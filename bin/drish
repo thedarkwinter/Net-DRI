@@ -1,0 +1,10 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Net::DRI::Shell;
+
+Net::DRI::Shell->run(@ARGV);
+
+exit 0;

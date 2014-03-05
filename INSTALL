@@ -1,0 +1,94 @@
+Documentation contributed by Tom van der Geer
+=============================================
+
+Most of this installation instruction is basic CPAN shell installation 
+practice, but hey... If you think you don't need it, don't read it :o)
+
+
+A) Install required OS libraries (make sure you have a working 
+development environment: make, gcc, etc.)
+
+Download latest SSL library (www.openssl.org), unpack, build and install
+
+B) Install Net::DRI dependencies
+
+1. open the CPAN shell:
+    perl -MCPAN -e shell
+
+If this is the first time, it will run the CPAN shell setup procedure. 
+You can usually get away by accepting all the default values. Be aware 
+that it should find most of the required binaries (tar, make, wget, etc.)
+
+2. On the CPAN shell commandline install the dependencies which are 
+listed in the README of the Net::DRI tarbal. Just type:
+
+install <module name>
+
+<module name> in this case can be e.g. DateTime (mind lower- and 
+uppercase characters) It can also be a 'sub'-module like SOAP::Lite 
+(also include the '::'!)
+
+Whenever you install a module that is listed as dependency in the README 
+it might depend on other modules as well. This will typically look 
+something like:
+
+---- Unsatisfied dependencies detected during 
+[J/JH/JHOBLITT/DateTime-Format-ISO8601-0.0403.tar.gz] -----
+     DateTime::Format::Builder
+Shall I follow them and prepend them to the queue
+of modules we are processing right now? [yes]
+
+Just accept prepending them to the queue. (default)
+
+
+My experience was that not all dependencies are properly detected like 
+the example above. This can lead to those nasty errors during the 
+test-phase of a module installation. E.g. during the installation of 
+DateTime:
+
+t/07compare.............ok 17/26Can't locate Class/Singleton.pm in @INC
+
+The way I deal with them is:
+Scroll back in the modules testing log and locate the missing module. In 
+this case "Class/Singleton.pm" which is part of module Class::Singleton. 
+(not hard to figure that out, right?)
+Now first do:
+install Class::Singleton
+
+and after you've succesfuly installed this missing module, you can 
+resume installing the module you wanted to install. In this case just 
+type the installation line again:
+
+install DateTime
+
+NOTE. I found during the installtion of the Net::DRI dependency modules 
+that I needed to additionally install the following modules. (yes, 
+that's on top of all the official dependencies listed):
+
+File::Find::Rule
+Test::Pod
+Class::Singleton
+Net::SSLeay
+MIME::Parser
+
+So you might want to install these "just in case" before you run into 
+errors. It won't harm your system if you do this without ever needing them.
+
+As a last resort, when there seem to be no more missing dependencies but 
+the test still lists errors, you might choose to do a 'forced' install:
+
+force install SOAP::Lite
+
+Only do this when you made sure there are no missing dependencies!
+(Uhum.... I had to do this for one or two modules..... But hey, it works 
+now)
+
+C) Install the Net::DRI module
+
+Finally we can install Net::DRI smoothly:
+
+install Net::DRI
+
+If the installation exits with "/usr/bin/make install  -- OK" 
+there's nothing more standing between you and 
+using the Net::DRI module. (Go treat yourself a beer)

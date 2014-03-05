@@ -1,0 +1,622 @@
+Net::DRI is Copyright (C) 2005-2013, Patrick Mevzek <netdri@dotandco.com>
+Official website for Net::DRI information and download:
+http://www.dotandco.com/services/software/Net-DRI/index.en
+
+Net::DRI
+========
+
+A Perl library to access Domain Name Registries/Registrars:
+DRI stands for Domain Registration Interface and aims to be,
+for domain name registries/registrars/resellers
+what Perl DBI is for databases.
+
+Net::DRI offers a uniform API to access services.
+It can be used by registries to test their systems.
+It can be used by registrars to access registries.
+It can be used by clients to access registrars and/or resellers.
+It can be used by anonyone to do whois, DAS or IRIS DCHK queries.
+
+It is an OO framework that can be easily extended to
+handle various protocols (RRP, EPP, custom protocols) and
+various transports methods (TCP, TLS, SOAP, email, etc...).
+
+Specific policies for each registry are handled in a Net::DRI::DRD
+subclass, DRD standing for Domain Registry Driver with registry
+being used broadly to describe a service offering domain names
+and related things, which can be provided by a true domain name
+registry, a registrar or a reseller at any level in the chain.
+
+Net::DRI standardizes as much as possible on EPP which is the current
+standard for domain name activities, for example for status codes.
+
+Net::DRI has been used to help conduct IETF interoperability tests, and is used
+in production by various organizations with success. It follows Perl Best Practices level 4 policies.
+
+Currently Net::DRI ships with:
+
+- a full RRP implementation (RFC 2832 & 3632)
+- a full EPP implementation (STD 69 aka RFC 5730/5731/5732/5733/5734/3735), including registry notifications
+- many EPP extensions:
+  * GracePeriod (RFC 3915)
+  * E164 for ENUM (RFC 4114)
+  * Enum Validation (RFC 5076)
+  * SecDNS for DNSSEC in EPP, both version 1.0 (RFC 4310) and version 1.1 (RFC 5910)
+  * Infrastructure ENUM in Austria
+  * NSgroup and Keygroup (used by .BE and .EU)
+  * VeriSign extensions: Sync, WhoisInfo, WhoWas, PremiumDomain, Suggestion, ClientAttributes, Balance
+  * IDN extension (draft-obispo-epp-idn-02)
+  * KeyRelay extension (draft-gieben-epp-keyrelay-02)
+  * AusRegistry extensions: KeyValue, IDN, Variant
+  * CentralNic extensions: Release, TTL, WebForwarding, Pricing
+  * CloudRegistry extension: LaunchPhase
+  * CoCCA extension: IPVerification
+  * ICANN extension: MarkSignedMark (SMD for TMCH in new gTLDs)
+  * Domain/Contact/Host and other extensions needed for extra services in various TLD:
+    .EU .COM .NET .MOBI .AERO .CAT .US .PL .SE .BE .AT .COOP .LU .ASIA .AU .NAME .ORG .UK
+    .DE .CH .LI .HN .SC .VC .AG .BZ .LC .MN .ME .CZ .TRAVEL .NO .BR .JOBS .PRO .FR .PT
+    .CX .GS .TL .KI .MS .MU .NF .HT .IM .SI .NG .NA .IT .NL .CA .CO.ZA
+    .RU .SU .РФ .XXX .TEL .NU
+- a full DAS (Domain Availability Service) implementation for .BE .EU .NL .AU
+- a full Whois implementation (RFC 3912) for thin and thick registries :
+     support included for domain names in .COM .NET .ORG .BIZ .INFO .AERO
+     .EU .MOBI .NAME .LU .WS .SE .CAT .AT .TRAVEL .US .PT
+- an IRIS (RFC3981) implementation with LWZ transport (RFC4993) for DCHK (RFC5144):
+  currently only .DE and .FR provide this service.
+  (XCP transport (RFC4992) is also available)
+- an UDP/TCP/TLS socket transport, handling SNI
+- an HTTP/HTTPS transport
+- various SOAP transports over HTTP/HTTPS
+- an SMTP transport
+- a shell (Net::DRI::Shell) providing autocompletion, logging and batch operations to be able
+  to leverage all Net::DRI power without writing any line of code
+  (see Net::DRI::Shell module documentation for all details)
+- Net::DRI::DRD::* modules for:
+  COM NET CC BZ TV JOBS
+  AdamsNames AERO AG ASIA AT AU
+  BE BH BIZ BR BZ
+  CAT CentralNic CIRA COOP CZ CO.CZ CO.ZA
+  CX GS TL KI MU NF HT NA NG CC CM SB MG
+  DE EU GL HN FR PM RE YT TF WF
+  ID IENUMAT IM INFO IT
+  LC LU ME MN MOBI NAME NO NU NL
+  ORG PL POST PRO PT SC SE CH LI
+  RU SU РФ
+  SI SO TEL TRAVEL UK US VC WS XXX
+- Net::DRI::DRD::* modules to use registrars API for Gandi, OVH, BookMyName, OpenSRS
+- Net::DRI::DRD::ISPAPI : the ISPAPI Registry driver for Net::DRI enables you to connect HEXONET's
+  EPP server and gives you the possibility to manage a wide range of gTLDs
+  and ccTLDs.
+  In addition to the EPP 1.0 compliant commands there is a Key-Value mapping
+  for additional domain related parameters which are required by several
+  registries.
+  The driver also supports all other HEXONET commands like queries for
+  domain and contact lists. It is also possible to access additional HEXONET
+  products like virtual servers and ssl certificates.
+
+If you are a registry/registrar/reseller, we would welcome
+the opportunity to be able to test Net::DRI against your system. Please
+drop a note to the authors of Net::DRI and do not hesitate to provide
+this framework to your clients (see license file).
+
+If you are already using Net::DRI or planning to do so, please let us also know.
+Do not hesitate to let others know and if you want, you are welcome to make a link
+back to our website at <http://www.dotandco.com/services/software/Net-DRI/index.en>
+
+If you find this software useful, we would welcome any kind of support to continue working on it.
+
+Perl modules needed
+-------------------
+
+Make sure to use at least Perl 5.8.4 as earlier versions have issues
+with utf8 handling which will cause errors for EPP.
+
+You also need the following modules:
+
+Carp (*)
+DateTime
+DateTime::Duration
+DateTime::Format::Strptime
+DateTime::Format::ISO8601 (>=0.06)
+DateTime::TimeZone
+Class::Accessor
+Class::Accessor::Chained
+Time::HiRes
+Email::Valid
+IO::Socket::INET (*)
+IO::Socket::SSL (>=0.90)
+XML::LibXML (>=1.61)
+Module::Load
+SOAP::Lite (needed only for BookMyName, OVH, Gandi webservices)
+SOAP::WSDL (needed only for OVH webservices)
+MIME::Entity (needed only for AFNIC emails)
+Net::SMTP (needed only for AFNIC emails)
+LWP::UserAgent (>=6.02) (needed only for OpenSRS, .PL and .IT)
+Digest::MD5 (needed only for OpenSRS)
+Net::DNS (needed only for .DE IRIS DCHK queries)
+IO::Uncompress::RawInflate (needed only for .DE IRIS DCHK queries) (*)
+
+Modules marked (*) are core Perl modules.
+
+
+All dates and durations exchanged with Net::DRI should be
+DateTime and DateTime::Duration objects
+
+Install
+-------
+
+Use the standard procedure:
+
+perl Makefile.PL
+make
+make test
+
+and then only if you have no errors:
+
+make install
+
+All tests are done locally and do not require a network connection;
+those who require a network connection are not enabled by default.
+
+LICENSE INFORMATION
+-------------------
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+See the accompanying LICENSE file for all details.
+
+Some parts of this library have been contributed by other authors,
+and are copyrighted to them. See each specific module documentation.
+
+How to use
+----------
+
+As a binary, a script called drish is installed, and is a wrapper
+around the Net::DRI shell, see its documentation inside Net::DRI::Shell
+
+You can find examples in the eg subdirectory:
+
+afnic_email.pl : as AFNIC member, to use the email robot
+ws_rrp.pl    : as registrar, to connect to .WS using RRP
+eurid_epp.pl : as registrar, connect to EURid test systems
+cat_epp.pl   : as registrar, connect to .CAT test systems
+coop_epp.pl  : as registrar, connect to .COOP test systems
+ispapi_epp.pl: as registrar, connect to Hexonet systems
+epp_client_no.pl (+ xmlfilter.pl) : as registrar, do operations with the .NO registry
+epp_client_se.pl : as registrar, do operations with the .SE registry
+das.pl       : for anyone, to check domain availability in various TLDs
+whois.pl     : for anyone, to do whois queries for some TLDs.
+iris_dchk.pl : for anyone, to do IRIS DCHK queries for some .DE domain names
+
+In the t subdirectory, the test files can also be studied for insight
+of all the API available.
+
+All errors trigger an exception using die and a specific class
+(Net::DRI::Exception). Thus all calls to Net::DRI methods should be
+put in an eval() to easily trap exceptions. Please see Net::DRI::Exception
+for details about information available when an exception is raised.
+
+Net::DRI uses an internal cache (in the future many different backends will
+be available for this service), and you can provide the global time to live of objects
+in it when you create the Net::DRI object. A negative ttl means no cache at all.
+It is recommended not to completely disable the cache, and to have a ttl of at
+least of few seconds: it will cut down the use of checks and related verifications
+done at registry, especially for complex operations.
+
+Typical use of this library would be like the following
+(but please not that parts of this documentation may be outdated,
+and you should double check inside the Changes file as well as the examples
+described above and the test files):
+
+- $dri=Net::DRI->new(...) to create the global object. Save the result,
+  everything will be done with methods applied on this object.
+  You can choose the logging you wish (among base modules provided: no logging
+  at all, all logging to STDERR and logging into files, one per registry+profile)
+  and the cache time to live. See Net::DRI module documentation for more information
+  on caching and logging.
+
+- $dri->add_registry(...) to add a new registry driver
+  First argument is the registry class name (Net::DRI::DRD:: will be added if no :: is found),
+  second argument is an hash ref setting information : you should have at least
+  a client_id key whose value is the client identifier at this registry for the client connecting
+  (this is needed for the various _is_mine() methods - see below)
+
+  You can attach as many registry drivers as you need to a single Net::DRI object
+  this would enable you to easily operate on multiple registries at the same time
+  Use $dri->target('registry name') to set the current registry, the one which
+  will receive all future calls.
+  The target method returns the $dri object, thus can be chained with other calls.
+  Besides the registry name you can also pass a domain name or a TLD, and the library
+  will try to find the correct registry. This will work only if you have no overlap between
+  your TLDs among various registries
+
+- $dri->add_profile('profilename','profiletype',{transport params},{protocol params})
+ (or add_current_profile with same parameters as in add_profile and it will also
+   set the default profile to the one being created)
+  to use registry driver default for profiletype (see transport_protocol_default in each DRD modules)
+  for transport & protocol classes.
+
+  Each registry driver is used through a specific profile. Each driver can have at the same time
+  as many profiles as needed.
+  A profile is:
+  - a name
+  - a transport, with specific parameters
+  - a protocol, with specific parameters
+
+  This enables you to be connected to the same registries with different credentials at the same
+  time, or through different transports, if the registry provides for example access by email
+  and by TCP at the same time.
+
+  You switch profile using the $dri->target('registry name','profile name') call.
+
+  add_profile() and add_current_profile() return a Net::DRI::Protocol::ResultStatus
+  in all cases, and this should be tested with ->is_success() to be sure the profile
+  has been created correctly.
+  They may also die for some other internal errors.
+
+  Optionnally, you can use an auto target function:
+  by providing details about which profile to use for each given action,
+  Net::DRI can switch to the profile needed automatically, thus you will not need
+  anymore to call target() by yourself.
+  To do that, you will need to provide information by calling:
+  $dri->set_auto_target('profile','type','action')
+  Profile is the profile name to use when doing
+  action 'action' (check, info, create, etc...) on object type 'type' (domain, host, contact).
+  The profile must exist before calling set_auto_target()
+  A default profile can be specified when type and/or action is undef.
+
+- after registries and profiles have been created (others can be added at any time),
+ you can apply many methods (see below) to the $dri object
+ You can change the current registry and/or current profile at any time using $dri->target(X,Y)
+
+ You get back for most of the calls an object representing the status.
+ It is an instance of Net::DRI::Protocol::ResultStatus, please see its documentation.
+ Through it you can access all details about the operation that has been done, including
+ raw data, using the get_data() and get_data_collection() methods (see module documentation).
+ As long as you keep the object, the data is there, and will not be deleted, while data
+ in cache (and accessed through $dri->get_info()) will be deleted after its time to live
+ has elapsed.
+
+ You can also always use the following methods:
+ result_is_success()
+ result_code()
+ result_native_code()
+ result_message()
+ result_lang()
+ result_is_pending()
+ result_trid()
+ to get back the same information (if not given by the methods or if you want to discard output)
+
+ Information that has been sent by registry will also be available through $dri->get_info(...)
+ with a specific key. The key to use depends on the operation, but should be mostly registry-independent.
+ get_info() gives back information related to the latest operation.
+ If you use target() and later get_info() you will get information related to the latest operation
+ for the registry/profile specified in the target() call.
+
+ See below the list of methods you can call, and information available after each in get_info()
+
+- when you are finished, call $dri->end() to deallocate ressources and close any open connections.
+
+
+If using the Socket transport, you can make sure the connection is still open by using the
+ping() method, such as : $dri->transport()->ping()
+It will return 1 if the connection is still there, 0 otherwise.
+If you pass a true value to ping(), it will automatically reconnect if the connection is broken.
+
+Available API
+-------------
+
+Please see the included tests (directory t/) and examples (directory eg/) for many
+examples of use and full API coverage.
+
+* has_object($type)
+
+ gives 1 if the registry manages objects of type $type (domain, ns, contact, etc...)
+
+* periods()
+
+ gives the list of all registration periods allowed by the current registry.
+ Periods are given as DateTime::Duration objects.
+
+* is_my_tld()
+
+ with a domain name as argument, returns 1 if the current registry handles this
+ domain name (TLD of domain name is handled by registry)
+
+* cache_clear()
+
+ completely delete cache for current registry and current profile
+
+* verify_name_domain() verify_name_host()
+
+ gives 0 if the given argument is a correct name for a domain name or an hostname
+ at the current registry.
+
+* verify_duration_create() verify_duration_renew() verify_duration_transfer()
+
+ called internally at various stages in Net::DRI to verify that we can add/renew/transfer
+ a domain name
+
+* domain_create()
+
+ Create a domain name and associated operations (except if pure creation is asked)
+ at the current registry and current profile. A domain name and an hash ref should be provided.
+ The hash ref can have a "duration" key with its value being a DateTime::Duration object,
+ and a "ns" key with its value being a Net::DRI::Data::Hosts object.
+
+ The following operations are done (if pure creation is asked, only step 4 is done):
+
+ 0) we do a domain_check operation and stop if the domain exists already
+ 1) we separate nameservers : those being inside domain name being created, those being outside
+ 2) we test outside nameservers for existence at registry, and if it fails, we try to create them
+ 3) we create all needed contacts, for thick registries
+ 4) we create domain
+ 5) we create nameservers that are inside domain (in-bailiwick nameservers)
+ 6) we update domain to add nameservers created at step 5.
+ 7) if a status key exists in hash ref given, we try to change status of newly created domain name
+
+ You get back a ResultStatus that may contain all results chained, see this module documentation.
+
+ You may use get_info with the following keys to get more information:
+ - exDate : for the current expiration date (a DateTime object)
+ - status : for the current status of domain name
+
+* domain_delete()
+
+ Delete a domain and associated opeations (except if a pure deletion is askedt)
+ at the current registry and current profile.
+ A domain name should be provided.
+
+ The following operations are done (if pure delete is asked, only step 3 is done):
+
+ 1) we find the current list of nameservers for this domain
+ 2) we remove all nameservers from this domain
+ 3) we delete the domain name
+ (which can fail if some nameservers use the domain name in their FQDN,
+ we should try to rename them first, it is planned for later)
+
+ See domain_create() for information on what you get back.
+
+* domain_info()
+
+ Ask for all information on a given domain name at the current registry and current profile.
+ A second optional parameter is an hash ref. It can include an auth key, for EPP registries for example.
+
+ You may use get_info or ResultStatus::get_data with the following keys to get more information:
+ - ns : a Net::DRI::Data::Hosts object representing the nameservers of the domain
+ - status : a Net::DRI::Data::StatusList object representing the current status list of the domain queried
+ - exDate, crDate, upDate, trDate : DateTime objects representing the expiration, creation, last update, and
+                          transfer date for the domain queried
+ - clID, crID, upID : (strings) local registry ID of the current sponsoring registrar, the registrar having created,
+                       and the registrar (or registry) having last modified the domain queried
+
+* domain_check()
+
+ Check if a domain name exists or not at the current registry and current profile.
+
+ $dri->get_info('exist') returns 0 or 1
+
+ When given a list of domain names, will check for each one, using one or more registry
+ calls depending on the registry and protocol selected.
+
+ $dri->get_info('exist','domain',$domain) returns 0 or 1 for the given domain name in $domain
+ (the cache ttl must be positive and large enough (few seconds) for that to work) ;
+ you can also use $rc->get_data('domain',$domain,'exist') - please note the different API -
+ which will always have data, independently from cache.
+
+* domain_exist()
+
+ Same as previous, but we get back 0 or 1 if the domain does not exist/exist or undef if we do not know.
+
+* domain_update()
+
+ Update the domain name given as argument at the current registry and current profile.
+ Most of the time you should use the following more specific methods.
+
+* domain_update_ns()
+
+ Update nameservers of the domain name given as argument at the current registry and current profile.
+ Most of the time you should use the following more specific methods.
+
+* domain_update_ns_add()
+
+ For the given domain name as first argument,
+ add the nameservers given as second argument (being a Net::DRI::Data::Hosts object).
+
+* domain_update_ns_del()
+
+ Same as previous to delete nameservers
+
+* domain_update_ns_set()
+
+ Same as previous to set the current list of nameservers, irrespective to what they are now.
+
+* domain_update_status()
+
+ Update statuses of the domain name given as argument at the current registry and current profile.
+ Most of the time you should use the following more specific methods.
+
+* domain_update_status_add()
+
+ For the given domain name as first argument, add the statuses given as second argument.
+
+ To create the second argument, call $dri->local_object('status')->no()
+ with up to three parameters :
+ - first one is a string among renew, update, transfer, publish, delete (choices depending on the registry),
+   which sets what is forbidden,
+ - second (optional) one is a message (ex: Payment overdue),
+ - third (optional, default to 'en') is the language of the previous message.
+
+ The call to local_object('status') creates a new object from a class which is a subclass of Net::DRI::Data::StatusList,
+ that can be used in all functions related to statuses.
+
+* domain_update_status_del()
+
+ Same as previous to delete statuses.
+
+* domain_update_status_set()
+
+ Same as previous to set the current list of status, irrespective to what they are now.
+
+* domain_update_contact()
+
+ Update contacts of the domain name given as argument at the current registry and current profile.
+ Most of the time you should use the following more specific methods.
+
+* domain_update_contact_add()
+
+ For the given domain name as first argument, add the contacts given as second argument which is a
+ Net::DRI::Data::ContactSet instance.
+
+* domain_update_contact_del()
+
+ Same as previous to delete contacts.
+
+* domain_update_contact_set()
+
+ Same as previous to set the current list of contacts, irrespective to what they are now.
+
+* domain_renew()
+
+ Renew the domain name provided as first argument,
+ with optionnally a ref hash, with keys duration and current_expiration.
+
+ You may use get_info() to retrieve the same information as after domain_create()
+
+* domain_transfer()
+
+ Various operations related to transfers of domain names.
+ Most of the time you should use the following more specific methods.
+
+* domain_transfer_start()
+
+ Start the transfer of the given domain name as first argument.
+ A second optional argument is an hash ref that can include for example an auth key for authorization information.
+
+* domain_transfer_stop()
+
+ Stop the transfer of the given domain name as first argument (used by the registrar having started the transfer).
+ A second optional argument is an hash ref that can include for example an auth key for authorization information.
+
+* domain_transfer_query()
+
+ Query the state of the ongoing transfer for the given domain name as first argument.
+ A second optional argument is an hash ref that can include for example an auth key for authorization information.
+
+* domain_transfer_accept()
+
+ Accept the transfer of the given domain name as first argument (used by the registrar currently sponsoring the domain name).
+ A second optional argument is an hash ref that can include for example an auth key for authorization information.
+
+* domain_transfer_refuse()
+
+ Refuse the transfer of the given domain name as first argument (used by the registrar currently sponsoring the domain name).
+ A second optional argument is an hash ref that can include for example an auth key for authorization information.
+
+* domain_can()
+
+ For the domain name given as first argument, and for the operation given as second
+ (being either 'renew','update','delete' or 'tranfer'), returns 1 if we can
+ do the requested operation at the current registry and current profile.
+ We check the domain name status, and if possible who sponsors currently the domain name,
+ and if the action requested needs sponsorship.
+
+* domain_status_allows()
+
+ Check if the current status of the domain name given as first argument allows
+ for a specific operation.
+ Most of the time you should use the following more specific methods.
+
+* domain_status_allows_delete()
+
+ Returns 1 if we can delete the domain name given as first argument at the current registry and current profile.
+ Else, 0.
+
+* domain_status_allows_update()
+
+ Same for update.
+
+* domain_status_allows_renew()
+
+ Same for renew.
+
+* domain_status_allows_transfer()
+
+ Same for transfer.
+
+* domain_current_status()
+
+ Returns the status of the domain name given as first argument at the current registry and current profile.
+ (status is a Net::DRI::Data::StatusList or subclass object)
+
+* domain_is_mine()
+
+ Returns 1 if we are the current sponsor of the domain name given as first argument 
+ at the current registry and current profile.
+ Else, 0.
+
+* host_create()
+
+ Create a new nameserver. The first argument should be a Net::DRI::Data::Hosts object.
+ Some registries may require or permit a second argument, used in the same way as in domain_create()
+
+* host_delete()
+
+ Delete a nameserver. The first and only argument should be a Net::DRI::Data::Hosts object or a string.
+
+* host_info()
+
+ Retrieve information about a namserver. The first and only argument should be a Net::DRI::Data::Hosts object or a string.
+
+ You may use get_info with the following keys to get more information:
+ - self : a Net::DRI::Data::Hosts for the nameserver itself (name + IP addresses)
+ - exDate, crDate, upDate, trDate, clID, crID, upID : see domain_info()
+
+* host_check()
+* host_exist()
+* host_update()
+* host_update_ip()
+* host_update_ip_add()
+* host_update_ip_del()
+* host_update_ip_set()
+* host_update_status()
+* host_update_status_add()
+* host_update_status_del()
+* host_update_status_set()
+* host_update_name_set()
+* host_current_status()
+* host_is_mine()
+
+See corresponding domain_* methods.
+
+* contact_create()
+
+ Create a new contact at registry. The first and only argument should be a Net::DRI::Data::Contact object (or one of its subclasses).
+
+* contact_delete()
+* contact_info()
+* contact_check()
+* contact_exist()
+* contact_update()
+* contact_update_status()
+* contact_update_status_add()
+* contact_update_status_del()
+* contact_update_status_set()
+* contact_transfer()
+* contact_transfer_start()
+* contact_transfer_stop()
+* contact_transfer_query()
+* contact_transfer_accept()
+* contact_transfer_refuse()
+* contact_is_mine()
+
+See above methods.
+
+* message_retrieve() message_delete() message_waiting() message_count() : to handle registry messages (see t/601vnds_epp.t)

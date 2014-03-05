@@ -1,0 +1,46 @@
+TODO file for Net::DRI
+Send your wishlist to <netdri@dotandco.com>
+=====================================================================
+
+All
+        * sign the distribution with Module::Signature (1)
+        * add some introspections to be able to know what methods are really available per DRD, instead of throwing an exception ?
+        * implement RFC5105 « ENUM Validation Token Format Definition »
+        * switch from ExtUtils::MakeMaker to Module::Build for better META.yml ?
+        * offer full asynchronous API ?
+        * add "use warnings;" in every module (1)
+        * rewrite using Moose, roles will make things easier than subclasses for DRD modules, but probably only a v2 goal !
+
+Net::DRI
+        * IDN support (in a cross registry fashion) with Net-IDN-Tools (1)
+        * Exception handling using Exception::Class instead of internal implementation ? (1)
+
+Net::DRI::DRD
+        * bulk operations (many domains at once)
+        * domain_update() / host_update()
+          - try to accomodate (set=>info+add+del, add=>info+set, del=>info+set)
+          - verify not same info in add & del
+          - verify final change is not empty ?
+        * split the module in DRD::Objects::{Domain,Host,Contact,...} + smart loader (like Protocol register_commands)
+          to load the relevant modules based on DRD::object_types() and/or Protocol registered actions and objects
+
+Net::DRI::Protocol::ResultStatus + Net::DRI::Registry
+        * implement the results_* methods added in EPP/Message. Or change API based on wantarray
+
+Net::DRI::DRD::LU
+        * implement startTLS extension ?
+
+Net::DRI::DRD::Nominet
+        * implement DAS and Whois
+
+Net::DRI::Transport::HTTP::*
+        * unify all three modules into one (Net::DRI::Transport::WS ?), taking into account all possible cases
+        * retrofit Transport/SOAP into Transport/HTTP/SOAPLite (1), depending also on previous point
+
+Net::DRI::Protocol::EPP::Message
+        * use new API of command_extension_register everywhere (1)
+
+Net::DRI::DRD::Contact
+        * better report of errors in validate() with details on what is expected (1)
+
+(1) would be great to have before releasing Net::DRI version 1.0

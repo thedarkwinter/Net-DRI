@@ -1,0 +1,16 @@
+SUPPORT
+-------
+
+Free, best effort support is available by email to netdri@dotandco.com
+or through Dot and Co newsgroups, for which you will find all information
+on http://www.dotandco.net/newsgroups.en
+
+Net::DRI is being sponsored by Dot and Co (http://www.dotandco.com/).
+Professionnal support and specific development are available.
+Please contact netdri@dotandco.com for any information.
+
+Before reporting any bug, please make sure you use the latest Net::DRI
+version, by checking on https://metacpan.org/module/Net::DRI
+including developer's releases.
+If you can not upgrade, please try to reproduce your bug first with the
+latest version, as your problem may have been already fixed in it.
