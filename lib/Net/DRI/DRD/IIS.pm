@@ -88,7 +88,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::SE',{})                 if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::IIS',{})                 if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{remote_host=>'whois.nic-se.se'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
  return;
 }
@@ -96,7 +96,7 @@ sub transport_protocol_default
 sub set_factories
 {
  my ($self,$po)=@_;
- $po->factories('contact',sub { return Net::DRI::Data::Contact::SE->new(@_); });
+ $po->factories('contact',sub { return Net::DRI::Data::Contact::IIS->new(@_); });
  return;
 }
 

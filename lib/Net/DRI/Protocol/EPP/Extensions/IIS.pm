@@ -70,7 +70,7 @@ sub setup
     return;
 }
 
-sub default_extensions { return qw/SE::Extensions SecDNS/; }
+sub default_extensions { return qw/IIS::Extensions SecDNS/; }
 
 ####################################################################################################
 1;
