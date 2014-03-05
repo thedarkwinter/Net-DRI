@@ -22,6 +22,7 @@ use base qw/Net::DRI::Logging/;
 use Net::DRI::Exception;
 
 use IO::Handle; ## needed for the autoflush method on any lexical $fh
+use POSIX qw /strftime/;
 
 ####################################################################################################
 
@@ -77,6 +78,36 @@ sub generate_filename
 {
  my ($self,$type,$ctx)=@_;
  return sprintf '%s/%s',$self->{output_directory},$self->{output_filename} if exists $self->{output_filename};
+ if (exists $self->{format_filename})
+ {
+  my $name = $self->{format_filename};
+  if ($name =~ m/%DATE\[(.*)\]/)
+  {
+   my $dt = strftime ($1, gmtime);
+   $name =~ s/%DATE\[$1\]/$dt/;
+  }
+  $name =~ s/%PID/$$/;
+  $name =~ s/%TYPE/$type/;
+  if (defined $ctx && ref $ctx eq 'HASH')
+  {
+   $name =~ s/%PROTOCOL/$ctx->{protocol}/;
+   $name =~ s/%PROFILE/$ctx->{profile}/;
+   $name =~ s/%(REGISTRY|DRD)/$ctx->{registry}/;
+  }
+  else
+  {
+    $name =~ s/%(PROTOCOL|PROFILE|REGISTRY|DRD)//g;
+  }
+  $name .= "-core" if $type eq 'core' && $name !~ m/$type/; # append core if this is core
+  chomp($name);
+  $name =~ s/--*/-/; 
+  $name =~ s/__*/_/;
+  $name =~ s/^[ _-]//;
+  $name =~ s/[ _-]$//;
+  $name .= ".log" unless ($name =~ m/\..*$/);
+  return sprintf '%s/%s',$self->{output_directory},$name;
+ }
+ # otherwise use the old method
  my $name=(defined $ctx && ref $ctx eq 'HASH')? sprintf('%s-%s-%s',$ctx->{registry},$ctx->{profile},$type) : $type;
  return sprintf '%s/%d-%s.log',$self->{output_directory},$$,$name;
 }
@@ -113,12 +144,31 @@ This class dumps all logging information to various files.
 =head1 EXAMPLES
 
 	$dri->new({..., logging => ['files',{output_directory => '/tmp'}] ,...});
+	$dri->new({..., logging => ['files',{output_directory => '/tmp',format_filename => '%PID-%PROFILE'}] ,...}))
 
-If not defined, output_directory defaults to the current working directory.
+If not defined, the format_filename is %PID-%REGISTRY-%PROFILE-%TYPE
+
+
 
 =head1 SUBROUTINES/METHODS
 
 All mandated by superclass L<Net::DRI::Logging>.
+
+Additional parameter for the Files module:
+
+=item output_directory
+
+If not defined, output_directory defaults to the current working directory.
+
+=item output_filename
+
+Optionally specify the filename
+
+=item format_filename
+
+Optionally specify the format to generate the filename. If not defined, the format_filename is %PID-%REGISTRY-%PROFILE-%TYPE. You can also use %DATE[posix format], eg: %DATE[%Y%m%d]-%PROFILE. Arbirtary text wont be removed, eg: %PID-%PROFILE-polling. The default extension is .log, but you can set this, eg:  %PID-%PROFILE.txt. Note, if you don't specify %TYPE, then transport and protocol will be logged together, but -core will be added to the core log.
+
+=back
 
 =head1 DIAGNOSTICS
 

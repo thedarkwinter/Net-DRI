@@ -109,13 +109,28 @@ sub string_data
  $data->{all}=join q{ },map { $_.q{=}.(defined $data->{$_} ? $data->{$_} : '') } sort { $a cmp $b } keys %{$data}; ## this should be handy during debugging
  if (exists $data->{direction}) { $data->{udirection}=uc $data->{direction}; $data->{adirection}=$data->{direction} eq 'in'? 'C<=S' : 'C=>S';}
  my @r;
+ 
+ if (exists $self->{suppress_keepalive} && $self->{suppress_keepalive})
+ {
+  $msg = "[Poll Request]" if ($msg =~ m/(poll op="req"|msg:queue-read)/);
+  $msg = "[Poll Response 1300 - No Messages]" if ($msg =~ m/(code='1300'|code="1300")/);
+  $msg = "[Greeting Request]" if ($msg =~ m/hello\//);
+  $msg = "[Greeting Response]" if ($msg =~ m/\/greeting/);
+  $msg = "\n$msg" if ($msg =~ m/\n/);
+ }
+ 
  foreach my $l (split /\n/,$msg)
  {
   my $f=$hdr.q{ }.$self->{'format_'.$type};
   $data->{message}=$l;
   $f=~s/%([A-Z]+)/$data->{lc $1} || ''/eg;
+  if (exists $self->{trim_headers} && $self->{trim_headers}) {
+   $hdr='';
+   $f=~s/(^ IN |^ OUT )//;
+  }
   push @r,$f;
  }
+ push @r,'' if ($msg =~ m/\n/ && exists $self->{trim_headers} && $self->{trim_headers});
  return join qq{\n}, @r;
 }
 
@@ -193,6 +208,14 @@ if needed, name of encoding to use to convert data stream ; default: UTF-8
 an optional ref hash to know which part of logged data should be replaced to ensure confidentiality;
 for now it works only for EPP, with the hash key "session_password" and a true value, then content
 of <pw> and <newPW> are replaced by a string of * in logging data
+
+=item suppress_keepalive
+
+setting this to 1 will cause all keepalive XML to be replaced with [Greeting Request], [Greeting Response], [Poll Request], and [Poll Response 1300 - No Messages]. If there is a poll message, then it will be output in the log.
+
+=item trim_headers
+
+setting this to 1 will cause all log messages with more than one line (eg XML) to be output with only the initial header, and the rest of the message will output directly.
 
 =back
 

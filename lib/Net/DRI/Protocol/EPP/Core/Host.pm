@@ -163,6 +163,7 @@ sub info_parse
   if ($name eq 'name')
   {
    $oname=lc($c->textContent());
+   $oname =~ s/\.$//; # remove trailing .
    $rinfo->{host}->{$oname}->{action}='info';
    $rinfo->{host}->{$oname}->{exist}=1;
   } elsif ($name=~m/^(clID|crID|upID)$/)

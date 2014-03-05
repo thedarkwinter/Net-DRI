@@ -21,6 +21,7 @@ use warnings;
 use Time::HiRes ();
 use Encode ();
 use Module::Load;
+use Hash::KeyMorpher qw (to_mixed to_under);
 use Net::DRI::Exception;
 
 =pod
@@ -501,7 +502,10 @@ sub xml_write
   }
   my $tag=shift(@c);
   my $attr=keys(%attr)? ' '.join(' ',map { $_.'="'.$attr{$_}.'"' } sort(keys(%attr))) : '';
-  if (!@c || (@c==1 && !ref($c[0]) && ($c[0] eq '')))
+  if (ref $tag eq 'XML::LibXML::Element') # MH: it its an XML Element just push it straight; this is used by LaunchPhase to push signedMarks in
+  {
+   push @t, $tag;
+  } elsif (!@c || (@c==1 && !ref($c[0]) && ($c[0] eq '')))
   {
    push @t,'<'.$tag.$attr.'/>';
   } else
@@ -583,6 +587,10 @@ sub remcam
  $in=~s/([A-Z])/_$1/g;
  return lc($in);
 }
+
+# These two subs convert to/from perl / xml naming styles. They use Hash::KeyMorpher;
+sub xml2perl { return Hash::KeyMorpher::to_under($_[0]); }
+sub perl2xml { my $s = Hash::KeyMorpher::to_mixed($_[0]); $s =~ s/Id$/ID/; return $s; }
 
 sub encode       { my ($cs,$data)=@_; return Encode::encode($cs,ref $data? $data->as_string() : $data,1); } ## Will croak on malformed data (a case that should not happen)
 sub encode_utf8  { return encode('UTF-8',$_[0]); } ## no critic (Subroutines::RequireArgUnpacking)

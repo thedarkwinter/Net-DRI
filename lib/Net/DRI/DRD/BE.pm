@@ -99,7 +99,6 @@ sub verify_name_domain
  return $self->_verify_name_rules($domain,$op,{ check_name => 1,
                                                 my_tld => 1,
                                                 min_length => 2,
-                                                no_double_hyphen => 1,
                                               });
 }
 

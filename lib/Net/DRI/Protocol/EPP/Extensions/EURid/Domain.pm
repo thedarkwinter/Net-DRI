@@ -301,7 +301,7 @@ sub transfer_request
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=$mes->command_extension_register('domain-ext','transfer');
+ my $eid=$mes->command_extension_register('domain-ext','transfer', {'xmlns:domain'=>'urn:ietf:params:xml:ns:domain-1.0'});
  my @d;
 
  if (Net::DRI::Util::has_contact($rd))

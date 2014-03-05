@@ -1,4 +1,4 @@
-## Domain Registry Interface, EPP IDN (draft-obispo-epp-idn-02)
+## Domain Registry Interface, EPP IDN (draft-obispo-epp-idn-03)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -52,6 +52,7 @@ sub info_parse
  my $data=$mes->get_extension('idn','data');
  return unless defined $data;
 
+ # Make Compatible with Data::IDN  object
  foreach my $el (Net::DRI::Util::xml_list_children($data))
  {
   my ($name,$node)=@$el;
@@ -63,7 +64,10 @@ sub info_parse
    $rinfo->{domain}->{$oname}->{uname}=$node->textContent(); ## domain name in unicode NFC form
   }
  }
-
+ my $idn = $po->create_local_object('idn')->autodetect($oname,$rinfo->{domain}->{$oname}->{idn_table});
+ $idn->uname($rinfo->{domain}->{$oname}->{uname});
+ 
+ $rinfo->{domain}->{$oname}->{idn} = $idn;
  return;
 }
 
@@ -72,13 +76,23 @@ sub create_build
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- return unless Net::DRI::Util::has_key($rd,'idn_table') && Net::DRI::Util::has_key($rd,'uname');
+ # Make Compatible with Data::IDN  object
+ if (Net::DRI::Util::has_key($rd,'idn') && UNIVERSAL::isa($rd->{idn},'Net::DRI::Data::IDN'))
+ {
+   my $idn = $rd->{'idn'};
+   $rd->{'idn_table'} = $idn->iso639_1() if $idn->iso639_1(); # Is this correct? What /table/ are they referring to
+   $rd->{'uname'} = $idn->uname() if $idn->uname();
+ }
 
+ return unless Net::DRI::Util::has_key($rd,'idn_table');
  Net::DRI::Exception::usererr_invalid_parameters('idn_table must be of type XML schema token with at least 1 character') unless Net::DRI::Util::xml_is_token($rd->{idn_table},1);
- Net::DRI::Exception::usererr_invalid_parameters('uname must be of type XML schema token from 1 to 255 characters') unless Net::DRI::Util::xml_is_token($rd->{uname},1,255);
+ Net::DRI::Exception::usererr_invalid_parameters('uname must be of type XML schema token from 1 to 255 characters') if (exists $rd->{'uname'} && !Net::DRI::Util::xml_is_token($rd->{uname},1,255));
 
  my $eid=$mes->command_extension_register('idn','data');
- $mes->command_extension($eid,[['idn:table',$rd->{idn_table}],['idn:uname',$rd->{uname}]]);
+ my @n;
+ push @n,['idn:table',$rd->{idn_table}];
+ push @n,['idn:uname',$rd->{uname}] if exists $rd->{uname};
+ $mes->command_extension($eid,\@n);
 
  return;
 }

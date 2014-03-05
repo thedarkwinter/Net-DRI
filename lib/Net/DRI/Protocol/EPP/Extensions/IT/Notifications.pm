@@ -1,6 +1,7 @@
 ## Domain Registry Interface, .IT message extensions
 ##
 ## Copyright (C) 2009-2010,2013 Tower Technologies. All rights reserved.
+##                        (C) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This program free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License v2.
@@ -10,6 +11,7 @@ package Net::DRI::Protocol::EPP::Extensions::IT::Notifications;
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 =pod
 
@@ -46,113 +48,158 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
        my ($class, $version) = @_;
-
-       my $ops = {
-               'review_credit' => [ undef, \&parse_credit ],
-               'review_passwd' => [ undef, \&parse_reminder ],
-               'review_simple' => [ undef, \&parse_simple ],
-               'review_change' => [ undef, \&parse_chgstatus ],
-               'review_dnserror' => [ undef, \&parse_dnserror ],
-       };
-
-       return {
-               'message' => $ops,
-       };
+       return { 'message' => { 'notication' => [undef, \&parse] } };
 }
 
-sub retrieve_ext
+####################################################################################################
+
+sub parse
 {
- my ($po,$ns,$node)=@_;
- my $msg = $po->message;
- return unless $msg->is_success;
- my $ext = $msg->get_extension($ns,$node);
- return unless defined $ext;
- my $id = $msg->msg_id;
- return ($ext,$id);
+ my ($po, $otype, $oaction, $oname, $rinfo) = @_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
+ my $msgid=$oname=$mes->msg_id();
+ return unless (defined($msgid) && $msgid);
+
+ # namespace => node , action
+ my %namespaces=(
+               'it_epp' => {
+                                'passwdReminder' => 'password_expiring',
+                                'wrongNamespaceReminder' => 'wrong_namespace',
+                                'creditMsgData' => 'low_balance',
+
+                        },
+                'it_domain' => {
+                                'chgStatusMsgData' => 'update', # FIXME is this right?
+                                'dnsErrorMsgData' => 'dns_error',
+                                'dnsWarningMsgData' => 'update', #FIXME is this right?
+                                'simpleMsgData' => 'delete', #FIXME
+                                'dlgMsgData' => 'lost_delegation', #FIXME ??
+                                'trade' => 'transfer', # FIXME or trade?
+                                'delayedDebitAndRefundMsgData' => 'refund',
+                        },
+#       this is processed fine by main parser
+#                'domain' => (
+#                                'trnData' => 'transfer',
+#                        ),
+        );
+        
+        my ($data,$ns,$nodeac,$node,$ac,$tmp);
+        while ( ($ns, $nodeac) = each(%namespaces))
+        {
+                while ( ($node,$ac) = each (%{$nodeac}))
+                {
+                        next unless $data= $mes->get_extension($ns,$node);
+                        $otype = ($ns eq 'it_epp') ? 'message' : 'domain';
+                        if ($otype eq 'domain') {
+                                my $tn = Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'domain');
+                                $tn = Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'name');
+                                $rinfo->{$otype}->{$oname}->{object_id} = $oname = $tn->textContent() if $tn;
+                         }
+                        $oaction = $rinfo->{$otype}->{$oname}->{action} = $ac;
+                        parse_recurse($po, $otype, $oaction, $oname, $rinfo,$data);
+                }
+        }
+        return;
 }
 
-sub parse_credit
+sub parse_recurse
 {
- my ($po, $type, $action, $name, $rinfo) = @_;
- my ($ext,$id)=retrieve_ext($po,'it_epp','creditMsgData');
- return unless defined $ext;
+        my ($po, $otype, $oaction, $oname, $rinfo,$data) = @_;
+        return unless $data;
+        my $mes=$po->message();
 
- $rinfo->{'message'}->{$id}->{credit}=($ext->getElementsByTagName('extepp:credit'))[0]->textContent; ## TODO: use xml_child_content() instead
- return;
+        parse_namespace($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_epp'),'wrongNamespaceInfo'));
+        parse_status($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'targetStatus'));
+        parse_nameservers($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'nameservers'));
+        parse_tests($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'tests'));
+        parse_queries($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'queries'));
+
+        foreach my $el (Net::DRI::Util::xml_list_children($data))
+        {
+                my ($name,$c) = @$el;
+                next if $name =~ m/nameservers|tests|queries|targetStatus|wrongNamespaceInfo/; # already parsed in the other subs
+                $rinfo->{$otype}->{$oname}->{$name} = $po->parse_iso8601($c->textContent) if ($name =~ m/Date$/); # date nodes
+                $rinfo->{$otype}->{$oname}->{Net::DRI::Util::xml2perl($name)} = $c->textContent if ($c->nodeType == 1); # all other text nodes
+                parse_recurse($po, $otype, $oaction, $oname, $rinfo,$c) if ($name =~ m/Data$/); # recursive parse 
+        }
+        return;
 }
 
-sub parse_reminder
+sub parse_namespace
 {
- my ($po, $type, $action, $name, $rinfo) = @_;
- my ($ext,$id)=retrieve_ext($po,'it_epp','passwdReminder');
- return unless defined $ext;
-
- $rinfo->{'message'}->{$id}->{'passwd_expires_on'}= ($ext->getElementsByTagName('extepp:exDate'))[0]->textContent; ## TODO: use xml_child_content() instead + convert date to DateTime object ?
- return;
+        my ($po, $otype, $oaction, $oname, $rinfo,@data) = @_;
+        return unless @data;
+        foreach my $data (@data) {
+                foreach my $el (Net::DRI::Util::xml_list_children($data))
+                {
+                        my ($name,$c) = @$el;
+                        push @{$rinfo->{$otype}->{$oname}->{Net::DRI::Util::xml2perl($name)}},$c->textContent();
+                }
+        }
+        return;
 }
 
-sub parse_simple
+sub parse_nameservers
 {
- my ($po, $type, $action, $name, $rinfo) = @_;
- my ($ext,$id)=retrieve_ext($po,'it_domain','simpleMsgData');
- return unless defined $ext;
-
- $rinfo->{'message'}->{$id}->{'domain'}=($ext->getElementsByTagName('extdom:name'))[0]->textContent; ## TODO: use xml_child_content() instead
- return;
+        my ($po, $otype, $oaction, $oname, $rinfo,$data) = @_;
+        return unless $data;
+        foreach my $el (Net::DRI::Util::xml_list_children($data))
+        {
+                my ($name,$c) = @$el;
+                push @{$rinfo->{$otype}->{$oname}->{nameservers}},$c->getAttribute('name');
+         }
+        return;
 }
 
-sub parse_chgstatus
-{      
- my ($po, $type, $action, $name, $rinfo) = @_;
- my ($ext,$id)=retrieve_ext($po,'it_domain','chgStatusMsgData');
- return unless defined $ext;
-
- $rinfo->{'message'}->{$id}->{'domain'}=($ext->getElementsByTagName('extdom:name'))[0]->textContent; ## TODO: use xml_child_content() instead
-       
-       foreach ($ext->findnodes('//extdom:targetStatus/*')) {
-       
-               $rinfo->{'message'}->{$id}->{'status'} = $_->getAttribute('s')
-                       if $_->nodeName eq 'domain:status';
-               
-               $rinfo->{'message'}->{$id}->{'own_status'} = $_->getAttribute('s')
-                       if $_->nodeName eq 'extdom:ownStatus'; ## TODO : what is the difference between the two statuses ? + create a true StatusList object
-       }
-       return;
-}
-
-sub parse_dnserror
+sub parse_tests
 {
- my ($po, $type, $action, $name, $rinfo) = @_;
- my ($ext,$id)=retrieve_ext($po,'it_domain','dnsErrorMsgData');
- return unless defined $ext;
- 
-       $rinfo->{'message'}->{$id}->{'domain'}
-               = ($ext->getElementsByTagName('extdom:domain'))[0]
-               ->getAttribute('name'); ## TODO: use xml_child_content() instead
-
-       $rinfo->{'message'}->{$id}->{'status'}
-               = ($ext->getElementsByTagName('extdom:domain'))[0]
-               ->getAttribute('status'); ## TODO: use xml_child_content() instead
-
-       $rinfo->{'message'}->{$id}->{'response_id'}
-               = ($ext->getElementsByTagName('extdom:responseId'))[0]->textContent; ## TODO: use xml_child_content() instead
-
-       $rinfo->{'message'}->{$id}->{'validation_date'}
-               = ($ext->getElementsByTagName('extdom:validationDate'))[0]->textContent; ## TODO: use xml_child_content() instead
-
-       foreach my $test ($ext->findnodes('//extdom:test')) {
-
-               my $name = $test->getAttribute('name');
-
-               $rinfo->{'message'}->{$id}->{'test'}{$name}{'status'} = $test->getAttribute('status');
-
-               foreach my $dns ($test->findnodes('./extdom:dns')) {
-
-                       $rinfo->{'message'}->{$id}->{'test'}{$name}{'dns'}{$dns->getAttribute('name')}
-                               = $dns->getAttribute('status');
-               }
-       }
-       return;
+        my ($po, $otype, $oaction, $oname, $rinfo,$data) = @_;
+        return unless $data;
+        foreach my $el (Net::DRI::Util::xml_list_children($data))
+        {
+                my ($name,$c) = @$el;
+                my $tname = $c->getAttribute('name');
+                $rinfo->{$otype}->{$oname}->{test}->{$tname}->{status} = $c->getAttribute('status');
+                foreach my $el2 (Net::DRI::Util::xml_list_children($c))
+                {
+                        my ($name2,$c2) = @$el2;
+                        $rinfo->{$otype}->{$oname}->{test}->{$tname}->{dns}->{$c2->getAttribute('name')} = $c2->getAttribute('status') if $c2->getAttribute('status') eq 'SUCCEEDED';
+                        $rinfo->{$otype}->{$oname}->{test}->{$tname}->{dns}->{$c2->getAttribute('name')} = {$c2->getAttribute('status'),$c2->textContent} unless $c2->getAttribute('status') eq 'SUCCEEDED';
+                }
+        }
+        return;
 }
+
+sub parse_queries
+{
+        my ($po, $otype, $oaction, $oname, $rinfo,$data) = @_;
+        return unless $data;
+        foreach my $el (Net::DRI::Util::xml_list_children($data))
+        {
+                my ($name,$c) = @$el;
+                my $qid = $c->getAttribute('id');
+                foreach my $el2 (Net::DRI::Util::xml_list_children($c))
+                {
+                        my ($name2,$c2) = @$el2;
+                        $rinfo->{$otype}->{$oname}->{'queries'}->{$qid}->{$name2} = $c2->textContent;
+                }
+        }
+        return;
+}
+
+sub parse_status
+{
+        my ($po, $otype, $oaction, $oname, $rinfo,$data) = @_;
+        return unless $data;
+        foreach my $el (Net::DRI::Util::xml_list_children($data))
+        {
+                my ($name,$c) = @$el;
+                $rinfo->{$otype}->{$oname}->{target_status} = $c->getAttribute('s') if $name eq 'status';
+                $rinfo->{$otype}->{$oname}->{rgp_status} = $c->getAttribute('s') if $name eq 'rgpStatus';
+        }
+        return;
+}
+
        
 1;

@@ -169,7 +169,14 @@ sub info_parse
    $cs->add($po->create_local_object('contact')->srid($c->textContent()),$c->getAttribute('type'));
   } elsif ($name eq 'ns')
   {
+   if ($po->{hostasns} ==1 ) {
+   $rinfo->{domain}->{$oname}->{ns} = $po->create_local_object('hosts') unless defined ($rinfo->{domain}->{$oname}->{ns});
+   $rinfo->{domain}->{$oname}->{ns}->add($c->textContent());
+   }
+   else 
+   {
    $rinfo->{domain}->{$oname}->{ns}=Net::DRI::Protocol::EPP::Util::parse_ns($po,$c);
+   }
   } elsif ($name eq 'host')
   {
    push @host,$c->textContent();

@@ -14,15 +14,17 @@
 
 package Net::DRI::Transport::HTTP;
 
+use base qw(Net::DRI::Transport);
 use strict;
 use warnings;
 
-use base qw(Net::DRI::Transport);
+use Time::HiRes ();
+use LWP::UserAgent 6.02;
+
 
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-use LWP::UserAgent 6.02;
 
 =pod
 
@@ -125,8 +127,6 @@ sub new
 {
  my ($class,$ctx,$rp)=@_;
  my %opts=%$rp;
- my $ndr=$ctx->{registry};
- my $pname=$ctx->{profile};
  my $po=$ctx->{protocol};
 
  my %t=(message_factory => $po->factories()->{message});
@@ -139,19 +139,22 @@ sub new
  }
 
  my $self=$class->SUPER::new($ctx,\%opts); ## We are now officially a Net::DRI::Transport instance
- $self->has_state(1); ## some registries need login (like .PL) some not (like .ES) ; see end of method & call to open_connection()
+ $self->has_state(exists $opts{has_state}? $opts{has_state} : 1); ## some registries need login (like .PL) some not (like .ES). setting has_state to 0 in the DRD will disable login
  $self->is_sync(1);
  $self->name('http');
  $self->version('0.2');
+ ##delete($ctx->{protocol}); ## TODO : double check it is ok
+ delete($ctx->{registry});
+ delete($ctx->{profile});
 
- foreach my $k (qw/client_login client_password client_newpassword protocol_data/)
- {
-  $t{$k}=$opts{$k} if exists($opts{$k});
- }
+ $t{client_login}=$opts{client_login};
+ $t{client_password}=$opts{client_password};
+ $t{client_newpassword}=$opts{client_newpassword} if (exists($opts{client_newpassword}) && $opts{client_newpassword});
 
- my @need=qw/read_data write_message/;
- Net::DRI::Exception::usererr_invalid_parameters('protocol_connection class must have: '.join(' ',@need)) if (grep { ! $t{pc}->can($_) } @need);
  $t{protocol_data}=$opts{protocol_data} if (exists($opts{protocol_data}) && $opts{protocol_data});
+ my @need=qw/read_data write_message/;
+ Net::DRI::Exception::usererr_invalid_parameters('protocol_connection class ('.$t{pc}.') must have: '.join(' ',@need)) if (grep { ! $t{pc}->can($_) } @need);
+
  Net::DRI::Exception::usererr_insufficient_parameters('remote_url must be defined') unless (exists $opts{'remote_url'} && defined $opts{'remote_url'});
  Net::DRI::Exception::usererr_invalid_parameters('remote_url must be an uri starting with http:// or https:// with a proper path') unless $opts{remote_url}=~m!^https?://\S+/\S*$!;
  $t{remote_url}=$opts{remote_url};
@@ -181,8 +184,17 @@ sub new
  $self->{transport}=\%t;
  $t{pc}->init($self) if $t{pc}->can('init');
 
- $self->open_connection($ctx); ## noop for registries without login, will properly setup has_state()
- return $self;
+ my $rc;
+ if ($self->defer()) ## we will open, but later
+ {
+  $self->current_state(0);
+ } else ## we will open NOW
+ {
+  $rc=$self->open_connection($ctx);
+  $self->current_state(1);
+ }
+
+ return ($self,$rc);
 }
 
 sub send_login
@@ -190,28 +202,52 @@ sub send_login
  my ($self,$ctx)=@_;
  my $t=$self->transport_data();
  my $pc=$t->{pc};
- my ($cltrid,$dr);
+ my ($cltrid,$dr,$t1,$t2);
 
  ## Get registry greeting, if available
- if ($pc->can('greeting') && $pc->can('parse_greeting'))
+ if ($ctx->{protocol}->has_action('session','noop'))
  {
-  $cltrid=$self->generate_trid($self->{logging_ctx}->{registry}); ## not used for greeting (<hello> has no clTRID), but used in logging
-  my $greeting=$pc->greeting($t->{message_factory});
+  my $greeting=$ctx->{protocol}->action('session','noop');
   $self->log_output('notice','transport',$ctx,{trid=>$cltrid,phase=>'opening',direction=>'out',message=>$greeting});
   Net::DRI::Exception->die(0,'transport/http',4,'Unable to send greeting message to '.$t->{remote_uri}) unless $self->_http_send(1,$greeting,1);
+  $t1=Time::HiRes::time();
   $dr=$self->_http_receive(1);
+  $t2=Time::HiRes::time();
   $self->log_output('notice','transport',$ctx,{trid=>$cltrid,phase=>'opening',direction=>'in',message=>$dr});
-  my $rc1=$pc->parse_greeting($dr); ## gives back a Net::DRI::Protocol::ResultStatus
+  my $rc1 = $self->protocol_parse($ctx->{protocol},'session','connect',$dr,undef,$t2-$t1,$greeting);
   die($rc1) unless $rc1->is_success();
  }
 
- my $login=$pc->login($t->{message_factory},$t->{client_login},$t->{client_password},$cltrid,$dr,$t->{client_newpassword},$t->{protocol_data});
+ $cltrid=$self->generate_trid($self->{logging_ctx}->{registry}); ## not used for greeting (<hello> has no clTRID), but used in logging
+ my $login=$ctx->{protocol}->action('session','login',$cltrid,$t->{client_login},$t->{client_password},{ client_newpassword => $t->{client_newpassword}, %{$t->{protocol_data} || {}}});
  $self->log_output('notice','transport',$ctx,{trid=>$cltrid,phase=>'opening',direction=>'out',message=>$login});
  Net::DRI::Exception->die(0,'transport/http',4,'Unable to send login message to '.$t->{remote_uri}) unless $self->_http_send(1,$login,1);
+ $t1=Time::HiRes::time();
  $dr=$self->_http_receive(1);
+ $t2=Time::HiRes::time();
  $self->log_output('notice','transport',$ctx,{trid=>$cltrid,phase=>'opening',direction=>'in',message=>$dr});
- my $rc2=$pc->parse_login($dr); ## gives back a Net::DRI::Protocol::ResultStatus
+ my $rc2 = $self->protocol_parse($ctx->{protocol},'session','login',$dr,$cltrid,$t2-$t1,$login);
  die($rc2) unless $rc2->is_success();
+ return;
+}
+
+sub send_logout
+{
+ my ($self,$ctx)=@_;
+ my $t=$self->transport_data();
+ my $pc=$t->{pc};
+
+ return unless $ctx->{protocol}->has_action('session','logout');
+ my $cltrid=$self->generate_trid($self->{logging_ctx}->{registry});
+ my $logout=$ctx->{protocol}->action('session','logout',$cltrid);
+ $self->log_output('notice','transport',{otype=>'session',oaction=>'logout'},{trid=>$cltrid,phase=>'closing',direction=>'out',message=>$logout});
+ Net::DRI::Exception->die(0,'transport/http',4,'Unable to send logout message to '.$t->{remote_uri}) unless $self->_http_send(1,$logout,3);
+ my $t1=Time::HiRes::time();
+ my $dr=$self->_http_receive(1);
+ my $t2=Time::HiRes::time();
+ $self->log_output('notice','transport',{otype=>'session',oaction=>'logout'},{trid=>$cltrid,phase=>'closing',direction=>'in',message=>$dr});
+ my $rc1=$self->protocol_parse($ctx->{protocol},'session','logout',$dr,$cltrid,$t2-$t1,$logout);
+ die($rc1) unless $rc1->is_success();
  return;
 }
 
@@ -220,12 +256,11 @@ sub open_connection
  my ($self,$ctx)=@_;
  my $t=$self->transport_data();
  my $pc=$t->{pc};
- $self->has_state(0);
+ $self->current_state(0);
 
- if ($pc->can('login') && $pc->can('parse_login'))
+ if ($ctx->{protocol}->has_action('session','login'))
  {
   $self->send_login($ctx);
-  $self->has_state(1);
   $self->current_state(1);
  }
 
@@ -235,29 +270,60 @@ sub open_connection
  return;
 }
 
-sub send_logout
+sub ping
 {
- my ($self)=@_;
+ my ($self,$ctx,$autorecon)=@_;
+ $autorecon=0 unless defined $autorecon;
  my $t=$self->transport_data();
  my $pc=$t->{pc};
 
- return unless ($pc->can('logout') && $pc->can('parse_logout'));
+ return 0 unless $self->has_state();
+ return 0 unless $ctx->{protocol}->has_action('session','noop');
 
+ my $rc1;
  my $cltrid=$self->generate_trid($self->{logging_ctx}->{registry});
- my $logout=$pc->logout($t->{message_factory},$cltrid);
- $self->log_output('notice','transport',{otype=>'session',oaction=>'logout'},{trid=>$cltrid,phase=>'closing',direction=>'out',message=>$logout});
- Net::DRI::Exception->die(0,'transport/http',4,'Unable to send logout message to '.$t->{remote_uri}) unless $self->_http_send(1,$logout,3);
- my $dr=$self->_http_receive(1);
- $self->log_output('notice','transport',{otype=>'session',oaction=>'logout'},{trid=>$cltrid,phase=>'closing',direction=>'in',message=>$dr});
- my $rc1=$pc->parse_logout($dr);
- die($rc1) unless $rc1->is_success();
- return;
+ my $ok=eval
+ {
+  local $SIG{ALRM}=sub { die 'timeout' };
+  alarm 10;
+  my $noop=$ctx->{protocol}->action('session','noop',$cltrid);
+  $self->log_output('notice','transport',$ctx,{otype=>'session',oaction=>'keepalive',trid=>$cltrid,phase=>'keepalive',direction=>'out',message=>$noop});
+  my $t1=Time::HiRes::time();
+ Net::DRI::Exception->die(0,'transport/http',4,'Unable to send keepalive message to '.$t->{remote_uri}) unless $self->_http_send(1,$noop,3);
+  my $dr=$self->_http_receive(1);
+  my $t2=Time::HiRes::time();
+  $self->time_used(time());
+  $t->{exchanges_done}++;
+  $self->log_output('notice','transport',$ctx,{otype=>'session',oaction=>'keepalive',trid=>$cltrid,phase=>'keepalive',direction=>'in',message=>$dr});
+  $rc1=$self->protocol_parse($ctx->{protocol},'session','noop',$dr,$cltrid,$t2-$t1,$noop);
+  die $rc1 unless $rc1->is_success();
+  1;
+ };
+ my $err=$@;
+
+ alarm 0;
+ if (defined $ok && $ok==1)
+ {
+  $self->current_state(1);
+ } else
+ {
+  $self->current_state(0);
+  $rc1=$err if defined $err && Net::DRI::Util::is_class($err,'Net::DRI::Protocol::ResultStatus');
+  if ($autorecon)
+  {
+   $self->log_output('notice','transport',{},{phase=>'keepalive',message=>'Reopening connection to '.$t->{remote_uri}.' because ping failed and asked to auto-reconnect'});
+   my $rc2=$self->open_connection($ctx);
+   $rc1=defined $rc1 ? Net::DRI::Util::link_rs($rc1,$rc2) : $rc2;
+  }
+ }
+
+ return defined $rc1 ? $rc1 : Net::DRI::Protocol::ResultStatus->new_error('COMMAND_FAILED_CLOSING','ping failed, no auto-reconnect');
 }
 
 sub close_connection
 {
- my ($self)=@_;
- $self->send_logout() if ($self->has_state() && $self->current_state());
+ my ($self,$ctx)=@_;
+ $self->send_logout($ctx) if ($self->has_state() && $self->current_state());
  $self->transport_data()->{ua}->cookie_jar({});
  $self->current_state(0);
  return;
@@ -265,14 +331,14 @@ sub close_connection
 
 sub end
 {
- my ($self)=@_;
+ my ($self,$ctx)=@_;
  if ($self->current_state())
  {
   eval
   {
    local $SIG{ALRM}=sub { die 'timeout' };
    alarm(10);
-   $self->close_connection();
+   $self->close_connection($ctx);
   };
   alarm(0); ## since close_connection may die, this must be outside of eval to be executed in all cases
  }

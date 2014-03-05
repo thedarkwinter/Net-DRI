@@ -99,26 +99,24 @@ sub read_data
 {
  my ($class,$to,$sock)=@_;
 
- my $version = $to->{transport}->{protocol_version};
+ my $length=4; ## first 4 bytes are the packed length
+ my $c='';
+ while($length > 0)
+ {
+   my $new;
+   $length-=$sock->sysread($new,$length);
+   $c.=$new;
+ }
+ $length=unpack('N',$c);
  my $m='';
- my $c;
- my $rl=$sock->sysread($c, 4); ## first 4 bytes are the packed length
- die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_FAILED_CLOSING',
-	'Unable to read RRI 4 bytes length (connection closed by registry ?): '.$!,
-	'en')) unless (defined $rl && $rl==4);
- my $length = unpack('N', $c);
  while ($length > 0)
  {
   my $new;
   $length-=$sock->sysread($new,$length);
   $m.=$new;
  }
-
  $m=Net::DRI::Util::decode_utf8($m);
- die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR',
-	$m ? $m : '<empty message from server>', 'en'))
-	unless ($m =~ m!</registry-response>$!);
-
+ die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR',$m? 'Got unexpected EPP message: '.$m : '<empty message from server>','en')) unless ($m=~m!</registry-response>\s*$!);
  return Net::DRI::Data::Raw->new_from_xmlstring($m);
 }
 

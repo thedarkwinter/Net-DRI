@@ -32,7 +32,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/NeuLevel::IDNLanguage NeuLevel::UIN NeuLevel::WhoisType/; }
+sub default_extensions { return qw/NeuLevel::IDNLanguage NeuLevel::UIN NeuLevel::WhoisType NeuLevel::Message/; }
 
 ####################################################################################################
 1;

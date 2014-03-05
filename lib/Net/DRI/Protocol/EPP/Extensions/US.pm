@@ -67,7 +67,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/US::Contact/; }
+sub default_extensions { return qw/US::Contact NeuLevel::Message/; }
 
 ####################################################################################################
 1;

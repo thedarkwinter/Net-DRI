@@ -1,6 +1,7 @@
 ## Domain Registry Interface, CentralNic Registry Driver
 ##
 ## Copyright (c) 2008-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -28,11 +29,27 @@ use Net::DRI::Util;
 
 =head1 NAME
 
-Net::DRI::DRD::CentralNic - CentralNic (.LA .EU.COM .UK.COM etc.) Registry driver for Net::DRI
+Net::DRI::DRD::CentralNic - CentralNic (gTLD and SLD) Registry driver for Net::DRI
 
 =head1 DESCRIPTION
 
 Please see the README file for details.
+
+Additional domain extension used new Generic TLDs
+
+CentralNic utilises the following standard extensions. Please see the test files for more examples.
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
+
+=head2 Custom extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Pricing> urn:centralnic:params:xml:ns:pricing-1.0. Note this might or might not be replaced with a 'fee' extension
 
 =head1 SUPPORT
 
@@ -49,10 +66,12 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 =head1 AUTHOR
 
 Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
+(c) 2014 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -71,17 +90,22 @@ sub new
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=0;
- $self->{info}->{contact_i18n}=2;       ## INT only
+ $self->{info}->{contact_i18n}=2;       ## INT only - FIXME : check this is still the case
  return $self;
 }
 
-sub periods      { return map { DateTime::Duration->new(years => $_) } (2..10); }
-sub name         { return 'CentralNic'; }
-sub tlds         { return (qw/la pw com.de/,
-                           (map { $_.'.org' } qw/us ae/),
-                           (map { $_.'.net' } qw/uk se gb jp hu/),
-                           (map { $_.'.com' } qw/eu uk us cn de jpn kr no za br ar ru sa se hu gb qc uy gr/)
-                          ); } ## see https://www.centralnic.com/portfolio/domains/registration
+sub periods { return map { DateTime::Duration->new(years => $_) } (1..10); }
+sub name { return 'CentralNic'; }
+sub tlds {
+  my @coms = (map { $_.'.com' } qw/africa ar br cn de eu gb gr hu jpn kr mex no qc ru sa se uk us uy za/);
+  my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
+  my @orgs = (map { $_.'.org' } qw/us ae/);
+  my @others = qw/la pw com.de/;
+  my @ngtlds = qw/bar cafe college contact fans feedback host ink pid place press rest space website wiki xyz/;
+  my @ngtlds_contested = qw/cafe fans place reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
+  my @ngtlds_pipeline = qw/art auto design sucks pizza now hotel forum law golf school style chat gay group blog app mail love news llc/; # no expected dates given, probably contested strings
+  return (@coms,@nets,@orgs,@others,@ngtlds);
+}
 
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }
@@ -89,7 +113,6 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
-
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}) if $type eq 'epp';
  return;
 }
@@ -97,6 +120,8 @@ sub transport_protocol_default
 ## From http://centralnicstatus.com/2011/07/01/mandatory-use-of-epp-client-ssl-certificates-2011-07-25/
 ## certificates are now mandatory
 ## (stolen from DRD/COOP, see comment in it)
+
+# FIXME, should we not somehow make a more generic way of doing this since every (?) epp registry requires it?
 sub transport_protocol_init
 {
  my ($self,$type,$tc,$tp,$pc,$pp,$test)=@_;
@@ -122,34 +147,6 @@ sub verify_name_domain
                                               });
 }
 
-sub verify_duration_transfer
-{
- my ($self,$ndr,$duration,$domain,$op)=@_;
-
- return $self->_verify_duration_transfer_15days($ndr,$duration,$domain,$op);
-}
-
-sub verify_duration_renew
-{
- my ($self,$ndr,$duration,$domain,$curexp)=@_;
-
- return 0 unless (defined $duration && defined $curexp && Net::DRI::Util::is_class($curexp,'DateTime'));
- my $newexp=$curexp+$duration; ## New expiration
- my $max=DateTime->new(year => 2037, month => 1, day => 1, time_zone => $curexp->time_zone()->name());
- my $cmp=DateTime->compare($newexp,$max);
- return 2 unless ($cmp == -1); ## we must have curexp+duration < 2037
- return 0; ## everything ok
-}
-
 ####################################################################################################
 
-sub domain_release
-{
- my ($self,$ndr,$domain,$rd)=@_;
- $self->enforce_domain_name_constraints($ndr,$domain,'release');
-
- return $ndr->process('domain','release',[$domain,$rd]);
-}
-
-####################################################################################################
 1;

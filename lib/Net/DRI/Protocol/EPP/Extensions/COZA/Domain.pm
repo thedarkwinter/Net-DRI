@@ -38,6 +38,8 @@ sub setup
 {
  my ($class,$po,$version)=@_;
  $po->ns({ 'cozadomain' => [ 'http://co.za/epp/extensions/cozadomain-1-0','coza-domain-1.0.xsd' ] });
+ $po->capabilities('domain_update','cancel_action',['set']);
+ $po->capabilities('domain_update','auto_renew',['set']);
  return;
 }
 

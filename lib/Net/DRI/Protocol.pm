@@ -32,6 +32,7 @@ use Net::DRI::Data::Contact;
 use Net::DRI::Data::ContactSet;
 use Net::DRI::Data::Hosts;
 use Net::DRI::Data::StatusList;
+use Net::DRI::Data::IDN;
 
 =pod
 
@@ -87,6 +88,7 @@ sub new
 				contactset 	=> sub { return Net::DRI::Data::ContactSet->new(@_); },
 				hosts		=> sub { return Net::DRI::Data::Hosts->new(@_); },
 				status		=> sub { return Net::DRI::Data::StatusList->new(@_); },
+				idn   => sub { return Net::DRI::Data::IDN->new(@_); },
 				},
 		logging   => $ctx->{registry}->logging(),
 		logging_ctx => { registry => $ctx->{registry}->name(), profile => $ctx->{profile}, transport_class => $ctx->{transport_class} },

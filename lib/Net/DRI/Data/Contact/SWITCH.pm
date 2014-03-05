@@ -18,6 +18,7 @@ package Net::DRI::Data::Contact::SWITCH;
 use strict;
 use warnings;
 use base qw/Net::DRI::Data::Contact/;
+__PACKAGE__->register_attributes();
 
 use Net::DRI::Exception;
 use Net::DRI::Util;

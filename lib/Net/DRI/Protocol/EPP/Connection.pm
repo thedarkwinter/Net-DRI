@@ -66,29 +66,30 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub read_data
+sub read_fragments
 {
- my ($class,$to,$sock)=@_;
-
- my $length=4; ## first 4 bytes are the packed length
- my $c='';
+ my ($sock,$length)=@_;
+ my $data='';
  while($length > 0)
  {
    my $new;
-   $length-=$sock->sysread($new,$length);
-   $c.=$new;
+   my $read = $sock->sysread($new,$length);
+   die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR','Error reading socket','en')) unless $read;
+   $length-=$read;
+   $data.=$new;
  }
- $length=unpack('N',$c)-4;
- my $m='';
- while ($length > 0)
- {
-  my $new;
-  $length-=$sock->sysread($new,$length);
-  $m.=$new;
- }
- $m=Net::DRI::Util::decode_utf8($m);
- die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR',$m? 'Got unexpected EPP message: '.$m : '<empty message from server>','en')) unless ($m=~m!</epp>\s*$!s);
- return Net::DRI::Data::Raw->new_from_xmlstring($m);
+ return $data;
+}
+
+sub read_data
+{
+ my ($class,$to,$sock)=@_;
+ my $header = read_fragments($sock,4); ## first 4 bytes are the packed length
+ my $length=unpack('N',$header)-4; ## Length of the XML frame
+ die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR','Unable to determin frame length','en')) unless ($length>0);
+ my $frame = Net::DRI::Util::decode_utf8(read_fragments($sock,$length));
+ die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR',$frame? 'Got unexpected EPP message: '.$frame : '<empty message from server>','en')) unless ($frame=~m!epp>\s*$!s);
+ return Net::DRI::Data::Raw->new_from_xmlstring($frame);
 }
 
 sub write_message

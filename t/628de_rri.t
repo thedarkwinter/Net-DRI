@@ -2,11 +2,12 @@
 
 use strict;
 use warnings;
+use utf8;
 
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 89;
+use Test::More tests => 92;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -130,20 +131,23 @@ my $mod = $dri->get_info('upDate', 'contact', 'DENIC-99989-BSP');
 isa_ok($mod, 'DateTime');
 is($mod->ymd . 'T' . $mod->hms, '2007-05-23T22:55:33', 'Update Date');
 
-$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID .
-	'</tr:stid><tr:result>success</tr:result><tr:data><domain:checkData>' .
-	'<domain:handle>rritestdomain.de</domain:handle><domain:ace>' .
-	'rritestdomain.de</domain:ace><domain:status>free</domain:status>' .
-	'</domain:checkData></tr:data></tr:transaction>' . $E2;
 
 ####################################################################################################
 
+
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><domain:checkData><domain:handle>rritestdomain.de</domain:handle><domain:ace>rritestdomain.de</domain:ace><domain:status>free</domain:status></domain:checkData></tr:data></tr:transaction>' . $E2;
 $rc = $dri->domain_check('rritestdomain.de');
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
-
 is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:domain="http://registry.denic.de/domain/1.0"><domain:check><domain:handle>rritestdomain.de</domain:handle><domain:ace>rritestdomain.de</domain:ace></domain:check></registry-request>', 'Check Domain XML correct');
-
 is($dri->get_info('exist', 'domain', 'rritestdomain.de'), 0, 'Domain does not exist');
+
+# check using IDN (ace)
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><domain:checkData><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace><domain:status>free</domain:status></domain:checkData></tr:data></tr:transaction>' . $E2;
+$rc = $dri->domain_check('xn--rriberdomain-flb.de');
+isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:domain="http://registry.denic.de/domain/1.0"><domain:check><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace></domain:check></registry-request>', 'Check Domain XML correct');
+is($dri->get_info('exist', 'domain', 'rritestdomain.de'), 0, 'Domain does not exist');
+
 
 
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID .

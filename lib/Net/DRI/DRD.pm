@@ -1377,6 +1377,16 @@ sub account_list_domains
  return $rc;
 }
 
+# Afilias (and maybe others) starting to to have registrar as an object
+sub registrar_info
+{
+ my ($self,$ndr,$rd)=@_;
+ if (!defined $rd) {
+   $rd= $self->info('clid');
+ }
+ return $ndr->process('registrar','info',[$rd]);
+}
+
 ####################################################################################################
 # Misc
 ####################################################################################################

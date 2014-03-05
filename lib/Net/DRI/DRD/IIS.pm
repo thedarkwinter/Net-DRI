@@ -1,5 +1,6 @@
-## Domain Registry Interface, .SE policy on reserved names
+## Domain Registry Interface, .IIS policy on reserved names
 ## Contributed by Elias Sidenbladh and Ulrich Wisser from NIC SE
+## Updated 2014 Michael Holloway to change regerences to IIS for inclusion of .NU
 ##
 ## Copyright (c) 2006-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -13,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::SE;
+package Net::DRI::DRD::IIS;
 
 use strict;
 use warnings;
@@ -22,7 +23,7 @@ use base qw/Net::DRI::DRD/;
 
 use DateTime::Duration;
 use Net::DRI::Util;
-use Net::DRI::Data::Contact::SE;
+use Net::DRI::Data::Contact::IIS;
 
 ## Only transfer requests and queries are possible, the rest is handled "off line".
 __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_stop domain_transfer_accept domain_transfer_refuse domain_delete/);
@@ -31,7 +32,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_stop d
 
 =head1 NAME
 
-Net::DRI::DRD::SE - .SE policies for Net::DRI
+Net::DRI::DRD::IIS - .SE policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -78,7 +79,7 @@ sub new
 }
 
 sub name     { return 'IIS'; }
-sub tlds     { return ('se','nu'); }
+sub tlds     { return ('se','tm.se','org.se','pp.se','parti.se','presse.se','nu'); }
 sub periods  { return map { DateTime::Duration->new(months => $_) } (12..120); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

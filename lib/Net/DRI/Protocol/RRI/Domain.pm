@@ -110,14 +110,20 @@ sub build_command
  $msg->command(['domain', $tcommand, (defined($dns) ? $dns : $ns[0]), $domainattr]);
 
  my @d;
-
- foreach my $domain (@dom)
- {
-  ##my $ace = join('.', map { decode_punycode($_) } split(/\./, $domain));
-  push @d, ['domain:handle', $domain];
-  push @d, ['domain:ace', $domain];
- }
+ my ($ace,$idn) = idn_get_ace_unicode($domain);
+ push @d, ['domain:handle', $idn];
+ push @d, ['domain:ace', $ace];
  return @d;
+}
+
+sub idn_get_ace_unicode
+{
+ my $domain = shift;
+ eval { require Net::IDN::Encode; };
+ return ($domain,$domain) if $@;
+ my $idn = ($domain =~ m/^xn--/) ? Net::IDN::Encode::domain_to_unicode($domain):$domain;
+ my $ace = ($domain !~ m/^[a-z0-9.-]/) ? Net::IDN::Encode::domain_to_ascii($domain):$domain; 
+ return ($ace,$idn);
 }
 
 ####################################################################################################
@@ -142,7 +148,7 @@ sub check_parse
 
  my $chkdata = $mes->get_content('checkData',$mes->ns('domain'));
  return unless $chkdata;
- my @d = $chkdata->getElementsByTagNameNS($mes->ns('domain'),'handle');
+ my @d = $chkdata->getElementsByTagNameNS($mes->ns('domain'),'ace');
  my @s = $chkdata->getElementsByTagNameNS($mes->ns('domain'),'status');
  return unless (@d && @s);
 
@@ -181,7 +187,7 @@ sub info_parse
   my $name = $c->localname() || $c->nodeName();
   next unless $name;
 
-  if ($name eq 'handle')
+  if ($name eq 'ace')
   {
    $oname = lc($c->getFirstChild()->getData());
    $rinfo->{domain}->{$oname}->{action} = 'info';
@@ -298,7 +304,7 @@ sub transfer_parse
  my $infodata = $mes->get_content('infoData', $mes->ns('domain'));
  return unless $infodata;
  my $namedata = ($infodata->getElementsByTagNameNS($mes->ns('domain'),
-	'handle'))[0];
+	'ace'))[0];
  return unless $namedata;
  my $trndata = ($infodata->getElementsByTagNameNS($mes->ns('domain'),
 	'chprovData'))[0];

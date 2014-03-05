@@ -38,6 +38,8 @@ sub setup
 {
  my ($class,$po,$version)=@_;
  $po->ns({ 'cozacontact' => [ 'http://co.za/epp/extensions/cozacontact-1-0','coza-contact-1.0.xsd' ] });
+ $po->capabilities('contact_update','status',undef); ## No changes in status possible for .CO.ZA contacts
+ $po->capabilities('contact_update','cancel_action',['set']);
  return;
 }
 

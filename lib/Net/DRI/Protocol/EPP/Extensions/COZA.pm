@@ -27,10 +27,6 @@ use Net::DRI::Data::Contact::COZA;
 sub setup
 {
  my ($self,$rp)=@_;
- $self->capabilities('contact_update','status',undef); ## No changes in status possible for .CO.ZA contacts
- $self->capabilities('contact_update','cancel_action',['set']);
- $self->capabilities('domain_update','cancel_action',['set']);
- $self->capabilities('domain_update','auto_renew',['set']);
  $self->factories('contact',sub { return Net::DRI::Data::Contact::COZA->new(); });
  return;
 }

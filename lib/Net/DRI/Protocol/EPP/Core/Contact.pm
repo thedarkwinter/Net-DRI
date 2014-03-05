@@ -338,38 +338,41 @@ sub transfer_parse
 
 sub build_authinfo
 {
- my $contact=shift;
+ my ($contact,$ns)=@_;
+ $ns = 'contact' unless $ns;
  my $az=$contact->auth();
  return () unless ($az && ref($az) && exists($az->{pw}));
- return ['contact:authInfo',['contact:pw',$az->{pw}]];
+ return [$ns.':authInfo',[$ns.':pw',$az->{pw}]];
 }
 
 sub build_disclose
 {
- my $contact=shift;
+ my ($contact,$ns)=@_;
+ $ns = 'contact' unless $ns;
  my $d=$contact->disclose();
  return () unless ($d && ref($d));
  my %v=map { $_ => 1 } values(%$d);
  return () unless (keys(%v)==1); ## 1 or 0 as values, not both at same time
  my @d;
- push @d,['contact:name',{type=>'int'}] if (exists($d->{name_int}) && !exists($d->{name}));
- push @d,['contact:name',{type=>'loc'}] if (exists($d->{name_loc}) && !exists($d->{name}));
- push @d,['contact:name',{type=>'int'}],['contact:name',{type=>'loc'}] if exists($d->{name});
- push @d,['contact:org',{type=>'int'}] if (exists($d->{org_int}) && !exists($d->{org}));
- push @d,['contact:org',{type=>'loc'}] if (exists($d->{org_loc}) && !exists($d->{org}));
- push @d,['contact:org',{type=>'int'}],['contact:org',{type=>'loc'}] if exists($d->{org});
- push @d,['contact:addr',{type=>'int'}] if (exists($d->{addr_int}) && !exists($d->{addr}));
- push @d,['contact:addr',{type=>'loc'}] if (exists($d->{addr_loc}) && !exists($d->{addr}));
- push @d,['contact:addr',{type=>'int'}],['contact:addr',{type=>'loc'}] if exists($d->{addr});
- push @d,['contact:voice'] if exists($d->{voice});
- push @d,['contact:fax']   if exists($d->{fax});
- push @d,['contact:email'] if exists($d->{email});
- return ['contact:disclose',@d,{flag=>(keys(%v))[0]}];
+ push @d,[$ns.':name',{type=>'int'}] if (exists($d->{name_int}) && !exists($d->{name}));
+ push @d,[$ns.':name',{type=>'loc'}] if (exists($d->{name_loc}) && !exists($d->{name}));
+ push @d,[$ns.':name',{type=>'int'}],['contact:name',{type=>'loc'}] if exists($d->{name});
+ push @d,[$ns.':org',{type=>'int'}] if (exists($d->{org_int}) && !exists($d->{org}));
+ push @d,[$ns.':org',{type=>'loc'}] if (exists($d->{org_loc}) && !exists($d->{org}));
+ push @d,[$ns.':org',{type=>'int'}],['contact:org',{type=>'loc'}] if exists($d->{org});
+ push @d,[$ns.':addr',{type=>'int'}] if (exists($d->{addr_int}) && !exists($d->{addr}));
+ push @d,[$ns.':addr',{type=>'loc'}] if (exists($d->{addr_loc}) && !exists($d->{addr}));
+ push @d,[$ns.':addr',{type=>'int'}],['contact:addr',{type=>'loc'}] if exists($d->{addr});
+ push @d,[$ns.':voice'] if exists($d->{voice});
+ push @d,[$ns.':fax']   if exists($d->{fax});
+ push @d,[$ns.':email'] if exists($d->{email});
+ return [$ns.':disclose',@d,{flag=>(keys(%v))[0]}];
 }
 
 sub build_cdata
 {
- my ($contact,$v)=@_;
+ my ($contact,$v,$ns)=@_;
+ $ns = 'contact' unless $ns;
  my $hasloc=$contact->has_loc();
  my $hasint=$contact->has_int();
  if ($hasint && !$hasloc && (($v & 5) == $v))
@@ -383,42 +386,44 @@ sub build_cdata
  }
 
  my (@postl,@posti,@addrl,@addri);
- _do_locint(\@postl,\@posti,$contact,'name');
- _do_locint(\@postl,\@posti,$contact,'org');
- _do_locint(\@addrl,\@addri,$contact,'street');
- _do_locint(\@addrl,\@addri,$contact,'city');
- _do_locint(\@addrl,\@addri,$contact,'sp');
- _do_locint(\@addrl,\@addri,$contact,'pc');
- _do_locint(\@addrl,\@addri,$contact,'cc');
- push @postl,['contact:addr',@addrl] if @addrl;
- push @posti,['contact:addr',@addri] if @addri;
+ _do_locint(\@postl,\@posti,$contact,'name',$ns);
+ _do_locint(\@postl,\@posti,$contact,'org',$ns);
+ _do_locint(\@addrl,\@addri,$contact,'street',$ns);
+ _do_locint(\@addrl,\@addri,$contact,'city',$ns);
+ _do_locint(\@addrl,\@addri,$contact,'sp',$ns);
+ _do_locint(\@addrl,\@addri,$contact,'pc',$ns);
+ _do_locint(\@addrl,\@addri,$contact,'cc',$ns);
+ push @postl,[$ns.':addr',@addrl] if @addrl;
+ push @posti,[$ns.':addr',@addri] if @addri;
 
  my @d;
- push @d,['contact:postalInfo',@postl,{type=>'loc'}] if (($v & 5) && $hasloc); ## loc+int OR loc
- push @d,['contact:postalInfo',@posti,{type=>'int'}] if (($v & 6) && $hasint); ## loc+int OR int
+ push @d,[$ns.':postalInfo',@postl,{type=>'loc'}] if (($v & 5) && $hasloc); ## loc+int OR loc
+ push @d,[$ns.':postalInfo',@posti,{type=>'int'}] if (($v & 6) && $hasint); ## loc+int OR int
 
- push @d,Net::DRI::Protocol::EPP::Util::build_tel('contact:voice',$contact->voice()) if defined($contact->voice());
- push @d,Net::DRI::Protocol::EPP::Util::build_tel('contact:fax',$contact->fax()) if defined($contact->fax());
- push @d,['contact:email',$contact->email()] if defined($contact->email());
- push @d,build_authinfo($contact);
- push @d,build_disclose($contact);
+ push @d,Net::DRI::Protocol::EPP::Util::build_tel($ns.':voice',$contact->voice()) if defined($contact->voice());
+ push @d,Net::DRI::Protocol::EPP::Util::build_tel($ns.':fax',$contact->fax()) if defined($contact->fax());
+ push @d,[$ns.':email',$contact->email()] if defined($contact->email());
+ push @d,build_authinfo($contact,$ns);
+ push @d,build_disclose($contact,$ns);
 
  return @d;
 }
 
 sub _do_locint
 {
- my ($rl,$ri,$contact,$what)=@_;
+ my ($rl,$ri,$contact,$what,$ns)=@_;
+ $ns = 'contact' unless $ns;
+
  my @tmp=$contact->$what();
  return unless @tmp;
  if ($what eq 'street')
  {
-  if (defined($tmp[0])) { foreach (@{$tmp[0]}) { push @$rl,['contact:street',$_]; } };
-  if (defined($tmp[1])) { foreach (@{$tmp[1]}) { push @$ri,['contact:street',$_]; } };
+  if (defined($tmp[0])) { foreach (@{$tmp[0]}) { push @$rl,[$ns.':street',$_]; } };
+  if (defined($tmp[1])) { foreach (@{$tmp[1]}) { push @$ri,[$ns.':street',$_]; } };
  } else
  {
-  if (defined($tmp[0])) { push @$rl,['contact:'.$what,$tmp[0]]; }
-  if (defined($tmp[1])) { push @$ri,['contact:'.$what,$tmp[1]]; }
+  if (defined($tmp[0])) { push @$rl,[$ns.':'.$what,$tmp[0]]; }
+  if (defined($tmp[1])) { push @$ri,[$ns.':'.$what,$tmp[1]]; }
  }
  return;
 }

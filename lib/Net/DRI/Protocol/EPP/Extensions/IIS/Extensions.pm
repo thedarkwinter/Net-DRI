@@ -1,4 +1,4 @@
-## Domain Registry Interface, .SE EPP Domain/Contact Extensions for Net::DRI
+## Domain Registry Interface, IIS EPP Domain/Contact Extensions for Net::DRI
 ## Contributed by Elias Sidenbladh and Ulrich Wisser from NIC SE
 ##
 ## Copyright (c) 2006,2008-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::SE::Extensions;
+package Net::DRI::Protocol::EPP::Extensions::IIS::Extensions;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use Net::DRI::Protocol::EPP::Util;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::SE::Extensions - .SE EPP Domain/Contact Extensions for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::IIS::Extensions - IIS EPP Domain/Contact Extensions for Net::DRI
 
 =head1 DESCRIPTION
 

@@ -47,7 +47,8 @@ sub register_commands {
        my ($class, $version) = @_;
 
        my $ops = {
-               'info'          => [ undef, \&parse ],
+               'info'          => [ \&info, \&parse ],
+               'transfer_request'   => [\&transfer, \&parse],
        };
 
        return {
@@ -55,19 +56,43 @@ sub register_commands {
        };
 }
 
+sub info
+{
+ my ($epp,$domain,$rd)=@_;
+ return unless defined $rd->{inf_contacts};
+ Net::DRI::Exception::usererr_invalid_parameters('inf_contacts must be one of registrant|admin|tech|all') unless $rd->{inf_contacts} =~ m/^registrant|admin|tech|all$/;
+ my $mes=$epp->message();
+ my $eid =$mes->command_extension_register('extdom:infContacts', sprintf('op="'.$rd->{inf_contacts}.'" xmlns:extdom="%s" xsi:schemaLocation="%s %s"', $mes->nsattrs('it_domain')));
+ $mes->command_extension($eid);
+}
+
+sub transfer
+{
+ my ($epp,$domain,$rd)=@_;
+ return unless defined $rd->{new_registrant } && defined $rd->{new_authinfo};
+ my $mes=$epp->message();
+ my $eid =$mes->command_extension_register('extdom:trade', sprintf('xmlns:extdom="%s" xsi:schemaLocation="%s %s"', $mes->nsattrs('it_domain')));
+ my @d;
+ push @d, ['extdom:newRegistrant', $rd->{new_registrant} ];
+ push @d, ['extdom:newAuthInfo', ['extdom:pw',$rd->{new_authinfo}] ];
+ $mes->command_extension($eid,['extdom:transferTrade',@d]);
+}
+
 sub parse
 {
-       my ($po, $type, $action, $name, $info) = @_;
+       use Data::Dumper;
+       my ($po, $otype, $oaction, $oname, $rinfo) = @_;
 
        my $msg = $po->message;
        my $ns = $msg->ns('it_domain');
 
        my $infdata = $msg->get_extension('it_domain', 'infData');
        my $infns = $msg->get_extension('it_domain', 'infNsToValidateData');
+       my $infconts = $msg->get_extension('it_domain','infContactsData');
 
        if (defined $infdata) {
 
-               $info->{'domain'}{$name}{'own_status'} =
+               $rinfo->{'domain'}{$oname}{'own_status'} =
                        $infdata->getChildrenByTagNameNS($ns, 'ownStatus')
                        ->shift
                        ->getAttribute('s');
@@ -79,12 +104,52 @@ sub parse
                # due to mixed namespace
                foreach ($infns->findnodes('./extdom:nsToValidate/*/*')) {
 
-                       push(@{$info->{'domain'}{$name}{'ns_to_validate'}},
+                       push(@{$rinfo->{'domain'}{$oname}{'ns_to_validate'}},
                                $_->textContent)
                                if $_->getName eq 'domain:hostName';
                }
        }
 
+      # The main contact parser wont parse this without some sersious work, so ive just added a basic parser for now
+       if (defined $infconts) {
+               #my $cs = Dumper $rinfo->{$otype}->{$oname}->{contact};
+               my $cs = $po->create_local_object('contactset');
+                foreach my $el (Net::DRI::Util::xml_list_children($infconts))
+                {
+                        my ($name,$c) = @$el;
+                        my $ctype = ($name eq 'registrant')?'registrant':$c->getAttribute('type');
+                        my $cont = $po->create_local_object('contact');
+                        my %pi=map { $_ => [] } qw/city sp pc cc/;
+                        foreach my $el2 (Net::DRI::Util::xml_list_children(Net::DRI::Util::xml_traverse($c,$msg->ns('it_domain'),'infContact')))
+                        {
+                                my ($name2,$c2) = @$el2;
+                                $cont->srid($c2->textContent) if $name2 eq 'id';
+                                $cont->{$name2} = $c2->textContent() if $name2 =~ m/^roid|name|org|email|clID|crID|upID$/;
+                                $cont->{$name2} = $po->parse_iso8601($c2->textContent()) if $name2 =~ /Date$/;
+                                $cont->{$name2} = Net::DRI::Protocol::EPP::Util::parse_tel($c2) if $name2 =~ /^voice|fax$/;
+                                $cont->{status} = $po->create_local_object('status')->add(Net::DRI::Protocol::EPP::Util::parse_node_status($c2)) if $name2 eq 'status';
+                                Net::DRI::Protocol::EPP::Core::Contact::parse_postalinfo($po,$c2,\%pi) if $name2 eq 'postalInfo';
+                        } 
+                        foreach my $key (keys %pi) { $cont->{$key} = $pi{$key}; }
+
+                        # even the extra contact details are under a different namespace from a contact_info!
+                        foreach my $el2 (Net::DRI::Util::xml_list_children(Net::DRI::Util::xml_traverse($c,$msg->ns('it_domain'),'extInfo')))
+                        {
+                                my ($name2,$c2) = @$el2;
+                                $cont->consent_for_publishing( ($c->textContent()eq'true')?1:0 ) if $name eq 'consentForPublishing';
+                                foreach my $el3 (Net::DRI::Util::xml_list_children($c2))
+                                {
+                                        my ($name3,$c3) = @$el3;
+                                        $cont->nationality_code($c3->textContent()) if $name3 eq 'nationalityCode';
+                                        $cont->entity_type($c3->textContent()) if $name3 eq 'entityType';
+                                        $cont->reg_code($c3->textContent()) if $name3 eq 'regCode';
+                                }
+                        }
+                        $cs->set($cont,$ctype);
+                        $rinfo->{contact}->{$cont->srid()}->{self} = $cont;
+                }
+                $rinfo->{$otype}->{$oname}->{contact} = $cs;
+        }
        return 1;
 }
 

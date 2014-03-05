@@ -1,4 +1,4 @@
-## Domain Registry Interface, Handling of contact data for .SE
+## Domain Registry Interface, Handling of contact data for IIS
 ## Contributed by Elias Sidenbladh and Ulrich Wisser from NIC SE
 ##
 ## Copyright (c) 2006-2009,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Data::Contact::SE;
+package Net::DRI::Data::Contact::IIS;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ __PACKAGE__->register_attributes(qw(orgno vatno));
 
 =head1 NAME
 
-Net::DRI::Data::Contact::SE - Handle .SE contact data for Net::DRI
+Net::DRI::Data::Contact::IIS - Handle IIS (.se,.nu) contact data for Net::DRI
 
 =head1 DESCRIPTION
 

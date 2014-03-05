@@ -1,6 +1,7 @@
 ## Domain Registry Interface, .UK EPP Notifications
 ##
 ## Copyright (c) 2008,2009,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -18,7 +19,6 @@ use strict;
 use warnings;
 
 use Net::DRI::Util;
-use Net::DRI::Protocol::EPP::Extensions::Nominet::Account;
 
 =pod
 
@@ -49,6 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008,2009,2013 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -64,228 +65,208 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub register_commands
 {
- my ($class,$version)=@_;
- my %tmpn=(
-		registrar_change => [ undef, \&registrar_change ],
-		registrant_change => [ undef, \&registrant_change ],
-		domain_cancelled => [ undef, \&domain_cancelled ],
-		poor_quality => [ undef, \&poor_quality ],
-		domains_released => [ undef, \&domains_released ],
-	);
- my %tmpd=map { $_ => [ undef, \&domain_failwarning ] } qw/info update create/; ## the documentation is not clear about when this happen => we take some cases as others below + create since it is in example
- my %tmpa=map { $_ => [ undef, \&account_failwarning ] } qw/info update/;
- my %tmpc=map { $_ => [ undef, \&contact_failwarning ] } qw/info update/;
- my %tmph=map { $_ => [ undef, \&host_failwarning ] } qw/info update/;
-
- return { 'notifications' => \%tmpn, 'domain' => \%tmpd, 'account' => \%tmpa, 'contact' => \%tmpc, 'host' => \%tmph,  };
+ my %tmp=( notification => [ undef, \&parse ] );
+ return { 'message' => \%tmp };
 }
 
 ####################################################################################################
 
-## http://www.nominet.org.uk/registrars/systems/epp/registrarchange/
-## http://www.nominet.org.uk/registrars/systems/epp/handshakerequest/
-sub registrar_change
+# Contact::info_parse fails so we do a small parse here and create the contact object
+sub parse_contact
 {
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
- my $rcdata=$mes->get_response('notifications','rcData');
- return unless defined $rcdata;
-
- my $msgid=$mes->msg_id();
- my $ns=$mes->ns('notifications');
- $rinfo->{message}->{$msgid}->{action}='registrar_change';
- $rinfo->{message}->{$msgid}->{orig}=Net::DRI::Util::xml_child_content($rcdata,$ns,'orig');
- $rinfo->{message}->{$msgid}->{registrar_to}=Net::DRI::Util::xml_child_content($rcdata,$ns,'registrar-tag');
-
- if ($rcdata->getChildrenByTagNameNS($ns,'case-id')->size())
- {
-  $rinfo->{message}->{$msgid}->{action}='handshake_request';
-  $rinfo->{message}->{$msgid}->{case_id}=Net::DRI::Util::xml_child_content($rcdata,$ns,'case-id');
- }
-
- my $list=$mes->get_response('domain','listData'); ## attribute no-domains is not used, as there should be as many simpleInfData as domain names
- my @d=parse_listdata($mes,$list,$rinfo);
- $rinfo->{message}->{$msgid}->{domains}=\@d;
-
- my $ainfo=$mes->get_response('account','infData');
- ## TODO : parse account info, see Account::parse_infdata
- return;
+ my ($po,$data,$ns,$rinfo) = @_;
+ return unless $data;
+ my $nsc=$po->message()->ns('contact');
+ my $id = Net::DRI::Util::xml_child_content($data,$ns,'id');
+ return unless $id;
+ my $cont = $po->create_local_object('contact')->srid($id);
+ my $pi = {};
+ Net::DRI::Protocol::EPP::Core::Contact::parse_postalinfo($po,$data->getChildrenByTagNameNS($ns,'postalInfo')->shift(),$pi);
+ foreach ($cont->attributes()) { 
+   next if $_ eq 'srid';
+   $cont->$_(Net::DRI::Util::xml_child_content($data,$ns,$_));
+   $cont->$_($pi->{$_}) if $pi->{$_};
+  }
+  return $cont;
 }
 
-sub parse_listdata
-{
- my ($mes,$list,$rinfo)=@_;
- my $nsd=$mes->ns('domain');
+sub parse_domainlist
+ {
+ my ($po,$data,$ns,$rinfo) = @_;
+ return unless $data;
  my @d;
- foreach my $d ($list->getChildrenByTagNameNS($nsd,'simpleInfData'))
+ return unless my $dl = $data->getChildrenByTagNameNS($ns,'domainListData')->shift();
+ foreach my $el (Net::DRI::Util::xml_list_children($dl))
+ {
+  my ($name,$c)=@$el;
+  push @d,$c->textContent() if $name eq 'domainName';
+ }
+ return \@d;
+}
+
+sub parse_rcdomainlist
+{
+ my ($po,$data,$ns,$rinfo) = @_;
+ return unless $data;
+ my $mes = $po->message();
+ my $nsd=$mes->ns('domain');
+ return unless my $dl =$data->getChildrenByTagNameNS($ns,'domainListData')->shift();
+ my (@d,$clid);
+ foreach my $d ($dl->getChildrenByTagNameNS($nsd,'infData'))
  {
   push @d,Net::DRI::Util::xml_child_content($d,$nsd,'name');
+  $clid=Net::DRI::Util::xml_child_content($d,$nsd,'clID');
   ## TODO : parse other keys, using Domain::info_parse stuff extracted into some sort of parse_infdata
  }
- return @d;
+ return ($clid,\@d);
 }
 
-## http://www.nominet.org.uk/registrars/systems/epp/registrantchange/
-sub registrant_change
+sub parse_hostlist
 {
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
- my $rcdata=$mes->get_response('notifications','trnData');
- return unless defined $rcdata;
-
- my $msgid=$mes->msg_id();
- my $ns=$mes->ns('notifications');
- $rinfo->{message}->{$msgid}->{action}='registrant_change';
- $rinfo->{message}->{$msgid}->{account_from}=Net::DRI::Util::xml_child_content($rcdata,$ns,'old-account-id');
- $rinfo->{message}->{$msgid}->{account_to}=Net::DRI::Util::xml_child_content($rcdata,$ns,'account-id');
-
- ## domainList or listData ??? The documentation is very unclear on details like that !
- my $list=$mes->get_response('domain','domainList'); ## attribute no-domains is not used, as there should be as many simpleInfData as domain names
- my @d=parse_listdata($mes,$list,$rinfo);
- $rinfo->{message}->{$msgid}->{domains}=\@d;
-
- my $ainfo=$mes->get_response('account','infData');
- ## TODO : parse account info, see Account::parse_infdata
- return;
-}
-
-## http://www.nominet.org.uk/registrars/systems/epp/accountdetails/
-## TODO : we do not parse the changed="Y" attribute
-
-## http://www.nominet.org.uk/registrars/systems/epp/domaincancelled/
-sub domain_cancelled
-{
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
- my $cancdata=$mes->get_response('notifications','cancData');
- return unless defined $cancdata;
-
- my $ns=$mes->ns('notifications');
- my $name=Net::DRI::Util::xml_child_content($cancdata,$ns,'domain-name');
- $rinfo->{domain}->{$name}->{exist}=0;
- $rinfo->{domain}->{$name}->{action}='cancelled';
- $rinfo->{domain}->{$name}->{cancelled_orig}=Net::DRI::Util::xml_child_content($cancdata,$ns,'orig');
- return;
-}
-
-## http://www.nominet.org.uk/registrars/systems/epp/handshakerejected/
-## seem totally bogus and conflicts with http://www.nominet.org.uk/registrars/systems/epp/domainsreleased/
-
-## http://www.nominet.org.uk/registrars/systems/epp/poorqualitydata/
-sub poor_quality
-{
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
- my $pqdata=$mes->get_response('notifications','pqData');
- return unless defined $pqdata;
-
- my $msgid=$mes->msg_id();
- my $ns=$mes->ns('notifications');
- $rinfo->{message}->{$msgid}->{action}='poor_quality';
- $rinfo->{message}->{$msgid}->{poor_quality_stage}=$pqdata->getAttribute('stage');
-
- my $d=$pqdata->getChildrenByTagNameNS($ns,'suspend-date');
- $rinfo->{message}->{$msgid}->{poor_quality_suspend}=$po->parse_iso8601($d->get_node(1)->textContent()) if $d->size();
- $d=$pqdata->getChildrenByTagNameNS($ns,'cancel-date');
- $rinfo->{message}->{$msgid}->{poor_quality_cancel}=$po->parse_iso8601($d->get_node(1)->textContent()) if $d->size();
-
- ## No account:infData, what a great idea (not) !
- my $nsa=$mes->ns('account');
- my $a=$po->create_local_object('contact');
- ## Text & XML do not agree !
- $a->roid(Net::DRI::Util::xml_child_content($pqdata,$nsa,'roid'));
- $a->name(Net::DRI::Util::xml_child_content($pqdata,$nsa,'name'));
- $d=$pqdata->getChildrenByTagNameNS($nsa,'addr');
- if ($d->size())
+ my ($po,$data,$ns,$rinfo) = @_;
+ return unless $data;
+ my @h;
+ return unless my $hl = $data->getChildrenByTagNameNS($ns,'hostListData')->shift();
+ foreach my $el (Net::DRI::Util::xml_list_children($hl))
  {
-  Net::DRI::Protocol::EPP::Extensions::Nominet::Account::parse_addr($d->get_node(1),$a);
+  my ($name,$c)=@$el;
+  next unless $name eq 'hostObj';
+  my $ho = $c->textContent();
+  $ho =~ s/\.$//; # remove trailing .
+  push @h,$ho;
  }
- $rinfo->{message}->{$msgid}->{poor_quality_account}=$a;
-
- my $list=$mes->get_response('domain','listData'); ## attribute no-domains is not used, as there should be as many simpleInfData as domain names
- ## here we do not use the same listData as everywhere else ! What a great idea (not) !
- my $nsd=$mes->ns('domain');
- my @d;
- foreach my $d ($list->getChildrenByTagNameNS($nsd,'name'))
- {
-  push @d,$d->textContent();
- }
- $rinfo->{message}->{$msgid}->{domains}=\@d;
- return;
-}
-
-## http://www.nominet.org.uk/registrars/systems/epp/domainsreleased/
-sub domains_released
-{
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
- my $reldata=$mes->get_response('notifications','relData');
- return unless defined $reldata;
-
- my $msgid=$mes->msg_id();
- my $ns=$mes->ns('notifications');
- $rinfo->{message}->{$msgid}->{action}='domains_released';
- my $n=$reldata->getChildrenByTagNameNS($ns,'account-id')->get_node(1);
- $rinfo->{message}->{$msgid}->{account_id}=$n->textContent();
- $rinfo->{message}->{$msgid}->{account_moved}=$n->getAttribute('moved') eq 'Y'? 1 : 0;
- $rinfo->{message}->{$msgid}->{registrar_from}=Net::DRI::Util::xml_child_content($reldata,$ns,'from');
- $rinfo->{message}->{$msgid}->{registrar_to}=Net::DRI::Util::xml_child_content($reldata,$ns,'registrar-tag');
-
- my $list=$mes->get_response('domain','listData'); ## attribute no-domains is not used, as there should be as many simpleInfData as domain names
- ## here we do not use the same listData as everywhere else ! What a great idea (not) !
- my $nsd=$mes->ns('domain');
- my @d;
- foreach my $d ($list->getChildrenByTagNameNS($nsd,'name'))
- {
-  push @d,$d->textContent();
- }
- $rinfo->{message}->{$msgid}->{domains}=\@d;
- return;
+ return \@h;
 }
 
 ####################################################################################################
 
-# http://www.nominet.org.uk/registrars/systems/epp/error/
-sub faildata_parse
+sub parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
- ## no test on success, as this obviously can happen when no success !
- my $faildata=$mes->get_response($otype,'failData');
- return unless defined $faildata;
+ return unless $mes->is_success();
+ my $msgid=$oname=$mes->msg_id();
+ return unless (defined($msgid) && $msgid);
 
- my $ns=$mes->ns($otype);
- my $name=Net::DRI::Util::xml_child_content($faildata,$ns,$otype eq 'domain'? 'name' : 'roid');
- $rinfo->{$otype}->{$name}->{fail_reason}=Net::DRI::Util::xml_child_content($faildata,$ns,'reason');
- $rinfo->{$otype}->{$name}->{action}='fail' unless exists $rinfo->{$otype}->{$name}->{action};
- $rinfo->{$otype}->{$name}->{exist}=0 unless exists $rinfo->{$otype}->{$name}->{exist};
+ my ($n,$nsstr,$data);
+ my %actions=(
+               hosts_cancelled => { n=>'hostCancData' },
+               contact_deleted => { n=>'contactDelData' },
+               registrar_change => { n=> 'rcData'}, # also handshake_request, changed later
+               registrant_change=> { n=> 'trnData'},
+               registrant_change_auth_request => { n=> 'trnAuthData'}, # should probably be dealt with as a handshake_request, but no change of Tag
+               domains_released => { n=> 'relData'}, # also handshake_rejected, changed later
+               domains_suspended => { n=> 'suspData'},
+               cancelled => { n=> 'cancData', ot=>'domain'},
+               fail => { n=> 'domainFailData', ot=>'domain'},
+               poor_quality => { n=> 'processData'},
+               abuse => { n=> 'infData', ns=>'nom-abuse-feed'},
+               #info => { n=> 'infData', ns =>'contact', ot => 'contact'},# this is processed correctly by contact::info_parse so dont need to do anything here
+               #create => {n => 'creData', ns => 'domain', 'ot => 'domain'},  # this is processed correctly by domain::create_parse  so dont need to do anything here
+           );
+
+ while (my ($ac, $nd) = each(%actions))
+ {
+    $n = $nd->{n};
+    $nsstr = ($nd->{ns})?$nd->{ns}:'std-notifications';
+    $otype = ($nd->{ot}) ? ($nd->{ot}):'message';
+    next unless ( ($data=$mes->get_response($nsstr,$n)) && (my $ns=$mes->ns($nsstr)));
+
+    # abuse feed seems to come from an old Nominet EPP schema and has to be treated differently - this is likely to change some day
+    if ($ac eq 'abuse')
+    {
+      $oaction =  $rinfo->{$otype}->{$oname}->{action}=$ac;
+      foreach my $f (qw/key activity source hostname url date ip nameserver dnsAdmin target wholeDomain/)
+      { $rinfo->{$otype}->{$oname}->{$f}=Net::DRI::Util::xml_child_content($data,$ns,$f); }
+      return;
+    }
+   
+    # set oname/exist for domain
+    if ($otype eq 'domain')
+    {
+      $oname=Net::DRI::Util::xml_child_content($data,$ns,'domainName');
+      $rinfo->{$otype}->{$oname}->{exist}=0;
+    }
+
+    # action
+    $oaction =  $rinfo->{$otype}->{$oname}->{action}=$ac;
+
+    # plain text fields
+    $rinfo->{$otype}->{$oname}->{orig}=Net::DRI::Util::xml_child_content($data,$ns,'orig');
+    $rinfo->{$otype}->{$oname}->{reason}=Net::DRI::Util::xml_child_content($data,$ns,'reason');
+    $rinfo->{$otype}->{$oname}->{registrar_to}=Net::DRI::Util::xml_child_content($data,$ns,'registrarTag');
+    $rinfo->{$otype}->{$oname}->{contact} = Net::DRI::Util::xml_child_content($data,$ns,'contactId');
+    $rinfo->{$otype}->{$oname}->{account_from}=Net::DRI::Util::xml_child_content($data,$ns,'oldAccountId');
+    $rinfo->{$otype}->{$oname}->{account_to}=Net::DRI::Util::xml_child_content($data,$ns,'accountId');
+    $rinfo->{$otype}->{$oname}->{process_type} = Net::DRI::Util::xml_child_content($data,$ns,'processType');
+    $rinfo->{$otype}->{$oname}->{poor_quality_stage}=$data->getAttribute('stage') if $data->hasAttribute('stage');
+    $rinfo->{$otype}->{$oname}->{case_id}=Net::DRI::Util::xml_child_content($data,$ns,'caseId');
+
+
+    # relData (release/handshake rejected has account data)
+    if (($n eq 'relData') && (my $acid=$data->getChildrenByTagNameNS($ns,'accountId')->shift()))
+    {
+     $rinfo->{$otype}->{$oname}->{account_id}=$acid->textContent();
+     $rinfo->{$otype}->{$oname}->{action}='handshake_rejected' unless $acid->hasAttribute('moved'); # NOT VERIFIED - but since we don't have the message content <msg> we cant determine the action here
+     $rinfo->{$otype}->{$oname}->{account_moved}=$acid->getAttribute('moved') eq 'Y'? 1 : 0 if $acid->hasAttribute('moved');
+     $rinfo->{$otype}->{$oname}->{registrar_from}=Net::DRI::Util::xml_child_content($data,$ns,'from');
+    }
+
+    # if casId then this is a handshake_request
+    if ( ($n eq 'rcData') && ($data->getChildrenByTagNameNS($ns,'caseId')->size()) )
+    {
+     $rinfo->{$otype}->{$oname}->{action}='handshake_request';
+     $rinfo->{$otype}->{$oname}->{case_id}=Net::DRI::Util::xml_child_content($data,$ns,'caseId');
+    }
+    # rcData return different data structures
+    ($rinfo->{$otype}->{$oname}->{registrar_from},$rinfo->{$otype}->{$oname}->{domains}) = parse_rcdomainlist($po,$data,$ns,$rinfo) if ($n eq 'rcData');
+
+    # domain / host lists
+    $rinfo->{$otype}->{$oname}->{domains}=parse_domainlist($po,$data,$ns,$rinfo) unless ($n eq 'rcData');
+    $rinfo->{$otype}->{$oname}->{hosts}=parse_hostlist($po,$data,$ns,$rinfo);
+
+     # contact data
+     my $nsc=$mes->ns('contact');
+     if (my $cont=parse_contact($po,$data->getChildrenByTagNameNS($nsc,'infData')->shift(),$nsc,$rinfo))
+     {
+      $rinfo->{$otype}->{$oname}->{contact}=$cont->srid();
+      $rinfo->{$otype}->{$oname}->{contact_data}=$cont if $n eq 'rcData';
+      $rinfo->{message}->{$msgid}->{poor_quality_account}=$cont if $n eq 'processData';
+     }
+    
+     # dates
+     my $d;
+     if ( ($d=$data->getChildrenByTagNameNS($ns,'cancelDate')) && ($d->size()) )
+     {
+       $rinfo->{$otype}->{$msgid}->{poor_quality_cancel}=$po->parse_iso8601($d->get_node(1)->textContent()) if $oaction eq 'poor_quality';
+       $rinfo->{$otype}->{$msgid}->{cancel_date}=$po->parse_iso8601($d->get_node(1)->textContent());
+     }
+     if ( ($d=$data->getChildrenByTagNameNS($ns,'suspendDate')) && ($d->size()) )
+     { 
+       $rinfo->{$otype}->{$msgid}->{poor_quality_suspend}=$po->parse_iso8601($d->get_node(1)->textContent());
+     }
+
+     # cleanup
+     my %onames = %{$rinfo->{$otype}->{$oname}}; 
+     foreach ( keys %onames) 
+     { 
+       delete $rinfo->{$otype}->{$oname}->{$_} unless defined $rinfo->{$otype}->{$oname}->{$_}; 
+     }
+   
+ }
  return;
 }
 
-sub warning_parse
+
+sub ammed_account
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
- return unless $mes->is_success(); ## the documentation seems to imply it is only during success, but not very clear
- my $warning=$mes->get_extension($otype,'warning');
- return unless defined $warning;
-
- ## No clear specification of the content
- $rinfo->{$otype}->{$oname}->{warning}=$warning->textContent();
+ return unless $mes->is_success();
+ my $infdata=$mes->get_response('nom-abuse-feed','infData');
+ return unless defined $infdata;
  return;
 }
-
-# http://www.nominet.org.uk/registrars/systems/epp/error/ (does not explain when this case can occur for domain operations)
-# http://www.nominet.org.uk/registrars/systems/epp/referralreject/
-sub domain_failwarning  { my ($po,$otype,$oaction,$oname,$rinfo)=@_; faildata_parse($po,'domain',$oaction,$oname,$rinfo); warning_parse($po,'domain',$oaction,$oname,$rinfo); return; }
-sub account_failwarning { my ($po,$otype,$oaction,$oname,$rinfo)=@_; faildata_parse($po,'account',$oaction,$oname,$rinfo); warning_parse($po,'account',$oaction,$oname,$rinfo); return; }
-sub contact_failwarning { my ($po,$otype,$oaction,$oname,$rinfo)=@_; faildata_parse($po,'contact',$oaction,$oname,$rinfo); warning_parse($po,'contact',$oaction,$oname,$rinfo); return; }
-sub host_failwarning    { my ($po,$otype,$oaction,$oname,$rinfo)=@_; faildata_parse($po,'ns',$oaction,$oname,$rinfo); warning_parse($po,'ns',$oaction,$oname,$rinfo); return; }
 
 ####################################################################################################
 1;

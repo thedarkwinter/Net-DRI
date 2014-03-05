@@ -95,10 +95,11 @@ sub transport_protocol_default
 
 sub registrar_balance
 {
- my ($self,$ndr)=@_;
- my $clid=$self->info('client_id');
- my $rc=$ndr->try_restore_from_cache('registrar',$clid,'balance');
- if (! defined $rc) { $rc=$ndr->process('contact','info',[$ndr->local_object('contact')->srid($clid),{balance=>1}]); }
+ my ($self,$ndr,$rd)=@_;
+ if (!defined $rd) {
+   $rd = ( defined($self->info('client_id'))?$self->info('client_id') :$self->info('clid') );
+ }
+ my $rc=$ndr->process('contact','info',[$ndr->local_object('contact')->srid($rd),{balance=>1}]);
  return $rc;
 }
 

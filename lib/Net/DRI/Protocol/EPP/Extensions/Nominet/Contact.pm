@@ -1,6 +1,7 @@
 ## Domain Registry Interface, .UK EPP Contact commands
 ##
 ## Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,6 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -62,42 +64,22 @@ See the LICENSE file that comes with this distribution for more details.
 =cut
 
 ####################################################################################################
-
 sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=( 
-		info   => [ \&info, \&info_parse ],
+		info   => [ undef, \&info_parse ],
+		create => [ \&create ],
 		update => [ \&update ],
+        fork    => [ \&fork, \&Net::DRI::Protocol::EPP::Core::Contact::create_parse ],
+        lock => [ \&lock ],
 	);
 
  return { 'contact' => \%tmp };
 }
 
-sub build_command
-{
- my ($msg,$command,$contact)=@_;
- Net::DRI::Exception->die(1,'protocol/EPP',2,'Contact id needed') unless (defined($contact));
-
- my $id=Net::DRI::Util::isa_contact($contact,'Net::DRI::Data::Contact::Nominet')? $contact->roid() : $contact;
- Net::DRI::Exception->die(1,'protocol/EPP',2,'Contact id needed') unless (defined($id) && $id && !ref($id));
- Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid contact id: '.$id) unless Net::DRI::Util::xml_is_token($id,3,16); ## inherited from Core EPP
- my $tcommand=(ref($command))? $command->[0] : $command;
- $msg->command([$command,'contact:'.$tcommand,sprintf('xmlns:contact="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('contact'))]);
- return (['contact:roid',$id]);
-}
-
 ####################################################################################################
 ########### Query commands
-
-sub info
-{
- my ($epp,$c)=@_;
- my $mes=$epp->message();
- my @d=build_command($mes,'info',$c);
- $mes->command_body(\@d);
- return;
-}
 
 sub info_parse
 {
@@ -105,99 +87,81 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_response('contact','infData');
- return unless defined $infdata;
+ my $infdata=$mes->get_extension('contact-nom-ext','infData');
+ return unless $infdata;
 
- my $contact=$po->create_local_object('contact');
- parse_infdata($po,$infdata,$contact,$oname,$rinfo);
- return;
-}
-
-sub parse_infdata
-{
- my ($po,$infdata,$contact,$oname,$rinfo)=@_;
-
+ my $s=$rinfo->{contact}->{$oname}->{self};
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
-  if ($name eq 'roid')
-  {
-   $oname=$c->textContent();
-   $contact->roid($oname);
-   $rinfo->{contact}->{$oname}->{roid}=$contact->roid();
-   $rinfo->{contact}->{$oname}->{action}='info';
-   $rinfo->{contact}->{$oname}->{exist}=1;
-  } elsif ($name eq 'name')
-  {
-   $contact->name($c->textContent());
-  } elsif ($name=~m/^(clID|crID|upID)$/)
-  {
-   $rinfo->{contact}->{$oname}->{$1}=$c->textContent();
-  } elsif ($name=~m/^(crDate|upDate)$/)
-  {
-   $rinfo->{contact}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
-  } elsif ($name eq 'email')
-  {
-   $contact->email($c->textContent());
-  } elsif ($name eq 'phone') ## diverving from EPP voice
-  {
-   $contact->voice(Net::DRI::Protocol::EPP::Util::parse_tel($c));
-  } elsif ($name eq 'fax')
-  {
-   $contact->fax(Net::DRI::Protocol::EPP::Util::parse_tel($c));
-  } elsif ($name eq 'mobile')
-  {
-    $contact->mobile(Net::DRI::Protocol::EPP::Util::parse_tel($c));
-  }
+  $s->type($c->textContent()) if $name eq 'type';
+  $s->co_no($c->textContent()) if $name eq 'co-no';
+  $s->opt_out($c->textContent()) if $name eq 'opt-out';
+  $s->trad_name($c->textContent()) if $name eq 'trad-name';
  }
-
- $rinfo->{contact}->{$oname}->{self}=$contact;
  return;
 }
 
-# ############ Transform commands
+############ Transform commands ####################################################################
 
-sub build_cdata
+sub contact_nom_ext
 {
- my ($contact)=@_;
- my @d;
- push @d,['contact:name',$contact->name()] if (defined($contact->name()));
- push @d,Net::DRI::Protocol::EPP::Util::build_tel('contact:phone',$contact->voice()) if defined $contact->voice();
- push @d,Net::DRI::Protocol::EPP::Util::build_tel('contact:fax',$contact->fax()) if defined $contact->fax();
- push @d,Net::DRI::Protocol::EPP::Util::build_tel('contact:mobile',$contact->mobile()) if defined $contact->mobile();
- push @d,['contact:email',$contact->email()] if defined($contact->email());
- return @d;
+ my $c=shift;
+ my @n;
+ push @n, ['contact-nom-ext:trad-name', $c->trad_name()] if defined $c->trad_name();
+ push @n, ['contact-nom-ext:type', $c->type()] if defined $c->type();
+ push @n, ['contact-nom-ext:co-no', $c->co_no()] if defined $c->co_no();
+ push @n, ['contact-nom-ext:opt-out', $c->opt_out()] if defined $c->opt_out();
+ return @n;
+}
+
+sub create
+{
+ my ($epp,$c)=@_;
+ my @n = contact_nom_ext($c);
+ return unless @n;
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('contact-nom-ext:create',sprintf('xmlns:contact-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('contact-nom-ext')));
+ $mes->command_extension($eid,\@n);
+ return;
 }
 
 sub update
 {
- my ($epp,$contact,$todo)=@_;
+ # I don't think name/org can be updated so this should be checked and return an exception. If they are the same then just remove from the changes
+ my ($epp,$c,$todo)=@_;
+ my $tochg = $todo->set('info');
+ return unless $tochg;
+ my @n = contact_nom_ext($tochg);
+ return unless @n;
  my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('contact-nom-ext:update',sprintf('xmlns:contact-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('contact-nom-ext')));
+ $mes->command_extension($eid,\@n);
+ return;
+}
 
- Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
- if (grep { ! /^(?:set)$/ } $todo->types('info'))
- {
-  Net::DRI::Exception->die(0,'protocol/EPP',11,'Only info set available for contact in .UK');
- }
+sub fork
+{
+ my ($epp,$c,$rd)=@_;
+ my $mes=$epp->message();
+ Net::DRI::Exception::usererr_insufficient_parameters('Contact srID is required') unless  $c->srid();
+ Net::DRI::Exception::usererr_insufficient_parameters('newContactID is required') unless $rd->{newContactId};
+ $mes->command(['update','f:fork',sprintf('xmlns:f="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-fork'))]);
+ my @doms = @{$rd->{domains}};
+ my @d=(['f:contactID',$c->srid()],['f:newContactId',$rd->{newContactId}]);
+ foreach (@doms) { push @d,['f:domainName',$_]; }
+ $mes->command_body(\@d);
+ return;
+}
 
- my @d=build_command($mes,'update',$contact);
- my $newc=$todo->set('info');
- if ($newc)
+sub lock
  {
-  Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid contact '.$newc) unless (Net::DRI::Util::isa_contact($newc,'Net::DRI::Data::Contact::Nominet'));
-  $newc->validate(1); ## will trigger an Exception if needed
-  my @c=build_cdata($newc);
-  if (@c)
-  {
-   push @d,@c;
-  } else
-  {
-   Net::DRI::Exception->die(0,'protocol/EPP',11,'Nothing to update !');
-  }
- } else
- {
-  Net::DRI::Exception->die(0,'protocol/EPP',11,'Nothing to update !');
- }
+ my ($epp,$c,$rd)=@_;
+ my $mes=$epp->message();
+ Net::DRI::Exception::usererr_insufficient_parameters('Contact srID is required') unless  $c->srid();
+ Net::DRI::Exception::usererr_insufficient_parameters('type must be set to investigation OR opt-out to lock a contact') unless $rd->{type} && $rd->{type} =~ m/^(investigation|opt-out)$/;
+ $mes->command(['update','l:lock',sprintf('xmlns:l="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-locks')). ' object="contact" type="'.$rd->{type}.'"']);
+ my @d=(['l:contactId',$c->srid()]);
  $mes->command_body(\@d);
  return;
 }

@@ -71,12 +71,13 @@ sub new
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=1;
+ $self->{info}->{contact_i18n}=1; ## LOC only
  return $self;
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'IIT-CNR'; }
-sub tlds     { return ('it'); }
+sub tlds     { return qw /it co.it/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 

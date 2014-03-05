@@ -68,7 +68,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/NeuLevel::IDNLanguage/; }
+sub default_extensions { return qw/NeuLevel::IDNLanguage NeuLevel::Message/; }
 
 ####################################################################################################
 1;

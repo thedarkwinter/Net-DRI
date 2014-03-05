@@ -1,4 +1,4 @@
-## Domain Registry Interface, Mark & Signed Mark for EPP (draft-lozano-tmch-smd-02)
+## Domain Registry Interface, Mark & Signed Mark for EPP (draft-lozano-tmch-smd-03)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -154,7 +154,7 @@ sub _build_contact
  $v=$contact->voice();
  if (defined $v && length $v)
  {
-  Net::DRI::Exception::usererr_invalid_parameters('Voice of contact must be an XML token string verifying pattern "(\+[0-9]{1,3}\.[0-9]{1,14})?"') unless Net::DRI::Util::xml_is_token($v,0,17) && $v=~m/^\+[0-9]{1,3}\.[0-9]{1,14}$/;
+  Net::DRI::Exception::usererr_invalid_parameters('Voice of contact must be an XML token string verifying pattern "(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?"') unless Net::DRI::Util::xml_is_token($v,0,24) && $v=~m/^(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?$/; 
   push @r,Net::DRI::Protocol::EPP::Util::build_tel('mark:voice',$v);
  } else
  {
@@ -164,7 +164,7 @@ sub _build_contact
  $v=$contact->fax();
  if (defined $v && length $v)
  {
-  Net::DRI::Exception::usererr_invalid_parameters('Fax of contact must be an XML token string verifying pattern "(\+[0-9]{1,3}\.[0-9]{1,14})?"') unless Net::DRI::Util::xml_is_token($v,0,17) && $v=~m/^\+[0-9]{1,3}\.[0-9]{1,14}$/;
+  Net::DRI::Exception::usererr_invalid_parameters('Fax of contact must be an XML token string verifying pattern "(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?"') unless Net::DRI::Util::xml_is_token($v,0,24) && $v=~m/^(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?$/; 
   push @r,Net::DRI::Protocol::EPP::Util::build_tel('mark:fax',$v);
  }
 
@@ -320,16 +320,16 @@ sub _build_treaty
   my @pro;
   Net::DRI::Exception::usererr_invalid_parameters('Each protection item must be a ref hash, not: '.$rprot) unless ref $rprot eq 'HASH';
 
-  push @r,_add_token($rprot,'cc');
+  push @pro,_add_token($rprot,'cc');
   Net::DRI::Exception::usererr_invalid_parameters(qq{Value for "cc" key must be an XML token string of 2 characters}) unless Net::DRI::Util::xml_is_token($rprot->{cc},2,2);
 
-  push @r,_add_token($rprot,'region',1);
+  push @pro,_add_token($rprot,'region',1);
 
   if (Net::DRI::Util::has_key($rprot,'ruling'))
   {
    foreach my $ruling (ref $rprot->{ruling} eq 'ARRAY' ? @{$rprot->{ruling}} : ($rprot->{ruling}))
    {
-    push @r,_add_token({ ruling => $ruling },'ruling');
+    push @pro,_add_token({ ruling => $ruling },'ruling');
     Net::DRI::Exception::usererr_invalid_parameters(qq{Each "ruling" item must be an XML token string of 2 characters}) unless Net::DRI::Util::xml_is_token($ruling,2,2);
    }
   }
@@ -495,7 +495,8 @@ sub parse_mark
 sub lined_content
 {
  my ($node,$signs,@keys)=@_;
- my $r=Net::DRI::Util::xml_traverse($node,$signs,@keys)->textContent();
+ return undef unless my $e=Net::DRI::Util::xml_traverse($node,$signs,@keys);
+ my $r = $e->textContent();
  $r=~s/\s+//g;
  return $r;
 }

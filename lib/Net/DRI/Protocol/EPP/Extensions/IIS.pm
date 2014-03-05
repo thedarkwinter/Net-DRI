@@ -1,4 +1,4 @@
-## Domain Registry Interface, Net::DRI::Protocol::EPP class for .SE
+## Domain Registry Interface, Net::DRI::Protocol::EPP class for IIS
 ## Contributed by Elias Sidenbladh and Ulrich Wisser from NIC SE
 ##
 ## Copyright (c) 2006,2008-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::SE;
+package Net::DRI::Protocol::EPP::Extensions::IIS;
 
 use strict;
 use warnings;
@@ -24,7 +24,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::SE - .SE EPP Extensions for Net::DRI
+Net::DRI::Protocol::EPP::Extensions:IIS - IIS (.se,.nu) EPP Extensions for Net::DRI
 
 =head1 DESCRIPTION
 

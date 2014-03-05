@@ -1,5 +1,48 @@
 Net::DRI changelog from newest to oldest changes
 
+
+0.96_06_tdw 2014-03-04 DEVELOPMENT RELEASE
+!! Note, this is not an official release !!
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this version, however EPP over HTTPS is working.
+
+#### Core
+= Transport/HTTP : allow for persistent connections (has_state=1) to replicate Transport/Socket behaviour
+= Protocol/EPP/Connection : Better handling of disconnects
+= Protocol/RRI/Connection : Better handling of disconnects
++ Logging : added options suppress_keepalive, trim_headers 
++ Logging/Files : added option format_filename 
++ Protocol/EPP : added nameserver method host_as_ns to build <domain:ns>ns1.test.com</..>, currently utilised by ES
++ Data/IDN : A new IDN object to try and make a common method of creating / parsing domains with IDNs. Requires Net::IDN::Encode
+= EPP/Core/Contact : use $ns for namespace instead of 'contact', allowing external extensions to use the parser
++ Util : Added functions xml2perl and perl2xml to convert variable naming convention, requires Hash::KeyMorpher
+#### ccTLDs
++ New EPP DRD added for ES (they also support a SOAP interface, but not implemented)
++ Nominet - Updated to Nominet Standard EPP (2013 patch)
++ IT - Various updates to their system in 2013
+= BE - Enabled IDNs
+= COZA - Fix contacts, fix registrar_balance, couple of other minor fixes
+= Switch - Fix contacts
+= SE - DRDs (and Extensions) renamed to IIS as this now supports *.se and .nu
+= CentralNIC : removed obsolete extensions
+= Eurid : Fix namespace issue in transfers
+= DENIC : idn fixes (note, DENIC now supports graceperiods which is not implemented)
+#### New gTLDs
++ EPP/Extensions/LaunchPhase : implememted LaunchPhase extension to latest draft-ietf-eppext-launchphase-00. Thanks to Michael Braunoeder for big fix
++ New EPP DRDs and extensions added for AFNIC_GTLD,ARI,CORENIC,DONUTS,MAM,NEUSTAR,TANGO,UNIREG,UNITEDTLD,ZACR (in progress, Afilias, CentralNic, RegBox, CRC)
+= EPP/Extensions/Icann/MarkSignedMark : minor fixes, up to date according to draft-lozano-tmch-smd-03, but I believe this has been moved to a new WG draft
+= EPP/Extensions/IDN : now compatible with Data::IDN object. Up to date according to draft-obispo-epp-idn-03, but I believe this has been moved to a new WG draft
+#### gTLDs
++ Afilias/Registrar : Afilias Registrar Info Extension (from Paulo Jorge)
++ Neulevel/Message : parser for NeuLevels extmessage
+#### TMCH
++ Added Protocol for TMCH using tmch-1.0 (which is unfortunately end of life from 01/01/14 at least with Deloitte).
++ Added TMCH DRD using Deloitte.pm (there are supposodely more to come, but currently not sure how it will work).
+#### TMDB
++ Added Protocol for TMDB which supports SMDRL and CNIS only
++ Added TMDB DRD using TMDB.pm
+
 0.96_05 2013-05-01 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,

@@ -48,6 +48,7 @@ sub register_commands
 
        my $ops = {
                'create' => [ \&create, undef ],
+               'info' => [undef,\&info_parse],
        };
 
        return { 'contact' => $ops };
@@ -102,4 +103,31 @@ sub create
        return fix_contact($epp, $contact, 'create');
 }
 
+sub info_parse
+{
+       my ($po, $type, $action, $oname, $rinfo) = @_;
+       my $msg = $po->message;
+       my $ns = $msg->ns('it_contact');
+
+       my $infdata = $msg->get_extension('it_contact', 'infData');
+       return unless $infdata;
+       my $s=$rinfo->{contact}->{$oname}->{self};
+       
+       foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+       {
+          my ($name,$c)=@$el;
+          $s->consent_for_publishing( ($c->textContent()eq'true')?1:0 ) if $name eq 'consentForPublishing';
+           if ($name eq 'registrant')
+           {
+               foreach my $el2 (Net::DRI::Util::xml_list_children($c))
+               {
+                       my ($name2,$c2)=@$el2;
+                       $s->nationality_code($c2->textContent()) if $name2 eq 'nationalityCode';
+                       $s->entity_type($c2->textContent()) if $name2 eq 'entityType';
+                       $s->reg_code($c2->textContent()) if $name2 eq 'regCode';
+               }
+           }
+       }
+       return;
+}
 1;
