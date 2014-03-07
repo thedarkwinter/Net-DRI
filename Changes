@@ -1,7 +1,24 @@
 Net::DRI changelog from newest to oldest changes
 
+0.96_06_tdw_02 2014-??-?? DEVELOPMENT RELEASE
+!! Note, this is not an official release !!
 
-0.96_06_tdw 2014-03-04 DEVELOPMENT RELEASE
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this version, however EPP over HTTPS is working.
+
+#### New gTLDS
++ UnitedTLD Finance extension : registrar_balance command for Donuts/UnitedTLD (Rightside)
++ RegBox (Nic.at) DRD from Michael Braunoeder
+#### ccTLDs
+= Imported .NO changed from Net-DRI-0.96_05.no.1.0.1 (By Norid)
+  - eg/epp_client_no.pl: added support for bulk operation by specifying a -I option which should point to a file with a list of domains
+  - lib/Net/DRI/Protocol/EPP/Extensions/NO/Result.pm: When parse() is now also called for a 'session' (login sequence), $oname is undef, and we set it to $otype to remove a perl warning.
+  - lib/Net/DRI/Protocol/EPP/Extensions/NO.pm: Activated secDNS extensions
+  - eg/epp_client_no.pl: added support for secDNS parameters
+  - t/633norid_epp.t: added secDNS tests
+
+
+0.96_06_tdw_01 2014-03-04 DEVELOPMENT RELEASE
 !! Note, this is not an official release !!
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,

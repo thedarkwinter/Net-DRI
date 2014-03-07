@@ -1381,10 +1381,15 @@ sub account_list_domains
 sub registrar_info
 {
  my ($self,$ndr,$rd)=@_;
- if (!defined $rd) {
-   $rd= $self->info('clid');
- }
+ $rd= $self->info('clid') unless defined $rd;
  return $ndr->process('registrar','info',[$rd]);
+ }
+
+sub registrar_balance
+{
+ my ($self,$ndr,$rd)=@_;
+ $rd= $self->info('clid') unless defined $rd;
+ return $ndr->process('registrar','balance',[$rd]);
 }
 
 ####################################################################################################
