@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 426;
+use Test::More tests => 428;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -96,6 +96,7 @@ use_ok('Net::DRI::DRD::TMDB');
 use_ok('Net::DRI::DRD::UNIREG');
 use_ok('Net::DRI::DRD::UNITEDTLD');
 use_ok('Net::DRI::DRD::ZACR');
+use_ok('Net::DRI::DRD::NGTLD');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
 use_ok('Net::DRI::Data::Changes');
@@ -235,6 +236,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::AU::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::E164Validation');
 use_ok('Net::DRI::Protocol::EPP::Extensions::E164Validation::RFC5076');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias');
+use_ok('Net::DRI::Protocol::EPP::Extensions::AfiliasSRS');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Restore');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::IPR');
