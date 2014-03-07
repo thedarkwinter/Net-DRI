@@ -106,6 +106,7 @@ lib/Net/DRI/DRD/MN.pm
 lib/Net/DRI/DRD/MOBI.pm
 lib/Net/DRI/DRD/NAME.pm
 lib/Net/DRI/DRD/NEUSTAR.pm
+lib/Net/DRI/DRD/NGTLD.pm
 lib/Net/DRI/DRD/NO.pm
 lib/Net/DRI/DRD/Nominet.pm
 lib/Net/DRI/DRD/NU.pm
@@ -190,6 +191,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Registrar.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Restore.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Trademark.pm
+lib/Net/DRI/Protocol/EPP/Extensions/AfiliasSRS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Domain.pm
