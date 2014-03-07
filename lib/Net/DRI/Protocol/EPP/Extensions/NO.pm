@@ -88,7 +88,7 @@ sub setup {
     return;
 }
 
-sub default_extensions { return qw/NO::Domain NO::Contact NO::Host NO::Result NO::Message/; }
+sub default_extensions { return qw/NO::Domain NO::Contact NO::Host NO::Result NO::Message SecDNS/; }
 
 ####################################################################################################
 1;

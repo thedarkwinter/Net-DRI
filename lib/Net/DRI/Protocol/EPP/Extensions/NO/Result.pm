@@ -130,6 +130,9 @@ sub parse {
         push @conditions, \%con;
         $mes->add_to_extra_info({from=>'no',type=>'text',message => $con{msg}, %con});
     }
+    # $oname is undef in case of $otype='session', so set it to $otype then
+    # to avoid warnings
+    $oname = $otype unless ($oname);
 
     # Extension results can be returned in all 3 object types
     $rinfo->{$otype}->{$oname}->{conditions} = \@conditions;

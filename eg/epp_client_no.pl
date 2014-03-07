@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 ##
-## Copyright (c) 2008-2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+## Copyright (c) 2008-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
 ##                    All rights reserved.
 ##
@@ -47,7 +47,7 @@ $Data::Dumper::Indent=1;
 
 use encoding "utf-8";    # assume utf-8 encoded argument input
 
-our $VERSION     = '0.95.no';
+our $VERSION     = '0.96_05.no';
 our $SVN_VERSION = do {
     my @r = ( q$Revision: 1.5 $ =~ /\d+/gxm );
     sprintf( "%d" . ".%02d" x $#r, @r );
@@ -87,7 +87,7 @@ my @cm = (
 
 # args
 use vars qw($opt_c $opt_o $opt_h $opt_p $opt_f $opt_P $opt_S
-    $opt_L $opt_C $opt_W $opt_w $opt_F);
+    $opt_L $opt_C $opt_W $opt_w $opt_F $opt_I);
 
 # Operations
 my %op = (
@@ -178,7 +178,7 @@ my %ds_dri_map = (
 # Hash to hold the EPP arguments
 my %p;
 
-&getopts("vLo:c:p:f:S:P:C:W:w:F:");
+&getopts("vLo:c:p:f:S:P:C:W:w:F:I:");
 
 #server and port must be specified
 my $socktype = 'tcp';
@@ -202,6 +202,17 @@ if ($opt_F) {
     }
     $dump_fmt = $opt_F;
 }
+
+# input file with domain for repeated operation
+my $ifile;
+if ($opt_I) {
+    unless (-f $opt_I) {
+	pexit("Illegal opt_I arg, not a file");
+    }
+    # input file contains list of domains for repeated operation
+    $ifile = $opt_I;
+}
+
 
 my $newpass;
 $newpass = $opt_w if ($opt_w);
@@ -236,10 +247,25 @@ my $logf = 'results-' . time() . '.log';
 $logf = $opt_f if ($opt_f);
 open( my $fh, '>>', $logf ) || die $!;
 
+my @doms;
+
+if ($ifile) {
+    open DF, "<$ifile" or pexit("Cannot open $ifile");
+    while (<DF>) {
+	chomp;
+	my $d = $_;
+	next unless $d;
+	push @doms, $d;
+    }
+    close DF;
+} else {
+    push @doms, $p{name};
+}
+
 do_epp_operation(
     $obj{$opt_o}, $opt_c,  $clid, $pass, $newpass,
-    $socktype,    $server, $port, $fh,   %p
-);
+    $socktype,    $server, $port, $fh,   \@doms, 
+    %p);
 
 my $t2 = time();
 
@@ -267,7 +293,7 @@ sub parse_params {
 }
 
 sub do_epp_operation {
-    my ( $obj, $cmd, $clid, $pw, $newpw, $socktype, $server, $port, $fh, %p )
+    my ( $obj, $cmd, $clid, $pw, $newpw, $socktype, $server, $port, $fh, $doms, %p )
         = @_;
 
     my $res = 1;
@@ -281,10 +307,15 @@ sub do_epp_operation {
     my ( $dri, $rc );
 
     eval {
-        ( $dri, $rc )
-            = init_reg_no( $clid, $pw, $newpw, $socktype, $server, $port,
-            $fh );
-        do_command( $obj, $cmd, $dri, $rc, %p );
+	
+	# Connect/Login
+	( $dri, $rc ) = init_reg_no( $clid, $pw, $newpw, $socktype, $server, $port, $fh );
+	
+	# Do the EPP cmds
+	foreach my $d (sort @$doms) {
+	    $p{name} = $d;
+            do_command( $obj, $cmd, $dri, $rc, %p );
+	}
     };
     if ($@) {
         print "\n\nAn EXCEPTION happened !\n";
@@ -351,13 +382,11 @@ sub init_reg_no {
        {
            cache_ttl => 10,
            logging => [
-              # Use EPPClient's log module
-              'EppClient::Model::NORID::DRILogging',
-              # original
-              #'files',
+              'files',
                        {output_directory => './',
                         output_filename=>$opt_f,
                         level=>'notice',
+			sanitize_data => { session_password => 1}, 
                         xml_indent=>0}]
        }
 );
@@ -803,6 +832,30 @@ sub do_command {
                     }
                 }
             }
+
+            # Secdns
+            my @secdns;
+            if ( $p{secdns} ) {
+		# 
+		# Comment on maxSigLife:
+		#  Strange syntax by Net-DRI since it is assumed that maxSigLife 
+		#  is passed per key instead of as a single maxLife key/value inside secdns as 
+		#  is the case for an update.
+		#
+		#  If multiple DNS keys are passed in a create (ARRAY), maxSigLife must be specified 
+		#  inside the array of at least one of the keys. 
+		#  
+		#  However, if maxSigLife is passed for several keys, the values must be identical for secDNS-1.1
+		#  whilst for secDNS-1.0 they can be different and maxSigLife can be set per key.
+		#
+		my $sdns = $p{secdns};
+		if (ref($sdns) eq 'ARRAY') {
+		    @secdns = @{$sdns};
+		} else {
+		    push @secdns, $sdns;
+		}
+            }
+
             $rc = $dri->domain_create(
                 $ace,
                 {   pure_create => 1, ## this was previously achieved by using domain_create_only that is now deprecated
@@ -810,12 +863,13 @@ sub do_command {
                     duration => $du,
                     contact  => $cs,
                     ns       => $nso,
-                   facets   => $p{facets},
-                   applicantdataset => $p{applicantdataset}
+		    secdns   => [ @secdns ],
+		    facets   => $p{facets},
+		    applicantdataset => $p{applicantdataset}
                 }
             );
 
-           dump_as_fmt ($rc, $dri);
+	    dump_as_fmt ($rc, $dri);
 
             die($rc) unless ( $rc->is_success() );
         }
@@ -904,18 +958,40 @@ sub do_command {
                 }
             }
             if ( $p{nsset} ) {
-               foreach my $op ('add', 'del') {
+		foreach my $op ('add', 'del') {
+		    # add and del keys shall describe what to do
+		    my $a = $p{nsset}{$op} if ($p{nsset}{$op});
+		    my $nso = $dri->local_object('hosts');
+		    foreach my $m (@$a) {
+			$nso->add($m);
+		    }
+		    $toc->$op('ns', $nso);
+		}
+	    }
+	    # secDNS DS/Key params
+	    if ( $p{secdns} ) {
+                foreach my $op ( 'add', 'del' ) {
                     # add and del keys shall describe what to do
-                   my $a = $p{nsset}{$op} if ($p{nsset}{$op});
-                   my $nso = $dri->local_object('hosts');
-                        foreach my $m (@$a) {
-                       $nso->add($m);
-                        }
-                   $toc->$op('ns', $nso);
-                    }
-                }
+                    my $a;
+                    $a = $p{secdns}{$op} if ( $p{secdns}{$op} );
 
-           # applicantDataset
+		    # add/del on secdns works for $a being either a string or an array
+		    $toc->$op( 'secdns', $a );
+                }
+		# Any secDNS maxSigLife must be specified once in %p,
+		# it is a single value and need to be chg'ed:
+		if ( defined($p{secdns}->{maxSigLife}) ) {
+		    $toc->set( 'secdns', { maxSigLife => $p{secdns}->{maxSigLife} } );
+		}
+
+		# urgent or normal update?
+		if ( $p{secdns_urgent} ) {
+		    # turn on the urgent flag for this update
+		    $toc->set( 'secdns_urgent', '1');
+		}
+	    }
+
+	    # applicantDataset
             if ( defined($p{applicantdataset}) ) {
 
                #print STDERR "ds p: ", Dumper \%p;
@@ -1160,7 +1236,7 @@ sub dump_as_fmt {
 
 
 
-=begin head2 rc_result_as_fmt
+=begin rc_result_as_fmt
 
 Helper function to map rc result information from DRI into a hash
 or a string as the user prefers.
@@ -1203,9 +1279,10 @@ Keys returned can be:
     * print_full()
     * trid() 
 
-=end head2 rc_result_as_fmt
+=end rc_result_as_fmt
 
 =cut
+
 sub rc_result_as_fmt {
     my $rc  = shift;
     my $fmt = shift;
@@ -1853,6 +1930,51 @@ Keys returned can be:
     crID
     upID
 
+  - secdns
+
+    example layout:
+
+        <secDNS:maxSigLife>604800</secDNS:maxSigLife>
+        <secDNS:dsData>
+          <secDNS:keyTag>12344</secDNS:keyTag>
+          <secDNS:alg>3</secDNS:alg>
+          <secDNS:digestType>2</secDNS:digestType>
+          <secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest>
+          <secDNS:keyData>
+            <secDNS:flags>257</secDNS:flags>
+            <secDNS:protocol>3</secDNS:protocol>
+            <secDNS:alg>1</secDNS:alg>
+            <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+          </secDNS:keyData>
+        </secDNS:dsData>
+        <secDNS:dsData>
+          <secDNS:keyTag>12322</secDNS:keyTag>
+          <secDNS:alg>3</secDNS:alg>
+          <secDNS:digestType>2</secDNS:digestType>
+          <secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest>
+          <secDNS:keyData>
+            <secDNS:flags>256</secDNS:flags>
+            <secDNS:protocol>3</secDNS:protocol>
+            <secDNS:alg>1</secDNS:alg>
+            <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+          </secDNS:keyData>
+        </secDNS:dsData>
+
+
+   keys:
+
+     maxSigLife
+
+     keyTag
+     alg
+     digestType
+     digest
+
+     key_flags
+     key_protocol
+     key_alg
+     key_pubKey
+
   - applicantDataset values:
     versionNumber
     acceptName
@@ -1973,6 +2095,60 @@ sub domain_object_as_fmt {
                $s .= sprintf "$F", $ct, $v;
            }
        }
+    }
+
+    my $secdns = $dri->get_info('secdns');
+
+    #print STDERR "SecDNS: ", Dumper $secdns;
+
+    if ( defined($secdns) ) {
+
+	unless ($fmt eq 'hash') {
+	    $s .= sprintf "--- Secure DNS data ---\n";
+	}
+
+	my $count = scalar(@$secdns);
+
+	##
+	# note that Net::DRI returns maxSigLife inside each secdns[] element,
+	# even if the value is passed only once over EPP in secDNS-1.1,
+	# this is because that was the structure in 1.0, and the internal 
+	# representation is kept, although in 1.1 the value will be the same.
+
+	if ($count > 0) {
+	    if ($fmt eq 'hash') {
+		$s->{secdns}->{keyCount}   = $count;
+		$s->{secdns}->{keys}       = $secdns;
+	    } else {
+		$s .= sprintf "$F", 'SecDNS Key count', $count;
+		
+		my $i = 0;
+		while ($i < $count) {
+		    my $n = $secdns->[$i];
+
+		    $s .= sprintf "$F", "dsData($i)", "";
+
+		    if (exists ($n->{maxSigLife}) ) {
+			$s .= sprintf "$F", '  maxSigLife', $n->{maxSigLife};
+		    }
+
+		    $s .= sprintf "$F", '  keyTag', $n->{keyTag};
+		    $s .= sprintf "$F", '  digestType', $n->{digestType};
+		    $s .= sprintf "$F", '  alg', $n->{alg};
+		    $s .= sprintf "$F", '  digest', $n->{digest};
+
+		    if (defined ($n->{key_flags}) ) {
+			# Also dump the optional keyData when present
+ 		        $s .= sprintf "$F", '  keyData', '';
+			$s .= sprintf "$F", '   key_flags', $n->{key_flags};
+			$s .= sprintf "$F", '   key_protocol', $n->{key_protocol};
+			$s .= sprintf "$F", '   key_alg     ', $n->{key_alg};
+			$s .= sprintf "$F", '   key_pubKey  ', $n->{key_pubKey};
+		    }
+		    $i++;
+		}
+	    }
+	}
     }
 
     ####################
@@ -2423,6 +2599,8 @@ B<perl epp_client_no.pl [Connect arguments] [Command arguments]>
  -L: Use SSL connection
  -w: New account password, will be set in first EPP login
  -F: Format on output, 'string' (default) or 'hash'
+ -I: Input file containing a domain list, one domain name per line.
+     For bulk operations, where name in %p is replaced by those domains.
 
 =item Command arguments
 
@@ -2476,7 +2654,7 @@ filter the tail through the supplied xmlfilter.pl utility, which will wrap the
 raw XML to a pretty-printed dump.
 
 The filters '-s' option will skip all the login/logout and greetings which
-otherwise will dominate the outpot.
+otherwise will dominate the output.
 
   'tail -f xx.log | ./xmlfilter.pl -s'
 
@@ -2707,21 +2885,21 @@ specify his registrar id by the 'sponsoringClientID'.
 
 A lot of domain create methods are offered by Net::DRI.
 
-The client uses one specific create method, namely the domain_create_only().
+The client uses one specific create method, namely the domain_create() with pure_create=1
 
 =over
 
-=item * domain_create_only()
+=item * domain_create() with pure_create=1
 
 This method assumes that the contacts handles and the nameservers listed are
 ALREADY created in the registry, and this is closest to Norid's datamodel.
 Hence, the client uses this method.
 
-=item * domain_create()
+=item * domain_create() without pure_create or with pure_create=0
 
 This is another method which is a very powerful Net::DRI method.
 
-This method will do the same as domain_create_only(), but will also accept and
+This method will do the same as domain_create with pure_create=1, but will also accept and
 handle full contacts and nameserver objects as parameters, meaning that it will
 check and create various objects as an integral part of the command.
 
@@ -2739,7 +2917,7 @@ Duration syntax: 'duration=>{years=>1}' or 'duration=>{months=>12}'
 =back
 
 
-=item * Create a normal domain
+=item 1 Create a normal domain
 
 Create a single domain with a a registrant, a contact set with one type each,
 two existing name servers, which is the minimum for .no.
@@ -2772,7 +2950,7 @@ Example of content of the file 'applicant_declaration.txt' found inside the '/tm
  Accept date       : 2011-10-11T08:19:31.00Z
  Version number    : 3.0
 
-=item Create an IDN domain
+=item 2 Create an IDN domain
 
 Create a single IDN-domain with a duration of 12 months, a registrant, a
 contact set with one type each, and two existing name servers, which is the
@@ -2785,6 +2963,29 @@ ACE-form is passed as the domain name to the registry.
 
 This should be accepted if the handles and name servers exist and the domain
 don't.
+
+=item 3 Create a domain with a Secure DNS key
+
+Create a single domain with a a registrant, a contact set with one type each, two name servers and one Secure DNS Key:
+
+-o domain -c create -p E<34>%p=(name=>'test-secdns.no', pw=>'', duration=>{months=>12}, registrant=>'THO12O', coset=>{tech=>'THO23P', admin=>'TH2345P'}, nsset=>['ns1.sol.no', 'ns2.sol.no']}, secdns=>[{keyTag=>'12345',alg=>3,digestType=>2,digest=>'49FD46E6C4B45C55D4AC'}])E<34>
+
+Create a single domain with a a registrant, a contact set with one type each, two name servers and one Secure DNS Key, including the optional keyData for the DS:
+
+-o domain -c create -p E<34>%p=(name=>'test-secdns.no', pw=>'', duration=>{months=>12}, registrant=>'THO12O', coset=>{tech=>'THO23P', admin=>'TH2345P'}, nsset=>['ns1.sol.no', 'ns2.sol.no']}, secdns=>[{keyTag=>'12345',alg=>3,digestType=>2,digest=>'49FD46E6C4B45C55D4AC', key_flags=>'257', key_protocol=>'3', key_alg=>'1', key_pubKey=>'AQPJ////4Q=='}])E<34>
+
+Create a single domain with a a registrant, a contact set with one type each, two name servers and one Secure DNS Key with optional maxSigLife also specified:
+
+B<Comment on maxSigLife usage>:
+
+ Net-DRI assumes that maxSigLife is passed per key instead of as a single maxLife key/value inside secdns as is the case for an update.
+ If multiple DNS keys are passed in a create (ARRAY), maxSigLife must be specified inside the array of at least one of the keys. 
+ However, if maxSigLife is passed for several keys, the values must be identical for secDNS-1.1 whilst for secDNS-1.0 they can be different and maxSigLife can be set per key.
+
+The maxSigLife parameter may be rejected by server policy, but usage is shown anyway.
+
+-o domain -c create -p E<34>%p=(name=>'test-secdns.no', pw=>'', duration=>{months=>12}, registrant=>'THO12O', coset=>{tech=>'THO23P', admin=>'TH2345P'}, nsset=>['ns1.sol.no', 'ns2.sol.no']}, secdns=>[{keyTag=>'12345',alg=>3,digestType=>2,digest=>'49FD46E6C4B45C55D4AC', digest=>'49FD46E6C4B45C55D4AC', maxSigLife=>'604801'}])<E34>
+
 
 =back
 
@@ -2834,8 +3035,7 @@ The domain name cannot be changed, otherwise all parameters may be changed.
 
  - registrant is changed
  - set authInfo to 'abc'
- - add and del on all the multiple objects, coset and nsset, which may be
-   arrays or scalars
+ - add and del on all the multiple objects, coset and nsset, which may be arrays or scalars
 
 B<Using the 1.0 version of the domain schema:>
 
@@ -2866,10 +3066,73 @@ Example update when a couple of flags are set, and two already set are removed:
 -o domain -c update -p E<34>%p=(name=>'test.no', status=>{add=>['delete','publish'], del=>['update', 'transfer']})E<34>
 
 
-=item 2 Update of applicantdataset only
+=item 3 Update of DNS Secure data
 
-A registrar may have collected an updated applicant statement. This is how to send it it, just ba a simple domain update, with new applicantdataset,
-this implies useing the 1.1 version of the domain schema:
+.NO suports the DNS secure extensions secDNS-1.1. The client can get/set/remove the keys for DNSsec. You can delete all keys by sending a delete with 'all'.
+
+
+B<dsdata and optional keyData>
+
+ Using dsData is mandatory.
+
+ Using keyData is optional. If wanted, it can be passed along with the DS data. 
+ If the registry also receive the keyData, more validation can technically be done by the registry.
+
+
+B<Add a DNSsec key>
+
+Add a DNSsec key to a domain. Multiple keys need to be specified as an array.
+
+single, use array or no array:
+
+-o domain -c update -p E<34>%p=(name=>'test-dnssec.no', secdns=>{add=> {keyTag=>'12346', alg=>3, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}  })E<34>
+
+-o domain -c update -p E<34>%p=(name=>'test-dnssec.no', secdns=>{add=>[{keyTag=>'12346', alg=>3, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}] })E<34>
+
+multiple, use array:
+
+-o domain -c update -p E<34>%p=(name=>'test-dnssec.no', secdns=>{add=>[{keyTag=>'12346', alg=>3, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}, {keyTag=>'12347', alg=>2, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}]})E<34>
+
+B<Add a DNSsec key with optional KeyData>
+
+keyData is optional, and can be passed along with the DS data. If the registry also received the keyData, more validation can technically be done by the registry.
+
+-o domain -c update -p E<34>%p=(name=>'test-dnssec.no', secdns=>{add=>[{keyTag=>'12346', alg=>3, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}, key_flags=>'257', key_protocol=>'3', key_alg=>'1', key_pubKey=>'AQPJ////4Q=='}] })E<34>
+
+B<Add a DNSsec key with optional maxSigLife>
+
+The maxSigLife parameter may be rejected or ignored by server policy, but usage is shown anyway.
+
+-o domain -c update -p E<34>%p=(name=>'test-dnssec.no', secdns=>[add=>{keyTag=>'12346', alg=>3, digestType=>1, digest=>'49FD46E6C4B45C55D4DD', maxSigLife=>'604800'}] })E<34>
+
+B<Delete a single DNSsec key>
+
+Delete a DNSsec key from a domain. In secDNS-1.1, all secdns elements must be speciified to ensure uniqe selection of key.
+
+-o domain -c update -p E<34>%p=(name=>'test-dnssec.no', secdns=>{del=>[{keyTag=>'12346', alg=>3, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}]})E<34>
+
+
+B<Delete all DNSsec keys>
+
+Special and simplified syntax to delete all keys. This will remove all keys and leave the domain unsecured.
+
+-o domain -c update -p E<34>%p=(name=>'test-dnssec.no', secdns=>{del=>'all'})E<34>
+
+
+B<Delete all DNSsec keys and add two new DNS key>
+
+-o domain -c update -p E<34>%p=(name=>'test-dnssec.no', secdns=>{del=>'all', add=>[{keyTag=>'12346', alg=>3, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}, {keyTag=>'12355', alg=>2, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}]} )E<34>
+
+
+B<Delete all DNSsec keys and add two new DNS key, with the urgent option set>
+
+The urgent option is an atttempt for an urgent change by the registry, as and if supported by the registry.
+
+-o domain -c update -p E<34>%p=(name=>'test-dnssec.no', secdns=>{del=>'all', add=>[{keyTag=>'12346', alg=>3, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}, {keyTag=>'12355', alg=>2, digestType=>1, digest=>'49FD46E6C4B45C55D4DD'}] }, secdns_urgent=>'1' )E<34>
+
+=item 4 Update of applicantdataset only
+
+A registrar may have collected an updated applicant statement. This is how to send it it, just ba a simple domain update, with new applicantdataset, this implies useing the 1.1 version of the domain schema:
 
 -o domain -c update -p E<34>%p=(name=>'test.no', applicantdatafile=>'/tmp/appl.zip')E<34>
 
