@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 43;
+use Test::More tests => 48;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -122,5 +122,14 @@ is($dri->get_info('action'),'create','domain_create get_info (action)');
 is($ch1->{create},'999.9900','domain_create get_info (charge premium create)');
 is($ch2->{create},'10000','domain_create get_info (charge earlyAccess create)');
 
+
+## Finance Extension
+$R2=$E1.'<response>'.r().'<resData><finance:infData xmlns:finance="http://www.unitedtld.com/epp/finance-1.0"><finance:balance>200000.00</finance:balance><finance:threshold type="final">0.00</finance:threshold><finance:threshold type="restricted">500.00</finance:threshold><finance:threshold type="notification">1000.00</finance:threshold></finance:infData></resData>'.$TRID.'</response>'.$E2;
+$rc = $dri->registrar_balance();
+is($R1,$E1.'<command><info><finance:info xmlns:finance="http://www.unitedtld.com/epp/finance-1.0"/></info><clTRID>ABC-12345</clTRID></command>'.$E2,'registrar_balance build_xml');
+is($dri->get_info('balance'),'200000.00','registrar_balance get_info (balance)');
+is($dri->get_info('final'),'0.00','registrar_balance get_info (final)');
+is($dri->get_info('restricted'),'500.00','registrar_balance get_info (balance)');
+is($dri->get_info('notification'),'1000.00','registrar_balance get_info (balance)');
 
 exit 0;

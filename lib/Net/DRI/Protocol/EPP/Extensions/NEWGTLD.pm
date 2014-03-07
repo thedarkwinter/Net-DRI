@@ -35,7 +35,11 @@ Additional domain extension for new Generic TLDs. This extension is intended to 
 
 =head2 Supported Registries
 
-=head3 L<AFNIC|Net::DRI::DRD::AFNIC_GTLD>, L<Minds And Machines|Net::DRI::DRD::MAM>, L<Charleston Road Registry|Net::DRI::DRD::CRC>
+=head3 
+L<AFNIC|Net::DRI::DRD::AFNIC_GTLD>
+L<Minds And Machines|Net::DRI::DRD::MAM>
+L<Charleston Road Registry|Net::DRI::DRD::CRC>
+L<GMO Registry|Net::DRI::DRD::GMO>
 
 =head2 Standard extensions:
 
