@@ -40,10 +40,6 @@ ARI utilises the following standard extensions. Please see the test files for mo
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
-
 =head2 Custom extensions:
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::ARI::Application> urn:ar:params:xml:ns:application-1.0
@@ -107,7 +103,12 @@ sub name     { return 'ARI'; }
 
 #sub tlds     { return ('example','xn--mgbh0fb','keyvalue','sunrise','landrush'); } # FIXME : these are OT&E tlds!
 # Note, some of these TLD's may be in contention
-sub tlds     { return qw/menu xn--ngbc5azd luxury build xn--hxt814e xn--5tzm5g wedding select blog online hotel insurance salon study melbourne sport hosting salon music spot city krd icu website movie app one secure giving one film law physio gold compare courses home store tennis space web click online box host inc doctor ping design rip sydney sucks loans world news baby chat site cancerresearch app bank soccer shop sex style studio band men doctor deals eco cloud music love/; }
+sub tlds     { 
+ my @uncontented = qw/xn--ngbc5azd xn--ngbrx abudhabi arab build dubai host krd luxury melbourne men menu physio press space sydney website/;
+ my @contended = qw/xn--hxt814e xn--5tzm5g app baby band bank blog box chat city click cloud cpa deals design doctor eco film home hosting hotel inc insurance law love movie music news now online ping rip salon secure sex shop site soccer spa sport spot store studio style sucks tennis web world /;
+ return (@uncontented);
+}
+
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 

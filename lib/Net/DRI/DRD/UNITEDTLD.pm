@@ -48,6 +48,8 @@ United TLDutilises the following standard extensions. Please see the test files 
 
 =head3 L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
 
+=head3 L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
@@ -94,7 +96,7 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'UNITEDTLD'; }
 
 #sub tlds     { return ('tld','claimsga','claimslandrush'); } # OT&E tlds
-sub tlds     { return qw/dpml.pub actor consulting dance democrat futbol haus immobilien kaufen moda ninja pub republican reviews rocks social/; } # http://rightside.co/rightside-registry/tld-portfolio/
+sub tlds     { return qw/dpml.pub actor airforce consulting dance democrat futbol haus immobilien kaufen moda ninja pub republican reviews rocks social/; } # http://rightside.co/rightside-registry/tld-portfolio/
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 

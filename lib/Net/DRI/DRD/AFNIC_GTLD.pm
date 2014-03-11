@@ -87,8 +87,8 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'AFNIC_GTLD'; }
 
-sub tlds { return ('next'); } # OT&E
-#sub tlds { return qw/alsace aquitaine bzh corsica paris/ ; }
+#sub tlds { return ('next'); } # OT&E
+sub tlds { return qw/alsace aquitaine banque bzh corsica ovh paris/ ; }
 
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }

@@ -10,7 +10,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 + Added NGTLD SuperDRD, once DRD to rule them [ngTLDs] all
 + UnitedTLD Finance extension : registrar_balance command for Donuts/UnitedTLD (Rightside)
 + RegBox (Nic.at) DRD from Michael Braunoeder
-+ AfiliasSRS Extensions
++ AfiliasSRS DRD + Extensions
 #### ccTLDs
 = Imported .NO changed from Net-DRI-0.96_05.no.1.0.1 (By Norid)
   - eg/epp_client_no.pl: added support for bulk operation by specifying a -I option which should point to a file with a list of domains

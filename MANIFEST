@@ -58,6 +58,7 @@ lib/Net/DRI/Data/StatusList.pm
 lib/Net/DRI/DRD.pm
 lib/Net/DRI/DRD/AdamsNames.pm
 lib/Net/DRI/DRD/AERO.pm
+lib/Net/DRI/DRD/AfiliasSRS.pm
 lib/Net/DRI/DRD/AFNIC.pm
 lib/Net/DRI/DRD/AFNIC_GTLD.pm
 lib/Net/DRI/DRD/AG.pm
