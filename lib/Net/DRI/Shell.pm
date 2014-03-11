@@ -47,6 +47,10 @@ Net::DRI::Shell - Command Line Shell for Net::DRI, with batch features and autoc
  or in your programs:
  use Net::DRI::Shell;
  Net::DRI::Shell->run();
+ or if your program creates a dri object beforehand (e.g preconfigured):
+ use Net::DRI::Shell;
+ $dri = new Net::DRI ....
+ Net::DRI::Shell->run({dri=>$dri});
 
  Welcome to Net::DRI $version shell, pid $pid
  Net::DRI object created with a cache TTL of 10 seconds and logging into files in current directory
@@ -499,7 +503,14 @@ sub run
 
  output($ctx,"Welcome to Net::DRI ${Net::DRI::VERSION} shell, pid $$\n");
 
+ if (defined($args[1]) && ref($args[1]) eq 'HASH' && defined($args[1]->{dri})) {
+  $ctx->{dri} = $args[1]->{dri};
+  delete $args[1];
+ }
+ else
+ {
  $ctx->{dri}=Net::DRI->new({cache_ttl => 10,logging=>['files',{level => 'info',sanitize_data => {session_password => 0}}]});
+ }
  output($ctx,"Net::DRI object created with a cache TTL of 10 seconds and logging into files in current directory\n\n");
 
  if (exists $ctx->{term_features}->{readHistory} && defined $HISTORY)

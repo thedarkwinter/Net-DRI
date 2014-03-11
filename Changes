@@ -18,6 +18,8 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
   - lib/Net/DRI/Protocol/EPP/Extensions/NO.pm: Activated secDNS extensions
   - eg/epp_client_no.pl: added support for secDNS parameters
   - t/633norid_epp.t: added secDNS tests
+#### Other
+= Can now send a DRI object (i.e. preconfigured) to Net::DRI::Shell->run({dri=>$dri});
 
 
 0.96_06_tdw_01 2014-03-04 DEVELOPMENT RELEASE
