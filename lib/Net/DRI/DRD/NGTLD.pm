@@ -733,7 +733,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:n
      bep_type => 2, # shared registry
      tlds => ['org','xn--i1b6b1a6a2e','xn--nqv7f','xn--tqq33ed31aqia','ngo','ong','opr'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
-   } if $bep eq 'afilias';
+   } if $bep eq 'pir';
 
 
 =pod
