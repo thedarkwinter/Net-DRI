@@ -26,7 +26,7 @@ use base qw(Class::Accessor::Chained::Fast Net::DRI::BaseClass);
 __PACKAGE__->mk_ro_accessors(qw/trid_factory logging cache/);
 
 our $AUTOLOAD;
-our $VERSION='0.96_06_tdw_02';
+our $VERSION='0.96_06_tdw_03';
 our $RUNNING_POE=(exists($INC{'POE.pm'}))? $POE::Kernel::poe_kernel : undef;
 
 =pod

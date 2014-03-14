@@ -25,6 +25,8 @@ use Net::DRI::Util;
 
 use Data::Dumper;
 
+####################################################################################################
+
 =pod
 
 =head1 NAME
@@ -37,29 +39,61 @@ Additional domain extension for [most?] New Generic TLDs. Note this is still som
 
 =cut
 
-####################################################################################################
 
 =pod
 
-=head1 METHODS
+=head1 SYNOPSYS
 
-=head2 new()
+=head3 Usage
 
-  # Load up Net::DRI;
-	use Net::DRI;
-	my $dri=Net::DRI->new(...);
+Load up Net::DRI as normal
 
-  # will simply add defaults
-	$dri->add_registry('NGTLD',{clid => 'ClientX'});
-	$dri->target('NGTLD')->add_current_profile(....); 
+ use Net::DRI;
+ my $dri=Net::DRI->new(...);
 
-  # select a back end provider
-	$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'Neustar'});
-	$dri->target('Neustar')->add_current_profile(....); 
+=head3 Basic
 
-  # add a custom target name, by default this is the back end provider name, but e.g. if you have a provider that has multiple connections for different tlds
-	$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'buzz'});
-	$dri->target('buzz')->add_current_profile(....); 
+Simply add NGTLD with defaults - not this is not really tested... at all. Rather specify a backend provider as below
+
+ $dri->add_registry('NGTLD',{clid => 'ClientX'});
+ $dri->target('NGTLD')->add_current_profile(....); 
+	
+=head3 Options
+
+There are a number of options that can be defined in the hash send to this unit
+
+=over
+
+=item provider  : select backend provider, this is case-insensitive
+
+=item name : optionally set the 'target' name (default = provider) in the case of backends that have multiple distinct platforms
+
+=item tlds : optionally send a specified list of TLDs. And empty array ref will result in any tlds being allowed
+
+=back
+
+ $dri->add_registry('NGTLD',{clid => '...',provider=>'...',name=>'...', tld_profile=>'...',tlds=>[]});
+
+=head3 Selecting a back end provider
+
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'Neustar'});
+ $dri->target('Neustar')->add_current_profile(....); 
+
+=head3 Backend providers with shared environments
+
+Donuts is an example of a backend that provides a single platform for all their TLDs. Normally only specifying the provider will suite your needs
+
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'donuts'});
+ $dri->target('donuts')->add_current_profile(....); 
+
+=head3 Backend providers with dedicated environments
+ 
+ Nesutar is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
+ e.g: add a custom target name, by default this is the back end provider name, but in this instance we select buzz
+ Note, if the name you specified matches one of the TLD's and you have not manually specified the tld list, if will use only this TLD. If the name doesn't match a TLD, it will make all TLD's by the prover available in the DRD
+	
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'buzz'});
+ $dri->target('buzz')->add_current_profile(....); 
 
 =cut
 
@@ -79,6 +113,11 @@ sub new
   }
   $self->_set_bep_key('name',$beprd->{name}) if $beprd->{name};
   $self->_set_bep_key('name',$beprd->{provider}) unless $beprd->{name};
+  if (exists $beprd->{tlds}) {
+   $self->_set_bep_key('tlds',$beprd->{tlds});
+  } elsif ($self->_get_bep_key('bep_type') && $self->_get_bep_key('bep_type')==1 && exists $beprd->{name}) { # select TLD for dedicated backends
+   $self->_set_bep_key('tlds',[$beprd->{name}]) if (grep /$beprd->{name}/i,@{$self->_get_bep_key('tlds')});
+  }
  }
  $self->{info}->{host_as_attr} = $self->_get_bep_key('host_as_attr') ? $self->_get_bep_key('host_as_attr') : 0;
  $self->{info}->{contact_i18n} = $self->_get_bep_key('contact_i18n') ? $self->_get_bep_key('contact_i18n') : 4; ## LOC+INT is default
@@ -177,13 +216,14 @@ alsace aquitaine banque bzh corsica ovh paris
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['alsace', 'aquitaine', 'banque', 'bzh', 'corsica', 'ovh', 'paris'],
    } if $bep eq 'afnic';
 
 =pod
 
 
-=head2 Afilias-SRS
+=head2 Afilias
 
  $dri->add_registry('NGTLD',{provider=>'afilias'});
  
@@ -191,7 +231,7 @@ alsace aquitaine banque bzh corsica ovh paris
 
 =head3 TLDs
 
-xxx xn--fiq228c5hs xn--kput3i xn--4gbrim xn--6frz82g xn--3ds443g xn--i1b6b1a6a2e xn--tqq33ed31aqia xn--nqv7f opr hiv onl kim blue pink indians lotto lgbt shiksha global red ltda organic rich vegas meet black creditunion storage ong ngo voto vote adult ged porn
+info xn--6frz82g black blue kim lgbt lotto meet organic pink red shiksha
 
 Contended TLD's not included
 
@@ -205,14 +245,51 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:n
 
 =head3 Notes
 
-1. Afilias SRS includes .XXX (from ICM Registry), and may in future include other older gTLDs
+1. Afilias has extended the .INFO plaform to include these newGTLDs
 
 =cut
 
  return { 
-     tlds => ['xxx', 'xn--fiq228c5hs', 'xn--kput3i', 'xn--4gbrim', 'xn--6frz82g', 'xn--3ds443g', 'xn--i1b6b1a6a2e', 'xn--tqq33ed31aqia', 'xn--nqv7f', 'орг', 'hiv', 'onl', 'kim', 'blue', 'pink', 'indians', 'lotto', 'lgbt', 'shiksha', 'global', 'red', 'ltda', 'organic', 'rich', 'vegas', 'meet', 'black', 'creditunion', 'storage', 'ong', 'ngo', 'voto', 'vote', 'adult', 'ged', 'porn'],
+     bep_type => 2, # shared registry
+     tlds => ['info','xn--6frz82g','black','blue','kim','lgbt','lotto','meet','organic','pink','red','shiksha'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
    } if $bep eq 'afilias';
+
+
+=pod
+
+
+=head2 Afilias-SRS
+
+ $dri->add_registry('NGTLD',{provider=>'afiliasrss'});
+ 
+=head3 Status: Untested
+
+=head3 TLDs
+
+xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult creditunion ged global hiv indians ltda onl porn rich storage vegas vote voto 
+
+Contended TLD's not included
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage> urn:afilias:params:xml:ns:idn-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:ipr-1.1 
+
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0 
+
+=head3 Notes
+
+1. Afilias SRS  has extended the .XXX plaform to include these newGTLDs
+
+=cut
+
+ return { 
+     bep_type => 2, # shared registry
+     tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','creditunion','ged','global','hiv','indians','ltda','onl','porn','rich','storage','vegas','vote','voto'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
+   } if $bep eq 'afiliassrs';
 
 
 =pod
@@ -253,6 +330,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 =cut
 
  return { 
+     bep_type => 2, # shared registry
      tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'host', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'physio', 'press', 'space', 'sydney', 'website'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
    } if $bep eq 'ari';
@@ -284,6 +362,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 =cut
 
  return { 
+     bep_type => 2, # shared registry
      tlds => ['bar', 'cafe', 'college', 'contact', 'fans', 'feedback', 'host', 'ink', 'pid', 'place', 'press', 'rest', 'space', 'website', 'wiki', 'xyz'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
    } if $bep eq 'centralnic';
@@ -315,6 +394,7 @@ http://xmlns.corenic.net/epp/mark-ext-1.0 : This means thats we are not currentl
 =cut
 
  return { 
+     bep_type => 1, # dedicated registy
      tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','eus','gal','madrid','quebec','radio','scot','sport','swiss'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TANGO',{}],
    } if $bep eq 'corenic';
@@ -337,6 +417,7 @@ Contended TLD's not included
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['xn--io0a7i','xn--1qqw23a','xn--xhq521b','xn--55qx5d'],
    } if $bep eq 'cnnic';
 
@@ -356,6 +437,7 @@ xn--p1acf xn--mgbt3dhd pars islam wed nowruz persiangulf tci shia halal
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['xn--p1acf','xn--mgbt3dhd','pars','islam','wed','nowruz','persiangulf','tci','shia','halal'],
    } if $bep eq 'cocca';
 
@@ -375,6 +457,7 @@ xn--q9jyb4c ads android boo car dad day eat esq fly foo here how ing kid meme mo
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['xn--q9jyb4c','ads','android','boo','car','dad','day','eat','esq','fly','foo','here','how','ing','kid','meme','mov','new','prof','rsvp','soy','tour','zip'],
    } if $bep eq 'crr';
 
@@ -408,6 +491,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 =cut
 
  return { 
+     bep_type => 2, # shared registry
      tlds => ['dpml.zone','academy','accountants','agency','architect','associates','attorney','bargains','bike','boutique','builders','business','cab','camera','camp','capital','cards','care','careers','cash','catering','center','cheap','church','claims','cleaning','clinic','clothing','codes','coffee','community','company','computer','condos','construction','consulting','contractors','cool','credit','creditcard','cruises','dating','degree','dental','dentist','diamonds','digital','directory','discount','domains','education','email','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','fail','fan','farm','finance','financial','fish','fitness','flights','florist','foundation','fund','gallery','games','glass','graphics','gripe','guide','guru','haus','healthcare','holdings','holiday','hospital','house','industries','institute','insure','international','investments','kitchen','land','lawyer','lease','life','lighting','limited','limo','loans','maison','management','market','marketing','media','medical','mortgage','network','partners','parts','pets','photography','photos','pictures','plumbing','productions','properties','recipes','reisen','rentals','repair','report','reviews','rocks','schule','services','shoes','singles','software','solar','solutions','sports','supplies','supply','support','surgery','systems','tax','technology','tienda','tips','today','tools','tours','town','toys','training','university','vacations','ventures','vet','viajes','villas','vin','vision','voyage','watch','works','wtf','xn-czrs0t','xn--unup4y','xn--vhquv','zone'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
    } if $bep eq 'donuts';
@@ -431,6 +515,7 @@ Contended TLD's not included
 =cut
 
  return { 
+     bep_type => 1, # dedicated registy
      tlds => ['accountant', 'bid', 'date', 'download', 'faith', 'loan', 'men', 'review', 'science', 'trade', 'webcam', 'win'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],
    } if $bep eq 'ffm';
@@ -453,6 +538,7 @@ nagoya tokyo yokohama
 =cut
 
  return { 
+     bep_type => 2, # shared registry
      tlds => ['nagoya','tokyo','yokohama'],
    } if $bep eq 'gmo';
 
@@ -474,6 +560,7 @@ Contended TLD's not included
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['xn--45q11c','xn--3bst00m','xn--ses554g','xn--efvy88h','xn--czr694b','xn--czru2d','xn--6qq986b3xl','xn--30rr7y','xn--imr513n','xn--otu796d','xn--9et52u','wang','top'],
    } if $bep eq 'knet';
 
@@ -495,6 +582,7 @@ Contended TLD's not included
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['desi','bio','saarland','archi'],
    } if $bep eq 'ks';
 
@@ -517,6 +605,7 @@ Contended TLD's not included
 =cut
 
  return { 
+     bep_type => 2, # shared registry
      tlds => ['abogado', 'bayern', 'beer', 'bible', 'bradesco', 'budapest', 'casa', 'cooking', 'country', 'ecom', 'fishing', 'fit', 'gop', 'horse', 'kiwi', 'london', 'luxe', 'miami', 'nrw', 'review', 'rodeo', 'surf', 'vodka', 'work', 'xn--g2xx48c'],
    } if $bep eq 'mam';
 
@@ -539,6 +628,7 @@ Contended TLD's not included
 =cut
 
  return { 
+     bep_type => 1, # dedicated registy
      tlds => ['xn--rhqv96g','xn--g2xx48c','xn--nyqy26a','uno','safety','pharmacy','nyc','jetzt','taipei','qpon','moe','buzz','ceo','htc','club','kyoto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],
    } if $bep eq 'neustar';
@@ -559,6 +649,7 @@ bom final
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['bom','final'],
    } if $bep eq 'nicbr';
 
@@ -583,6 +674,7 @@ cymru wales
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['cymru','wales'],
    } if $bep eq 'nominet';
 
@@ -600,12 +692,48 @@ cymru wales
 
 gent boston
 
+=cut
+
+ return { 
+     bep_type => undef, # TODO: check this
+     tlds => ['gent','boston'],
+   } if $bep eq 'openreg';
+
+
+=pod
+
+
+=head2 PIR (Public Information Registry)
+
+ $dri->add_registry('NGTLD',{provider=>'pir'});
+ 
+=head3 Status: Untested
+
+=head3 TLDs
+
+org xn--i1b6b1a6a2e xn--nqv7f xn--tqq33ed31aqia ngo ong opr
+
+Contended TLD's not included
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage> urn:afilias:params:xml:ns:idn-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:ipr-1.1 
+
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0 
+
+=head3 Notes
+
+1. PIR has extended the .ORG plaform to include these newGTLDs
 
 =cut
 
  return { 
-     tlds => ['gent','boston'],
-   } if $bep eq 'openreg';
+     bep_type => 2, # shared registry
+     tlds => ['org','xn--i1b6b1a6a2e','xn--nqv7f','xn--tqq33ed31aqia','ngo','ong','opr'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
+   } if $bep eq 'afilias';
 
 
 =pod
@@ -632,6 +760,7 @@ Contended TLD's not included
 =cut
 
  return { 
+     bep_type => 1, # dedicated registy
      tlds => ['bh','berlin','brussels','gmbh','hamburg','immo','reise','tirol','versicherung','vlaanderen','voting','wien','ikano'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::RegBox->new(@_); } } ],
@@ -672,6 +801,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 =cut
 
  return { 
+     bep_type => 2, # shared registry
      tlds => ['dpml.pub','actor','airforce','consulting','dance','democrat','futbol','haus','immobilien','kaufen','moda','ninja','pub','republican','reviews','rocks','social'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
    } if $bep eq 'rightside';
@@ -694,6 +824,7 @@ amsterdam
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['amsterdam'],
    } if $bep eq 'sidn';
 
@@ -722,6 +853,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> urn:ar:params:xml:ns:auct
 =cut
 
  return { 
+     bep_type => 1, # dedicated registy
      tlds => ['ruhr','cologne','koeln','nrw'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TANGO',{}],
    } if $bep eq 'tango';
@@ -742,6 +874,7 @@ tatar xn--d1acj3b
 =cut
  
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['tatar','xn--d1acj3b'],
      # TCI cctlds has Contact Object and Extensions Object, these may be required
    } if $bep eq 'tci';
@@ -772,6 +905,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 =cut
    
  return { 
+     bep_type => 2, # shared registry
      tlds => ['art','auction','audio','auto','blackfriday','cars','christmas','click','country','deal','design','diet','family','fashion','ﬂowers','free','furniture','game','garden','gift','gratis','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','marketing','media','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
@@ -796,6 +930,7 @@ Contended TLD's not included
 =cut
 
  return { 
+     bep_type => undef, # TODO: check this
      tlds => ['xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','career','ooo'],
    } if $bep eq 'verisign';
 
@@ -821,6 +956,7 @@ L<Net::DRI::Protocol::EPP::Extensions::COZA::Domain> http://co.za/epp/extensions
 =cut
 
  return {
+     bep_type => undef, # TODO: check this
      tlds => ['africa','durban','capetown','joburg'],
      ote_tlds => ['cities.dnservices.co.za'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],
