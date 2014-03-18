@@ -35,7 +35,7 @@ Net::DRI::DRD::NGTLD - Generic New gTLD Driver for Net::DRI - Aka, the SuperDRD
 
 =head1 DESCRIPTION
 
-Additional domain extension for [most?] New Generic TLDs. Note this is still someone immature, but it seems to be working okay so far.
+Additional domain extension for [most?] New Generic TLDs. This extension distinguishes between back end providers to select extensions, tld lists and some other config for the DRD. The providers listed her are loosely referred to as back end providers. Some registries may have multiple providers, and most providers have multiple registries. For example, Demand Media provides the backed for Donuts and Rightside Registry, but as both of these hold multiple TLDs in a shared registry distinct fro each other, each is their own provider in this driver.
 
 =cut
 
@@ -396,7 +396,7 @@ http://xmlns.corenic.net/epp/mark-ext-1.0 : This means thats we are not currentl
  return { 
      bep_type => 1, # dedicated registy
      tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','eus','gal','madrid','quebec','radio','scot','sport','swiss'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TANGO',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{}],
    } if $bep eq 'corenic';
 
 =pod
