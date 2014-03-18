@@ -1,11 +1,11 @@
-## Domain Registry Interface, EPP LaunchPhase Extensions (draft-ietf-eppext-launchphase-00)
+## Domain Registry Interface, EPP LaunchPhase Extensions (draft-ietf-eppext-launchphase-01)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
-## LaunchPhase ext based on IETF draft 00 : http://tools.ietf.org/html/draft-ietf-eppext-launchphase-00
+## LaunchPhase ext based on IETF draft 01 : http://tools.ietf.org/html/draft-ietf-eppext-launchphase-01
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ use Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::LaunchPhase - EPP LaunchPhase commands (draft-ietf-eppext-launchphase-00) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::LaunchPhase - EPP LaunchPhase commands (draft-ietf-eppext-launchphase-01) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -323,7 +323,7 @@ sub info_parse
     my ($n,$c)=@$el;
     $lp->{phase}=$c->textContent() if $n eq 'phase';
     $lp->{application_id}=$c->textContent() if $n eq 'applicationID';
-    $lp->{status}=$c->getAttribute('s') if $n eq 'status'; # FIXME, could this have multiple statuses?
+    $lp->{status}=$c->getAttribute('s') if $n eq 'status'; # Note: IN draft 01 the wording was changed to indicate only one status, but some previous implementations may have more than one (?)
     ## FIXME - THERE COULD BE MARK DATA HERE
     if ($n eq 'mark')
     {
