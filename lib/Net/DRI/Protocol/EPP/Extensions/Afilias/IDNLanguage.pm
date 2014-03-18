@@ -80,13 +80,18 @@ sub add_language
 {
  my ($tag,$epp,$domain,$rd)=@_;
  my $mes=$epp->message();
-
- if (Net::DRI::Util::has_key($rd,'language'))
+ my $script;
+ if (Net::DRI::Util::has_key($rd,'idn') && UNIVERSAL::isa($rd->{idn},'Net::DRI::Data::IDN') && defined $rd->{idn}->iso639_1()) { # use IDN object if possible
+  $script = $rd->{idn}->iso639_1(); # Warning, I *think* .asia uses different codes here?
+ } 
+ elsif (Net::DRI::Util::has_key($rd,'language')) # Fall back to old/standard
  {
   Net::DRI::Exception::usererr_invalid_parameters('IDN language tag must be of type XML schema language') unless Net::DRI::Util::xml_is_language($rd->{language});
-  my $eid=$mes->command_extension_register($tag,'xmlns:idn="urn:iana:xml:ns:idn" xsi:schemaLocation="urn:iana:xml:ns:idn idn.xsd"');
-  $mes->command_extension($eid,['idn:script', $rd->{language}]);
+  $script = $rd->{language};
  }
+ return unless $script;
+ my $eid=$mes->command_extension_register($tag,'xmlns:idn="urn:iana:xml:ns:idn" xsi:schemaLocation="urn:iana:xml:ns:idn idn.xsd"');
+ $mes->command_extension($eid,['idn:script', $script]);
  return;
 }
 

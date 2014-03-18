@@ -12,6 +12,10 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 = Fix NGTLD default object types + PIR & CORENIC
 = Updated NGTLD: split Afilias int Afilias, Afilias-SRS, and PIR, and added bep_type for shared/dedicated beps to detect tlds etc.
 
+#### gTLDS
+= Updated Neustar+Afilias_Verisign IDN units to accept the IDN object, or if not avail fall back to $rd->{language}
+= Merged some afilias/neustar test files
+
 
 0.96_06_tdw_02 2014-03-11 DEVELOPMENT RELEASE
 !! Note, this is not an official release !!
