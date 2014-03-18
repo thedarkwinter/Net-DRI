@@ -3,7 +3,13 @@ Net::DRI changelog from newest to oldest changes
 0.96_06_tdw_03 2014-??-?? DEVELOPMENT RELEASE
 !! Note, this is not an official release !!
 
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this version, however EPP over HTTPS is working.
+
 #### New gTLDS
+= Updated launch/idnmap/smd drafts (versions only, no real changes)
+= Enabled CoreNIC Launchphase
+= Fix NGTLD default object types + PIR & CORENIC
 = Updated NGTLD: split Afilias int Afilias, Afilias-SRS, and PIR, and added bep_type for shared/dedicated beps to detect tlds etc.
 
 
