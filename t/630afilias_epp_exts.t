@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 27;
+use Test::More tests => 29;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -124,6 +124,12 @@ $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params
 $rc=$dri->domain_check('example3.info',{'idn' => $dri->local_object('idn')->autodetect('','zh') });
 is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.info</domain:name></domain:check></check><extension><idn:check xmlns:idn="urn:iana:xml:ns:idn" xsi:schemaLocation="urn:iana:xml:ns:idn idn.xsd"><idn:script>zh</idn:script></idn:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check idn new build');
 is($rc->is_success(),1,'domain_check idn new is_success');
+
+# New method (with IDN Object and extlang)
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example3.info</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example3.info',{'idn' => $dri->local_object('idn')->autodetect('','zh-tw') });
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.info</domain:name></domain:check></check><extension><idn:check xmlns:idn="urn:iana:xml:ns:idn" xsi:schemaLocation="urn:iana:xml:ns:idn idn.xsd"><idn:script>zh-tw</idn:script></idn:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check idn new with extlang build');
+is($rc->is_success(),1,'domain_check idn new with extlang is_success');
 
 
 exit(0);

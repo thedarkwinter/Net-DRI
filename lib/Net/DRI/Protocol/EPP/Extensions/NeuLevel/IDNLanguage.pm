@@ -80,7 +80,7 @@ sub add_language
  my $mes=$epp->message();
  my $script;
  if (Net::DRI::Util::has_key($rd,'idn') && UNIVERSAL::isa($rd->{idn},'Net::DRI::Data::IDN') && defined $rd->{idn}->iso639_1()) { # use IDN object if possible
-  $script = $rd->{idn}->iso639_1();
+  $script = $rd->{idn}->iso639_1() . (defined $rd->{idn}->extlang() ? '-'.$rd->{idn}->extlang():'');
  } 
  elsif (Net::DRI::Util::has_key($rd,'language')) # Fall back to old/standard
  {

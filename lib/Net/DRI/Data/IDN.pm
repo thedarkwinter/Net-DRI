@@ -20,7 +20,7 @@ use strict;
 use warnings;
 use base qw(Class::Accessor::Chained); ## provides a new() method
 
-our @ATTRS=qw(uname aname script language variants iso639_1 iso639_2 iso15924);
+our @ATTRS=qw(uname aname script language variants extlang iso639_1 iso639_2 iso15924);
 __PACKAGE__->mk_accessors(@ATTRS);
 
 use Net::DRI::Exception;
@@ -47,6 +47,7 @@ sub autodetect
   return $self unless $c; ## or work out codes
 
   $self->_from_iso639_1($c) if $c =~ m/^\w{2}$/;
+  $self->_from_iso639_1_extlang($c) if $c =~ m/^\w{2}-\w{2}$/;
   $self->_from_iso639_2($c) if $c =~ m/^\w{3}$/;
   $self->_from_iso15924($c) if $c =~ m/^\w{4}$/;
   $self->_from_iso639_2_15924($c) if $c =~ m/^\w{3}-\w{4}$/;
@@ -61,6 +62,14 @@ sub _from_iso639_1
   $self->iso639_2(language_code2code($c,LOCALE_LANG_ALPHA_2,LOCALE_LANG_ALPHA_3));
   $self->language(code2language($c),LOCALE_LANG_ALPHA_2);
   return;
+}
+
+sub _from_iso639_1_extlang
+{
+  my ($self,$c) = @_;
+  return unless $c =~ m/^(\w{2})-(\w{2})$/;
+  $self->extlang($2);
+  return $self->_from_iso639_1($1);
 }
 
 sub _from_iso639_2
