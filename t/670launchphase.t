@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 39;
+use Test::More tests => 40;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -384,12 +384,16 @@ $rc=$dri->domain_create('example4.com',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.com</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="application"><launch:phase>landrush</launch:phase></launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml [general create]');
 
 #3.3.4.  Mixed Create Form
-$lp = { type=>'registration', phase => 'non-tmch-sunrise','code_marks'=>[ {code=>'123'}], notices => [ {'id'=>'abc123','not_after_date'=>DateTime->new({year=>2008,month=>12}),'accepted_date'=>DateTime->new({year=>2009,month=>10}) } ]  };
+$lp = {type=>'registration', phase => 'non-tmch-sunrise','code_marks'=>[ {code=>'123'}], notices => [ {'id'=>'abc123','not_after_date'=>DateTime->new({year=>2008,month=>12}),'accepted_date'=>DateTime->new({year=>2009,month=>10}) } ]  };
 $R2='';
 $rc=$dri->domain_create('example4.com',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=>$lp});
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.com</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="registration"><launch:phase name="non-tmch-sunrise">custom</launch:phase><launch:codeMark><launch:code>123</launch:code></launch:codeMark><launch:notice><launch:noticeID>abc123</launch:noticeID><launch:notAfter>2008-12-01T00:00:00Z</launch:notAfter><launch:acceptedDate>2009-10-01T00:00:00Z</launch:acceptedDate></launch:notice></launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml [mixed create]');
 
-
+# Create using Multiple Launch items. E.G. Donuts DPML + Claims
+my $lp1 = {phase => 'landrush','type' =>'application' };
+my $lp2 = {type=>'registration', phase => 'claims',notices => [ {'id'=>'abc123','not_after_date'=>DateTime->new({year=>2008,month=>12}),'accepted_date'=>DateTime->new({year=>2009,month=>10}) } ]  };
+$rc=$dri->domain_create('example4.com',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=>[$lp1,$lp2]});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.com</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="application"><launch:phase>landrush</launch:phase></launch:create><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="registration"><launch:phase>claims</launch:phase><launch:notice><launch:noticeID>abc123</launch:noticeID><launch:notAfter>2008-12-01T00:00:00Z</launch:notAfter><launch:acceptedDate>2009-10-01T00:00:00Z</launch:acceptedDate></launch:notice></launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml [general create]');
 
 # UPDATE
 $lp = {phase => 'sunrise','application_id'=>'abc321'};

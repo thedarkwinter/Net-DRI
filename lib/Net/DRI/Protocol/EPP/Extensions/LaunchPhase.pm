@@ -132,6 +132,14 @@ Used for landrush or other phases
 =head3 Mixed form (Mixes Sunrise and Claims forms)
 
   $lp = { phase => 'landrush' , encoded_signed_marks'>[ $enc ] , notices => {...} } ;
+  
+=head2 Multiple Launch Extensions
+
+You can create with multiple launch extensions by using an array reference
+
+  my $lp1 = { phase => 'landrush','type' =>'application' };
+  my $lp2 = { type=>'registration', phase => 'claims',notices => [ {'id'=>'abc123','not_after_date'=>DateTime->new({year=>2008,month=>12}),'accepted_date'=>DateTime->new({year=>2009,month=>10}) } ]  };
+  $rc=$dri->domain_create('example4.com',{pure_create=>1,auth=>{pw=>'2fooBAR'}, lp => [$lp1,$lp2] );
 
 =head2 update & delete
 
@@ -354,84 +362,91 @@ sub create
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'lp');
- my $lp = $rd->{'lp'};
- 
- Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase};
- Net::DRI::Exception::usererr_invalid_parameters('type') if exists $lp->{type} && $lp->{type}  !~ m/^(application|registration)$/;
- Net::DRI::Exception::usererr_invalid_parameters('For create sunrise: at least one code_marks, signed_marks, encoded_signed_marks is required') if $lp->{'phase'} eq 'sunrise' and !(exists $lp->{code_marks} || exists $lp->{signed_marks} || exists $lp->{encoded_signed_marks}); 
+ my $lpref = $rd->{'lp'};
+ my @lps;
+ Net::DRI::Exception::usererr_invalid_parameters('lp') unless ref($lpref) eq 'HASH' || ref($lpref) eq 'ARRAY';
+ @lps = ($lpref) if ref($lpref) eq 'HASH';
+ @lps = @{$lpref} if ref($lpref) eq 'ARRAY';
 
- my $eid = (exists $lp->{type}) ? $mes->command_extension_register('launch','create',{type => $lp->{type}}) : undef;
- $eid=$mes->command_extension_register('launch','create') unless defined $eid;
- my @n =_build_idContainerType($lp);
- 
-  # Code Marks
-  if (exists $lp->{code_marks})
-  {
-   foreach my $cm (@{$lp->{code_marks}})
-   {
-     # FIXME validate each $cm ?
-     my @codemark;
-     if (exists $cm->{code})
-     {
-       push @codemark,['launch:code',$cm->{code}] unless exists $cm->{validator_id};
-       push @codemark,['launch:code', {'validatorID' => $cm->{validator_id} }, $cm->{code}] if exists $cm->{validator_id};
-     }
-     if (exists $cm->{mark})
-     {
-       push @codemark, [$cm->{mark}] if (ref $cm->{mark} eq 'XML::LibXML::Element');
-       push @codemark, ['mark:mark', {'xmlns:mark'=>'urn:ietf:params:xml:ns:mark-1.0'}, Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::build_mark($cm->{mark})]  if ref $cm->{mark} eq 'HASH';
-     }
-     push @n, ['launch:codeMark', @codemark];
-   }
-  }
-  # Signed Marks # FIXME: I HAVE NO IDEA IF THIS WILL WORK!!!
-  if (exists $lp->{signed_marks})
-  {
-   foreach my $sm (@{$lp->{signed_marks}})
-   {
-     # FIXME validate each $sm ?
-     Net::DRI::Exception::usererr_invalid_parameters('signedMark must be a valid XML root elemnt (e.g. imported from an SMD file)') unless ref $sm eq 'XML::LibXML::Element';
-     push @n,  [$sm];
-   }
-  }
-  ## Encoded Signed Marks  # FIXME: I Am assuming the input will already be BASE64 encoded
-  if (exists $lp->{encoded_signed_marks})
-  {
-   foreach my $em (@{$lp->{encoded_signed_marks}})
-   {
-     if (ref $em eq 'XML::LibXML::Element')
-     {
-      push @n, [$em];
-     } elsif ($em =~ m!<smd:encodedSignedMark xmlns:smd="urn:ietf:params:xml:ns:signedMark-1.0">\s*?(.*)</smd:encodedSignedMark>!s || $em =~ m!-----BEGIN ENCODED SMD-----\s*?(.*)\s*?-----END!s)
-     {
-      push @n,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$1] if $1;
-     } elsif ($em =~ m!^[A-Za-z0-9\+/\=\s]+$!s) # aleady base64 string
-     {
-      push @n,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$em] if $em;
-     } else
-     {
-      Net::DRI::Exception::usererr_invalid_parameters('encodedSignedMark must ve a valid XML root element OR a string (e.g. imported from an Encoded SMD file)');
-     }
-   }
-  }
-  # Claims  / Mixed
-  if (exists $lp->{notices})
-  {
-   foreach my $nt (@{$lp->{notices}})
-   {
-    Net::DRI::Exception::usererr_invalid_parameters('notice id') unless defined $nt->{id};
-    Net::DRI::Exception::usererr_invalid_parameters('notice not_after_date must be a Date::Time object') if exists $nt->{not_after_date} && !Net::DRI::Util::is_class($nt->{not_after_date},'DateTime');
-    Net::DRI::Exception::usererr_invalid_parameters('notice accepted_date must be a Date::Time object') if exists $nt->{accepted_date} && !Net::DRI::Util::is_class($nt->{accepted_date},'DateTime');
-    my @notice;
-    push @notice,['launch:noticeID',$nt->{id}] unless exists $nt->{'validator_id'};
-    push @notice,['launch:noticeID',{validatorID => $nt->{'validator_id'}},$nt->{id}] if exists $nt->{'validator_id'};
-    push @notice,['launch:notAfter',Net::DRI::Util::dto2zstring($nt->{not_after_date})] if exists $nt->{not_after_date};
-    push @notice,['launch:acceptedDate',Net::DRI::Util::dto2zstring($nt->{accepted_date})] if exists $nt->{accepted_date};
-    push @n, ['launch:notice',@notice];
-   }
-  }
+ foreach my $lp (@lps)
+ {
+  Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase};
+  Net::DRI::Exception::usererr_invalid_parameters('type') if exists $lp->{type} && $lp->{type}  !~ m/^(application|registration)$/;
+  Net::DRI::Exception::usererr_invalid_parameters('For create sunrise: at least one code_marks, signed_marks, encoded_signed_marks is required') if $lp->{'phase'} eq 'sunrise' and !(exists $lp->{code_marks} || exists $lp->{signed_marks} || exists $lp->{encoded_signed_marks}); 
+
+  my $eid = (exists $lp->{type}) ? $mes->command_extension_register('launch','create',{type => $lp->{type}}) : undef;
+  $eid=$mes->command_extension_register('launch','create') unless defined $eid;
+  my @n =_build_idContainerType($lp);
   
- $mes->command_extension($eid,\@n);
+   # Code Marks
+   if (exists $lp->{code_marks})
+   {
+    foreach my $cm (@{$lp->{code_marks}})
+    {
+      # FIXME validate each $cm ?
+      my @codemark;
+      if (exists $cm->{code})
+      {
+        push @codemark,['launch:code',$cm->{code}] unless exists $cm->{validator_id};
+        push @codemark,['launch:code', {'validatorID' => $cm->{validator_id} }, $cm->{code}] if exists $cm->{validator_id};
+      }
+      if (exists $cm->{mark})
+      {
+        push @codemark, [$cm->{mark}] if (ref $cm->{mark} eq 'XML::LibXML::Element');
+        push @codemark, ['mark:mark', {'xmlns:mark'=>'urn:ietf:params:xml:ns:mark-1.0'}, Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::build_mark($cm->{mark})]  if ref $cm->{mark} eq 'HASH';
+      }
+      push @n, ['launch:codeMark', @codemark];
+    }
+   }
+   # Signed Marks # FIXME: I HAVE NO IDEA IF THIS WILL WORK!!!
+   if (exists $lp->{signed_marks})
+   {
+    foreach my $sm (@{$lp->{signed_marks}})
+    {
+      # FIXME validate each $sm ?
+      Net::DRI::Exception::usererr_invalid_parameters('signedMark must be a valid XML root elemnt (e.g. imported from an SMD file)') unless ref $sm eq 'XML::LibXML::Element';
+      push @n,  [$sm];
+    }
+   }
+   ## Encoded Signed Marks  # FIXME: I Am assuming the input will already be BASE64 encoded
+   if (exists $lp->{encoded_signed_marks})
+   {
+    foreach my $em (@{$lp->{encoded_signed_marks}})
+    {
+      if (ref $em eq 'XML::LibXML::Element')
+      {
+       push @n, [$em];
+      } elsif ($em =~ m!<smd:encodedSignedMark xmlns:smd="urn:ietf:params:xml:ns:signedMark-1.0">\s*?(.*)</smd:encodedSignedMark>!s || $em =~ m!-----BEGIN ENCODED SMD-----\s*?(.*)\s*?-----END!s)
+      {
+       push @n,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$1] if $1;
+      } elsif ($em =~ m!^[A-Za-z0-9\+/\=\s]+$!s) # aleady base64 string
+      {
+       push @n,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$em] if $em;
+      } else
+      {
+       Net::DRI::Exception::usererr_invalid_parameters('encodedSignedMark must ve a valid XML root element OR a string (e.g. imported from an Encoded SMD file)');
+      }
+    }
+   }
+   # Claims  / Mixed
+   if (exists $lp->{notices})
+   {
+    foreach my $nt (@{$lp->{notices}})
+    {
+     Net::DRI::Exception::usererr_invalid_parameters('notice id') unless defined $nt->{id};
+     Net::DRI::Exception::usererr_invalid_parameters('notice not_after_date must be a Date::Time object') if exists $nt->{not_after_date} && !Net::DRI::Util::is_class($nt->{not_after_date},'DateTime');
+     Net::DRI::Exception::usererr_invalid_parameters('notice accepted_date must be a Date::Time object') if exists $nt->{accepted_date} && !Net::DRI::Util::is_class($nt->{accepted_date},'DateTime');
+     my @notice;
+     push @notice,['launch:noticeID',$nt->{id}] unless exists $nt->{'validator_id'};
+     push @notice,['launch:noticeID',{validatorID => $nt->{'validator_id'}},$nt->{id}] if exists $nt->{'validator_id'};
+     push @notice,['launch:notAfter',Net::DRI::Util::dto2zstring($nt->{not_after_date})] if exists $nt->{not_after_date};
+     push @notice,['launch:acceptedDate',Net::DRI::Util::dto2zstring($nt->{accepted_date})] if exists $nt->{accepted_date};
+     push @n, ['launch:notice',@notice];
+    }
+   }
+   
+  $mes->command_extension($eid,\@n);
+ }
  return;
 }
 
