@@ -12,6 +12,8 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 = Fix NGTLD default object types + PIR & CORENIC
 = Updated NGTLD: split Afilias int Afilias, Afilias-SRS, and PIR, and added bep_type for shared/dedicated beps to detect tlds etc.
 = IDN object now detects extlang (eg zh-tw)
+= LaunchPhase extension updated to support multiple launch extensions in create command (e.g. for DPML override)
+= NGTLD DRD updates _has_bep_key and verify name rules updates
 
 #### gTLDS
 = Updated Neustar+Afilias_Verisign IDN units to accept the IDN object, or if not avail fall back to $rd->{language}
