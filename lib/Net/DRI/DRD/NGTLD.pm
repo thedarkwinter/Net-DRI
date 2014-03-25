@@ -119,22 +119,22 @@ sub new
    $self->_set_bep_key('tlds',[$beprd->{name}]) if (grep /$beprd->{name}/i,@{$self->_get_bep_key('tlds')});
   }
  }
- $self->{info}->{host_as_attr} = $self->_get_bep_key('host_as_attr') ? $self->_get_bep_key('host_as_attr') : 0;
- $self->{info}->{contact_i18n} = $self->_get_bep_key('contact_i18n') ? $self->_get_bep_key('contact_i18n') : 4; ## LOC+INT is default
+ $self->{info}->{host_as_attr} = $self->_has_bep_key('host_as_attr') ? $self->_get_bep_key('host_as_attr') : 0;
+ $self->{info}->{contact_i18n} = $self->_has_bep_key('contact_i18n') ? $self->_get_bep_key('contact_i18n') : 4; ## LOC+INT is default
 
  return $self;
 }
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name          { return $_[0]->_get_bep_key('name') ? $_[0]->_get_bep_key('name') : 'NGTLD'; }
-sub tlds          {  return $_[0]->_get_bep_key('tlds') ? @{$_[0]->_get_bep_key('tlds')} : (); }
-sub object_types  { return $_[0]->_get_bep_key('object_types') ? @{$_[0]->_get_bep_key('object_types')} : ('domain','contact','ns'); }
-sub profile_types { return $_[0]->_get_bep_key('profile_types') ? @{$_[0]->_get_bep_key('profile_types')} : (); }
+sub name          { return $_[0]->_has_bep_key('name') ? $_[0]->_get_bep_key('name') : 'NGTLD'; }
+sub tlds          {  return $_[0]->_has_bep_key('tlds') ? @{$_[0]->_get_bep_key('tlds')} : (); }
+sub object_types  { return $_[0]->_has_bep_key('object_types') ? @{$_[0]->_get_bep_key('object_types')} : ('domain','contact','ns'); }
+sub profile_types { return $_[0]->_has_bep_key('profile_types') ? @{$_[0]->_get_bep_key('profile_types')} : (); }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ($self->_get_bep_key('transport_protocol_default') ? @{$self->_get_bep_key('transport_protocol_default')} : ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{})) if $type eq 'epp';
+ return ($self->_has_bep_key('transport_protocol_default') ? @{$self->_get_bep_key('transport_protocol_default')} : ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{})) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois'; # todo, not customisable at the mo
  return;
 }
@@ -153,9 +153,9 @@ sub verify_name_domain
 {
  my ($self,$ndr,$domain,$op)=@_;
  return $self->_verify_name_rules($domain,$op,{
-     check_name => 0,
-     my_tld => ($self->_get_bep_key('tlds')),
-     icann_reserved => 1,
+     check_name => $self->_has_bep_key('verify_check_name')?$self->_get_bep_key('verify_check_name'):1, # default on, checks dots etc ?
+     icann_reserved => $self->_has_bep_key('verify_icann_reserved')?$self->_get_bep_key('verify_icann_reserved'):1, # default verify ICANN reservered
+     my_tld => ($self->_get_bep_key('tlds')), # by default it will verify TLD if there is a TLD list
    });
 }
 
@@ -175,6 +175,14 @@ sub _get_bep_key
  return unless defined $self->{info}->{provider};
  my $bep = lc($self->{info}->{provider});
  return (exists $self->{bep} && exists $self->{bep}->{$key}) ? $self->{bep}->{$key} : undef;
+}
+
+sub _has_bep_key
+{
+ my ($self,$key) = @_;
+ return unless defined $self->{info}->{provider};
+ my $bep = lc($self->{info}->{provider});
+ return exists $self->{bep} && exists $self->{bep}->{$key};
 }
 
 ####################################################################################################
@@ -361,12 +369,24 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 =cut
 
- return {
-     bep_type => 2, # shared registry
-     tlds => ['bar', 'cafe', 'college', 'contact', 'fans', 'feedback', 'host', 'ink', 'pid', 'place', 'press', 'rest', 'space', 'website', 'wiki', 'xyz'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
-   } if $bep eq 'centralnic';
+ if ($bep eq 'centralnic') {
+    my @coms = (map { $_.'.com' } qw/africa ar br cn de eu gb gr hu jpn kr mex no qc ru sa se uk us uy za/);
+    my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
+    my @orgs = (map { $_.'.org' } qw/us ae/);
+    my @others = qw/la pw com.de/;
+    my @ngtlds = qw/bar cafe college contact fans feedback host ink pid place press rest space website wiki xyz/;
+    my @ngtlds_contested = qw/cafe fans place reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
+    my @ngtlds_pipeline = qw/art auto design sucks pizza now hotel forum law golf school style chat gay group blog app mail love news llc/; # no expected dates given, probably contested strings
+    my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
+    return {
+     bep_type => 2, # shared registry
+     tlds => \@tlds,
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
+     verify_icann_reserved => 0,
+     verify_check_name => 0,
+    };
+ }
 
 =pod
 
@@ -980,6 +1000,8 @@ All registries in the todo list here...
 }
 
 ####################################################################################################
+
+=pod
 
 =head1 SUPPORT
 
