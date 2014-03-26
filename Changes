@@ -5,6 +5,8 @@ Net::DRI changelog from newest to oldest changes
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
 other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this version, however EPP over HTTPS is working.
+#### Core
++ DRI option identify_client (disabled by default) will prepend the Net-DRI version to the clTRID
 
 #### New gTLDS
 = Updated launch/idnmap/smd drafts (versions only, no real changes)
@@ -14,6 +16,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 = IDN object now detects extlang (eg zh-tw)
 = LaunchPhase extension updated to support multiple launch extensions in create command (e.g. for DPML override)
 = NGTLD DRD updates _has_bep_key and verify name rules updates
++ Neustar FEE extension
 
 #### gTLDS
 = Updated Neustar+Afilias_Verisign IDN units to accept the IDN object, or if not avail fall back to $rd->{language}

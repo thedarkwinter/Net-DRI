@@ -23,7 +23,7 @@ use Net::DRI::Util;
 use Net::DRI::Exception;
 
 use base qw(Class::Accessor::Chained::Fast Net::DRI::BaseClass);
-__PACKAGE__->mk_ro_accessors(qw/trid_factory logging cache/);
+__PACKAGE__->mk_ro_accessors(qw/trid_factory identify_client logging cache/);
 
 our $AUTOLOAD;
 our $VERSION='0.96_06_tdw_03';
@@ -103,6 +103,12 @@ created after that will inherit this value. If you call again C<trid_factory()>
 the change will only apply to new objects (registry profiles and transports) created after the change,
 it will not apply to already existing objects (registry profiles and transports).
 
+=head2 identify_client()
+
+If not using your own trid_factory, you can enable identify_client to submit the version of Net-DRI with the trid.
+This feature is disabled by default, but enabling it could help registries identify which EPP clients their registrars are using, 
+and provide better support to their clients. It may also encourage them to support developement of Net-DRI.
+
 =head2 logging()
 
 This is an accessor to the underlying Logging object. During the C<new()> call you can
@@ -164,7 +170,7 @@ sub new
             registries       => {}, ## registry name => Net::DRI::Registry object
             tlds             => {}, ## tld => [ registries name ]
             time_created     => time(),
-            trid_factory     => (Net::DRI::Util::has_key($rh,'trid_factory') && ref $rh->{trid_factory} eq 'CODE')? $rh->{trid_factory} : \&Net::DRI::Util::create_trid_1,
+            trid_factory     => (Net::DRI::Util::has_key($rh,'trid_factory') && ref $rh->{trid_factory} eq 'CODE')? $rh->{trid_factory} : (Net::DRI::Util::has_key($rh,'identify_client') && $rh->{identify_client}  ? \&Net::DRI::Util::create_trid_with_identify : \&Net::DRI::Util::create_trid_1),
           };
 
  my ($logname,@logdata);

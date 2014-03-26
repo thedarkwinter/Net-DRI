@@ -275,6 +275,14 @@ sub create_trid_1
  return uc($name).'-'.$$.'-'.$mt;
 }
 
+## Identify the Net-DRI version in the clTRID
+sub create_trid_with_identify
+{
+ my ($name)=@_;
+ my $mt=microtime(); ## length=16
+ return uc('NET-DRI-' . $Net::DRI::VERSION .'-'. $name).'-'.$$.'-'.$mt;
+}
+
 sub create_params
 {
  my ($op,$rd)=@_;
