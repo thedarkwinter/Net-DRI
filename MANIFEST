@@ -306,6 +306,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/MOBI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NAME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NAME/EmailFwd.pm
+lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNLanguage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.pm
@@ -518,7 +519,7 @@ t/626nominet_epp.t
 t/627at_epp.t
 t/628de_rri.t
 t/629asia_epp.t
-t/630afilias_epp_restore.t
+t/630afilias_epp_exts.t
 t/631cz_epp.t
 t/632travel_epp.t
 t/633norid_epp.t
@@ -534,7 +535,7 @@ t/642cira_epp.t
 t/643vnds_epp_whowas.t
 t/644vnds_epp_premiumdomain.t
 t/645vnds_epp_suggestion.t
-t/646afilias_oxrs.t
+t/646neustar_epp_exts.t
 t/647cocca_epp_ipvalidation.t
 t/648coza_epp.t
 t/649vnds_epp_coa.t

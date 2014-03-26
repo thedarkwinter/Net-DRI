@@ -22,7 +22,14 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase NeuLevel::Message/; }
+sub setup
+{
+ my ($self,$rp)=@_;
+ $self->ns({neulevel => ['urn:ietf:params:xml:ns:neulevel-1.0','neulevel-1.0.xsd']});
+ return;
+}
+
+sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase NeuLevel::Message NeuLevel::Fee/; }
 
 ####################################################################################################
 1;
