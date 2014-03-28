@@ -1,5 +1,5 @@
 ## Domain Registry Interface, CentralNic EPP extensions (http://labs.centralnic.com/epp/ext/)
-## 
+##
 ##
 ## Copyright (c) 2007-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -23,7 +23,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
-sub default_extensions { return qw/CentralNic::Pricing SecDNS GracePeriod IDN LaunchPhase/; }
+sub default_extensions { return qw/SecDNS GracePeriod IDN LaunchPhase CentralNic::Fee/; }
 
 ####################################################################################################
 1;

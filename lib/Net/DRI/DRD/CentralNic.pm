@@ -49,7 +49,7 @@ CentralNic utilises the following standard extensions. Please see the test files
 
 =head2 Custom extensions:
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Pricing> urn:centralnic:params:xml:ns:pricing-1.0. Note this might or might not be replaced with a 'fee' extension
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.4
 
 =head1 SUPPORT
 
