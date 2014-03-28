@@ -17,6 +17,8 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 = LaunchPhase extension updated to support multiple launch extensions in create command (e.g. for DPML override)
 = NGTLD DRD updates _has_bep_key and verify name rules updates
 + Neustar FEE extension
++ CentralNIC Fee Extension (from Paulo Jorge)
++ GMO DRD
 
 #### gTLDS
 = Updated Neustar+Afilias_Verisign IDN units to accept the IDN object, or if not avail fall back to $rd->{language}

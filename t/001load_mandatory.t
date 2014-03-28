@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 430;
+use Test::More tests => 431;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -97,6 +97,7 @@ use_ok('Net::DRI::DRD::UNIREG');
 use_ok('Net::DRI::DRD::UNITEDTLD');
 use_ok('Net::DRI::DRD::ZACR');
 use_ok('Net::DRI::DRD::AfiliasSRS');
+use_ok('Net::DRI::DRD::GMO');
 use_ok('Net::DRI::DRD::NGTLD');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
@@ -228,7 +229,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::LU::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LU::Poll');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LU::Status');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::Pricing');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ASIA');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ASIA::CED');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ASIA::Domain');

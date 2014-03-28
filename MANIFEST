@@ -88,6 +88,7 @@ lib/Net/DRI/DRD/ES.pm
 lib/Net/DRI/DRD/EURid.pm
 lib/Net/DRI/DRD/Gandi.pm
 lib/Net/DRI/DRD/GL.pm
+lib/Net/DRI/DRD/GMO.pm
 lib/Net/DRI/DRD/HN.pm
 lib/Net/DRI/DRD/ICANN.pm
 lib/Net/DRI/DRD/ICMRegistry.pm
@@ -232,7 +233,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/CAT/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CAT/DefensiveRegistration.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CAT/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/Pricing.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Agreement.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Contact.pm
