@@ -558,7 +558,6 @@ t/675unireg_epp.t
 t/676ari_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
-t/699afilias_balance.t
 t/701ovh_ws_live.t
 t/702bookmyname_ws_live.t
 t/703gandi_ws_live.t
