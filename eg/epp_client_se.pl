@@ -590,7 +590,7 @@ sub init_reg_se {
        );
     }
 
-    $dri->add_registry( 'SE', { clid => $clid } );
+    $dri->add_registry( 'IIS', { clid => $clid } );
 
     my %pars = (
         defer               => 0,
@@ -611,7 +611,7 @@ sub init_reg_se {
 
     $pars{client_newpassword} = $newpw if ($newpw);
 
-    my $rc = $dri->target('SE')->add_current_profile(
+    my $rc = $dri->target('IIS')->add_current_profile(
         'profile1', 'epp',
         { %pars, },
     );
