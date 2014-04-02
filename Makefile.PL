@@ -22,7 +22,7 @@ WriteMakefile(
         'XML::LibXML' => '1.99',
         'Net::SAML2::XML::Sig' => '0.22',
         'Module::Load' => 0,
-	'Hash::KeyMorher' => '0.09',
+	'Hash::KeyMorpher' => '0.09',
 	'Net::IDN::Encode' => 0,
 	'Locale::Language' => 0,
 	'Locale::Script' => 0,
