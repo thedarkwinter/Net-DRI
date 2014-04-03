@@ -44,6 +44,7 @@ lib/Net/DRI/Data/Contact/Nominet.pm
 lib/Net/DRI/Data/Contact/OpenSRS.pm
 lib/Net/DRI/Data/Contact/PL.pm
 lib/Net/DRI/Data/Contact/RegBox.pm
+lib/Net/DRI/Data/Contact/SE.pm
 lib/Net/DRI/Data/Contact/SIDN.pm
 lib/Net/DRI/Data/Contact/SWITCH.pm
 lib/Net/DRI/Data/Contact/TCI.pm
@@ -120,6 +121,7 @@ lib/Net/DRI/DRD/PRO.pm
 lib/Net/DRI/DRD/PT.pm
 lib/Net/DRI/DRD/RegBox.pm
 lib/Net/DRI/DRD/SC.pm
+lib/Net/DRI/DRD/SE.pm
 lib/Net/DRI/DRD/SIDN.pm
 lib/Net/DRI/DRD/SO.pm
 lib/Net/DRI/DRD/SWITCH.pm

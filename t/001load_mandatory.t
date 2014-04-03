@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 431;
+use Test::More tests => 433;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -27,6 +27,7 @@ use_ok('Net::DRI::DRD::Gandi');
 use_ok('Net::DRI::DRD::WS');
 use_ok('Net::DRI::DRD::EURid');
 use_ok('Net::DRI::DRD::IIS');
+use_ok('Net::DRI::DRD::SE');
 use_ok('Net::DRI::DRD::PL');
 use_ok('Net::DRI::DRD::IENUMAT');
 use_ok('Net::DRI::DRD::CAT');
@@ -109,6 +110,7 @@ use_ok('Net::DRI::Data::Contact');
 use_ok('Net::DRI::Data::ContactSet');
 use_ok('Net::DRI::Data::Contact::EURid');
 use_ok('Net::DRI::Data::Contact::IIS');
+use_ok('Net::DRI::Data::Contact::SE');
 use_ok('Net::DRI::Data::Contact::PL');
 use_ok('Net::DRI::Data::Contact::AFNIC');
 use_ok('Net::DRI::Data::Contact::US');

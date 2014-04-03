@@ -115,7 +115,7 @@
             "DateTime::Format::Strptime" : "0",
             "DateTime::TimeZone" : "0",
             "Email::Valid" : "0",
-            "Hash::KeyMorher" : "0.09",
+            "Hash::KeyMorpher" : "0.09",
             "IO::Socket::SSL" : "1.31",
             "Locale::Language" : "0",
             "Locale::Script" : "0",

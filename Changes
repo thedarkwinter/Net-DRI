@@ -1,10 +1,21 @@
 Net::DRI changelog from newest to oldest changes
 
+0.96_06_tdw_04 2014-04-?? DEVELOPMENT RELEASE
+!! Note, this is not an official release !!
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this version, however EPP over HTTPS is working.
+
+#### ccTLDs
+= Protocol/EPP/Extensions/NO/Domain : bugfix on the deleteDate parameter handling - form Net-DRI-0.96_05.no.1.0.1_1 (Jørgen Thomsen/Trond Haugen)
+= Added Depricated versions of SE DRD and Contact objects for backwards compatability (Jan Saell)
+
 0.96_06_tdw_03 2014-03-28 DEVELOPMENT RELEASE
 !! Note, this is not an official release !!
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
 other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this version, however EPP over HTTPS is working.
+
 #### Core
 + DRI option identify_client (disabled by default) will prepend the Net-DRI version to the clTRID
 
