@@ -243,7 +243,8 @@ sub delete { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
     my $dfr = $rd->{deletefromregistry};
     my $fs  = $rd->{facets};
 
-    return unless ( ( defined($dfd) || defined($dfr) || defined($fs) ) && ( $dfd || $dfr || $fs ) );
+    return unless ( ( defined($ddate) || defined($dfd) || defined($dfr) || defined($fs) ) && (
+			$ddate || $dfd || $dfr || $fs ) );
 
     if (defined($dfd) && ref($dfd)) { 
          Net::DRI::Util::check_isa($dfd,'DateTime');
