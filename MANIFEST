@@ -81,6 +81,7 @@ lib/Net/DRI/DRD/CoCCA.pm
 lib/Net/DRI/DRD/COOP.pm
 lib/Net/DRI/DRD/CORENIC.pm
 lib/Net/DRI/DRD/COZA.pm
+lib/Net/DRI/DRD/CRR.pm
 lib/Net/DRI/DRD/CZ.pm
 lib/Net/DRI/DRD/Deloitte.pm
 lib/Net/DRI/DRD/DENIC.pm

@@ -6,6 +6,10 @@ Net::DRI changelog from newest to oldest changes
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
 other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this version, however EPP over HTTPS is working.
 
+#### New gTLDS
+= Fix UniRegistry Contacts/Polls issue
+= Added CRR (Charleston Road Regisry) DRD and to NGTLD drd
+
 #### ccTLDs
 = Protocol/EPP/Extensions/NO/Domain : bugfix on the deleteDate parameter handling - form Net-DRI-0.96_05.no.1.0.1_1 (Jørgen Thomsen/Trond Haugen)
 = Added Depricated versions of SE DRD and Contact objects for backwards compatability (Jan Saell)
