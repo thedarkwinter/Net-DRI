@@ -38,7 +38,7 @@ sub parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $msgid=$mes->msg_id();
+ return unless my $msgid=$mes->msg_id();
  return if defined $rinfo->{message}->{$msgid}->{lp}; # if they have a sent a proper lp extension in the message then use that
  
  # try to match LP related text in content
