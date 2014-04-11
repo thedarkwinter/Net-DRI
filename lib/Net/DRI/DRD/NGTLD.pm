@@ -468,17 +468,22 @@ xn--p1acf xn--mgbt3dhd pars islam wed nowruz persiangulf tci shia halal
 
  $dri->add_registry('NGTLD',{provider=>'crr'});
 
-=head3 Status: In progress
+=head3 Status: Working
 
 =head3 TLDs
 
 xn--q9jyb4c ads android boo car dad day eat esq fly foo here how ing kid meme mov new prof rsvp soy tour zip
 
+=head3 Notes
+
+1. CRR does not use an IDN extension. IDNs are submitted as ASCII strings without specifying language/script.
+
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
+     bep_type => 1, # TODO: check this
      tlds => ['xn--q9jyb4c','ads','android','boo','car','dad','day','eat','esq','fly','foo','here','how','ing','kid','meme','mov','new','prof','rsvp','soy','tour','zip'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
    } if $bep eq 'crr';
 
 
@@ -641,7 +646,7 @@ Contended TLD's not included
 
 =head3 TLDs
 
-xn--rhqv96g xn--g2xx48c xn--nyqy26a uno safety pharmacy nyc jetzt taipei qpon moe buzz ceo htc club kyoto
+xn--rhqv96g xn--g2xx48c xn--nyqy26a best uno safety pharmacy nyc jetzt taipei qpon moe buzz ceo htc club kyoto
 
 Contended TLD's not included
 
@@ -649,7 +654,7 @@ Contended TLD's not included
 
  return {
      bep_type => 1, # dedicated registy
-     tlds => ['xn--rhqv96g','xn--g2xx48c','xn--nyqy26a','uno','safety','pharmacy','nyc','jetzt','taipei','qpon','moe','buzz','ceo','htc','club','kyoto'],
+     tlds => ['xn--rhqv96g','xn--g2xx48c','xn--nyqy26a','best','uno','safety','pharmacy','nyc','jetzt','taipei','qpon','moe','buzz','ceo','htc','club','kyoto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],
    } if $bep eq 'neustar';
 
@@ -910,7 +915,7 @@ tatar xn--d1acj3b
 
 =head3 TLDs
 
-art auction audio auto blackfriday cars christmas click country deal design diet family fashion flowers free furniture game garden gift gratis guitars help hiphop home hosting inc juegos link lol love marketing media mom news photo pics pizza property racing realestate restaurant sale save school sexy shopping store style tattoo team tech video yoga
+art auction audio auto blackfriday cars christmas click country deal design diet family fashion flowers free furniture game garden gift gratis guitars help hiphop home hosting inc juegos link lol love mom news photo pics pizza property racing realestate restaurant sale save school sexy shopping store style tattoo team tech video yoga
 
 Contended TLD's not included
 
@@ -926,7 +931,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','auction','audio','auto','blackfriday','cars','christmas','click','country','deal','design','diet','family','fashion','ﬂowers','free','furniture','game','garden','gift','gratis','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','marketing','media','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
+     tlds => ['art','auction','audio','auto','blackfriday','cars','christmas','click','country','deal','design','diet','family','fashion','ﬂowers','free','furniture','game','garden','gift','gratis','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],

@@ -1,4 +1,4 @@
-## Domain Registry Interface, NEWGTLD EPP extensions
+## Domain Registry Interface, Charleston Road Registry Driver
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,39 +13,26 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::NEWGTLD;
+package Net::DRI::DRD::CRR;
 
 use strict;
 use warnings;
 
-use base qw/Net::DRI::Protocol::EPP/;
+use base qw/Net::DRI::DRD/;
 
-sub default_extensions { 
-  my ($self,$pp) = @_;
-  return qw/GracePeriod SecDNS LaunchPhase/ if exists $pp->{disable_idn} && $pp->{disable_idn};
-  return qw/GracePeriod SecDNS IDN LaunchPhase/;
-}
-
-####################################################################################################
+use DateTime::Duration;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::NEWGTLD; NEWGTLD Standard Extensins for Net::DRI
+Net::DRI::DRD::CRR - Charleston Road Registry Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension for new Generic TLDs. This extension is intended to cover any registry that uses the Standard Extensions [below] only. Note, this unit may become useless, I can't tell the future.
+Additional domain extension Charleston Road Registry New Generic TLDs
 
-=head2 Supported Registries
-
-=head3 
-L<AFNIC|Net::DRI::DRD::AFNIC_GTLD>
-L<Minds And Machines|Net::DRI::DRD::MAM>
-L<Charleston Road Registry|Net::DRI::DRD::CRC>
-L<GMO Registry|Net::DRI::DRD::GMO>
-L<Charleston Road Registry|Net::DRI::DRD::CRR> (without idn)
+Charleston Road Registry utilises the following standard extensions. Please see the test files for more examples.
 
 =head2 Standard extensions:
 
@@ -55,7 +42,7 @@ L<Charleston Road Registry|Net::DRI::DRD::CRR> (without idn)
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
+Note: CRR does not use an IDN extension. IDNs are submitted as ASCII strings without specifying language/script.
 
 =head1 SUPPORT
 
@@ -87,5 +74,33 @@ the Free Software Foundation; either version 2 of the License, or
 See the LICENSE file that comes with this distribution for more details.
 
 =cut
+
+####################################################################################################
+
+sub new
+{
+ my $class=shift;
+ my $self=$class->SUPER::new(@_);
+ $self->{info}->{host_as_attr}=0;
+ $self->{info}->{contact_i18n}=4; ## LOC+INT
+ return $self;
+}
+
+sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
+sub name     { return 'CRR'; }
+
+sub tlds     { return qw/xn--q9jyb4c ads android boo car dad day eat esq fly foo here how ing kid meme mov new prof rsvp soy tour zip/; }
+sub object_types { return ('domain','contact','ns'); }
+sub profile_types { return qw/epp/; }
+
+sub transport_protocol_default
+{
+ my ($self,$type)=@_;
+
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}) if $type eq 'epp';
+ return;
+}
+
+####################################################################################################
 
 1;

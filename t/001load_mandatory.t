@@ -99,6 +99,7 @@ use_ok('Net::DRI::DRD::UNITEDTLD');
 use_ok('Net::DRI::DRD::ZACR');
 use_ok('Net::DRI::DRD::AfiliasSRS');
 use_ok('Net::DRI::DRD::GMO');
+use_ok('Net::DRI::DRD::CRR');
 use_ok('Net::DRI::DRD::NGTLD');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
