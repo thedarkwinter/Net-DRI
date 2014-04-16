@@ -93,19 +93,25 @@ sub validate
  $change||=0;
  $self->SUPER::validate(1); ## will trigger an Exception if problem
 
- Net::DRI::Exception::usererr_insufficient_parameters('Mandatory contact information missing: challenge') unless defined $self->challenge(); 
- Net::DRI::Exception::usererr_invalid_parameters('challenge requires between 3 and 5 questions+answers') unless ($#{$self->challenge()} > 1 && $#{$self->challenge()}<5 );
-
  my @errs;
  push @errs,'alt_email' if ($self->alt_email() && ! (Net::DRI::Util::xml_is_token($self->alt_email(),1,undef)  && Email::Valid->rfc822($self->alt_email())));
  push @errs,'mobile' if ($self->mobile() && ! ($self->mobile()=~m/^\+[0-9]{1,3}\.[0-9]{1,14}$/));
- 
- foreach my $c (@{$self->challenge()})
+
+ if (defined $self->challenge())
  {
-  if (!exists $c->{'question'} || !exists $c->{'answer'} || grep { !Net::DRI::Util::xml_is_normalizedstring($_,1,255) }  ($c->{'question'},$c->{'answer'}) )
+  if (ref($self->challenge()) ne 'ARRAY' || $#{$self->challenge()} < 2 || $#{$self->challenge()}>4)
   {
-   push @errs,'challenge';
-   last;
+   Net::DRI::Exception::usererr_insufficient_parameters('challenge must be an array of between 3 and 5 questions+answers');
+  } else
+  {
+   foreach my $c (@{$self->challenge()})
+   {
+    if (!exists $c->{'question'} || !exists $c->{'answer'} || grep { !Net::DRI::Util::xml_is_normalizedstring($_,1,255) }  ($c->{'question'},$c->{'answer'}) )
+    {
+     push @errs,'challenge';
+     last;
+    }
+   }
   }
  }
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;

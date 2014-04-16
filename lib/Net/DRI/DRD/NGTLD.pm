@@ -596,34 +596,13 @@ Contended TLD's not included
 
  $dri->add_registry('NGTLD',{provider=>'ks'});
 
-=head3 Status: Not started
-
-=head3 TLDs
-
-desi bio saarland archi
-
-Contended TLD's not included
-
-=cut
-
- return {
-     bep_type => undef, # TODO: check this
-     tlds => ['desi','bio','saarland','archi'],
-   } if $bep eq 'ks';
-
-
-=pod
-
-
-=head2 Minds And Machines
-
- $dri->add_registry('NGTLD',{provider=>'mam'});
-
 =head3 Status: Working
 
 =head3 TLDs
 
-abogado bayern beer bible bradesco budapest casa cooking country ecom fishing fit gop horse kiwi london luxe miami nrw review rodeo surf vodka work xn--g2xx48c
+archi bio ski 
+
+immo (contested)
 
 Contended TLD's not included
 
@@ -631,9 +610,66 @@ Contended TLD's not included
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['abogado', 'bayern', 'beer', 'bible', 'bradesco', 'budapest', 'casa', 'cooking', 'country', 'ecom', 'fishing', 'fit', 'gop', 'horse', 'kiwi', 'london', 'luxe', 'miami', 'nrw', 'review', 'rodeo', 'surf', 'vodka', 'work', 'xn--g2xx48c'],
+     tlds => ['archi', 'bio', 'ski', 'immo'],
+   } if $bep eq 'ks';
+
+
+=pod
+
+
+=head2 Minds And Machines (MAM Own TLDs)
+
+ $dri->add_registry('NGTLD',{provider=>'mam'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+Uncontested: babogado bayern budapest casa cooking fishing fit horse luxe miami nrw rodeo surf vodka wedding work xn--g2xx48c
+
+Contested: app art baby beauty blog book cloud coupon cpa cricket data dds deals design dog eco fashion garden gay home hotel immo inc latino law llc love pizza property realestate restaurant school site soccer store style tech video vip yoga
+
+=head3 Notes
+
+M&M uses a single enveronment for its own TLDs (set provider to 'mam'), while using separate unique environments for other TLDs (use provider 'mamsrs').
+
+=cut
+
+ return {
+     bep_type => 2, # shared registry
+     tlds => ['abogado', 'bayern', 'budapest', 'casa', 'cooking', 'fishing', 'fit', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'xn--g2xx48c',
+              'app ', 'art ', 'baby ', 'beauty ', 'blog ', 'book ', 'cloud ', 'coupon ', 'cpa ', 'cricket ', 'data ', 'dds ', 'deals ', 'design ', 'dog ', 'eco ', 'fashion ', 'garden ', 'gay ', 'home ', 'hotel ', 'immo ', 'inc ', 'latino ', 'law ', 'llc ', 'love ', 'pizza ', 'property ', 'realestate ', 'restaurant ', 'school ', 'site ', 'soccer ', 'store ', 'style ', 'tech ', 'video ', 'vip ', 'yoga'
+             ],
    } if $bep eq 'mam';
 
+
+=pod
+
+
+=head2 Minds And Machines SRS (Other TLDs)
+
+ $dri->add_registry('NGTLD',{provider=>'mamsrs'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+Uncontested: bible country gop kiwi london review rugby
+
+Contested: basketball group music broadway casino poker radio tickets tube
+
+=head3 Notes
+
+M&M uses a single enveronment for its own TLDs (set provider to 'mam'), while using separate unique environments for other TLDs (use provider 'mamsrs').
+
+=cut
+
+ return {
+     bep_type => 1, # single registry
+     tlds => ['bible', 'country', 'gop', 'kiwi', 'london', 'review', 'rugby',
+              'basketball ', 'group ', 'music ', 'broadway ', 'casino ', 'poker ', 'radio ', 'tickets ', 'tube'
+             ],
+   } if $bep eq 'mamsrs';
 
 =pod
 
