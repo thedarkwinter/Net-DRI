@@ -495,10 +495,17 @@ sub parse_mark
 sub lined_content
 {
  my ($node,$signs,@keys)=@_;
- return undef unless my $e=Net::DRI::Util::xml_traverse($node,$signs,@keys);
- my $r = $e->textContent();
- $r=~s/\s+//g;
- return $r;
+ return undef unless my @e=Net::DRI::Util::xml_traverse($node,$signs,@keys);
+ my $numel = @e; 
+ my (@es,$r);
+ foreach my $e (@e)
+ {
+   $r = $e->textContent();
+   $r =~ s/\s+//g;
+   push @es,$r;
+ }
+ return $es[0] if $numel==1;
+ return \@es; # this will probably break things as nothing is expecting an array, however at least doesn't cause a syntax
 }
 
 sub parse_signed_mark
@@ -566,7 +573,8 @@ sub parse_encoded_signed_mark
  {
   my $encoding=$start->hasAttribute('encoding') ? $start->getAttribute('encoding') : 'base64';
   Net::DRI::Exception::err_invalid_parameter('For encoded signed mark, only base64 encoding is supported') unless $encoding eq 'base64';
-  $content=$start->textContent();
+  my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start->textContent());
+  $content = (@a) ? $content=join("\n",@a[1..($#a-1)]) : $start->textContent();
  } else
  {
   my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start);

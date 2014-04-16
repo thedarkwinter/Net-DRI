@@ -29,6 +29,8 @@ use Net::DRI::Util;
 use Net::DRI::Protocol::EPP::Util;
 use Net::DRI::Util;
 
+use Data::Dumper;
+
 use base qw /Net::DRI::Protocol::EPP::Message/;
 __PACKAGE__->mk_accessors(qw(version command command_body cltrid svtrid msg_id msg_content node_resdata node_extension node_msg node_greeting));
 

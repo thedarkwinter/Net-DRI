@@ -36,7 +36,7 @@ TMCH Protocol for L<NET::DRI>
 
 =head1 SYNOPSIS
 
-The module inplements the TMCH protocol using namespace: urn:ietf:params:xml:ns:tmch-1.0
+The module inplements the TMCH protocol using namespace: urn:ietf:params:xml:ns:tmch-1.1
 
 Mark data is build/parsed using L<Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark> urn:ietf:params:xml:ns:mark-1.0, urn:ietf:params:xml:ns:signedMark-1.0
 
@@ -72,6 +72,13 @@ Currently used by L<Net::DRI::DRD::Deloitte>
   $signedMark->{'issuer'}->{*} issuer details
 
 =head2 mark_info_enc
+
+  $rc=$dri->mark_info_smd($mark_id);
+  $dri->get_info('mark') # mark object
+  $dri->get_info('signed_mark') # signedMark object [decoded from the BASE64 string data]
+  $dri->get_info('encoded_signed_mark') # encodedSignedMark BASE64 string
+
+=head2 mark_info_file
 
   $rc=$dri->mark_info_smd($mark_id);
   $dri->get_info('mark') # mark object
@@ -174,10 +181,10 @@ sub new
  my $drd=$ctx->{registry}->driver();
  my $self=$c->SUPER::new($ctx);
  $self->name('TMCH');
- my $version=Net::DRI::Util::check_equal($rp->{version},['1.0'],'1.0');
+ my $version=Net::DRI::Util::check_equal($rp->{version},['1.1'],'1.1');
  $self->version($version);
 
- $self->ns({ _main   => ['urn:ietf:params:xml:ns:tmch-1.0','tmch-1.0'],
+ $self->ns({ _main   => ['urn:ietf:params:xml:ns:tmch-1.1','tmch-1.1'],
                          mark => ['urn:ietf:params:xml:ns:mark-1.0','mark-1.0'],
                          dignedMark => ['urn:ietf:params:xml:ns:signedMark-1.0','signedMark-1.0'],
                          'xmldsig-core-schema' => ['urn:ietf:params:xml:ns:xmldsig-core-schema-1.0','xmldsig-core-schema-1.0']

@@ -112,6 +112,12 @@ sub mark_info_enc {
  return $rc;
 }
 
+sub mark_info_file {
+ my ($self,$ndr,$mark)=@_;
+ my $rc=$ndr->process('mark','info_file',[$mark]);
+ return $rc;
+}
+
 sub mark_create {
  my ($self,$ndr,$mark,$rd)=@_;
  my $rc=$ndr->process('mark','create',[$mark,$rd]);
