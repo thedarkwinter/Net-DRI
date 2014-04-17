@@ -136,6 +136,18 @@ sub mark_renew {
  return $rc;
 }
 
+sub mark_transfer_request {
+	my ($self,$ndr,$mark,$rd)=@_;
+	my $rc=$ndr->process('mark','transfer_request',[$mark,$rd]);
+	return $rc;
+}
+
+sub mark_transfer_execute {
+	my ($self,$ndr,$mark,$rd)=@_;
+	my $rc=$ndr->process('mark','transfer_execute',[$mark,$rd]);
+	return $rc;
+}
+
 
 ####################################################################################################
 

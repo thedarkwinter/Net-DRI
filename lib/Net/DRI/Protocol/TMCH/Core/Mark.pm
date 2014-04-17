@@ -78,8 +78,10 @@ sub register_commands
            info_file => [ \&info_file, \&info_parse ],
            create => [ \&create, \&create_parse ],
            renew => [ \&renew, \&renew_parse ],
-           update => [ \&update ],
-           validate => [ \&validate ], # internal validation only
+           update => [ \&update, undef ],
+           transfer_request => [ \&transfer_request, \&transfer_parse ],
+           transfer_execute => [ \&transfer_execute, \&transfer_parse ], ## TODO: clean this transfer commands...
+           #validate => [ \&validate, undef ], # internal validation only
          );
 
  $tmp{check_multi}=$tmp{check};
@@ -121,6 +123,41 @@ sub _build_docs
    }
    return @docs;
 }
+
+sub _build_udrps
+{
+	my $udrps = shift;
+	return unless $udrps;
+	
+	my @udrps;
+	foreach my $u (@{$udrps})
+	{
+		#Net::DRI::Exception::usererr_insufficient_parameters('udrp data is not correct') unless $u->{case_no} && $u
+		my @u = ['caseNo',$u->{case_no}];
+		@u = ['udrpProvider',$u->{udrp_provider}];
+		@u = ['caseLang',$u->{case_lang}];
+		push @udrps,['udrp',@u];
+	}
+	return @udrps;
+}
+
+##TODO: to add a court case or a udrp the status need to be in status VERIFIED. If not we will not be able to add a case block to the mark
+##TODO: the case handle starts with the keyword 'case' followed by a dash (‘-’) followed by six digits containing the uid of the agent (left padded with ‘0’) followed by a set of digits (maximum length 63 characters).
+sub _build_cases
+{
+	my $cases = shift;
+	return unless $cases;
+	
+	my @cases;
+	foreach my $c (@{$cases})
+	{
+		my @c;		
+		foreach my $a (qw/doc_type file_name file_type file_content/) { push @c, [Net::DRI::Util::perl2xml($a),$c->{$a}] if $c->{$a}; }		
+		push @cases,['case',@c];
+	}
+	return @cases;
+}
+
 
 ####################################################################################################
 ########### Parse Helpers
@@ -229,14 +266,17 @@ sub check
  my ($tmch,$mark,$rd)=@_;
  my $mes=$tmch->message();
  my @mk=ref $mark ? @$mark : ($mark);
+ 
  Net::DRI::Exception->die(1,'protocol/EPP',2,'Mark id needed') unless @mk;
- foreach my $d (@mk) {
+  foreach my $d (@mk)
+  {
   Net::DRI::Exception->die(1,'protocol/EPP',2,'Mark id needed') unless defined $d && $d;
  }
+  
  $mes->command(['check']);
-
  my @d=map { ['id',$_] } @mk;
  $mes->command_body(\@d);
+  return;
 }
 
 sub check_parse
@@ -298,7 +338,7 @@ sub info_parse
   my ($n,$c)=@$el;
   if ($n eq 'id')
   {
-   #$oname=$c->textContent(); # Checl??, depending on query type this could be the mark_id OR tmch handled id thing... ?? So we ignore this and stick to the handle we already have
+   #$oname=$c->textContent(); # Check??, depending on query type this could be the mark_id OR tmch handled id thing... ?? So we ignore this and stick to the handle we already have
    $rinfo->{mark}->{$oname}->{action}='info';
    $rinfo->{mark}->{$oname}->{exist}=1;
   } elsif ($n eq 'authCode')
@@ -411,8 +451,11 @@ sub update
  my $addlabels= $todo->add('labels') if $todo->add('labels');
  my $adddocs = $todo->add('documents') if $todo->add('documents');
  my $dellabels= $todo->del('labels') if $todo->del('labels');
+ my $chglabels = $todo->set('labels') if $todo->set('labels'); 
+ my $addcases = $todo->add('cases') if $todo->add('cases');
+ my $addudrps = $todo->add('udrps') if $todo->add('udrps');
 
- return unless ($mark || $addlabels || $adddocs || $dellabels);
+ return unless ($mark || $addlabels || $adddocs || $dellabels || $chglabels || $addcases || $addudrps);
 
  my (@chg,@add,@del);
  $mes->command(['update']);
@@ -425,6 +468,9 @@ sub update
  push @add, _build_docs($adddocs) if $adddocs;
  push @add, _build_labels($addlabels) if $addlabels;
  push @del, _build_labels($dellabels) if $dellabels;
+ push @chg, _build_labels($chglabels) if $chglabels;
+ push @add, _build_cases($addcases) if $addcases;
+ push @add, _build_udrps($addudrps) if $addudrps;
 
  my @body = ['id',$mark];
  push @body, ['add',@add] if @add;
@@ -441,6 +487,8 @@ sub renew
  Net::DRI::Exception::usererr_insufficient_parameters('current expiration date') unless defined($curexp);
  $curexp=$curexp->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($curexp) && Net::DRI::Util::check_isa($curexp,'DateTime'));
  Net::DRI::Exception::usererr_invalid_parameters('current expiration date must be YYYY-MM-DD') unless $curexp=~m/^\d{4}-\d{2}-\d{2}$/;
+ # currently only extensions for 1 year and 3 years are allowed
+ Net::DRI::Exception::usererr_invalid_parameters('only extensions for 1 year and 3 years are allowed') unless ($rd->{duration}->in_units('years') == (qw/1 3/));
   
  my $mes=$tmch->message();
  my @d;
@@ -477,6 +525,38 @@ sub renew_parse
    $rinfo->{mark}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
   }
  }
+}
+
+sub transfer_execute
+{
+	my ($tmch,$mark,$rd)=@_;
+	print Dumper($rd);
+	transfer_request($tmch,$mark,{'op'=>'execute'});
+}
+
+sub transfer_request
+{
+	my ($tmch,$mark,$rd)=@_;
+	my $mes=$tmch->message();
+	Net::DRI::Exception->die(1,'protocol/EPP',2,'Mark id needed') unless $mark;
+	my @cmd=['transfer'];
+	@cmd=[['transfer',{'op' => $rd->{op}}] ] if $rd->{op} && $rd->{op} =~ m/^(?:execute)$/;	
+  $mes->command(@cmd);
+  $mes->command_body(['id',$mark],['authCode',$rd->{authCode}]);
+  #print Dumper(\@cmd);
+  #print Dumper($rd->{authCode});
+  print Dumper($mes->command_body(['id',$mark],['authCode'=>$rd->{authCode}]));
+	return;
+}
+
+sub transfer_parse
+{
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+	my $mes=$po->message();
+	return unless $mes->is_success();
+	
+	my $trndata = $mes->node_resdata()->getChildrenByTagName('trnData')->shift();
+	return unless $trndata;	
 }
 
 ####################################################################################################
