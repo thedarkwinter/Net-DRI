@@ -72,7 +72,7 @@ There are a number of options that can be defined in the hash send to this unit
 
 =back
 
- $dri->add_registry('NGTLD',{clid => '...',provider=>'...',name=>'...', tld_profile=>'...',tlds=>[]});
+ $dri->add_registry('NGTLD',{clid => '...',provider=>'...',name=>'...', tlds=>'...',tlds=>[]});
 
 =head3 Selecting a back end provider
 
@@ -88,9 +88,9 @@ Donuts is an example of a backend that provides a single platform for all their 
 
 =head3 Backend providers with dedicated environments
 
- Nesutar is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
- e.g: add a custom target name, by default this is the back end provider name, but in this instance we select buzz
- Note, if the name you specified matches one of the TLD's and you have not manually specified the tld list, if will use only this TLD. If the name doesn't match a TLD, it will make all TLD's by the prover available in the DRD
+Neustar is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
+e.g: add a custom target name, by default this is the back end provider name, but in this instance we select buzz
+Note, if the name you specified matches one of the TLD's and you have not manually specified the tld list, if will use only this TLD. If the name doesn't match a TLD, it will make all TLD's by the prover available in the DRD
 
  $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'buzz'});
  $dri->target('buzz')->add_current_profile(....);
@@ -101,21 +101,22 @@ sub new
 {
  my $class=shift;
  my $beprd = { %{$_[0]} } if (ref($_[0]) eq 'HASH' && defined $_[0]->{provider});
+ undef $beprd->{name} unless exists $beprd->{name};
  my $self=$class->SUPER::new(@_);
  ($self->{info}->{provider},$self->{bep}) = undef;
  if (defined $beprd)
  {
   $self->{info}->{provider} = $beprd->{provider};
-  $self->{bep} = $self->build_back_end_provider_info($beprd->{provider});
+  $self->{bep} = $self->build_back_end_provider_info($beprd->{provider},$beprd->{name},(exists $beprd->{tlds} ? @{$beprd->{tlds}} : undef));
   if (my $req = $self->_get_bep_key('requires'))
   {
    foreach my $mod (@{$req}) { Net::DRI::Util::load_module($mod); }
   }
   $self->_set_bep_key('name',$beprd->{name}) if $beprd->{name};
   $self->_set_bep_key('name',$beprd->{provider}) unless $beprd->{name};
-  if (exists $beprd->{tlds}) {
+  if (exists $beprd->{tlds} && $beprd->{tlds} && ref($beprd->{tlds}) eq 'ARRAY') {
    $self->_set_bep_key('tlds',$beprd->{tlds});
-  } elsif ($self->_get_bep_key('bep_type') && $self->_get_bep_key('bep_type')==1 && exists $beprd->{name}) { # select TLD for dedicated backends
+  } elsif ($self->_get_bep_key('bep_type') && $self->_get_bep_key('bep_type')==1 && $beprd->{name}) { # select TLD for dedicated backends
    $self->_set_bep_key('tlds',[$beprd->{name}]) if (grep /$beprd->{name}/i,@{$self->_get_bep_key('tlds')});
   }
  }
@@ -206,8 +207,11 @@ L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
 
 sub build_back_end_provider_info
 {
- my ($self,$bep) = @_;
+ my ($self,$bep,$name,$tld) = @_;
  $bep = lc($bep);
+ $tld = (defined $name ? $name : '') unless $tld;
+ $tld = lc($tld);
+
 
 =pod
 
@@ -652,6 +656,10 @@ M&M uses a single enveronment for its own TLDs (set provider to 'mam'), while us
 
 =head3 Status: Working
 
+=head3 Custom extensions
+
+L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
+
 =head3 TLDs
 
 Uncontested: bible country gop kiwi london review rugby
@@ -680,13 +688,35 @@ M&M uses a single enveronment for its own TLDs (set provider to 'mam'), while us
 
 =head3 Status: Working
 
+=head3 Custom extensions
+
+L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
+
+L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::NYCContact> urn:ietf:params:xml:ns:neulevel-1.0 (For .NYC Only)
+
 =head3 TLDs
 
 xn--rhqv96g xn--g2xx48c xn--nyqy26a best uno safety pharmacy nyc jetzt taipei qpon moe buzz ceo htc club kyoto
 
 Contended TLD's not included
 
+=head3 Notes
+
+Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD. 
+In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension
+
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'nyc'}); # using name
+ $dri->target('nyc')->add_current_profile(....);
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'whatever',tlds=['nyc']}); # using tld
+
 =cut
+ return {
+     bep_type => 1, # dedicated registy
+     tlds => ['nyc'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::NYC->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::NYC'],
+   } if $bep eq 'neustar' && $tld eq 'nyc';
 
  return {
      bep_type => 1, # dedicated registy

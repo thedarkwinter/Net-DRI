@@ -41,6 +41,7 @@ lib/Net/DRI/Data/Contact/JOBS.pm
 lib/Net/DRI/Data/Contact/LU.pm
 lib/Net/DRI/Data/Contact/NO.pm
 lib/Net/DRI/Data/Contact/Nominet.pm
+lib/Net/DRI/Data/Contact/NYC.pm
 lib/Net/DRI/Data/Contact/OpenSRS.pm
 lib/Net/DRI/Data/Contact/PL.pm
 lib/Net/DRI/Data/Contact/RegBox.pm
@@ -314,6 +315,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNLanguage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.pm
+lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/NYCContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NEUSTAR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NEWGTLD.pm
