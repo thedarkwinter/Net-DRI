@@ -99,7 +99,7 @@ is_string(join('',Net::DRI::Util::xml_write(Net::DRI::Protocol::EPP::Extensions:
 
 SKIP: {
 	eval { require Net::SAML2; };
-	skip 'Net::SAML2 not installed',34 if $@;
+	skip 'Net::SAML2 not installed',69 if $@;
 
 ## SMD from http://tools.ietf.org/id/draft-lozano-tmch-smd-02.txt
 
