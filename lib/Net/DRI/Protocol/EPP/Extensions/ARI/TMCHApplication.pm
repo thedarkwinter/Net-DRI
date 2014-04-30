@@ -276,7 +276,7 @@ sub create
 
 
  ## TMCH 
- if (exists $lp->{phase} && $lp->{phase} =~ m/^(sunrise|claims|TMCH Sunrise)$/) # FIXME, this might differ per tld and apparently its case sensitive!
+ if (exists $lp->{phase} && (exists $lp->{notices} || exists $lp->{encoded_signed_marks}) ) 
  {
   my $eid=$mes->command_extension_register('tmch','create');
    @n=();
@@ -303,10 +303,7 @@ sub create
    }
   }
 
-   # Claims 
-  if ($lp->{'phase'} eq 'claims')
-  {
-    Net::DRI::Exception::usererr_invalid_parameters('notices') unless defined $lp->{notices};
+   # Claims Notices
     if (exists $lp->{notices})
     {
      my $nt = (ref $lp->{notices} eq 'ARRAY') ? shift @{$lp->{notices}} : $lp->{notices};
@@ -316,7 +313,6 @@ sub create
      push @n,['tmch:noticeID',$nt->{id}];
      push @n,['tmch:notAfter',Net::DRI::Util::dto2zstring($nt->{not_after_date})] if exists $nt->{not_after_date};
      push @n,['tmch:accepted',Net::DRI::Util::dto2zstring($nt->{accepted_date})] if exists $nt->{accepted_date};
-    }
   }
   $mes->command_extension($eid,\@n);
  }
