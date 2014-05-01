@@ -604,17 +604,13 @@ Contended TLD's not included
 
 =head3 TLDs
 
-archi bio ski 
-
-immo (contested)
-
-Contended TLD's not included
+desi saarland
 
 =cut
 
  return {
-     bep_type => 2, # shared registry
-     tlds => ['archi', 'bio', 'ski', 'immo'],
+     bep_type => 1, # dedicated
+     tlds => ['desi', 'saarland'],
    } if $bep eq 'ks';
 
 
@@ -918,6 +914,27 @@ amsterdam
      bep_type => undef, # TODO: check this
      tlds => ['amsterdam'],
    } if $bep eq 'sidn';
+=pod
+
+
+=head2 StartingDot (Provided by Key Sytems)
+
+ $dri->add_registry('NGTLD',{provider=>'startingdot'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+archi bio ski 
+
+immo (contested)
+
+=cut
+
+ return {
+     bep_type => 2, # shared registry
+     tlds => ['archi', 'bio', 'ski', 'immo'],
+   } if $bep eq 'startingdot';
 
 
 =pod

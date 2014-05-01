@@ -43,7 +43,7 @@ use Getopt::Std;
 use Data::Dumper;
 $Data::Dumper::Indent=1;
 
-use encoding "utf-8";    # assume utf-8 encoded argument input #! NOTE, replicated in Perl 5.18+
+use encoding "utf-8";    # assume utf-8 encoded argument input #! NOTE, depricated in Perl 5.18+
 
 our $VERSION     = '0.90.se';
 our $SVN_VERSION = do {
