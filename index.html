@@ -4,11 +4,11 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Net-DRI : Net-DRI-0.96_06_tdw based on Net-DRI-0.96_05" />
+    <meta name="description" content="Net-DRI : Net-DRI-0.96_06_tdw with new gTLD support" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Net-dri</title>
+    <title>Net-DRI</title>
   </head>
 
   <body>
@@ -19,7 +19,7 @@
           <a id="forkme_banner" href="https://github.com/thedarkwinter/Net-DRI">View on GitHub</a>
 
           <h1 id="project_title">Net-DRI</h1>
-          <h2 id="project_tagline">Net-DRI-0.96_06_tdw based on Net-DRI-0.96_05</h2>
+          <h2 id="project_tagline">Net-DRI-0.96_06_tdw with new gTLD support</h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/thedarkwinter/Net-DRI/zipball/master">Download this project as a .zip file</a>
@@ -31,66 +31,88 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>
-<a name="net-dri-096_06_tdw" class="anchor" href="#net-dri-096_06_tdw"><span class="octicon octicon-link"></span></a>Net-DRI-0.96_06_tdw</h3>
+        <p>Net-DRI-0.96_06_tdw is based on Net-DRI-0.96_05 Patrick Mezvek, <a href="http://www.dotandco.com/services/software/Net-DRI/">Home Page</a> and <a href="http://search.cpan.org/dist/Net-DRI/">CPAN</a></p>
 
-<ul>
-<li>based on Net-DRI-0.96_05 (see README)</li>
-</ul><p>This version contains mostly updates related new gTLDs:</p>
+<hr><h4>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h4>
 
-<ul>
-<li>LaunchPhase support</li>
-<li>Support for multiple new gTLD backend providers (with more being added, and yes some bits being fixed)
+<p>This version contains the following updates along with a few bug fixes and improvements</p>
 
-<ul>
-<li>Afilias</li>
-<li>ARI</li>
-<li>CentralNIC</li>
-<li>CoreNIC</li>
-<li>Charleston Road Registry</li>
-<li>Donuts</li>
-<li>Famous Four Media</li>
-<li>GMO Registry</li>
-<li>KSRegistry / incl. Starting Dot</li>
-<li>Minds And Machines</li>
-<li>Neustar</li>
-<li>Registry-in-a-Box from NicAT</li>
-<li>Rightside</li>
-<li>Tango from KNIPP</li>
-<li>UniRegistry</li>
-</ul>
-</li>
-<li>Limited support for new gTLD services
+<h5>
+<a name="launchphase-extension" class="anchor" href="#launchphase-extension"><span class="octicon octicon-link"></span></a>LaunchPhase extension</h5>
 
-<ul>
-<li>TMCH (Deloitte): Curretly V1 only</li>
-<li>TMDB (IBM): CNIS and SMDRL only</li>
-</ul>
-</li>
-<li>Added/Updated/Fixed support for ccTLDs
+<p>Based on draft-ietf-eppext-launchphase-01</p>
 
-<ul>
-<li>UK</li>
-<li>IT</li>
-<li>ES</li>
-<li>NO</li>
-<li>SE/NU (IIS module)</li>
-<li>BE</li>
-<li>EI</li>
-<li>DE</li>
-<li>CH</li>
-<li>ZA</li>
-</ul>
-</li>
-<li>Includes a few other bug fixes</li>
-</ul>
+<h5>
+<a name="new-gtld-backend-providers-ros" class="anchor" href="#new-gtld-backend-providers-ros"><span class="octicon octicon-link"></span></a>New gTLD backend providers (RO's)</h5>
+
+<p>Afilias, ARI, CentralNIC, CoreNIC, Charleston Road Registry, Donuts, Famous Four Media, GMO Registry, KSRegistry (Starting Dot), Minds And Machines, Neustar, Registry-in-a-Box from NicAT, Rightside, Tango from KNIPP, UniRegistry</p>
+
+<h5>
+<a name="planned-support-for-providers" class="anchor" href="#planned-support-for-providers"><span class="octicon octicon-link"></span></a>Planned support for providers</h5>
+
+<p>CoCCA, KNET, Nic.br, Nominet, OpenRegistry, SIDN, TCI, Verisign, ZACR</p>
+
+<h5>
+<a name="trademark-services" class="anchor" href="#trademark-services"><span class="octicon octicon-link"></span></a>Trademark services</h5>
+
+<p>TMCH (Deloitte): Curretly V1 only, and TMDB (IBM): CNIS and SMDRL only</p>
+
+<h5>
+<a name="addedupdatedfixed-support-for-cctlds" class="anchor" href="#addedupdatedfixed-support-for-cctlds"><span class="octicon octicon-link"></span></a>Added/Updated/Fixed support for ccTLDs</h5>
+
+<p>UK, IT, ES, NO, SE/NU (IIS module), BE, Eu, DE, CH, ZA</p>
+
+<hr><h4>
+<a name="ngtld-usage" class="anchor" href="#ngtld-usage"><span class="octicon octicon-link"></span></a>NGTLD Usage</h4>
+
+<p>The NGTLD "Super-DRD" is intended to work for all new gTLD providers with minimal fuss. In principle you can add the registry by selecting the provider and optionally customise the name and TLDs available.</p>
+
+<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'...'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'...'</span><span class="p">,</span><span class="n">name</span><span class="o">=&gt;</span><span class="s">'...'</span><span class="p">,</span> <span class="n">tlds</span><span class="o">=&gt;[]</span><span class="p">});</span>
+</pre></div>
+
+<h5>
+<a name="selecting-a-back-end-provider" class="anchor" href="#selecting-a-back-end-provider"><span class="octicon octicon-link"></span></a>Selecting a back end provider</h5>
+
+<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'Neustar'</span><span class="p">});</span>
+<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">target</span><span class="p">(</span><span class="s">'Neustar'</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">add_current_profile</span><span class="p">(</span><span class="o">....</span><span class="p">);</span>
+</pre></div>
+
+<h5>
+<a name="backend-providers-with-shared-environments" class="anchor" href="#backend-providers-with-shared-environments"><span class="octicon octicon-link"></span></a>Backend providers with shared environments</h5>
+
+<p>Donuts is an example of a backend that provides a single platform for all their TLDs. Normally only specifying the provider will suite your needs</p>
+
+<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'donuts'</span><span class="p">});</span>
+<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">target</span><span class="p">(</span><span class="s">'donuts'</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">add_current_profile</span><span class="p">(</span><span class="o">....</span><span class="p">);</span>
+</pre></div>
+
+<h5>
+<a name="backend-providers-with-dedicated-environments" class="anchor" href="#backend-providers-with-dedicated-environments"><span class="octicon octicon-link"></span></a>Backend providers with dedicated environments</h5>
+
+<p>Neustar is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
+e.g: add a custom target name, by default this is the back end provider name, but in this instance we select buzz
+Note, if the name you specified matches one of the TLD's and you have not manually specified the tld list, if will use only this TLD. If the name doesn't match a TLD, it will make all TLD's by the prover available in the DRD</p>
+
+<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'neustar'</span><span class="p">,</span><span class="n">name</span><span class="o">=&gt;</span><span class="s">'buzz'</span><span class="p">});</span>
+<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">target</span><span class="p">(</span><span class="s">'buzz'</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">add_current_profile</span><span class="p">(</span><span class="o">....</span><span class="p">);</span>
+</pre></div>
+
+<p>Some TLDs have specific extensions that need to be loaded. In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension</p>
+
+<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'neustar'</span><span class="p">,</span><span class="n">name</span><span class="o">=&gt;</span><span class="s">'nyc'</span><span class="p">});</span> <span class="c1"># using name</span>
+<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">target</span><span class="p">(</span><span class="s">'nyc'</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">add_current_profile</span><span class="p">(</span><span class="o">....</span><span class="p">);</span>
+<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'neustar'</span><span class="p">,</span><span class="n">name</span><span class="o">=&gt;</span><span class="s">'whatever'</span><span class="p">,</span><span class="n">tlds</span><span class="o">=</span><span class="p">[</span><span class="s">'nyc'</span><span class="p">]});</span> <span class="c1"># using tld</span>
+</pre></div>
+
+<hr>
       </section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">Net-dri maintained by <a href="https://github.com/thedarkwinter">thedarkwinter</a></p>
+        <p class="copyright">Net-DRI maintained by <a href="https://github.com/thedarkwinter">thedarkwinter</a></p>
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
