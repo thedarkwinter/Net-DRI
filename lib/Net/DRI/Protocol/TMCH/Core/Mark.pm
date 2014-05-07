@@ -78,7 +78,8 @@ sub register_commands
            info_file => [ \&info_file, \&info_parse ],
            create => [ \&create, \&create_parse ],
            renew => [ \&renew, \&renew_parse ],
-           update => [ \&update, undef ],
+           update => [ \&update ],
+           review_complete => [ undef, \&infdata_parse ],
            transfer_request => [ \&transfer_request, \&transfer_parse ],
            transfer_execute => [ \&transfer_execute, \&transfer_parse ], ## TODO: clean this transfer commands...
            #validate => [ \&validate, undef ], # internal validation only
@@ -266,17 +267,16 @@ sub check
  my ($tmch,$mark,$rd)=@_;
  my $mes=$tmch->message();
  my @mk=ref $mark ? @$mark : ($mark);
- 
  Net::DRI::Exception->die(1,'protocol/EPP',2,'Mark id needed') unless @mk;
-  foreach my $d (@mk)
-  {
+ foreach my $d (@mk)
+ {
   Net::DRI::Exception->die(1,'protocol/EPP',2,'Mark id needed') unless defined $d && $d;
  }
-  
+
  $mes->command(['check']);
  my @d=map { ['id',$_] } @mk;
  $mes->command_body(\@d);
-  return;
+ return;
 }
 
 sub check_parse
@@ -338,9 +338,13 @@ sub info_parse
   my ($n,$c)=@$el;
   if ($n eq 'id')
   {
-   #$oname=$c->textContent(); # Check??, depending on query type this could be the mark_id OR tmch handled id thing... ?? So we ignore this and stick to the handle we already have
+   $oname=$c->textContent();
+   $rinfo->{mark}->{$oname}->{id}=$oname;
    $rinfo->{mark}->{$oname}->{action}='info';
    $rinfo->{mark}->{$oname}->{exist}=1;
+  } elsif ($n eq 'smdId')
+  {
+   $rinfo->{mark}->{$oname}->{smd_id}=$c->textContent();
   } elsif ($n eq 'authCode')
   {
    $rinfo->{mark}->{$oname}->{auth} = { pw => $c->textContent() };
@@ -483,6 +487,7 @@ sub update
 sub renew
 {
  my ($tmch,$mark,$rd)=@_;
+    # FIXME check these are duractions!!!
  my $curexp=Net::DRI::Util::has_key($rd,'current_expiration')? $rd->{current_expiration} : undef;
  Net::DRI::Exception::usererr_insufficient_parameters('current expiration date') unless defined($curexp);
  $curexp=$curexp->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($curexp) && Net::DRI::Util::check_isa($curexp,'DateTime'));
@@ -560,6 +565,18 @@ sub transfer_parse
 }
 
 ####################################################################################################
+
+sub infdata_parse {
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
+ my $infdata = $mes->node_resdata()->getChildrenByTagName('infData')->shift();
+ return unless defined $infdata; 
+ $otype = 'mark';
+ my $c = $infdata->getChildrenByTagName('id')->shift();
+ $oname=$c->textContent();
+ $rinfo->{mark}->{$oname}->{action}='review';
+ return 1;
+}
+
 1;
-
-
