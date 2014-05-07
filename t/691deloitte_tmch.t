@@ -8,9 +8,8 @@ use Net::DRI::Data::Raw;
 use MIME::Base64;
 use DateTime;
 use DateTime::Duration;
-use Data::Dumper;
 
-use Test::More tests => 133;
+use Test::More tests => 213;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -29,7 +28,7 @@ $dri->target('Deloitte')->add_current_profile('p1','tmch',{f_send=>\&mysend,f_re
 
 my $rc;
 my ($dh,@c);
-my ($pouS,$s,$d,$smark,$mark,$mark2,$cs,$holder,$holder2,$holder3,$agent,$tparty,$l1,$l2,$d1,$c1,$cm1,$chg,@docs,@labels,@comments,@cases);
+my ($pouS,$s,$d,$smark,$mark,$mark2,$cs,$holder,$holder2,$holder3,$agent,$tparty,$l1,$l2,$l3,$l4,$l5,$d1,$c1,$c2,$cm1,$chg,@docs,@labels,@comments,@cases);
 
 ## Session commands
 
@@ -69,7 +68,19 @@ is($rc->is_success(), 1, 'mark_check is_success');
 is($dri->get_info('action'),'check','mark_check get_info(action)');
 is($dri->get_info('exist'),0,'mark_check get_info(exist)');
 
-# check multi?
+# check multi
+$R2=$E1.'<response>'.r().'<msgQ count="76" id="17" /><resData><chkData><cd><id avail="0">000712423-2</id><reason>Format: 000001XXXXXXXXXX-1</reason></cd><cd><id avail="1">000001436269876872643629798257-1</id></cd><cd><id avail="0">00000113637780801363778080-1</id><reason>Already exists</reason></cd></chkData></resData><trID><svTRID>check-1391087493</svTRID></trID></response>'.$E2;
+$rc=$dri->mark_check(["000712423-2", "000001436269876872643629798257-1", "00000113637780801363778080-1"]);
+is($R1,$E1.'<command><check><id>000712423-2</id><id>000001436269876872643629798257-1</id><id>00000113637780801363778080-1</id></check><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_check build multiple ids');
+is($rc->is_success(),1,'mark_check multi is_success');
+is($dri->get_info('action','mark','000712423-2'),'check','mark_check multi get_info(action,id1)');
+is($dri->get_info('exist','mark','000712423-2'),1,'mark_check multi get_info(exist,id1)');
+is($dri->get_info('exist_reason','mark','000712423-2'),'Format: 000001XXXXXXXXXX-1','mark_check multi get_info(exist_reason,id1)');
+is($dri->get_info('action','mark','000001436269876872643629798257-1'),'check','mark_check multi get_info(action,id2)');
+is($dri->get_info('exist','mark','000001436269876872643629798257-1'),0,'mark_check multi get_info(exist,id2)');
+is($dri->get_info('action','mark','00000113637780801363778080-1'),'check','mark_check multi get_info(action,id3)');
+is($dri->get_info('exist','mark','00000113637780801363778080-1'),1,'mark_check multi get_info(exist,id3)');
+is($dri->get_info('exist_reason','mark','00000113637780801363778080-1'),'Already exists','mark_check multi get_info(exist_reason,id3)');
 
 
 # info default (trademark)
@@ -254,8 +265,6 @@ is($rc->is_success(), 1, 'mark_create is_success');
 is($dri->get_info('action'),'create','mark_create get_info(action)');
 is($dri->get_info('crDate'),'2012-10-01T22:00:00','mark_create get_info(crDate)');
 
-SKIP: {
-  skip 'Update: In progress',6;
 
 # update
 
@@ -293,7 +302,6 @@ $chg->add('labels',\@addlabels);
 $rc=$dri->mark_update('0000011363778801363778080-1',$chg);
 is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><add><label><aLabel>exampleone</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (adding a label) build');
 is($rc->is_success(),1,'mark_update (adding a label) is_success');
-};
 
 ## update: changing label flags
 $R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
@@ -305,44 +313,174 @@ is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><chg><label><aL
 is($rc->is_success(),1,'mark_update (changing label flags) is_success');
 # end:update
 
-#
-##todo: udrp or court case - NOT FINISHED!!!
-#$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;  
-#$chg=$dri->local_object('changes');
-#my @addcases=({id=>'case-00000123466989999999'},{a_label=>'a'},{a_label=>'b'});
-#$chg->add('cases',\@addcases);
-##print Dumper($chg);
-#$rc=$dri->mark_update('000001132-1',$chg);
-#print Dumper($rc);
-#is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989999999</id><udrp><caseNo>987654321</caseNo><udrpProvider>National Arbitration Forum</udrpProvider><caseLang>Spanish</caseLang></udrp><document><docType>courtCaseDocument</docType><fileName>02-2013-TMCHdefect1.jpg</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>a</aLabel></label><label><aLabel>b</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (add udrp case) build');
-#is($rc->is_success(),1,'mark_update (add udrp case) is_success');
-## end:udrp or court case
-#
+## 8.1: adding a udrp case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+my @addlabels2=({a_label=>'a'},{a_label=>'b'});
+my @adddocs2=({doc_type=>'courtCaseDocument', file_type=>'jpg', file_name=>'02-2013-TMCHdefect1.jpg', file_content=>'YnJvbAo='});
+my @addudrp=({caseNo=>'987654321', udrpProvider=>'National Arbitration Forum', caseLang=>'Spanish'});
+my @addcases=({id=>'case-00000123466989999999',udrp=>\@addudrp,document=>\@adddocs2,label=>\@addlabels2});
+$chg->add('cases',\@addcases);
+$rc=$dri->mark_update('000001132-1',$chg);
+is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989999999</id><udrp><caseNo>987654321</caseNo><udrpProvider>National Arbitration Forum</udrpProvider><caseLang>Spanish</caseLang></udrp><document><docType>courtCaseDocument</docType><fileName>02-2013-TMCHdefect1.jpg</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>a</aLabel></label><label><aLabel>b</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (add udrp case) build');
+is($rc->is_success(),1,'mark_update (add udrp case) is_success');
+
+## 8.2: adding a court case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+my @addcourt=({ref_num=>'987654321',cc=>'BE',court_name=>'Bla',case_lang=>'Spanish'});
+@adddocs=({doc_type=>'courtCaseDocument', file_type=>'jpg', file_name=>'02-2013-TMCHdefect2.jpg', file_content=>'YnJvbAo='});
+@addlabels=({a_label=>'a'},{a_label=>'b'});
+@addcases=({id=>'case-00000123466989979999',court=>\@addcourt,document=>\@adddocs,label=>\@addlabels});
+$chg->add('cases',\@addcases);
+$rc=$dri->mark_update('000001132-1',$chg);
+is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989979999</id><court><refNum>987654321</refNum><cc>BE</cc><courtName>Bla</courtName><caseLang>Spanish</caseLang></court><document><docType>courtCaseDocument</docType><fileName>02-2013-TMCHdefect2.jpg</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>a</aLabel></label><label><aLabel>b</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (adding a court case) build');
+is($rc->is_success(),1,'mark_update (adding a court case) is_success');
+
+## 8.3: managing labels linked to a case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+@addlabels=({a_label=>'x'});
+@addcases=({id=>'case-00000123466989979998',label=>\@addlabels});
+$chg->add('cases',\@addcases);
+$rc=$dri->mark_update('000001132-1',$chg);
+is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989979998</id><label><aLabel>x</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (managing labels linked to a case) build');
+is($rc->is_success(),1,'mark_update (managing labels linked to a case) is_success');
+
+## 8.4: managing documents linked to a case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+@adddocs=({doc_type=>'tmOther', file_type=>'jpg', file_name=>'C:\\ddafs\\file2.png', file_content=>'YnJvbAo='});
+@addlabels=({a_label=>'my-name-three'});
+@addcases=({id=>'case-00000123456',document=>\@adddocs,label=>\@addlabels});
+$chg->add('cases',\@addcases);
+$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
+is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><add><case><id>case-00000123456</id><document><docType>tmOther</docType><fileName>C:\\ddafs\\file2.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>my-name-three</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (managing documents linked to a case) build');
+is($rc->is_success(),1,'mark_update (managing documents linked to a case) is_success');
+
+## 8.5: changing a case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+my @chgudrp=({caseNo=>'987654321', udrpProvider=>'NAF', caseLang=>'Spanish'});
+my @chgcases=({id=>'case-00000123456',udrp=>\@chgudrp});
+$chg->set('cases',\@chgcases);
+$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
+is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><chg><case><id>case-00000123456</id><udrp><caseNo>987654321</caseNo><udrpProvider>NAF</udrpProvider><caseLang>Spanish</caseLang></udrp></case></chg></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (changing a case) build');
+is($rc->is_success(),1,'mark_update (changing a case) is_success');
+
+## 8.6: retrieve case data (mark_info)
+$R2=$E1.'<response>'.r().'<resData><infData><id>000001136757513215-1</id><status s="verified" /><pouStatus s="valid" /><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><trademark><id>000001136757513215-1</id><markName>Example 3</markName><holder entitlement="owner"><name>Example name</name><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>LY</cc></addr><email>test@test.test</email></holder><jurisdiction>LY</jurisdiction><class>35</class><class>36</class><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><regNum>234235</regNum><regDate>2009-08-16T00:00:00Z</regDate><exDate>2015-08-16T00:00:00Z</exDate></trademark></mark><label><aLabel>example-one</aLabel><uLabel>example-one</uLabel><smdInclusion enable="0" /><claimsNotify enable="0" /></label><case><id>case-165955219104862426891240536623</id><udrp><caseNo>123</caseNo><udrpProvider>Asian Domain Name Dispute Resolution Centre</udrpProvider><caseLang>Afrikaans</caseLang></udrp><status s="new" /><label><aLabel>label5</aLabel><status s="new" /></label><label><aLabel>label3</aLabel><status s="new" /></label><label><aLabel>label2</aLabel><status s="new" /></label><label><aLabel>label1</aLabel><status s="new" /></label><label><aLabel>label4</aLabel><status s="new" /></label><upDate>2013-10-09T10:20:45.2Z</upDate></case><case><id>case-176169232111416328571942201148</id><udrp><caseNo>456</caseNo><udrpProvider>Asian Domain Name Dispute Resolution Centre</udrpProvider><caseLang>Afrikaans</caseLang></udrp><status s="new" /><label><aLabel>second1</aLabel><status s="new" /></label><upDate>2013-10-09T10:21:35.0Z</upDate></case><crDate>2013-05-03T11:58:53.3Z</crDate><upDate>2013-12-18T10:45:53.3Z</upDate><exDate>2014-05-03T00:00:00Z</exDate></infData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->mark_info('000001136757513215-1');
+is($R1,$E1.'<command><info><id>000001136757513215-1</id></info><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_info (retrieve case data) build');
+is($rc->is_success(),1,'mark_info (retrieve case data) is_success');
+is($dri->get_info('exist'),1,'mark_info get_info(exist)');
+is($dri->get_info('action'),'info','mark_info get_info(action)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(status)');
+is_deeply([$s->list_status()],['verified'],'mark_info get_info(status) is verified');
+$pouS=$dri->get_info('pou_status');
+isa_ok($pouS,'Net::DRI::Data::StatusList','mark_info get_info(pou_status)');
+is_deeply([$pouS->list_status()],['valid'],'mark_info get_info(pou_status) is valid');
+$mark=$dri->get_info('mark');
+is($mark->{'type'},'trademark','mark_info get_info(mark) type');
+is($mark->{'id'},'000001136757513215-1','mark_info get_info(id) org');
+is($mark->{'mark_name'},'Example 3','mark_info get_info(mark) mark_name');
+$cs=$mark->{'contact'};
+isa_ok($cs,'Net::DRI::Data::ContactSet','mark_info get_info(cs)');
+$holder=$cs->get('holder_owner');
+is($holder->name(),'Example name','mark_info get_info(holder) name');
+is($holder->org(),'Example Inc.','mark_info get_info(holder) org');
+is_deeply(scalar $holder->street(),['123 Example Dr.','Suite 100'],'mark_info get_info(holder) street');
+is($holder->city(),'Reston','mark_info get_info(holder) city');
+is($holder->sp(),'VA','mark_info get_info(holder) sp');
+is($holder->pc(),'20190','mark_info get_info(holder) pc');
+is($holder->cc(),'LY','mark_info get_info(holder) cc');
+is($holder->email(),'test@test.test','mark_info get_info(holder) email');
+is($mark->{'jurisdiction'},'LY','mark_info get_info(holder) jurisdiction');
+is_deeply($mark->{'class'},[35,36],'mark_info get_info(holder) class');
+is($mark->{'goods_services'},'Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.','mark_info get_info(holder) goods_services');
+is($mark->{'registration_number'},'234235','mark_info get_info(holder) regNum');
+is($mark->{'registration_date'},'2009-08-16T00:00:00','mark_info get_info(mark) regDate');
+is($mark->{'expiration_date'},'2015-08-16T00:00:00','mark_info get_info(mark) exDate');
+@labels=@{$dri->get_info('labels')};
+$l1=$labels[0];
+isa_ok($l1,'HASH','mark_info get_info(label)');
+is($l1->{'a_label'},'example-one','mark_info get_info(label) aLabel');
+is($l1->{'u_label'},'example-one','mark_info get_info(label) uLabel');
+is($l1->{'smd_inclusion'},'0','mark_info get_info(label) smdInclusion');
+is($l1->{'claims_notify'},'0','mark_info get_info(label) claimsNotify');
+##cases:start - tests
+@cases=@{$dri->get_info('cases')};
+#get_info(case1)
+$c1=$cases[0];
+isa_ok($c1,'HASH','mark_info get_info(case)');
+is($c1->{'id'},'case-165955219104862426891240536623','mark_info get_info(case1) id');
+is($c1->{'udrp'}->{'case_number'},'123','mark_info get_info(case1) caseNo');
+is($c1->{'udrp'}->{'provider'},'Asian Domain Name Dispute Resolution Centre','mark_info get_info(case1) udrpProvider');
+is($c1->{'udrp'}->{'language'},'Afrikaans','mark_info get_info(case1) language');
+$s=$c1->{'status'};
+isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case1) status');
+is_deeply([$s->list_status()],['new'],'mark_info get_info(case1) status is verified');
+@labels=@{$c1->{'labels'}};
+$l1=$labels[0];
+isa_ok($l1,'HASH','mark_info get_info(case1) label1');
+is($l1->{'a_label'},'label5','mark_info get_info(case1) label1-aLabel');
+$s=$l1->{'status'};
+isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case1) label1-status');
+is_deeply([$s->list_status()],['new'],'mark_info get_info(case1) label1-status is verified');
+$l2=$labels[1];
+isa_ok($l2,'HASH','mark_info get_info(case1) label2');
+is($l2->{'a_label'},'label3','mark_info get_info(case1) label2-aLabel');
+$s=$l2->{'status'};
+isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case1) label2-status');
+is_deeply([$s->list_status()],['new'],'mark_info get_info(case1) label2-status is verified');
+$l3=$labels[2];
+isa_ok($l3,'HASH','mark_info get_info(case1) label3');
+is($l3->{'a_label'},'label2','mark_info get_info(case1) label3-aLabel');
+$s=$l3->{'status'};
+isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case1) label2-status');
+is_deeply([$s->list_status()],['new'],'mark_info get_info(case1) label2-status is verified');
+$l4=$labels[3];
+isa_ok($l4,'HASH','mark_info get_info(case1) label4');
+is($l4->{'a_label'},'label1','mark_info get_info(case1) label4-aLabel');
+$s=$l4->{'status'};
+isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case1) label4-status');
+is_deeply([$s->list_status()],['new'],'mark_info get_info(case1) label4-status is verified');
+$l5=$labels[4];
+isa_ok($l5,'HASH','mark_info get_info(case1) label5');
+is($l5->{'a_label'},'label4','mark_info get_info(case1) label5-aLabel');
+$s=$l5->{'status'};
+isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case1) label5-status');
+is_deeply([$s->list_status()],['new'],'mark_info get_info(case1) label5-status is verified');
+#get_info(case2)
+$c2=$cases[1];
+isa_ok($c2,'HASH','mark_info get_info(case)');
+is($c2->{'id'},'case-176169232111416328571942201148','mark_info get_info(case2) id');
+is($c2->{'udrp'}->{'case_number'},'456','mark_info get_info(case2) caseNo');
+is($c2->{'udrp'}->{'provider'},'Asian Domain Name Dispute Resolution Centre','mark_info get_info(case2) udrpProvider');
+is($c2->{'udrp'}->{'language'},'Afrikaans','mark_info get_info(case2) language');
+$s=$c2->{'status'};
+isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case2) status');
+is_deeply([$s->list_status()],['new'],'mark_info get_info(case2) status is verified');
+@labels=@{$c2->{'labels'}};
+$l1=$labels[0];
+isa_ok($l1,'HASH','mark_info get_info(label)');
+is($l1->{'a_label'},'second1','mark_info get_info(case2) label1-aLabel');
+$s=$l1->{'status'};
+isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case2) label1-status');
+is_deeply([$s->list_status()],['new'],'mark_info get_info(case2) label1-status is verified');
+##cases:end - tests
+is($dri->get_info('crDate'),'2013-05-03T11:58:53','mark_info get_info(crDate)');
+is($dri->get_info('upDate'),'2013-12-18T10:45:53','mark_info get_info(upDate)');
+is($dri->get_info('exDate'),'2014-05-03T00:00:00','mark_info get_info(exDate)');
 
 # renew
-#TODO: only extensions for 1 year and 3 years are allowed
-#TODO: a renew forces a creation on a new SMD file
 $R2=$E1.'<response>'.r().'<msgQ count="76" id="17" /><resData><renData><id>00000126-1</id><exDate>2017-08-08T00:00:00Z</exDate><balance><amount currency="USD">56588.2500</amount><statusPoints>1414</statusPoints></balance></renData></resData><trID><svTRID>renew-1391087231-5310</svTRID></trID></response>'.$E2;
 $rc=$dri->mark_renew('00000126-1',{duration=>DateTime::Duration->new(years=>3),current_expiration=>DateTime->new(year=>2014,month=>01,day=>02)});
 is($R1,$E1.'<command><renew><id>00000126-1</id><curExpDate>2014-01-02</curExpDate><period unit="y">3</period></renew><clTRID>ABC-12345</clTRID></command>'.$E2, 'mark_renew build');
 is($rc->is_success(), 1, 'mark_renew is_success');
 is($dri->get_info('action'),'renew','mark_renew get_info(action)');
 is($dri->get_info('exDate'),'2017-08-08T00:00:00','mark_renew get_info(exDate)');
-
-# check:  example using the new documentation...
-# TODO: when working move this multi check example to top where MH created initially for single checks...
-$R2=$E1.'<response>'.r().'<msgQ count="76" id="17" /><resData><chkData><cd><id avail="0">000712423-2</id><reason>Format: 000001XXXXXXXXXX-1</reason></cd><cd><id avail="1">000001436269876872643629798257-1</id></cd><cd><id avail="0">00000113637780801363778080-1</id><reason>Already exists</reason></cd></chkData></resData><trID><svTRID>check-1391087493</svTRID></trID></response>'.$E2;
-$rc=$dri->mark_check(["000712423-2", "000001436269876872643629798257-1", "00000113637780801363778080-1"]);
-is($R1,$E1.'<command><check><id>000712423-2</id><id>000001436269876872643629798257-1</id><id>00000113637780801363778080-1</id></check><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_check build multiple ids');
-is($rc->is_success(),1,'mark_check multi is_success');
-is($dri->get_info('action','mark','000712423-2'),'check','mark_check multi get_info(action,id1)');
-is($dri->get_info('exist','mark','000712423-2'),1,'mark_check multi get_info(exist,id1)');
-is($dri->get_info('exist_reason','mark','000712423-2'),'Format: 000001XXXXXXXXXX-1','mark_check multi get_info(exist_reason,id1)');
-is($dri->get_info('action','mark','000001436269876872643629798257-1'),'check','mark_check multi get_info(action,id2)');
-is($dri->get_info('exist','mark','000001436269876872643629798257-1'),0,'mark_check multi get_info(exist,id2)');
-is($dri->get_info('action','mark','00000113637780801363778080-1'),'check','mark_check multi get_info(action,id3)');
-is($dri->get_info('exist','mark','00000113637780801363778080-1'),1,'mark_check multi get_info(exist,id3)');
-is($dri->get_info('exist_reason','mark','00000113637780801363778080-1'),'Already exists','mark_check multi get_info(exist_reason,id3)');
 
 
 ####################################################################################################
@@ -389,15 +527,13 @@ is($dri->get_info('status','message',4),'verified','message get_info [domain_reg
 
 ####################################################################################################
 ## Transfer
-SKIP: {
-  skip 'Transfer: In progress',2;
 
 # transfer - request to execute
 $R2=$E1.'<response>'.r().'<msgQ count="75" id="19" /><resData><trnData><newId>000001123456789876543211113333-1</newId><trnDate>2014-01-30T15:27:14.3Z</trnDate><balance><amount currency="USD">56565.2500</amount><statusPoints>1414</statusPoints></balance></trnData></resData><trID><svTRID>create-1391092034-5317</svTRID></trID></response>'.$E2;
-#$rc=$dri->mark_transfer_request('000001123456789876543211113333-1', {authCode=>'qwertyasdfgh'});
-$rc=$dri->mark_transfer_execute('000001123456789876543211113333-1', {authCode=>'qwertyasdfgh'});
-is($R1,$E1.'<command><transfer op="execute"><id>000001123456789876543211113333-1</id><authCode>qwertyasdfgh</authCode></transfer></command>'.$E2,'mark_transfer_request build');
+$rc=$dri->mark_transfer_request('000001123456789876543211113333-1', {op=>'execute', authCode=>'qwertyasdfgh'});
+
+#$rc=$dri->mark_transfer_execute('000001123456789876543211113333-1', {authCode=>'qwertyasdfgh'});
+is($R1,$E1.'<command><transfer op="execute"><id>000001123456789876543211113333-1</id><authCode>qwertyasdfgh</authCode></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_transfer_request build');
 is($rc->is_success(),1,'mark_transfer_request is_success');
-};
 
 exit 0;
