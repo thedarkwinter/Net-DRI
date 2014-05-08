@@ -8,8 +8,9 @@ use Net::DRI::Data::Raw;
 use MIME::Base64;
 use DateTime;
 use DateTime::Duration;
+use Data::Dumper;
 
-use Test::More tests => 213;
+use Test::More tests => 217;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -30,6 +31,7 @@ my $rc;
 my ($dh,@c);
 my ($pouS,$s,$d,$smark,$mark,$mark2,$cs,$holder,$holder2,$holder3,$agent,$tparty,$l1,$l2,$l3,$l4,$l5,$d1,$c1,$c2,$cm1,$chg,@docs,@labels,@comments,@cases);
 
+####################################################################################################
 ## Session commands
 
 $R2='<?xml version="1.0" encoding="utf-8"?><tmch xmlns="urn:ietf:params:xml:ns:tmch-1.1"><greeting><svID>TMCH server v1.1</svID><svDate>2013-01-15T12:01:02Z</svDate></greeting></tmch>';
@@ -49,7 +51,7 @@ is($R1,$E1.'<command><logout/><clTRID>ABC-12345</clTRID></command>'.$E2,'session
 is($rc->is_success(),1,'session logout is_success');
 
 ####################################################################################################
-## Mark Commands
+## Mark Check Commands
 
 # check not avail
 $R2=$E1 .'<response>'  . r() .  '<resData><chkData><cd><id avail="0">000712423-2</id><reason>Format: 000001XXXXXXXXXX-1</reason></cd></chkData></resData>'.$TRID .'</response>'.$E2;
@@ -82,6 +84,8 @@ is($dri->get_info('action','mark','00000113637780801363778080-1'),'check','mark_
 is($dri->get_info('exist','mark','00000113637780801363778080-1'),1,'mark_check multi get_info(exist,id3)');
 is($dri->get_info('exist_reason','mark','00000113637780801363778080-1'),'Already exists','mark_check multi get_info(exist_reason,id3)');
 
+####################################################################################################
+## Mark Info Commands
 
 # info default (trademark)
 #$R2=$E1 .'<response>'  . r() .  '<resData><infData><id>00000712423-1</id><status s="new"/><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><trademark><id>00000712423-1</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><jurisdiction>US</jurisdiction><class>35</class><class>36</class><goodsAndServices>Dirigendas et eiusmodifeaturing infringo in airfare et cartam servicia.</goodsAndServices><regNum>234235</regNum><regDate>2009-08-16T09:00:00.0Z</regDate><exDate>2015-08-16T09:00:00.0Z</exDate></trademark></mark><document><id>14531423SADF</id><docType>Other</docType><fileName>C:\\ddafs\\file.png</fileName><fileType>jpg</fileType></document><label><aLabel>my-name</aLabel><uLabel>my-name</uLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label><label><aLabel>myname</aLabel><uLabel>myname</uLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label><crDate>2013-02-10T22:00:00Z</crDate><upDate>2013-03-11T08:01:38Z</upDate><exDate>2018-03-11T08:01:38Z</exDate></infData></resData>'.$TRID .'</response>'.$E2;
@@ -162,7 +166,6 @@ is($mark->{'title'},'n.a.','mark_info get_info(mark) title');
 my $p1 = shift @{$mark->{'protection'}};
 is_deeply($p1,{'cc'=>'US','ruling'=>['AF','AX','AL']},'mark_info get_info(mark) protection' );
 
-
 # info smd
 $R2=$E1 .'<response>'  . r() .  '<resData><infData><id>0000005071387359953364-1</id><smdId>123-1</smdId><status s="verified" /><smd:signedMark xmlns:smd="urn:ietf:params:xml:ns:signedMark-1.0" id="_7f3b6f8c-5cf1-4f6b-9187-21dd7d53c968"><smd:id>0000005071387359953364-1</smd:id><smd:issuerInfo issuerID="1"><smd:org>Deloitte</smd:org><smd:email>smd-support@deloitte.com</smd:email><smd:url>smd-support.deloitte.com</smd:url><smd:voice>+32.20000000</smd:voice></smd:issuerInfo><smd:notBefore>2013-12-18T09:45:53.364Z</smd:notBefore><smd:notAfter>2014-05-02T22:00:00.000Z</smd:notAfter><mark:mark xmlns:mark="urn:ietf:params:xml:ns:mark-1.0"><mark:trademark><mark:id>000001136757513215-1</mark:id><mark:markName>Example 3</mark:markName><mark:holder entitlement="owner"><mark:org>Example Inc.</mark:org><mark:addr><mark:street>123 Example Dr.</mark:street><mark:street>Suite 100</mark:street><mark:city>Reston</mark:city><mark:sp>VA</mark:sp><mark:pc>20190</mark:pc><mark:cc>LY</mark:cc></mark:addr></mark:holder><mark:contact type="agent"><mark:name>jan jansen</mark:name><mark:org>CHIP</mark:org><mark:addr><mark:street>dvv 37</mark:street><mark:city>Leuven</mark:city><mark:pc>3000</mark:pc><mark:cc>BE</mark:cc></mark:addr><mark:voice>+1.123</mark:voice><mark:fax>+2.457</mark:fax><mark:email>jan@ipclearinghouse.org</mark:email></mark:contact><mark:jurisdiction>LY</mark:jurisdiction><mark:class>35</mark:class><mark:class>36</mark:class><mark:goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</mark:goodsAndServices><mark:regNum>234235</mark:regNum><mark:regDate>2009-08-15T22:00:00.000Z</mark:regDate><mark:exDate>2015-08-15T22:00:00.000Z</mark:exDate></mark:trademark></mark:mark><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="_32534634-384e-40b3-9c48-812c5a92f0ee"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" /><ds:Reference URI="#_7f3b6f8c-5cf1-4f6b-9187-21dd7d53c968"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><ds:DigestValue>UOUfso/KI5u9WEVqfX/jTKcEoeuUWioT4O9neFsqmZg=</ds:DigestValue></ds:Reference><ds:Reference URI="#_ebda5fd0-14e2-40fb-b973-06328b34fc74"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><ds:DigestValue>kedEuC5ruC2DeF9GFPQ3crkV+lW0IQCmCk7uX8uM13g=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue Id="_c3d3ad97-f335-4694-b70b-7ac578eeb816">gvN4wbzEXfJ0FvdUJ54JTdF4NKuRfuXs0BYj0DIKNMnaXD0KAFDnEb1nMFfC7mU+lugjofeuHYz/AglrVMgKCatiiGIM7GHLIaz6CfBWvQbRFAg23xJ/tOoEcmtmg8QwOLVmtwnfG2AhLfDJWCnV8PqJbGmxlt7k9jlhpPGlMYY=</ds:SignatureValue><ds:KeyInfo Id="_ebda5fd0-14e2-40fb-b973-06328b34fc74"><ds:X509Data><ds:X509Certificate>MIIFQDCCBKmgAwIBAgIEQDf7czANBgkqhkiG9w0BAQUFADA/MQsw-CQYDVQQGEwJESzEMMAoGA1UEChMDVERDMSIwIAYDVQQDExlUREMgT0NFUyBTeXN0ZW10ZXN0IENBIElJMB4XDTExMTEwMTEyMjAzM1oXDTEzMTEwMTEyNTAzM1owgYUxCzAJBgNVBAYTAkRLMSkwJwYDVQQKEyBJbmdlbiBvcmdhbmlzYXRvcmlzayB0aWxrbnl0bmluZzFLMCMGA1UEBRMcUElEOjkyMDgtMjAwMi0yLTczNTA4OTg1Nzk4MjAkBgNVBAMTHVRlc3RwZXJzb24gMjgwMjc1MTc3MiBUZXN0c2VuMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCSx/24Ymnp6hOLnEKstqKbkzKbxWAtsp6McocgCCWkIX82QGJ5N6Fqi8Ti20D0DNxjlW0RfQU/Ot25mEmVXrXpcUcQEsidHs1nFx7Bz2EEFL0gs8JzDiNQ9fpTUU/dOLZzb/qr1EcTaGtJyaRZjJOGl7jO/K83oZqptu/0DgLzuQIDAQABo4IDADCCAvwwDgYDVR0PAQH/BAQDAgP4MCsGA1UdEAQkMCKADzIwMTExMTAxMTIyMDMzWoEPMjAxMzExMDExMjUwMzNaMEYGCCsGAQUFBwEBBDowODA2BggrBgEFBQcwAYYqaHR0cDovL3Rlc3Qub2NzcC5jZXJ0aWZpa2F0LmRrL29jc3Avc3RhdHVzMIIBNwYDVR0gBIIBLjCCASowggEmBgoqgVCBKQEBAQECMIIBFjAvBggrBgEFBQcCARYjaHR0cDovL3d3dy5jZXJ0aWZpa2F0LmRrL3JlcG9zaXRvcnkwgeIGCCsGAQUFBwICMIHVMAoWA1REQzADAgEBGoHGRm9yIGFudmVuZGVsc2UgYWYgY2VydGlmaWthdGV0IGfmbGRlciBPQ0VTIHZpbGvlciwgQ1BTIG9nIE9DRVMgQ1AsIGRlciBrYW4gaGVudGVzIGZyYSB3d3cuY2VydGlmaWthdC5kay9yZXBvc2l0b3J5LiBCZW3mcmssIGF0IFREQyBlZnRlciB2aWxr5XJlbmUgaGFyIGV0IGJlZ3LmbnNldCBhbnN2YXIgaWZ0LiBwcm9mZXNzaW9uZWxsZSBwYXJ0ZXIuMBgGCWCGSAGG+EIBDQQLFglQZXJzb25XZWIwIAYDVR0RBBkwF4EVc3VwcG9ydEBjZXJ0aWZpa2F0LmRrMIGXBgNVHR8EgY8wgYwwV6BVoFOkUTBPMQswCQYDVQQGEwJESzEMMAoGA1UEChMDVERDMSIwIAYDVQQDExlUREMgT0NFUyBTeXN0ZW10ZXN0IENBIElJMQ4wDAYDVQQDEwVDUkwyOTAxoC+gLYYraHR0cDovL3Rlc3QuY3JsLm9jZXMuY2VydGlmaWthdC5kay9vY2VzLmNybDAfBgNVHSMEGDAWgBQcmAlHGkw4uRDFBClb8fROgGrMfjAdBgNVHQ4EFgQUR4fjxTv2jdk9Ztak8CBikXRbWjwwCQYDVR0TBAIwADAZBgkqhkiG9n0HQQAEDDAKGwRWNy4xAwIDqDANBgkqhkiG9w0BAQUFAAOBgQBUvfdxcBIo8vsxGvtF22WkiWFskcWjlUhKbGIyjcppfWqSnZ5iDy5T9iIGY/huT/7SgnJbjnpN6EEa6UqXUbUzdth5OP7qBQkvKnOkIyuGjftcqV8Xja4GwZos6F6NzqAXCReC2kwuuN44zrjz3fj7dA26QGpimCJWzv5zRyW3Ng==</ds:X509Certificate><ds:X509Certificate>MIIEXTCCA8agAwIBAgIEQDYX/DANBgkqhkiG9w0BAQUFADA/MQswCQYDVQQGEwJESzEMMAoGA1UEChMDVERDMSIwIAYDVQQDExlUREMgT0NFUyBTeXN0ZW10ZXN0IENBIElJMB4XDTA0MDIyMDEzNTE0OVoXDTM3MDYyMDE0MjE0OVowPzELMAkGA1UEBhMCREsxDDAKBgNVBAoTA1REQzEiMCAGA1UEAxMZVERDIE9DRVMgU3lzdGVtdGVzdCBDQSBJSTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArawANI56sljDsnosDU+Mp4r+RKFys9c5qy8jWZyA+7PYFs4+IZcFxnbNuHi8aAcbSFOUJF0PGpNgPEtNc+XAK7p16iawNTYpMkHm2VoInNfwWEj/wGmtb4rKDT2a7auGk76q+Xdqnno4PRO8e7AKEHw7pN3kiHmZCI48PTRpRx8CAwEAAaOCAmQwggJgMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMIIBAwYDVR0gBIH7MIH4MIH1BgkpAQEBAQEBAQEwgecwLwYIKwYBBQUHAgEWI2h0dHA6Ly93d3cuY2VydGlmaWthdC5kay9yZXBvc2l0b3J5MIGzBggrBgEFBQcCAjCBpjAKFgNUREMwAwIBARqBl1REQyBUZXN0IENlcnRpZmlrYXRlciBmcmEgZGVubmUgQ0EgdWRzdGVkZXMgdW5kZXIgT0lEIDEuMS4xLjEuMS4xLjEuMS4xLjEuIFREQyBUZXN0IENlcnRpZmljYXRlcyBmcm9tIHRoaXMgQ0EgYXJlIGlzc3VlZCB1bmRlciBPSUQgMS4xLjEuMS4xLjEuMS4xLjEuMS4wEQYJYIZIAYb4QgEBBAQDAgAHMIGWBgNVHR8EgY4wgYswVqBUoFKkUDBOMQswCQYDVQQGEwJESzEMMAoGA1UEChMDVERDMSIwIAYDVQQDExlUREMgT0NFUyBTeXN0ZW10ZXN0IENBIElJMQ0wCwYDVQQDEwRDUkwxMDGgL6AthitodHRwOi8vdGVzdC5jcmwub2Nlcy5jZXJ0aWZpa2F0LmRrL29jZXMuY3JsMCsGA1UdEAQkMCKADzIwMDQwMjIwMTM1MTQ5WoEPMjAzNzA2MjAxNDIxNDlaMB8GA1UdIwQYMBaAFByYCUcaTDi5EMUEKVvx9E6Aasx+MB0GA1UdDgQWBBQcmAlHGkw4uRDFBClb8fROgGrMfjAdBgkqhkiG9n0HQQAEEDAOGwhWNi4wOjQuMAMCBJAwDQYJKoZIhvcNAQEFBQADgYEApyoAjiKq6WK5XaKWUpVskutzohv1VcCke/3JeUVtmB+byexJMC171s4RHoqcbufcI2ASVWwu84i45MaKg/nxoqojMyY19/W2wbQFEdsxUCnLa9e9tlWj0xS/AaKeUhk2MBOqv+hMdc71jOqc5JN7T2Ba6ZRIY5uXkO3IGZ3XUsw=</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature></smd:signedMark></infData></resData>'.$TRID .'</response>'.$E2;
 $rc=$dri->mark_info_smd('0000005071387359953364-1');
@@ -208,168 +211,8 @@ $rc=$dri->mark_info_file('00000113675751323-1');
 is($R1,$E1.'<command><info type="file"><id>00000113675751323-1</id></info><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_info_enc build');
 is($rc->is_success(), 1, 'mark_info_enc is_success');
 
-
-
-# create TM
-$cs = $dri->local_object('contactset');
-$holder = $dri->local_object('contact');
-$holder->org('Example Inc.');
-$holder->street(['123 Example Dr.','Suite 100']);
-$holder->city('Reston');
-$holder->sp('VA');
-$holder->pc('20190');
-$holder->cc('US');
-$cs->add($holder,'holder_owner');
-
-# NOTE: Labels here are added to the TMCH command and built in the tmch namespace, NOT the mark namespase. This is correct for Deloitte but may be incorrect for others in future ?
-$l1 = { a_label => 'exampleone', smd_inclusion => 1, claims_notify => 1 };
-$l2 = { a_label => 'example-one', smd_inclusion => 0, claims_notify => 1 };
-@labels = ($l1,$l2);
-
-$d1 = { doc_type => 'tmOther', file_type => 'jpg', file_name => 'C:\\ddafs\\file.png', file_content => 'YnJvbAo='};
-@docs = ($d1);
-
-$d = DateTime::Duration->new(years=>5);
-
-# Create Court Mark
-$mark = { id => '0000061234-1', type => 'court', mark_name => 'Example One', court_name => 'P.R. supreme court', goods_services => 'Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.', cc => 'US', reference_number => '234235', protection_date => DateTime->new(year =>2009,month=>8,day=>16,hour=>9) };
-$mark->{contact} = $cs;
-
-$R2=$E1 .'<response>'  . r() .  '<resData><creData><id>0000061234-1</id><crDate>2012-10-01T22:00:00Z</crDate></creData></resData>'.$TRID .'</response>'.$E2;
-$rc=$dri->mark_create($mark->{'id'}, { mark => $mark, duration=>$d, labels => \@labels, documents => \@docs});
-#is($R1,$E1.'<command><create><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><court><id>0000061234-1</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><refNum>234235</refNum><proDate>2009-08-16T09:00:00Z</proDate><cc>US</cc><courtName>P.R. supreme court</courtName></court></mark><period unit="y">5</period><document><docType>tmOther</docType><fileName>C:\ddafs\file.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>exampleone</aLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label><label><aLabel>exampl-eone</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></create><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_create build');
-is($R1,$E1.'<command><create><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><court><id>0000061234-1</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><refNum>234235</refNum><proDate>2009-08-16T09:00:00Z</proDate><cc>US</cc><courtName>P.R. supreme court</courtName></court></mark><period unit="y">5</period><document><docType>tmOther</docType><fileName>C:\\ddafs\\file.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>exampleone</aLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label><label><aLabel>example-one</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></create><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_create build (court)');
-
-# Create Statute
-$mark = { id => '00000712423-1', type => 'statue_treaty', mark_name => 'Example One', goods_services => 'Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.', protection => [ { ruling => ['US'],cc => 'US'} ],  reference_number => '234235', protection_date => DateTime->new(year =>2009,month=>8,day=>16,hour=>9) ,execution_date => DateTime->new(year =>2010,month=>1,day=>5,hour=>9),title=>'My Mark Title'};
-$mark->{contact} = $cs;
-
-$R2=$E1 .'<response>'  . r() .  '<resData><creData><id>00000712423-1</id><crDate>2012-10-01T22:00:00Z</crDate></creData></resData>'.$TRID .'</response>'.$E2;
-$rc=$dri->mark_create($mark->{'id'}, { mark => $mark, duration=>$d, labels => \@labels, documents => \@docs});
-is($R1,$E1.'<command><create><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><treatyOrStatute><id>00000712423-1</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><protection><cc>US</cc><ruling>US</ruling></protection><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><refNum>234235</refNum><proDate>2009-08-16T09:00:00Z</proDate><title>My Mark Title</title><execDate>2010-01-05T09:00:00Z</execDate></treatyOrStatute></mark><period unit="y">5</period><document><docType>tmOther</docType><fileName>C:\\ddafs\\file.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>exampleone</aLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label><label><aLabel>example-one</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></create><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_create build (statute))');
-
-# Create TradeMark - note: I belive max contacs is now 2 ?
-$mark = { id => '0000061234-1', type => 'trademark', mark_name => 'Example One', class=> [35,36], goods_services => 'Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.',jurisdiction => 'US', registration_number => '234235', registration_date => DateTime->new(year =>2009,month=>8,day=>16,hour=>9),expiration_date => DateTime->new(year =>2015,month=>8,day=>16,hour=>9) };
-$holder2 = $holder->clone()->name('John Smith')->voice('+44.12341234')->fax('+44.123452234');
-#$agent = $holder->clone()->name('Agent Smith')->voice('+44.12341234')->email('test@web.site');
-#$tparty = $holder->clone()->name('Morpheus')->org('Nebuchadnezzar')->voice('+44.12341234')->email('test@web.site');
-$cs->add($holder2,'holder_assignee');
-#$cs->add($agent,'contact_agent');
-#$cs->add($tparty,'contact_thirdparty');
-$mark->{contact} = $cs;
-
-$R2=$E1 .'<response>'  . r() .  '<resData><creData><id>0000061234-1</id><crDate>2012-10-01T22:00:00Z</crDate></creData></resData>'.$TRID .'</response>'.$E2;
-$rc=$dri->mark_create($mark->{'id'}, { mark => $mark, duration=>$d, labels => \@labels, documents => \@docs});
-is($R1,$E1.'<command><create><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><trademark><id>0000061234-1</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><holder entitlement="assignee"><name>John Smith</name><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr><voice>+44.12341234</voice><fax>+44.123452234</fax></holder><jurisdiction>US</jurisdiction><class>35</class><class>36</class><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><regNum>234235</regNum><regDate>2009-08-16T09:00:00Z</regDate><exDate>2015-08-16T09:00:00Z</exDate></trademark></mark><period unit="y">5</period><document><docType>tmOther</docType><fileName>C:\\ddafs\\file.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>exampleone</aLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label><label><aLabel>example-one</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></create><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_create build (trademark)');
-is($rc->is_success(), 1, 'mark_create is_success');
-is($dri->get_info('action'),'create','mark_create get_info(action)');
-is($dri->get_info('crDate'),'2012-10-01T22:00:00','mark_create get_info(crDate)');
-
-
-# update
-
-## update: mark settings
-$cs = $dri->local_object('contactset');
-$holder3 = $dri->local_object('contact');
-$holder3->org('Example Inc.');
-$holder3->street(['123 Example Dr.','Suite 100']);
-$holder3->city('Reston');
-$holder3->sp('VA');
-$holder3->pc('20190');
-$holder3->cc('US');
-$R2=$E1 .'<response>'  . r() .  ''.$TRID .'</response>'.$E2;
-$mark2 = { id => '000712423-2', type => 'statue_treaty', mark_name => 'Example One', goods_services => 'Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.', protection => [ { ruling => ['US','PR'],cc => 'US',region => 'Puerto Rico'} ],  reference_number => '234235', protection_date => DateTime->new(year =>2009,month=>8,day=>16,hour=>9) ,execution_date => DateTime->new(year =>2010,month=>1,day=>5,hour=>9),title=>'My Mark Title'};
-$chg = $dri->local_object('changes');
-$mark2->{'goods_services'}='Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.';
-$cs->add($holder3,'holder_owner');
-$mark2->{'contact'}=$cs;
-$chg->set('mark',$mark2);
-my @addlabels=({a_label=>'my-name', smd_inclusion => 0, claims_notify => 1});
-$chg->add('labels',\@addlabels);
-my @remlabels=({a_label=>'my-name', smd_inclusion => 1, claims_notify => 1});
-$chg->del('labels',\@remlabels);
-my @adddocs=({doc_type=>'tmOther', file_type=>'jpg', file_name=>'C:\\ddafs\\file2.png', file_content=>'YnJvbAo='});
-$chg->add('documents',\@adddocs);
-$rc=$dri->mark_update($mark2->{'id'},$chg);
-is($R1,$E1.'<command><update><id>000712423-2</id><add><document><docType>tmOther</docType><fileName>C:\\ddafs\\file2.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>my-name</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></add><rem><label><aLabel>my-name</aLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label></rem><chg><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><treatyOrStatute><id>000712423-2</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><protection><cc>US</cc><region>Puerto Rico</region><ruling>US</ruling><ruling>PR</ruling></protection><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><refNum>234235</refNum><proDate>2009-08-16T09:00:00Z</proDate><title>My Mark Title</title><execDate>2010-01-05T09:00:00Z</execDate></treatyOrStatute></mark></chg></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (update mark settings) build');
-is($rc->is_success(),1,'mark_update (mark settings) is_success');
-
-## update: adding a label
-$R2=$E1.'<response>'.r().'<msgQ count="76" id="17" /><trID><svTRID>update-1391086383-5308</svTRID></trID></response>'.$E2;
-$chg=$dri->local_object('changes');
-@addlabels=({a_label=>'exampleone', smd_inclusion => 0, claims_notify => 1});
-$chg->add('labels',\@addlabels);
-$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
-is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><add><label><aLabel>exampleone</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (adding a label) build');
-is($rc->is_success(),1,'mark_update (adding a label) is_success');
-
-## update: changing label flags
-$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
-$chg=$dri->local_object('changes');
-my @chglabels=({a_label=>'exampleone', smd_inclusion => 0, claims_notify => 1});
-$chg->set('labels',\@chglabels);
-$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
-is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><chg><label><aLabel>exampleone</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></chg></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (changing label flags) build');
-is($rc->is_success(),1,'mark_update (changing label flags) is_success');
-# end:update
-
-## 8.1: adding a udrp case
-$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
-$chg=$dri->local_object('changes');
-my @addlabels2=({a_label=>'a'},{a_label=>'b'});
-my @adddocs2=({doc_type=>'courtCaseDocument', file_type=>'jpg', file_name=>'02-2013-TMCHdefect1.jpg', file_content=>'YnJvbAo='});
-my @addudrp=({caseNo=>'987654321', udrpProvider=>'National Arbitration Forum', caseLang=>'Spanish'});
-my @addcases=({id=>'case-00000123466989999999',udrp=>\@addudrp,document=>\@adddocs2,label=>\@addlabels2});
-$chg->add('cases',\@addcases);
-$rc=$dri->mark_update('000001132-1',$chg);
-is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989999999</id><udrp><caseNo>987654321</caseNo><udrpProvider>National Arbitration Forum</udrpProvider><caseLang>Spanish</caseLang></udrp><document><docType>courtCaseDocument</docType><fileName>02-2013-TMCHdefect1.jpg</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>a</aLabel></label><label><aLabel>b</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (add udrp case) build');
-is($rc->is_success(),1,'mark_update (add udrp case) is_success');
-
-## 8.2: adding a court case
-$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
-$chg=$dri->local_object('changes');
-my @addcourt=({ref_num=>'987654321',cc=>'BE',court_name=>'Bla',case_lang=>'Spanish'});
-@adddocs=({doc_type=>'courtCaseDocument', file_type=>'jpg', file_name=>'02-2013-TMCHdefect2.jpg', file_content=>'YnJvbAo='});
-@addlabels=({a_label=>'a'},{a_label=>'b'});
-@addcases=({id=>'case-00000123466989979999',court=>\@addcourt,document=>\@adddocs,label=>\@addlabels});
-$chg->add('cases',\@addcases);
-$rc=$dri->mark_update('000001132-1',$chg);
-is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989979999</id><court><refNum>987654321</refNum><cc>BE</cc><courtName>Bla</courtName><caseLang>Spanish</caseLang></court><document><docType>courtCaseDocument</docType><fileName>02-2013-TMCHdefect2.jpg</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>a</aLabel></label><label><aLabel>b</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (adding a court case) build');
-is($rc->is_success(),1,'mark_update (adding a court case) is_success');
-
-## 8.3: managing labels linked to a case
-$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
-$chg=$dri->local_object('changes');
-@addlabels=({a_label=>'x'});
-@addcases=({id=>'case-00000123466989979998',label=>\@addlabels});
-$chg->add('cases',\@addcases);
-$rc=$dri->mark_update('000001132-1',$chg);
-is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989979998</id><label><aLabel>x</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (managing labels linked to a case) build');
-is($rc->is_success(),1,'mark_update (managing labels linked to a case) is_success');
-
-## 8.4: managing documents linked to a case
-$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
-$chg=$dri->local_object('changes');
-@adddocs=({doc_type=>'tmOther', file_type=>'jpg', file_name=>'C:\\ddafs\\file2.png', file_content=>'YnJvbAo='});
-@addlabels=({a_label=>'my-name-three'});
-@addcases=({id=>'case-00000123456',document=>\@adddocs,label=>\@addlabels});
-$chg->add('cases',\@addcases);
-$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
-is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><add><case><id>case-00000123456</id><document><docType>tmOther</docType><fileName>C:\\ddafs\\file2.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>my-name-three</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (managing documents linked to a case) build');
-is($rc->is_success(),1,'mark_update (managing documents linked to a case) is_success');
-
-## 8.5: changing a case
-$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
-$chg=$dri->local_object('changes');
-my @chgudrp=({caseNo=>'987654321', udrpProvider=>'NAF', caseLang=>'Spanish'});
-my @chgcases=({id=>'case-00000123456',udrp=>\@chgudrp});
-$chg->set('cases',\@chgcases);
-$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
-is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><chg><case><id>case-00000123456</id><udrp><caseNo>987654321</caseNo><udrpProvider>NAF</udrpProvider><caseLang>Spanish</caseLang></udrp></case></chg></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (changing a case) build');
-is($rc->is_success(),1,'mark_update (changing a case) is_success');
-
-## 8.6: retrieve case data (mark_info)
-$R2=$E1.'<response>'.r().'<resData><infData><id>000001136757513215-1</id><status s="verified" /><pouStatus s="valid" /><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><trademark><id>000001136757513215-1</id><markName>Example 3</markName><holder entitlement="owner"><name>Example name</name><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>LY</cc></addr><email>test@test.test</email></holder><jurisdiction>LY</jurisdiction><class>35</class><class>36</class><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><regNum>234235</regNum><regDate>2009-08-16T00:00:00Z</regDate><exDate>2015-08-16T00:00:00Z</exDate></trademark></mark><label><aLabel>example-one</aLabel><uLabel>example-one</uLabel><smdInclusion enable="0" /><claimsNotify enable="0" /></label><case><id>case-165955219104862426891240536623</id><udrp><caseNo>123</caseNo><udrpProvider>Asian Domain Name Dispute Resolution Centre</udrpProvider><caseLang>Afrikaans</caseLang></udrp><status s="new" /><label><aLabel>label5</aLabel><status s="new" /></label><label><aLabel>label3</aLabel><status s="new" /></label><label><aLabel>label2</aLabel><status s="new" /></label><label><aLabel>label1</aLabel><status s="new" /></label><label><aLabel>label4</aLabel><status s="new" /></label><upDate>2013-10-09T10:20:45.2Z</upDate></case><case><id>case-176169232111416328571942201148</id><udrp><caseNo>456</caseNo><udrpProvider>Asian Domain Name Dispute Resolution Centre</udrpProvider><caseLang>Afrikaans</caseLang></udrp><status s="new" /><label><aLabel>second1</aLabel><status s="new" /></label><upDate>2013-10-09T10:21:35.0Z</upDate></case><crDate>2013-05-03T11:58:53.3Z</crDate><upDate>2013-12-18T10:45:53.3Z</upDate><exDate>2014-05-03T00:00:00Z</exDate></infData></resData>'.$TRID.'</response>'.$E2;
+# info with cases
+$R2=$E1.'<response>'.r().'<resData><infData><id>000001136757513215-1</id><status s="verified" /><pouStatus s="valid" /><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><trademark><id>000001136757513215-1</id><markName>Example 3</markName><holder entitlement="owner"><name>Example name</name><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>LY</cc></addr><email>test@test.test</email></holder><jurisdiction>LY</jurisdiction><class>35</class><class>36</class><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><regNum>234235</regNum><regDate>2009-08-16T00:00:00Z</regDate><exDate>2015-08-16T00:00:00Z</exDate></trademark></mark><label><aLabel>example-one</aLabel><uLabel>example-one</uLabel><smdInclusion enable="0" /><claimsNotify enable="0" /></label><case><id>case-165955219104862426891240536623</id><court><refNum>987654321</refNum><cc>BE</cc><courtName>Bla</courtName><caseLang>Spanish</caseLang></court><status s="new" /><label><aLabel>label5</aLabel><status s="new" /></label><label><aLabel>label3</aLabel><status s="new" /></label><label><aLabel>label2</aLabel><status s="new" /></label><label><aLabel>label1</aLabel><status s="new" /></label><label><aLabel>label4</aLabel><status s="new" /></label><upDate>2013-10-09T10:20:45.2Z</upDate></case><case><id>case-176169232111416328571942201148</id><udrp><caseNo>456</caseNo><udrpProvider>Asian Domain Name Dispute Resolution Centre</udrpProvider><caseLang>Afrikaans</caseLang></udrp><status s="new" /><label><aLabel>second1</aLabel><status s="new" /></label><upDate>2013-10-09T10:21:35.0Z</upDate></case><crDate>2013-05-03T11:58:53.3Z</crDate><upDate>2013-12-18T10:45:53.3Z</upDate><exDate>2014-05-03T00:00:00Z</exDate></infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->mark_info('000001136757513215-1');
 is($R1,$E1.'<command><info><id>000001136757513215-1</id></info><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_info (retrieve case data) build');
 is($rc->is_success(),1,'mark_info (retrieve case data) is_success');
@@ -415,9 +258,10 @@ is($l1->{'claims_notify'},'0','mark_info get_info(label) claimsNotify');
 $c1=$cases[0];
 isa_ok($c1,'HASH','mark_info get_info(case)');
 is($c1->{'id'},'case-165955219104862426891240536623','mark_info get_info(case1) id');
-is($c1->{'udrp'}->{'case_number'},'123','mark_info get_info(case1) caseNo');
-is($c1->{'udrp'}->{'provider'},'Asian Domain Name Dispute Resolution Centre','mark_info get_info(case1) udrpProvider');
-is($c1->{'udrp'}->{'language'},'Afrikaans','mark_info get_info(case1) language');
+is($c1->{'court'}->{'reference_number'},'987654321','mark_info get_info(case1) caseNo');
+is($c1->{'court'}->{'cc'},'BE','mark_info get_info(case1) udrpProvider');
+is($c1->{'court'}->{'language'},'Spanish','mark_info get_info(case1) language');
+is($c1->{'court'}->{'name'},'Bla','mark_info get_info(case1) language');
 $s=$c1->{'status'};
 isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case1) status');
 is_deeply([$s->list_status()],['new'],'mark_info get_info(case1) status is verified');
@@ -474,6 +318,175 @@ is($dri->get_info('crDate'),'2013-05-03T11:58:53','mark_info get_info(crDate)');
 is($dri->get_info('upDate'),'2013-12-18T10:45:53','mark_info get_info(upDate)');
 is($dri->get_info('exDate'),'2014-05-03T00:00:00','mark_info get_info(exDate)');
 
+####################################################################################################
+## Mark Create Commands
+
+# create TM
+$cs = $dri->local_object('contactset');
+$holder = $dri->local_object('contact');
+$holder->org('Example Inc.');
+$holder->street(['123 Example Dr.','Suite 100']);
+$holder->city('Reston');
+$holder->sp('VA');
+$holder->pc('20190');
+$holder->cc('US');
+$cs->add($holder,'holder_owner');
+
+# NOTE: Labels here are added to the TMCH command and built in the tmch namespace, NOT the mark namespase. This is correct for Deloitte but may be incorrect for others in future ?
+$l1 = { a_label => 'exampleone', smd_inclusion => 1, claims_notify => 1 };
+$l2 = { a_label => 'example-one', smd_inclusion => 0, claims_notify => 1 };
+@labels = ($l1,$l2);
+
+$d1 = { doc_type => 'tmOther', file_type => 'jpg', file_name => 'C:\\ddafs\\file.png', file_content => 'YnJvbAo='};
+@docs = ($d1);
+
+$d = DateTime::Duration->new(years=>5);
+
+# Create Court Mark
+$mark = { id => '0000061234-1', type => 'court', mark_name => 'Example One', court_name => 'P.R. supreme court', goods_services => 'Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.', cc => 'US', reference_number => '234235', protection_date => DateTime->new(year =>2009,month=>8,day=>16,hour=>9) };
+$mark->{contact} = $cs;
+
+$R2=$E1 .'<response>'  . r() .  '<resData><creData><id>0000061234-1</id><crDate>2012-10-01T22:00:00Z</crDate><balance><amount currency="USD">56588.2500</amount><statusPoints>1414</statusPoints></balance></creData></resData>'.$TRID .'</response>'.$E2;
+$rc=$dri->mark_create($mark->{'id'}, { mark => $mark, duration=>$d, labels => \@labels, documents => \@docs});
+is($R1,$E1.'<command><create><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><court><id>0000061234-1</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><refNum>234235</refNum><proDate>2009-08-16T09:00:00Z</proDate><cc>US</cc><courtName>P.R. supreme court</courtName></court></mark><period unit="y">5</period><document><docType>tmOther</docType><fileName>C:\\ddafs\\file.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>exampleone</aLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label><label><aLabel>example-one</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></create><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_create build (court)');
+
+# Create Statute
+$mark = { id => '00000712423-1', type => 'statue_treaty', mark_name => 'Example One', goods_services => 'Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.', protection => [ { ruling => ['US'],cc => 'US'} ],  reference_number => '234235', protection_date => DateTime->new(year =>2009,month=>8,day=>16,hour=>9) ,execution_date => DateTime->new(year =>2010,month=>1,day=>5,hour=>9),title=>'My Mark Title'};
+$mark->{contact} = $cs;
+
+$R2=$E1 .'<response>'  . r() .  '<resData><creData><id>00000712423-1</id><crDate>2012-10-01T22:00:00Z</crDate><balance><amount currency="USD">56588.2500</amount><statusPoints>1414</statusPoints></balance></creData></resData>'.$TRID .'</response>'.$E2;
+$rc=$dri->mark_create($mark->{'id'}, { mark => $mark, duration=>$d, labels => \@labels, documents => \@docs});
+is($R1,$E1.'<command><create><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><treatyOrStatute><id>00000712423-1</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><protection><cc>US</cc><ruling>US</ruling></protection><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><refNum>234235</refNum><proDate>2009-08-16T09:00:00Z</proDate><title>My Mark Title</title><execDate>2010-01-05T09:00:00Z</execDate></treatyOrStatute></mark><period unit="y">5</period><document><docType>tmOther</docType><fileName>C:\\ddafs\\file.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>exampleone</aLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label><label><aLabel>example-one</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></create><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_create build (statute))');
+
+# Create TradeMark - note: I belive max contacs is now 2 ?
+$mark = { id => '0000061234-1', type => 'trademark', mark_name => 'Example One', class=> [35,36], goods_services => 'Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.',jurisdiction => 'US', registration_number => '234235', registration_date => DateTime->new(year =>2009,month=>8,day=>16,hour=>9),expiration_date => DateTime->new(year =>2015,month=>8,day=>16,hour=>9) };
+$holder2 = $holder->clone()->name('John Smith')->voice('+44.12341234')->fax('+44.123452234');
+#$agent = $holder->clone()->name('Agent Smith')->voice('+44.12341234')->email('test@web.site');
+#$tparty = $holder->clone()->name('Morpheus')->org('Nebuchadnezzar')->voice('+44.12341234')->email('test@web.site');
+$cs->add($holder2,'holder_assignee');
+#$cs->add($agent,'contact_agent');
+#$cs->add($tparty,'contact_thirdparty');
+$mark->{contact} = $cs;
+
+$R2=$E1 .'<response>'  . r() .  '<resData><creData><id>0000061234-1</id><crDate>2012-10-01T22:00:00Z</crDate><balance><amount currency="USD">56588.2500</amount><statusPoints>1414</statusPoints></balance></creData></resData>'.$TRID .'</response>'.$E2;
+$rc=$dri->mark_create($mark->{'id'}, { mark => $mark, duration=>$d, labels => \@labels, documents => \@docs});
+is($R1,$E1.'<command><create><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><trademark><id>0000061234-1</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><holder entitlement="assignee"><name>John Smith</name><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr><voice>+44.12341234</voice><fax>+44.123452234</fax></holder><jurisdiction>US</jurisdiction><class>35</class><class>36</class><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><regNum>234235</regNum><regDate>2009-08-16T09:00:00Z</regDate><exDate>2015-08-16T09:00:00Z</exDate></trademark></mark><period unit="y">5</period><document><docType>tmOther</docType><fileName>C:\\ddafs\\file.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>exampleone</aLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label><label><aLabel>example-one</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></create><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_create build (trademark)');
+is($rc->is_success(), 1, 'mark_create is_success');
+is($dri->get_info('action'),'create','mark_create get_info(action)');
+is($dri->get_info('crDate'),'2012-10-01T22:00:00','mark_create get_info(crDate)');
+
+## Balance is returned after chargeable transactions (create,transfer,renew)
+is_deeply($dri->get_info('balance'),{'amount'=>'56588.2500','currency'=>'USD','status_points'=>'1414'},'mark_create get_info(balance)');
+
+
+####################################################################################################
+## Mark Update Commands
+
+## update: mark settings
+$cs = $dri->local_object('contactset');
+$holder3 = $dri->local_object('contact');
+$holder3->org('Example Inc.');
+$holder3->street(['123 Example Dr.','Suite 100']);
+$holder3->city('Reston');
+$holder3->sp('VA');
+$holder3->pc('20190');
+$holder3->cc('US');
+$R2=$E1 .'<response>'  . r() .  ''.$TRID .'</response>'.$E2;
+$mark2 = { id => '000712423-2', type => 'statue_treaty', mark_name => 'Example One', goods_services => 'Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.', protection => [ { ruling => ['US','PR'],cc => 'US',region => 'Puerto Rico'} ],  reference_number => '234235', protection_date => DateTime->new(year =>2009,month=>8,day=>16,hour=>9) ,execution_date => DateTime->new(year =>2010,month=>1,day=>5,hour=>9),title=>'My Mark Title'};
+$chg = $dri->local_object('changes');
+$mark2->{'goods_services'}='Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.';
+$cs->add($holder3,'holder_owner');
+$mark2->{'contact'}=$cs;
+$chg->set('mark',$mark2);
+my @addlabels=({a_label=>'my-name', smd_inclusion => 0, claims_notify => 1});
+$chg->add('labels',\@addlabels);
+my @remlabels=({a_label=>'my-name', smd_inclusion => 1, claims_notify => 1});
+$chg->del('labels',\@remlabels);
+my @adddocs=({doc_type=>'tmOther', file_type=>'jpg', file_name=>'C:\\ddafs\\file2.png', file_content=>'YnJvbAo='});
+$chg->add('documents',\@adddocs);
+$rc=$dri->mark_update($mark2->{'id'},$chg);
+is($R1,$E1.'<command><update><id>000712423-2</id><add><document><docType>tmOther</docType><fileName>C:\\ddafs\\file2.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>my-name</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></add><rem><label><aLabel>my-name</aLabel><smdInclusion enable="1"/><claimsNotify enable="1"/></label></rem><chg><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><treatyOrStatute><id>000712423-2</id><markName>Example One</markName><holder entitlement="owner"><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>US</cc></addr></holder><protection><cc>US</cc><region>Puerto Rico</region><ruling>US</ruling><ruling>PR</ruling></protection><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><refNum>234235</refNum><proDate>2009-08-16T09:00:00Z</proDate><title>My Mark Title</title><execDate>2010-01-05T09:00:00Z</execDate></treatyOrStatute></mark></chg></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (update mark settings) build');
+is($rc->is_success(),1,'mark_update (mark settings) is_success');
+
+## update: adding a label
+$R2=$E1.'<response>'.r().'<msgQ count="76" id="17" /><trID><svTRID>update-1391086383-5308</svTRID></trID></response>'.$E2;
+$chg=$dri->local_object('changes');
+@addlabels=({a_label=>'exampleone', smd_inclusion => 0, claims_notify => 1});
+$chg->add('labels',\@addlabels);
+$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
+is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><add><label><aLabel>exampleone</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (adding a label) build');
+is($rc->is_success(),1,'mark_update (adding a label) is_success');
+
+## update: changing label flags
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+my @chglabels=({a_label=>'exampleone', smd_inclusion => 0, claims_notify => 1});
+$chg->set('labels',\@chglabels);
+$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
+is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><chg><label><aLabel>exampleone</aLabel><smdInclusion enable="0"/><claimsNotify enable="1"/></label></chg></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (changing label flags) build');
+is($rc->is_success(),1,'mark_update (changing label flags) is_success');
+# end:update
+
+## Cases
+## 8.1: adding a udrp case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+my @addlabels2=({a_label=>'a'},{a_label=>'b'});
+my @adddocs2=({doc_type=>'courtCaseDocument', file_type=>'jpg', file_name=>'02-2013-TMCHdefect1.jpg', file_content=>'YnJvbAo='});
+my $udrp={case_number=>'987654321', provider=>'National Arbitration Forum', language=>'Spanish'};
+my @addcases=({id=>'case-00000123466989999999',udrp=>$udrp,documents=>\@adddocs2,labels=>\@addlabels2});
+$chg->add('cases',\@addcases);
+$rc=$dri->mark_update('000001132-1',$chg);
+is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989999999</id><udrp><caseNo>987654321</caseNo><udrpProvider>National Arbitration Forum</udrpProvider><caseLang>Spanish</caseLang></udrp><document><docType>courtCaseDocument</docType><fileName>02-2013-TMCHdefect1.jpg</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>a</aLabel></label><label><aLabel>b</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (add udrp case) build');
+is($rc->is_success(),1,'mark_update (add udrp case) is_success');
+
+## 8.2: adding a court case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+my $court={reference_number=>'987654321',cc=>'BE',name=>'Bla',language=>'Spanish'};
+@adddocs=({doc_type=>'courtCaseDocument', file_type=>'jpg', file_name=>'02-2013-TMCHdefect2.jpg', file_content=>'YnJvbAo='});
+@addlabels=({a_label=>'a'},{a_label=>'b'});
+@addcases=({id=>'case-00000123466989979999',court=>$court,documents=>\@adddocs,labels=>\@addlabels});
+$chg->add('cases',\@addcases);
+$rc=$dri->mark_update('000001132-1',$chg);
+is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989979999</id><court><refNum>987654321</refNum><cc>BE</cc><courtName>Bla</courtName><caseLang>Spanish</caseLang></court><document><docType>courtCaseDocument</docType><fileName>02-2013-TMCHdefect2.jpg</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>a</aLabel></label><label><aLabel>b</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (adding a court case) build');
+is($rc->is_success(),1,'mark_update (adding a court case) is_success');
+
+## 8.3: managing labels linked to a case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+@addlabels=({a_label=>'x'});
+@addcases=({id=>'case-00000123466989979998',labels=>\@addlabels});
+$chg->add('cases',\@addcases);
+$rc=$dri->mark_update('000001132-1',$chg);
+is($R1,$E1.'<command><update><id>000001132-1</id><add><case><id>case-00000123466989979998</id><label><aLabel>x</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (managing labels linked to a case) build');
+is($rc->is_success(),1,'mark_update (managing labels linked to a case) is_success');
+
+## 8.4: managing documents linked to a case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+@adddocs=({doc_type=>'tmOther', file_type=>'jpg', file_name=>'C:\\ddafs\\file2.png', file_content=>'YnJvbAo='});
+@addlabels=({a_label=>'my-name-three'});
+@addcases=({id=>'case-00000123456',documents=>\@adddocs,labels=>\@addlabels});
+$chg->add('cases',\@addcases);
+$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
+is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><add><case><id>case-00000123456</id><document><docType>tmOther</docType><fileName>C:\\ddafs\\file2.png</fileName><fileType>jpg</fileType><fileContent>YnJvbAo=</fileContent></document><label><aLabel>my-name-three</aLabel></label></case></add></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (managing documents linked to a case) build');
+is($rc->is_success(),1,'mark_update (managing documents linked to a case) is_success');
+
+## 8.5: changing a case
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$chg=$dri->local_object('changes');
+my $chgudrp={case_number=>'987654321', provider=>'NAF', language=>'Spanish'};
+my @chgcases=({id=>'case-00000123456',udrp=>$chgudrp});
+$chg->set('cases',\@chgcases);
+$rc=$dri->mark_update('0000011363778801363778080-1',$chg);
+is($R1,$E1.'<command><update><id>0000011363778801363778080-1</id><chg><case><id>case-00000123456</id><udrp><caseNo>987654321</caseNo><udrpProvider>NAF</udrpProvider><caseLang>Spanish</caseLang></udrp></case></chg></update><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_update (changing a case) build');
+is($rc->is_success(),1,'mark_update (changing a case) is_success');
+
+
+####################################################################################################
+## Mark Renew Commands
+
 # renew
 $R2=$E1.'<response>'.r().'<msgQ count="76" id="17" /><resData><renData><id>00000126-1</id><exDate>2017-08-08T00:00:00Z</exDate><balance><amount currency="USD">56588.2500</amount><statusPoints>1414</statusPoints></balance></renData></resData><trID><svTRID>renew-1391087231-5310</svTRID></trID></response>'.$E2;
 $rc=$dri->mark_renew('00000126-1',{duration=>DateTime::Duration->new(years=>3),current_expiration=>DateTime->new(year=>2014,month=>01,day=>02)});
@@ -482,6 +495,18 @@ is($rc->is_success(), 1, 'mark_renew is_success');
 is($dri->get_info('action'),'renew','mark_renew get_info(action)');
 is($dri->get_info('exDate'),'2017-08-08T00:00:00','mark_renew get_info(exDate)');
 
+
+####################################################################################################
+## Mar Transfer Commands
+
+# Mark Transfer Start
+# If successful, returns 'new_id' which will have your accountid at the beggining instead of previous agent
+$R2=$E1.'<response>'.r().'<msgQ count="75" id="19" /><resData><trnData><newId>000005553456789876543211113333-1</newId><trnDate>2014-01-30T15:27:14.3Z</trnDate><balance><amount currency="USD">56565.2500</amount><statusPoints>1414</statusPoints></balance></trnData></resData><trID><svTRID>create-1391092034-5317</svTRID></trID></response>'.$E2;
+$rc=$dri->mark_transfer_start('000001123456789876543211113333-1', {auth=>{pw=>'qwertyasdfgh'}});
+is($R1,$E1.'<command><transfer op="execute"><id>000001123456789876543211113333-1</id><authCode>qwertyasdfgh</authCode></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_transfer_start build');
+is($rc->is_success(),1,'mark_transfer_start is_success');
+is($dri->get_info('id'),'000001123456789876543211113333-1','mark_transfer_start get_info(id)');
+is($dri->get_info('new_id'),'000005553456789876543211113333-1','mark_transfer_start get_info(new_id)');
 
 ####################################################################################################
 ## Poll Commands - See Protocol/TMCH/Core/RegistryMessage.pm for codes etc
@@ -523,17 +548,5 @@ is($dri->get_info('action_code','message',4),220,'message get_info [domain_regis
 is($dri->get_info('action_text','message',4),'The domain name [brand.claims] was registered during Claims period at 2014-05-01T00:00:00.0Z','message get_info [domain_registered_claims] action_text');
 is($dri->get_info('object_id','message',4),'00123000011906-1','message get_info [domain_registered_claims] object_id');
 is($dri->get_info('status','message',4),'verified','message get_info [domain_registered_claims] status');
-
-
-####################################################################################################
-## Transfer
-
-# transfer - request to execute
-$R2=$E1.'<response>'.r().'<msgQ count="75" id="19" /><resData><trnData><newId>000001123456789876543211113333-1</newId><trnDate>2014-01-30T15:27:14.3Z</trnDate><balance><amount currency="USD">56565.2500</amount><statusPoints>1414</statusPoints></balance></trnData></resData><trID><svTRID>create-1391092034-5317</svTRID></trID></response>'.$E2;
-$rc=$dri->mark_transfer_request('000001123456789876543211113333-1', {op=>'execute', authCode=>'qwertyasdfgh'});
-
-#$rc=$dri->mark_transfer_execute('000001123456789876543211113333-1', {authCode=>'qwertyasdfgh'});
-is($R1,$E1.'<command><transfer op="execute"><id>000001123456789876543211113333-1</id><authCode>qwertyasdfgh</authCode></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_transfer_request build');
-is($rc->is_success(),1,'mark_transfer_request is_success');
 
 exit 0;

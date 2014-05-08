@@ -23,6 +23,7 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark;
+use Data::Dumper;
 
 =pod
 
@@ -79,9 +80,9 @@ sub register_commands
            create => [ \&create, \&create_parse ],
            renew => [ \&renew, \&renew_parse ],
            update => [ \&update, undef ],
-           review_complete => [ undef, \&infdata_parse ],
            transfer_request => [ \&transfer_request, \&transfer_parse ],
            validate => [ \&validate, undef ], # internal validation only
+           review_complete => [ undef, \&infdata_parse ],
          );
 
  $tmp{check_multi}=$tmp{check};
@@ -132,9 +133,10 @@ sub _build_udrps
 	my @udrps;
 	foreach my $u (@{$udrps})
 	{
+    # FIXME, whats going on here? :)
 		my @u = ['caseNo',$u->{case_no}];
 		@u = ['udrpProvider',$u->{udrp_provider}];
-		@u = ['caseLang',$u->{case_lang}];
+		@u = ['caseLang',$u->{language}];
 		push @udrps,['udrp',@u];
 	}
 	return @udrps;
@@ -153,26 +155,28 @@ sub _build_cases
 		#id
 		push @c,['id',$c->{id}] if $c->{id};		
 		#court
-		foreach my $court (@{$c->{court}})
+    if (exists $c->{court} && ref $c->{court} eq 'HASH')
 		{
+      my $court = $c->{court};
 			my @court;
-			push @court,['refNum',$court->{ref_num}] if $court->{ref_num};
+			push @court,['refNum',$court->{reference_number}] if $court->{reference_number};
 			push @court,['cc',$court->{cc}] if $court->{cc};
-			push @court,['courtName',$court->{court_name}] if $court->{court_name};
-			push @court,['caseLang',$court->{case_lang}] if $court->{case_lang};
+			push @court,['courtName',$court->{name}] if $court->{name};
+			push @court,['caseLang',$court->{language}] if $court->{language};
 			push @c,['court',@court];
 		}		
 		#udrp		
-		foreach my $udrp (@{$c->{udrp}})
+    if (exists $c->{udrp} && ref $c->{udrp} eq 'HASH')
 		{
+      my $udrp= $c->{udrp};
 			my @u;
-			push @u,['caseNo',$udrp->{caseNo}] if $udrp->{caseNo};
-			push @u,['udrpProvider',$udrp->{udrpProvider}] if $udrp->{udrpProvider};			
-			push @u,['caseLang',$udrp->{caseLang}] if $udrp->{caseLang};	
+			push @u,['caseNo',$udrp->{case_number}] if $udrp->{case_number};
+			push @u,['udrpProvider',$udrp->{provider}] if $udrp->{provider};			
+			push @u,['caseLang',$udrp->{language}] if $udrp->{language};	
 			push @c,['udrp',@u];
 		}		
 		#document
-		foreach my $doc (@{$c->{document}})
+		foreach my $doc (@{$c->{documents}})
 		{
 			my @docs;
 			push @docs,['docType',$doc->{doc_type}] if $doc->{doc_type};
@@ -182,7 +186,7 @@ sub _build_cases
 			push @c,['document',@docs];
 		}		
 		#label
-		foreach my $label (@{$c->{label}})
+		foreach my $label (@{$c->{labels}})
 		{
 			my @l;
 			push @l,['aLabel',$label->{a_label}] if $label->{a_label};
@@ -241,9 +245,9 @@ sub _parse_case
  my (@s,@labels,@docs);
  foreach my $el (Net::DRI::Util::xml_list_children($root)) {
   my ($n,$c)=@$el;
-  if ($n =~ m/^(?:id|court|comment)$/)
+  if ($n =~ m/^(?:id|comment)$/) # FIXME, should comment be array?
   {
-   $case->{$n} = $c->textContent() if $n =~ m/^(?:id|court|comment)$/;
+   $case->{$n} = $c->textContent();
   } elsif ($n eq 'upDate')
   {
    $case->{'updated_date'}=$po->parse_iso8601($c->textContent());
@@ -257,16 +261,21 @@ sub _parse_case
      $case->{udrp}->{language} = $c2->textContent() if $n2 eq 'caseLang';
      $case->{udrp}->{provider} = $c2->textContent() if $n2 eq 'udrpProvider';
     }
+  } elsif ($n eq 'court') {
+   foreach my $el2 (Net::DRI::Util::xml_list_children($c)) {
+    my ($n2,$c2)=@$el2;
+     $case->{court}->{reference_number} = $c2->textContent() if $n2 eq 'refNum';
+     $case->{court}->{name} = $c2->textContent() if $n2 eq 'courtName';
+     $case->{court}->{language} = $c2->textContent() if $n2 eq 'caseLang';
+     $case->{court}->{cc} = $c2->textContent() if $n2 eq 'cc';
+     if ($n2 eq 'region') {
+      @{$case->{court}->{region}} = () unless exists $case->{court}->{region};
+      push @{$case->{court}->{region}},$c2->textContent();
+     }
+    }
   } elsif ($n eq 'label')
   {
    push @labels,_parse_label($po,$otype,$oaction,$oname,$rinfo,$c);
-   #my $label;
-   #foreach my $el2 (Net::DRI::Util::xml_list_children($c)) {
-   # my ($n2,$c2)=@$el2;
-   # $label->{a_label} = $c2->textContent() if $n2 eq 'aLabel';
-   # $label->{status} = Net::DRI::Protocol::EPP::Util::parse_node_status($c) if $n eq 'status';
-   # push @labels,$label;
-   #}
   } elsif ($n eq 'document')
   {
    push @docs,_parse_doc($po,$otype,$oaction,$oname,$rinfo,$c);
@@ -364,9 +373,8 @@ sub info_parse
  return unless $mes->is_success();
  
  my $infdata = $mes->node_resdata()->getChildrenByTagName('infData')->shift();
- #$infdata = $mes->node_resdata()->getChildrenByTagName('smdData')->shift() unless $infdata; # smd
-
  return unless defined $infdata;
+
  $otype = 'mark';
  my (@s,@pouS,@docs,@labels,@comments,@cases);
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
@@ -433,7 +441,7 @@ sub info_parse
 }
 
 
-
+####################################################################################################
 ############ Transform commands
 
 sub create
@@ -471,8 +479,8 @@ sub create_parse
   } elsif ($n=~m/^(crDate|exDate)$/)
   {
    $rinfo->{mark}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
-  }
-  elsif ($n eq 'balance') { # should this be put in $rinfo->{message} along with poll?
+  } elsif ($n eq 'balance') 
+  {
    $rinfo->{mark}->{$oname}->{balance} = _parse_balance($po,$otype,$oaction,$oname,$rinfo,$c);
   }
  }
@@ -525,7 +533,7 @@ sub update
 sub renew
 {
  my ($tmch,$mark,$rd)=@_;
-    # FIXME check these are duractions!!!
+ # FIXME check these are duractions!!!
  my $curexp=Net::DRI::Util::has_key($rd,'current_expiration')? $rd->{current_expiration} : undef;
  Net::DRI::Exception::usererr_insufficient_parameters('current expiration date') unless defined($curexp);
  $curexp=$curexp->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($curexp) && Net::DRI::Util::check_isa($curexp,'DateTime'));
@@ -568,6 +576,9 @@ sub renew_parse
   elsif ($n=~m/^(crDate|exDate)$/)
   {
    $rinfo->{mark}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+  } elsif ($n eq 'balance') 
+  {
+   $rinfo->{mark}->{$oname}->{balance} = _parse_balance($po,$otype,$oaction,$oname,$rinfo,$c);
   }
  }
 }
@@ -577,25 +588,41 @@ sub transfer_request
   my ($tmch,$mark,$rd)=@_;
   my $mes=$tmch->message();
   Net::DRI::Exception->die(1,'protocol/EPP',2,'Mark id needed') unless $mark;
-  my @cmd=['transfer'];
-  @cmd=[['transfer',{'op' => $rd->{op}}] ] if $rd->{op} && $rd->{op} =~ m/^(?:execute)$/;	
-  $mes->command(@cmd);
-  $mes->command_body(['id',$mark],['authCode',$rd->{authCode}]);
+  $mes->command([['transfer',{'op' => 'execute'}]]);
+  $mes->command_body(['id',$mark],['authCode',$rd->{auth}->{pw}]);
   return;
 }
 
 sub transfer_parse
 {
-	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-	my $mes=$po->message();
-	return unless $mes->is_success();
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
 	
-	my $trndata = $mes->node_resdata()->getChildrenByTagName('trnData')->shift();
+ my $trndata = $mes->node_resdata()->getChildrenByTagName('trnData')->shift();
+ return unless defined $trndata;
+ $otype = 'mark';
+ foreach my $el (Net::DRI::Util::xml_list_children($trndata))
+ {
+  my ($n,$c)=@$el;
+  if ($n eq 'newId')
+  {
+   $rinfo->{mark}->{$oname}->{new_id} = $c->textContent();
+   $rinfo->{mark}->{$oname}->{id} = $oname;
+	} elsif ($n eq 'balance') 
+  {
+   $rinfo->{mark}->{$oname}->{balance} = _parse_balance($po,$otype,$oaction,$oname,$rinfo,$c);
+  }
+ }
+
+
 	return unless $trndata;	
 }
 
+
 ####################################################################################################
 
+### This only partially helps as there are hashes randomised furthar up the chain
 sub infdata_parse {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();

@@ -49,6 +49,8 @@ Currently used by L<Net::DRI::DRD::Deloitte>
 
 =head1 METHODS:
 
+The TMCH methods are quite extensive. Here are some examples, but please see the test file (t/691_deloitte_tmch.t) for complete command coverage.
+
 =head2 mark_check
 
   $rc=$dri->mark_check($mark_id);
@@ -63,6 +65,7 @@ Currently used by L<Net::DRI::DRD::Deloitte>
   $mark{'registration_date'}; # Mark date, not related to TMCH submission
   @labels = @{$dri->get_info('labels')}; # Note, while the mark namespace has aLabels, we are using the tmch namespace for labels here.
   @docs = @{$dri->get_info('documents')};
+  @cases = @{$dri->get_info('cases')}; # cases have udrp/court as well as their own labels and documents
   
 =head2 mark_info_smd
 
@@ -83,7 +86,7 @@ Currently used by L<Net::DRI::DRD::Deloitte>
   $rc=$dri->mark_info_smd($mark_id);
   $dri->get_info('mark') # mark object
   $dri->get_info('signed_mark') # signedMark object [decoded from the BASE64 string data]
-  $dri->get_info('encoded_signed_mark') # encodedSignedMark BASE64 string
+  $dri->get_info('encoded_signed_mark') # encodedSignedMark BASE64 string - in this case with the file headers
   
 =head2 mark_create
 
@@ -120,10 +123,11 @@ Currently used by L<Net::DRI::DRD::Deloitte>
   $mark = { id => '0000061234-1' ...
   $chg->set('mark',$mark);
   
-  # labels can be Added and Removed
-  @addlabels = ({a_label=>'m-y-label',  smd_inclusion => 0, claims_notify => 0}, {a_label=>'m-y-l-a-b-e-l',  smd_inclusion => 0, claims_notify => 1});
+  # labels can be Added and Removed, and since TMCHv2 can be changed as well (i.e. change flags)
+  @addlabels = ({a_label=>'m-y-label',  smd_inclusion => 0, claims_notify => 0}, {a_label=>'m-y-l-a-b-e-l',  smd_inclusion => 0, claims_notify => 1} );
   $chg->add('labels',\@addlabels);
-  @remlabels = ( {a_label=>'my-label', smd_inclusion => 0, claims_notify => 0});
+  @remlabels = ( {a_label=>'my-label', smd_inclusion => 0, claims_notify => 0} );
+  @chglabels = ( {a_label=>'my-label', smd_inclusion => 1, claims_notify => 0} ); 
   
   # documents can only be added
   @adddocs = ( { doc_type => 'tmOther', file_type => 'pdf', file_name => 'test.pdf', file_contect => 'acdsdc' } );
@@ -131,16 +135,41 @@ Currently used by L<Net::DRI::DRD::Deloitte>
 
   $rc = $dri->mark_update($mark->{'id'},$chg);
   $rc->is_success();
+  
+  # Adding a case (udrp)
+  my $udrp={case_number=>'987654321', provider=>'National Arbitration Forum', language=>'Spanish'};
+  my @labels=({a_label=>'a'},{a_label=>'b'});
+  my @docs=({doc_type=>'courtCaseDocument', file_type=>'jpg', file_name=>'02-2013-TMCHdefect1.jpg', file_content=>'YnJvbAo='});
+  my @cases=({id=>'case-00000123466989999999',udrp=>$udrp,documents=>\@docs,labels=>\@labels});
+  $chg->add('cases',\@addcases);
+  $rc=$dri->mark_update('000001132-1',$chg);
+
+  # Adding a case (court)
+  my $court={reference_number=>'987654321',cc=>'BE',name=>'Bla',language=>'Spanish'};
+  @docs=({doc_type=>'courtCaseDocument', file_type=>'jpg', file_name=>'02-2013-TMCHdefect2.jpg', file_content=>'YnJvbAo='});
+  @labels=({a_label=>'a'},{a_label=>'b'});
+  @cases=({id=>'case-00000123466989979999',court=>$court,documents=>\@docs,labels=>\@labels});
+  $chg->add('cases',\@cases);
+  $rc=$dri->mark_update('000001132-1',$chg);
 
 =head2 mark_renew
 
-  $rc=$dri->mark_renew($mark_id, {duration=>DateTime::Duration->new(years=>1),  current_expiration => DateTime->new(year=>2012,month=>10,day=>1)});
+  $rc=$dri->mark_renew($mark_id, {duration=>DateTime::Duration->new(years=>1), current_expiration => DateTime->new(year=>2012,month=>10,day=>1)});
+  my $new_exp = $dri->get_info('exDate');
+
+=head2 mark_transfer_start
+
+  $rc=$dri->mark_transfer_start('000001123456789876543211113333-1', {auth=>{pw=>'qwertyasdfgh'}});
+  my $new_id = $dri->get_info('new_id'); # when transferring, a new id with the agents id is assigned
 
 =head2 message_retrieve
 
   $rc=$dri->message_retrieve();
   $id = dri->get_info('last_id');
   $msg = $dri->get_info('action','message',$id);
+  $action_code = $dri->get_info('action_code','message',$id); # these codes are in the manual, or see L<Net::DRI::Protocol::TMCH::Core::RegistryMessage> for examples
+  $action_text = $dri->get_info('action_text','message',$id);
+
 
 =head1 SUPPORT
 

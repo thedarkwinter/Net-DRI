@@ -68,18 +68,10 @@ See the LICENSE file that comes with this distribution for more details.
 =cut
 
 ####################################################################################################
-
-sub new
-{
- my $class=shift;
- my $self=$class->SUPER::new(@_);
- return $self;
-}
-
-sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'Deloitte'; }
-sub tlds     { return qw /ngtld/; } # FIXME ? 
-sub object_types { return ('mark'); }
+sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
+sub name          { return 'Deloitte'; }
+sub tlds          { return (); } 
+sub object_types  { return ('mark'); }
 sub profile_types { return qw/tmch/; }
 
 sub transport_protocol_default
@@ -88,6 +80,10 @@ sub transport_protocol_default
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::TMCH',{}) if $type eq 'tmch';
  return;
 }
+
+####################################################################################################
+## Mark specific commands
+## If and when other clearing houses come to be, these should probably be moved to DRD.pm
 
 sub mark_check {
  my ($self,$ndr,$mark,$rd)=@_;
@@ -137,18 +133,15 @@ sub mark_renew {
  return $rc;
 }
 
-sub mark_transfer_request {
-	my ($self,$ndr,$mark,$rd)=@_;
-	my $rc=$ndr->process('mark','transfer_request',[$mark,$rd]);
-	return $rc;
+sub mark_transfer {
+ my ($self,$ndr,$mark,$op,$rd)=@_;
+ $rd=Net::DRI::Util::create_params('domain_transfer',$rd);
+ Net::DRI::Exception::usererr_invalid_parameters('Transfer operation must be start') unless ($op=~m/^(?:start)$/);
+ Net::DRI::Exception::usererr_invalid_parameters('Authcode is required') unless ($rd->{auth} && $rd->{auth}->{pw});
+ return $ndr->process('mark','transfer_request',[$mark,$rd]) if $op eq 'start';
 }
 
-sub mark_transfer_execute {
-	my ($self,$ndr,$mark,$rd)=@_;
-	my $rc=$ndr->process('mark','transfer_execute',[$mark,$rd]);
-	return $rc;
-}
-
+sub mark_transfer_start { my ($self,$ndr,$mark,$rd)=@_; return $self->mark_transfer($ndr,$mark,'start',$rd); }
 
 ####################################################################################################
 
