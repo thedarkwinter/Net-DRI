@@ -550,8 +550,8 @@ sub parse_signed_mark
 
    $s{'validated'} = undef;
    eval { ## If not installed then ignore. This should maybe be replaced with Net::TMCH if it does the job?
-   require Net::SAML2::XML::Sig;
-   $s{'validated'}=Net::SAML2::XML::Sig->new()->verify($start->toString()); ## TODO : is this working ok ?
+    require Net::SAML2::XML::Sig;
+    $s{'validated'}=Net::SAML2::XML::Sig->new()->verify($start->toString()); ## TODO : is this working ok ?
    };
 
    $smark{'signature'}=\%s;
