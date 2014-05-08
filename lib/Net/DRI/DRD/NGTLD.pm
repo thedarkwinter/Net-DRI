@@ -72,7 +72,7 @@ There are a number of options that can be defined in the hash send to this unit
 
 =back
 
- $dri->add_registry('NGTLD',{clid => '...',provider=>'...',name=>'...', tlds=>'...',tlds=>[]});
+ $dri->add_registry('NGTLD',{clid => '...',provider=>'...',name=>'...', tlds=>[]});
 
 =head3 Selecting a back end provider
 
@@ -355,7 +355,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
  $dri->add_registry('NGTLD',{provider=>'centralnic'});
 
-=head3 Status: In progress
+=head3 Status: Working
 
 =head3 TLDs
 
@@ -502,7 +502,7 @@ xn--q9jyb4c ads android boo car dad day eat esq fly foo here how ing kid meme mo
 
 =head3 TLDs
 
-academy accountants agency architect associates attorney bargains bike boutique builders business cab camera camp capital cards care careers cash catering center cheap church claims cleaning clinic clothing codes coffee community company computer condos construction consulting contractors cool credit creditcard cruises dating degree dental dentist diamonds digital directory discount domains education email engineering enterprises equipment estate events exchange expert exposed fail fan farm finance financial fish fitness flights florist foundation fund gallery games glass graphics gripe guide guru haus healthcare holdings holiday hospital house industries institute insure international investments kitchen land lawyer lease life lighting limited limo loans maison management market marketing media medical mortgage network partners parts pets photography photos pictures plumbing productions properties recipes reisen rentals repair report reviews rocks schule services shoes singles software solar solutions sports supplies supply support surgery systems tax technology tienda tips today tools tours town toys training university vacations ventures vet viajes villas vin vision voyage watch works wtf xn--czrs0t xn--unup4y xn--vhquv zone
+academy accountants agency architect associates attorney bargains bike boutique builders business cab camera camp capital cards care careers cash catering center cheap church claims cleaning clinic clothing codes coffee community company computer condos construction consulting contractors cool credit creditcard cruises dating degree dental dentist diamonds digital directory discount domains education email engineering enterprises equipment estate events exchange expert exposed fail fan farm finance financial fish fitness flights florist foundation fund gallery games glass graphics gripe guide guru haus healthcare holdings holiday hospital house industries institute insure international investments kitchen land lawyer lease life lighting limited limo loans maison management market marketing media medical mortgage network partners parts pets photography photos pictures plumbing productions properties recipes reisen rentals repair report reviews schule services shoes singles software solar solutions sports supplies supply support surgery systems tax technology tienda tips today tools tours town toys training university vacations ventures vet viajes villas vin vision voyage watch works wtf xn--czrs0t xn--unup4y xn--vhquv zone
 
 =head3 Custom extensions
 
@@ -521,7 +521,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.zone','academy','accountants','agency','architect','associates','attorney','bargains','bike','boutique','builders','business','cab','camera','camp','capital','cards','care','careers','cash','catering','center','cheap','church','claims','cleaning','clinic','clothing','codes','coffee','community','company','computer','condos','construction','consulting','contractors','cool','credit','creditcard','cruises','dating','degree','dental','dentist','diamonds','digital','directory','discount','domains','education','email','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','fail','fan','farm','finance','financial','fish','fitness','flights','florist','foundation','fund','gallery','games','glass','graphics','gripe','guide','guru','haus','healthcare','holdings','holiday','hospital','house','industries','institute','insure','international','investments','kitchen','land','lawyer','lease','life','lighting','limited','limo','loans','maison','management','market','marketing','media','medical','mortgage','network','partners','parts','pets','photography','photos','pictures','plumbing','productions','properties','recipes','reisen','rentals','repair','report','reviews','rocks','schule','services','shoes','singles','software','solar','solutions','sports','supplies','supply','support','surgery','systems','tax','technology','tienda','tips','today','tools','tours','town','toys','training','university','vacations','ventures','vet','viajes','villas','vin','vision','voyage','watch','works','wtf','xn-czrs0t','xn--unup4y','xn--vhquv','zone'],
+     tlds => ['dpml.zone','academy','accountants','agency','architect','associates','attorney','bargains','bike','boutique','builders','business','cab','camera','camp','capital','cards','care','careers','cash','catering','center','cheap','church','claims','cleaning','clinic','clothing','codes','coffee','community','company','computer','condos','construction','consulting','contractors','cool','credit','creditcard','cruises','dating','degree','dental','dentist','diamonds','digital','directory','discount','domains','education','email','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','fail','fan','farm','finance','financial','fish','fitness','flights','florist','foundation','fund','gallery','games','glass','graphics','gripe','guide','guru','haus','healthcare','holdings','holiday','hospital','house','industries','institute','insure','international','investments','kitchen','land','lawyer','lease','life','lighting','limited','limo','loans','maison','management','market','marketing','media','medical','mortgage','network','partners','parts','pets','photography','photos','pictures','plumbing','productions','properties','recipes','reisen','rentals','repair','report','reviews','schule','services','shoes','singles','software','solar','solutions','sports','supplies','supply','support','surgery','systems','tax','technology','tienda','tips','today','tools','tours','town','toys','training','university','vacations','ventures','vet','viajes','villas','vin','vision','voyage','watch','works','wtf','xn-czrs0t','xn--unup4y','xn--vhquv','zone'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
    } if $bep eq 'donuts';
 
@@ -868,7 +868,7 @@ Contended TLD's not included
 
 =head3 TLDs
 
-dpml.pub actor airforce consulting dance democrat futbol haus immobilien kaufen moda ninja pub republican reviews rocks social
+dpml.pub actor airforce army attorney consulting dance degree democrat dentist engineer futbol gives haus immobilien kaufen lawyer market moda mortgage navy ninja pub rehab republican reviews rocks social software vet
 
 Contended TLD's not included
 
@@ -889,7 +889,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.pub','actor','airforce','consulting','dance','democrat','futbol','haus','immobilien','kaufen','moda','ninja','pub','republican','reviews','rocks','social'],
+     tlds => ['dpml.pub','actor','airforce','army','attorney','consulting','dance','degree','democrat','dentist','engineer','futbol','gives','haus','immobilien','kaufen','lawyer','market','moda','mortgage','navy','ninja','pub','rehab','republican','reviews','rocks','social','software','vet'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
    } if $bep eq 'rightside';
 
@@ -914,6 +914,7 @@ amsterdam
      bep_type => undef, # TODO: check this
      tlds => ['amsterdam'],
    } if $bep eq 'sidn';
+
 =pod
 
 
