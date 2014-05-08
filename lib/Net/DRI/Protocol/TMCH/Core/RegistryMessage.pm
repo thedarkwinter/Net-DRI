@@ -32,34 +32,12 @@ sub register_commands
  my %msg=(
            retrieve => [ \&Net::DRI::Protocol::EPP::Core::RegistryMessage::pollreq, \&Net::DRI::Protocol::EPP::Core::RegistryMessage::parse_poll ],
            delete   => [ \&Net::DRI::Protocol::EPP::Core::RegistryMessage::pollack ],
-           result => [ undef, \&parse_balance ],
          );
   my %nots=(
-           parse => [undef,\&parse_poll],
+           parse => [undef,\&parse],
            );
 
  return { 'message' => \%msg, 'notifications'=>\%nots };
-}
-
-####################################################################################################
-#### Message (Balance)
-
-sub parse_balance
-{
- use Data::Dumper;
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $NS=$po->ns('_main');
- return unless my $mes=$po->message();
- return unless my $root = $mes->node_resdata();
- return unless my $b = $root->getElementsByTagName('balance');
-
- foreach my $el (Net::DRI::Util::xml_list_children($b->get_node(1)))
- {
-  my ($n,$c)=@$el;
-  $rinfo->{message}->{balance}->{Net::DRI::Util::xml2perl($n)} = $c->textContent() if $n =~ m/^(amount|statusPoints)$/;
-  $rinfo->{message}->{balance}->{currency} = $c->getAttribute('currency') if $c->hasAttribute('currency');
- }
- return;
 }
 
 ####################################################################################################
@@ -67,7 +45,7 @@ sub parse_balance
 
 # Parse any additional stuff above and beyond the Basic EPP polling.
 # At the moment it just changes the action if the content matches a known result
-sub parse_poll
+sub parse
 {
  my ($po, $otype, $oaction, $oname, $rinfo) = @_;
  my $mes=$po->message();
@@ -81,7 +59,7 @@ sub parse_poll
    return;
  }
  
- if ($content =~ m/^Mark mark renewal approved/) # no code on this one? :)
+ if ($content =~ m/^Mark mark renewal approved/) # this might be a tmchv1 thing (?)
  {
   $rinfo->{$otype}->{$oname}->{action} = 'renewed';
   $rinfo->{$otype}->{$oname}->{status} = 'verified';

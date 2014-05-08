@@ -8,9 +8,8 @@ use Net::DRI::Data::Raw;
 use MIME::Base64;
 use DateTime;
 use DateTime::Duration;
-use Data::Dumper;
 
-use Test::More tests => 217;
+use Test::More tests => 218;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -212,7 +211,7 @@ is($R1,$E1.'<command><info type="file"><id>00000113675751323-1</id></info><clTRI
 is($rc->is_success(), 1, 'mark_info_enc is_success');
 
 # info with cases
-$R2=$E1.'<response>'.r().'<resData><infData><id>000001136757513215-1</id><status s="verified" /><pouStatus s="valid" /><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><trademark><id>000001136757513215-1</id><markName>Example 3</markName><holder entitlement="owner"><name>Example name</name><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>LY</cc></addr><email>test@test.test</email></holder><jurisdiction>LY</jurisdiction><class>35</class><class>36</class><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><regNum>234235</regNum><regDate>2009-08-16T00:00:00Z</regDate><exDate>2015-08-16T00:00:00Z</exDate></trademark></mark><label><aLabel>example-one</aLabel><uLabel>example-one</uLabel><smdInclusion enable="0" /><claimsNotify enable="0" /></label><case><id>case-165955219104862426891240536623</id><court><refNum>987654321</refNum><cc>BE</cc><courtName>Bla</courtName><caseLang>Spanish</caseLang></court><status s="new" /><label><aLabel>label5</aLabel><status s="new" /></label><label><aLabel>label3</aLabel><status s="new" /></label><label><aLabel>label2</aLabel><status s="new" /></label><label><aLabel>label1</aLabel><status s="new" /></label><label><aLabel>label4</aLabel><status s="new" /></label><upDate>2013-10-09T10:20:45.2Z</upDate></case><case><id>case-176169232111416328571942201148</id><udrp><caseNo>456</caseNo><udrpProvider>Asian Domain Name Dispute Resolution Centre</udrpProvider><caseLang>Afrikaans</caseLang></udrp><status s="new" /><label><aLabel>second1</aLabel><status s="new" /></label><upDate>2013-10-09T10:21:35.0Z</upDate></case><crDate>2013-05-03T11:58:53.3Z</crDate><upDate>2013-12-18T10:45:53.3Z</upDate><exDate>2014-05-03T00:00:00Z</exDate></infData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><infData><id>000001136757513215-1</id><status s="verified" /><pouStatus s="valid" /><mark xmlns="urn:ietf:params:xml:ns:mark-1.0"><trademark><id>000001136757513215-1</id><markName>Example 3</markName><holder entitlement="owner"><name>Example name</name><org>Example Inc.</org><addr><street>123 Example Dr.</street><street>Suite 100</street><city>Reston</city><sp>VA</sp><pc>20190</pc><cc>LY</cc></addr><email>test@test.test</email></holder><jurisdiction>LY</jurisdiction><class>35</class><class>36</class><goodsAndServices>Dirigendas et eiusmodi featuring infringo in airfare et cartam servicia.</goodsAndServices><regNum>234235</regNum><regDate>2009-08-16T00:00:00Z</regDate><exDate>2015-08-16T00:00:00Z</exDate></trademark></mark><label><aLabel>example-one</aLabel><uLabel>example-one</uLabel><smdInclusion enable="0" /><claimsNotify enable="0" /></label><case><id>case-165955219104862426891240536623</id><court><refNum>987654321</refNum><cc>BE</cc><courtName>Bla</courtName><caseLang>Spanish</caseLang></court><status s="new" /><label><aLabel>label5</aLabel><status s="new" /></label><label><aLabel>label3</aLabel><status s="new" /></label><label><aLabel>label2</aLabel><status s="new" /></label><label><aLabel>label1</aLabel><status s="new" /></label><label><aLabel>label4</aLabel><status s="new" /></label><comment>this is a comment</comment><upDate>2013-10-09T10:20:45.2Z</upDate></case><case><id>case-176169232111416328571942201148</id><udrp><caseNo>456</caseNo><udrpProvider>Asian Domain Name Dispute Resolution Centre</udrpProvider><caseLang>Afrikaans</caseLang></udrp><status s="new" /><label><aLabel>second1</aLabel><status s="new" /></label><upDate>2013-10-09T10:21:35.0Z</upDate></case><crDate>2013-05-03T11:58:53.3Z</crDate><upDate>2013-12-18T10:45:53.3Z</upDate><exDate>2014-05-03T00:00:00Z</exDate></infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->mark_info('000001136757513215-1');
 is($R1,$E1.'<command><info><id>000001136757513215-1</id></info><clTRID>ABC-12345</clTRID></command>'.$E2,'mark_info (retrieve case data) build');
 is($rc->is_success(),1,'mark_info (retrieve case data) is_success');
@@ -265,6 +264,8 @@ is($c1->{'court'}->{'name'},'Bla','mark_info get_info(case1) language');
 $s=$c1->{'status'};
 isa_ok($s,'Net::DRI::Data::StatusList','mark_info get_info(case1) status');
 is_deeply([$s->list_status()],['new'],'mark_info get_info(case1) status is verified');
+@comments=@{$c1->{'comments'}};
+is_deeply($c1->{comments},['this is a comment'],'mark_info get_info(case1) comments');
 @labels=@{$c1->{'labels'}};
 $l1=$labels[0];
 isa_ok($l1,'HASH','mark_info get_info(case1) label1');

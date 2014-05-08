@@ -252,8 +252,6 @@ sub core_modules
  return map { 'Net::DRI::Protocol::TMCH::Core::'.$_ } @core;
 }
 
-sub core_contact_types { return qw/agent owder thirdparty/; } # FIXME do i need this?
-
 sub ns
 {
  my ($self,$add)=@_;

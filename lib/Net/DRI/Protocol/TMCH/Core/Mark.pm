@@ -23,7 +23,6 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark;
-use Data::Dumper;
 
 =pod
 
@@ -94,7 +93,7 @@ sub register_commands
 sub _build_labels
 {
   my $labels = shift;
-  Net::DRI::Exception::usererr_insufficient_parameters('at least one label is required') unless $labels;
+  Net::DRI::Exception::usererr_insufficient_parameters('at least one label is required') unless $labels && ref $labels eq 'ARRAY';
 
   my @labels;
   foreach my $l (@{$labels})
@@ -112,8 +111,8 @@ sub _build_labels
 sub _build_docs
 {
   my  $documents = shift;
-  return unless $documents;
-  my  @docs;
+  return unless $documents && ref $documents eq 'ARRAY';
+  my @docs;
   foreach my $d (@{$documents})
   {
     my @d;
@@ -125,36 +124,17 @@ sub _build_docs
    return @docs;
 }
 
-sub _build_udrps
-{
-	my $udrps = shift;
-	return unless $udrps;
-	
-	my @udrps;
-	foreach my $u (@{$udrps})
-	{
-    # FIXME, whats going on here? :)
-		my @u = ['caseNo',$u->{case_no}];
-		@u = ['udrpProvider',$u->{udrp_provider}];
-		@u = ['caseLang',$u->{language}];
-		push @udrps,['udrp',@u];
-	}
-	return @udrps;
-}
-
 sub _build_cases
 {
 	my $cases = shift;
-	return unless $cases;
+	return unless $cases && ref $cases eq 'ARRAY';
 	
 	my @cases;
 	my @c;
 	foreach my $c (@{$cases})
 	{
 		Net::DRI::Exception::usererr_insufficient_parameters('`id` field is not correct - "case-[0-9]{1,63}"') unless $c->{id} =~ m/^(case-.[0-9\-]{1,63})$/;		
-		#id
 		push @c,['id',$c->{id}] if $c->{id};		
-		#court
     if (exists $c->{court} && ref $c->{court} eq 'HASH')
 		{
       my $court = $c->{court};
@@ -165,7 +145,6 @@ sub _build_cases
 			push @court,['caseLang',$court->{language}] if $court->{language};
 			push @c,['court',@court];
 		}		
-		#udrp		
     if (exists $c->{udrp} && ref $c->{udrp} eq 'HASH')
 		{
       my $udrp= $c->{udrp};
@@ -175,25 +154,29 @@ sub _build_cases
 			push @u,['caseLang',$udrp->{language}] if $udrp->{language};	
 			push @c,['udrp',@u];
 		}		
-		#document
-		foreach my $doc (@{$c->{documents}})
-		{
-			my @docs;
-			push @docs,['docType',$doc->{doc_type}] if $doc->{doc_type};
-			push @docs,['fileName',$doc->{file_name}] if $doc->{file_name};
-			push @docs,['fileType',$doc->{file_type}] if $doc->{file_type};
-			push @docs,['fileContent',$doc->{file_content}] if $doc->{file_content};
-			push @c,['document',@docs];
-		}		
-		#label
-		foreach my $label (@{$c->{labels}})
-		{
-			my @l;
-			push @l,['aLabel',$label->{a_label}] if $label->{a_label};
-			push @l,['smdInclusion', {'enable' => $label->{smd_inclusion}}] if $label->{smd_inclusion};
-    	push @l,['claimsNotify', {'enable' => $label->{claims_notify}}] if $label->{claims_notify};
-    	push @c,['label',@l];
-		}				
+    if (exists $c->{documents} && ref $c->{documents} eq 'ARRAY')
+    {
+     foreach my $doc (@{$c->{documents}})
+     {
+       my @docs;
+       push @docs,['docType',$doc->{doc_type}] if $doc->{doc_type};
+       push @docs,['fileName',$doc->{file_name}] if $doc->{file_name};
+       push @docs,['fileType',$doc->{file_type}] if $doc->{file_type};
+       push @docs,['fileContent',$doc->{file_content}] if $doc->{file_content};
+       push @c,['document',@docs];
+     }		
+    }
+    if (exists $c->{labels} && ref $c->{labels} eq 'ARRAY')
+    {
+     foreach my $label (@{$c->{labels}})
+     {
+       my @l;
+       push @l,['aLabel',$label->{a_label}] if $label->{a_label};
+       push @l,['smdInclusion', {'enable' => $label->{smd_inclusion}}] if $label->{smd_inclusion};
+       push @l,['claimsNotify', {'enable' => $label->{claims_notify}}] if $label->{claims_notify};
+       push @c,['label',@l];
+     }				
+    }
 	}
 	push @cases,['case',@c];
 	return @cases;
@@ -242,10 +225,10 @@ sub _parse_case
  my $mes=$po->message();
  return unless $root;
  my $case = {};
- my (@s,@labels,@docs);
+ my (@s,@labels,@docs,@comments);
  foreach my $el (Net::DRI::Util::xml_list_children($root)) {
   my ($n,$c)=@$el;
-  if ($n =~ m/^(?:id|comment)$/) # FIXME, should comment be array?
+  if ($n eq 'id')
   {
    $case->{$n} = $c->textContent();
   } elsif ($n eq 'upDate')
@@ -279,11 +262,15 @@ sub _parse_case
   } elsif ($n eq 'document')
   {
    push @docs,_parse_doc($po,$otype,$oaction,$oname,$rinfo,$c);
+  } elsif ($n eq 'comment')
+  {
+   push @comments,$c->textContent();
   }
  }
  $case->{status}=$po->create_local_object('status')->add(@s) if @s;
  $case->{labels} = \@labels if @labels;
  $case->{documents} = \@docs if @docs;
+ $case->{comments}=\@comments if @comments;
  return $case;
 }
 
@@ -454,8 +441,8 @@ sub create
  my @mark = Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::build_mark($rd->{mark});
  push @body,[ 'mark', {xmlns => 'urn:ietf:params:xml:ns:mark-1.0'},@mark];
  push @body,['period',{'unit'=>'y'},$rd->{duration}->in_units('years')] if $rd->{duration};
- push @body, _build_docs($rd->{documents}) if defined $rd->{documents}; # DOCUMENTS
- push @body, _build_labels($rd->{labels}) if defined $rd->{labels}; # LABELS
+ push @body, _build_docs($rd->{documents}) if defined $rd->{documents};
+ push @body, _build_labels($rd->{labels}) if defined $rd->{labels};
  $mes->command_body(\@body);
 }
 
@@ -501,9 +488,8 @@ sub update
  my $addcases = $todo->add('cases') if $todo->add('cases');
  my $delcases = $todo->del('cases') if $todo->del('cases');
  my $chgcases = $todo->set('cases') if $todo->set('cases');  
- my $addudrps = $todo->add('udrps') if $todo->add('udrps');
 
- return unless ($mark || $addlabels || $adddocs || $dellabels || $chglabels || $addcases || $delcases || $chgcases || $addudrps);
+ return unless ($mark || $addlabels || $adddocs || $dellabels || $chglabels || $addcases || $delcases || $chgcases);
 
  my (@chg,@add,@del);
  $mes->command(['update']);
@@ -520,7 +506,6 @@ sub update
  push @add, _build_cases($addcases) if $addcases;
  push @del, _build_cases($delcases) if $delcases;
  push @chg, _build_cases($chgcases) if $chgcases;
- push @add, _build_udrps($addudrps) if $addudrps;
 
  my @body = ['id',$mark];
  push @body, ['add',@add] if @add;
@@ -533,16 +518,17 @@ sub update
 sub renew
 {
  my ($tmch,$mark,$rd)=@_;
- # FIXME check these are duractions!!!
  my $curexp=Net::DRI::Util::has_key($rd,'current_expiration')? $rd->{current_expiration} : undef;
  Net::DRI::Exception::usererr_insufficient_parameters('current expiration date') unless defined($curexp);
- $curexp=$curexp->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($curexp) && Net::DRI::Util::check_isa($curexp,'DateTime'));
+ $curexp=$curexp->clone()->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($curexp) && Net::DRI::Util::check_isa($curexp,'DateTime'));
  Net::DRI::Exception::usererr_invalid_parameters('current expiration date must be YYYY-MM-DD') unless $curexp=~m/^\d{4}-\d{2}-\d{2}$/;
+
  # currently only extensions for 1 year and 3 years are allowed
-	unless ($rd->{duration}->in_units('years') == 1 || $rd->{duration}->in_units('years') == 3)
-	{
-		Net::DRI::Exception::usererr_invalid_parameters('only extensions for 1 year and 3 years are allowed');
-	}	  
+ unless (Net::DRI::Util::has_duration($rd) && $rd->{duration}->in_units('years') =~ m/^(?:1|3)$/)
+ {
+	Net::DRI::Exception::usererr_invalid_parameters('only extensions for 1 year and 3 years are allowed');
+ }
+ 
  my $mes=$tmch->message();
  my @d;
  push @d,['id',$mark];
