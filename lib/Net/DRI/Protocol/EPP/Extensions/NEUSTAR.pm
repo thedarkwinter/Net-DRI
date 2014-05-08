@@ -29,7 +29,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase NeuLevel::Message NeuLevel::Fee NeuLevel::NYCContact/; }
+sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase NeuLevel::Message NeuLevel::Fee NeuLevel::EXTContact/; }
 
 ####################################################################################################
 1;

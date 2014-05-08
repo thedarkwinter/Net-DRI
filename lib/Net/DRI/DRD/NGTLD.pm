@@ -699,7 +699,8 @@ Contended TLD's not included
 =head3 Notes
 
 Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD. 
-In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension
+In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension for contacts and domains.
+See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact>
 
  $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'nyc'}); # using name
  $dri->target('nyc')->add_current_profile(....);

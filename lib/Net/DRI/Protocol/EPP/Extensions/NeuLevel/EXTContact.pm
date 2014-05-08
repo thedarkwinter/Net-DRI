@@ -1,4 +1,4 @@
-## Domain Registry Interface, Neulevel EPP NYC Contact Extension
+## Domain Registry Interface, Neulevel EPP EXT Contact Extension
 ##
 ## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::NeuLevel::NYCContact;
+package Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact;
 
 use strict;
 use warnings;
@@ -24,11 +24,20 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::NeuLevel::NYCContact - NeuLevel EPP NYCContact extension for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact - NeuLevel EPP EXTContact extension for Net::DRI
 
 =head1 DESCRIPTION
 
-Please see the README file for details.
+Adds the EXTContact extension. Currently used for .NYC domains
+
+  # Create EXTContact (see L<Net::DRI::Data::Contact::NYC>)
+  $c = $dri->local_object('contact');
+  $c->srid('abcde')->.....
+  $c->nexus_category('ORG'); # ORG or INDIV
+  $rc=$dri->contact_create($c);
+  
+  # Create domain
+  $rc=$dri->domain_create('example.nyc',{..., {'ext_contact'=>$c->srid()});
 
 =head1 SUPPORT
 
@@ -66,18 +75,30 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           create => [ \&create, undef ],
-           update => [ \&update, undef ],
-           info   => [ undef , \&parse ],
+ my %ctmp=(
+           create => [ \&contact_create, undef ],
+           update => [ \&contact_update, undef ],
+           info   => [ undef , \&contact_parse ],
+         );
+ my %dtmp=(
+           create => [ \&domain_create, undef ],
+           update => [ \&domain_update, undef ],
+           info   => [ undef , \&domain_parse ],
          );
 
- return { 'contact' => \%tmp };
+ return { 'contact' => \%ctmp, 'domain' => \%dtmp };
+}
+
+sub setup
+{
+ my ($self,$po) = @_;
+ $po->capabilities('domain_update','ext_contact',['set']);
 }
 
 ####################################################################################################
-
-sub parse
+#### Contact Functions
+ 
+sub contact_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
@@ -102,10 +123,10 @@ sub parse
  return;
 }
 
-sub create
+sub contact_create
 {
  my ($epp,$c)=@_;
- return unless $c->nexus_category();
+ return unless (grep $_ eq 'nexus_category', $c->attributes()) && defined $c->{nexus_category};
  my $unspec = 'EXTContact=' . ($c->ext_contact() && $c->ext_contact() eq 'N' ? 'N':'Y') . ' NexusCategory=' . uc($c->nexus_category());
  my $mes=$epp->message();
  my $eid=$mes->command_extension_register('neulevel','extension');
@@ -113,16 +134,63 @@ sub create
  return;
 }
 
-sub update
+sub contact_update
 {
  my ($epp,$oldc,$todo)=@_;
  my $c=$todo->set('info');
- return unless $c->nexus_category();
+ return unless (grep $_ eq 'nexus_category', $c->attributes()) && defined $c->{nexus_category};
  my $unspec = 'EXTContact=' . ($c->ext_contact() && $c->ext_contact() eq 'N' ? 'N':'Y') . ' NexusCategory=' . uc($c->nexus_category());
  my $mes=$epp->message();
  my $eid=$mes->command_extension_register('neulevel','extension');
  $mes->command_extension($eid,['neulevel:unspec', $unspec]);
  return;
 }
+
+
+####################################################################################################
+#### Domain Functions
+ 
+sub domain_parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ my $infdata=$mes->get_extension('neulevel','extension');
+ return unless defined $infdata;
+ 
+ my $unspec;
+ foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+ {
+  my ($n,$c)=@$el;
+  next unless $n eq 'unspec';
+  foreach my $kv (split(/ /,$c->textContent()))
+  {
+   my ($k,$v) = split(/=/,$kv);
+   $rinfo->{$otype}->{$oname}->{ext_contact} = $v if $k eq 'EXTContact';
+  }
+ }
+
+ return;
+}
+
+sub domain_create
+{
+ my ($epp,$domain,$rd)=@_;
+ return unless exists $rd->{ext_contact};
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('neulevel','extension');
+ $mes->command_extension($eid,['neulevel:unspec', 'EXTContact=' . $rd->{ext_contact}]);
+ return;
+}
+
+sub domain_update
+{
+ my ($epp,$domain,$todo)=@_;
+ return unless my $ext_contact = $todo->set('ext_contact');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('neulevel','extension');
+ $mes->command_extension($eid,['neulevel:unspec', 'EXTContact=' . $ext_contact]);
+ return;
+}
+
 
 1;
