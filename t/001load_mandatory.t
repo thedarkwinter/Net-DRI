@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 434;
+use Test::More tests => 436;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -123,6 +123,7 @@ use_ok('Net::DRI::Data::Contact::COOP');
 use_ok('Net::DRI::Data::Contact::LU');
 use_ok('Net::DRI::Data::Contact::ASIA');
 use_ok('Net::DRI::Data::Contact::Nominet');
+use_ok('Net::DRI::Data::Contact::NYC');
 use_ok('Net::DRI::Data::Contact::DENIC');
 use_ok('Net::DRI::Data::Contact::SWITCH');
 use_ok('Net::DRI::Data::Contact::NO');
@@ -269,6 +270,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::UIN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::IDNLanguage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::WhoisType');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message');
+use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::NYCContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NO::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NO::Domain');

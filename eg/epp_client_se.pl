@@ -43,7 +43,7 @@ use Getopt::Std;
 use Data::Dumper;
 $Data::Dumper::Indent=1;
 
-use encoding "utf-8";    # assume utf-8 encoded argument input
+use encoding "utf-8";    # assume utf-8 encoded argument input #! NOTE, depricated in Perl 5.18+
 
 our $VERSION     = '0.90.se';
 our $SVN_VERSION = do {
@@ -121,6 +121,7 @@ die "No port specified"      unless ($opt_P);
 die "No client id specified" unless ($opt_C);
 die "No password specified"  unless ($opt_W);
 die "No client certificate specified"  unless ($opt_F);
+die "Client certificate file not found ($opt_F)"  unless (-e $opt_F);
 die "No certificate password specified"  unless ($opt_w);
 die "No command specified" unless ($opt_c);
 

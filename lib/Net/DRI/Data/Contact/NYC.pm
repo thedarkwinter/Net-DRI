@@ -1,7 +1,7 @@
-## Domain Registry Interface, Handling of contact data for UNIREG
+## Domain Registry Interface, Handling of contact data for NYC
 ##
 ## Copyright (c) 2006,2008-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Data::Contact::UNIREG;
+package Net::DRI::Data::Contact::NYC;
 
 use utf8;
 use strict;
@@ -26,34 +26,29 @@ use Email::Valid;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-__PACKAGE__->register_attributes(qw(challenge alt_email mobile));
+__PACKAGE__->register_attributes(qw(ext_contact nexus_category));
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Data::Contact::UNIREG - Handle UNIREG contact data for Net::DRI
+Net::DRI::Data::Contact::NYC - Handle .NYC contact data for Net::DRI
 
 =head1 DESCRIPTION
 
-This subclass of Net::DRI::Data::Contact adds accessors and validation for UNIREG specific data. See the extension for more information: L<Net::DRI::Protocol::EPP::Extensions::UNIREG::Centric>
+This subclass of Net::DRI::Data::Contact adds accessors and validation for NYC specific data.
 
 =head1 METHODS
 
 The following accessors/mutators can be called in chain, as they all return the object itself.
 
-=head2 alt_email()
+=head2 nexus_category()
 
-Optional alternative email address
+One of the contacts must be based in New York, and the nexus category must be one of INDIV or ORG
 
-=head2 mobile()
+=head2 ext_contact()
 
-Optional mobile phone number
-
-=head2 challenge()
-
-An array of challenge qusetions an answers, minumum of 3, maximum of 5.
-  my @ch = ( {question=>'my question',answer=>'my answer'}, {}, {})
+Y/N defining whether or not this is the nexus contact. This will default to Y if not set and nexus_category is set.
 
 =head1 SUPPORT
 
@@ -74,7 +69,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2014 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -93,29 +88,9 @@ sub validate
  my ($self,$change)=@_;
  $change||=0;
  $self->SUPER::validate(1); ## will trigger an Exception if problem
-
- my @errs;
- push @errs,'alt_email' if ($self->alt_email() && ! (Net::DRI::Util::xml_is_token($self->alt_email(),1,undef)  && Email::Valid->rfc822($self->alt_email())));
- push @errs,'mobile' if ($self->mobile() && ! ($self->mobile()=~m/^\+[0-9]{1,3}\.[0-9]{1,14}$/));
-
- if (defined $self->challenge())
- {
-  if (ref($self->challenge()) ne 'ARRAY' || $#{$self->challenge()} < 2 || $#{$self->challenge()}>4)
-  {
-   Net::DRI::Exception::usererr_insufficient_parameters('challenge must be an array of between 3 and 5 questions+answers');
-  } else
-  {
-   foreach my $c (@{$self->challenge()})
-   {
-    if (!exists $c->{'question'} || !exists $c->{'answer'} || grep { !Net::DRI::Util::xml_is_normalizedstring($_,1,255) }  ($c->{'question'},$c->{'answer'}) )
-    {
-     push @errs,'challenge';
-     last;
-    }
-   }
-  }
- }
- Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
+ return 1 unless $self->nexus_category();
+ Net::DRI::Exception::usererr_insufficient_parameters('Nexus Contact must be in New York (sp)') unless uc($self->sp()) =~ m/^(?:NY|NEW YORK|NEW YORK STATE)$/;
+ Net::DRI::Exception::usererr_insufficient_parameters('Nexus Category must be INDIV or ORG') unless uc($self->nexus_category()) =~ m/^(?:INDIV|ORG)$/;
  return 1;
 }
 

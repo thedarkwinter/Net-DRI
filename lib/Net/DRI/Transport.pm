@@ -137,7 +137,7 @@ sub parse_ssl_options
 
  foreach my $s (qw/key_file cert_file ca_file ca_path version passwd_cb/)
  {
-  next unless exists $ropts->{'ssl_'.$s};
+  next unless exists $ropts->{'ssl_'.$s} && defined $ropts->{'ssl_'.$s};
   Net::DRI::Exception::usererr_invalid_parameters('File "'.$ropts->{'ssl_'.$s}.'" does not exist or is unreadable by current UID') if ($s=~m/_file$/ && ! -r $ropts->{'ssl_'.$s});
   Net::DRI::Exception::usererr_invalid_parameters('Directory "'.$ropts->{'ssl_'.$s}.'" does not exist')                            if ($s=~m/_path$/ && ! -d $ropts->{'ssl_'.$s});
   $s{'SSL_'.$s}=$ropts->{'ssl_'.$s};

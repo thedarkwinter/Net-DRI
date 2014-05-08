@@ -11,6 +11,8 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 + Added CRR (Charleston Road Regisry) DRD and to NGTLD drd
 + Add KSRegistry (NGTLD only)
 = Split MAM to MAM and MAMSRS as the latter are their clients have have dedicated EPP servers
++ Add NYC (Neustar) Nexus contact extension
+= Split KS into StartingDot and KS as StartingDot is shared while other KS tlds are dedicated
 
 #### ccTLDs
 = Protocol/EPP/Extensions/NO/Domain : bugfix on the deleteDate parameter handling - form Net-DRI-0.96_05.no.1.0.1_1 (Jørgen Thomsen/Trond Haugen)

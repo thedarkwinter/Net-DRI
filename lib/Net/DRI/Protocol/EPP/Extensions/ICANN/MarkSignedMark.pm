@@ -555,8 +555,11 @@ sub parse_signed_mark
                x509_certificate => lined_content($node,$signs,qw/KeyInfo X509Data X509Certificate/),
              };
 
+   $s{'validated'} = undef;
+   eval { ## If not installed then ignore. This should maybe be replaced with Net::TMCH if it does the job?
    require Net::SAML2::XML::Sig;
    $s{'validated'}=Net::SAML2::XML::Sig->new()->verify($start->toString()); ## TODO : is this working ok ?
+   };
 
    $smark{'signature'}=\%s;
   }
