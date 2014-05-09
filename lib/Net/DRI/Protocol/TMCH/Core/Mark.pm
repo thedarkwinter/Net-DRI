@@ -98,11 +98,11 @@ sub _build_labels
   my @labels;
   foreach my $l (@{$labels})
   {
-    Net::DRI::Exception::usererr_insufficient_parameters('label data is not correct') unless $l->{a_label} =~ m/^[a-z0-9\-]{1,63}$/ && $l->{smd_inclusion}=~ m/^(0|1)$/ && $l->{claims_notify}=~ m/^(0|1)$/;
+    Net::DRI::Exception::usererr_insufficient_parameters('label data is not correct') unless $l->{a_label} =~ m/^[a-z0-9\-]{1,63}$/;
     my @l = ['aLabel',$l->{a_label}];
     #push @l, ['uLabel',$l->{u_label}] if $l->{u_label}; # this breaks it??
-    push @l,['smdInclusion', {'enable' => $l->{smd_inclusion}}];
-    push @l,['claimsNotify', {'enable' => $l->{claims_notify}}];
+    push @l,['smdInclusion', {'enable' => $l->{smd_inclusion}}] if exists $l->{smd_inclusion};
+    push @l,['claimsNotify', {'enable' => $l->{claims_notify}}] if exists $l->{claims_notify};
     push @labels,['label',@l];
   }
   return @labels;
