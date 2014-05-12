@@ -186,6 +186,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Report');
+use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Future');
 use_ok('Net::DRI::Protocol::EPP::Extensions::US');
 use_ok('Net::DRI::Protocol::EPP::Extensions::US::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign');

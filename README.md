@@ -16,7 +16,8 @@ Afilias, ARI, CentralNIC, CoreNIC, Charleston Road Registry, Donuts, Famous Four
 CoCCA, KNET, Nic.br, Nominet, OpenRegistry, SIDN, TCI, Verisign, ZACR
 
 ##### Trademark services
-TMCH (Deloitte): Curretly V1 only, and TMDB (IBM): CNIS and SMDRL only
+TMCH (Deloitte)
+TMDB (IBM): CNIS and SMDRL only
 
 ##### Added/Updated/Fixed support for ccTLDs
 UK, IT, ES, NO, SE/NU (IIS module), BE, Eu, DE, CH, ZA

@@ -1,6 +1,6 @@
 Net::DRI changelog from newest to oldest changes
 
-0.96_06_tdw_04 2014-04-?? DEVELOPMENT RELEASE
+0.96_06_tdw_04 2014-05-?? DEVELOPMENT RELEASE
 !! Note, this is not an official release !!
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
@@ -13,10 +13,12 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 = Split MAM to MAM and MAMSRS as the latter are their clients have have dedicated EPP servers
 + Add NYC (Neustar) Nexus contact extension
 = Split KS into StartingDot and KS as StartingDot is shared while other KS tlds are dedicated
++ Updated TMCH to API v2 (Michael Holloway/Paulo Jorge)
 
 #### ccTLDs
 = Protocol/EPP/Extensions/NO/Domain : bugfix on the deleteDate parameter handling - form Net-DRI-0.96_05.no.1.0.1_1 (Jørgen Thomsen/Trond Haugen)
 = Added Depricated versions of SE DRD and Contact objects for backwards compatability (Jan Saell)
++ Updated .PL to NASK v2 API, and added Future Extension (Paulo Jorge)
 
 0.96_06_tdw_03 2014-03-28 DEVELOPMENT RELEASE
 !! Note, this is not an official release !!

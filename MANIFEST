@@ -311,11 +311,11 @@ lib/Net/DRI/Protocol/EPP/Extensions/MOBI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NAME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NAME/EmailFwd.pm
+lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/EXTContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNLanguage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.pm
-lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/EXTContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NEUSTAR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NEWGTLD.pm
@@ -335,6 +335,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/NSgroup.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/PL/Future.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Report.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PRO.pm
@@ -473,6 +474,7 @@ MANIFEST			This list of files
 META.json			Module JSON meta-data (added by MakeMaker)
 META.yml			Module YAML meta-data (added by MakeMaker)
 README
+README.md
 SUPPORT
 t/001load_mandatory.t
 t/001load_optional.t
