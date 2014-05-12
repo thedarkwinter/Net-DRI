@@ -270,7 +270,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::UIN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::IDNLanguage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::WhoisType');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message');
-use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::NYCContact');
+use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NO::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NO::Domain');
