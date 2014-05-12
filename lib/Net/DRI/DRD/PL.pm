@@ -1,6 +1,7 @@
 ## Domain Registry Interface, .PL policies
 ##
 ## Copyright (c) 2006,2008-2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013-2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -79,7 +80,7 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'NASK'; }
 ## See http://www.dns.pl/english/dns-funk.html
 sub tlds     { return ('pl',map { $_.'.pl'} qw/aid agro atm auto biz com edu gmina gsm info mail miasta media mil net nieruchomosci nom org pc powiat priv realestate rel sex shop sklep sos szkola targi tm tourism travel turystyka/ ); }
-sub object_types { return ('domain','contact','ns'); }
+sub object_types { return ('domain','contact','ns','future'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
@@ -105,6 +106,110 @@ sub report_create
  my $rc=$ndr->process('report','create',[$id,$rp]);
  return $rc;
 }
+
+sub future_info
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('future','info',[$id,$rd]);
+}
+
+sub future_check # based domain_check from /lib/Net/DRI/DRD.pm
+{
+	my ($self,$ndr,@p)=@_;
+	my (@names,$rd);
+	foreach my $p (@p)
+	{
+		if (defined $p && ref $p eq 'HASH')
+		{
+			Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in future_check') if defined $rd;
+			$rd=Net::DRI::Util::create_params('future_check',$p);
+		}
+		$self->enforce_domain_name_constraints($ndr,$p,'check');
+    push @names,$p;
+	}
+	Net::DRI::Exception::usererr_insufficient_parameters('future_check needs at least one domain name to check') unless @names;
+	$rd={} unless defined $rd;
+
+	my (@rs,@todo);
+	my (%seendom,%seenrc);
+	foreach my $domain (@names)
+	{
+	  next if exists $seendom{$domain};
+	  $seendom{$domain}=1;
+	  my $rs=$ndr->try_restore_from_cache('future',$domain,'check');
+	  if (! defined $rs)
+	  {
+	   push @todo,$domain;
+	  } else
+    {
+      push @rs,$rs unless exists $seenrc{''.$rs}; ## Some ResultStatus may relate to multiple domain names (this is why we are doing this anyway !), so make sure not to use the same ResultStatus multiple times
+      $seenrc{''.$rs}=1;
+    }
+  }
+	return Net::DRI::Util::link_rs(@rs) unless @todo;
+
+	 if (@todo > 1 && $ndr->protocol()->has_action('future','check_multi'))
+	 {
+	  my $l=$self->info('check_limit');
+	  if (! defined $l)
+	  {
+	   $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for domain_check action. Please report if you know the correct value');
+	   $l=10;
+	  }
+	  while (@todo)
+	  {
+	   my @lt=splice(@todo,0,$l);
+	   push @rs,$ndr->process('future','check_multi',[\@lt,$rd]);
+	  }
+	 } else ## either one domain only, or more than one but no check_multi available at protocol level
+	 {
+	  push @rs,map { $ndr->process('future','check',[$_,$rd]); } @todo;
+	}
+	return Net::DRI::Util::link_rs(@rs);
+}
+
+sub future_create
+{
+	my ($self,$reg,$id,$rd)=@_;
+	return $reg->process('future','create',[$id,$rd]);
+}
+
+sub future_renew
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('future','renew',[$id,$rd]);
+}
+
+sub future_delete
+{
+ my ($self,$reg,$rd)=@_;
+ return $reg->process('future','delete',[$rd]);
+}
+
+sub future_update
+{
+ my ($self,$reg,$rd,$todo)=@_;
+ return $reg->process('future','update',[$rd,$todo]);
+}
+
+sub future_transfer_request
+{
+ my ($self,$reg,$rd,$rp)=@_;
+ return $reg->process('future','transfer_request',[$rd,$rp]);
+}
+
+sub future_transfer_query
+{
+ my ($self,$reg,$rd,$rp)=@_;
+ return $reg->process('future','transfer_query',[$rd,$rp]);
+}
+
+sub future_transfer_cancel
+{
+ my ($self,$reg,$rd,$rp)=@_;
+ return $reg->process('future','transfer_cancel',[$rd,$rp]);
+}
+
 
 ####################################################################################################
 1;
