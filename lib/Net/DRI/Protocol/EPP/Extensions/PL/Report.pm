@@ -31,7 +31,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'extreport' => [ 'urn:ietf:params:xml:ns:extreport-1.0','extreport-1.0.xsd' ] });
+ $po->ns({ 'extreport' => [ 'http://www.dns.pl/nask-epp-schema/extreport-2.0','extreport-2.0.xsd' ] });
  return;
 }
 

@@ -1,6 +1,7 @@
 ## Domain Registry Interface, NASK (.PL) EPP extensions (draft-zygmuntowicz-epp-pltld-03)
 ##
 ## Copyright (c) 2006,2008,2009,2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013-2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -65,17 +66,23 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub setup
 {
- my ($self,$rp)=@_;
- $self->ns({ pl_domain  => ['http://www.dns.pl/NASK-EPP/extdom-1.0','extdom-1.0.xsd'],
-             pl_contact => ['http://www.dns.pl/NASK-EPP/extcon-1.0','extcon-1.0.xsd'],
-            # future     => ['http://www.dns.pl/NASK-EPP/future-1.0','future-1.0.xsd'], ## TODO
-          });
- $self->capabilities('host_update','name',undef); ## No change of hostnames
- $self->factories('contact',sub { return Net::DRI::Data::Contact::PL->new(); });
- return;
+  my ($self,$rp)=@_;
+  $self->ns({
+      _main       => ['http://www.dns.pl/nask-epp-schema/epp-2.0','epp-2.0.xsd'],
+      domain      => ['http://www.dns.pl/nask-epp-schema/domain-2.0','domain-2.0.xsd'],
+      contact     => ['http://www.dns.pl/nask-epp-schema/contact-2.0','contact-2.0.xsd'],
+      host        => ['http://www.dns.pl/nask-epp-schema/host-2.0','host-2.0.xsd'],
+      pl_contact  => ['http://www.dns.pl/nask-epp-schema/extcon-2.0','extcon-2.0.xsd'],
+      pl_domain   => ['http://www.dns.pl/nask-epp-schema/extdom-2.0','extdom-2.0.xsd'],
+      future      => ['http://www.dns.pl/nask-epp-schema/future-2.0','future-2.0.xsd'],
+    });
+
+  $self->capabilities('host_update','name',undef); ## No change of hostnames
+  $self->factories('contact',sub { return Net::DRI::Data::Contact::PL->new(); });
+  return;
 }
 
-sub default_extensions { return qw/PL::Domain PL::Contact PL::Message PL::Report/; } ## TODO: PL::Future
+sub default_extensions { return qw/PL::Domain PL::Contact PL::Message PL::Future PL::Report/; }
 
 ####################################################################################################
 1;
