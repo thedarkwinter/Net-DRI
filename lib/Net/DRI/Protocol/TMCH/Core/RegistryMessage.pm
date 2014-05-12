@@ -40,6 +40,9 @@ sub register_commands
  return { 'message' => \%msg, 'notifications'=>\%nots };
 }
 
+####################################################################################################
+#### Notifications
+
 # Parse any additional stuff above and beyond the Basic EPP polling.
 # At the moment it just changes the action if the content matches a known result
 sub parse
@@ -56,7 +59,7 @@ sub parse
    return;
  }
  
- if ($content =~ m/^Mark mark renewal approved/) # no code on this one? :)
+ if ($content =~ m/^Mark mark renewal approved/) # this might be a tmchv1 thing (?)
  {
   $rinfo->{$otype}->{$oname}->{action} = 'renewed';
   $rinfo->{$otype}->{$oname}->{status} = 'verified';

@@ -64,7 +64,7 @@ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   }
  }
  
-$tmp{version} = ['1.0'];
+$tmp{version} = ['1.1'];
 $tmp{lang} = ['en'];
 
  $po->default_parameters()->{server}=\%tmp;
