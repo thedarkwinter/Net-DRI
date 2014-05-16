@@ -93,29 +93,6 @@ sub transport_protocol_default
 
 ####################################################################################################
 
-sub message_retrieve
-{
- my ($self,$ndr,$id)=@_;
- my $rc=$ndr->process('message','plretrieve',[$id]);
- return $rc;
-}
-
-sub message_delete
-{
-	my ($self,$ndr,$id)=@_;
-	my $rc=$ndr->process('message','pldelete',[$id]);
-	return $rc;
-}
-
-sub message_count
-{
-	my ($self,$ndr)=@_;
-	my $rc=$ndr->process('message','plretrieve');
-	return unless $rc->is_success();
-	my $count=$ndr->get_info('count','message','info');
-	return (defined($count) && $count)?$count:0;
-}
-
 sub report_create
 {
  my ($self,$ndr,$id,$rp)=@_;

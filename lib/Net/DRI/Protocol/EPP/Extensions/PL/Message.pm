@@ -71,8 +71,7 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=( 
-          plretrieve	=> [ \&pollreq, \&parse_poll ],
-          pldelete		=> [ \&pollack, undef ],
+          notification => [ undef, \&parse ],
          );
 
  return { 'message' => \%tmp };
@@ -80,123 +79,40 @@ sub register_commands
 
 ####################################################################################################
 
-sub pollack
-{
-	my ($epp,$msgid)=@_;
-	my $mes=$epp->message();
-	$mes->command([['poll',{op=>'ack',msgID=>$msgid}]]);
-	return;
-}
-
-sub pollreq
-{
- my ($epp,$msgid)=@_;
- #From the documentation: if the op attribute equals req, then the <msgID> element is not present in a request
- Net::DRI::Exception::usererr_invalid_parameters('In EPP, you can not specify the message id you want to retrieve') if defined($msgid);
- my $mes=$epp->message();
- $mes->command([['poll',{op=>'req'}]]);
- return;
-}
-
-sub parse_poll
+# parse additional notifications not handled elsewhere, at the mo this is just doing extdom
+sub parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_; 
- my ($epp,$rep,$ext,$ctag,@conds,@tags);
- my $mes=$po->message(); 
- my $msgid=$mes->msg_id();
- my $domname;
- my $domauth;
- my $action;
-
+ my $mes=$po->message();
  return unless $mes->is_success();
- return if $mes->result_is('COMMAND_SUCCESSFUL_QUEUE_EMPTY');
- return unless (defined($msgid) && $msgid);
+ return unless my $msgid=$mes->msg_id();
 
- my $mesdata = $mes->node_resdata(); 
- return unless ($mesdata);
+ if (my $data=$mes->get_response('pl_domain','pollAuthInfo'))
+ {
+  $oaction = 'pollAuthInfo';
+  $otype = 'domain';
 
- $rinfo->{message}->{session}->{last_id}=$msgid;
-
- foreach my $cnode ($mesdata->childNodes) {
-  my $cmdname = $cnode->localName || $cnode->nodeName;
-
-  if ($cmdname eq 'pollAuthInfo') {
-   my $ra = $rinfo->{message}->{$msgid}->{extra_info};   
-   push @{$ra}, $cnode->toString(); ### ???
-   $action = 'pollAuthInfo';
-
-   foreach my $cnode ($cnode->childNodes) {
-    my $objname = $cnode->localName || $cnode->nodeName;
-
-    if ($objname eq 'domain') {
-     $otype = 'domain';
-
-     foreach my $cnode ($cnode->childNodes) {
-      my $infname = $cnode->localName || $cnode->nodeName;
-
-      if ($infname eq 'name') {
-       $domname = $cnode->getFirstChild()->getData();
-      } elsif ($infname eq 'authInfo') {
-       $domauth = $cnode;
-      }
-     }
+  my $domain=$data->getFirstChild();
+  foreach my $el (Net::DRI::Util::xml_list_children($domain))
+  {
+   my ($n,$c)=@$el;
+   if ($n eq 'name')
+   {
+    $oname = $c->textContent();
+    $rinfo->{$otype}->{$oname}->{name}=$oname;
+    $rinfo->{$otype}->{$oname}->{exist}=1;
+    $rinfo->{$otype}->{$oname}->{action}=$oaction;
+   } elsif ($n eq 'authInfo')
+   {
+    foreach my $el2 (Net::DRI::Util::xml_list_children($c))
+    {
+     my ($n2,$c2)=@$el2;
+     $rinfo->{$otype}->{$oname}->{auth} = {pw=>$c2->textContent()} if $n2 eq 'pw';
     }
    }
-  } else {
-   # copied from Net/DRI/Protocol/EPP/Core/Domain.pm:transfer_parse
-   my $trndata=$mes->get_response('domain','trnData');   
-   if ($trndata) {
-    my $pd=DateTime::Format::ISO8601->new();
-    my $c=$trndata->getFirstChild();
-    while ($c) {
-     next unless ($c->nodeType() == 1); ## only for element nodes
-     my $name=$c->localname() || $c->nodeName();
-     next unless $name;
+  }
+ }
 
-     if ($name eq 'name') {
-      $domname = lc($c->getFirstChild()->getData());
-      $action = 'transfer';      
-     } elsif ($name=~m/^(trStatus|reID|acID)$/) {
-      my $fc = $c->getFirstChild();      
-      $rinfo->{domain}->{$domname}->{$1}=$fc->getData() if (defined($fc));      
-      $rinfo->{message}->{$msgid}->{$1}=$fc->getData() if (defined($fc));       
-     } elsif ($name=~m/^(reDate|acDate|exDate)$/) {
-      $rinfo->{domain}->{$domname}->{$1}=$pd->parse_datetime($c->getFirstChild()->getData());
-      $rinfo->{message}->{$msgid}->{$1}=$pd->parse_datetime($c->getFirstChild()->getData());
-     }
-    } continue { $c=$c->getNextSibling(); }
-   }
-  }
- }
- if (defined ($domname)) {
-  $otype = 'domain';
-  $oname = $domname;
-  $rinfo->{domain}->{$domname}->{name} = $domname;
-  $rinfo->{domain}->{$domname}->{exist} = 1;
-  $rinfo->{message}->{$msgid}->{object_id} = $domname;
-  if (defined ($domauth)) {
-   my $c = $domauth->getFirstChild();
-
-   while ($c)
-   {
-    my $typename;
-    next unless ($c->nodeType == 1);	## only for element nodes
-    $typename = $c->localName || $c->nodeName;
-    $rinfo->{domain}->{$domname}->{auth} = {
-     $typename => $c->getFirstChild()->getData()
-    };
-   } continue { $c = $c->getNextSibling(); }
-  }
- }
- if (defined ($action)) {
-  $rinfo->{message}->{$msgid}->{action} = $action;
-  if (defined ($domname)) {
-   $rinfo->{domain}->{$oname}->{action} = $action;
-  }
- }
- $rinfo->{message}->{$msgid}->{object_type} = $otype;
- $rinfo->{message}->{$msgid}->{name} = $domname;
- $rinfo->{$otype}->{$oname}->{message}=$mesdata;
  return;
 }
 
