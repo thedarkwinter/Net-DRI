@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 154;
+use Test::More tests => 171;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -146,6 +146,28 @@ is($dri->get_info('action', 'message', 8308), 'transfer', 'Action is correct');
 is($dri->get_info('content','message', 8308), 'domain transfer requested', 'Content is correct');
 is($dri->get_info('object_id', 'message', 8308), 'syhosting.pl', 'Object ID is correct');
 is($dri->get_info('object_type', 'message', 8308), 'domain', 'Object type is correct');
+
+
+## .PL message polling: 5.5.5.1 - NASK_EPP_en_draft.pdf
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="70"><qDate>2003-02-07T11:23:08.0Z</qDate><msg lang="en">Domain transferred.</msg></msgQ><resData><domain:trnData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0"xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example.tld</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2003-02-07T11:23:08.830Z</domain:reDate><domain:acID>NASK EPP Registry</domain:acID><domain:acDate>2003-02-07T11:23:08.830Z</domain:acDate><domain:exDate>2003-05-07T11:23:08.830Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),70,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),70,'message get_info last_id 2');
+is($dri->get_info('id','message',70),70,'message get_info id');
+is(''.$dri->get_info('qdate','message',70),'2003-02-07T11:23:08','message get info qdate');
+is($dri->get_info('content','message',70),'Domain transferred.','message get_info content');
+is($dri->get_info('lang','message',70),'en','message get_info lang');
+is($dri->get_info('object_type','message',70),'domain','message get_info object type');
+is($dri->get_info('object_id','message',70),'example.tld','message get_info id');
+is($dri->get_info('action','message',70),'transfer','message get_info action');
+is($dri->get_info('name','message',70),'example.tld','message get_info name');
+is($dri->get_info('trStatus','message',70),'serverApproved','message get_info trStatus');
+is($dri->get_info('reID','message',70),'ClientX','message get_info reID');
+is(''.$dri->get_info('reDate','message',70),'2003-02-07T11:23:08','message get_info reDate');
+is($dri->get_info('acID','message',70),'NASK EPP Registry','message get_info acID');
+is(''.$dri->get_info('acDate','message',70),'2003-02-07T11:23:08','message get_info acDate');
+is(''.$dri->get_info('exDate','message',70),'2003-05-07T11:23:08','message get_info exDate');
 
 
 ## Multiple level domain registration

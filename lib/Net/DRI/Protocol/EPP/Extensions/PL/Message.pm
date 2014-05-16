@@ -71,7 +71,8 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=( 
-          plretrieve => [ \&poll, \&parse_poll ]
+          plretrieve	=> [ \&pollreq, \&parse_poll ],
+          pldelete		=> [ \&pollack, undef ],
          );
 
  return { 'message' => \%tmp };
@@ -79,9 +80,18 @@ sub register_commands
 
 ####################################################################################################
 
-sub poll
+sub pollack
+{
+	my ($epp,$msgid)=@_;
+	my $mes=$epp->message();
+	$mes->command([['poll',{op=>'ack',msgID=>$msgid}]]);
+	return;
+}
+
+sub pollreq
 {
  my ($epp,$msgid)=@_;
+ #From the documentation: if the op attribute equals req, then the <msgID> element is not present in a request
  Net::DRI::Exception::usererr_invalid_parameters('In EPP, you can not specify the message id you want to retrieve') if defined($msgid);
  my $mes=$epp->message();
  $mes->command([['poll',{op=>'req'}]]);
@@ -90,9 +100,9 @@ sub poll
 
 sub parse_poll
 {
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_; 
  my ($epp,$rep,$ext,$ctag,@conds,@tags);
- my $mes=$po->message();
+ my $mes=$po->message(); 
  my $msgid=$mes->msg_id();
  my $domname;
  my $domauth;
@@ -102,7 +112,7 @@ sub parse_poll
  return if $mes->result_is('COMMAND_SUCCESSFUL_QUEUE_EMPTY');
  return unless (defined($msgid) && $msgid);
 
- my $mesdata = $mes->node_resdata();
+ my $mesdata = $mes->node_resdata(); 
  return unless ($mesdata);
 
  $rinfo->{message}->{session}->{last_id}=$msgid;
@@ -111,7 +121,7 @@ sub parse_poll
   my $cmdname = $cnode->localName || $cnode->nodeName;
 
   if ($cmdname eq 'pollAuthInfo') {
-   my $ra = $rinfo->{message}->{$msgid}->{extra_info};
+   my $ra = $rinfo->{message}->{$msgid}->{extra_info};   
    push @{$ra}, $cnode->toString(); ### ???
    $action = 'pollAuthInfo';
 
@@ -134,7 +144,7 @@ sub parse_poll
    }
   } else {
    # copied from Net/DRI/Protocol/EPP/Core/Domain.pm:transfer_parse
-   my $trndata=$mes->get_response('domain','trnData');
+   my $trndata=$mes->get_response('domain','trnData');   
    if ($trndata) {
     my $pd=DateTime::Format::ISO8601->new();
     my $c=$trndata->getFirstChild();
@@ -145,12 +155,14 @@ sub parse_poll
 
      if ($name eq 'name') {
       $domname = lc($c->getFirstChild()->getData());
-      $action = 'transfer';
+      $action = 'transfer';      
      } elsif ($name=~m/^(trStatus|reID|acID)$/) {
-      my $fc = $c->getFirstChild();
-      $rinfo->{domain}->{$domname}->{$1}=$fc->getData() if (defined($fc));
+      my $fc = $c->getFirstChild();      
+      $rinfo->{domain}->{$domname}->{$1}=$fc->getData() if (defined($fc));      
+      $rinfo->{message}->{$msgid}->{$1}=$fc->getData() if (defined($fc));       
      } elsif ($name=~m/^(reDate|acDate|exDate)$/) {
       $rinfo->{domain}->{$domname}->{$1}=$pd->parse_datetime($c->getFirstChild()->getData());
+      $rinfo->{message}->{$msgid}->{$1}=$pd->parse_datetime($c->getFirstChild()->getData());
      }
     } continue { $c=$c->getNextSibling(); }
    }
@@ -183,6 +195,7 @@ sub parse_poll
   }
  }
  $rinfo->{message}->{$msgid}->{object_type} = $otype;
+ $rinfo->{message}->{$msgid}->{name} = $domname;
  $rinfo->{$otype}->{$oname}->{message}=$mesdata;
  return;
 }

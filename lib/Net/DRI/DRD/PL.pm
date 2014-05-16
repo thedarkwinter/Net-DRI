@@ -79,7 +79,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'NASK'; }
 ## See http://www.dns.pl/english/dns-funk.html
-sub tlds     { return ('pl',map { $_.'.pl'} qw/aid agro atm auto biz com edu gmina gsm info mail miasta media mil net nieruchomosci nom org pc powiat priv realestate rel sex shop sklep sos szkola targi tm tourism travel turystyka/ ); }
+sub tlds     { return ('pl',map { $_.'.pl'} qw/aid agro atm auto biz com edu gmina gsm info mail miasta media mil net nieruchomosci nom org pc powiat priv realestate rel sex shop sklep sos szkola targi tm tourism travel turystyka waw/ ); }
 sub object_types { return ('domain','contact','ns','future'); }
 sub profile_types { return qw/epp/; }
 
@@ -98,6 +98,22 @@ sub message_retrieve
  my ($self,$ndr,$id)=@_;
  my $rc=$ndr->process('message','plretrieve',[$id]);
  return $rc;
+}
+
+sub message_delete
+{
+	my ($self,$ndr,$id)=@_;
+	my $rc=$ndr->process('message','pldelete',[$id]);
+	return $rc;
+}
+
+sub message_count
+{
+	my ($self,$ndr)=@_;
+	my $rc=$ndr->process('message','plretrieve');
+	return unless $rc->is_success();
+	my $count=$ndr->get_info('count','message','info');
+	return (defined($count) && $count)?$count:0;
 }
 
 sub report_create
