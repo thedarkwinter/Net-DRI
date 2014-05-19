@@ -130,7 +130,7 @@ sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10);
 sub name          { return $_[0]->_has_bep_key('name') ? $_[0]->_get_bep_key('name') : 'NGTLD'; }
 sub tlds          {  return $_[0]->_has_bep_key('tlds') ? @{$_[0]->_get_bep_key('tlds')} : (); }
 sub object_types  { return $_[0]->_has_bep_key('object_types') ? @{$_[0]->_get_bep_key('object_types')} : ('domain','contact','ns'); }
-sub profile_types { return $_[0]->_has_bep_key('profile_types') ? @{$_[0]->_get_bep_key('profile_types')} : (); }
+sub profile_types { return $_[0]->_has_bep_key('profile_types') ? @{$_[0]->_get_bep_key('profile_types')} : ('epp'); }
 
 sub transport_protocol_default
 {
@@ -540,6 +540,9 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 accountant bid date download faith loan men review science trade webcam win
 
 Contended TLD's not included
+=head3 Custom extensions
+
+L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
 
 =cut
 
@@ -617,63 +620,67 @@ desi saarland
 =pod
 
 
-=head2 Minds And Machines (MAM Own TLDs)
+=head2 Minds And Machines
 
- $dri->add_registry('NGTLD',{provider=>'mam'});
+M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown'), dedicted environments for partner TLDs ('mamsrs' or 'mampartner'), and a separate shared environment for their clients ('mamclient'). *However*, this might change somewhat, so please note that this M+M section might need adjusting and they release more info.
 
 =head3 Status: Working
 
-=head3 TLDs
+=head3 M+M Own TLDs
 
-Uncontested: babogado bayern budapest casa cooking fishing fit horse luxe miami nrw rodeo surf vodka wedding work xn--g2xx48c
+ $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Contested: app art baby beauty blog book cloud coupon cpa cricket data dds deals design dog eco fashion garden gay home hotel immo inc latino law llc love pizza property realestate restaurant school site soccer store style tech video vip yoga
+Uncontested: abogado bayern budapest casa cooking fishing fit garden horse luxe miami nrw rodeo surf vodka wedding work yoga xn--g2xx48c
 
-=head3 Notes
-
-M&M uses a single enveronment for its own TLDs (set provider to 'mam'), while using separate unique environments for other TLDs (use provider 'mamsrs').
+Contested: app art baby beauty blog book cloud coupon cpa cricket data dds design dog eco fashiond gay home hotel immo inc latino law llc love pizza realestate restaurant school site soccer store style tech video vip
 
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['abogado', 'bayern', 'budapest', 'casa', 'cooking', 'fishing', 'fit', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'xn--g2xx48c',
-              'app ', 'art ', 'baby ', 'beauty ', 'blog ', 'book ', 'cloud ', 'coupon ', 'cpa ', 'cricket ', 'data ', 'dds ', 'deals ', 'design ', 'dog ', 'eco ', 'fashion ', 'garden ', 'gay ', 'home ', 'hotel ', 'immo ', 'inc ', 'latino ', 'law ', 'llc ', 'love ', 'pizza ', 'property ', 'realestate ', 'restaurant ', 'school ', 'site ', 'soccer ', 'store ', 'style ', 'tech ', 'video ', 'vip ', 'yoga'
+     tlds => ['abogado', 'bayern', 'budapest', 'casa', 'cooking', 'fishing', 'fit', 'garden', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
+              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'cricket', 'data', 'dds', 'design', 'dog', 'eco', 'fashiond', 'gay', 'home', 'hotel', 'immo', 'inc', 'latino', 'law', 'llc', 'love', 'pizza', 'realestate', 'restaurant', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video', 'vip',
              ],
-   } if $bep eq 'mam';
+   } if $bep eq 'mam' || $bep eq 'mamown';
 
 
 =pod
 
+=head3 M+M Partner TLDs
 
-=head2 Minds And Machines SRS (Other TLDs)
+ $dri->add_registry('NGTLD',{provider=>'mamsrs'}); # M+M In Partnership 'mamsrs' or 'mampartner'
 
- $dri->add_registry('NGTLD',{provider=>'mamsrs'});
+Uncontested: country london review rugby
 
-=head3 Status: Working
-
-=head3 Custom extensions
-
-L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
-
-=head3 TLDs
-
-Uncontested: bible country gop kiwi london review rugby
-
-Contested: basketball group music broadway casino poker radio tickets tube
-
-=head3 Notes
-
-M&M uses a single enveronment for its own TLDs (set provider to 'mam'), while using separate unique environments for other TLDs (use provider 'mamsrs').
+Contested: basketball group music
 
 =cut
 
  return {
-     bep_type => 1, # single registry
-     tlds => ['bible', 'country', 'gop', 'kiwi', 'london', 'review', 'rugby',
-              'basketball ', 'group ', 'music ', 'broadway ', 'casino ', 'poker ', 'radio ', 'tickets ', 'tube'
+     bep_type => 1, # dedicated registry
+     tlds => ['country', 'london', 'review', 'rugby',
+              'basketball', 'group', 'music', 
              ],
-   } if $bep eq 'mamsrs';
+   } if $bep eq 'mamsrs' || $bep eq 'mampartner';
+
+=pod
+
+=head3 M+M Client TLDs
+
+ $dri->add_registry('NGTLD',{provider=>'mamclient'}); # M+M Clients 'mamclient'
+
+Uncontested: bible gop kiwi
+
+Contested: broadway casino poker radio tickets tube
+
+=cut
+
+ return {
+     bep_type => 2, # shared registry
+     tlds => ['bible', 'gop', 'kiwi',
+              'broadway', 'casino', 'poker', 'radio', 'tickets', 'tube'
+             ],
+   } if $bep eq 'mamclient';
 
 =pod
 
@@ -684,11 +691,6 @@ M&M uses a single enveronment for its own TLDs (set provider to 'mam'), while us
 
 =head3 Status: Working
 
-=head3 Custom extensions
-
-L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
-
-L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::NYCContact> urn:ietf:params:xml:ns:neulevel-1.0 (For .NYC Only)
 
 =head3 TLDs
 
@@ -696,6 +698,11 @@ xn--rhqv96g xn--g2xx48c xn--nyqy26a best uno safety pharmacy nyc jetzt taipei qp
 
 Contended TLD's not included
 
+=head3 Custom extensions
+
+L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
+
+L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::NYCContact> urn:ietf:params:xml:ns:neulevel-1.0 (For .NYC Only)
 =head3 Notes
 
 Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD. 
