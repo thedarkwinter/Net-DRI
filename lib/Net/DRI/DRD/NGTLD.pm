@@ -540,6 +540,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 accountant bid date download faith loan men review science trade webcam win
 
 Contended TLD's not included
+
 =head3 Custom extensions
 
 L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
@@ -643,7 +644,6 @@ Contested: app art baby beauty blog book cloud coupon cpa cricket data dds desig
              ],
    } if $bep eq 'mam' || $bep eq 'mamown';
 
-
 =pod
 
 =head3 M+M Partner TLDs
@@ -691,7 +691,6 @@ Contested: broadway casino poker radio tickets tube
 
 =head3 Status: Working
 
-
 =head3 TLDs
 
 xn--rhqv96g xn--g2xx48c xn--nyqy26a best uno safety pharmacy nyc jetzt taipei qpon moe buzz ceo htc club kyoto
@@ -703,6 +702,7 @@ Contended TLD's not included
 L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
 
 L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::NYCContact> urn:ietf:params:xml:ns:neulevel-1.0 (For .NYC Only)
+
 =head3 Notes
 
 Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD. 
@@ -806,7 +806,7 @@ gent boston
 
 =head3 TLDs
 
-org xn--i1b6b1a6a2e xn--nqv7f xn--tqq33ed31aqia ngo ong opr
+org xn--c1avg xn--i1b6b1a6a2e xn--nqv7f xn--tqq33ed31aqia ngo ong
 
 Contended TLD's not included
 
@@ -826,7 +826,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:n
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['org','xn--i1b6b1a6a2e','xn--nqv7f','xn--tqq33ed31aqia','ngo','ong','opr'],
+     tlds => ['org','xn--c1avg','xn--i1b6b1a6a2e','xn--nqv7f','xn--tqq33ed31aqia','ngo','ong'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
    } if $bep eq 'pir';
 

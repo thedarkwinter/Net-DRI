@@ -266,22 +266,24 @@ sub create
 
  my $lp = $rd->{'lp'};
  my @n;
- Net::DRI::Exception::usererr_insufficient_parameters('phase not specified in launchphase extension') unless defined $lp->{phase};
+ Net::DRI::Exception::usererr_invalid_parameters('phase') if defined $lp->{phase} && $lp->{phase} !~ m/\w+/;
 
  ## Application
- my $a_eid=$mes->command_extension_register('application','create');
- push @n,['application:id',$lp->{'application_id'}] if exists $lp->{application_id};
- push @n,['application:phase',$lp->{'phase'}];
- $mes->command_extension($a_eid,\@n);
+ if (exists $lp->{phase}) {
+  my $a_eid=$mes->command_extension_register('application','create');
+  push @n,['application:id',$lp->{'application_id'}] if exists $lp->{application_id};
+  push @n,['application:phase',$lp->{'phase'}];
+  $mes->command_extension($a_eid,\@n);
+ }
 
 
  ## TMCH 
- if (exists $lp->{phase} && (exists $lp->{notices} || exists $lp->{encoded_signed_marks}) ) 
+ if (exists $lp->{phase} || exists $lp->{notices} || exists $lp->{encoded_signed_marks}) 
  {
   @n=();
   
   # Sunrise or Mixed (Claims+Sunrise) : Add SMD
-  Net::DRI::Exception::usererr_insufficient_parameters('encoded_signed_marks')  if ($lp->{phase} eq 'sunrise' && !exists $lp->{encoded_signed_marks});
+  Net::DRI::Exception::usererr_insufficient_parameters('encoded_signed_marks')  if ($lp->{phase} && $lp->{phase} eq 'sunrise' && !exists $lp->{encoded_signed_marks});
   if (exists $lp->{encoded_signed_marks})
   {
    foreach my $em (@{$lp->{encoded_signed_marks}})
