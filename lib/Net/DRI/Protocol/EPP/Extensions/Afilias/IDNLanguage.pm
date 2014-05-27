@@ -74,6 +74,12 @@ sub register_commands
  return { 'domain' => \%tmp };
 }
 
+sub setup
+{
+  my ($class,$po,$version)=@_;
+  $po->ns({'idn' =>['urn:afilias:params:xml:ns:idn-1.0','idn-1.0.xsd']});
+}
+
 ####################################################################################################
 
 sub add_language
@@ -90,22 +96,14 @@ sub add_language
   $script = $rd->{language};
  }
  return unless $script;
- my $eid=$mes->command_extension_register($tag,'xmlns:idn="urn:iana:xml:ns:idn" xsi:schemaLocation="urn:iana:xml:ns:idn idn.xsd"');
+ my $eid=$mes->command_extension_register('idn',$tag);
  $mes->command_extension($eid,['idn:script', $script]);
  return;
 }
 
-sub create
-{
- my (@args)=@_;
- return add_language('idn:create',@args);
-}
+sub create { return add_language('create',@_); }
 
-sub check
-{
- my (@args)=@_;
- return add_language('idn:check',@args);
-}
+sub check { return add_language('check',@_); }
 
 ####################################################################################################
 1;

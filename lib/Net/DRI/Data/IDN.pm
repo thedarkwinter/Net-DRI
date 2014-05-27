@@ -47,10 +47,10 @@ sub autodetect
   return $self unless $c; ## or work out codes
 
   $self->_from_iso639_1($c) if $c =~ m/^\w{2}$/;
-  $self->_from_iso639_1_extlang($c) if $c =~ m/^\w{2}-\w{2}$/;
+  $self->_from_iso639_1_extlang($c) if $c =~ m/^\w{2}-[a-z]{2,}$/;
   $self->_from_iso639_2($c) if $c =~ m/^\w{3}$/;
   $self->_from_iso15924($c) if $c =~ m/^\w{4}$/;
-  $self->_from_iso639_2_15924($c) if $c =~ m/^\w{3}-\w{4}$/;
+  $self->_from_iso639_2_15924($c) if $c =~ m/^\w{3}-[A-Z][a-z]{3}$/;
   $self->_from_language($c) if $c =~ m/^\w{4,}/;
   return $self;
 }
@@ -67,7 +67,7 @@ sub _from_iso639_1
 sub _from_iso639_1_extlang
 {
   my ($self,$c) = @_;
-  return unless $c =~ m/^(\w{2})-(\w{2})$/;
+  return unless $c =~ m/^(\w{2})-([a-z]{2,})$/;
   $self->extlang($2);
   return $self->_from_iso639_1($1);
 }
