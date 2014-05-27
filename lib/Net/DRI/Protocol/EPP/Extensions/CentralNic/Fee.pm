@@ -169,7 +169,6 @@ sub check_parse
   my $chkdata=$mes->node_extension;
   return unless defined $chkdata;
 
-  my %p;
   foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
   {
     my ($name,$content)=@$el;
@@ -181,7 +180,10 @@ sub check_parse
         my ($name2,$content2)=@$el2;
         $dn = $content2->textContent() if $name2 eq 'domain';
       }
-      push @{$rinfo->{domain}->{$dn}->{fee}},fee_set_parse($content);
+      next unless $dn;
+      if (my $fee_set = fee_set_parse($content)) {
+        @{$rinfo->{domain}->{$dn}->{fee}} = $fee_set;
+      }
     }
   }
   return;
