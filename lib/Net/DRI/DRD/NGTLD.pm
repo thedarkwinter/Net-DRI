@@ -1100,6 +1100,46 @@ All registries in the todo list here...
 
 =pod
 
+=head1 ngTLD Domain Methods
+
+=head2 domain_check_claims
+
+This method wraps and normalises the claims check form. By default it will uses
+'claims' as the phase. You can specify another phase (e.g.) landrush, and this
+method will automatically fill in phase/sub_phase fields as required by the 
+backend operator. Its recommended you always use the current phase name in this
+command.
+
+ $rc = $dri->domain_check_claims('test.tld'); # standard claims lookup without phase name (use claims)
+ $rc = $dri->domain_check_claims('test.tld',{'phase'=>'landrush','idn'=>{...}}); # claims lookup with phase name (recommended)
+
+=cut
+
+sub domain_check_claims
+{
+ my ($self,$ndr,@names)=@_;
+ my $bep = lc($self->{info}->{provider});
+ my $rd = (@names && exists $names[-1] && ref $names[-1] eq 'HASH' ) ? pop @names : {};
+ my $lp = { 'phase' => 'claims', 'type'=>'claims' };
+ if (defined $rd && exists $rd->{phase} && lc($rd->{phase}) ne 'claims')
+ {
+  # By default, most registries do NOT use a sub_phase is claims lookups. Therefore if you specifiy a phase it will be ignored
+  # Afilias/ARI/CentralNIC/CoreNic/CRR/Donuts/GMO/KS/PIR/RegBox/Rightside/StartingDot/Tango/UniRegistry
+
+  # These registres use claims as phase + phase_name us sub_phase. domain_check_claims('test-validate.buzz',{phase=>'landrush'});
+  # Neustar/MAM/FFM/KNet   (Knet seems to work either way - but rather put it here)
+  $lp->{sub_phase} = $rd->{phase} if ($bep =~ m/^(?:neustar|mam|ffm|knet)/);
+  # i think there is much more to do here
+ }
+ $rd->{lp} = $lp;
+ return $ndr->domain_check(@names,$rd);
+}
+
+
+####################################################################################################
+
+=pod
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
