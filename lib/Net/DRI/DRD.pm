@@ -547,7 +547,7 @@ sub domain_check
 
  if (@todo > 1 && $ndr->protocol()->has_action('domain','check_multi'))
  {
-  my $l=$self->info('check_limit');
+  my $l = $self->info('domain_check_limit') ? $self->info('domain_check_limit') : $self->info('check_limit');
   if (! defined $l)
   {
    $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for domain_check action. Please report if you know the correct value');
@@ -850,7 +850,7 @@ sub host_check
 
  if (@todo > 1 && $ndr->protocol()->has_action('host','check_multi'))
  {
-  my $l=$self->info('check_limit');
+  my $l = $self->info('host_check_limit') ? $self->info('host_check_limit') : $self->info('check_limit');
   if (! defined $l)
   {
    $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for host_check action. Please report if you know the correct value');
@@ -1053,7 +1053,7 @@ sub contact_check
 
  if (@todo > 1 && $ndr->protocol()->has_action('contact','check_multi'))
  {
-  my $l=$self->info('check_limit');
+  my $l = $self->info('contact_check_limit') ? $self->info('contact_check_limit') : $self->info('check_limit');
   if (! defined $l)
   {
    $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for contact_check action. Please report if you know the correct value');
