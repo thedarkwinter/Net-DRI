@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 14;
+use Test::More tests => 31;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -35,7 +35,7 @@ my ($rc,$drd,@periods);
 # MAM Clients
 $rc = $dri->add_registry('NGTLD',{provider => 'mamclient'});
 is($rc->{last_registry},'mamclient','mamclient: add_registry');
-$rc = $dri->target('mamclient')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->target('mamclient')->add_current_profile('p1-mamclient','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'mamclient: add_current_profile');
 is($dri->name(),'mamclient','mamclient: name');
 is_deeply([$dri->tlds()],['bible','gop','kiwi','broadway','casino','poker','radio','tickets','tube'],'mamclient: tlds');
@@ -46,33 +46,43 @@ is_deeply( [$dri->profile_types()],['epp'],'mamclient: profile_types');
 $drd = $dri->{registries}->{mamclient}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'mamclient: epp transport_protocol_default');
 is($drd->{bep}->{bep_type},2,'mamclient: bep_type');
+is($drd->{info}->{check_limit},13,'mamclient: check_limit');
+
+# Donuts
+$rc = $dri->add_registry('NGTLD',{provider => 'donuts'});
+is($rc->{last_registry},'donuts','donuts: add_registry');
+$rc = $dri->target('donuts')->add_current_profile('p1-donuts','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{donuts}->{driver};
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],'donuts: epp transport_protocol_default');
+is($drd->{bep}->{bep_type},2,'donuts: bep_type');
+is($drd->{info}->{check_limit},5,'donuts: check_limit');
+is($drd->{info}->{host_check_limit},5,'donuts: host_check_limit');
+is($dri->info('contact_check_limit'),5,'donuts: contact_check_limit');
+is($drd->{info}->{domain_check_limit},5,'donuts: domain_check_limit');
 
 
 #### Dedicated Registry
 
 # Neustar
-=cut
 $rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'buzz'});
-is($rc->{last_registry},'mamclient','mamclient: add_registry');
-$rc = $dri->target('mamclient')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-is($rc->is_success(),1,'mamclient: add_current_profile');
-is($dri->name(),'mamclient','mamclient: name');
-is_deeply([$dri->tlds()],['bible','gop','kiwi','broadway','casino','poker','radio','tickets','tube'],'mamclient: tlds');
+is($rc->{last_registry},'buzz','neustar: add_registry');
+$rc = $dri->target('buzz')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'neustar: add_current_profile');
+is($dri->name(),'buzz','neustar: name');
+is_deeply([$dri->tlds()],['buzz'],'neustar: tlds');
 @periods = $dri->periods();
-is($#periods,9,'mamclient: periods');
-is_deeply( [$dri->object_types()],['domain','contact','ns'],'mamclient: object_types');
-is_deeply( [$dri->profile_types()],['epp'],'mamclient: profile_types');
+is($#periods,9,'neustar: periods');
+is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
+is_deeply( [$dri->profile_types()],['epp'],'neustar: profile_types');
 $drd = $dri->{registries}->{mamclient}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'mamclient: epp transport_protocol_default');
-is($drd->{bep}->{bep_type},2,'mamclient: bep_type');
-=cut
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'neustar: epp transport_protocol_default');
+is($drd->{bep}->{bep_type},2,'neustar: bep_type');
 
 ####################################################################################################
 
 #### ngTLD methods
 
 ## domain_check_price
-$rc = $dri->add_registry('NGTLD',{provider => 'donuts'});
 $rc = $dri->target('donuts')->add_current_profile('methods-donuts','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 $R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="1">test.clothing</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
@@ -84,5 +94,5 @@ is($lpres->{'phase'},'claims','domain_check get_info(phase) ');
 is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check get_info(claim_key) ');
 is($lpres->{'validator_id'},'sample','domain_check get_info(validator_id) ');
 
-
+exit 0;
 
