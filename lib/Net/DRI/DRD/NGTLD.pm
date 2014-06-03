@@ -582,7 +582,7 @@ nagoya tokyo yokohama
 
  $dri->add_registry('NGTLD',{provider=>'knet'});
 
-=head3 Status: Not started
+=head3 Status: Working
 
 =head3 TLDs
 
@@ -590,11 +590,18 @@ xn--45q11c xn--3bst00m xn--ses554g xn--efvy88h xn--czr694b xn--czru2d xn--6qq986
 
 Contended TLD's not included
 
+=head3 Notes
+
+1. KNET does not use an IDN extension. IDNs are submitted as ASCII strings without specifying language/script.
+
+2. It looks as though KNET will run a shared EPP registry, but this is TBC
+
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
+     bep_type => 2, # shared registry - TODO TBC
      tlds => ['xn--45q11c','xn--3bst00m','xn--ses554g','xn--efvy88h','xn--czr694b','xn--czru2d','xn--6qq986b3xl','xn--30rr7y','xn--imr513n','xn--otu796d','xn--9et52u','wang','top'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
    } if $bep eq 'knet';
 
 =pod
