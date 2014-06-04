@@ -26,6 +26,7 @@ use Net::DRI::Exception;
 use Net::DRI::Util;
 use Net::DRI::Protocol::ResultStatus;
 use Net::DRI::Data::RegistryObject;
+use List::MoreUtils qw(uniq);
 
 our $AUTOLOAD;
 
@@ -236,18 +237,21 @@ sub get_info
 {
  my ($self,$what,$type,$key)=@_;
  return unless defined $what && $what;
-
- if (Net::DRI::Util::all_valid($type,$key)) ## search the cache, by default same registry & profile !
- {
-  my $p=$self->profile();
-  err_no_current_profile() unless defined($p);
-  my $regname=$self->name();
-  return $self->{cache}->get($type,$key,$what,$regname.'.'.$p);
- } else
- {
-  return unless exists $self->{last_data}->{$what};
-  return $self->{last_data}->{$what};
+ my @whats = ($what,Net::DRI::Util::xml2perl($what),Net::DRI::Util::perl2xml($what),lc($what),uc($what));
+ my @uwhats = uniq @whats;
+ foreach $what (@whats) {
+  if (Net::DRI::Util::all_valid($type,$key)) ## search the cache, by default same registry & profile !
+  {
+   my $p=$self->profile();
+   err_no_current_profile() unless defined($p);
+   my $regname=$self->name();
+   return $self->{cache}->get($type,$key,$what,$regname.'.'.$p);
+  } else
+  {
+   return $self->{last_data}->{$what} if exists $self->{last_data}->{$what};
+  }
  }
+ return;
 }
 
 sub get_info_all
