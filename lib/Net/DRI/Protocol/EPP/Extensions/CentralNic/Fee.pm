@@ -116,26 +116,50 @@ sub setup
   $po->capabilities('domain_update','fee',['set']); # add the fee extension in the domain_update command...
   return;
 }
+
 ####################################################################################################
+## Build / Parse helpers
 
-sub check
+sub fee_set_parse
 {
-  my ($epp,$domain,$rd)=@_;
-  my $mes=$epp->message();
-  return unless Net::DRI::Util::has_key($rd,'fee');
+  my $start = shift;
+  return unless $start;
+  my $set = {};
+  foreach my $el (Net::DRI::Util::xml_list_children($start))
+  {
+    my ($name,$content)=@$el;
+    if ($name eq 'action')
+    {
+      $set->{'action'} = $content->textContent();
+      $set->{'phase'} = $content->getAttribute('phase') if $content->hasAttribute('phase');
+      $set->{'sub_phase'} = $content->getAttribute('subphase') if $content->hasAttribute('subphase');
+    } elsif ($name =~ m/^(domain|currency|fee)$/)
+    {
+      $set->{$1} = $content->textContent();
+    } elsif ($name eq 'period')
+    {
+      my $unit={y=>'years',m=>'months'}->{$content->getAttribute('unit')};
+      $set->{'duration'} = DateTime::Duration->new($unit => 0+$content->textContent());
+    }
+  }
+ 
+  return $set;
+}
 
-  Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, action, duration') unless Net::DRI::Util::has_key($rd->{fee},'currency') && Net::DRI::Util::has_key($rd->{fee},'action') && Net::DRI::Util::has_key($rd->{fee},'duration');
-
-  my @n;
-  my $rp=$rd->{fee};
-  push @n,['fee:domain',$domain];
+sub fee_set_build
+{
+  my ($rp,$domain)=@_;
+  Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, action, duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'currency') && Net::DRI::Util::has_key($rp,'action') && Net::DRI::Util::has_key($rp,'duration');
   Net::DRI::Exception::usererr_invalid_parameters('currency should be 3 letters ISO-4217 code') unless $rp->{currency}=~m/^[A-Z]{3}$/;
-  push @n,['fee:currency',$rp->{currency}];
-
   Net::DRI::Exception::usererr_invalid_parameters('action should be: create, transfer, renew or restore') unless $rp->{action}=~m/^(?:create|transfer|renew|restore)$/;
   Net::DRI::Exception::usererr_invalid_parameters('fee action') unless (exists $rp->{action} && $rp->{action}  =~ m/\w+/);
-  Net::DRI::Exception::usererr_invalid_parameters('fee phase') if (exists $rp->{phase} && $rp->{phase}  !~ m/\w+/);
-  Net::DRI::Exception::usererr_invalid_parameters('fee subphase') if (exists $rp->{sub_phase} && $rp->{sub_phase}  !~ m/\w+/);
+  Net::DRI::Exception::usererr_invalid_parameters('fee action phase') if (exists $rp->{phase} && $rp->{phase}  !~ m/\w+/);
+  Net::DRI::Exception::usererr_invalid_parameters('fee action subphase') if (exists $rp->{sub_phase} && $rp->{sub_phase}  !~ m/\w+/);
+
+  my @n;
+  push @n,['fee:domain',$domain] if $domain;
+  push @n,['fee:currency',$rp->{currency}];
+
   if (defined $rp->{phase} && $rp->{sub_phase} && $rp->{action})
   {
     push @n,['fee:action',{'phase'=>$rp->{phase},'subphase'=>$rp->{sub_phase}},$rp->{action}];
@@ -154,6 +178,36 @@ sub check
   my $rj=Net::DRI::Protocol::EPP::Util::build_period($rp->{duration});
   push @n,['fee:period',$rj->[1],$rj->[2]];
 
+  return @n;
+  
+}
+
+####################################################################################################
+## Price Standardisation
+
+sub set_premium_values {
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return unless exists $rinfo->{domain}->{$oname}->{fee} && (ref $rinfo->{domain}->{$oname}->{fee} eq 'ARRAY');
+ foreach my $ch (@{$rinfo->{domain}->{$oname}->{fee}})
+ {
+  $rinfo->{domain}->{$oname}->{is_premium} = undef; # THIS EXTENSION DOES NOT [YET] INDICATE THIS
+  #$rinfo->{domain}->{$oname}->{price_category} = undef;
+  $rinfo->{domain}->{$oname}->{price_currency} = $ch->{currency}; # FIXME: TBC
+  $rinfo->{domain}->{$oname}->{price_duration} = $ch->{duration};
+  $rinfo->{domain}->{$oname}->{$ch->{action} .'_price'} = $ch->{fee}; # action can be create/renew/transfer/restore. extension only returns what was requested
+ }
+ return;
+}
+
+####################################################################################################
+
+sub check
+{
+  my ($epp,$domain,$rd)=@_;
+  my $mes=$epp->message();
+  return unless Net::DRI::Util::has_key($rd,'fee');
+  
+  my @n = fee_set_build($rd->{fee},$domain);
   my $eid=$mes->command_extension_register('fee','check');
   $mes->command_extension($eid,\@n);
   return;
@@ -183,6 +237,7 @@ sub check_parse
       next unless $dn;
       if (my $fee_set = fee_set_parse($content)) {
         @{$rinfo->{domain}->{$dn}->{fee}} = $fee_set;
+        set_premium_values($po,$otype,$oaction,$dn,$rinfo);
       }
     }
   }
@@ -193,40 +248,9 @@ sub info
 {
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
-
   return unless Net::DRI::Util::has_key($rd,'fee');
-
-  Net::DRI::Exception::usererr_invalid_parameters('fee extension can be used only with one domain:name in check operation') if (ref $domain && @$domain > 1);
-  Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, action, duration') unless Net::DRI::Util::has_key($rd->{fee},'currency') && Net::DRI::Util::has_key($rd->{fee},'action') && Net::DRI::Util::has_key($rd->{fee},'duration');
-
-  my @n;
-  my $rp=$rd->{fee};
-
-  Net::DRI::Exception::usererr_invalid_parameters('currency should be 3 letters ISO-4217 code') unless $rp->{currency}=~m/^[A-Z]{3}$/;
-  push @n,['fee:currency',$rp->{currency}];
-
-  Net::DRI::Exception::usererr_invalid_parameters('action should be: create, transfer, renew or restore') unless $rp->{action}=~m/^(?:create|transfer|renew|restore)$/;
-  Net::DRI::Exception::usererr_invalid_parameters('fee action') unless (exists $rp->{action} && $rp->{action}  =~ m/\w+/);
-  Net::DRI::Exception::usererr_invalid_parameters('fee action phase') if (exists $rp->{phase} && $rp->{phase}  !~ m/\w+/);
-  Net::DRI::Exception::usererr_invalid_parameters('fee action subphase') if (exists $rp->{sub_phase} && $rp->{sub_phase}  !~ m/\w+/);
-  if (defined $rp->{phase} && $rp->{sub_phase} && $rp->{action})
-  {
-    push @n,['fee:action',{'phase'=>$rp->{phase},'subphase'=>$rp->{sub_phase}},$rp->{action}];
-  } elsif (defined $rp->{phase} && $rp->{action})
-  {
-    push @n,['fee:action',{'phase'=>$rp->{phase}},$rp->{action}];
-  } elsif (defined $rp->{sub_phase} && $rp->{action})
-  {
-    push @n,['fee:action',{'subphase'=>$rp->{sub_phase}},$rp->{action}];
-  } elsif (!defined $rp->{phase} || $rp->{sub_phase})
-  {
-    push @n,['fee:action',$rp->{action}];
-  }
-
-  Net::DRI::Exception::usererr_invalid_parameters('duration should be a DateTime::Duration object') unless Net::DRI::Util::is_class($rp->{duration},'DateTime::Duration');
-  my $rj=Net::DRI::Protocol::EPP::Util::build_period($rp->{duration});
-  push @n,['fee:period',$rj->[1],$rj->[2]];
-
+  
+  my @n = fee_set_build($rd->{fee});
   my $eid=$mes->command_extension_register('fee','info');
   $mes->command_extension($eid,\@n);
   return;
@@ -300,12 +324,11 @@ sub transform_build
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
 
-  Net::DRI::Exception::usererr_invalid_parameters('fee extension can be used only with one domain:name in check operation') if (ref $domain && @$domain > 1);
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, fee') unless Net::DRI::Util::has_key($rd->{fee},'currency') && Net::DRI::Util::has_key($rd->{fee},'fee');
-
-  my @n;
   my $rp=$rd->{fee};
   Net::DRI::Exception::usererr_invalid_parameters('currency should be 3 letters ISO-4217 code') unless $rp->{currency}=~m/^[A-Z]{3}$/;
+
+  my @n;
   push @n,['fee:currency',$rp->{currency}];
   push @n,['fee:fee',$rp->{fee}]; # need protect fee param?
 
@@ -336,30 +359,5 @@ sub update
   transform_build($epp,$domain,{'fee' => $ch},'create');
 }
 
-sub fee_set_parse
-{
-  my $start = shift;
-  return unless $start;
-  my $set = {};
-  foreach my $el (Net::DRI::Util::xml_list_children($start))
-  {
-    my ($name,$content)=@$el;
-    if ($name eq 'action')
-    {
-      $set->{'action'} = $content->textContent();
-      $set->{'phase'} = $content->getAttribute('phase') if $content->hasAttribute('phase');
-      $set->{'sub_phase'} = $content->getAttribute('subphase') if $content->hasAttribute('subphase');
-    } elsif ($name =~ m/^(domain|currency|fee)$/)
-    {
-      $set->{$1} = $content->textContent();
-    } elsif ($name eq 'period')
-    {
-      my $unit={y=>'years',m=>'months'}->{$content->getAttribute('unit')};
-      $set->{'duration'} = DateTime::Duration->new($unit => 0+$content->textContent());
-    }
-  }
- 
-  return $set;
-}
 ####################################################################################################
 1;

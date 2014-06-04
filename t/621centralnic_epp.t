@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 93;
+use Test::More tests => 105;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -62,6 +62,15 @@ is($d->{phase},'claims','Fee extension: domain_check single parse phase');
 is($d->{sub_phase},'landrush','Fee extension: domain_check single parse sub_phase');
 is($d->{duration}->years(),2,'Fee extension: domain_check singe parse duration');
 is($d->{fee},'5.00','Fee extension: domain_check singe parse fee');
+# using the standardised methods
+is($dri->get_info('is_premium'),undef,'domain_check get_info (is_premium) undef'); # NOT SUPPORTED
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration) is DateTime::Duration');
+is($dri->get_info('price_duration')->years(),2,'domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'EUR','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),'5.00','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),undef,'domain_check get_info (renew_price) undef');
+is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');
+is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
 
 ## Check: multiple domains
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example.cafe</domain:name></domain:cd><domain:cd><domain:name avail="0">example.bar</domain:name><domain:reason>In use</domain:reason></domain:cd><domain:cd><domain:name avail="0">example.wiki</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example.cafe</fee:domain><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example.bar</fee:domain><fee:currency>EUR</fee:currency><fee:action phase="claims" subphase="landrush">create</fee:action><fee:period unit="y">2</fee:period><fee:fee>5.00</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example.wiki</fee:domain><fee:currency>EUR</fee:currency><fee:action>transfer</fee:action><fee:period unit="y">2</fee:period><fee:fee>2.50</fee:fee></fee:chkData></extension>'.$TRID.'</response>'.$E2;
@@ -92,6 +101,11 @@ is($d->{currency},'EUR','domain_check multi get_info(currency) 3/3');
 is($d->{action},'transfer','domain_check multi get_info(action) 3/3');
 is($d->{duration}->years(),'2','domain_check multi get_info(duration) 3/3');
 is($d->{fee},'2.50','domain_check multi get_info(fee) 3/3');
+# using the standardised methods
+is($dri->get_info('is_premium','domain','example.wiki'),undef,'domain_check_multi get_info (is_premium) undef');
+is($dri->get_info('price_duration','domain','example.cafe')->years(),1,'domain_check get_info (price_duration)');
+is($dri->get_info('create_price','domain','example.bar'),'5.00','domain_check_multi get_info (create_price)');
+is($dri->get_info('transfer_price','domain','example.wiki'),'2.50','domain_check_multi get_info (transfer_price)');
 
 ## Info
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name><domain:roid>EXAMPLE1-REP</domain:roid><domain:status s="ok" /><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:ns><domain:hostObj>ns1.example.cafe</domain:hostObj><domain:hostObj>ns1.example.bar</domain:hostObj></domain:ns><domain:host>ns1.example.cafe</domain:host><domain:host>ns2.example.cafe</domain:host><domain:clID>ClientX</domain:clID><domain:crID>ClientY</domain:crID><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:upID>ClientX</domain:upID><domain:upDate>1999-12-03T09:00:00.0Z</domain:upDate><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate><domain:trDate>2000-04-08T09:00:00.0Z</domain:trDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><fee:infData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:infData></extension>'.$TRID.'</response>'.$E2;

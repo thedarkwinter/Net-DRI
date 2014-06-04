@@ -91,9 +91,13 @@ sub check_parse
    } elsif ($n eq 'price')
    {
     $rinfo->{domain}->{$domain}->{price}={ amount => 0+$c->textContent(), unit => $c->getAttribute('unit') };
+    $rinfo->{domain}->{$domain}->{create_price} = 0+$c->textContent(); ## compatible with newgtld method
+    $rinfo->{domain}->{$domain}->{price_currency} = $c->getAttribute('unit');
+    $rinfo->{domain}->{$domain}->{price_duration} = DateTime::Duration->new(years=>1);
    } elsif ($n eq 'renewalPrice')
    {
     $rinfo->{domain}->{$domain}->{renewal_price}={ amount => 0+$c->textContent(), unit => $c->getAttribute('unit') };
+    $rinfo->{domain}->{$domain}->{renew_price}=0+$c->textContent();
    }
   }
  }

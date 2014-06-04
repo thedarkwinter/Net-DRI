@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 48;
+use Test::More tests => 63;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -44,6 +44,24 @@ is($ch1->{create},'999.9900','domain_check get_info (charge create)');
 is($ch1->{transfer},'750.0000','domain_check get_info (charge transfer)');
 is($ch1->{renew},'999.9900','domain_check get_info (charge renew)');
 is($ch1->{restore},'1249.9900','domain_check get_info (charge restore)');
+# using the standardised methods
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium)');
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('price_category'),'Price Category A','domain_check get_info (price_category)');
+is($dri->get_info('create_price'),'999.9900','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),'999.9900','domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price'),'750.0000','domain_check get_info (transfer_price)');
+is($dri->get_info('restore_price'),'1249.9900','domain_check get_info (restore_price)');
+
+#Check not premium
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">standard.actor</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc = $dri->domain_check('standard.actor');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info (action)');
+is($dri->get_info('exist'),0,'domain_check get_info (exist)');
+is($dri->get_info('charge'),undef,'domain get_info (charge) undef');
+is($dri->get_info('is_premium'),undef,'domain_check get_info (is_premium) undef');
 
 # Check multi
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">85014aaaa.actor</domain:name></domain:cd><domain:cd><domain:name avail="1">85014bbbb.actor</domain:name></domain:cd><domain:cd><domain:name avail="1">85014cccc.actor</domain:name></domain:cd></domain:chkData></resData><extension><charge:chkData xmlns:charge="http://www.unitedtld.com/epp/charge-1.0"><charge:cd><charge:name>85014aaaa.actor</charge:name><charge:set><charge:category name="AAAA">premium</charge:category><charge:type>price</charge:type><charge:amount command="create">20.0000</charge:amount><charge:amount command="renew">20.0000</charge:amount><charge:amount command="transfer">20.0000</charge:amount><charge:amount command="update" name="restore">20.0000</charge:amount></charge:set></charge:cd><charge:cd><charge:name>85014bbbb.actor</charge:name><charge:set><charge:category name="AAAA">premium</charge:category><charge:type>price</charge:type><charge:amount command="create">20.0000</charge:amount><charge:amount command="renew">20.0000</charge:amount><charge:amount command="transfer">20.0000</charge:amount><charge:amount command="update" name="restore">20.0000</charge:amount></charge:set></charge:cd><charge:cd><charge:name>85014cccc.actor</charge:name><charge:set><charge:category name="AAAA">premium</charge:category><charge:type>price</charge:type><charge:amount command="create">20.0000</charge:amount><charge:amount command="renew">20.0000</charge:amount><charge:amount command="transfer">20.0000</charge:amount><charge:amount command="update" name="restore">20.0000</charge:amount></charge:set></charge:cd></charge:chkData></extension>'.$TRID.'</response>'.$E2;
@@ -55,6 +73,9 @@ is($dri->get_info('exist','domain','85014bbbb.actor'),0,'domain_check multi get_
 is($dri->get_info('exist','domain','85014cccc.actor'),0,'domain_check multi get_info(exist) 3/3');
 $ch2 = shift $dri->get_info('charge','domain','85014bbbb.actor');
 is($ch2->{create},'20.0000','domain_check multi get_info (charge create)');
+# using the standardised methods
+is($dri->get_info('is_premium','domain','85014bbbb.actor'),1,'domain_check get_info (is_premium)');
+is($dri->get_info('create_price','domain','85014bbbb.actor'),'20.0000','domain_check get_info (create_price)');
 
 # Info domain
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>85014aaaa.actor</domain:name><domain:roid>23e82a3f0a614691b9e53d3d0156fe05-D</domain:roid><domain:status s="ok" /><domain:registrant>sh1890</domain:registrant><domain:contact type="admin">sh1890</domain:contact><domain:contact type="tech">sh1890</domain:contact><domain:clID>Registrar100</domain:clID><domain:crID>Registrar100</domain:crID><domain:crDate>2013-10-11T20:26:55.893Z</domain:crDate><domain:upID>Registrar100</domain:upID><domain:upDate>2013-10-11T20:26:56.35Z</domain:upDate><domain:exDate>2014-10-11T20:26:55.893Z</domain:exDate><domain:authInfo><domain:pw>2foo%BAR</domain:pw></domain:authInfo></domain:infData></resData><extension><charge:infData xmlns:charge="http://www.unitedtld.com/epp/charge-1.0"><charge:set><charge:category name="AAAA">premium</charge:category><charge:type>price</charge:type><charge:amount command="create">20.0000</charge:amount><charge:amount command="renew">20.0000</charge:amount><charge:amount command="transfer">20.0000</charge:amount><charge:amount command="update" name="restore">20.0000</charge:amount></charge:set></charge:infData></extension>'.$TRID.'</response>'.$E2;
@@ -129,7 +150,7 @@ $rc = $dri->registrar_balance();
 is($R1,$E1.'<command><info><finance:info xmlns:finance="http://www.unitedtld.com/epp/finance-1.0"/></info><clTRID>ABC-12345</clTRID></command>'.$E2,'registrar_balance build_xml');
 is($dri->get_info('balance'),'200000.00','registrar_balance get_info (balance)');
 is($dri->get_info('final'),'0.00','registrar_balance get_info (final)');
-is($dri->get_info('restricted'),'500.00','registrar_balance get_info (balance)');
-is($dri->get_info('notification'),'1000.00','registrar_balance get_info (balance)');
+is($dri->get_info('restricted'),'500.00','registrar_balance get_info (restricted)');
+is($dri->get_info('notification'),'1000.00','registrar_balance get_info (notification)');
 
 exit 0;

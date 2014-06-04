@@ -239,7 +239,7 @@ sub get_info
  return unless defined $what && $what;
  my @whats = ($what,Net::DRI::Util::xml2perl($what),Net::DRI::Util::perl2xml($what),lc($what),uc($what));
  my @uwhats = uniq @whats;
- foreach $what (@whats) {
+ foreach $what (@uwhats) {
   if (Net::DRI::Util::all_valid($type,$key)) ## search the cache, by default same registry & profile !
   {
    my $p=$self->profile();

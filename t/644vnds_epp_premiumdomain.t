@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 5;
+use Test::More tests => 12;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -33,6 +33,14 @@ is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:x
 is($rc->get_data('is_premium'),1,'domain_check premium=1 get_data(is_premium)');
 is_deeply($rc->get_data('price'),{unit=>'USD',amount=>125.00},'domain_check premium=1 get_data(price)');
 is_deeply($rc->get_data('renewal_price'),{unit=>'USD',amount=>75.00},'domain_check premium=1 get_data(renewal_price)');
+# using the standardised methods
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium)');
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),125,'domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),75,'domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');
+is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
 
 $R2='';
 $rc=$dri->domain_update('premium.tv',$dri->local_object('changes')->set('premium_short_name','testregistrar'));
