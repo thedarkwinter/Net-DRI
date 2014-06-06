@@ -506,7 +506,7 @@ xn--q9jyb4c ads android boo car dad day eat esq fly foo here how ing kid meme mo
 
 =head3 TLDs
 
-academy accountants agency architect associates attorney bargains bike boutique builders business cab camera camp capital cards care careers cash catering center cheap church claims cleaning clinic clothing codes coffee community company computer condos construction consulting contractors cool credit creditcard cruises dating degree dental dentist diamonds digital directory discount domains education email engineering enterprises equipment estate events exchange expert exposed fail fan farm finance financial fish fitness flights florist foundation fund gallery games glass graphics gripe guide guru haus healthcare holdings holiday hospital house industries institute insure international investments kitchen land lawyer lease life lighting limited limo loans maison management market marketing media medical mortgage network partners parts pets photography photos pictures plumbing productions properties recipes reisen rentals repair report reviews schule services shoes singles software solar solutions sports supplies supply support surgery systems tax technology tienda tips today tools tours town toys training university vacations ventures vet viajes villas vin vision voyage watch works wtf xn--czrs0t xn--unup4y xn--vhquv zone
+academy accountants agency architect associates attorney bargains bike boutique builders business cab camera camp capital cards care careers cash catering center cheap church claims cleaning clinic clothing codes coffee community company computer condos construction consulting contractors cool credit creditcard cruises dating degree dental dentist diamonds digital directory discount domains education email engineering enterprises equipment estate events exchange expert exposed fail fan farm finance financial fish fitness flights florist foundation fund gallery games glass graphics gripe guide guru haus healthcare holdings holiday hospital house industries institute insure international investments kitchen land lawyer lease life lighting limited limo loans maison management market marketing media medical mortgage network partners parts pets photography photos pictures plumbing productions properties recipes reisen rentals repair report schule services shoes singles software solar solutions sports supplies supply support surgery systems tax technology tienda tips today tools tours town toys training university vacations ventures vet viajes villas vin vision voyage watch works wtf xn--czrs0t xn--unup4y xn--vhquv zone
 
 =head3 Custom extensions
 
@@ -525,7 +525,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.zone','academy','accountants','agency','architect','associates','attorney','bargains','bike','boutique','builders','business','cab','camera','camp','capital','cards','care','careers','cash','catering','center','cheap','church','claims','cleaning','clinic','clothing','codes','coffee','community','company','computer','condos','construction','consulting','contractors','cool','credit','creditcard','cruises','dating','degree','dental','dentist','diamonds','digital','directory','discount','domains','education','email','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','fail','fan','farm','finance','financial','fish','fitness','flights','florist','foundation','fund','gallery','games','glass','graphics','gripe','guide','guru','haus','healthcare','holdings','holiday','hospital','house','industries','institute','insure','international','investments','kitchen','land','lawyer','lease','life','lighting','limited','limo','loans','maison','management','market','marketing','media','medical','mortgage','network','partners','parts','pets','photography','photos','pictures','plumbing','productions','properties','recipes','reisen','rentals','repair','report','reviews','schule','services','shoes','singles','software','solar','solutions','sports','supplies','supply','support','surgery','systems','tax','technology','tienda','tips','today','tools','tours','town','toys','training','university','vacations','ventures','vet','viajes','villas','vin','vision','voyage','watch','works','wtf','xn-czrs0t','xn--unup4y','xn--vhquv','zone'],
+     tlds => ['dpml.zone','academy','accountants','agency','architect','associates','attorney','bargains','bike','boutique','builders','business','cab','camera','camp','capital','cards','care','careers','cash','catering','center','cheap','church','claims','cleaning','clinic','clothing','codes','coffee','community','company','computer','condos','construction','consulting','contractors','cool','credit','creditcard','cruises','dating','degree','dental','dentist','diamonds','digital','directory','discount','domains','education','email','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','fail','fan','farm','finance','financial','fish','fitness','flights','florist','foundation','fund','gallery','games','glass','graphics','gripe','guide','guru','haus','healthcare','holdings','holiday','hospital','house','industries','institute','insure','international','investments','kitchen','land','lawyer','lease','life','lighting','limited','limo','loans','maison','management','market','marketing','media','medical','mortgage','network','partners','parts','pets','photography','photos','pictures','plumbing','productions','properties','recipes','reisen','rentals','repair','report','schule','services','shoes','singles','software','solar','solutions','sports','supplies','supply','support','surgery','systems','tax','technology','tienda','tips','today','tools','tours','town','toys','training','university','vacations','ventures','vet','viajes','villas','vin','vision','voyage','watch','works','wtf','xn-czrs0t','xn--unup4y','xn--vhquv','zone'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
      check_limit => 5,
    } if $bep eq 'donuts';
@@ -1145,6 +1145,61 @@ sub domain_check_claims
   # i think there is much more to do here
  }
  $rd->{lp} = $lp;
+ return $ndr->domain_check(@names,$rd);
+}
+
+=pod 
+
+=head2 domain_check_price
+
+Some ngTLD backend operators have extensions that support checking domain prices 
+(including premium prices). Unfortunately, there is a bit of a mix of how it 
+works, so this method attempts to standadise it somewhat. Where available, 
+currency, and duration (as interger for years or a DateTime::Duration 
+object) will be added to the lookup.
+
+ $rc = $dri->domain_check_price('test.tld','test2.tld'); # defaults to USD / create / 1 year
+ $rc = $dri->domain_check_price('test.tld','test2.tld',{'currency'=>'USD','duration'=>'1'}); # manually
+ $rc = $dri->domain_check_price('test.tld','test2.tld',{'currency'=>'USD','idn'=>{...}}); # any other arguments can be specified alongside
+ 
+=cut
+
+
+#### FIXME: Neustar requires phase
+sub domain_check_price
+{
+ my ($self,$ndr,@names)=@_;
+ my $bep = lc($self->{info}->{provider});
+ return $ndr->domain_check(@names) unless $bep =~ m/^(?:neustar|mam|ffm|ari|centralnic)/; # no price lookups
+
+ my $rd = (@names && exists $names[-1] && ref $names[-1] eq 'HASH' ) ? pop @names : {};
+ if ($bep =~ m/^(?:neustar|mam|ffm)/)
+ {
+   $rd->{fee} = 1;
+ } elsif ($bep eq 'ari') {
+   $rd->{price} = 1;
+# } elsif ($bep m/^?:(donuts|rightside)/) { # they answer with fee anyway
+ } elsif ($bep eq 'centralnic') {
+   my ($fee,@fees);
+   foreach (qw/currency action duration/)
+   {
+     $fee->{$_} = $rd->{$_} if exists $rd->{$_};
+   }
+   $fee->{currency} = 'USD' unless exists $fee->{currency};
+   $fee->{duration} = 1 unless exists $fee->{duration};
+   $fee->{duration} = $ndr->local_object('duration','years',$fee->{duration}) if ref $fee->{duration} eq '' && $fee->{duration} =~ m/^\d$/;
+   @{$rd->{fee}} = ();
+   foreach (qw/create renew transfer restore/) {
+     my $feetype = { %{$fee} };
+     $feetype->{action} = $_;
+     push @fees,$feetype;
+   }
+   $rd->{fee} = \@fees;
+ }
+ foreach (qw/currency action duration/)
+ {
+   delete $rd->{$_} if exists $rd->{$_};
+ }
  return $ndr->domain_check(@names,$rd);
 }
 

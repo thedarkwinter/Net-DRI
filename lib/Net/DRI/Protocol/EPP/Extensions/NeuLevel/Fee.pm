@@ -85,7 +85,7 @@ sub set_premium_values {
  return unless exists $rinfo->{domain}->{$oname}->{fee} && (ref $rinfo->{domain}->{$oname}->{fee} eq 'HASH');
  my $ch = $rinfo->{domain}->{$oname}->{fee};
  $rinfo->{domain}->{$oname}->{is_premium} = 1;
- $rinfo->{domain}->{$oname}->{price_currency} = 'USD'; # FIXME: TBC
+ $rinfo->{domain}->{$oname}->{price_currency} = 'USD';
  $rinfo->{domain}->{$oname}->{price_category} = $ch->{tier};
  $rinfo->{domain}->{$oname}->{price_duration} = DateTime::Duration->new(years=>1);
  $rinfo->{domain}->{$oname}->{create_price} = $ch->{price};
