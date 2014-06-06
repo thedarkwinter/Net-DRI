@@ -157,7 +157,15 @@ sub fee_set_build
   Net::DRI::Exception::usererr_invalid_parameters('fee action subphase') if (exists $rp->{sub_phase} && $rp->{sub_phase}  !~ m/\w+/);
 
   my @n;
-  push @n,['fee:domain',$domain] if $domain;
+  if ($rp->{domain}) {
+    push @n,['fee:domain',$rp->{domain}];
+  }
+  elsif ($domain && ref $domain ne 'ARRAY') {
+    push @n,['fee:domain',$domain];
+  }
+  elsif ($domain) {
+    push @n,['fee:domain',$domain->[0]];
+  }
   push @n,['fee:currency',$rp->{currency}];
 
   if (defined $rp->{phase} && $rp->{sub_phase} && $rp->{action})
@@ -206,10 +214,15 @@ sub check
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  
-  my @n = fee_set_build($rd->{fee},$domain);
-  my $eid=$mes->command_extension_register('fee','check');
-  $mes->command_extension($eid,\@n);
+  my (@n,@fees);
+  @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
+  @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
+  foreach my $fee_set (@fees)
+  {
+    @n = fee_set_build($fee_set,$domain);
+    my $eid=$mes->command_extension_register('fee','check');
+    $mes->command_extension($eid,\@n);
+  }
   return;
 
 }
@@ -236,7 +249,7 @@ sub check_parse
       }
       next unless $dn;
       if (my $fee_set = fee_set_parse($content)) {
-        @{$rinfo->{domain}->{$dn}->{fee}} = $fee_set;
+        push @{$rinfo->{domain}->{$dn}->{fee}},$fee_set;
         set_premium_values($po,$otype,$oaction,$dn,$rinfo);
       }
     }
@@ -249,10 +262,16 @@ sub info
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  
-  my @n = fee_set_build($rd->{fee});
-  my $eid=$mes->command_extension_register('fee','info');
-  $mes->command_extension($eid,\@n);
+ 
+  my (@n,@fees);
+  @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
+  @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
+  foreach my $fee_set (@fees)
+  {
+    @n = fee_set_build($fee_set);
+    my $eid=$mes->command_extension_register('fee','info');
+    $mes->command_extension($eid,\@n);
+  }
   return;
 }
 
@@ -265,28 +284,10 @@ sub info_parse
   my $infdata=$mes->get_extension($mes->ns('fee'),'infData');
   return unless defined $infdata;
 
-  my %p;
-  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
-  {
-    my ($name,$content)=@$el;
-    if ($name eq 'action')
-    {
-      $p{action}=$content->textContent();
-      $p{phase}=$content->getAttribute('phase');
-      $p{sub_phase}=$content->getAttribute('subphase');
-    } elsif ($name=~m/^(currency)$/)
-    {
-      $p{$1}=$content->textContent();
-    } elsif ($name eq 'period')
-    {
-      my $unit={y=>'years',m=>'months'}->{$content->getAttribute('unit')};
-      $p{duration}=DateTime::Duration->new($unit => 0+$content->textContent());
-    } elsif ($name eq 'fee')
-    {
-      $p{fee}=0+$content->textContent();
-    }
+  if (my $fee_set = fee_set_parse($infdata)) {
+    @{$rinfo->{domain}->{$oname}->{fee}} = $fee_set;
+    set_premium_values($po,$otype,$oaction,$oname,$rinfo);
   }
-  $rinfo->{domain}->{$oname}->{fee}=\%p; # extension fields
   return;
 }
 
@@ -337,26 +338,15 @@ sub transform_build
   return;
 }
 
-sub create
-{
-  transform_build(@_,'create');
-}
-
-sub renew
-{
-  transform_build(@_,'create'); # left the next functions even if we repeat code (could change since the extension was made from a draft RFC)
-}
-
-sub transfer
-{
-  transform_build(@_,'create');
-}
+sub create { return transform_build(@_,'create'); }
+sub renew { return transform_build(@_,'renew'); }
+sub transfer { return transform_build(@_,'transfer'); }
 
 sub update
 {
   my ($epp,$domain,$todo)=@_;
   return unless my $ch=$todo->set('fee');
-  transform_build($epp,$domain,{'fee' => $ch},'create');
+  return transform_build($epp,$domain,{'fee' => $ch},'update');
 }
 
 ####################################################################################################
