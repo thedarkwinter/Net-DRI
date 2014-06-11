@@ -643,7 +643,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: abogado bayern budapest casa cooking fishing fit garden horse luxe miami nrw rodeo surf vodka wedding work yoga xn--g2xx48c
+Uncontested: abogado bayern budapest casa cooking country fishing fit garden horse luxe miami nrw rodeo surf vodka wedding work yoga xn--g2xx48c
 
 Contested: app art baby beauty blog book cloud coupon cpa cricket data dds design dog eco fashiond gay home hotel immo inc latino law llc love pizza realestate restaurant school site soccer store style tech video vip
 
@@ -651,7 +651,7 @@ Contested: app art baby beauty blog book cloud coupon cpa cricket data dds desig
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['abogado', 'bayern', 'budapest', 'casa', 'cooking', 'fishing', 'fit', 'garden', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
+     tlds => ['abogado', 'bayern', 'budapest', 'casa', 'cooking', 'country', 'fishing', 'fit', 'garden', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
               'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'cricket', 'data', 'dds', 'design', 'dog', 'eco', 'fashiond', 'gay', 'home', 'hotel', 'immo', 'inc', 'latino', 'law', 'llc', 'love', 'pizza', 'realestate', 'restaurant', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video', 'vip',
              ],
    } if $bep eq 'mam' || $bep eq 'mamown';
@@ -662,7 +662,7 @@ Contested: app art baby beauty blog book cloud coupon cpa cricket data dds desig
 
  $dri->add_registry('NGTLD',{provider=>'mamsrs'}); # M+M In Partnership 'mamsrs' or 'mampartner'
 
-Uncontested: country london review rugby
+Uncontested: london review rugby
 
 Contested: basketball group music
 
@@ -670,7 +670,7 @@ Contested: basketball group music
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['country', 'london', 'review', 'rugby',
+     tlds => ['london', 'review', 'rugby',
               'basketball', 'group', 'music', 
              ],
    } if $bep eq 'mamsrs' || $bep eq 'mampartner';
@@ -1020,7 +1020,7 @@ tatar xn--d1acj3b
 
 =head3 TLDs
 
-art auction audio auto blackfriday cars christmas click country deal design diet family fashion flowers free furniture game garden gift gratis guitars help hiphop home hosting inc juegos link lol love mom news photo pics pizza property racing realestate restaurant sale save school sexy shopping store style tattoo team tech video yoga
+art auction audio auto blackfriday cars christmas click deal design diet family fashion flowers free furniture game garden gift gratis guitars help hiphop home hosting inc juegos link lol love mom news photo pics pizza property racing realestate restaurant sale save school sexy shopping store style tattoo team tech video yoga
 
 Contended TLD's not included
 
@@ -1036,7 +1036,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','auction','audio','auto','blackfriday','cars','christmas','click','country','deal','design','diet','family','fashion','ﬂowers','free','furniture','game','garden','gift','gratis','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
+     tlds => ['art','auction','audio','auto','blackfriday','cars','christmas','click','deal','design','diet','family','fashion','ﬂowers','free','furniture','game','garden','gift','gratis','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
