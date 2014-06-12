@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 437;
+use Test::More tests => 438;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -259,6 +259,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::Session');
+use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::DirectRights');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::SWITCH');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CZ');

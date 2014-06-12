@@ -327,6 +327,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/NO/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NO/Result.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Contact.pm
+lib/Net/DRI/Protocol/EPP/Extensions/Nominet/DirectRights.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Notifications.pm
@@ -556,6 +557,7 @@ t/655idn_epp.t
 t/656icann_smd.t
 t/657it_epp.t
 t/658es_epp.t
+t/660ngtld_epp.t
 t/670launchphase.t
 t/671tango_epp.t
 t/672neustar_epp.t

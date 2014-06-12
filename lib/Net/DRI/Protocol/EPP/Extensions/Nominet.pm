@@ -69,7 +69,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- my @extNS=qw/contact-nom-ext-1.0 domain-nom-ext-1.2 std-contact-id-1.0 std-fork-1.0 std-handshake-1.0 std-list-1.0 std-locks-1.0 std-notifications-1.2 std-release-1.0 std-unrenew-1.0 std-warning-1.1 nom-abuse-feed-1.0/;
+ my @extNS=qw/contact-nom-ext-1.0 domain-nom-ext-1.2 std-contact-id-1.0 std-fork-1.0 std-handshake-1.0 std-list-1.0 std-locks-1.0 std-notifications-1.2 std-release-1.0 std-unrenew-1.0 std-warning-1.1 nom-abuse-feed-1.0 nom-direct-rights-1.0/;
  foreach my $ns (@extNS) { $self->ns({ (split(/-([^-]+)$/,$ns))[0] => ['http://www.nominet.org.uk/epp/xml/'.$ns,$ns.'.xsd'] }); }
  foreach my $o (qw/first-bill recur-bill auto-bill next-bill notes reseller auto-period next-period renew-not-required/) { $self->capabilities('domain_update',$o,['set']); }
  $self->factories('contact',sub { return Net::DRI::Data::Contact::Nominet->new(); });
@@ -78,7 +78,7 @@ sub setup
 }
 
 sub core_contact_types { return (); }
-sub default_extensions { return qw/Nominet::Session Nominet::Message Nominet::Domain Nominet::Contact Nominet::Notifications/; }
+sub default_extensions { return qw/Nominet::Session Nominet::Message Nominet::Domain Nominet::Contact Nominet::Notifications Nominet::DirectRights/; }
 
 
 ####################################################################################################
