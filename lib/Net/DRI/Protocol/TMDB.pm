@@ -1,4 +1,4 @@
-## Domain Registry Interface,  TMDB Protocol (Based TMDB System Registrar Manul 2.3 and http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08)
+## Domain Registry Interface,  TMDB Protocol (Based TMDB System Registrar Manul 2.3 and http://tools.ietf.org/html/draft-lozano-tmch-func-spec-09)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -28,11 +28,11 @@ use Net::DRI::Protocol::TMDB::Message;
 
 =head1 NAME
 
-Net::DRI::Protocol::TMDB - TMDB Protocol (Based TMDB System Registrar Manul 2.2 and http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08) for Net::DRI
+Net::DRI::Protocol::TMDB - TMDB Protocol (Based TMDB System Registrar Manul 2.2 and http://tools.ietf.org/html/draft-lozano-tmch-func-spec-09) for Net::DRI
 
 =head1 DESCRIPTION
 
-TMDB Protocol for L<NET::DRI>. The module inplements the TMDB (Trademark Database) protocol using namespace: tmNotice-1.0 based on draft-lozano-tmch-func-spec-08. This currently only supports SMDRL and CNIS operations. DNL and LORDN are not supported (unless someone from a registry adds it)
+TMDB Protocol for L<NET::DRI>. The module inplements the TMDB (Trademark Database) protocol using namespace: tmNotice-1.0 based on draft-lozano-tmch-func-spec-09. This currently only supports SMDRL and CNIS operations. DNL and LORDN are not supported (unless someone from a registry adds it)
 
 =head1 SYNOPSIS
 

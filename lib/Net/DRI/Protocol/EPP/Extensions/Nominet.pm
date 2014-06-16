@@ -77,7 +77,7 @@ sub setup
  return;
 }
 
-sub core_contact_types { return (); }
+sub core_contact_types { return qw/admin/; }
 sub default_extensions { return qw/Nominet::Session Nominet::Message Nominet::Domain Nominet::Contact Nominet::Notifications Nominet::DirectRights/; }
 
 
