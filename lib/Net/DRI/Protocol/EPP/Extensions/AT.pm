@@ -70,7 +70,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/AT::Domain AT::Contact AT::ATResult AT::Message SecDNS/; }
+sub default_extensions { return qw/AT::Domain AT::Contact AT::ATResult AT::Message SecDNS GracePeriod/; }
 
 ####################################################################################################
 1;
