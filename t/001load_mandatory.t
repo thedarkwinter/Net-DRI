@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 438;
+use Test::More tests => 440;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -244,6 +244,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::E164Validation');
 use_ok('Net::DRI::Protocol::EPP::Extensions::E164Validation::RFC5076');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AfiliasSRS');
+use_ok('Net::DRI::Protocol::EPP::Extensions::PIR');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Restore');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::IPR');
@@ -252,6 +253,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Trademark');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Association');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar');
+use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Validation');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NAME');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NAME::EmailFwd');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet');

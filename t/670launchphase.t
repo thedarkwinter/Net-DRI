@@ -54,7 +54,7 @@ is($lpres->{'validator_id'},'sample','domain_check get_info(validator_id) ');
 # 3.1.1.  Claims Check Form Multi
 $lp = {type=>'claims'} ;
 $R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="0">examplea.com</launch:name></launch:cd><launch:cd><launch:name exists="1">exampleb.com</launch:name><launch:claimKey>2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('examplea.com',('exampleb.com',{lp => $lp}));
+$rc=$dri->domain_check('examplea.com','exampleb.com',{lp => $lp});
 is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>examplea.com</domain:name><domain:name>exampleb.com</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase>claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check_multi build_xml');
 is($dri->get_info('exist','domain','examplea.com'),0,'domain_check_multi get_info(exist) 1/2');
 is($dri->get_info('exist','domain','exampleb.com'),1,'domain_check_multi get_info(exist) 2/2');
