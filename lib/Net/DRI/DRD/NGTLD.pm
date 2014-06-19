@@ -130,9 +130,9 @@ sub new
  return $self;
 }
 
-sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
+sub periods       { return $_[0]->_has_bep_key('periods') ? @{$_[0]->_get_bep_key('periods')} : return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return $_[0]->_has_bep_key('name') ? $_[0]->_get_bep_key('name') : 'NGTLD'; }
-sub tlds          {  return $_[0]->_has_bep_key('tlds') ? @{$_[0]->_get_bep_key('tlds')} : (); }
+sub tlds          { return $_[0]->_has_bep_key('tlds') ? @{$_[0]->_get_bep_key('tlds')} : (); }
 sub object_types  { return $_[0]->_has_bep_key('object_types') ? @{$_[0]->_get_bep_key('object_types')} : ('domain','contact','ns'); }
 sub profile_types { return $_[0]->_has_bep_key('profile_types') ? @{$_[0]->_get_bep_key('profile_types')} : ('epp'); }
 
