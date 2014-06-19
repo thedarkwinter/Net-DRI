@@ -319,7 +319,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:n
 
 =head3 TLDs
 
-xn--ngbc5azd xn--ngbrx abudhabi arab build dubai host krd luxury melbourne men menu physio press space sydney website
+xn--ngbc5azd xn--ngbrx abudhabi arab build dubai host krd luxury melbourne men menu physio press space sydney
 
 Contended TLD's not included
 
@@ -347,7 +347,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'host', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'physio', 'press', 'space', 'sydney', 'website'],
+     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'host', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'physio', 'press', 'space', 'sydney'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
    } if $bep eq 'ari';
 
@@ -573,11 +573,16 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 
 nagoya tokyo yokohama
 
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.4
+
 =cut
 
  return {
      bep_type => 2, # shared registry
      tlds => ['nagoya','tokyo','yokohama'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
    } if $bep eq 'gmo';
 
 =pod
@@ -1179,11 +1184,11 @@ sub domain_check_price
  } elsif ($bep eq 'ari') {
    $rd->{price} = 1;
 # } elsif ($bep m/^?:(donuts|rightside)/) { # they answer with fee anyway
- } elsif ($bep eq 'centralnic') {
+ } elsif ($bep =~ m/^(?:centralnic|gmo)$/) {
    my ($fee,@fees);
-   foreach (qw/currency action duration/)
+   foreach my $k (qw/currency action duration/)
    {
-     $fee->{$_} = $rd->{$_} if exists $rd->{$_};
+     $fee->{$k} = $rd->{$k} if exists $rd->{$k};
    }
    $fee->{currency} = 'USD' unless exists $fee->{currency};
    $fee->{duration} = 1 unless exists $fee->{duration};
