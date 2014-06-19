@@ -1634,7 +1634,7 @@ SKIP: {
 ####################################################################################################
 # ZACR
 SKIP: {
-  skip '*** TODO : ZACR',1;
+  skip '*** TODO : ZACR Does not seem to have implemented a whois server system yet',1;
 };
 
 exit 0;

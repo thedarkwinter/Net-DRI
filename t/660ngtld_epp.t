@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 36;
+use Test::More tests => 45;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -62,7 +62,7 @@ is($drd->{info}->{domain_check_limit},5,'donuts: domain_check_limit');
 
 
 #### Dedicated Registry
-# Neustar
+# Neustar (Buzz)
 $rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'buzz'});
 is($rc->{last_registry},'buzz','neustar: add_registry');
 $rc = $dri->target('buzz')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
@@ -73,9 +73,24 @@ is_deeply([$dri->tlds()],['buzz'],'neustar: tlds');
 is($#periods,9,'neustar: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
 is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
-$drd = $dri->{registries}->{mamclient}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'neustar: epp transport_protocol_default');
-is($drd->{bep}->{bep_type},2,'neustar: bep_type');
+$drd = $dri->{registries}->{buzz}->{driver};
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],'neustar: epp transport_protocol_default');
+is($drd->{bep}->{bep_type},1,'neustar: bep_type');
+
+# ZACR (Durban)
+$rc = $dri->add_registry('NGTLD',{provider => 'zacr','name'=>'joburg'});
+is($rc->{last_registry},'joburg','neustar: add_registry');
+$rc = $dri->target('joburg')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'zacr: add_current_profile');
+is($dri->name(),'joburg','zacr: name');
+is_deeply([$dri->tlds()],['joburg'],'neustar: tlds');
+@periods = $dri->periods();
+is($#periods,9,'zacr: periods');
+is_deeply( [$dri->object_types()],['domain','contact'],'zacr: object_types');
+is_deeply( [$dri->profile_types()],['epp'],'neustar: profile_types');
+$drd = $dri->{registries}->{joburg}->{driver};
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],'zacr: epp transport_protocol_default');
+is($drd->{bep}->{bep_type},1,'zacr: bep_type');
 
 
 ####################################################################################################

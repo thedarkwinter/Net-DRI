@@ -1105,22 +1105,26 @@ Contended TLD's not included
 
  $dri->add_registry('NGTLD',{provider=>'zacr'});
 
-=head3 Status: In progress
+=head3 Status: Working
 
 =head3 TLDs
 
-joburg durban capetown
+africa capetown durban joburg
 
 =head3 Custom extensions:
 
+The extensions are optional, so no need to do anything out of the ordinary if you don't want to.
+
 L<Net::DRI::Protocol::EPP::Extensions::COZA::Domain> http://co.za/epp/extensions/cozadomain-1-0
+L<Net::DRI::Protocol::EPP::Extensions::COZA::Contact> http://co.za/epp/extensions/cozacontact-1-0
 
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
+     bep_type => 1, # dedicated
      tlds => ['africa','durban','capetown','joburg'],
-     ote_tlds => ['cities.dnservices.co.za'],
+     host_as_attr => 1,
+     object_types => ['domain','contact'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],
    } if $bep eq 'zacr';
 
