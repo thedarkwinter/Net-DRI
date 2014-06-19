@@ -42,7 +42,7 @@ is_deeply([$dri->tlds()],['bible','gop','kiwi','broadway','casino','poker','radi
 @periods = $dri->periods();
 is($#periods,9,'mamclient: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'mamclient: object_types');
-is_deeply( [$dri->profile_types()],['epp'],'mamclient: profile_types');
+is_deeply( [$dri->profile_types()],['epp','whois'],'mamclient: profile_types');
 $drd = $dri->{registries}->{mamclient}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'mamclient: epp transport_protocol_default');
 is($drd->{bep}->{bep_type},2,'mamclient: bep_type');
@@ -72,7 +72,7 @@ is_deeply([$dri->tlds()],['buzz'],'neustar: tlds');
 @periods = $dri->periods();
 is($#periods,9,'neustar: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
-is_deeply( [$dri->profile_types()],['epp'],'neustar: profile_types');
+is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
 $drd = $dri->{registries}->{mamclient}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'neustar: epp transport_protocol_default');
 is($drd->{bep}->{bep_type},2,'neustar: bep_type');
