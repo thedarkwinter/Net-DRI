@@ -78,8 +78,13 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'NASK'; }
-## See http://www.dns.pl/english/dns-funk.html
-sub tlds     { return ('pl',map { $_.'.pl'} qw/aid agro atm auto biz com edu gmina gsm info mail miasta media mil net nieruchomosci nom org pc powiat priv realestate rel sex shop sklep sos szkola targi tm tourism travel turystyka waw/ ); }
+sub tlds
+{
+  my @functional = (map { $_.'.pl' } qw/aid agro atm auto biz com edu gmina gsm info mail miasta media mil net nieruchomosci nom org pc powiat priv realestate rel sex shop sklep sos szkola targi tm tourism travel turystyka/);
+  my @regional = (map { $_.'.pl' } qw/augustow babia-gora bedzin beskidy bialowieza bialystok bielawa bieszczady boleslawiec bydgoszcz bytom cieszyn czeladz czest dlugoleka elblag elk glogow gniezno gorlice grajewo ilawa jaworzno jelenia-gora jgora kalisz kazimierz-dolny karpacz kartuzy kaszuby katowice kepno ketrzyn klodzko kobierzyce kolobrzeg konin konskowola kutno lapy lebork legnica lezajsk limanowa lomza lowicz lubin lukow malbork malopolska mazowsze mazury mielec mielno mragowo naklo nowaruda nysa olawa olecko olkusz olsztyn opoczno opole ostroda ostroleka ostrowiec ostrowwlkp pila pisz podhale podlasie polkowice pomorze pomorskie prochowice pruszkow przeworsk pulawy radom rawa-maz rybnik rzeszow sanok sejny slask slupsk sosnowiec stalowa-wola skoczow starachowice stargard suwalki swidnica swiebodzin swinoujscie szczecin szczytno tarnobrzeg tgory turek tychy ustka walbrzych warmia warszawa waw wegrow wielun wlocl wloclawek wodzislaw wolomin wroclaw zachpomor zagan zarow zgora zgorzelec/);
+  return ('pl', (@functional,@regional));
+}
+
 sub object_types { return ('domain','contact','ns','future'); }
 sub profile_types { return qw/epp/; }
 
@@ -108,63 +113,63 @@ sub future_info
 
 sub future_check # based domain_check from /lib/Net/DRI/DRD.pm
 {
-	my ($self,$ndr,@p)=@_;
-	my (@names,$rd);
-	foreach my $p (@p)
-	{
-		if (defined $p && ref $p eq 'HASH')
-		{
-			Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in future_check') if defined $rd;
-			$rd=Net::DRI::Util::create_params('future_check',$p);
-		}
-		$self->enforce_domain_name_constraints($ndr,$p,'check');
-    push @names,$p;
-	}
-	Net::DRI::Exception::usererr_insufficient_parameters('future_check needs at least one domain name to check') unless @names;
-	$rd={} unless defined $rd;
-
-	my (@rs,@todo);
-	my (%seendom,%seenrc);
-	foreach my $domain (@names)
-	{
-	  next if exists $seendom{$domain};
-	  $seendom{$domain}=1;
-	  my $rs=$ndr->try_restore_from_cache('future',$domain,'check');
-	  if (! defined $rs)
-	  {
-	   push @todo,$domain;
-	  } else
-    {
-      push @rs,$rs unless exists $seenrc{''.$rs}; ## Some ResultStatus may relate to multiple domain names (this is why we are doing this anyway !), so make sure not to use the same ResultStatus multiple times
-      $seenrc{''.$rs}=1;
-    }
+ my ($self,$ndr,@p)=@_;
+ my (@names,$rd);
+ foreach my $p (@p)
+ {
+  if (defined $p && ref $p eq 'HASH')
+  {
+   Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in future_check') if defined $rd;
+   $rd=Net::DRI::Util::create_params('future_check',$p);
   }
-	return Net::DRI::Util::link_rs(@rs) unless @todo;
+  $self->enforce_domain_name_constraints($ndr,$p,'check');
+  push @names,$p;
+ }
+ Net::DRI::Exception::usererr_insufficient_parameters('future_check needs at least one domain name to check') unless @names;
+ $rd={} unless defined $rd;
 
-	 if (@todo > 1 && $ndr->protocol()->has_action('future','check_multi'))
-	 {
-	  my $l=$self->info('check_limit');
-	  if (! defined $l)
-	  {
-	   $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for domain_check action. Please report if you know the correct value');
-	   $l=10;
-	  }
-	  while (@todo)
-	  {
-	   my @lt=splice(@todo,0,$l);
-	   push @rs,$ndr->process('future','check_multi',[\@lt,$rd]);
-	  }
-	 } else ## either one domain only, or more than one but no check_multi available at protocol level
-	 {
-	  push @rs,map { $ndr->process('future','check',[$_,$rd]); } @todo;
-	}
-	return Net::DRI::Util::link_rs(@rs);
+ my (@rs,@todo);
+ my (%seendom,%seenrc);
+ foreach my $domain (@names)
+ {
+  next if exists $seendom{$domain};
+  $seendom{$domain}=1;
+  my $rs=$ndr->try_restore_from_cache('future',$domain,'check');
+  if (! defined $rs)
+  {
+   push @todo,$domain;
+  } else
+  {
+   push @rs,$rs unless exists $seenrc{''.$rs}; ## Some ResultStatus may relate to multiple domain names (this is why we are doing this anyway !), so make sure not to use the same ResultStatus multiple times
+   $seenrc{''.$rs}=1;
+  }
+ }
+ return Net::DRI::Util::link_rs(@rs) unless @todo;
+
+ if (@todo > 1 && $ndr->protocol()->has_action('future','check_multi'))
+ {
+  my $l=$self->info('check_limit');
+  if (! defined $l)
+  {
+   $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for domain_check action. Please report if you know the correct value');
+   $l=10;
+  }
+  while (@todo)
+  {
+   my @lt=splice(@todo,0,$l);
+   push @rs,$ndr->process('future','check_multi',[\@lt,$rd]);
+  }
+ } else ## either one domain only, or more than one but no check_multi available at protocol level
+ {
+  push @rs,map { $ndr->process('future','check',[$_,$rd]); } @todo;
+ }
+ return Net::DRI::Util::link_rs(@rs);
 }
 
 sub future_create
 {
-	my ($self,$reg,$id,$rd)=@_;
-	return $reg->process('future','create',[$id,$rd]);
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('future','create',[$id,$rd]);
 }
 
 sub future_renew
@@ -202,7 +207,6 @@ sub future_transfer_cancel
  my ($self,$reg,$rd,$rp)=@_;
  return $reg->process('future','transfer_cancel',[$rd,$rp]);
 }
-
 
 ####################################################################################################
 1;
