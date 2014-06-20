@@ -449,5 +449,13 @@ $d=$dri->get_info('acDate');
 isa_ok($d,'DateTime','future_transfer_request get_info(acDate)');
 is($d,'2000-06-13T22:00:00','future_transfer_request get_info(acDate) value=>"2000-06-13T22:00:00"');
 
+
+####################################################################################################
+## Domain - check (test some regional domains)
+$rc = $dri->domain_check(qw/example.babia-gora.pl example.czest.pl example.elk.pl/);
+is($R1,$E1.'<command><check><domain:check xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example.babia-gora.pl</domain:name><domain:name>example.czest.pl</domain:name><domain:name>example.elk.pl</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command></epp>','domain_check({multiple domain_check name => ("example.babia-gora.pl","example.czest.pl","example.elk.pl")})');
+is($rc->is_success(),1,'domain_check multi is_success');
+
+
 ####################################################################################################
 exit 0;
