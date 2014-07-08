@@ -693,7 +693,7 @@ Contested: basketball group music
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['london', 'review', 'rugby',
+     tlds => ['london', 'london-collisions', 'review', 'rugby',
               'basketball', 'group', 'music', 
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
