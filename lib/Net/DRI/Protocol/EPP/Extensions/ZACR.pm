@@ -26,7 +26,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 #2. COZA::Domain and COZA::Contact are optional extensions; at the mo not announced on test server, but again I am told they are being used.
 #3. At this point there is no plan for IDNS, however for .africa it may well be implemented after the initial Launch phases
 
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase COZA::Domain COZA::Contact/; } # IDN not used
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase COZA::Domain COZA::Contact UNITEDTLD::Charge/; } # IDN not used
 
 ####################################################################################################
 1;
