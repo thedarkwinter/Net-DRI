@@ -5,9 +5,8 @@ use warnings;
 
 use Net::DRI;
 use Net::DRI::Data::Raw;
-use Data::Dumper; # TODO: remove... when finished
 
-use Test::More tests => 10; # TODO: change when finished!!!
+use Test::More tests => 55;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -94,7 +93,7 @@ $cs->add($dri->local_object('contact')->srid('012345'),'admin');
 $cs->add($dri->local_object('contact')->srid('012345'),'tech');
 $cs->add($dri->local_object('contact')->srid('012345'),'billing');
 $ch1=[{
-	'category' => 'premium',
+  'category' => 'premium',
   'category_name' => 'AAAA',
   'type' => 'price',
   'create' => '123.56'}];
@@ -216,7 +215,7 @@ is($ch2->{restore},'100.0000','domain_create get_info (Sunrise charge premium re
 is($ch2->{category_name},'AAAA','domain_create get_info (Sunrise charge premium category_name)');
 is($ch2->{type},'price','domain_create get_info (Sunrise charge premium type)');
 
-# 5.2: Landrush	Domain Create	With Claims and Extension
+# 5.2: Landrush Domain Create With Claims and Extension
 $R2='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><epp:epp xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"><epp:response><epp:result code="1001"><epp:msg>Command completed successfully; validation pending</epp:msg></epp:result><epp:resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><domain:name>premium.durban</domain:name><domain:crDate>2014-01-01T19:18:06Z</domain:crDate></domain:creData></epp:resData><epp:extension><charge:creData xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><charge:set><charge:category>premium</charge:category><charge:type>price</charge:type><charge:amount command="transfer">100.0000</charge:amount><charge:amount command="create">100.0000</charge:amount><charge:amount command="renew">100.0000</charge:amount><charge:amount command="update" name="restore">100.0000</charge:amount></charge:set></charge:creData><launch:creData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><launch:phase name="landrush">claims</launch:phase><launch:applicationID>0123456</launch:applicationID></launch:creData></epp:extension><epp:trID><epp:svTRID>DNS-EPP-146EE3EC6E4-A3F53</epp:svTRID></epp:trID></epp:response></epp:epp>';
 $dh=$dri->local_object('hosts');
 $dh->add('ns1.premium.durban',['194.194.10.10'],['ff02::1'],1);
@@ -235,7 +234,6 @@ is($ch2->{restore},'100.0000','domain_create get_info (Landrush charge premium r
 is($ch2->{type},'price','domain_create get_info (Landrush charge premium type)');
 
 # 5.3: General Availability Create With Extension
-#$R2='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><epp:epp xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"><epp:response><epp:result code="1000"><epp:msg>Domain Creation Successful</epp:msg></epp:result><epp:resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><domain:name>premium.durban</domain:name><domain:crDate>2010-01-01T04:41:55Z</domain:crDate><domain:exDate>2011-01-01T04:41:55Z</domain:exDate></domain:creData></epp:resData><epp:extension><charge:creData xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><charge:set><charge:category>premium</charge:category><charge:type>price</charge:type><charge:amount command="transfer">100.0000</charge:amount><charge:amount command="create">100.0000</charge:amount><charge:amount command="renew">100.0000</charge:amount><charge:amount command="update" name="restore">100.0000</charge:amount></charge:set></charge:creData><launch:creData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><launch:phase name="landrush">claims</launch:phase><launch:applicationID>0123456</launch:applicationID></launch:creData></epp:extension><epp:trID><epp:svTRID>DNS-EPP-146EE3EC6E4-A3F53</epp:svTRID></epp:trID></epp:response></epp:epp>';
 $R2='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><epp:epp xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"><epp:response><epp:result code="1000"><epp:msg>Domain Creation Successful</epp:msg></epp:result><epp:resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><domain:name>premium.durban</domain:name><domain:crDate>2010-01-01T04:41:55Z</domain:crDate><domain:exDate>2011-01-01T04:41:55Z</domain:exDate></domain:creData></epp:resData><epp:extension><charge:agreement xmlns:charge="http://www.unitedtld.com/epp/charge-1.0"><charge:set><charge:category name="AAAA">premium</charge:category><charge:type>price</charge:type><charge:amount command="create">123.56</charge:amount></charge:set></charge:agreement></epp:extension><epp:trID><epp:svTRID>DNS-EPP-146EE3EC6E4-A3F53</epp:svTRID></epp:trID></epp:response></epp:epp>';
 $dh=$dri->local_object('hosts');
 $dh->add('ns1.premium.durban',['194.194.10.10','195.195.11.11'],['ff02::1'],1);
@@ -245,8 +243,6 @@ is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns
 is($rc->is_success(),1,'domainq_create GA is_success');
 is($dri->get_info('action'),'create','domain_create get_info (GA action)');
 is($dri->get_info('name'),'premium.durban','domain_create get_info (GA premium domain name)');
-#print Dumper(shift $dri->get_info('charge'));
-#print Dumper($rc);
 $ch2 = shift $dri->get_info('charge');
 is($ch2->{category_name},'AAAA','domain_create get_info (GA charge premium category)');
 is($ch2->{category},'premium','domain_create get_info (GA charge premium category)');

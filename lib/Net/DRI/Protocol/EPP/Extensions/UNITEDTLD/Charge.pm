@@ -257,7 +257,7 @@ sub info_parse
 sub transform_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message(); 
+ my $mes=$po->message();
  return unless $mes->is_success();
  my $resdata;
  foreach my $ex (qw/creData upData trnData renData agreement/) # FIXME: add agreement for the dom_create General Avalability for zacr new gTLDs - added here instead of create a new file only for this small restriction.... 
