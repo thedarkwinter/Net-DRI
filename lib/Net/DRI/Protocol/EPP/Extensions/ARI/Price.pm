@@ -94,6 +94,7 @@ sub setup
 
 sub set_premium_values {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return unless $otype && $oaction && $oname;
  return unless exists $rinfo->{domain}->{$oname}->{price} && (ref $rinfo->{domain}->{$oname}->{price} eq 'HASH');
  my $ch = $rinfo->{domain}->{$oname}->{price};
  $rinfo->{domain}->{$oname}->{is_premium} = $ch->{premium};

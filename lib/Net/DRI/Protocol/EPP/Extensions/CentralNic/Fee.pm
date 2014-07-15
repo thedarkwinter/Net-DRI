@@ -195,6 +195,7 @@ sub fee_set_build
 
 sub set_premium_values {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return unless $otype && $oaction && $oname;
  return unless exists $rinfo->{domain}->{$oname}->{fee} && (ref $rinfo->{domain}->{$oname}->{fee} eq 'ARRAY');
  foreach my $ch (@{$rinfo->{domain}->{$oname}->{fee}})
  {

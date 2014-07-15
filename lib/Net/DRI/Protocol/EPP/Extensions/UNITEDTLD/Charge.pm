@@ -184,6 +184,7 @@ sub charge_set_build
 
 sub set_premium_values {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return unless $otype && $oaction && $oname;
  return unless exists $rinfo->{domain}->{$oname}->{charge} && (ref $rinfo->{domain}->{$oname}->{charge} eq 'ARRAY');
  foreach my $ch (@{$rinfo->{domain}->{$oname}->{charge}})
  {

@@ -82,6 +82,7 @@ sub register_commands
 
 sub set_premium_values {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return unless $otype && $oaction && $oname;
  return unless exists $rinfo->{domain}->{$oname}->{fee} && (ref $rinfo->{domain}->{$oname}->{fee} eq 'HASH');
  my $ch = $rinfo->{domain}->{$oname}->{fee};
  $rinfo->{domain}->{$oname}->{is_premium} = 1;
