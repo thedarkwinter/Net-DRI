@@ -261,9 +261,9 @@ sub transform_parse
  my $mes=$po->message();
  return unless $mes->is_success();
  my $resdata;
- foreach my $ex (qw/creData upData trnData renData/)
+ foreach my $ex (qw/creData upData trnData renData agreement/) # FIXME: add agreement for the dom_create General Avalability for zacr new gTLDs - added here instead of create a new file only for this small restriction.... 
  {
-  next unless $resdata=$mes->get_extension($mes->ns('charge'),$ex);
+  next unless $resdata=$mes->get_extension($mes->ns('charge'),$ex);  
   foreach my $el (Net::DRI::Util::xml_list_children($resdata))
   {
     my ($n,$c)=@$el;
