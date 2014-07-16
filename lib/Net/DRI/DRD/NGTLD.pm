@@ -1115,6 +1115,8 @@ africa capetown durban joburg
 
 =head3 Custom extensions:
 
+L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
+
 The extensions are optional, so no need to do anything out of the ordinary if you don't want to.
 
 L<Net::DRI::Protocol::EPP::Extensions::COZA::Domain> http://co.za/epp/extensions/cozadomain-1-0
