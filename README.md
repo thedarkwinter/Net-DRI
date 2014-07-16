@@ -10,17 +10,17 @@ This version contains the following updates along with a few bug fixes and impro
 Based on draft-ietf-eppext-launchphase-01
 
 ##### New gTLD backend providers (RO's)
-Afilias, ARI, CentralNIC, CoreNIC, Charleston Road Registry, Donuts, Famous Four Media, GMO Registry, KSRegistry (Starting Dot), Minds And Machines, Neustar, Registry-in-a-Box from NicAT, Rightside, Tango from KNIPP, UniRegistry
+Afilias, ARI, CentralNIC, CoreNIC, Charleston Road Registry, Donuts, Famous Four Media, GMO Registry, KNET, KSRegistry (Starting Dot), Minds And Machines, Neustar, Registry-in-a-Box from NicAT, Rightside, Tango from KNIPP, UniRegistry, ZACR
 
 ##### Planned support for providers
-CoCCA, KNET, Nic.br, Nominet, OpenRegistry, SIDN, TCI, Verisign, ZACR
+CoCCA, Nic.br, Nominet, OpenRegistry, SIDN, TCI, Verisign
 
 ##### Trademark services
 TMCH (Deloitte)
 TMDB (IBM): CNIS and SMDRL only
 
 ##### Added/Updated/Fixed support for ccTLDs
-UK, IT, ES, NO, SE/NU (IIS module), BE, Eu, DE, CH, ZA
+UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA
 
 
 * * *
