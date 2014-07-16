@@ -67,7 +67,7 @@ sub new
 {
  my $class=shift;
  my $self=$class->SUPER::new(@_);
- $self->{info}->{check_limit}=5;
+ $self->{info}->{check_limit}=13;
  return $self;
 }
 

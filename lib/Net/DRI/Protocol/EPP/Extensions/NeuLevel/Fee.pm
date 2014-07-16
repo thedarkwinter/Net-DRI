@@ -78,6 +78,25 @@ sub register_commands
 }
 
 ####################################################################################################
+## Price Standardisation
+
+sub set_premium_values {
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return unless $otype && $oaction && $oname;
+ return unless exists $rinfo->{domain}->{$oname}->{fee} && (ref $rinfo->{domain}->{$oname}->{fee} eq 'HASH');
+ my $ch = $rinfo->{domain}->{$oname}->{fee};
+ $rinfo->{domain}->{$oname}->{is_premium} = 1;
+ $rinfo->{domain}->{$oname}->{price_currency} = 'USD';
+ $rinfo->{domain}->{$oname}->{price_category} = $ch->{tier};
+ $rinfo->{domain}->{$oname}->{price_duration} = DateTime::Duration->new(years=>1);
+ $rinfo->{domain}->{$oname}->{create_price} = $ch->{price};
+ $rinfo->{domain}->{$oname}->{renew_price} = $ch->{price};
+ #$rinfo->{domain}->{$oname}->{restore_price} = undef; # not implemented in this extension
+ #$rinfo->{domain}->{$oname}->{transfer_price} = undef; # not implemented in this extension
+ return;
+}
+
+####################################################################################################
 
 sub check
 {
@@ -111,6 +130,7 @@ sub check_parse
    $rinfo->{$otype}->{$oname}->{fee}->{price}=$v if $k eq 'AnnualTierPrice';
   }
  }
+ set_premium_values($po,$otype,$oaction,$oname,$rinfo);
 
  return;
 }

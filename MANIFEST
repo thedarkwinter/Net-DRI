@@ -197,6 +197,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Registrar.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Restore.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Trademark.pm
+lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Validation.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AfiliasSRS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Contact.pm
@@ -327,11 +328,13 @@ lib/Net/DRI/Protocol/EPP/Extensions/NO/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NO/Result.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Contact.pm
+lib/Net/DRI/Protocol/EPP/Extensions/Nominet/DirectRights.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NSgroup.pm
+lib/Net/DRI/Protocol/EPP/Extensions/PIR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Domain.pm
@@ -448,6 +451,7 @@ lib/Net/DRI/Protocol/Whois/Domain/INFO.pm
 lib/Net/DRI/Protocol/Whois/Domain/LU.pm
 lib/Net/DRI/Protocol/Whois/Domain/MOBI.pm
 lib/Net/DRI/Protocol/Whois/Domain/NAME.pm
+lib/Net/DRI/Protocol/Whois/Domain/NGTLD.pm
 lib/Net/DRI/Protocol/Whois/Domain/ORG.pm
 lib/Net/DRI/Protocol/Whois/Domain/PT.pm
 lib/Net/DRI/Protocol/Whois/Domain/SE.pm
@@ -556,6 +560,8 @@ t/655idn_epp.t
 t/656icann_smd.t
 t/657it_epp.t
 t/658es_epp.t
+t/660ngtld_epp.t
+t/661ngtld_whois.t
 t/670launchphase.t
 t/671tango_epp.t
 t/672neustar_epp.t
@@ -563,6 +569,7 @@ t/673zacr_epp.t
 t/674unitedtld_epp.t
 t/675unireg_epp.t
 t/676ari_epp.t
+t/677pir_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
 t/701ovh_ws_live.t

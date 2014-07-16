@@ -90,6 +90,25 @@ sub setup
 }
 
 ####################################################################################################
+## Price Standardisation
+
+sub set_premium_values {
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return unless $otype && $oaction && $oname;
+ return unless exists $rinfo->{domain}->{$oname}->{price} && (ref $rinfo->{domain}->{$oname}->{price} eq 'HASH');
+ my $ch = $rinfo->{domain}->{$oname}->{price};
+ $rinfo->{domain}->{$oname}->{is_premium} = $ch->{premium};
+ #$rinfo->{domain}->{$oname}->{price_category} = undef;
+ #$rinfo->{domain}->{$oname}->{price_currency} = undef; # this depends on registrar contract
+ $rinfo->{domain}->{$oname}->{price_duration} = $ch->{duration};
+ $rinfo->{domain}->{$oname}->{create_price} = $ch->{price};
+ $rinfo->{domain}->{$oname}->{renew_price} = $ch->{renewal_price};
+ #$rinfo->{domain}->{$oname}->{restore_price} = undef; # not implemented in this extension
+ #$rinfo->{domain}->{$oname}->{transfer_price} = undef; # not implemented in this extension
+ return;
+}
+
+####################################################################################################
 
 sub check
 {
@@ -139,6 +158,7 @@ sub check_parse
        $rinfo->{domain}->{$dn}->{price}->{duration} = ($u eq 'm') ? DateTime::Duration->new(months=>$t) : DateTime::Duration->new(years=>$t);
      }
     }
+    set_premium_values($po,$otype,$oaction,$dn,$rinfo);
    }
  }
  return;

@@ -75,6 +75,7 @@ sub new
  $self->version($version);
 
  my @tlds=$drd->tlds();
+ @tlds = ('NGTLD') if UNIVERSAL::isa($drd,'Net::DRI::DRD::NGTLD');
 ## Net::DRI::Exception::usererr_invalid_parameters('Whois can not be used for registry handling multiple TLDs: '.join(',',@tlds)) unless (@tlds==1 || lc($tlds[0]) eq 'com');
  $drd->set_factories($self) if $drd->can('set_factories');
  $self->factories('message',sub { return Net::DRI::Protocol::Whois::Message->new(@_)->version($version); });

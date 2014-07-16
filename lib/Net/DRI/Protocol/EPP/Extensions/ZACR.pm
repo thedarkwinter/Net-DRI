@@ -1,7 +1,7 @@
 ## Domain Registry Interface, ZACR (ZA Central Registry) EPP extensions
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -22,7 +22,11 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
-sub default_extensions { return qw/SecDNS COZA::Domain/; }
+#1. GracePeriod is not yet active, but I am told it will be. This might well make the autorenew feature COZA::Domain redundant
+#2. COZA::Domain and COZA::Contact are optional extensions; at the mo not announced on test server, but again I am told they are being used.
+#3. At this point there is no plan for IDNS, however for .africa it may well be implemented after the initial Launch phases
+
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase COZA::Domain COZA::Contact UNITEDTLD::Charge/; } # IDN not used
 
 ####################################################################################################
 1;

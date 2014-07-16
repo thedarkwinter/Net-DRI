@@ -46,6 +46,7 @@ Adds the Charge Extension (http://www.unitedtld.com/epp/charge-1.0) to domain co
 =item restore [price for restore]
 
  # check and create
+ 
  $rc = $dri->domain_check('premium.tld');
  my $ch = $dri->get_info('charge');
  if ($ch->{create} < '1000000000.00') { 
@@ -179,6 +180,33 @@ sub charge_set_build
 }
 
 ####################################################################################################
+## Price Standardisation
+
+sub set_premium_values {
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return unless $otype && $oaction && $oname;
+ return unless exists $rinfo->{domain}->{$oname}->{charge} && (ref $rinfo->{domain}->{$oname}->{charge} eq 'ARRAY');
+ foreach my $ch (@{$rinfo->{domain}->{$oname}->{charge}})
+ {
+  if ($ch->{category} eq 'premium') {
+   $rinfo->{domain}->{$oname}->{is_premium} = 1;
+   $rinfo->{domain}->{$oname}->{price_category} = $ch->{category_name};
+   $rinfo->{domain}->{$oname}->{price_currency} = 'USD';
+   $rinfo->{domain}->{$oname}->{price_duration} = DateTime::Duration->new(years=>1);
+   $rinfo->{domain}->{$oname}->{create_price} = $ch->{create};
+   $rinfo->{domain}->{$oname}->{renew_price} = $ch->{renew};
+   $rinfo->{domain}->{$oname}->{restore_price} = $ch->{restore};
+   $rinfo->{domain}->{$oname}->{transfer_price} = $ch->{transfer};
+  } else {
+   $rinfo->{domain}->{$oname}->{has_fee} = 1;
+   $rinfo->{domain}->{$oname}->{fee_category} = $ch->{category};
+   $rinfo->{domain}->{$oname}->{fee_price} = $ch->{create};
+  }
+ }
+ return;
+}
+
+####################################################################################################
 ## Query Commands
 
 sub check_parse
@@ -200,9 +228,10 @@ sub check_parse
      $dn = $c2->textContent() if $n2 eq 'name';
      push @{$rinfo->{domain}->{$dn}->{charge}},charge_set_parse($c2) if $n2 eq 'set';
     }
+    set_premium_values($po,$otype,$oaction,$dn,$rinfo);
    }
  }
-  return;
+ return;
 }
 
 sub info_parse
@@ -218,6 +247,7 @@ sub info_parse
    my ($n,$c)=@$el;
    push @{$rinfo->{domain}->{$oname}->{charge}},charge_set_parse($c) if $n eq 'set';
  }
+ set_premium_values($po,$otype,$oaction,$oname,$rinfo);
  return;
 }
 
@@ -240,6 +270,7 @@ sub transform_parse
     push @{$rinfo->{domain}->{$oname}->{charge}},charge_set_parse($c) if $n eq 'set';
   }
  }
+ set_premium_values($po,$otype,$oaction,$oname,$rinfo);
  return;
 }
 

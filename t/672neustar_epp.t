@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 14;
+use Test::More tests => 22;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -42,6 +42,15 @@ is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:d
 $fee = $dri->get_info('fee');
 is($fee->{tier},'Tier2','domain_check get_info fee tier');
 is($fee->{price},'50','domain_check get_info fee price');
+# using the standardised methods
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium)');
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('price_category'),'Tier2','domain_check get_info (price_category)');
+is($dri->get_info('create_price'),'50','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),'50','domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');
+is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
 
 $fee = { tier => 'Tier3', 'price' => 100 };
 # domain create - # domain renew and domain transfer work exactly the same

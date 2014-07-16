@@ -80,7 +80,7 @@ sub new
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Nominet'; }
-sub tlds          { return qw/co.uk ltd.uk me.uk net.uk org.uk plc.uk sch.uk/; }
+sub tlds          { return qw/uk co.uk ltd.uk me.uk net.uk org.uk plc.uk sch.uk/; }
 sub object_types  { return qw/domain contact ns/; }
 sub profile_types { return qw/epp/; }
 
