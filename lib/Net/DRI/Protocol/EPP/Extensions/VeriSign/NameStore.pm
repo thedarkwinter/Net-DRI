@@ -145,6 +145,10 @@ sub add_namestore_ext
  $ext='dotTV' if ($domain=~m/\.tv$/i);
  $ext='dotBZ' if ($domain=~m/\.bz$/i);
  $ext='dotJOBS' if ($domain=~m/\.jobs$/i);
+ if ($domain =~ m/\.(xn--pssy2u|xn--c1yn36f|xn--11b4c3dZ|xn--t60b56a|xn--c2br7g|xn--42c2d9a|xn--j1aef|xn--3pxu8k|xn--hdb9cza1b|xn--mk1bu44c|xn--fhbei|xn--tckwe|career|ooo)/)
+ {
+  $ext = uc $1;
+ }
 
  $mes->command_extension($eid,['namestoreExt:subProduct',$ext]);
  return;

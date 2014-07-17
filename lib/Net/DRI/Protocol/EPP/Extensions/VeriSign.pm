@@ -79,7 +79,7 @@ sub setup
 sub default_extensions
 {
  my ($self,$rp)=@_;
- my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::ClientAttributes VeriSign::TwoFactorAuth VeriSign::ZoneManagement VeriSign::Balance GracePeriod SecDNS/;
+ my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::ClientAttributes VeriSign::TwoFactorAuth VeriSign::ZoneManagement VeriSign::Balance GracePeriod SecDNS LaunchPhase/;
  push @c,'VeriSign::WhoisInfo'   if !exists $rp->{default_product} || (defined $rp->{default_product} && $rp->{default_product} ne 'dotCC' && $rp->{default_product} ne 'dotTV' );
  push @c,'VeriSign::JobsContact' if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'dotJOBS';
  return @c;
