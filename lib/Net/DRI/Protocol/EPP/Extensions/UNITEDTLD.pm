@@ -34,7 +34,7 @@ Additional domain extension United TLD New Generic TLDs.  This extension set is 
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase UNITEDTLD::Charge UNITEDTLD::Finance/; }
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase IDN UNITEDTLD::Charge UNITEDTLD::Finance/; }
 
 ####################################################################################################
 1;

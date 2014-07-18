@@ -29,7 +29,16 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase NeuLevel::Message NeuLevel::Fee NeuLevel::EXTContact/; }
+sub default_extensions { 
+ my ($self,$pp) = @_;
+ my @ext = qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message NeuLevel::Fee/;
+ if (exists $pp->{custom} )
+ {
+   my @custom = (ref $pp->{custom} eq 'ARRAY') ? @{$pp->{custom}} : ($pp->{custom});
+   foreach (@custom) { push @ext,$_; }
+ }
+ return @ext;
+}
 
 ####################################################################################################
 1;

@@ -23,7 +23,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
-sub default_extensions { return qw/SecDNS GracePeriod IDN LaunchPhase CentralNic::Fee/; }
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee/; }
 
 ####################################################################################################
 1;

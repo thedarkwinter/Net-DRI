@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 45;
+use Test::More tests => 57;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -31,6 +31,11 @@ my ($rc,$drd,@periods);
 ####################################################################################################
 #### Loading DRD
 
+# Core module lists for testing loaded_modules
+my @core_modules = map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Domain Contact Host/;
+my @core_modules_no_host = map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Domain Contact/; # e.g. ZACR
+
+
 #### Shared Registry
 # MAM Clients
 $rc = $dri->add_registry('NGTLD',{provider => 'mamclient'});
@@ -44,7 +49,8 @@ is($#periods,9,'mamclient: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'mamclient: object_types');
 is_deeply( [$dri->profile_types()],['epp','whois'],'mamclient: profile_types');
 $drd = $dri->{registries}->{mamclient}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'mamclient: epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],'mamclient: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee/],'mamclient: loaded_modules');
 is($drd->{bep}->{bep_type},2,'mamclient: bep_type');
 is($drd->{info}->{check_limit},13,'mamclient: check_limit');
 
@@ -54,6 +60,7 @@ is($rc->{last_registry},'donuts','donuts: add_registry');
 $rc = $dri->target('donuts')->add_current_profile('p1-donuts','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{donuts}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],'donuts: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN UNITEDTLD::Charge UNITEDTLD::Finance/],'donuts: loaded_modules');
 is($drd->{bep}->{bep_type},2,'donuts: bep_type');
 is($drd->{info}->{check_limit},5,'donuts: check_limit');
 is($drd->{info}->{host_check_limit},5,'donuts: host_check_limit');
@@ -75,7 +82,15 @@ is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_typ
 is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
 $drd = $dri->{registries}->{buzz}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],'neustar: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message NeuLevel::Fee/],'neustar: loaded_modules');
 is($drd->{bep}->{bep_type},1,'neustar: bep_type');
+
+# Neustar (NYC with EXTContact)
+$rc = $dri->add_registry('NGTLD',{provider => 'neustar',name=>'nyc'});
+is($rc->{last_registry},'nyc','neustar nyc: add_registry');
+$rc = $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'neustar nyc: add_current_profile');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message NeuLevel::Fee NeuLevel::EXTContact/],'neustar nyc: loaded_modules (EXTContact)');
 
 # ZACR (Durban)
 $rc = $dri->add_registry('NGTLD',{provider => 'zacr','name'=>'joburg'});
@@ -90,8 +105,20 @@ is_deeply( [$dri->object_types()],['domain','contact'],'zacr: object_types');
 is_deeply( [$dri->profile_types()],['epp'],'neustar: profile_types');
 $drd = $dri->{registries}->{joburg}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],'zacr: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules_no_host, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase COZA::Domain COZA::Contact UNITEDTLD::Charge/],'zacr: loaded_modules');
+
 is($drd->{bep}->{bep_type},1,'zacr: bep_type');
 
+
+# CRR
+$rc = $dri->add_registry('NGTLD',{provider => 'crr'});
+is($rc->{last_registry},'crr','crr: add_registry');
+$rc = $dri->target('crr')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{crr}->{driver};
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1}],'crr: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase/],'crr: loaded_modules');
+is($drd->{bep}->{bep_type},1,'crr: bep_type');
+is($drd->{info}->{check_limit},13,'crr: check_limit');
 
 ####################################################################################################
 #### ngTLD Methods

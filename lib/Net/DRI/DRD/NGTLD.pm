@@ -676,6 +676,7 @@ Contested: app art baby beauty blog book cloud coupon cpa cricket data dds desig
      tlds => ['abogado', 'bayern', 'budapest', 'casa', 'cooking', 'country', 'fishing', 'fit', 'garden', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
               'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'cricket', 'data', 'dds', 'design', 'dog', 'eco', 'fashiond', 'gay', 'home', 'hotel', 'immo', 'inc', 'latino', 'law', 'llc', 'love', 'pizza', 'realestate', 'restaurant', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video', 'vip',
              ],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
      whois_server => 'whois-dub.mm-registry.com',
    } if $bep eq 'mam' || $bep eq 'mamown';
 
@@ -697,6 +698,7 @@ Contested: basketball group music
               'basketball', 'group', 'music', 
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
    } if $bep eq 'mamsrs' || $bep eq 'mampartner';
 
 =pod
@@ -717,6 +719,7 @@ Contested: broadway casino poker radio tickets tube
               'broadway', 'casino', 'poker', 'radio', 'tickets', 'tube'
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
    } if $bep eq 'mamclient';
 
 =pod
@@ -754,7 +757,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  return {
      bep_type => 1, # dedicated registy
      tlds => ['nyc'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::EXTContact'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::NYC->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::NYC'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -1209,25 +1212,40 @@ object) will be added to the lookup.
 sub domain_check_price
 {
  my ($self,$ndr,@names)=@_;
- my $bep = lc($self->{info}->{provider});
- return $ndr->domain_check(@names) unless $bep =~ m/^(?:neustar|mam|ffm|ari|centralnic)/; # no price lookups
-
  my $rd = (@names && exists $names[-1] && ref $names[-1] eq 'HASH' ) ? pop @names : {};
- if ($bep =~ m/^(?:neustar|mam|ffm)/)
+ $rd = $self->_build_price_query($ndr,$rd);
+ return $ndr->domain_check(@names,$rd);
+}
+
+#### FIXME: Neustar requires phase
+sub domain_info_price
+{
+ my ($self,$ndr,$domain,$rd)=@_;
+ $rd = $self->_build_price_query($ndr,$rd);
+ return $ndr->domain_info($ndr,$domain,$rd);
+}
+
+sub _build_price_query
+{
+ my ($self,$ndr,$rd)=@_;
+ my $bep = lc($self->{info}->{provider});
+ if ($bep =~ m/^(?:donuts|rightside)/) 
+ { 
+  # they answer with fee anyway, so no action required on this one
+ } elsif ($bep =~ m/^(?:neustar|ffm)/)
  {
    $rd->{fee} = 1;
  } elsif ($bep eq 'ari') {
    $rd->{price} = 1;
-# } elsif ($bep m/^?:(donuts|rightside)/) { # they answer with fee anyway
- } elsif ($bep =~ m/^(?:centralnic|gmo)$/) {
+ } elsif ($bep =~ m/^(?:centralnic|gmo|mam)/) {
    my ($fee,@fees);
    foreach my $k (qw/currency action duration/)
    {
      $fee->{$k} = $rd->{$k} if exists $rd->{$k};
    }
-   $fee->{currency} = 'USD' unless exists $fee->{currency};
-   $fee->{duration} = 1 unless exists $fee->{duration};
-   $fee->{duration} = $ndr->local_object('duration','years',$fee->{duration}) if ref $fee->{duration} eq '' && $fee->{duration} =~ m/^\d$/;
+   $fee->{currency} = 'USD' unless exists $fee->{currency} || $bep =~ m/^mam/; # FIXME: fee-0.5 should not set values for currency and duration
+   $fee->{duration} = 1 unless exists $fee->{duration} || $bep =~ m/^mam/;
+   $fee->{duration} = $ndr->local_object('duration','years',$fee->{duration}) if exists $fee->{duration} && ref $fee->{duration} eq '' && $fee->{duration} =~ m/^\d$/;
    @{$rd->{fee}} = ();
    foreach (qw/create renew transfer restore/) {
      my $feetype = { %{$fee} };
@@ -1240,7 +1258,7 @@ sub domain_check_price
  {
    delete $rd->{$_} if exists $rd->{$_};
  }
- return $ndr->domain_check(@names,$rd);
+ return $rd;
 }
 
 
