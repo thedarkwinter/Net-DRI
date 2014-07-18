@@ -20,6 +20,15 @@ use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
 
+
+sub setup
+{
+ my ($self,$rp)=@_;
+ $self->default_parameters()->{subproductid}=$rp->{default_product} || '_auto_'; ## VERISIGN - THIS SHOULD BE CLEANUP UP A BIT THO ?
+ $self->default_parameters()->{whois_info}=0; ## VERISIGN - THIS SHOULD BE CLEANUP UP A BIT THO ?
+ return;
+}
+
 sub default_extensions { 
  my ($self,$pp) = @_;
  my @ext = qw/GracePeriod SecDNS LaunchPhase/;

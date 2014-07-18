@@ -121,7 +121,7 @@ sub add_namestore_ext
  my ($epp,$domain,@p)=@_;
  my $rd=pop @p;
  my $mes=$epp->message();
- my $defprod=$epp->default_parameters()->{subproductid};
+ my $defprod=$epp->default_parameters()->{subproductid} || '_auto_';
 
  my $eid=$mes->command_extension_register('namestoreExt:namestoreExt',sprintf('xmlns:namestoreExt="%s" xsi:schemaLocation="%s namestoreExt-1.1.xsd"',$NS,$NS));
 
