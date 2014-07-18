@@ -31,29 +31,35 @@ use Data::Dumper;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee - CentralNic EPP Fee extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee - CentralNic EPP Fee extension commands for Net::DRI (draft-brown-epp-fees-01 & 02)
 
 =head1 DESCRIPTION
 
-Adds the Price Extension (urn:ietf:params:xml:ns:fee-0.4) to domain commands. The extension is built by adding a hash to any domains commands. This pricing information is returned in all commands when requested.
+Adds the Price Extension (urn:ietf:params:xml:ns:fee-0.4 & -0.5) to domain commands. Minds and Machines is implementing fee-0.5, while CentralNic/GMO are using 0.4. This extension supports both versions. The extension is built by adding a hash to any domains commands. This pricing information is returned in all commands when requested.
 
 CentralNic Fees extension is defined in http://tools.ietf.org/html/draft-brown-epp-fees-01
 
-=item currency* (3 letter currency code)
+=item currency* (3 letter currency code - option in 0.5)
 
 =item action* (create, transfer, renew or restore)
 
-=item duration*
+=item duration* (Datetime::Duration - optional in 0.5)
 
 =item phase (launch phase, e.g. landrush)
 
 =item sub_phase (launch sub phase, e.g. phase=>claims, sub_phase=>landrush)
 
-* indicates required fields
-
  my $fee = {fee=>{currency=>'EUR',action=>'transfer',duration=>$dri->local_object('duration','years',2)}}
  $rc=$dri->domain_check('example9.tld',{fee => $fee} );
  $price = $dri->get_info('fee');
+
+Or
+
+ $rc=$dri->domain_check_price('example9.tld');
+ $dri->get_info('is_premium');
+ $dri->get_info('price_currency');
+ $dri->get_info('create_price'); // renew_price / transfer_price / restore_price
+
 
 
 =head1 SUPPORT
@@ -93,7 +99,12 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
   my ($class,$version)=@_;
-  my %tmp=(
+  my %s=(
+    'connect' => [ undef, \&parse_greeting ],
+    'noop'    => [ undef, \&parse_greeting ],
+  );
+
+  my %d=(
             info  => [ \&info, \&info_parse ],
             check => [ \&check, \&check_parse ],
             transfer_query => [ undef, \&transform_parse], ## does not add any elements to the command but does include elements in the response
@@ -104,21 +115,114 @@ sub register_commands
             update => [ \&update, \&transform_parse ], ## extension adds elements to both the EPP <renew> command and response
           );
   # check multiple domains...
-  $tmp{check_multi}=$tmp{check};
-  return { 'domain' => \%tmp };
+  $d{check_multi}=$d{check};
+  return { 'domain' => \%d, 'session' => \%s };
 }
 
 sub setup
 {
   my ($class,$po,$version)=@_;
-  $po->ns({ map { $_ => [ 'urn:ietf:params:xml:ns:'.$_.'-0.4',$_.'-0.4.xsd' ] } qw/fee/ }); # rfc example don't have xsd (http://tools.ietf.org/html/draft-brown-epp-fees-01)
-  #$po->ns({ 'fee' => [ 'urn:centralnic:params:xml:ns:fee-1.0','fee-1.0.xsd' ] }); # need to use their urn or keep the previous ietf?
+  $po->ns({ 'fee' => [ 'urn:ietf:params:xml:ns:fee-0.4','fee-0.4.xsd' ] }); ## this will get bumped to fee-0.5 after login if server supports it
   $po->capabilities('domain_update','fee',['set']); # add the fee extension in the domain_update command...
   return;
 }
 
 ####################################################################################################
-## Build / Parse helpers
+### DEVELOPING
+## Please run t/621centralnic_epp.t and t/678mam_epp.t as they use different versions of the extension!
+####################################################################################################
+
+## parse_greeting to determine extension version from server
+sub parse_greeting
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless defined $mes->node_greeting();
+ $po->switch_to_highest_namespace_version('fee');
+}
+
+####################################################################################################
+## Build / Parse helpers for 0.5
+
+sub fee_set_parse_05
+{
+  my $start = shift;
+  return unless $start;
+  my $set = {};
+  foreach my $el (Net::DRI::Util::xml_list_children($start))
+  {
+    my ($name,$content)=@$el;
+    if ($name eq 'name') {
+      $set->{'domain'} = $content->textContent();
+      $set->{'premium'} = ($content->hasAttribute('premium') && Net::DRI::Util::xml_parse_boolean($content->getAttribute('premium'))) ? 1 : 0;
+    } elsif ($name eq 'command')
+    {
+      $set->{'action'} = $content->textContent();
+      $set->{'phase'} = $content->getAttribute('phase') if $content->hasAttribute('phase');
+      $set->{'sub_phase'} = $content->getAttribute('subphase') if $content->hasAttribute('subphase');
+    } elsif ($name eq 'currency')
+    {
+      $set->{'currency'} = $content->textContent();
+    } elsif ($name eq 'period')
+    {
+      my $unit={y=>'years',m=>'months'}->{$content->getAttribute('unit')};
+      $set->{'duration'} = DateTime::Duration->new($unit => 0+$content->textContent());
+    } elsif ($name eq 'fee')
+    # Fees are kind of loosely defined based on free text description field with refundable also possible. This will total it up and concat the description and refundable fields but its only human readable
+    {
+      $set->{fee} = 0 unless exists $set->{fee};
+      $set->{fee} += $content->textContent();
+      $set->{description} = '' unless exists $set->{description};
+      $set->{description} = "\n" . $content->getAttribute('description') if $content->hasAttribute('description');
+      if ($content->hasAttribute('refundable') && $content->getAttribute('refundable') eq '1') {
+        $set->{description} .= "Refundable";
+      }
+      if ($content->hasAttribute('grace-period')) {
+        $set->{description} .= "(Grace " . $content->getAttribute('grace-period') . ")";
+      }
+    } elsif ($name eq 'class')
+    {
+      $set->{class} = $content->textContent();
+    }
+  }
+  chomp $set->{description} if $set->{description};
+  return $set;
+}
+
+sub fee_set_build_05
+{
+  my ($rp,$cmd,$domain)=@_;
+  Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with key action, and optionally currency and duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'action');
+  Net::DRI::Exception::usererr_invalid_parameters('fee currency should be 3 letters ISO-4217 code') if exists $rp->{currency} && $rp->{currency} !~ m/^[A-Z]{3}$/; # No longer required field
+  Net::DRI::Exception::usererr_invalid_parameters('fee action should be: create, transfer, renew or restore') if exists $rp->{action} && $rp->{action} !~ m/^(?:create|transfer|renew|restore)$/;
+  Net::DRI::Exception::usererr_invalid_parameters('fee action phase') if (exists $rp->{phase} && $rp->{phase}  !~ m/\w+/);
+  Net::DRI::Exception::usererr_invalid_parameters('fee action subphase') if (exists $rp->{sub_phase} && $rp->{sub_phase}  !~ m/\w+/);
+
+  my (@n,$name,$lp);
+  $name = $rp->{domain} if exists $rp->{domain};
+  $name = $domain if !$name && $domain && ref $domain ne 'ARRAY';
+  $name = $domain->[0] if !$name && $domain && ref $domain eq 'ARRAY';
+
+  push @n,['fee:name',$name] if $name;
+  push @n,['fee:currency',$rp->{currency}] if exists $rp->{currency};
+  
+  $lp->{phase} = $rp->{phase} if exists $rp->{phase};
+  $lp->{subphase} = $rp->{sub_phase} if exists $rp->{sub_phase};
+  push @n, ['fee:command',$lp,$rp->{action}];
+
+  if (exists $rp->{duration}) {
+    Net::DRI::Exception::usererr_invalid_parameters('duration should be a DateTime::Duration object') unless Net::DRI::Util::is_class($rp->{duration},'DateTime::Duration');
+    my $rj=Net::DRI::Protocol::EPP::Util::build_period($rp->{duration});
+    push @n,['fee:period',$rj->[1],$rj->[2]];
+  }
+  
+  return @n unless $cmd && $cmd eq 'check';
+  return ['fee:domain',@n];
+}
+
+####################################################################################################
+## Build / Parse helpers for 0.4
+
 
 sub fee_set_parse
 {
@@ -195,13 +299,12 @@ sub fee_set_build
 
 sub set_premium_values {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- return unless $otype && $oaction && $oname;
  return unless exists $rinfo->{domain}->{$oname}->{fee} && (ref $rinfo->{domain}->{$oname}->{fee} eq 'ARRAY');
  foreach my $ch (@{$rinfo->{domain}->{$oname}->{fee}})
  {
-  $rinfo->{domain}->{$oname}->{is_premium} = undef; # THIS EXTENSION DOES NOT [YET] INDICATE THIS
-  #$rinfo->{domain}->{$oname}->{price_category} = undef;
-  $rinfo->{domain}->{$oname}->{price_currency} = $ch->{currency}; # FIXME: TBC
+  $rinfo->{domain}->{$oname}->{is_premium} = $ch->{premium};
+  $rinfo->{domain}->{$oname}->{price_category} = $ch->{description};
+  $rinfo->{domain}->{$oname}->{price_currency} = $ch->{currency};
   $rinfo->{domain}->{$oname}->{price_duration} = $ch->{duration};
   $rinfo->{domain}->{$oname}->{$ch->{action} .'_price'} = $ch->{fee}; # action can be create/renew/transfer/restore. extension only returns what was requested
  }
@@ -215,14 +318,31 @@ sub check
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my (@n,@fees);
+  my (@n,@fees,@fee_set);
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
-  foreach my $fee_set (@fees)
+
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
+  if ($ver eq '0.4')
   {
-    @n = fee_set_build($fee_set,$domain);
-    my $eid=$mes->command_extension_register('fee','check');
-    $mes->command_extension($eid,\@n);
+   foreach my $fee_set (@fees)
+   {
+     @n = fee_set_build($fee_set,$domain);
+     my $eid=$mes->command_extension_register('fee','check');
+     $mes->command_extension($eid,\@n);
+   }
+  }
+
+  if ($ver eq '0.5')
+  {
+   foreach my $fee_set (@fees)
+   {
+     @n = fee_set_build_05($fee_set,'check',$domain);
+     push @fee_set,@n if @n;
+   }
+   return unless @fee_set;
+   my $eid=$mes->command_extension_register('fee','check');
+   $mes->command_extension($eid,\@fee_set);
   }
   return;
 
@@ -234,22 +354,28 @@ sub check_parse
   my $mes=$po->message();
   return unless $mes->is_success;
 
-  my $chkdata=$mes->node_extension;
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
+
+  my $chkdata=$mes->node_extension if ($ver eq '0.4');
+  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($ver eq '0.5');
   return unless defined $chkdata;
 
   foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
   {
     my ($name,$content)=@$el;
-    if ($name eq 'chkData')
+    if ($name =~ m/^(chkData|cd)$/) # chkData for 0.4, cd for 0.5
     {
       my $dn = '';
       foreach my $el2 (Net::DRI::Util::xml_list_children($content))
       {
         my ($name2,$content2)=@$el2;
-        $dn = $content2->textContent() if $name2 eq 'domain';
+        $dn = $content2->textContent() if $name2 =~ m/^(domain|name)$/; # domain for 0.4, name for 0.5
       }
       next unless $dn;
-      if (my $fee_set = fee_set_parse($content)) {
+      my $fee_set = fee_set_parse($content) if ($ver eq '0.4');
+      $fee_set = fee_set_parse_05($content) if ($ver eq '0.5');
+      if ($fee_set)
+      {
         push @{$rinfo->{domain}->{$dn}->{fee}},$fee_set;
         set_premium_values($po,$otype,$oaction,$dn,$rinfo);
       }
@@ -263,13 +389,15 @@ sub info
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
  
   my (@n,@fees);
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
   foreach my $fee_set (@fees)
   {
-    @n = fee_set_build($fee_set);
+    @n = fee_set_build($fee_set) if ($ver eq '0.4');
+    @n = fee_set_build_05($fee_set) if ($ver eq '0.5');
     my $eid=$mes->command_extension_register('fee','info');
     $mes->command_extension($eid,\@n);
   }
@@ -281,11 +409,15 @@ sub info_parse
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success();
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
 
   my $infdata=$mes->get_extension($mes->ns('fee'),'infData');
   return unless defined $infdata;
 
-  if (my $fee_set = fee_set_parse($infdata)) {
+  my $fee_set = fee_set_parse($infdata) if ($ver eq '0.4');
+  $fee_set = fee_set_parse_05($infdata) if ($ver eq '0.5');
+  if ($fee_set)
+  {
     @{$rinfo->{domain}->{$oname}->{fee}} = $fee_set;
     set_premium_values($po,$otype,$oaction,$oname,$rinfo);
   }
@@ -306,12 +438,13 @@ sub transform_parse
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
       my ($name,$content)=@$el;
-      if ($name=~m/^(currency)$/)
+      if ($name eq 'currency')
       {
-        $p{$1}=$content->textContent();
-      } elsif ($name eq 'fee')
+        $p{'currency'}=$content->textContent();
+      } elsif ($name =~ m/^(fee|balance|creditLimit)/)
       {
-        $p{fee}=0+$content->textContent();
+        my $k= ($1 eq 'creditLimit') ? 'credit_limit' : $1;
+        $p{$k}=0+$content->textContent();
       }
     }
     $rinfo->{domain}->{$oname}->{fee}=\%p;
@@ -325,12 +458,14 @@ sub transform_build
   my ($epp,$domain,$rd,$cmd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
 
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, fee') unless Net::DRI::Util::has_key($rd->{fee},'currency') && Net::DRI::Util::has_key($rd->{fee},'fee');
   my $rp=$rd->{fee};
   Net::DRI::Exception::usererr_invalid_parameters('currency should be 3 letters ISO-4217 code') unless $rp->{currency}=~m/^[A-Z]{3}$/;
 
   my @n;
+  $rp = ref $rd->{fee} eq 'ARRAY' ? $rd->{fee}->[0] : $rd->{fee};
   push @n,['fee:currency',$rp->{currency}];
   push @n,['fee:fee',$rp->{fee}]; # need protect fee param?
 
