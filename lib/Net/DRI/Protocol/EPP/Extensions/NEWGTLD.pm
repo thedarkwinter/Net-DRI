@@ -21,9 +21,15 @@ use warnings;
 use base qw/Net::DRI::Protocol::EPP/;
 
 sub default_extensions { 
-  my ($self,$pp) = @_;
-  return qw/GracePeriod SecDNS LaunchPhase/ if exists $pp->{disable_idn} && $pp->{disable_idn};
-  return qw/GracePeriod SecDNS IDN LaunchPhase/;
+ my ($self,$pp) = @_;
+ my @ext = qw/GracePeriod SecDNS LaunchPhase/;
+ push @ext, 'IDN' unless (exists $pp->{disable_idn} && $pp->{disable_idn});
+ if (exists $pp->{custom} )
+ {
+  my @custom = (ref $pp->{custom} eq 'ARRAY') ? @{$pp->{custom}} : ($pp->{custom});
+  foreach (@custom) { push @ext,$_; }
+ }
+ return @ext;
 }
 
 ####################################################################################################

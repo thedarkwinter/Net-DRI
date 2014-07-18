@@ -570,6 +570,7 @@ t/674unitedtld_epp.t
 t/675unireg_epp.t
 t/676ari_epp.t
 t/677pir_epp.t
+t/678mam_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
 t/701ovh_ws_live.t
