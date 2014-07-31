@@ -28,10 +28,10 @@ sub register_commands
 {
   my ($class,$version)=@_;
   my %tmp=(
-            check               => [ undef, \&check_parse ],
-  			create              => [ undef, \&transform_parse ],
-  			renew				=> [ undef, \&transform_parse ],
-  			transfer_request	=> [ undef, \&transform_parse ],
+        check             => [ undef, \&check_parse ],
+        create            => [ undef, \&transform_parse ],
+        renew             => [ undef, \&transform_parse ],
+        transfer_request  => [ undef, \&transform_parse ],
   );
   # check multiple domains
   $tmp{check_multi}=$tmp{check};
@@ -97,26 +97,25 @@ sub transform_parse
 {
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
-  return unless $mes->is_success();	
+  return unless $mes->is_success();
   my $resdata;
   foreach my $ex (qw/creData renData trnData/)
   {
     next unless $resdata=$mes->get_extension($mes->ns('price'),$ex);
-	my %p;
-	foreach my $el (Net::DRI::Util::xml_list_children($resdata))
-	{
-	  my ($name,$content)=@$el;
-	  if ($name eq 'domain')
-	  {
-	    $p{'domain'}=$content->textContent();
-		$p{'domain_type_attr'}=$content->getAttribute('type');				
-	  }			
-	}		
-	$rinfo->{domain}->{$oname}->{'price_ext'}=\%p;
+    my %p;
+    foreach my $el (Net::DRI::Util::xml_list_children($resdata))
+    {
+      my ($name,$content)=@$el;
+      if ($name eq 'domain')
+      {
+        $p{'domain'}=$content->textContent();
+        $p{'domain_type_attr'}=$content->getAttribute('type');
+      }
+    }
+    $rinfo->{domain}->{$oname}->{'price_ext'}=\%p;
   }
   return;
 }
-
 
 ####################################################################################################
 1;
