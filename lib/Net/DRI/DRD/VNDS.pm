@@ -73,7 +73,7 @@ sub new
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return 'VNDS'; }
-sub tlds          { return qw/com net cc tv bz jobs/; } ## If this changes, VeriSign/NameStore will need to be updated also
+sub tlds          { return qw/com net cc tv bz jobs xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe career ooo/; } ## If this changes, VeriSign/NameStore will need to be updated also
 sub object_types  { return qw/domain ns/; }
 sub profile_types { return qw/epp whois/; }
 

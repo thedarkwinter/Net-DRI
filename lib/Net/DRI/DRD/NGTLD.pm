@@ -1094,11 +1094,29 @@ xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef 
 
 Contended TLD's not included
 
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::PollLowBalance>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::PollRGP>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::IDNLanguage>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::WhoWas>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Suggestion>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::ClientAttributes>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::TwoFactorAuth>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::ZoneManagement>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Balance>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::NameStore>
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain>
+
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
-     tlds => ['xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','career','ooo'],
+     bep_type => 2, # FIXME: shared - on cc-tv-jobs server?
+     contact_i18n => 2, # FIXME: they appear to only accept one address, might be they either is valid?
+     tlds => ['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','career','ooo'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['VeriSign::Sync', 'VeriSign::PollLowBalance', 'VeriSign::PollRGP', 'VeriSign::IDNLanguage', 'VeriSign::WhoWas', 'VeriSign::Suggestion', 'VeriSign::ClientAttributes', 'VeriSign::TwoFactorAuth', 'VeriSign::ZoneManagement', 'VeriSign::Balance', 'VeriSign::NameStore', 'VeriSign::PremiumDomain']}],
+     whois_server => 'ccwhois.verisign-grs.com',
    } if $bep eq 'verisign';
 
 

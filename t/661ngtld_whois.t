@@ -5,7 +5,7 @@ use warnings;
 use Net::DRI;
 use Data::Dumper;
 
-use Test::More tests => 366;
+use Test::More tests => 390;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -1627,9 +1627,133 @@ is($r->org(),'Uniregistry, Corp','domain_info get_info (contact) registrant org'
 
 ####################################################################################################
 # Verisign
-SKIP: {
-  skip '*** TODO : Verisign',1;
-};
+$R2='Whois Server Version 2.0
+
+Domain names can now be registered with many different competing registrars. 
+Go to http://registrar.verisign-grs.com/whois/ for detailed information.
+
+   Domain Name: NIC.CAREER
+   Domain ID: 106017070
+   Whois Server: rs.internic.net
+   Referral URL: http://www.networksolutions.com
+   Updated Date: 2013-11-14T10:09:07Z
+   Creation Date: 2013-05-31T10:16:43Z
+   Registry Expiry Date: 2023-05-31T10:16:43Z
+   Sponsoring Registrar: TEST REGISTRAR
+   Sponsoring Registrar IANA ID: 9999
+   Domain Status: ok
+   Registrant ID: VRSNCONTACT
+   Registrant Name: Verisign Customer Service
+   Registrant Organization: Verisign, Inc.
+   Registrant Street: 12061 Bluemont Way
+   Registrant City: Reston
+   Registrant Country: US
+   Registrant Phone: +1.7039256999
+   Registrant Email: info@verisign-grs.com
+   Admin ID: VRSNCONTACT
+   Admin Name: Verisign Customer Service
+   Admin Organization: Verisign, Inc.
+   Admin Street: 12061 Bluemont Way
+   Admin City: Reston
+   Admin Country: US
+   Admin Phone: +1.7039256999
+   Admin Email: info@verisign-grs.com
+   Tech ID: VRSNCONTACT
+   Tech Name: Verisign Customer Service
+   Tech Organization: Verisign, Inc.
+   Tech Street: 12061 Bluemont Way
+   Tech City: Reston
+   Tech Country: US
+   Tech Phone: +1.7039256999
+   Tech Email: info@verisign-grs.com
+   Billing ID: VRSNCONTACT
+   Billing Name: Verisign Customer Service
+   Billing Organization: Verisign, Inc.
+   Billing Street: 12061 Bluemont Way
+   Billing City: Reston
+   Billing Country: US
+   Billing Phone: +1.7039256999
+   Billing Email: info@verisign-grs.com
+   Name Server: NS100.NSTLD.NET
+   Name Server: NS101.NSTLD.NET
+   Name Server: NS102.NSTLD.NET
+   Name Server: NS103.NSTLD.NET
+   Name Server: NS104.NSTLD.NET
+   Name Server: NS105.NSTLD.NET
+   DNSSEC: Unsigned delegation
+
+
+>>> Last update of whois database: 2014-07-31T11:02:24Z <<<
+
+NOTICE: The expiration date displayed in this record is the date the 
+registrar\'s sponsorship of the domain name registration in the registry is 
+currently set to expire. This date does not necessarily reflect the 
+expiration date of the domain name registrant\'s agreement with the 
+sponsoring registrar.  Users may consult the sponsoring registrar\'s 
+Whois database to view the registrar\'s reported date of expiration 
+for this registration.
+
+TERMS OF USE: You are not authorized to access or query our Whois 
+database through the use of electronic processes that are high-volume and 
+automated except as reasonably necessary to register domain names or 
+modify existing registrations; the Data in VeriSign\'s ("VeriSign") Whois 
+database is provided by VeriSign for information purposes only, and to 
+assist persons in obtaining information about or related to a domain name 
+registration record. VeriSign does not guarantee its accuracy. 
+By submitting a Whois query, you agree to abide by the following terms of 
+use: You agree that you may use this Data only for lawful purposes and that 
+under no circumstances will you use this Data to: (1) allow, enable, or 
+otherwise support the transmission of mass unsolicited, commercial 
+advertising or solicitations via e-mail, telephone, or facsimile; or 
+(2) enable high volume, automated, electronic processes that apply to 
+VeriSign (or its computer systems). The compilation, repackaging, 
+dissemination or other use of this Data is expressly prohibited without 
+the prior written consent of VeriSign. You agree not to use electronic 
+processes that are automated and high-volume to access or query the 
+Whois database except as reasonably necessary to register domain names 
+or modify existing registrations. VeriSign reserves the right to restrict 
+your access to the Whois database in its sole discretion to ensure 
+operational stability.  VeriSign may restrict or terminate your access to the 
+Whois database for failure to abide by these terms of use. VeriSign 
+reserves the right to modify these terms at any time. 
+
+The Registry database contains ONLY .cc, .tv, and .jobs domains 
+and Registrars.
+';
+
+$dri->add_registry('NGTLD',{provider=>'verisign'});
+$dri->target('verisign')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->domain_info('nic.career');
+is($rc->is_success(),1,'Verisign domain_info is_success');
+is($dri->get_info('action'),'info','domain_info get_info (action)');
+is($dri->get_info('name'),'nic.career','domain_info get_info (name)');
+is($dri->get_info('id'),'106017070','domain_info get_info (id)');
+is($dri->get_info('clName'),'TEST REGISTRAR','domain_info get_info (clName)');
+is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
+is($dri->get_info('clWhois'),'rs.internic.net','domain_info get_info (clWhois)');
+is($dri->get_info('clWebsite'),'http://www.networksolutions.com','domain_info get_info (clWebsite)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list');
+is($dri->get_info('crDate'),'2013-05-31T10:16:43','domain_info get_info (crDate)');
+is($dri->get_info('upDate'),'2013-11-14T10:09:07','domain_info get_info (upDate)');
+is($dri->get_info('exDate'),'2023-05-31T10:16:43','domain_info get_info (exDate)');
+is($dri->get_info('wuDate'),'2014-07-31T11:02:24','domain_info get_info (wuDate) undef');
+$h=$dri->get_info('ns');
+isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
+@hs=$h->get_names();
+is_deeply(\@hs,['ns100.nstld.net','ns101.nstld.net','ns102.nstld.net','ns103.nstld.net','ns104.nstld.net','ns105.nstld.net'],'domain_info get_info (ns) get_names');
+$c=$dri->get_info('contact');
+isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
+is_deeply([$c->types()],['admin','billing','registrant','tech'],'domain_info get_info (contactSet) types');
+is($c->get('registrant')->srid(),'VRSNCONTACT','domain_info get_info (contact) registrant srid');
+is($c->get('admin')->srid(),'VRSNCONTACT','domain_info get_info (contact) admin srid');
+is($c->get('tech')->srid(),'VRSNCONTACT','domain_info get_info (contact) tech srid');
+is($c->get('billing')->srid(),'VRSNCONTACT','domain_info get_info (contact) tech srid');
+$r = $c->get('registrant');
+isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
+is($r->name(),'Verisign Customer Service','domain_info get_info (contact) registrant name');
+is($r->org(),'Verisign, Inc.','domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # ZACR

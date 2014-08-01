@@ -121,31 +121,46 @@ sub add_namestore_ext
  my ($epp,$domain,@p)=@_;
  my $rd=pop @p;
  my $mes=$epp->message();
- my $defprod=$epp->default_parameters()->{subproductid};
+ my $defprod=$epp->default_parameters()->{subproductid} || '_auto_';
 
  my $eid=$mes->command_extension_register('namestoreExt:namestoreExt',sprintf('xmlns:namestoreExt="%s" xsi:schemaLocation="%s namestoreExt-1.1.xsd"',$NS,$NS));
 
  if (Net::DRI::Util::has_key($rd,'subproductid') && $rd->{subproductid})
  {
   $mes->command_extension($eid,['namestoreExt:subProduct',$rd->{subproductid}]);
+  $epp->{current_product} = $rd->{subproductid};
   return;
  }
 
  unless ($defprod eq '_auto_')
  {
   $mes->command_extension($eid,['namestoreExt:subProduct',$defprod]);
+  $epp->{current_product} = $defprod;
   return;
  }
 
  ## We do not know what will happen in case of check_multi with multiple TLDs
- my $ext='dotCOM';
+ my $ext;
  $domain=$domain->[0] if (ref($domain) eq 'ARRAY');
- $ext='dotNET' if ($domain=~m/\.net$/i);
- $ext='dotCC' if ($domain=~m/\.cc$/i);
- $ext='dotTV' if ($domain=~m/\.tv$/i);
- $ext='dotBZ' if ($domain=~m/\.bz$/i);
- $ext='dotJOBS' if ($domain=~m/\.jobs$/i);
+ if ($domain =~ m/\.(com|net|cc|tv|bz|jobs|name)$/)
+ {
+  $ext = 'dot' . uc $1;
+ } elsif ($domain =~ m/\.(xn--pssy2u|xn--c1yn36f|xn--11b4c3dZ|xn--t60b56a|xn--c2br7g|xn--42c2d9a|xn--j1aef|xn--3pxu8k|xn--hdb9cza1b|xn--mk1bu44c|xn--fhbei|xn--tckwe|career|ooo)$/)
+ {
+  $ext = uc $1;
+ }
 
+ ## Determine object type so we can fall back to current_product if need be
+ my $cmd = join ',',@{$mes->{command}};
+ $cmd =~ m/xmlns\:(host|contact|domain)?/;
+ my $object = $1 || 'domain';
+
+ ## Use detected product if its a domain OR a host in a valid product
+ unless ($object eq 'domain')
+ {
+  $ext = $epp->{current_product} || 'dotCOM';
+ }
+ $epp->{current_product} = $ext;
  $mes->command_extension($eid,['namestoreExt:subProduct',$ext]);
  return;
 }
