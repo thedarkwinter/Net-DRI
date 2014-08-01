@@ -117,6 +117,9 @@ sub parse_greeting
      push @{$tmp{extensions_announced}},map { $_->textContent() } grep { $_->getName() eq 'extURI' } $cc->getChildNodes();
     }
    }
+   # TRIM the .xsd file off the end of e.g.  urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd
+   s/\s+.*xsd$// for @{$tmp{objects}};
+   s/\s+.*xsd$// for @{$tmp{extensions_announced}};
   } elsif ($n eq 'dcp') ## Does anyone really use this data ??
   {
    $tmp{dcp}=$c->cloneNode(1);

@@ -1035,13 +1035,13 @@ $dri->add_registry('NGTLD',{provider=>'tci'});
 
 =head3 TLDs
 
-tatar xn--d1acj3b
+moscow tatar xn--80adxhks xn--d1acj3b
 
 =cut
 
  return {
      bep_type => undef, # TODO: check this
-     tlds => ['tatar','xn--d1acj3b'],
+     tlds => ['moscow','tatar','xn--80adxhks','xn--d1acj3b'],
      # TCI cctlds has Contact Object and Extensions Object, these may be required
    } if $bep eq 'tci';
 
