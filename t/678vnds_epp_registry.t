@@ -631,17 +631,44 @@ my @domain_dnssec = ( { dnssec_ds_data_min=>0, dnssec_ds_data_max=>13, dnssec_ds
 my @domain_supported_status = ({ status=>['ok','clientDeleteProhibited','serverDeleteProhibited','clientHold','serverHold','clientRenewProhibited','serverRenewProhibited','clientTransferProhibited','serverTransferProhibited','clientUpdateProhibited','serverUpdateProhibited','inactive','pendingDelete','pendingTransfer'] });
 ## domain->authInfoRegex
 my @domain_auth_info_regex = ({ regex_expression=>'^.*$' });
-
 my @domain_el = ({ dom_name=>$domain_name, dom_idn=>$domain_idn, dom_premium_support=>'false',
 	dom_contacts_supported=>'true', dom_contact=>\@domain_contact, dom_ns=>\@domain_ns,
 	dom_child_host=>\@domain_child_host, dom_period=>\@domain_period, dom_transfer_hold_period=>\@domain_transfer_hold_period,
 	dom_grace_period=>\@domain_grace_period, dom_rgp=>\@domain_rgp, dom_dnssec=>\@domain_dnssec,
 	dom_max_check_domain=>5, dom_supported_status=>\@domain_supported_status ,dom_auth_info_regex=>\@domain_auth_info_regex
 });
+# END: domain node
+# host node
+my @host_supported_status = ({ status=>['ok','clientDeleteProhibited','serverDeleteProhibited','clientUpdateProhibited','serverUpdateProhibited','linked','pendingDelete','pendingTransfer'] });
+my @host_el = (
+  {
+    host_internal=>{ min_ip=>1, max_ip=>13, share_policy=>'perZone' },
+    host_external=>{ min_ip=>0, max_ip=>0, share_policy=>'perZone' },
+    host_name_regex=>[{regex_expression=>'^.*$'}],
+    host_max_check_host=>5,
+    host_supported_status=>\@host_supported_status
+  }
+);
+# END: host node
 
+# contact node
+my @contact_supported_status = ({ status=>['ok','clientDeleteProhibited','serverDeleteProhibited','clientTransferProhibited','serverTransferProhibited','clientUpdateProhibited','serverUpdateProhibited','linked','pendingDelete','pendingTransfer'] });
+my @contact_el = (
+  {
+    contact_id_regex=>{regex_expression=>'^.*$'},
+    contact_share_policy=>'perZone',
+    contact_int_support=>'true',
+    contact_loc_support=>'false',
+    contact_auth_info_regex=>{regex_expression=>'^.*$'},
+    contact_client_disclosure_supported=>'false',
+    contact_supported_status=>\@contact_supported_status,
+    contact_transfer_hold_period=>5,
+    contact_transfer_hold_period_attr=>'d'
+  }
+);
+# END: contact node
 
-
-$rc=$dri->registry_create('EXAMPLE',{group=>'STANDARD',sub_product=>'EXAMPLE',related=>\@related_el,phase=>\@phase_el,service=>\@service_el,sla_info=>\@slainfo_el,cr_id=>'clientX',cr_date=>'2012-10-01T00:00:00.0Z',up_id=>'clientY',up_date=>'2012-10-15T00:00:00.0Z',domain=>\@domain_el});
+$rc=$dri->registry_create('EXAMPLE',{group=>'STANDARD',sub_product=>'EXAMPLE',related=>\@related_el,phase=>\@phase_el,service=>\@service_el,sla_info=>\@slainfo_el,cr_id=>'clientX',cr_date=>'2012-10-01T00:00:00.0Z',up_id=>'clientY',up_date=>'2012-10-15T00:00:00.0Z',domain=>\@domain_el,host=>\@host_el,contact=>\@contact_el});
 #is_string($R1,$E1.'<command><create><registry:create xmlns:registry="http://www.verisign.com/epp/registry-1.0" xsi:schemaLocation="http://www.verisign.com/epp/registry-1.0 registry-1.0.xsd"><registry:zone><registry:name>EXAMPLE</registry:name><registry:group>STANDARD</registry:group><registry:subProduct>EXAMPLE</registry:subProduct><registry:related><registry:fields type="sync"><registry:field>clID</registry:field><registry:field>registrant</registry:field><registry:field>ns</registry:field></registry:fields><registry:zoneMember type="equal">EXAMPLE</registry:zoneMember><registry:zoneMember type="equal">EXAMPLE2</registry:zoneMember><registry:zoneMember type="equal">EXAMPLE3</registry:zoneMember></registry:related><registry:phase type="sunrise"><registry:startDate>2012-11-01T00:00:00.0Z</registry:startDate><registry:endDate>2012-12-01T00:00:00.0Z</registry:endDate></registry:phase><registry:phase name="landrush" type="claims"><registry:startDate>2012-12-01T00:00:00.0Z</registry:startDate><registry:endDate>2012-12-08T00:00:00.0Z</registry:endDate></registry:phase><registry:phase name="open" type="claims"><registry:startDate>2012-12-08T00:00:00.0Z</registry:startDate><registry:endDate>2013-02-01T00:00:00.0Z</registry:endDate></registry:phase><registry:phase type="open"><registry:startDate>2013-02-01T00:00:00.0Z</registry:startDate></registry:phase><registry:services><registry:objURI required="true">urn:ietf:params:xml:ns:domain-1.0</registry:objURI><registry:objURI required="true">urn:ietf:params:xml:ns:host-1.0</registry:objURI><registry:objURI required="true">urn:ietf:params:xml:ns:contact-1.0</registry:objURI><registry:svcExtension><registry:extURI required="true">urn:ietf:params:xml:ns:rgp-1.0</registry:extURI><registry:extURI required="true">urn:ietf:params:xml:ns:secDNS-1.1</registry:extURI><registry:extURI required="true">http://www.verisign-grs.com/epp/namestoreExt-1.1</registry:extURI><registry:extURI required="false">http://www.verisign.com/epp/idnLang-1.0</registry:extURI></registry:svcExtension></registry:services><registry:slaInfo><registry:sla type="downtime" unit="min">864</registry:sla><registry:sla type="rtt" command="domain:check" unit="ms">2000</registry:sla><registry:sla type="rtt" command="domain:info" unit="ms">2000</registry:sla><registry:sla type="rtt" command="domain:create" unit="ms">4000</registry:sla><registry:sla type="rtt" command="domain:update" unit="ms">4000</registry:sla><registry:sla type="rtt" command="domain:renew" unit="ms">4000</registry:sla><registry:sla type="rtt" command="domain:delete" unit="ms">4000</registry:sla><registry:sla type="rtt" command="domain:transfer" unit="ms">4000</registry:sla></registry:slaInfo><registry:crID>clientX</registry:crID><registry:crDate>2012-10-01T00:00:00.0Z</registry:crDate></registry:zone></registry:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'registry_create build');
 # faking original attributes order (registry:phase type and and name attr, registry:slainfo (all attributes)) because of the array swapping on Perl 5.xx
 is_string($R1,$E1.'<command><create><registry:create xmlns:registry="http://www.verisign.com/epp/registry-1.0" xsi:schemaLocation="http://www.verisign.com/epp/registry-1.0 registry-1.0.xsd"><registry:zone><registry:name>EXAMPLE</registry:name><registry:group>STANDARD</registry:group><registry:subProduct>EXAMPLE</registry:subProduct><registry:related><registry:fields type="sync"><registry:field>clID</registry:field><registry:field>registrant</registry:field><registry:field>ns</registry:field></registry:fields><registry:zoneMember type="equal">EXAMPLE</registry:zoneMember><registry:zoneMember type="equal">EXAMPLE2</registry:zoneMember><registry:zoneMember type="equal">EXAMPLE3</registry:zoneMember></registry:related><registry:phase type="sunrise"><registry:startDate>2012-11-01T00:00:00.0Z</registry:startDate><registry:endDate>2012-12-01T00:00:00.0Z</registry:endDate></registry:phase><registry:phase name="landrush" type="claims"><registry:startDate>2012-12-01T00:00:00.0Z</registry:startDate><registry:endDate>2012-12-08T00:00:00.0Z</registry:endDate></registry:phase><registry:phase name="open" type="claims"><registry:startDate>2012-12-08T00:00:00.0Z</registry:startDate><registry:endDate>2013-02-01T00:00:00.0Z</registry:endDate></registry:phase><registry:phase type="open"><registry:startDate>2013-02-01T00:00:00.0Z</registry:startDate></registry:phase><registry:services><registry:objURI required="true">urn:ietf:params:xml:ns:domain-1.0</registry:objURI><registry:objURI required="true">urn:ietf:params:xml:ns:host-1.0</registry:objURI><registry:objURI required="true">urn:ietf:params:xml:ns:contact-1.0</registry:objURI><registry:svcExtension><registry:extURI required="true">urn:ietf:params:xml:ns:rgp-1.0</registry:extURI><registry:extURI required="true">urn:ietf:params:xml:ns:secDNS-1.1</registry:extURI><registry:extURI required="true">http://www.verisign-grs.com/epp/namestoreExt-1.1</registry:extURI><registry:extURI required="false">http://www.verisign.com/epp/idnLang-1.0</registry:extURI></registry:svcExtension></registry:services><registry:slaInfo><registry:sla type="downtime" unit="min">864</registry:sla><registry:sla command="domain:check" type="rtt" unit="ms">2000</registry:sla><registry:sla command="domain:info" type="rtt" unit="ms">2000</registry:sla><registry:sla command="domain:create" type="rtt" unit="ms">4000</registry:sla><registry:sla command="domain:update" type="rtt" unit="ms">4000</registry:sla><registry:sla command="domain:renew" type="rtt" unit="ms">4000</registry:sla><registry:sla command="domain:delete" type="rtt" unit="ms">4000</registry:sla><registry:sla command="domain:transfer" type="rtt" unit="ms">4000</registry:sla></registry:slaInfo><registry:crID>clientX</registry:crID><registry:crDate>2012-10-01T00:00:00.0Z</registry:crDate><registry:upID>clientY</registry:upID><registry:upDate>2012-10-15T00:00:00.0Z</registry:upDate>

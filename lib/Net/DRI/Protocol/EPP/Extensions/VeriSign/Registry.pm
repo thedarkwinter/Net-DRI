@@ -23,7 +23,6 @@ use Net::DRI::Util;
 use Net::DRI::Exception;
 use Data::Dumper; # TODO: remove this when finished.
 
-# TODO: Change the POD description, when finished (missing to change the item and explanation how to use)
 
 =pod
 
@@ -36,23 +35,6 @@ Net::DRI::Protocol::EPP::Extensions::VeriSign::Registry - VeriSign EPP Registry 
 Add a Domain Name Registry Mapping, referred to as Registry Mapping, for the Extensible Protocol EPP [RFC5730]. A Domain Name Registry can service one or more zones (e.g. top-level domains). This extension enables the provisioning of the zones in the Domain Name Registry. A Domain Name Registry MAY support a subset of all of the commands defined in this mapping.
 
 VeriSign Registry extension is defined in http://www.verisigninc.com/assets/epp-sdk/verisign_epp-extension_premium-domain_v00.html
-
-=item currency* (3 letter currency code)
-
-=item action* (create, transfer, renew or restore)
-
-=item duration*
-
-=item phase (launch phase, e.g. landrush)
-
-=item sub_phase (launch sub phase, e.g. phase=>claims, sub_phase=>landrush)
-
-* indicates required fields
-
- my $fee = {fee=>{currency=>'EUR',action=>'transfer',duration=>$dri->local_object('duration','years',2)}}
- $rc=$dri->domain_check('example9.tld',{fee => $fee} );
- $price = $dri->get_info('fee');
-
 
 =head1 SUPPORT
 
@@ -151,55 +133,6 @@ sub info
   $mes->command_body(\@d);
   return;
 }
-
-
-#sub info_parse
-#{
-#	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-#	my $mes=$po->message();
-#	return unless $mes->is_success();
-#
-#	my $resdata;
-#	foreach my $res (qw/infData/)
-#	{
-#		next unless $resdata=$mes->get_response($mes->ns('registry'),$res);
-#		my %p;
-#		foreach my $el (Net::DRI::Util::xml_list_children($resdata))
-#		{
-#		  my ($n,$c)=@$el;
-#		  if ($n eq 'zone')
-#			{
-#			  foreach my $el2 (Net::DRI::Util::xml_list_children($c))
-#				{
-#				  my ($n2,$c2)=@$el2;
-#				  $rinfo->{registry}->{$oname}->{$n2}=$c2->textContent() if $n2 =~ m/^(name)$/; # plain text
-#				  $rinfo->{registry}->{$oname}->{$n2}=$po->parse_iso8601($c2->textContent()) if $n2 =~ m/^(crDate|upDate)$/; # dates
-#				}
-#			} elsif ($n eq 'zoneList')
-#			{
-#				foreach my $el2 (Net::DRI::Util::xml_list_children($c))
-#				{
-#					my ($n2,$c2)=@$el2;
-#					my @zone=();
-#				  if ($n2 eq 'zone')
-#				  {
-#				    foreach my $el3 (Net::DRI::Util::xml_list_children($c2))
-#						{
-#				  	  my ($n3,$c3)=@$el3;
-#				  	  
-#				  	  my $name=$c3->textContent() if $n3 eq 'name';
-#				  	  push @zone,$name;
-#							$rinfo->{registry}->{$zone[0]}->{$n3}=$c3->textContent() if $n3 =~ m/^(name)$/; # plain text
-#				  	  $rinfo->{registry}->{$zone[0]}->{$n3}=$po->parse_iso8601($c3->textContent()) if $n3 =~ m/^(crDate|upDate)$/; # dates
-#						}
-#				  }
-#				}
-#			}
-#		}
-#	}
-#	return;
-#}
-
 
 sub create
 {
@@ -319,15 +252,11 @@ sub transform_build
   push @r,['registry:crID',$rd->{cr_id}] if defined $rd->{cr_id};
   push @r,['registry:crDate',$rd->{cr_date}] if defined $rd->{cr_date};
   push @r,['registry:upID',$rd->{up_id}] if defined $rd->{up_id};
-  push @r,['registry:upDate',$rd->{up_date}] if defined $rd->{up_date};
-
-  # TODO: registry:domain
+  push @r,['registry:upDate',$rd->{up_date}] if defined $rd->{up_date}; 
   push @r,_build_domain($rd->{domain}) if defined $rd->{domain};
-  
-  # TODO: registry:host
-#  push @r,_build_host($rd->{host}) if defined $rd->{host};
+  push @r,_build_host($rd->{host}) if defined $rd->{host};
   # TODO: registry:contact
-#  push @r,_build_contact($rd->{contact}) if defined $rd->{contact};
+  push @r,_build_contact($rd->{contact}) if defined $rd->{contact};
 
   @r=['registry:zone',@r] if $cmd =~ m/^(create|update)$/; # add xml zone node
 
@@ -910,12 +839,56 @@ sub _build_domain
     push @domain, __build_domain_rgp($d->{dom_rgp}) if $d->{dom_rgp};
     push @domain, __build_domain_dnssec($d->{dom_dnssec}) if $d->{dom_dnssec};
     push @domain, ['registry:maxCheckDomain', $d->{dom_max_check_domain}] if $d->{dom_max_check_domain};
-    push @domain, __build_domain_supported_status($d->{dom_supported_status}) if $d->{dom_supported_status};
+		push @domain, build_supported_status($d->{dom_supported_status}) if $d->{dom_supported_status};
     push @domain, __build_domain_auth_info_regex($d->{dom_auth_info_regex}) if $d->{dom_auth_info_regex};
-    # TODO: <registry:customData> - an example would be very helpful...
+    # TODO: domain <registry:customData> - an example would be very helpful...
   }
   @domain = ['registry:domain',@domain];
   return @domain;
+}
+
+sub _build_host
+{
+  my $host = shift;
+  return unless $host && ref $host eq 'ARRAY';
+  my @host;
+  foreach my $h (@{$host})
+  {
+    push @host, __build_host_ip($h->{host_internal},'internal') if $h->{host_internal};
+    push @host, __build_host_ip($h->{host_external},'external') if $h->{host_external};
+    push @host, __build_host_name_regex($h->{host_name_regex}) if $h->{host_name_regex};
+    push @host, ['registry:maxCheckHost', $h->{host_max_check_host}];
+    push @host, build_supported_status($h->{host_supported_status}) if $h->{host_supported_status};
+    # TODO: host <registry:customData> - an example would be very helpful...
+  }
+  @host = ['registry:host',@host];
+  return @host;
+}
+
+sub _build_contact
+{
+  my $contact = shift;
+  return unless $contact && ref $contact eq 'ARRAY';
+  my @contact;
+  foreach my $c (@{$contact})
+  {
+    push @contact, build_regex_type($c->{contact_id_regex},'contactIdRegEx') if $c->{contact_id_regex};
+    Net::DRI::Exception::usererr_invalid_parameters('sharePolicy values need to be: perZone or perSystem') unless ( $c->{contact_share_policy} =~ m/^(perZone|perSystem)$/ );
+    push @contact, ['registry:sharePolicy',$c->{contact_share_policy}] if $c->{contact_share_policy};
+    push @contact, ['registry:intSupport',$c->{contact_int_support}] if $c->{contact_int_support};
+    push @contact, ['registry:locSupport',$c->{contact_loc_support}] if $c->{contact_loc_support};
+    push @contact, build_regex_type($c->{contact_auth_info_regex},'authInfoRegex') if $c->{contact_auth_info_regex};
+    push @contact, ['registry:clientDisclosureSupported',$c->{contact_client_disclosure_supported}] if $c->{contact_client_disclosure_supported};
+    push @contact, build_supported_status($c->{contact_supported_status}) if $c->{contact_supported_status};
+    if ($c->{contact_transfer_hold_period})
+    {
+      Net::DRI::Exception::usererr_invalid_parameters('transferHoldPeriod attribute need to be: y(year), m(month), d(day)') unless ( $c->{contact_transfer_hold_period_attr} =~ m/^(y|m|d)$/ );
+      push @contact, ['registry:transferHoldPeriod',{ 'unit'=>$c->{contact_transfer_hold_period_attr} }, $c->{contact_transfer_hold_period}];
+    }
+    # TODO: contact <registry:customData> - an example would be very helpful...
+  }
+  @contact = ['registry:contact',@contact];
+  return @contact;
 }
 
 sub __build_domain_name
@@ -1130,19 +1103,6 @@ sub __build_domain_dnssec
   return @domain_dnssec;
 }
 
-sub __build_domain_supported_status
-{
-  my $domain_supported_status = shift;
-  return unless $domain_supported_status && ref $domain_supported_status eq 'ARRAY';
-  my (@domain_supported_status,@d_s);
-  foreach my $s (@{$domain_supported_status})
-  {
-    foreach (@{$s->{status}}) { push @d_s, ['registry:status', $_] if $_; } # TODO: confirm status based on http://tools.ietf.org/html/rfc5731#section-2.3
-  }
-  push @domain_supported_status, ['registry:supportedStatus', @d_s];
-  return @domain_supported_status;
-}
-
 sub __build_domain_auth_info_regex
 {
   my $domain_auth_info_regex = shift;
@@ -1159,9 +1119,84 @@ sub __build_domain_auth_info_regex
     {
       push @regex, ['registry:explanation', {'lang'=>'en'}, $r->{regex_explanation}] if $r->{regex_explanation};
     }
-  }	
+  }
   push @domain_auth_info_regex, ['registry:authInfoRegEx', @regex];
   return @domain_auth_info_regex;
+}
+
+sub __build_host_name_regex
+{
+  my $regex = shift;
+  return unless $regex && ref $regex eq 'ARRAY';
+  my (@regex,@r);
+  foreach my $r (@{$regex})
+  {
+    push @r, ['registry:expression', $r->{regex_expression}] if $r->{regex_expression};
+    if (exists $r->{regex_explanation_attr})
+    {
+      push @r, ['registry:explanation', {'lang'=>$r->{regex_explanation_attr}}, $r->{regex_explanation}] if $r->{regex_explanation};
+    }
+    else
+    {
+      push @r, ['registry:explanation', {'lang'=>'en'}, $r->{regex_explanation}] if $r->{regex_explanation};
+    }
+    push @regex, ['registry:nameRegex', @r];
+    @r = ();
+  }
+  return @regex;
+}
+
+sub __build_host_ip
+{
+  my ($ip,$type) = @_;
+  return unless $ip;
+  my (@ip,@i);
+  foreach my $i ($ip)
+  {
+    push @i, ['registry:minIP', $i->{min_ip}];
+    push @i, ['registry:maxIP', $i->{max_ip}];
+    if ( $i->{share_policy} )
+    {
+      Net::DRI::Exception::usererr_invalid_parameters('sharePolicy values need to be: perZone or perSystem') unless ( $i->{share_policy} =~ m/^(perZone|perSystem)$/ );
+      push @i, ['registry:sharePolicy', $i->{share_policy}];
+    }
+  }
+  push @ip, ['registry:'.$type, @i];
+  return @ip;
+}
+
+sub build_supported_status
+{
+  my $supported_status = shift;
+  return unless $supported_status && ref $supported_status eq 'ARRAY';
+  my (@supported_status,@s);
+  foreach my $s (@{$supported_status})
+  {
+    foreach (@{$s->{status}}) { push @s, ['registry:status', $_] if $_; } # TODO: confirm status based on http://tools.ietf.org/html/rfc5731#section-2.3
+  }
+  push @supported_status, ['registry:supportedStatus', @s];
+  return @supported_status;
+}
+
+sub build_regex_type
+{
+  my ($regex,$child_el) = @_;
+  return unless $regex;
+  my (@regex, @r);
+  foreach my $r ($regex)
+  {
+    push @r, ['registry:expression', $r->{regex_expression}] if $r->{regex_expression};
+    if (exists $r->{regex_explanation_attr})
+    {
+      push @r, ['registry:explanation', {'lang'=>$r->{regex_explanation_attr}}, $r->{regex_explanation}] if $r->{regex_explanation};
+    }
+    else
+    {
+      push @r, ['registry:explanation', {'lang'=>'en'}, $r->{regex_explanation}] if $r->{regex_explanation};
+    }
+  }
+  push @regex, ['registry:'.$child_el, @r];
+  return @regex;
 }
 
 sub registry_build_command
