@@ -839,7 +839,7 @@ sub _build_domain
     push @domain, __build_domain_rgp($d->{dom_rgp}) if $d->{dom_rgp};
     push @domain, __build_domain_dnssec($d->{dom_dnssec}) if $d->{dom_dnssec};
     push @domain, ['registry:maxCheckDomain', $d->{dom_max_check_domain}] if $d->{dom_max_check_domain};
-		push @domain, build_supported_status($d->{dom_supported_status}) if $d->{dom_supported_status};
+    push @domain, build_supported_status($d->{dom_supported_status}) if $d->{dom_supported_status};
     push @domain, __build_domain_auth_info_regex($d->{dom_auth_info_regex}) if $d->{dom_auth_info_regex};
     # TODO: domain <registry:customData> - an example would be very helpful...
   }
@@ -856,7 +856,7 @@ sub _build_host
   {
     push @host, __build_host_ip($h->{host_internal},'internal') if $h->{host_internal};
     push @host, __build_host_ip($h->{host_external},'external') if $h->{host_external};
-    push @host, __build_host_name_regex($h->{host_name_regex}) if $h->{host_name_regex};
+    push @host, build_regex_type_multi($h->{host_name_regex},'nameRegex') if $h->{host_name_regex};
     push @host, ['registry:maxCheckHost', $h->{host_max_check_host}];
     push @host, build_supported_status($h->{host_supported_status}) if $h->{host_supported_status};
     # TODO: host <registry:customData> - an example would be very helpful...
@@ -872,11 +872,13 @@ sub _build_contact
   my @contact;
   foreach my $c (@{$contact})
   {
-    push @contact, build_regex_type($c->{contact_id_regex},'contactIdRegEx') if $c->{contact_id_regex};
+    push @contact, build_regex_type($c->{contact_id_regex},'contactIdRegex') if $c->{contact_id_regex};
     Net::DRI::Exception::usererr_invalid_parameters('sharePolicy values need to be: perZone or perSystem') unless ( $c->{contact_share_policy} =~ m/^(perZone|perSystem)$/ );
     push @contact, ['registry:sharePolicy',$c->{contact_share_policy}] if $c->{contact_share_policy};
     push @contact, ['registry:intSupport',$c->{contact_int_support}] if $c->{contact_int_support};
     push @contact, ['registry:locSupport',$c->{contact_loc_support}] if $c->{contact_loc_support};
+    push @contact, __build_contact_postal_info($c->{contact_postal_info}) if $c->{contact_postal_info};
+    push @contact, ['registry:maxCheckContact',$c->{contact_max_check_contact}] if $c->{contact_max_check_contact};
     push @contact, build_regex_type($c->{contact_auth_info_regex},'authInfoRegex') if $c->{contact_auth_info_regex};
     push @contact, ['registry:clientDisclosureSupported',$c->{contact_client_disclosure_supported}] if $c->{contact_client_disclosure_supported};
     push @contact, build_supported_status($c->{contact_supported_status}) if $c->{contact_supported_status};
@@ -942,7 +944,7 @@ sub __build_domain_idn
     Net::DRI::Exception::usererr_invalid_parameters('idn code attribute needs to be: blocked, restricted or open') unless $l->{idn_reg_variant_strategy} =~ m/^(blocked|restricted|open)$/;
     $code = $l->{idn_code_attr};
     $table = ['registry:table', $l->{idn_reg_table}] if $l->{idn_reg_table};
-    $strategy = ['registry:table', $l->{idn_reg_variant_strategy}] if $l->{idn_reg_variant_strategy};
+    $strategy = ['registry:variantStrategy', $l->{idn_reg_variant_strategy}] if $l->{idn_reg_variant_strategy};
     push @domain_idn, ['registry:language', {'code'=>$code}, $table, $strategy];
   }
   @domain_idn = ['registry:idn', @domain_idn];
@@ -1071,7 +1073,7 @@ sub __build_domain_dnssec
   foreach my $d (@{$domain_dnssec})
   {
     # <registry:dsDataInterface>
-    push @d_ds, ['registry:min', $d->{dnssec_ds_data_min}] if $d->{dnssec_ds_data_min};
+    push @d_ds, ['registry:min', $d->{dnssec_ds_data_min}];
     push @d_ds, ['registry:max', $d->{dnssec_ds_data_max}] if $d->{dnssec_ds_data_max};
     foreach (@{$d->{dnssec_ds_data_alg}}) { push @d_ds, ['registry:alg', $_] if $_; }
     foreach (@{$d->{dnssec_ds_data_digest}}) { push @d_ds, ['registry:digestType', $_] if $_; }
@@ -1120,30 +1122,8 @@ sub __build_domain_auth_info_regex
       push @regex, ['registry:explanation', {'lang'=>'en'}, $r->{regex_explanation}] if $r->{regex_explanation};
     }
   }
-  push @domain_auth_info_regex, ['registry:authInfoRegEx', @regex];
+  push @domain_auth_info_regex, ['registry:authInfoRegex', @regex];
   return @domain_auth_info_regex;
-}
-
-sub __build_host_name_regex
-{
-  my $regex = shift;
-  return unless $regex && ref $regex eq 'ARRAY';
-  my (@regex,@r);
-  foreach my $r (@{$regex})
-  {
-    push @r, ['registry:expression', $r->{regex_expression}] if $r->{regex_expression};
-    if (exists $r->{regex_explanation_attr})
-    {
-      push @r, ['registry:explanation', {'lang'=>$r->{regex_explanation_attr}}, $r->{regex_explanation}] if $r->{regex_explanation};
-    }
-    else
-    {
-      push @r, ['registry:explanation', {'lang'=>'en'}, $r->{regex_explanation}] if $r->{regex_explanation};
-    }
-    push @regex, ['registry:nameRegex', @r];
-    @r = ();
-  }
-  return @regex;
 }
 
 sub __build_host_ip
@@ -1163,6 +1143,61 @@ sub __build_host_ip
   }
   push @ip, ['registry:'.$type, @i];
   return @ip;
+}
+
+sub __build_contact_postal_info
+{
+  my $postal_info = shift;
+  return unless $postal_info && ref $postal_info eq 'ARRAY';
+  my (@postal_info,@p);
+  my $tmp;
+  foreach my $p (@{$postal_info})
+  {
+    push @p, ['registry:name', build_min_max_length($tmp->{min_length},$tmp->{max_length})] if ($tmp = $p->{contact_postal_info_name});
+    push @p, ['registry:org', build_min_max_length($tmp->{min_length},$tmp->{max_length})] if ($tmp = $p->{contact_postal_info_org});
+    push @p, ['registry:address', __build_contact_address_type($p->{contact_postal_info_address})] if $p->{contact_postal_info_address};
+    push @p, ['registry:voiceRequired',$p->{contact_postal_info_voice_required}] if $p->{contact_postal_info_voice_required};
+    push @p, ['registry:voiceExt', build_min_max_length($tmp->{min_length},$tmp->{max_length})] if ($tmp = $p->{contact_postal_info_voice_ext});
+    push @p, ['registry:faxExt', build_min_max_length($tmp->{min_length},$tmp->{max_length})] if ($tmp = $p->{contact_postal_info_fax_ext});
+    push @p, build_regex_type_multi($p->{contact_postal_info_email_regex},'emailRegex') if $p->{contact_postal_info_email_regex};
+  }
+  push @postal_info, ['registry:postalInfo', @p];
+  return @postal_info;
+}
+
+sub __build_contact_address_type
+{
+  my $address = shift;
+  return unless $address;
+  my (@address);
+  my $tmp;
+  push @address, ['registry:street', build_min_max_length($tmp->{min_length},$tmp->{max_length}), build_min_max_entry($tmp->{min_entry},$tmp->{max_entry})] if ($tmp = $address->{street});
+  push @address, ['registry:city', build_min_max_length($tmp->{min_length},$tmp->{max_length})] if ($tmp = $address->{city});
+  push @address, ['registry:sp', build_min_max_length($tmp->{min_length},$tmp->{max_length})] if ($tmp = $address->{sp});
+  push @address, ['registry:pc', build_min_max_length($tmp->{min_length},$tmp->{max_length})] if ($tmp = $address->{pc});
+  return @address;
+}
+
+sub build_regex_type_multi
+{
+  my ($regex,$child_el) = @_;
+  return unless $regex && ref $regex eq 'ARRAY';
+  my (@regex,@r);
+  foreach my $r (@{$regex})
+  {
+    push @r, ['registry:expression', $r->{regex_expression}] if $r->{regex_expression};
+    if (exists $r->{regex_explanation_attr})
+    {
+      push @r, ['registry:explanation', {'lang'=>$r->{regex_explanation_attr}}, $r->{regex_explanation}] if $r->{regex_explanation};
+    }
+    else
+    {
+      push @r, ['registry:explanation', {'lang'=>'en'}, $r->{regex_explanation}] if $r->{regex_explanation};
+    }
+    push @regex, ['registry:'.$child_el, @r];
+    @r = ();
+  }
+  return @regex;
 }
 
 sub build_supported_status
@@ -1197,6 +1232,26 @@ sub build_regex_type
   }
   push @regex, ['registry:'.$child_el, @r];
   return @regex;
+}
+
+sub build_min_max_length
+{
+  my ($min,$max) = @_;
+  return unless $min || $max;
+  my (@min_max);
+  push @min_max, ['registry:minLength', $min] if $min;
+  push @min_max, ['registry:maxLength', $max] if $max;
+  return @min_max;
+}
+
+sub build_min_max_entry
+{
+  my ($min,$max) = @_;
+  return unless $min || $max;
+  my (@min_max);
+  push @min_max, ['registry:minEntry', $min] if $min;
+  push @min_max, ['registry:maxEntry', $max] if $max;
+  return @min_max;
 }
 
 sub registry_build_command
