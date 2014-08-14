@@ -146,17 +146,9 @@ sub delete
 }
 
 
-#sub update
-#{
-#	transform_build(@_,'update');
-#}
-
-
 sub update
 {
-  my ($epp,$registry,$todo)=@_;
-  return unless my $ch=$todo->set('registry');
-  transform_build($epp,$registry,{'registry'=>$ch},'????');
+  transform_build(@_,'update');
 }
 
 
@@ -232,6 +224,8 @@ sub transform_parse
           }
         }
       }
+      $rinfo->{registry}->{$oname}->{$n}=$c->textContent() if $n eq 'name';
+      $rinfo->{registry}->{$oname}->{$n}=$po->parse_iso8601($c->textContent()) if $n eq 'crDate';
     }
   }
   return;
@@ -255,7 +249,6 @@ sub transform_build
   push @r,['registry:upDate',$rd->{up_date}] if defined $rd->{up_date}; 
   push @r,_build_domain($rd->{domain}) if defined $rd->{domain};
   push @r,_build_host($rd->{host}) if defined $rd->{host};
-  # TODO: registry:contact
   push @r,_build_contact($rd->{contact}) if defined $rd->{contact};
 
   @r=['registry:zone',@r] if $cmd =~ m/^(create|update)$/; # add xml zone node

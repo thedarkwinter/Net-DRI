@@ -5,9 +5,11 @@ use warnings;
 
 use Net::DRI;
 use Net::DRI::Data::Raw;
+use DateTime;
+use DateTime::Duration;
 use Data::Dumper; # TODO: remove... when finished
 
-use Test::More tests => 10; # TODO: change when finished!!!
+use Test::More tests => 175; # TODO: change when finished!!!
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -25,15 +27,13 @@ $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_registry('VNDS');
 $dri->target('VNDS')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-my ($rc,$d,$todo,$related,$phase,$services,$slainfo,$domainname);
+my ($rc,$d,$related,$phase,$services,$slainfo,$domainname);
 
 ####################################################################################################
 
 ##
 # Tests based on: http://www.verisigninc.com/assets/epp-sdk/verisign_epp-extension_registry_v00.html
 ##
-
-goto STEP1;
 
 ## 3.1 EPP Query Commands
 
@@ -365,7 +365,7 @@ is_deeply($zones_name,['EXAMPLE','EXAMPLE2','EXAMPLE3'],'registry_info get_info(
 my $zones_type=$related->{'zone_member_type'};
 is_deeply($zones_type,['equal','equal','equal'],'registry_info get_info(related) zoneMember type attribute');
 
-# TODO: tests for get_info(phase) - find a friendly way to perform the test. array values keep changing even if we get properly the different phases :( 
+# TODO: tests for get_info(phase) - find a friendly way to perform the test. array values keep changing... 
 #my $phase=$dri->get_info('phase');
 #print Dumper($phase);
 #my @values = values @{$phase}[0];
@@ -544,7 +544,6 @@ is_string($contact->{transfer_hold_period_attr},'d','registry_info get_info(cont
 
 ## 3.2 EPP Transform Commands
 
-STEP1:
 # Simple
 # 3.2.1 EPP <create> Command
 $R2=$E1.'<response>'.r().'<resData><registry:creData xmlns:registry="http://www.verisign.com/epp/registry-1.0" xsi:schemaLocation="http://www.verisign.com/epp/registry-1.0 registry-1.0.xsd"><registry:name>zone1</registry:name><registry:crDate>2012-10-30T22:00:00.0Z</registry:crDate></registry:creData></resData>'.$TRID.'</response>'.$E2;
@@ -691,18 +690,11 @@ $rc=$dri->registry_create('EXAMPLE',{group=>'STANDARD',sub_product=>'EXAMPLE',re
 # README: faking original attributes order (registry:phase type and and name attr, registry:slainfo (all attributes)) because of the array swapping on Perl 5.xx
 is_string($R1,$E1.'<command><create><registry:create xmlns:registry="http://www.verisign.com/epp/registry-1.0" xsi:schemaLocation="http://www.verisign.com/epp/registry-1.0 registry-1.0.xsd"><registry:zone><registry:name>EXAMPLE</registry:name><registry:group>STANDARD</registry:group><registry:subProduct>EXAMPLE</registry:subProduct><registry:related><registry:fields type="sync"><registry:field>clID</registry:field><registry:field>registrant</registry:field><registry:field>ns</registry:field></registry:fields><registry:zoneMember type="equal">EXAMPLE</registry:zoneMember><registry:zoneMember type="equal">EXAMPLE2</registry:zoneMember><registry:zoneMember type="equal">EXAMPLE3</registry:zoneMember></registry:related><registry:phase type="sunrise"><registry:startDate>2012-11-01T00:00:00.0Z</registry:startDate><registry:endDate>2012-12-01T00:00:00.0Z</registry:endDate></registry:phase><registry:phase name="landrush" type="claims"><registry:startDate>2012-12-01T00:00:00.0Z</registry:startDate><registry:endDate>2012-12-08T00:00:00.0Z</registry:endDate></registry:phase><registry:phase name="open" type="claims"><registry:startDate>2012-12-08T00:00:00.0Z</registry:startDate><registry:endDate>2013-02-01T00:00:00.0Z</registry:endDate></registry:phase><registry:phase type="open"><registry:startDate>2013-02-01T00:00:00.0Z</registry:startDate></registry:phase><registry:services><registry:objURI required="true">urn:ietf:params:xml:ns:domain-1.0</registry:objURI><registry:objURI required="true">urn:ietf:params:xml:ns:host-1.0</registry:objURI><registry:objURI required="true">urn:ietf:params:xml:ns:contact-1.0</registry:objURI><registry:svcExtension><registry:extURI required="true">urn:ietf:params:xml:ns:rgp-1.0</registry:extURI><registry:extURI required="true">urn:ietf:params:xml:ns:secDNS-1.1</registry:extURI><registry:extURI required="true">http://www.verisign-grs.com/epp/namestoreExt-1.1</registry:extURI><registry:extURI required="false">http://www.verisign.com/epp/idnLang-1.0</registry:extURI></registry:svcExtension></registry:services><registry:slaInfo><registry:sla type="downtime" unit="min">864</registry:sla><registry:sla command="domain:check" type="rtt" unit="ms">2000</registry:sla><registry:sla command="domain:info" type="rtt" unit="ms">2000</registry:sla><registry:sla command="domain:create" type="rtt" unit="ms">4000</registry:sla><registry:sla command="domain:update" type="rtt" unit="ms">4000</registry:sla><registry:sla command="domain:renew" type="rtt" unit="ms">4000</registry:sla><registry:sla command="domain:delete" type="rtt" unit="ms">4000</registry:sla><registry:sla command="domain:transfer" type="rtt" unit="ms">4000</registry:sla></registry:slaInfo><registry:crID>clientX</registry:crID><registry:crDate>2012-10-01T00:00:00.0Z</registry:crDate><registry:upID>clientY</registry:upID><registry:upDate>2012-10-15T00:00:00.0Z</registry:upDate><registry:domain><registry:domainName level="2"><registry:minLength>5</registry:minLength><registry:maxLength>50</registry:maxLength><registry:alphaNumStart>true</registry:alphaNumStart><registry:alphaNumEnd>false</registry:alphaNumEnd><registry:onlyDnsChars>true</registry:onlyDnsChars><registry:regex><registry:expression>^\w+.*$</registry:expression><registry:explanation>Alphanumeric</registry:explanation></registry:regex><registry:regex><registry:expression>^\d+.*$</registry:expression></registry:regex><registry:reservedNames><registry:reservedName>reserved1</registry:reservedName></registry:reservedNames></registry:domainName><registry:idn><registry:idnVersion>4.1</registry:idnVersion><registry:idnaVersion>2008</registry:idnaVersion><registry:unicodeVersion>6.0</registry:unicodeVersion><registry:encoding>Punycode</registry:encoding><registry:commingleAllowed>false</registry:commingleAllowed><registry:language code="LANG-1"><registry:table>http://www.iana.org/idn-tables/test_tab1_1.1.txt</registry:table><registry:variantStrategy>blocked</registry:variantStrategy></registry:language></registry:idn><registry:premiumSupport>false</registry:premiumSupport><registry:contact type="admin"><registry:min>1</registry:min><registry:max>4</registry:max></registry:contact><registry:ns><registry:min>0</registry:min><registry:max>13</registry:max></registry:ns><registry:childHost><registry:min>0</registry:min></registry:childHost><registry:period command="create"><registry:length><registry:min unit="y">1</registry:min><registry:max unit="y">10</registry:max><registry:default unit="y">1</registry:default></registry:length></registry:period><registry:transferHoldPeriod unit="d">5</registry:transferHoldPeriod><registry:gracePeriod command="create" unit="d">5</registry:gracePeriod><registry:gracePeriod command="renew" unit="d">5</registry:gracePeriod><registry:gracePeriod command="transfer" unit="d">5</registry:gracePeriod><registry:gracePeriod command="autoRenew" unit="d">45</registry:gracePeriod><registry:rgp><registry:redemptionPeriod unit="d">30</registry:redemptionPeriod><registry:pendingRestore unit="d">7</registry:pendingRestore><registry:pendingDelete unit="d">5</registry:pendingDelete></registry:rgp><registry:dnssec><registry:dsDataInterface><registry:min>0</registry:min><registry:max>13</registry:max><registry:alg>3</registry:alg><registry:digestType>1</registry:digestType></registry:dsDataInterface><registry:maxSigLife><registry:clientDefined>false</registry:clientDefined></registry:maxSigLife></registry:dnssec><registry:maxCheckDomain>5</registry:maxCheckDomain><registry:supportedStatus><registry:status>ok</registry:status><registry:status>clientDeleteProhibited</registry:status><registry:status>serverDeleteProhibited</registry:status><registry:status>clientHold</registry:status><registry:status>serverHold</registry:status><registry:status>clientRenewProhibited</registry:status><registry:status>serverRenewProhibited</registry:status><registry:status>clientTransferProhibited</registry:status><registry:status>serverTransferProhibited</registry:status><registry:status>clientUpdateProhibited</registry:status><registry:status>serverUpdateProhibited</registry:status><registry:status>inactive</registry:status><registry:status>pendingDelete</registry:status><registry:status>pendingTransfer</registry:status></registry:supportedStatus><registry:authInfoRegex><registry:expression>^.*$</registry:expression></registry:authInfoRegex></registry:domain><registry:host><registry:internal><registry:minIP>1</registry:minIP><registry:maxIP>13</registry:maxIP><registry:sharePolicy>perZone</registry:sharePolicy></registry:internal><registry:external><registry:minIP>0</registry:minIP><registry:maxIP>0</registry:maxIP><registry:sharePolicy>perZone</registry:sharePolicy></registry:external><registry:nameRegex><registry:expression>^.*$</registry:expression></registry:nameRegex><registry:maxCheckHost>5</registry:maxCheckHost><registry:supportedStatus><registry:status>ok</registry:status><registry:status>clientDeleteProhibited</registry:status><registry:status>serverDeleteProhibited</registry:status><registry:status>clientUpdateProhibited</registry:status><registry:status>serverUpdateProhibited</registry:status><registry:status>linked</registry:status><registry:status>pendingDelete</registry:status><registry:status>pendingTransfer</registry:status></registry:supportedStatus></registry:host><registry:contact><registry:contactIdRegex><registry:expression>^.*$</registry:expression></registry:contactIdRegex><registry:sharePolicy>perZone</registry:sharePolicy><registry:intSupport>true</registry:intSupport><registry:locSupport>false</registry:locSupport><registry:postalInfo><registry:name><registry:minLength>5</registry:minLength><registry:maxLength>15</registry:maxLength></registry:name><registry:org><registry:minLength>2</registry:minLength><registry:maxLength>40</registry:maxLength></registry:org><registry:address><registry:street><registry:minLength>1</registry:minLength><registry:maxLength>40</registry:maxLength><registry:minEntry>1</registry:minEntry><registry:maxEntry>3</registry:maxEntry></registry:street><registry:city><registry:minLength>1</registry:minLength><registry:maxLength>40</registry:maxLength></registry:city><registry:sp><registry:minLength>1</registry:minLength><registry:maxLength>40</registry:maxLength></registry:sp><registry:pc><registry:minLength>1</registry:minLength><registry:maxLength>40</registry:maxLength></registry:pc></registry:address><registry:voiceRequired>false</registry:voiceRequired><registry:voiceExt><registry:minLength>1</registry:minLength><registry:maxLength>40</registry:maxLength></registry:voiceExt><registry:faxExt><registry:minLength>1</registry:minLength><registry:maxLength>40</registry:maxLength></registry:faxExt><registry:emailRegex><registry:expression>^.+\..+$</registry:expression></registry:emailRegex></registry:postalInfo><registry:maxCheckContact>5</registry:maxCheckContact><registry:authInfoRegex><registry:expression>^.*$</registry:expression></registry:authInfoRegex><registry:clientDisclosureSupported>false</registry:clientDisclosureSupported><registry:supportedStatus><registry:status>ok</registry:status><registry:status>clientDeleteProhibited</registry:status><registry:status>serverDeleteProhibited</registry:status><registry:status>clientTransferProhibited</registry:status><registry:status>serverTransferProhibited</registry:status><registry:status>clientUpdateProhibited</registry:status><registry:status>serverUpdateProhibited</registry:status><registry:status>linked</registry:status><registry:status>pendingDelete</registry:status><registry:status>pendingTransfer</registry:status></registry:supportedStatus><registry:transferHoldPeriod unit="d">5</registry:transferHoldPeriod></registry:contact></registry:zone></registry:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'registry_create build');
 is($rc->is_success(),1,'registry_create is_success');
+is($dri->get_info('name'),'zone1','registry_create get_info(name)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','registry_create get_info(crDate)');
+is($d,'2012-10-30T22:00:00','registry_create get_info(crDate)');
 
-exit 0;
-
-
-#is($dri->get_info('name'),'zone1','registry_create get_info(name)');
-#$d=$dri->get_info('crDate');
-#isa_ok($d,'DateTime','registry_create get_info(crDate)');
-#is($d,'2012-10-30T22:00:00','registry_create get_info(crDate)');
-is($rc->get_data('registry','EXAMPLE','name'),'EXAMPLE','registry_create_all get_data(name,registry)');
-is($rc->get_data('registry','EXAMPLE','crDate'),'2012-10-30T22:00:00','registry_create_all get_data(name,registry)');
-
-exit 0;
 
 # 3.2.2 EPP <delete> Command
 $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
@@ -710,13 +702,11 @@ $rc=$dri->registry_delete('EXAMPLE');
 is_string($R1,$E1.'<command><delete><registry:delete xmlns:registry="http://www.verisign.com/epp/registry-1.0" xsi:schemaLocation="http://www.verisign.com/epp/registry-1.0 registry-1.0.xsd"><registry:name>EXAMPLE</registry:name></registry:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'registry_delete build');
 is($rc->is_success(),1,'registry_delete is_success');
 
+
 # 3.2.5 EPP <update> Command
-# TODO: check... I think that the xml is not being done properly :(
+# FIXME???: they mention "The update completely replaces the prior version of the zone". So it makes no sense using the standard update: add, del and chg???
 $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
-$todo=Net::DRI::Data::Changes->new();
-$todo->set('group','STANDARD2');
-$todo->set('subproduct','EXAMPLE2');
-$rc=$dri->registry_update('EXAMPLE',$todo);
+$rc=$dri->registry_update('EXAMPLE',{group=>'STANDARD',sub_product=>'EXAMPLE'});
 is_string($R1,$E1.'<command><update><registry:update xmlns:registry="http://www.verisign.com/epp/registry-1.0" xsi:schemaLocation="http://www.verisign.com/epp/registry-1.0 registry-1.0.xsd"><registry:zone><registry:name>EXAMPLE</registry:name><registry:group>STANDARD</registry:group><registry:subProduct>EXAMPLE</registry:subProduct></registry:zone></registry:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'registry_update build');
 is($rc->is_success(),1,'registry_update is_success');
 
