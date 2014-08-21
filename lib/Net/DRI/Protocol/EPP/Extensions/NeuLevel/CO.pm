@@ -1,6 +1,6 @@
-## Domain Registry Interface, Neulevel .BIZ EPP extensions
+## Domain Registry Interface, Neulevel EPP Fee Extension
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,18 +12,19 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::BIZ;
+package Net::DRI::Protocol::EPP::Extensions::NeuLevel::CO;
 
 use strict;
 use warnings;
 
-use base qw/Net::DRI::Protocol::EPP/;
+use Net::DRI::Util;
+use Net::DRI::Exception;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::BIZ - Neulevel .BIZ EPP extensions for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::NeuLevel::CO - NeuLevel .CO DomainSuspendedIndicator extension for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -43,11 +44,12 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 =head1 COPYRIGHT
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
+(c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -61,14 +63,39 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub setup
+sub register_commands
 {
- my ($self,$rp)=@_;
- $self->ns({neulevel => ['urn:ietf:params:xml:ns:neulevel-1.0','neulevel-1.0.xsd']});
+ my ($class,$version)=@_;
+ my %tmp=(
+           info => [ undef, \&parse ],
+         );
+
+ return { 'domain' => \%tmp };
+}
+
+####################################################################################################
+
+sub parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ my $infdata=$mes->get_extension('neulevel','extension');
+ return unless defined $infdata;
+
+ my %t;
+ my $unspec;
+ foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+ {
+  my ($n,$c)=@$el;
+  next unless $n eq 'unspec';
+  foreach my $kv (split(/ /,$c->textContent()))
+  {
+   my ($k,$v) = split(/=/,$kv);
+   $rinfo->{$otype}->{$oname}->{domain_suspended_indicator}=$v if $k eq 'DomainSuspendedIndicator';
+  }
+ }
+
  return;
 }
 
-sub default_extensions { return qw/NeuLevel::IDNLanguage NeuLevel::Message NeuLevel::CO/; } # CO doesn't cause any harm to anyone else
-
-####################################################################################################
 1;
