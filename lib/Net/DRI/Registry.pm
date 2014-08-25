@@ -458,6 +458,24 @@ sub has_action
 sub process
 {
  my ($self,$otype,$oaction,$pa,$ta)=@_;
+
+ ## IDN Handling - Required for .IT, tested in 657it_epp and 628de_rri
+ # force_native_idn converts ace domains to unicode for all domain:name commands.
+ #use Data::Dumper; print Dumper $pa;
+ if ($otype eq 'domain' && $self->info('force_native_idn'))
+ {
+  my (@names) = shift @$pa;
+  my ($ace,$idn,@idnnames);
+  foreach (@names)
+  {
+   ($ace,$idn) = Net::DRI::Util::idn_get_ace_unicode($_);
+   push @idnnames,$idn;
+  }
+  $pa = [@idnnames,@$pa];
+ }
+ #use Data::Dumper; print Dumper $pa;
+ ## End IDN Handling
+
  $pa=[] unless defined $pa; ## store them ?
  $ta=[] unless defined $ta;
  $self->{last_process}=[$otype,$oaction,$pa,$ta]; ## should be handled more generally by LocalStorage/Exchange
@@ -572,12 +590,30 @@ sub process_back
  $ri->{session}->{exchange}->{registry}=$self->name();
  $ri->{session}->{exchange}->{profile}=$self->profile();
 
+ my ($is_idn,$ace,$idn);
  ## set_info stores also data in last_data, so we make sure to call last for current object
  foreach my $type (keys(%$ri))
  {
   foreach my $key (keys(%{$ri->{$type}}))
   {
    next if ($oname && ($type eq $otype) && ($key eq $oname));
+
+   ## IDN Handling - Required for .IT, tested in 657it_epp and 628de_rri
+   ## Automatically process idns getting ace and unicode idn.
+   if ($type eq 'domain' || ($type eq 'message' && exists $ri->{$type}->{$key}->{object_type} && $ri->{$type}->{$key}->{object_type} eq 'domain'))
+   {
+    $ace = ($type eq 'domain') ? $key : $ri->{$type}->{$key}->{name};
+    $is_idn = Net::DRI::Util::is_idn($ace);;
+    $ri->{$type}->{$key}->{name_idn} = $ri->{$type}->{$key}->{name_ace} = $ace;
+    if ($is_idn)
+    {
+     ($ace,$idn) = Net::DRI::Util::idn_get_ace_unicode($ace);
+      $ri->{$type}->{$key}->{name_idn} = $idn;
+      $ri->{$type}->{$key}->{name_ace} = $ace;
+    }
+   }
+   ## End IDN Handling
+
    $self->set_info($type,$key,$ri->{$type}->{$key});
   }
  }
