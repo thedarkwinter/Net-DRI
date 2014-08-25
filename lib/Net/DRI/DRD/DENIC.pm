@@ -74,6 +74,7 @@ sub new
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=1;
+ $self->{info}->{force_native_idn}=1;
  return $self;
 }
 
@@ -98,7 +99,7 @@ sub transport_protocol_default
 sub verify_name_domain
 {
  my ($self,$ndr,$domain,$op)=@_;
- return $self->_verify_name_rules($domain,$op,{check_name => 1,
+ return $self->_verify_name_rules($domain,$op,{check_name => 0, ## FIXME, is there a batter way to allow native IDNs?
                                                my_tld => 1,
                                                icann_reserved => 1, ## is that right ??
                                               });
