@@ -388,13 +388,14 @@ sub build_ns
 {
  my ($rri,$ns,$domain,$xmlns)=@_;
  my @d;
+ my ($ace,$idn) = Net::DRI::Util::idn_get_ace_unicode($domain);
 
  foreach my $i (1..$ns->count())
  {
   my ($n, $v4, $v6) = $ns->get_details($i);
   my @h = map { ['dnsentry:address', $_] } (@{$v4}, @{$v6});
   push @d, ['dnsentry:dnsentry', {'xsi:type' => 'dnsentry:NS'},
-	['dnsentry:owner', $domain . '.'],
+	['dnsentry:owner', $ace . '.'],
 	['dnsentry:rdata', ['dnsentry:nameserver', $n . '.' ], @h ] ];
  }
  $xmlns='dnsentry' unless defined($xmlns);
@@ -405,6 +406,8 @@ sub build_secdns
 {
  my ($secdns,$domain)=@_;
  return unless $secdns;
+ my ($ace,$idn) = Net::DRI::Util::idn_get_ace_unicode($domain);
+
  my @d;
  foreach my $s (@{$secdns}) {
   next unless $s->{key_flags};
@@ -413,7 +416,7 @@ sub build_secdns
   Net::DRI::Exception::usererr_invalid_parameters('key_alg must be an unsigned byte: '.$s->{key_alg}) unless Net::DRI::Util::verify_ubyte($s->{key_alg});
   Net::DRI::Exception::usererr_invalid_parameters('key_pubKey must be a non empty base64 string: '.$s->{key_pubKey}) unless Net::DRI::Util::verify_base64($s->{key_pubKey},1);
   push @d, ['dnsentry:dnsentry', {'xsi:type' => 'dnsentry:DNSKEY'},
-       ['dnsentry:owner', $domain . '.'],
+       ['dnsentry:owner', $ace . '.'],
     ['dnsentry:rdata',
          ['dnsentry:flags', $s->{'key_flags'}],
          ['dnsentry:protocol', $s->{'key_protocol'}],
