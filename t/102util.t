@@ -2,8 +2,9 @@
 
 use warnings;
 use strict;
+use utf8;
 
-use Test::More tests => 340;
+use Test::More tests => 348;
 
 use Net::DRI::Util;
 
@@ -83,6 +84,16 @@ TODO: {
         local $TODO="tests on is_ipv6(), compare_duration()";
         ok(0);
 }
+
+is(Net::DRI::Util::is_idn('test.com'),0,'is_idn(test.com)');
+is(Net::DRI::Util::is_idn('tes--dt.com'),0,'is_idn(tes--dt.com)');
+is(Net::DRI::Util::is_idn('xn--tst-jma.com'),1,'is_idn(xn--tst-jma.com)');
+is(Net::DRI::Util::is_idn('tëst.com'),1,'is_idn(tëst.com)');
+
+is_deeply([Net::DRI::Util::idn_get_ace_unicode('test.com')],['test.com','test.com'],'idn_get_ace_unicode(test.com)');
+is_deeply([Net::DRI::Util::idn_get_ace_unicode('tëst.com')],['xn--tst-jma.com','tëst.com'],'idn_get_ace_unicode(tëst.com)');
+is_deeply([Net::DRI::Util::idn_get_ace_unicode('xn--tst-jma.com')],['xn--tst-jma.com','tëst.com'],'idn_get_ace_unicode(xn--tst-jma.com)');
+is_deeply([Net::DRI::Util::idn_get_ace_unicode('xn--abc.com')],['xn--abc.com','xn--abc.com'],'idn_get_ace_unicode(xn--abc.com - invalid idn)'); # not a valid idn
 
 is(Net::DRI::Util::xml_is_normalizedstring("A\tB"),0,'xml_is_normalizedstring()  1');
 is(Net::DRI::Util::xml_is_normalizedstring("A",1),1,'xml_is_normalizedstring()  2');

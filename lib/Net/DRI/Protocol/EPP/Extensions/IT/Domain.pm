@@ -48,6 +48,7 @@ sub register_commands {
 
        my $ops = {
                'info'          => [ \&info, \&parse ],
+               'create'        => [ undef, \&parse  ],
                'transfer_request'   => [\&transfer, \&parse],
        };
 
@@ -89,7 +90,27 @@ sub parse
        my $infdata = $msg->get_extension('it_domain', 'infData');
        my $infns = $msg->get_extension('it_domain', 'infNsToValidateData');
        my $infconts = $msg->get_extension('it_domain','infContactsData');
+       my $remapped_idn = $msg->get_extension('it_domain','remappedIdnData');
 
+       if (defined $remapped_idn) {
+                my ($idn_requested,$idn_created);
+                foreach my $el (Net::DRI::Util::xml_list_children($remapped_idn))
+                {
+                        my ($name,$c) = @$el;
+                        $idn_requested = $c->textContent() if $name eq 'idnRequested';
+                        $idn_created = $c->textContent() if $name eq 'idnCreated';
+                }
+                unless (defined $oname)
+                {
+                        $oname = $idn_requested;
+                        $rinfo->{'domain'}{$oname}{name} = $idn_requested;
+                        $rinfo->{'domain'}{$oname}{action} = $oaction = 'idn_remapped';
+                }
+                $rinfo->{'domain'}{$oname}{idn_requested} = $idn_requested;
+                $rinfo->{'domain'}{$oname}{idn_created} = $idn_created;
+       }
+       #use Data::Dumper; print Dumper $rinfo->{'domain'} if $oname;
+       
        if (defined $infdata) {
 
                $rinfo->{'domain'}{$oname}{'own_status'} =

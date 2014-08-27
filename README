@@ -126,6 +126,7 @@ IO::Socket::INET (*)
 IO::Socket::SSL (>=0.90)
 XML::LibXML (>=1.61)
 Module::Load
+Net::IDN::Encode
 SOAP::Lite (needed only for BookMyName, OVH, Gandi webservices)
 SOAP::WSDL (needed only for OVH webservices)
 MIME::Entity (needed only for AFNIC emails)
