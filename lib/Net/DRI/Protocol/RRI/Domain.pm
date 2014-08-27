@@ -95,14 +95,13 @@ sub build_command
 {
  my ($msg, $command, $domain, $domainattr, $dns) = @_;
  my @dom = (ref($domain))? @$domain : ($domain);
- Net::DRI::Exception->die(1,'protocol/RRI', 2, 'Domain name needed')
-	unless @dom;
+ Net::DRI::Exception->die(1,'protocol/RRI', 2, 'Domain name needed') unless @dom;
  foreach my $d (@dom)
  {
   Net::DRI::Exception->die(1, 'protocol/RRI', 2, 'Domain name needed')
 	unless defined($d) && $d;
-  Net::DRI::Exception->die(1, 'protocol/RRI', 10, 'Invalid domain name: ' . $d)
-	unless Net::DRI::Util::is_hostname($d);
+  #Net::DRI::Exception->die(1, 'protocol/RRI', 10, 'Invalid domain name: ' . $d)
+	#unless Net::DRI::Util::is_hostname($d);
  }
 
  my $tcommand = (ref($command)) ? $command->[0] : $command;
@@ -110,20 +109,10 @@ sub build_command
  $msg->command(['domain', $tcommand, (defined($dns) ? $dns : $ns[0]), $domainattr]);
 
  my @d;
- my ($ace,$idn) = idn_get_ace_unicode($domain);
+ my ($ace,$idn) = Net::DRI::Util::idn_get_ace_unicode($domain);
  push @d, ['domain:handle', $idn];
  push @d, ['domain:ace', $ace];
  return @d;
-}
-
-sub idn_get_ace_unicode
-{
- my $domain = shift;
- eval { require Net::IDN::Encode; };
- return ($domain,$domain) if $@;
- my $idn = ($domain =~ m/^xn--/) ? Net::IDN::Encode::domain_to_unicode($domain):$domain;
- my $ace = ($domain !~ m/^[a-z0-9.-]/) ? Net::IDN::Encode::domain_to_ascii($domain):$domain; 
- return ($ace,$idn);
 }
 
 ####################################################################################################
@@ -148,7 +137,7 @@ sub check_parse
 
  my $chkdata = $mes->get_content('checkData',$mes->ns('domain'));
  return unless $chkdata;
- my @d = $chkdata->getElementsByTagNameNS($mes->ns('domain'),'ace');
+ my @d = $chkdata->getElementsByTagNameNS($mes->ns('domain'),'handle');
  my @s = $chkdata->getElementsByTagNameNS($mes->ns('domain'),'status');
  return unless (@d && @s);
 
@@ -187,7 +176,7 @@ sub info_parse
   my $name = $c->localname() || $c->nodeName();
   next unless $name;
 
-  if ($name eq 'ace')
+  if ($name eq 'handle')
   {
    $oname = lc($c->getFirstChild()->getData());
    $rinfo->{domain}->{$oname}->{action} = 'info';
@@ -304,7 +293,7 @@ sub transfer_parse
  my $infodata = $mes->get_content('infoData', $mes->ns('domain'));
  return unless $infodata;
  my $namedata = ($infodata->getElementsByTagNameNS($mes->ns('domain'),
-	'ace'))[0];
+	'handle'))[0];
  return unless $namedata;
  my $trndata = ($infodata->getElementsByTagNameNS($mes->ns('domain'),
 	'chprovData'))[0];
@@ -399,13 +388,14 @@ sub build_ns
 {
  my ($rri,$ns,$domain,$xmlns)=@_;
  my @d;
+ my ($ace,$idn) = Net::DRI::Util::idn_get_ace_unicode($domain);
 
  foreach my $i (1..$ns->count())
  {
   my ($n, $v4, $v6) = $ns->get_details($i);
   my @h = map { ['dnsentry:address', $_] } (@{$v4}, @{$v6});
   push @d, ['dnsentry:dnsentry', {'xsi:type' => 'dnsentry:NS'},
-	['dnsentry:owner', $domain . '.'],
+	['dnsentry:owner', $ace . '.'],
 	['dnsentry:rdata', ['dnsentry:nameserver', $n . '.' ], @h ] ];
  }
  $xmlns='dnsentry' unless defined($xmlns);
@@ -416,6 +406,8 @@ sub build_secdns
 {
  my ($secdns,$domain)=@_;
  return unless $secdns;
+ my ($ace,$idn) = Net::DRI::Util::idn_get_ace_unicode($domain);
+
  my @d;
  foreach my $s (@{$secdns}) {
   next unless $s->{key_flags};
@@ -424,7 +416,7 @@ sub build_secdns
   Net::DRI::Exception::usererr_invalid_parameters('key_alg must be an unsigned byte: '.$s->{key_alg}) unless Net::DRI::Util::verify_ubyte($s->{key_alg});
   Net::DRI::Exception::usererr_invalid_parameters('key_pubKey must be a non empty base64 string: '.$s->{key_pubKey}) unless Net::DRI::Util::verify_base64($s->{key_pubKey},1);
   push @d, ['dnsentry:dnsentry', {'xsi:type' => 'dnsentry:DNSKEY'},
-       ['dnsentry:owner', $domain . '.'],
+       ['dnsentry:owner', $ace . '.'],
     ['dnsentry:rdata',
          ['dnsentry:flags', $s->{'key_flags'}],
          ['dnsentry:protocol', $s->{'key_protocol'}],
