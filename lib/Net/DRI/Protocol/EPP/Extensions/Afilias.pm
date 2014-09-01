@@ -70,7 +70,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/Afilias::Message Afilias::IDNLanguage Afilias::Registrar Afilias::Restore GracePeriod SecDNS/; }
+sub default_extensions { return qw/Afilias::Message Afilias::IDNLanguage Afilias::Registrar Afilias::Restore Afilias::Price GracePeriod SecDNS/; }
 
 ####################################################################################################
 1;
