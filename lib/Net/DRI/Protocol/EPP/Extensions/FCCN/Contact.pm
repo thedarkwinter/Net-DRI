@@ -88,8 +88,7 @@ sub create
 
 # validate() has been called
  my @n;
- push @n,['ptcontact:type',$contact->type()];
- push @n,['ptcontact:identification',{type=>$contact->identification()->{type}},$contact->identification()->{value}];
+ push @n,['ptcontact:identification',$contact->identification()->{value}];
  push @n,['ptcontact:mobile',$contact->mobile()] if $contact->mobile();
 
  my $eid=build_command_extension($mes,$epp,'ptcontact:create');

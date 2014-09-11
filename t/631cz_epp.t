@@ -52,7 +52,7 @@ my ($dh, @c);
 ## Contact operations
 
 ## Contact create
-$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><contact:creData xmlns:contact="http://www.nic.cz/xml/epp/contact-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.4 contact-1.4.xsd"><contact:id>TL1-CZ</contact:id><contact:crDate>2008-04-25T18:20:51+02:00</contact:crDate></contact:creData></resData>' . $TRID . '</response>' . $E2;
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><contact:creData xmlns:contact="http://www.nic.cz/xml/epp/contact-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.5 contact-1.5.xsd"><contact:id>TL1-CZ</contact:id><contact:crDate>2008-04-25T18:20:51+02:00</contact:crDate></contact:creData></resData>' . $TRID . '</response>' . $E2;
 
 my $c = $dri->local_object('contact');
 $c->srid('TL1-CZ');
@@ -86,7 +86,7 @@ if (! $ok)
 is($rc->is_success(), 1, 'contact create success');
 
 die('Error ' . $rc->code() . ': ' . $rc->message()) unless ($rc->is_success());
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="http://www.nic.cz/xml/epp/contact-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.4 contact-1.4.xsd"><contact:id>TL1-CZ</contact:id><contact:postalInfo><contact:name>Tonnerre Lombard</contact:name><contact:org>SyGroup GmbH</contact:org><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp><contact:pc>4053</contact:pc><contact:cc>CH</contact:cc></contact:addr></contact:postalInfo><contact:voice>+41.61338033</contact:voice><contact:fax>+41.613831467</contact:fax><contact:email>tonnerre.lombard@sygroup.ch</contact:email><contact:authInfo>blablabla</contact:authInfo></contact:create></create><clTRID>ABC-12345</clTRID></command>' . $E2, 'contact create xml correct');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="http://www.nic.cz/xml/epp/contact-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.5 contact-1.5.xsd"><contact:id>TL1-CZ</contact:id><contact:postalInfo><contact:name>Tonnerre Lombard</contact:name><contact:org>SyGroup GmbH</contact:org><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp><contact:pc>4053</contact:pc><contact:cc>CH</contact:cc></contact:addr></contact:postalInfo><contact:voice>+41.61338033</contact:voice><contact:fax>+41.613831467</contact:fax><contact:email>tonnerre.lombard@sygroup.ch</contact:email><contact:authInfo>blablabla</contact:authInfo></contact:create></create><clTRID>ABC-12345</clTRID></command>' . $E2, 'contact create xml correct');
 is($dri->get_info('crDate', 'contact', 'TL1-CZ'), '2008-04-25T18:20:51',
 	'contact create crdate');
 
@@ -94,7 +94,7 @@ $c = $dri->local_object('contact');
 $c->srid('TL2-CZ');
 
 ## Contact info
-$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><contact:infData xmlns:contact="http://www.nic.cz/xml/epp/contact-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.4 contact-1.4.xsd"><contact:id>TL2-CZ</contact:id><contact:roid>C0000146169-CZ</contact:roid><contact:status s="ok">Objekt is without restrictions</contact:status><contact:postalInfo><contact:name>Tonnerre Lombard</contact:name><contact:org>SyGroup GmbH</contact:org><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>Basel-Stadt</contact:sp><contact:pc>4053</contact:pc><contact:cc>CH</contact:cc></contact:addr></contact:postalInfo><contact:voice>+41.61338033</contact:voice><contact:fax>+41.613831467</contact:fax><contact:email>tonnerre.lombard@sygroup.ch</contact:email><contact:clID>REG-FRED_A</contact:clID><contact:crID>REG-FRED_A</contact:crID><contact:crDate>2008-04-25T18:20:51+02:00</contact:crDate><contact:upID>REG-FRED_A</contact:upID><contact:upDate>2008-04-25T18:29:12+02:00</contact:upDate><contact:authInfo>blablabla</contact:authInfo></contact:infData></resData>' . $TRID . '</response>' . $E2;
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><contact:infData xmlns:contact="http://www.nic.cz/xml/epp/contact-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.5 contact-1.5.xsd"><contact:id>TL2-CZ</contact:id><contact:roid>C0000146169-CZ</contact:roid><contact:status s="ok">Objekt is without restrictions</contact:status><contact:postalInfo><contact:name>Tonnerre Lombard</contact:name><contact:org>SyGroup GmbH</contact:org><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>Basel-Stadt</contact:sp><contact:pc>4053</contact:pc><contact:cc>CH</contact:cc></contact:addr></contact:postalInfo><contact:voice>+41.61338033</contact:voice><contact:fax>+41.613831467</contact:fax><contact:email>tonnerre.lombard@sygroup.ch</contact:email><contact:clID>REG-FRED_A</contact:clID><contact:crID>REG-FRED_A</contact:crID><contact:crDate>2008-04-25T18:20:51+02:00</contact:crDate><contact:upID>REG-FRED_A</contact:upID><contact:upDate>2008-04-25T18:29:12+02:00</contact:upDate><contact:authInfo>blablabla</contact:authInfo></contact:infData></resData>' . $TRID . '</response>' . $E2;
 $ok=eval {
 	$rc = $dri->contact_info($c);
 	1;
@@ -155,13 +155,13 @@ if (! $ok)
 	}
 }
 is($rc->is_success(), 1, 'contact update success');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><contact:update xmlns:contact="http://www.nic.cz/xml/epp/contact-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.4 contact-1.4.xsd"><contact:id>TL2-CZ</contact:id><contact:chg><contact:postalInfo><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp></contact:addr></contact:postalInfo><contact:authInfo>bliblablu</contact:authInfo></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'contact update xml correct');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><contact:update xmlns:contact="http://www.nic.cz/xml/epp/contact-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.5 contact-1.5.xsd"><contact:id>TL2-CZ</contact:id><contact:chg><contact:postalInfo><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp></contact:addr></contact:postalInfo><contact:authInfo>bliblablu</contact:authInfo></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'contact update xml correct');
 
 ####################################################################################################
 ## Domain operations
 
 ## Domain create
-$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><domain:creData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.3 domain-1.3.xsd"><domain:name>sygroup.cz</domain:name><domain:crDate>2008-05-07T14:31:26+02:00</domain:crDate><domain:exDate>2009-05-07</domain:exDate></domain:creData></resData>' . $TRID . '</response>' . $E2;
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><domain:creData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>sygroup.cz</domain:name><domain:crDate>2008-05-07T14:31:26+02:00</domain:crDate><domain:exDate>2009-05-07</domain:exDate></domain:creData></resData>' . $TRID . '</response>' . $E2;
 
 my $cs = $dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('SG1-CZ'), 'registrant');
@@ -191,14 +191,14 @@ if (! $ok)
 is($rc->is_success(), 1, 'domain create success');
 
 die('Error ' . $rc->code() . ': ' . $rc->message()) unless ($rc->is_success());
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="http://www.nic.cz/xml/epp/domain-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.3 domain-1.3.xsd"><domain:name>sygroup.cz</domain:name><domain:period unit="y">2</domain:period><domain:nsset>nameservers</domain:nsset><domain:registrant>SG1-CZ</domain:registrant><domain:admin>SK1-CZ</domain:admin><domain:authInfo>yumyumyum</domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>' . $E2, 'domain create xml correct');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>sygroup.cz</domain:name><domain:period unit="y">2</domain:period><domain:nsset>nameservers</domain:nsset><domain:registrant>SG1-CZ</domain:registrant><domain:admin>SK1-CZ</domain:admin><domain:authInfo>yumyumyum</domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>' . $E2, 'domain create xml correct');
 is($dri->get_info('crDate', 'domain', 'sygroup.cz'), '2008-05-07T14:31:26',
 	'domain create crdate');
 is($dri->get_info('exDate', 'domain', 'sygroup.cz'), '2009-05-07T00:00:00',
 	'domain create exdate');
 
 ## Domain info
-$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><domain:infData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.3 domain-1.3.xsd"><domain:name>syhosting.cz</domain:name><domain:roid>D0000152990-CZ</domain:roid><domain:status s="outzone">Domain is not generated into zone</domain:status><domain:registrant>TK1-CZ</domain:registrant><domain:admin>TL1-CZ</domain:admin><domain:clID>REG-FRED_A</domain:clID><domain:crID>REG-FRED_A</domain:crID><domain:crDate>2008-05-07T14:31:26+02:00</domain:crDate><domain:exDate>2009-05-07</domain:exDate><domain:authInfo>gnagnagna</domain:authInfo></domain:infData></resData>' . $TRID . '</response>' . $E2;
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><domain:infData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>syhosting.cz</domain:name><domain:roid>D0000152990-CZ</domain:roid><domain:status s="outzone">Domain is not generated into zone</domain:status><domain:registrant>TK1-CZ</domain:registrant><domain:admin>TL1-CZ</domain:admin><domain:clID>REG-FRED_A</domain:clID><domain:crID>REG-FRED_A</domain:crID><domain:crDate>2008-05-07T14:31:26+02:00</domain:crDate><domain:exDate>2009-05-07</domain:exDate><domain:authInfo>gnagnagna</domain:authInfo></domain:infData></resData>' . $TRID . '</response>' . $E2;
 
 $ok=eval {
 	$rc = $dri->domain_info('syhosting.cz');
@@ -218,7 +218,7 @@ if (! $ok)
 }
 
 die('Error ' . $rc->code() . ': ' . $rc->message()) unless ($rc->is_success());
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><domain:info xmlns:domain="http://www.nic.cz/xml/epp/domain-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.3 domain-1.3.xsd"><domain:name>syhosting.cz</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command></epp>', 'domain info xml correct');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><domain:info xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>syhosting.cz</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command></epp>', 'domain info xml correct');
 
 is($dri->get_info('name', 'domain', 'syhosting.cz'), 'syhosting.cz',
 	'domain_info name');
@@ -240,7 +240,7 @@ is($dri->get_info('auth', 'domain', 'syhosting.cz')->{pw}, 'gnagnagna',
 	'domain_info auth');
 
 ## Domain renew
-$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><domain:renData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.3 domain-1.3.xsd"><domain:name>sybla.cz</domain:name><domain:exDate>2010-05-07</domain:exDate></domain:renData></resData>' . $TRID . '</response>' . $E2;
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><domain:renData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>sybla.cz</domain:name><domain:exDate>2010-05-07</domain:exDate></domain:renData></resData>' . $TRID . '</response>' . $E2;
 
 $ok=eval {
 	$rc = $dri->domain_renew('sybla.cz',
@@ -261,7 +261,7 @@ if (! $ok)
 }
 
 die('Error ' . $rc->code() . ': ' . $rc->message()) unless ($rc->is_success());
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><renew><domain:renew xmlns:domain="http://www.nic.cz/xml/epp/domain-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.3 domain-1.3.xsd"><domain:name>sybla.cz</domain:name><domain:curExpDate>2008-05-07</domain:curExpDate><domain:period unit="y">2</domain:period></domain:renew></renew><clTRID>ABC-12345</clTRID></command></epp>', 'domain renew xml correct');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><renew><domain:renew xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>sybla.cz</domain:name><domain:curExpDate>2008-05-07</domain:curExpDate><domain:period unit="y">2</domain:period></domain:renew></renew><clTRID>ABC-12345</clTRID></command></epp>', 'domain renew xml correct');
 
 is($dri->get_info('exDate', 'domain', 'sybla.cz'), '2010-05-07T00:00:00',
 	'domain_renew exDate');
@@ -300,7 +300,7 @@ if (! $ok)
 }
 
 die('Error ' . $rc->code() . ': ' . $rc->message()) unless ($rc->is_success());
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><domain:update xmlns:domain="http://www.nic.cz/xml/epp/domain-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.3 domain-1.3.xsd"><domain:name>sybla.cz</domain:name><domain:add><domain:admin>DA1-TZ</domain:admin></domain:add><domain:rem><domain:admin>TL1-TZ</domain:admin></domain:rem><domain:chg><domain:nsset>alfredservers</domain:nsset><domain:authInfo>coincoin</domain:authInfo></domain:chg></domain:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'domain renew xml correct');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><domain:update xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>sybla.cz</domain:name><domain:add><domain:admin>DA1-TZ</domain:admin></domain:add><domain:rem><domain:admin>TL1-TZ</domain:admin></domain:rem><domain:chg><domain:nsset>alfredservers</domain:nsset><domain:authInfo>coincoin</domain:authInfo></domain:chg></domain:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'domain renew xml correct');
 
 ###############################################################################
 ## NSSET object

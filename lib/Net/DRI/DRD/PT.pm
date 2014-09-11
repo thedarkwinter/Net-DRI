@@ -100,16 +100,6 @@ sub set_factories
 
 ####################################################################################################
 
-## We can not start a transfer, if domain name has already been transfered less than 15 days ago.
-sub verify_duration_transfer
-{
- my ($self,$ndr,$duration,$domain,$op)=@_;
-
- return $self->_verify_duration_transfer_15days($ndr,$duration,$domain,$op);
-}
-
-####################################################################################################
-
 sub domain_renounce
 {
  my ($self,$ndr,$domain,$rd)=@_;

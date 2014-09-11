@@ -92,12 +92,11 @@ sub validate
 
  if (!$change)
  {
-  Net::DRI::Exception::usererr_insufficient_parameters('type is mandatory') unless $self->type();
-  Net::DRI::Exception::usererr_insufficient_parameters('identification is mandatory') unless ($self->identification() && Net::DRI::Util::has_key($self->identification(),'type') && Net::DRI::Util::has_key($self->identification(),'value'));
+  Net::DRI::Exception::usererr_insufficient_parameters('identification is mandatory') unless ($self->identification() && Net::DRI::Util::has_key($self->identification(),'value'));
  }
 
  push @errs,'type' if ($self->type() && $self->type()!~m/^(?:individual|organization)$/);
- push @errs,'identification' if ($self->identification() && (($self->identification()->{type}!~m/^(?:010|020|030|040|110)$/) || (! Net::DRI::Util::xml_is_token($self->identification()->{value},1,20))));
+ push @errs,'identification' if ($self->identification() && (($self->identification()->{type} && $self->identification()->{type}!~m/^(?:010|020|030|040|110)$/) || (! Net::DRI::Util::xml_is_token($self->identification()->{value},1,20))));
  push @errs,'mobile' if ($self->mobile() && !Net::DRI::Util::xml_is_token($self->mobile(),undef,17) && $self->mobile()!~m/^\+[0-9]{1,3}\.[0-9]{1,14}(?:x\d+)?$/);
 
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;

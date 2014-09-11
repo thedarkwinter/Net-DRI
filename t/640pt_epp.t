@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 22;
+use Test::More tests => 21;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -38,7 +38,7 @@ my $c1=$dri->local_object('contact')->srid('FCZA-142520-FCCN');
 $cs->set($c1,'registrant');
 $cs->set($c1,'tech');
 $rc=$dri->domain_create('mytestdomain.pt',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,legitimacy=>1,registration_basis=>'090',add_period=>1,next_possible_registration=>0,auto_renew=>1});
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain.pt</domain:name><domain:period unit="y">1</domain:period><domain:registrant>FCZA-142520-FCCN</domain:registrant><domain:contact type="tech">FCZA-142520-FCCN</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><ptdomain:create xmlns:ptdomain="http://www.dns.pt/xml/epp/ptdomain-1.0" xsi:schemaLocation="http://www.dns.pt/xml/epp/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy type="1"/><ptdomain:registration_basis type="090"/><ptdomain:addPeriod>1</ptdomain:addPeriod><ptdomain:nextPossibleRegistration>0</ptdomain:nextPossibleRegistration><ptdomain:autoRenew>1</ptdomain:autoRenew></ptdomain:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain.pt</domain:name><domain:period unit="y">1</domain:period><domain:registrant>FCZA-142520-FCCN</domain:registrant><domain:contact type="tech">FCZA-142520-FCCN</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><ptdomain:create xmlns:ptdomain="http://www.dns.pt/xml/epp/ptdomain-1.0" xsi:schemaLocation="http://www.dns.pt/xml/epp/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy type="1"/><ptdomain:registration_basis type="090"/><ptdomain:autoRenew>1</ptdomain:autoRenew></ptdomain:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($dri->get_info('roid'),'4569356','domain_create get_info(roid)');
 
 ## Example corrected, domain:name needs a namespace
@@ -91,23 +91,21 @@ $co->voice('+351.963456569');
 $co->fax('+351.213456569');
 $co->email('noreply@dns.pt');
 $co->auth({pw=>'pA55w0rD'});
-$co->type('individual');
-$co->identification({type=>'010',value=>'234561728'});
+$co->identification({value=>'234561728'});
 $co->mobile('+351.916589304');
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>NIC-Handle</contact:id><contact:postalInfo type="loc"><contact:name>Smith Bill</contact:name><contact:addr><contact:street>Blue Tower</contact:street><contact:city>Lisboa</contact:city><contact:pc>1900</contact:pc><contact:cc>PT</contact:cc></contact:addr></contact:postalInfo><contact:voice>+351.963456569</contact:voice><contact:fax>+351.213456569</contact:fax><contact:email>noreply@dns.pt</contact:email><contact:authInfo><contact:pw>pA55w0rD</contact:pw></contact:authInfo></contact:create></create><extension><ptcontact:create xmlns:ptcontact="http://www.dns.pt/xml/epp/ptcontact-1.0" xsi:schemaLocation="http://www.dns.pt/xml/epp/ptcontact-1.0 ptcontact-1.0.xsd"><ptcontact:type>individual</ptcontact:type><ptcontact:identification type="010">234561728</ptcontact:identification><ptcontact:mobile>+351.916589304</ptcontact:mobile></ptcontact:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>NIC-Handle</contact:id><contact:postalInfo type="loc"><contact:name>Smith Bill</contact:name><contact:addr><contact:street>Blue Tower</contact:street><contact:city>Lisboa</contact:city><contact:pc>1900</contact:pc><contact:cc>PT</contact:cc></contact:addr></contact:postalInfo><contact:voice>+351.963456569</contact:voice><contact:fax>+351.213456569</contact:fax><contact:email>noreply@dns.pt</contact:email><contact:authInfo><contact:pw>pA55w0rD</contact:pw></contact:authInfo></contact:create></create><extension><ptcontact:create xmlns:ptcontact="http://www.dns.pt/xml/epp/ptcontact-1.0" xsi:schemaLocation="http://www.dns.pt/xml/epp/ptcontact-1.0 ptcontact-1.0.xsd"><ptcontact:identification>234561728</ptcontact:identification><ptcontact:mobile>+351.916589304</ptcontact:mobile></ptcontact:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
 is($rc->is_success(),1,'contact_create is_success');
 is($dri->get_info('id'),'c1006441','contact_create get_info(id)');
 is($dri->get_info('action','contact','c1006441'),'create','contact_create get_info(action)');
 is($dri->get_info('exist','contact','c1006441'),1,'contact_create get_info(exist)');
 
 
-$R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>c1006449</contact:id><contact:roid>1006449-FCCN</contact:roid><contact:postalInfo type="loc"><contact:name>Smith Bill</contact:name><contact:addr><contact:street>Blue Tower</contact:street><contact:city>Paris</contact:city><contact:pc>571234</contact:pc><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.16345656</contact:voice><contact:fax>+33.16345656</contact:fax><contact:email>noreply@dns.pt</contact:email><contact:crID>t000005</contact:crID><contact:crDate>2006-03-21T10:04:54.000Z</contact:crDate><contact:upDate>2006-03-21T10:04:54.000Z</contact:upDate></contact:infData></resData><extension><ptcontact:infData xmlns:ptcontact="http://www.dns.pt/xml/epp/ptcontact-1.0" xsi:schemaLocation="http://www.dns.pt/xml/epp/ptcontact-1.0 ptcontact-1.0.xsd"><ptcontact:type>individual</ptcontact:type><ptcontact:identification type="010">234561728</ptcontact:identification><ptcontact:mobile>+33.9689304</ptcontact:mobile></ptcontact:infData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>c1006449</contact:id><contact:roid>1006449-FCCN</contact:roid><contact:postalInfo type="loc"><contact:name>Smith Bill</contact:name><contact:addr><contact:street>Blue Tower</contact:street><contact:city>Paris</contact:city><contact:pc>571234</contact:pc><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.16345656</contact:voice><contact:fax>+33.16345656</contact:fax><contact:email>noreply@dns.pt</contact:email><contact:crID>t000005</contact:crID><contact:crDate>2006-03-21T10:04:54.000Z</contact:crDate><contact:upDate>2006-03-21T10:04:54.000Z</contact:upDate></contact:infData></resData><extension><ptcontact:infData xmlns:ptcontact="http://www.dns.pt/xml/epp/ptcontact-1.0" xsi:schemaLocation="http://www.dns.pt/xml/epp/ptcontact-1.0 ptcontact-1.0.xsd"><ptcontact:identification>234561728</ptcontact:identification><ptcontact:mobile>+33.9689304</ptcontact:mobile></ptcontact:infData></extension>'.$TRID.'</response>'.$E2;
 $co->srid('c1006449');
 $rc=$dri->contact_info($co);
 $co=$dri->get_info('self');
-is($co->type(),'individual','contact_info get_info(self) type');
-is_deeply($co->identification(),{type=>'010',value=>'234561728'},'contact_info get_info(self) identification');
+is_deeply($co->identification(),{type => undef, value=>'234561728'},'contact_info get_info(self) identification');
 is($co->mobile(),'+33.9689304','contact_info get_info(self) mobile');
 
 $R2='';
