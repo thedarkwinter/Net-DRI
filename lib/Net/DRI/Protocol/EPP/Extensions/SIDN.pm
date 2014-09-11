@@ -1,6 +1,6 @@
 ## Domain Registry Interface, SIDN (.NL) EPP extensions
 ##
-## Copyright (c) 2009-2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009-2012,2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -39,7 +39,7 @@ sub setup
 }
 
 sub core_contact_types { return ('admin','tech'); } ## No billing contact in .NL
-sub default_extensions { return qw/SIDN::Message SIDN::Domain SIDN::Contact SIDN::Host SIDN::Notifications SecDNS/; }
+sub default_extensions { return qw/SIDN::Message SIDN::Domain SIDN::Contact SIDN::Host SIDN::Notifications SecDNS KeyRelay/; }
 
 ####################################################################################################
 1;
@@ -74,7 +74,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009-2012 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009-2012,2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

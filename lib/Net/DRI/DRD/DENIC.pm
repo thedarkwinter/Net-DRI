@@ -80,17 +80,15 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'DENIC'; }
-sub tlds     { return ('de','9.4.e164.arpa'); } ## *.9.4.e164.arpa can be queried over IRIS DCHK, do not know about RRI support
+sub tlds     { return ('de','9.4.e164.arpa'); } ## *.9.4.e164.arpa could be queried over IRIS DCHK in the past, do not know about RRI support
 sub object_types { return ('domain','contact'); }
-sub profile_types { return qw/rri dchk/; }
+sub profile_types { return qw/rri/; }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
  return ('Net::DRI::Transport::Socket',{remote_host=>'rri.test.denic.de',remote_port=>51131,defer=>1,close_after=>1,socktype=>'tcp'},'Net::DRI::Protocol::RRI',{version=>'2.0'}) if $type eq 'rri';
- ## DENIC IRIS server does not support request deflation, see §3.1.7 "no-inflation-support-error", so we force no deflate
- return ('Net::DRI::Transport::Socket',{find_remote_server => ['de.','DCHK1:iris.lwz']},'Net::DRI::Protocol::IRIS',{version=>'1.0',authority=>'de',request_deflate=>0})          if $type eq 'dchk';
  return;
 }
 

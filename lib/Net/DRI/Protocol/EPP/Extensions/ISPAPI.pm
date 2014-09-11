@@ -1,6 +1,6 @@
 ## Domain Registry Interface, ISPAPI (aka HEXONET) EPP extensions
 ##
-## Copyright (c) 2010 HEXONET GmbH, http://www.hexonet.net,
+## Copyright (c) 2010,2013 HEXONET GmbH, http://www.hexonet.net,
 ##                    Jens Wagner <info@hexonet.net>
 ## All rights reserved.
 ##
@@ -50,7 +50,7 @@ Jens Wagner, E<lt>jwagner@hexonet.netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010 HEXONET GmbH, E<lt>http://www.hexonet.netE<gt>,
+Copyright (c) 2010,2013 HEXONET GmbH, E<lt>http://www.hexonet.netE<gt>,
 Alexander Biehl <abiehl@hexonet.net>,
 Jens Wagner <jwagner@hexonet.net>
 All rights reserved.
@@ -66,7 +66,7 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub default_extensions { return qw/ISPAPI::KeyValue/; }
+sub default_extensions { return qw/ISPAPI::KeyValue SecDNS/; }
 
 ####################################################################################################
 1;

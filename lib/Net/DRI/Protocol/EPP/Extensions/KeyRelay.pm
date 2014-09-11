@@ -1,4 +1,4 @@
-## Domain Registry Interface, Key Relay Mapping for EPP (draft-gieben-epp-keyrelay-02)
+## Domain Registry Interface, Key Relay Mapping for EPP (draft-gieben-epp-keyrelay-03)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -199,7 +199,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::KeyRelay - EPP Key Relay mapping (draft-gieben-epp-keyrelay-01) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::KeyRelay - EPP Key Relay mapping (draft-gieben-epp-keyrelay-03) for Net::DRI
 
 =head1 DESCRIPTION
 
