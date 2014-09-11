@@ -82,16 +82,16 @@ sub parse_contact
  my $cont = $po->create_local_object('contact')->srid($id);
  my $pi = {};
  Net::DRI::Protocol::EPP::Core::Contact::parse_postalinfo($po,$data->getChildrenByTagNameNS($ns,'postalInfo')->shift(),$pi);
- foreach ($cont->attributes()) { 
+ foreach ($cont->attributes()) {
    next if $_ eq 'srid';
    $cont->$_(Net::DRI::Util::xml_child_content($data,$ns,$_));
    $cont->$_($pi->{$_}) if $pi->{$_};
-  }
-  return $cont;
+ }
+ return $cont;
 }
 
 sub parse_domainlist
- {
+{
  my ($po,$data,$ns,$rinfo) = @_;
  return unless $data;
  my @d;
@@ -180,7 +180,7 @@ sub parse
       { $rinfo->{$otype}->{$oname}->{$f}=Net::DRI::Util::xml_child_content($data,$ns,$f); }
       return;
     }
-   
+
     # set oname/exist for domain
     if ($otype eq 'domain')
     {
@@ -233,7 +233,7 @@ sub parse
       $rinfo->{$otype}->{$oname}->{contact_data}=$cont if $n eq 'rcData';
       $rinfo->{message}->{$msgid}->{poor_quality_account}=$cont if $n eq 'processData';
      }
-    
+
      # dates
      my $d;
      if ( ($d=$data->getChildrenByTagNameNS($ns,'cancelDate')) && ($d->size()) )
@@ -242,17 +242,16 @@ sub parse
        $rinfo->{$otype}->{$msgid}->{cancel_date}=$po->parse_iso8601($d->get_node(1)->textContent());
      }
      if ( ($d=$data->getChildrenByTagNameNS($ns,'suspendDate')) && ($d->size()) )
-     { 
+     {
        $rinfo->{$otype}->{$msgid}->{poor_quality_suspend}=$po->parse_iso8601($d->get_node(1)->textContent());
      }
 
      # cleanup
-     my %onames = %{$rinfo->{$otype}->{$oname}}; 
-     foreach ( keys %onames) 
-     { 
+     my %onames = %{$rinfo->{$otype}->{$oname}};
+     foreach ( keys %onames)
+     {
        delete $rinfo->{$otype}->{$oname}->{$_} unless defined $rinfo->{$otype}->{$oname}->{$_}; 
      }
-   
  }
  return;
 }

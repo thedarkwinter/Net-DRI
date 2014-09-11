@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Nominet Session Command
 ##
-## Copyright (c) 2005-2010,2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2010,2012,2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -41,11 +41,11 @@ sub parse_greeting
  my $srv = $po->default_parameters()->{server};
 
  my @objNS = qw/domain contact host/;
- @{$srv->{objects}} = (map { "urn:ietf:params:xml:ns:$_-1.0" } @objNS);
+ $srv->{objects} = [ map { "urn:ietf:params:xml:ns:$_-1.0" } @objNS ];
  my @extNS=qw/contact-nom-ext-1.0 domain-nom-ext-1.2 std-contact-id-1.0 std-fork-1.0 std-handshake-1.0 std-list-1.0 std-locks-1.0 std-notifications-1.2 std-release-1.0 std-unrenew-1.0 std-warning-1.1 nom-abuse-feed-1.0 nom-direct-rights-1.0/;
- undef $srv->{extensions_selected};
- @{$srv->{extensions_selected}} = (map { "http://www.nominet.org.uk/epp/xml/$_" } @extNS);
+ $srv->{extensions_selected} = [ map { "http://www.nominet.org.uk/epp/xml/$_" } @extNS ];
  push @{$srv->{extensions_selected}},'urn:ietf:params:xml:ns:secDNS-1.1';
+ return;
 }
 
 ####################################################################################################
