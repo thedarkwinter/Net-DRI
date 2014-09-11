@@ -2,6 +2,7 @@
 ## (based on EURid registration_guidelines_v1_0E-epp.pdf)
 ##
 ## Copyright (c) 2005,2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,6 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2005,2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+              2014 Michael Kefeder <michael.kefeder@world4you.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -79,7 +81,7 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/contact-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.0',$ns.'-1.0.xsd' ] });
+  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.1',$ns.'-1.1.xsd' ] });
  }
  return;
 }
