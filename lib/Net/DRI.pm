@@ -26,7 +26,7 @@ use base qw(Class::Accessor::Chained::Fast Net::DRI::BaseClass);
 __PACKAGE__->mk_ro_accessors(qw/trid_factory identify_client logging cache/);
 
 our $AUTOLOAD;
-our $VERSION='0.96_06_tdw_04';
+our $VERSION='0.96_06_tdw_05';
 
 =pod
 
@@ -36,7 +36,7 @@ Net::DRI - Interface to Domain Name Registries/Registrars/Resellers
 
 =head1 VERSION
 
-This documentation refers to Net::DRI version 0.96_06_tdw_02
+This documentation refers to Net::DRI version 0.96_06_tdw_05
 
 =head1 SYNOPSIS
 
