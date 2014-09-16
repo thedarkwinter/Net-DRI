@@ -153,9 +153,6 @@ lib/Net/DRI/Protocol/AdamsNames/WS.pm
 lib/Net/DRI/Protocol/AdamsNames/WS/Connection.pm
 lib/Net/DRI/Protocol/AdamsNames/WS/Domain.pm
 lib/Net/DRI/Protocol/AdamsNames/WS/Message.pm
-lib/Net/DRI/Protocol/AFNIC/Email.pm
-lib/Net/DRI/Protocol/AFNIC/Email/Domain.pm
-lib/Net/DRI/Protocol/AFNIC/Email/Message.pm
 lib/Net/DRI/Protocol/AFNIC/WS.pm
 lib/Net/DRI/Protocol/AFNIC/WS/Domain.pm
 lib/Net/DRI/Protocol/AFNIC/WS/Message.pm
