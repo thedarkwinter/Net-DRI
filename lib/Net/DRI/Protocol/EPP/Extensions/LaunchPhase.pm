@@ -238,7 +238,6 @@ sub check
  return unless Net::DRI::Util::has_key($rd,'lp');
 
  my $lp = $rd->{'lp'};
- #use Data::Dumper; print Dumper $lp;
  Net::DRI::Exception::usererr_invalid_parameters('type must be claims or avail') if exists $lp->{type} && $lp->{type}  !~ m/^(claims|avail)$/;
  # according to RFC draft, phase *should* be set claims when the type is claims, but we will not change it if the user has set something else so it can auto/custom it.
  $lp->{phase} = 'claims' if exists $lp->{type} && $lp->{type} eq 'claims' && !exists $lp->{phase};
