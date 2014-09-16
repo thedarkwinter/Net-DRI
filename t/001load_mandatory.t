@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 448;
+use Test::More tests => 447;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -156,7 +156,6 @@ use_ok('Net::DRI::Protocol::RRP');
 use_ok('Net::DRI::Protocol::AFNIC::WS::Domain');
 use_ok('Net::DRI::Protocol::AFNIC::WS::Message');
 use_ok('Net::DRI::Protocol::AFNIC::WS');
-use_ok('Net::DRI::Protocol::AFNIC::Email::Domain');
 use_ok('Net::DRI::Protocol::EPP');
 use_ok('Net::DRI::Protocol::EPP::Message');
 use_ok('Net::DRI::Protocol::EPP::Connection');
