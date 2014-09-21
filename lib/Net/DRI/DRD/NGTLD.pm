@@ -310,7 +310,7 @@ xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult creditunion ged globa
 
 =head3 TLDs
 
-xn--ngbc5azd xn--ngbrx abudhabi arab build dubai host krd luxury melbourne men menu physio press space sydney
+xn--ngbc5azd xn--ngbrx abudhabi arab build dubai ckrd luxury melbourne men menu physio space sydney
 
 Contended TLD's not included
 
@@ -338,7 +338,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'host', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'physio', 'press', 'space', 'sydney'],
+     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'physio', 'space', 'sydney'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
      whois_server => 'whois.aridnrs.net.au',
    } if $bep eq 'ari';
