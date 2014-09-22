@@ -103,15 +103,19 @@ sub parse
   case 124 {
    $rinfo->{$otype}->{$oname}->{action} = $rinfo->{$otype}->{$oname}->{status} = 'incorrect';
   }
-  case 126 {
+  case [126,127] {
    $rinfo->{$otype}->{$oname}->{action} = $rinfo->{$otype}->{$oname}->{status} = 'invalid';
   }
-  case 127 {
-   $rinfo->{$otype}->{$oname}->{action} = $rinfo->{$otype}->{$oname}->{status} = 'expired';
-  }
-  case 134 {
+ case 134 {
    $rinfo->{$otype}->{$oname}->{action} = 'exception';
    $rinfo->{$otype}->{$oname}->{status} = 'incorrect';
+  }
+  case 137 {
+   $rinfo->{$otype}->{$oname}->{action} = $rinfo->{$otype}->{$oname}->{status} = 'expired';
+  }
+  case 146 {
+   $rinfo->{$otype}->{$oname}->{action} = 'correction_period_expired';
+   $rinfo->{$otype}->{$oname}->{status} = 'invalid';
   }
   case 154 {
    $rinfo->{$otype}->{$oname}->{action} = 'exception';
@@ -121,8 +125,28 @@ sub parse
    $rinfo->{$otype}->{$oname}->{action} = 'exception';
    $rinfo->{$otype}->{$oname}->{status} = 'incorrect';
   }
+  case 190 {
+   $rinfo->{$otype}->{$oname}->{action} = 'pou_expiring';
+   $rinfo->{$otype}->{$oname}->{status} = 'expiring';
+  }
+  case 191 {
+   $rinfo->{$otype}->{$oname}->{action} = 'mark_certificate_expiring';
+   $rinfo->{$otype}->{$oname}->{status} = 'expiring';
+  }
+  case 196 {
+   $rinfo->{$otype}->{$oname}->{action} = 'warning';
+   $rinfo->{$otype}->{$oname}->{status} = 'incorrect';
+  }
+  case 197 {
+   $rinfo->{$otype}->{$oname}->{action} = 'warning';
+   $rinfo->{$otype}->{$oname}->{status} = 'expiring';
+  }
   case 198 {
    $rinfo->{$otype}->{$oname}->{action} = $rinfo->{$otype}->{$oname}->{status} = 'deactivated';
+  }
+  case 199 {
+   $rinfo->{$otype}->{$oname}->{action} = 'transfer';
+   $rinfo->{$otype}->{$oname}->{status} = 'revoked';
   }
   
   # Think these are notifications that others have registered them ?
@@ -132,6 +156,14 @@ sub parse
   }
   case 220 {
    $rinfo->{$otype}->{$oname}->{action} = 'domain_registered_claims';
+   $rinfo->{$otype}->{$oname}->{status} = 'verified';
+  }
+  case 230 {
+   $rinfo->{$otype}->{$oname}->{action} = 'domain_activated';
+   $rinfo->{$otype}->{$oname}->{status} = 'verified';
+  }
+  case 220 {
+   $rinfo->{$otype}->{$oname}->{action} = 'domain_qualified_launch';
    $rinfo->{$otype}->{$oname}->{status} = 'verified';
   }
   
@@ -153,6 +185,12 @@ sub parse
   case 400 {
    $otype = 'message';
    $rinfo->{$otype}->{$oname}->{action} = 'low_balace' ;
+  }
+
+  # IDRP
+  case 500 {
+   $otype = 'message';
+   $rinfo->{$otype}->{$oname}->{action} = 'udrp' ;
   }
 
  }
