@@ -310,7 +310,7 @@ xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult creditunion ged globa
 
 =head3 TLDs
 
-xn--ngbc5azd xn--ngbrx abudhabi arab build dubai ckrd luxury melbourne men menu physio space sydney
+xn--ngbc5azd xn--ngbrx abudhabi arab build dubai krd luxury melbourne men menu physio space sydney
 
 Contended TLD's not included
 

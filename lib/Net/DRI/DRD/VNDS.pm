@@ -74,8 +74,7 @@ sub new
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return 'VNDS'; }
 sub tlds          { return qw/com net cc tv bz jobs xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe career ooo/; } ## If this changes, VeriSign/NameStore will need to be updated also
-sub object_types  { return qw/domain ns/; }
-sub profile_types { return qw/epp whois/; }
+sub object_types  { return qw/domain ns registry/; }
 
 sub transport_protocol_default
 {
@@ -138,6 +137,84 @@ sub balance_info
 {
  my ($self,$ndr)=@_;
  return $ndr->process('balance','info');
+}
+
+sub registry_check
+{
+  my ($self,$ndr,@p)=@_;
+  my (@names,$rd);
+  foreach my $p (@p)
+  {
+    if (defined $p && ref $p eq 'HASH')
+    {
+      Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in registy_check') if defined $rd;
+      $rd=Net::DRI::Util::create_params('registry_check',$p);
+    }
+    push @names,$p;
+  }
+  Net::DRI::Exception::usrerr_insuficient_parameters('registry_check needs at least one registry name zone to check') unless @names;
+  $rd={} unless defined $rd;
+
+  my (@rs,@todo);
+  my (%seendom,%seenrc);
+  foreach my $zone (@names)
+  {
+    next if exists $seendom{$zone};
+    $seendom{$zone}=1;
+    my $rs=$ndr->try_restore_from_cache('registry',$zone,'check');
+    if (!defined $rs)
+    {
+      push @todo,$zone;
+    } else
+    {
+      push @rs,$rs unless exists $seenrc{''.$rs};
+      $seenrc{''.$rs}=1;
+    }
+  }
+  return Net::DRI::Util::link_rs(@rs) unless @todo;
+
+  if (@todo > 1 && $ndr->protocol()->has_action('registry','check_multi'))
+  {
+    my $l=$self->info('check_limit');
+    if (!defined $l)
+    {
+      $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for registry_check action. Please report if you know the correct value'); # TODO: doc say maxOccurs="unbounded". Because of performance should we limit or not?
+      $l=10;
+    }
+    while (@todo)
+    {
+      my @lt=splice(@todo,0,$l);
+      push @rs,$ndr->process('registry','check_multi',[\@lt,$rd]);
+    }
+  }  else
+  {
+    push @rs,map { $ndr->process('registry','check',[$_,$rd]); } @todo;
+  }
+  return Net::DRI::Util::link_rs(@rs);
+}
+
+sub registry_info
+{
+  my ($self,$reg,$id,$rd)=@_;
+  return $reg->process('registry','info',[$id,$rd]);
+}
+
+sub registry_create
+{
+  my ($self,$reg,$id,$rd)=@_;
+  return $reg->process('registry','create',[$id,$rd]);
+}
+
+sub registry_delete
+{
+  my ($self,$reg,$id)=@_;
+  return $reg->process('registry','delete',[$id]);
+}
+
+sub registry_update
+{
+  my ($self,$reg,$id,$todo)=@_;
+  return $reg->process('registry','update',[$id,$todo]);
 }
 
 ####################################################################################################
