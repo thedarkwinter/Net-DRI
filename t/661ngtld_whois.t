@@ -5,7 +5,7 @@ use warnings;
 use Net::DRI;
 use Data::Dumper;
 
-use Test::More tests => 413;
+use Test::More tests => 436;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -1346,9 +1346,93 @@ SKIP: {
 
 ####################################################################################################
 # Nominet
-SKIP: {
-  skip '*** TODO : NOMINET',1;
-};
+$R2='Domain Name: NIC.WALES
+Domain ID: 141
+Creation Date: 2014-08-07T08:44:38Z
+Registry Expiry Date: 2015-08-07T08:44:38Z
+Sponsoring Registrar: clid-nomi-9999
+Sponsoring Registrar IANA ID: 9999
+WHOIS Server: whois.nic.wales
+Referral URL: http://nic.wales
+Domain Status: ok
+Registrant ID: Nomi_Contact
+Registrant Name: Nominet Internal Nic Contact
+Registrant Organization: Nominet
+Registrant Street: Edmund Halley Road
+Registrant City: Oxford
+Registrant State/Province: Oxon
+Registrant Postal Code: OX4 4DQ
+Registrant Country: GB
+Registrant Phone: +44.01234567899
+Registrant Email: support@nominet.org.uk
+Admin ID: Nomi_Contact
+Admin Name: Nominet Internal Nic Contact
+Admin Organization: Nominet
+Admin Street: Edmund Halley Road
+Admin City: Oxford
+Admin State/Province: Oxon
+Admin Postal Code: OX4 4DQ
+Admin Country: GB
+Admin Phone: +44.01234567899
+Admin Email: support@nominet.org.uk
+Tech ID: Nomi_Contact
+Tech Name: Nominet Internal Nic Contact
+Tech Organization: Nominet
+Tech Street: Edmund Halley Road
+Tech City: Oxford
+Tech State/Province: Oxon
+Tech Postal Code: OX4 4DQ
+Tech Country: GB
+Tech Phone: +44.01234567899
+Tech Email: support@nominet.org.uk
+Name Server: ns1.nic.uk.
+Name Server: ns2.nic.uk.
+Name Server: ns4.nic.uk.
+Name Server: ns5.nic.uk.
+Name Server: ns6.nic.uk.
+Name Server: ns7.nic.uk.
+DNSSEC: signedDelegation
+>>> Last update of WHOIS database: 2014-09-23T11:49:26Z <<<
+
+This WHOIS information is provided for free by Nominet UK, the central registry for .wales domain names. This information and the .wales WHOIS are:
+
+Copyright Nominet UK 2013.
+
+You may not access the .wales WHOIS or use any data from it except as permitted by the terms of use available in full at http://www.nominet.org.uk/whois, which includes restrictions on: (A) use of the data for advertising, or its repackaging, recompilation, redistribution or reuse (B) obscuring, removing or hiding any or all of this notice and (C) exceeding query rate or volume limits. The data is provided on an \'as-is\' basis and may lag behind the register. No guarantee is given as to the accuracy of the data provided. Access may be withdrawn or restricted at any time.';
+
+$dri->add_registry('NGTLD',{provider=>'nominet',name=>'wales'});
+$dri->target('wales')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->domain_info('nic.wales');
+is($rc->is_success(),1,'NOMINET domain_info is_success');
+is($dri->get_info('action'),'info','domain_info get_info (action)');
+is($dri->get_info('name'),'nic.wales','domain_info get_info (name)');
+is($dri->get_info('id'),'141','domain_info get_info (id)');
+is($dri->get_info('clName'),'clid-nomi-9999','domain_info get_info (clName)');
+is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
+is($dri->get_info('clWhois'),'whois.nic.wales','domain_info get_info (clWhois)');
+is($dri->get_info('clWebsite'),'http://nic.wales','domain_info get_info (clWebsite)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list'); # FIXME, should this not be lower-cased somewhere?
+is($dri->get_info('crDate'),'2014-08-07T08:44:38','domain_info get_info (crDate)');
+is($dri->get_info('upDate'),undef,'domain_info get_info (upDate)');
+is($dri->get_info('exDate'),'2015-08-07T08:44:38','domain_info get_info (exDate)');
+is($dri->get_info('wuDate'),'2014-09-23T11:49:26','domain_info get_info (wuDate) undef');
+$h=$dri->get_info('ns');
+isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
+@hs=$h->get_names();
+is_deeply(\@hs,['ns1.nic.uk','ns2.nic.uk','ns4.nic.uk','ns5.nic.uk','ns6.nic.uk','ns7.nic.uk'],'domain_info get_info (ns) get_names');
+$c=$dri->get_info('contact');
+isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
+is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
+is($c->get('registrant')->srid(),'Nomi_Contact','domain_info get_info (contact) registrant srid');
+is($c->get('admin')->srid(),'Nomi_Contact','domain_info get_info (contact) admin srid');
+is($c->get('tech')->srid(),'Nomi_Contact','domain_info get_info (contact) tech srid');
+$r = $c->get('registrant');
+isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
+is($r->name(),'Nominet Internal Nic Contact','domain_info get_info (contact) registrant name');
+is($r->org(),'Nominet','domain_info get_info (contact) registrant org');
+
 
 ####################################################################################################
 # OpenRegistry
