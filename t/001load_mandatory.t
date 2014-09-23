@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 447;
+use Test::More tests => 448;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -353,6 +353,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CORENIC');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TANGO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TANGO::Auction');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TANGO::IDN');
+use_ok('Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ES');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ES::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ES::Domain');

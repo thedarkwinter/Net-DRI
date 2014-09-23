@@ -361,6 +361,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/SWITCH.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO/Auction.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO/IDN.pm
+lib/Net/DRI/Protocol/EPP/Extensions/TANGO/LaunchPhase.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI/Domain.pm

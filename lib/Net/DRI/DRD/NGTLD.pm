@@ -408,9 +408,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> : http://xmlns.corenic.net/ep
 
 L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> : http://xmlns.corenic.net/epp/auction-1.0
 
-=head3 Unimplemented extensions:
-
-http://xmlns.corenic.net/epp/mark-ext-1.0 : This means thats we are not currently able submit "Custom Trademark"  and "Transliteration" applications.
+L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
 =cut
 
@@ -1012,6 +1010,8 @@ pay is in contention
 L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> urn:ar:params:xml:ns:idn-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> urn:ar:params:xml:ns:auction-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
 =cut
 
