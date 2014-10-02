@@ -229,7 +229,7 @@ sub build_back_end_provider_info
 
  $dri->add_registry('NGTLD',{provider=>'afnic'});
 
-=head3 Status: Untested
+=head3 Status: Working
 
 =head3 TLDs
 
@@ -238,8 +238,10 @@ alsace aquitaine banque bzh corsica ovh paris
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
+     bep_type => 1, # dedicated regsitry
      tlds => ['alsace', 'aquitaine', 'banque', 'bzh', 'corsica', 'ovh', 'paris'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
+     contact_i18n => 1, # can only use the "loc" type
    } if $bep eq 'afnic';
 
 =pod

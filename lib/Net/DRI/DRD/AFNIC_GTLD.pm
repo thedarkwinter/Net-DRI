@@ -80,14 +80,13 @@ sub new
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=0;
- $self->{info}->{contact_i18n}=4; ## LOC only ## FIXME check this
+ $self->{info}->{contact_i18n}=1;
  return $self;
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'AFNIC_GTLD'; }
 
-#sub tlds { return ('next'); } # OT&E
 sub tlds { return qw/alsace aquitaine banque bzh corsica ovh paris/ ; }
 
 sub object_types { return ('domain','contact','ns'); }
@@ -96,7 +95,7 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}) if $type eq 'epp';
  return;
 }
 
