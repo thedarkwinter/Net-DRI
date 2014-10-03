@@ -87,7 +87,7 @@ is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns
 ####################################################################################################
 ## SecDNS 1.1 support from RFC5910
 
-## Verify 1.1 is selected over 1.0 if both are there.
+## Version 1.1 is selected over 1.0 if both are there.
 
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);

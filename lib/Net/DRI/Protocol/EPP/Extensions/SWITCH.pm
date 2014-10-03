@@ -74,7 +74,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/SecDNS/; }
+sub default_extensions { return qw/SecDNS GracePeriod/; }
 
 ####################################################################################################
 1;

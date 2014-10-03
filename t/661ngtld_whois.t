@@ -5,7 +5,7 @@ use warnings;
 use Net::DRI;
 use Data::Dumper;
 
-use Test::More tests => 390;
+use Test::More tests => 436;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -494,9 +494,99 @@ is($r->org(),'CORE Association','domain_info get_info (contact) registrant org')
 
 ####################################################################################################
 # CNNIC
-SKIP: {
-  skip '*** TODO : CNNIC',1;
-};
+$R2='Domain Name: nic.佛山
+Puny Name: nic.xn--1qqw23a
+Domain ID: 3591
+WHOIS Server: 218.241.97.61
+Referral URL: http://whois.ngtld.cn
+Updated Date: 2014-08-20T16:05:02Z
+Creation Date: 2014-08-15T04:12:59Z
+Registry Expiry Date: 2019-08-15T04:12:59Z
+Sponsoring Registrar: IANA9999
+Sponsoring Registrar IANA ID: 9999
+Domain Status: ok
+Registrant ID: 9999-contact-001
+Registrant Name: 张黎
+Registrant Organization: 广州誉威信息科技有限公司
+Registrant Street: 广州市天河区林和西路1号国际贸易中心3302
+Registrant City: guangzhou
+Registrant State/Province: guangdong
+Registrant Postal Code: 510000
+Registrant Country: cn
+Registrant Phone: +86.1058813170
+Registrant Fax: +86.1058812666
+Registrant Email: zhangli@cnnic.cn
+Admin ID: 9999-contact-001
+Admin Name: 张黎
+Admin Organization: 广州誉威信息科技有限公司
+Admin Street: 广州市天河区林和西路1号国际贸易中心3302
+Admin City: guangzhou
+Admin State/Province: guangdong
+Admin Postal Code: 510000
+Admin Country: cn
+Admin Phone: +86.1058813170
+Admin Fax: +86.1058812666
+Admin Email: zhangli@cnnic.cn
+Tech ID: 9999-contact-001
+Tech Name: 张黎
+Tech Organization: 广州誉威信息科技有限公司
+Tech Street: 广州市天河区林和西路1号国际贸易中心3302
+Tech City: guangzhou
+Tech State/Province: guangdong
+Tech Postal Code: 510000
+Tech Country: cn
+Tech Phone: +86.1058813170
+Tech Fax: +86.1058812666
+Tech Email: zhangli@cnnic.cn
+Name Server: ta.ngtld.cn
+Name Server: tb.ngtld.cn
+Name Server: tc.ngtld.cn
+Name Server: td.ngtld.cn
+Name Server: te.ngtld.cn
+DNSSEC: unsigned
+>>> Last update of WHOIS database: 2014-09-08T13:13:12Z <<<
+
+Disclaimer: The data contained in China Internet Network Information Center\'s("CNNIC") WhoIs database is 
+provided for the sole purpose of assisting you in obtaining information about or related to a domain name registration record. 
+CNNIC provides the data in accordance with the registration record, but does not guarantee its accuracy. 
+By submitting a WHOIS query, you agree that you will use this Data only for lawful purposes and that, under no circumstances will you: 
+(1) use electronic processes that are automated and high-volume to access or query the Whois database; 
+(2)support the transmission of mass unsolicited, commercial advertising or solicitations via facsimile, e-mail and telephone. 
+Without the prior written consent of CNNIC, the compilation, repackaging and dissemination of this Data is expressly prohibited.
+CNNIC reserves the right to modify these terms at any time. By submitting this query, you agree to abide by this policy.';
+
+$dri->add_registry('NGTLD',{provider=>'cnnic'});
+$dri->target('cnnic')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->domain_info('nic.xn--1qqw23a');
+is($rc->is_success(),1,'CNNIC domain_info is_success');
+is($dri->get_info('action'),'info','domain_info get_info (action)');
+is($dri->get_info('name'),'nic.xn--1qqw23a','domain_info get_info (name)');
+is($dri->get_info('id'),'3591','domain_info get_info (id)');
+is($dri->get_info('clName'),'IANA9999','domain_info get_info (clName)');
+is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)');
+is($dri->get_info('clWhois'),'218.241.97.61','domain_info get_info (clWhois)');
+is($dri->get_info('clWebsite'),'http://whois.ngtld.cn','domain_info get_info (clWebsite)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list');
+is($dri->get_info('crDate'),'2014-08-15T04:12:59','domain_info get_info (crDate)');
+is($dri->get_info('upDate'),'2014-08-20T16:05:02','domain_info get_info (upDate)');
+is($dri->get_info('exDate'),'2019-08-15T04:12:59','domain_info get_info (exDate)');
+is($dri->get_info('wuDate'),'2014-09-08T13:13:12','domain_info get_info (wuDate)');
+$h=$dri->get_info('ns');
+isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
+@hs=$h->get_names();
+is_deeply(\@hs,['ta.ngtld.cn','tb.ngtld.cn','tc.ngtld.cn','td.ngtld.cn','te.ngtld.cn'],'domain_info get_info (ns) get_names');
+$c=$dri->get_info('contact');
+isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
+is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
+is($c->get('registrant')->srid(),'9999-contact-001','domain_info get_info (contact) registrant srid');
+is($c->get('admin')->srid(),'9999-contact-001','domain_info get_info (contact) admin srid');
+is($c->get('tech')->srid(),'9999-contact-001','domain_info get_info (contact) tech srid');
+$r = $c->get('registrant');
+isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
+is($r->name(),'张黎','domain_info get_info (contact) registrant name');
+is($r->org(),'广州誉威信息科技有限公司','domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # CoCCA
@@ -1256,9 +1346,93 @@ SKIP: {
 
 ####################################################################################################
 # Nominet
-SKIP: {
-  skip '*** TODO : NOMINET',1;
-};
+$R2='Domain Name: NIC.WALES
+Domain ID: 141
+Creation Date: 2014-08-07T08:44:38Z
+Registry Expiry Date: 2015-08-07T08:44:38Z
+Sponsoring Registrar: clid-nomi-9999
+Sponsoring Registrar IANA ID: 9999
+WHOIS Server: whois.nic.wales
+Referral URL: http://nic.wales
+Domain Status: ok
+Registrant ID: Nomi_Contact
+Registrant Name: Nominet Internal Nic Contact
+Registrant Organization: Nominet
+Registrant Street: Edmund Halley Road
+Registrant City: Oxford
+Registrant State/Province: Oxon
+Registrant Postal Code: OX4 4DQ
+Registrant Country: GB
+Registrant Phone: +44.01234567899
+Registrant Email: support@nominet.org.uk
+Admin ID: Nomi_Contact
+Admin Name: Nominet Internal Nic Contact
+Admin Organization: Nominet
+Admin Street: Edmund Halley Road
+Admin City: Oxford
+Admin State/Province: Oxon
+Admin Postal Code: OX4 4DQ
+Admin Country: GB
+Admin Phone: +44.01234567899
+Admin Email: support@nominet.org.uk
+Tech ID: Nomi_Contact
+Tech Name: Nominet Internal Nic Contact
+Tech Organization: Nominet
+Tech Street: Edmund Halley Road
+Tech City: Oxford
+Tech State/Province: Oxon
+Tech Postal Code: OX4 4DQ
+Tech Country: GB
+Tech Phone: +44.01234567899
+Tech Email: support@nominet.org.uk
+Name Server: ns1.nic.uk.
+Name Server: ns2.nic.uk.
+Name Server: ns4.nic.uk.
+Name Server: ns5.nic.uk.
+Name Server: ns6.nic.uk.
+Name Server: ns7.nic.uk.
+DNSSEC: signedDelegation
+>>> Last update of WHOIS database: 2014-09-23T11:49:26Z <<<
+
+This WHOIS information is provided for free by Nominet UK, the central registry for .wales domain names. This information and the .wales WHOIS are:
+
+Copyright Nominet UK 2013.
+
+You may not access the .wales WHOIS or use any data from it except as permitted by the terms of use available in full at http://www.nominet.org.uk/whois, which includes restrictions on: (A) use of the data for advertising, or its repackaging, recompilation, redistribution or reuse (B) obscuring, removing or hiding any or all of this notice and (C) exceeding query rate or volume limits. The data is provided on an \'as-is\' basis and may lag behind the register. No guarantee is given as to the accuracy of the data provided. Access may be withdrawn or restricted at any time.';
+
+$dri->add_registry('NGTLD',{provider=>'nominet',name=>'wales'});
+$dri->target('wales')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->domain_info('nic.wales');
+is($rc->is_success(),1,'NOMINET domain_info is_success');
+is($dri->get_info('action'),'info','domain_info get_info (action)');
+is($dri->get_info('name'),'nic.wales','domain_info get_info (name)');
+is($dri->get_info('id'),'141','domain_info get_info (id)');
+is($dri->get_info('clName'),'clid-nomi-9999','domain_info get_info (clName)');
+is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
+is($dri->get_info('clWhois'),'whois.nic.wales','domain_info get_info (clWhois)');
+is($dri->get_info('clWebsite'),'http://nic.wales','domain_info get_info (clWebsite)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list'); # FIXME, should this not be lower-cased somewhere?
+is($dri->get_info('crDate'),'2014-08-07T08:44:38','domain_info get_info (crDate)');
+is($dri->get_info('upDate'),undef,'domain_info get_info (upDate)');
+is($dri->get_info('exDate'),'2015-08-07T08:44:38','domain_info get_info (exDate)');
+is($dri->get_info('wuDate'),'2014-09-23T11:49:26','domain_info get_info (wuDate) undef');
+$h=$dri->get_info('ns');
+isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
+@hs=$h->get_names();
+is_deeply(\@hs,['ns1.nic.uk','ns2.nic.uk','ns4.nic.uk','ns5.nic.uk','ns6.nic.uk','ns7.nic.uk'],'domain_info get_info (ns) get_names');
+$c=$dri->get_info('contact');
+isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
+is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
+is($c->get('registrant')->srid(),'Nomi_Contact','domain_info get_info (contact) registrant srid');
+is($c->get('admin')->srid(),'Nomi_Contact','domain_info get_info (contact) admin srid');
+is($c->get('tech')->srid(),'Nomi_Contact','domain_info get_info (contact) tech srid');
+$r = $c->get('registrant');
+isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
+is($r->name(),'Nominet Internal Nic Contact','domain_info get_info (contact) registrant name');
+is($r->org(),'Nominet','domain_info get_info (contact) registrant org');
+
 
 ####################################################################################################
 # OpenRegistry

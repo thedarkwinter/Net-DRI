@@ -183,6 +183,7 @@ sub fee_set_parse_05
     } elsif ($name eq 'class')
     {
       $set->{class} = $content->textContent();
+      $set->{'premium'} = 1 if $set->{class} eq 'premium';
     }
   }
   chomp $set->{description} if $set->{description};

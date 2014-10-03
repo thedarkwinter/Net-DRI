@@ -1,6 +1,6 @@
 ## Domain Registry Interface, SYSLOG Logging operations for Net::DRI
 ##
-## Copyright (c) 2009,2013 Jørgen Thomsen <netdri@jth.net>. All rights reserved
+## Copyright (c) 2009,2013,2014 Jørgen Thomsen <netdri@jth.net>. All rights reserved
 ##
 ## This file is part of Net::DRI
 ##
@@ -73,6 +73,8 @@ sub DESTROY
 __END__
 
 =pod
+
+=encoding utf8
 
 =head1 NAME
 
@@ -176,7 +178,7 @@ Jørgen Thomsen, E<lt>netdri@jth.netE<gt>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009 Jørgen Thomsen <netdri@jth.net>. All rights reserved.
+Copyright (c) 2009,2013,2014 Jørgen Thomsen <netdri@jth.net>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free

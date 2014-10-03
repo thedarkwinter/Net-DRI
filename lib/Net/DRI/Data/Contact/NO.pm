@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Handling of contact data for .NO
 ##
-## Copyright (c) 2008-2011 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+## Copyright (c) 2008-2011,2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>.
 ##                    All rights reserved.
 ##
@@ -27,6 +27,8 @@ use Net::DRI::Exception;
 __PACKAGE__->register_attributes(qw(type identity mobilephone organization rolecontact xemail xdisclose facets));
 
 =pod
+
+=encoding utf8
 
 =head1 NAME
 
@@ -130,7 +132,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+Copyright (c) 2008-2010,2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>.
 All rights reserved.
 

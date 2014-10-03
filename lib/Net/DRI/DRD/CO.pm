@@ -1,8 +1,7 @@
-## Domain Registry Interface, ISPAPI (aka HEXONET) EPP extensions
+## Domain Registry Interface, .CO policies
 ##
-## Copyright (c) 2010,2013 HEXONET GmbH, http://www.hexonet.net,
-##                    Jens Wagner <info@hexonet.net>
-## All rights reserved.
+## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -14,20 +13,25 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::ISPAPI;
+package Net::DRI::DRD::CO;
 
 use strict;
 use warnings;
 
-use base qw/Net::DRI::Protocol::EPP/;
+use base qw/Net::DRI::DRD/;
+
+use DateTime::Duration;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ISPAPI - ISPAPI EPP extensions for Net::DRI
+Net::DRI::DRD::CO - .CO policies for Net::DRI
 
 =head1 DESCRIPTION
+
+Additional info element returned by the domain_info command:
+$dri->get_info('domain_suspended_indicator'); # possible value: expired - Specifies whether the domain has expired
 
 Please see the README file for details.
 
@@ -35,7 +39,7 @@ Please see the README file for details.
 
 For now, support questions should be sent to:
 
-E<lt>support@hexonet.netE<gt>
+E<lt>netdri@dotandco.comE<gt>
 
 Please also see the SUPPORT file in the distribution.
 
@@ -45,14 +49,12 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Alexander Biehl, E<lt>abiehl@hexonet.netE<gt>
-Jens Wagner, E<lt>jwagner@hexonet.netE<gt>
+Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2013 HEXONET GmbH, E<lt>http://www.hexonet.netE<gt>,
-Alexander Biehl <abiehl@hexonet.net>,
-Jens Wagner <jwagner@hexonet.net>
+Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
+(c) 2014 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,7 +68,29 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub default_extensions { return qw/ISPAPI::KeyValue SecDNS/; }
+sub new
+{
+ my $class=shift;
+ my $self=$class->SUPER::new(@_);
+ $self->{info}->{host_as_attr}=0;
+ $self->{info}->{contact_i18n}=6; ## INT only or INT+LOC (but not LOC only)
+ return $self;
+}
+
+sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
+sub name     { return 'CO'; }
+sub tlds     { return ('co','com.co','net.co','nom.co'); }
+sub object_types { return ('domain','contact','ns'); }
+sub profile_types { return ('epp'); }
+
+sub transport_protocol_default
+{
+ my ($self,$type)=@_;
+
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::BIZ',{}) if $type eq 'epp';
+ return;
+}
 
 ####################################################################################################
+
 1;

@@ -72,6 +72,7 @@ sub new
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=1;
  $self->{info}->{contact_i18n}=1; ## LOC only
+ $self->{info}->{force_native_idn}=1;
  return $self;
 }
 
@@ -80,6 +81,15 @@ sub name     { return 'IIT-CNR'; }
 sub tlds     { return qw /it co.it/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
+
+sub verify_name_domain
+{
+ my ($self,$ndr,$domain,$op)=@_;
+ return $self->_verify_name_rules($domain,$op,{ check_name => 0, ## FIXME, is there a batter way to allow native IDNs?
+                                                my_tld => 1,
+                                                min_length => 2,
+                                              });
+}
 
 sub transport_protocol_default
 {

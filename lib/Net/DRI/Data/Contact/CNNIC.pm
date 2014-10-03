@@ -1,6 +1,6 @@
-## Domain Registry Interface, Handling of contact data for OpenSRS
+## Domain Registry Interface, Handling of contact data for CNNIC 
 ##
-## Copyright (c) 2009,2013 Richard Siddall <netdri@elirion.net>. All rights reserved.
+## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,39 +12,36 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Data::Contact::OpenSRS;
+package Net::DRI::Data::Contact::CNNIC;
 
 use strict;
 use warnings;
 
 use base qw/Net::DRI::Data::Contact/;
-
-use Net::DRI::Exception;
-
-__PACKAGE__->register_attributes(qw(firstname url));
+use Net::DRI::Util;
+__PACKAGE__->register_attributes(qw(type code));
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Data::Contact::OpenSRS - Handle OpenSRS contact data for Net::DRI
+Net::DRI::Data::Contact::CNNIC - Handle CNNIC contact data for Net::DRI
 
 =head1 DESCRIPTION
 
-This subclass of Net::DRI::Data::Contact adds accessors and validation for
-OpenSRS specific data.
+This subclass of Net::DRI::Data::Contact adds accessors and validation for CNNIC specific data.
 
 =head1 METHODS
 
 The following accessors/mutators can be called in chain, as they all return the object itself.
 
-=head2 firstname()
+=head2 type()
 
-Please note that for OpenSRS data, the name() must be only the lastname, hence this extra firstname() method
+One of YYZZ,ZZJGDMZ,SFZ,JGZ,HZ,QT
 
-=head2 lastname()
+=head2 code()
 
-Alias for name()
+String between 1 and 20 characters
 
 =head1 SUPPORT
 
@@ -60,11 +57,11 @@ http://www.dotandco.com/services/software/Net-DRI/
 
 =head1 AUTHOR
 
-Richard Siddall, E<lt>netdri@elirion.net<gt>
+Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 =head1 COPYRIGHT
-
-Copyright (c) 2009,2013 Richard Siddall <netdri@elirion.net>.
+Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
+(c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -82,23 +79,14 @@ sub validate
 {
  my ($self,$change)=@_;
  $change||=0;
- my @errs;
-
  $self->SUPER::validate($change); ## will trigger an Exception if problem
-
- push @errs,'firstname' if ($self->firstname() && grep { !Net::DRI::Util::xml_is_normalizedstring($_,1,255) } ($self->firstname()));
-
- push @errs,'voice' if ($self->voice() && !Net::DRI::Util::xml_is_token($self->voice(),undef,17) && $self->voice()!~m/^\+[0-9]{1,3}\.[0-9]{1,12}(?:x\d{1,4})?$/);
- push @errs,'fax'   if ($self->fax()   && !Net::DRI::Util::xml_is_token($self->fax(),undef,17)   && $self->fax()!~m/^\+[0-9]{1,3}\.[0-9]{1,12}(?:x\d{1,4})?$/);
-
- Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
- return 1; ## everything ok.
-}
-
-sub lastname {
- my ($self, $change) = @_;
- return $self->name($change);
+ if ($self->type() || $self->code()) {
+  Net::DRI::Exception::usererr_invalid_parameters('contact type should be one of YYZZ,ZZJGDMZ,SFZ,JGZ,HZ,QT') unless $self->type() =~ m/^(?:YYZZ|ZZJGDMZ|SFZ|JGZ|HZ|QT)$/;
+  Net::DRI::Exception::usererr_invalid_parameters('contact code should be a string between 1 and 20 characters') unless Net::DRI::Util::xml_is_token($self->code(),1,20);
+ }
+ return 1;
 }
 
 ####################################################################################################
+
 1;

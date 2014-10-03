@@ -270,6 +270,11 @@ sub sw_register
   $attr->{$_} = ($rd->{$_}) if Net::DRI::Util::has_key($rd, $_);
  }
 
+ if (Net::DRI::Util::has_key($rd, 'f_bypass_confirm') && Net::DRI::Util::has_auth($rd)) {
+  $attr->{'f_bypass_confirm'} = 1;
+  $attr->{'auth_info'} = $rd->{'auth'}->{'pw'};
+ }
+
  # TBD: ccTLD-specific flags including domain encoding.
  # TBD: handle, link_domains, etc.
 
@@ -495,7 +500,7 @@ sub renew_parse
  }
  my ($k,$v)=('registration expiration date', 'exDate');
  $ra->{$k}=~s/\s+/T/; ## with a little effort we become ISO8601
- $rinfo->{domain}->{$oname}->{$v}=$xcp->parse_iso8601($ra->{$k});
+ $rinfo->{domain}->{$oname}->{$v}=$xcp->parse_iso8601($ra->{$k}) if defined($ra->{$k});
  return;
 }
 

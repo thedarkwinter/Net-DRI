@@ -103,6 +103,22 @@ sub set
   $self->{data}->{$type}={} unless exists $self->{data}->{$type};
  ## We store only the last version of a given key, so start from scratch
   $self->{data}->{$type}->{$key}=\%c;
+
+ ## IDN Handling - Required for .IT, tested in 657it_epp and 628de_rri
+ ## Now we set name_ace and name_idn and reference the other IDN version if required for get_info
+  if ($type eq 'domain')
+  {
+   $self->{data}->{$type}->{$key}->{name_idn} = $self->{data}->{$type}->{$key}->{name_ace} = $key;
+   if (Net::DRI::Util::is_idn($key))
+   {
+    my ($ace,$idn) = Net::DRI::Util::idn_get_ace_unicode($key);
+    $self->{data}->{$type}->{$key}->{name_idn} = $idn;
+    $self->{data}->{$type}->{$key}->{name_ace} = $ace;
+    $self->{data}->{$type}->{$ace} = $self->{data}->{$type}->{$key} unless $key eq $ace;
+    $self->{data}->{$type}->{$idn} = $self->{data}->{$type}->{$key} unless $key eq $idn;
+   }
+  }
+ ## End IDN Handling
  }
 
  return \%c;

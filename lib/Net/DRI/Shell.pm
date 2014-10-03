@@ -468,7 +468,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -1570,7 +1570,8 @@ sub build_duration
 {
  my ($ctx,$rd)=@_;
  return unless exists($rd->{duration});
- my ($v,$u)=($rd->{duration}=~m/^(\d+)(\S+)$/);
+ my ($v,$u)=($rd->{duration}=~m/^(\d+)(y(?:ears?)|m(?:onths?))$/i);
+ die sprintf('Invalid duration specification "%s"',$rd->{duration}) unless defined $v && defined $u;
  $rd->{duration}=$ctx->{dri}->local_object('duration','years'  => $v) if ($u=~m/^y(?:ears?)?$/i);
  $rd->{duration}=$ctx->{dri}->local_object('duration','months' => $v) if ($u=~m/^m(?:onths?)?$/i);
  return;

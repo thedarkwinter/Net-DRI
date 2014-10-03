@@ -1,6 +1,7 @@
 ## Domain Registry Interface, EURid (.EU) policy on reserved names
 ##
 ## Copyright (c) 2005-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -23,7 +24,7 @@ use Net::DRI::Util;
 use Net::DRI::Exception;
 use DateTime::Duration;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_query domain_transfer_accept domain_transfer_refuse domain_transfer_stop contact_check contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_accept domain_transfer_refuse domain_transfer_stop contact_check contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse/);
 
 =pod
 
@@ -54,6 +55,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2005-2011 Patrick Mevzek <netdri@dotandco.com>.
+              2014 Michael Kefeder <michael.kefeder@world4you.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

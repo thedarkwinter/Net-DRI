@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 12;
+use Test::More tests => 13;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -45,5 +45,21 @@ is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) 
 $R2='';
 $rc=$dri->domain_update('premium.tv',$dri->local_object('changes')->set('premium_short_name','testregistrar'));
 is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>premium.tv</domain:name></domain:update></update><extension><premiumdomain:reassign xmlns:premiumdomain="http://www.verisign.com/epp/premiumdomain-1.0" xsi:schemaLocation="http://www.verisign.com/epp/premiumdomain-1.0 premiumdomain-1.0.xsd"><premiumdomain:shortName>testregistrar</premiumdomain:shortName></premiumdomain:reassign></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build premium_domain=1');
+
+
+##################################################
+# extension (update) tests: http://www.verisigninc.com/assets/epp-sdk/verisign_epp-extension_premium-domain_v00.html
+
+# 3.1.1 EPP <check> Command
+# Check single domain - done previously.
+
+# Check multiple domains
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example1.tv</domain:name></domain:cd><domain:cd><domain:name avail="0">example2.tv</domain:name></domain:cd><domain:cd><domain:name avail="1">example3.tv</domain:name></domain:cd></domain:chkData></resData><extension><premiumdomain:chkData xmlns:premiumdomain="http://www.verisign.com/epp/premiumdomain-1.0" xsi:schemaLocation="http://www.verisign.com/epp/premiumdomain-1.0 premiumdomain-1.0.xsd"><premiumdomain:cd><premiumdomain:name premium="1">example1.tv</premiumdomain:name><premiumdomain:price unit="USD">125.00</premiumdomain:price><premiumdomain:renewalPrice unit="USD">75.00</premiumdomain:renewalPrice></premiumdomain:cd><premiumdomain:cd><premiumdomain:name premium="1">example2.tv</premiumdomain:name></premiumdomain:cd><premiumdomain:cd><premiumdomain:name premium="1">example3.tv</premiumdomain:name><premiumdomain:price unit="USD">125.00</premiumdomain:price><premiumdomain:renewalPrice unit="USD">75.00</premiumdomain:renewalPrice></premiumdomain:cd></premiumdomain:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check(qw/example1.tv example2.tv example3.tv/);
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example1.tv</domain:name><domain:name>example2.tv</domain:name><domain:name>example3.tv</domain:name></domain:check></check><extension><premiumdomain:check xmlns:premiumdomain="http://www.verisign.com/epp/premiumdomain-1.0" xsi:schemaLocation="http://www.verisign.com/epp/premiumdomain-1.0 premiumdomain-1.0.xsd"><premiumdomain:flag>1</premiumdomain:flag></premiumdomain:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multiple build premium_domain=1');
+
+# 3.2.5 EPP <update> Command (also tested previously)
+
+##################################################
 
 exit 0;

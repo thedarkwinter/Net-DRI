@@ -37,7 +37,6 @@ sub parse
  my $mes=$po->message();
 
  ## Parse warnings
- use Data::Dumper;
  my $result = $mes->node_extension();
  return unless $result;
  my $warnTypes = {
@@ -66,7 +65,7 @@ sub parse
    $mes->add_to_extra_info({from => 'nominet', type => 'text', message => $str});
   }
  }
-
+ return;
 }
 
 1;

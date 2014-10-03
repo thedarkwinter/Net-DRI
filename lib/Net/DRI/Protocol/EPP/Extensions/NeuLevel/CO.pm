@@ -1,8 +1,6 @@
-## Domain Registry Interface, ISPAPI (aka HEXONET) EPP extensions
+## Domain Registry Interface, Neulevel EPP Fee Extension
 ##
-## Copyright (c) 2010,2013 HEXONET GmbH, http://www.hexonet.net,
-##                    Jens Wagner <info@hexonet.net>
-## All rights reserved.
+## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -14,18 +12,19 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::ISPAPI;
+package Net::DRI::Protocol::EPP::Extensions::NeuLevel::CO;
 
 use strict;
 use warnings;
 
-use base qw/Net::DRI::Protocol::EPP/;
+use Net::DRI::Util;
+use Net::DRI::Exception;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ISPAPI - ISPAPI EPP extensions for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::NeuLevel::CO - NeuLevel .CO DomainSuspendedIndicator extension for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -35,7 +34,7 @@ Please see the README file for details.
 
 For now, support questions should be sent to:
 
-E<lt>support@hexonet.netE<gt>
+E<lt>netdri@dotandco.comE<gt>
 
 Please also see the SUPPORT file in the distribution.
 
@@ -45,14 +44,12 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Alexander Biehl, E<lt>abiehl@hexonet.netE<gt>
-Jens Wagner, E<lt>jwagner@hexonet.netE<gt>
+Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2013 HEXONET GmbH, E<lt>http://www.hexonet.netE<gt>,
-Alexander Biehl <abiehl@hexonet.net>,
-Jens Wagner <jwagner@hexonet.net>
+Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
+(c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,7 +63,39 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub default_extensions { return qw/ISPAPI::KeyValue SecDNS/; }
+sub register_commands
+{
+ my ($class,$version)=@_;
+ my %tmp=(
+           info => [ undef, \&parse ],
+         );
+
+ return { 'domain' => \%tmp };
+}
 
 ####################################################################################################
+
+sub parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ my $infdata=$mes->get_extension('neulevel','extension');
+ return unless defined $infdata;
+
+ my %t;
+ my $unspec;
+ foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+ {
+  my ($n,$c)=@$el;
+  next unless $n eq 'unspec';
+  foreach my $kv (split(/ /,$c->textContent()))
+  {
+   my ($k,$v) = split(/=/,$kv);
+   $rinfo->{$otype}->{$oname}->{domain_suspended_indicator}=$v if $k eq 'DomainSuspendedIndicator';
+  }
+ }
+
+ return;
+}
+
 1;

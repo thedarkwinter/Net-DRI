@@ -68,7 +68,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/NeuLevel::IDNLanguage NeuLevel::Message/; }
+sub default_extensions { return qw/NeuLevel::IDNLanguage NeuLevel::UIN SecDNS GracePeriod NeuLevel::Message NeuLevel::CO/; } # CO doesn't cause any harm to anyone else
 
 ####################################################################################################
 1;

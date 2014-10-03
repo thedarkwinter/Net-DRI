@@ -229,7 +229,7 @@ sub build_back_end_provider_info
 
  $dri->add_registry('NGTLD',{provider=>'afnic'});
 
-=head3 Status: Untested
+=head3 Status: Working
 
 =head3 TLDs
 
@@ -238,8 +238,10 @@ alsace aquitaine banque bzh corsica ovh paris
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
+     bep_type => 1, # dedicated regsitry
      tlds => ['alsace', 'aquitaine', 'banque', 'bzh', 'corsica', 'ovh', 'paris'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
+     contact_i18n => 1, # can only use the "loc" type
    } if $bep eq 'afnic';
 
 =pod
@@ -247,15 +249,9 @@ alsace aquitaine banque bzh corsica ovh paris
 
 =head2 Afilias
 
- $dri->add_registry('NGTLD',{provider=>'afilias'});
+Afilias operates a shared enveronment for its own TLDs (set provider to 'afilias'), and a separate shared environment for their clients ('afiliassrs').
 
 =head3 Status: Working
-
-=head3 TLDs
-
-info xn--6frz82g black blue kim lgbt lotto meet organic pink red shiksha
-
-Contended TLD's not included
 
 =head3 Custom extensions:
 
@@ -265,9 +261,17 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:i
 
 L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0
 
-=head3 Notes
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::Price> urn:ietf:params:xml:ns:price-1.0
 
-1. Afilias has extended the .INFO plaform to include these newGTLDs
+=head3 Afilias Own TLDs
+
+Afilias has extended the .INFO plaform to include these newGTLDs
+
+ $dri->add_registry('NGTLD',{provider=>'afilias'}); # own tlds
+
+info xn--6frz82g black blue kim lgbt lotto meet organic pink red shiksha
+
+Contended TLD's not included
 
 =cut
 
@@ -278,33 +282,15 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:n
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
 
-
 =pod
 
+=head3 Afilias Client TLDs
 
-=head2 Afilias-SRS
+Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
- $dri->add_registry('NGTLD',{provider=>'afiliasrss'});
-
-=head3 Status: Working
-
-=head3 TLDs
+ $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
 xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult creditunion ged global hiv indians ltda onl porn rich storage vegas vote voto
-
-Contended TLD's not included
-
-=head3 Custom extensions:
-
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage> urn:afilias:params:xml:ns:idn-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:ipr-1.1
-
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0
-
-=head3 Notes
-
-1. Afilias SRS  has extended the .XXX plaform to include these newGTLDs
 
 =cut
 
@@ -314,7 +300,6 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:n
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afiliassrs';
-
 
 =pod
 
@@ -327,7 +312,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:n
 
 =head3 TLDs
 
-xn--ngbc5azd xn--ngbrx abudhabi arab build dubai host krd luxury melbourne men menu physio press space sydney
+xn--ngbc5azd xn--ngbrx abudhabi arab build dubai krd luxury melbourne men menu physio space sydney
 
 Contended TLD's not included
 
@@ -355,7 +340,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'host', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'physio', 'press', 'space', 'sydney'],
+     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'physio', 'space', 'sydney'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
      whois_server => 'whois.aridnrs.net.au',
    } if $bep eq 'ari';
@@ -372,7 +357,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
 =head3 TLDs
 
-bar cafe college contact fans feedback host ink pid place press rest space website wiki xyz
+bar cafe college contact fans feedback host ink pid press rest space website wiki xyz
 
 Contended TLD's not included
 
@@ -391,9 +376,9 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/la pw com.de/;
-    my @ngtlds = qw/bar cafe college contact fans feedback host ink pid place press rest space website wiki xyz/;
-    my @ngtlds_contested = qw/cafe fans place reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
-    my @ngtlds_pipeline = qw/art auto design sucks pizza now hotel forum law golf school style chat gay group blog app mail love news llc/; # no expected dates given, probably contested strings
+    my @ngtlds = qw/bar cafe college contact fans feedback host ink pid press rest space website wiki xyz/;
+    my @ngtlds_contested = qw/cafe fans reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
+    my @ngtlds_pipeline = qw/art auto design sucks now hotel forum law golf school style chat gay group blog app mail love news llc/; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
     return {
@@ -425,9 +410,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> : http://xmlns.corenic.net/ep
 
 L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> : http://xmlns.corenic.net/epp/auction-1.0
 
-=head3 Unimplemented extensions:
-
-http://xmlns.corenic.net/epp/mark-ext-1.0 : This means thats we are not currently able submit "Custom Trademark"  and "Transliteration" applications.
+L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
 =cut
 
@@ -456,8 +439,12 @@ Contended TLD's not included
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
+     bep_type => 2, # shared registry
      tlds => ['xn--io0a7i','xn--1qqw23a','xn--xhq521b','xn--55qx5d'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CNNIC',{}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::CNNIC->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::CNNIC'],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef), ## FIXME check this and test whois?
    } if $bep eq 'cnnic';
 
 =pod
@@ -518,7 +505,7 @@ xn--q9jyb4c ads android boo car dad day eat esq fly foo here how ing kid meme mo
 
 =head3 TLDs
 
-academy accountants agency architect associates attorney bargains bike boutique builders business cab camera camp capital cards care careers cash catering center cheap church claims cleaning clinic clothing codes coffee community company computer condos construction contractors cool credit creditcard cruises dating degree dental dentist diamonds digital directory discount domains education email engineering enterprises equipment estate events exchange expert exposed fail fan farm finance financial fish fitness flights florist foundation fund furniture gallery games glass graphics gripe guide guru haus healthcare holdings holiday hospital house industries institute insure international investments kitchen land lawyer lease life lighting limited limo loans maison management market marketing media medical mortgage network partners parts pets photography photos pictures plumbing productions properties recipes reisen rentals repair report schule services shoes singles software solar solutions sports supplies supply support surgery systems tax technology tienda tips today tools tours town toys training university vacations ventures vet viajes villas vin vision voyage watch works wtf xn--czrs0t xn--unup4y xn--vhquv zone
+academy accountants agency architect associates attorney bargains bike boutique builders business cab camera camp capital cards care careers cash catering center cheap church city claims cleaning clinic clothing codes coffee community company computer condos construction contractors cool credit creditcard cruises dating deals dental diamonds digital direct directory discount domains education email engineering enterprises equipment estate events exchange expert exposed fail fan farm finance financial fish fitness flights florist foundation fund furniture gallery games gifts glass graphics gratis gripe guide guru healthcare holdings holiday hospital house immo industries institute insure international investments kitchen land lawyer lease life lighting limited limo loans maison management market marketing media medical network partners parts pets photography photos pictures place plumbing productions properties recipes reisen rentals repair report restaurant sarl schule services shoes singles solar solutions sports supplies supply support surgery systems tax technology tienda tips today tools tours town toys training university vacations ventures viajes villas vin vision voyage watch works wtf xn--czrs0t xn--unup4y xn--vhquv zone
 
 =head3 Custom extensions
 
@@ -537,7 +524,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.zone','academy','accountants','agency','architect','associates','attorney','bargains','bike','boutique','builders','business','cab','camera','camp','capital','cards','care','careers','cash','catering','center','cheap','church','claims','cleaning','clinic','clothing','codes','coffee','community','company','computer','condos','construction','contractors','cool','credit','creditcard','cruises','dating','degree','dental','dentist','diamonds','digital','directory','discount','domains','education','email','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','fail','fan','farm','finance','financial','fish','fitness','flights','florist','foundation','fund','furniture','gallery','games','glass','graphics','gripe','guide','guru','haus','healthcare','holdings','holiday','hospital','house','industries','institute','insure','international','investments','kitchen','land','lawyer','lease','life','lighting','limited','limo','loans','maison','management','market','marketing','media','medical','mortgage','network','partners','parts','pets','photography','photos','pictures','plumbing','productions','properties','recipes','reisen','rentals','repair','report','schule','services','shoes','singles','software','solar','solutions','sports','supplies','supply','support','surgery','systems','tax','technology','tienda','tips','today','tools','tours','town','toys','training','university','vacations','ventures','vet','viajes','villas','vin','vision','voyage','watch','works','wtf','xn-czrs0t','xn--unup4y','xn--vhquv','zone'],
+     tlds => ['dpml.zone','academy','accountants','agency','architect','associates','attorney','bargains','bike','boutique','builders','business','cab','camera','camp','capital','cards','care','careers','cash','catering','center','cheap','church','city','claims','cleaning','clinic','clothing','codes','coffee','community','company','computer','condos','construction','contractors','cool','credit','creditcard','cruises','dating','deals','dental','diamonds','digital','direct','directory','discount','domains','education','email','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','fail','fan','farm','finance','financial','fish','fitness','flights','florist','foundation','fund','furniture','gallery','games','gifts','glass','graphics','gratis','gripe','guide','guru','healthcare','holdings','holiday','hospital','house','immo','industries','institute','insure','international','investments','kitchen','land','lawyer','lease','life','lighting','limited','limo','loans','maison','management','market','marketing','media','medical','network','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','productions','properties','recipes','reisen','rentals','repair','report','restaurant','sarl','schule','services','shoes','singles','solar','solutions','sports','supplies','supply','support','surgery','systems','tax','technology','tienda','tips','today','tools','tours','town','toys','training','university','vacations','ventures','viajes','villas','vin','vision','voyage','watch','works','wtf','xn-czrs0t','xn--unup4y','xn--vhquv','zone'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
      whois_server => 'whois.donuts.co',
      check_limit => 5,
@@ -579,13 +566,17 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 
 =head2 GMO Registry
 
- $dri->add_registry('NGTLD',{provider=>'gmo'});
+GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo') and a separate shared account for geoTLDs (set provider to 'gmogeo')
+
+ $dri->add_registry('NGTLD',{provider=>'gmo'}); # Own: nagoya tokyo yokohama
+ $dri->add_registry('NGTLD',{provider=>'gmogeo'}); # Geo: okinawa ryukyu
 
 =head3 Status: Untested
 
 =head3 TLDs
 
-nagoya tokyo yokohama
+Own: nagoya tokyo yokohama
+Geo: okinawa ryukyu
 
 =head3 Custom extensions:
 
@@ -600,6 +591,13 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmo';
 
+ return {
+     bep_type => 2, # shared registry
+     tlds => ['okinawa','ryukyu'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
+     whois_server => 'whois.centralnic.com',
+   } if $bep eq 'gmogeo';
+   
 =pod
 
 
@@ -665,16 +663,16 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: abogado bayern budapest casa cooking country fishing fit garden horse luxe miami nrw rodeo surf vodka wedding work yoga xn--g2xx48c
+Uncontested: abogado bayern beer budapest casa cooking country fishing fit garden horse luxe miami nrw rodeo surf vodka wedding work yoga xn--g2xx48c
 
-Contested: app art baby beauty blog book cloud coupon cpa cricket data dds design dog eco fashiond gay home hotel immo inc latino law llc love pizza realestate restaurant school site soccer store style tech video vip
+Contested: app art baby beauty blog book cloud coupon cpa cricket data dds design dog eco fashiond gay home hotel inc latino law llc love pizza realestate school site soccer store style tech video vip
 
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['abogado', 'bayern', 'budapest', 'casa', 'cooking', 'country', 'fishing', 'fit', 'garden', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'cricket', 'data', 'dds', 'design', 'dog', 'eco', 'fashiond', 'gay', 'home', 'hotel', 'immo', 'inc', 'latino', 'law', 'llc', 'love', 'pizza', 'realestate', 'restaurant', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video', 'vip',
+     tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fishing', 'fit', 'garden', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
+              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'cricket', 'data', 'dds', 'design', 'dog', 'eco', 'fashiond', 'gay', 'home', 'hotel', 'inc', 'latino', 'law', 'llc', 'love', 'pizza', 'realestate', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video', 'vip',
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
      whois_server => 'whois-dub.mm-registry.com',
@@ -811,10 +809,11 @@ cymru wales
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
+     bep_type => 1, # dedicated registy
      tlds => ['cymru','wales'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet';
-
 
 =pod
 
@@ -1015,6 +1014,8 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> urn:ar:params:xml:ns:idn-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> urn:ar:params:xml:ns:auction-1.0
 
+L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
+
 =cut
 
  return {
@@ -1056,7 +1057,7 @@ moscow tatar xn--80adxhks xn--d1acj3b
 
 =head3 TLDs
 
-art auction audio auto blackfriday cars christmas click deal design diet family fashion flowers free game garden gift gratis guitars help hiphop home hosting inc juegos link lol love mom news photo pics pizza property racing realestate restaurant sale save school sexy shopping store style tattoo team tech video yoga
+art auction audio auto blackfriday cars christmas click deal design diet family fashion flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics pizza property racing realestate restaurant sale save school sexy shopping store style tattoo team tech video yoga
 
 Contended TLD's not included
 
@@ -1072,7 +1073,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','auction','audio','auto','blackfriday','cars','christmas','click','deal','design','diet','family','fashion','ﬂowers','free','game','garden','gift','gratis','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
+     tlds => ['art','auction','audio','auto','blackfriday','cars','christmas','click','deal','design','diet','family','fashion','ﬂowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
