@@ -120,75 +120,78 @@ sub create
   my @n = Net::DRI::Protocol::EPP::Extensions::LaunchPhase::_build_idContainerType($lp);
   my @n2;
   
-   # Code Marks
-   if (exists $lp->{code_marks})
+  # Code Marks
+  if (exists $lp->{code_marks})
+  {
+   foreach my $cm (@{$lp->{code_marks}})
    {
-    foreach my $cm (@{$lp->{code_marks}})
-    {
-      my @codemark;
-      if (exists $cm->{code})
-      {
-        push @codemark,['launch:code',$cm->{code}] unless exists $cm->{validator_id};
-        push @codemark,['launch:code', {'validatorID' => $cm->{validator_id} }, $cm->{code}] if exists $cm->{validator_id};
-      }
-      if (exists $cm->{mark})
-      {
-        push @codemark, [$cm->{mark}] if (ref $cm->{mark} eq 'XML::LibXML::Element');
-        push @codemark, ['mark:mark', {'xmlns:mark'=>'urn:ietf:params:xml:ns:mark-1.0'}, Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::build_mark($cm->{mark})]  if ref $cm->{mark} eq 'HASH';
-      }
-	  push @n2, ['launch:codeMark', @codemark];
-    }
+     my @codemark;
+     if (exists $cm->{code})
+     {
+      push @codemark,['launch:code',$cm->{code}] unless exists $cm->{validator_id};
+      push @codemark,['launch:code', {'validatorID' => $cm->{validator_id} }, $cm->{code}] if exists $cm->{validator_id};
+     }
+     if (exists $cm->{mark})
+     {
+      push @codemark, [$cm->{mark}] if (ref $cm->{mark} eq 'XML::LibXML::Element');
+      push @codemark, ['mark:mark', {'xmlns:mark'=>'urn:ietf:params:xml:ns:mark-1.0'}, Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::build_mark($cm->{mark})]  if ref $cm->{mark} eq 'HASH';
+     }
+   push @n2, ['launch:codeMark', @codemark];
    }
-   if (exists $lp->{signed_marks})
+  }
+  if (exists $lp->{signed_marks})
+  {
+   foreach my $sm (@{$lp->{signed_marks}})
    {
-    foreach my $sm (@{$lp->{signed_marks}})
-    {
-      Net::DRI::Exception::usererr_invalid_parameters('signedMark must be a valid XML root elemnt (e.g. imported from an SMD file)') unless ref $sm eq 'XML::LibXML::Element';
-	  push @n2,  [$sm];
-    }
+    Net::DRI::Exception::usererr_invalid_parameters('signedMark must be a valid XML root elemnt (e.g. imported from an SMD file)') unless ref $sm eq 'XML::LibXML::Element';
+    push @n2,  [$sm];
    }
-   if (exists $lp->{encoded_signed_marks} && $rd->{intended_use})
+  }
+  if (exists $lp->{encoded_signed_marks} && $rd->{intended_use})
+  {
+   foreach my $em (@{$lp->{encoded_signed_marks}})
    {
-    foreach my $em (@{$lp->{encoded_signed_marks}})
-    {
-      if (ref $em eq 'XML::LibXML::Element')
-      {
-        push @n2, [$em];
-      } elsif ($em =~ m!<smd:encodedSignedMark xmlns:smd="urn:ietf:params:xml:ns:signedMark-1.0">\s*?(.*)</smd:encodedSignedMark>!s || $em =~ m!-----BEGIN ENCODED SMD-----\s*?(.*)\s*?-----END!s)
-      {
-        push @n2,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$1] if $1;       
-      } elsif ($em =~ m!^[A-Za-z0-9\+/\=\s]+$!s) # aleady base64 string
-      {
-        push @n2,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$em] if $em;
-      } else
-      {
-       Net::DRI::Exception::usererr_invalid_parameters('encodedSignedMark must ve a valid XML root element OR a string (e.g. imported from an Encoded SMD file)');
-      }      
-    }    
-   }
-   # Claims  / Mixed
-   if (exists $lp->{notices})
-   {
-    foreach my $nt (@{$lp->{notices}})
-    {
-     Net::DRI::Exception::usererr_invalid_parameters('notice id') unless defined $nt->{id};
-     Net::DRI::Exception::usererr_invalid_parameters('notice not_after_date must be a Date::Time object') if exists $nt->{not_after_date} && !Net::DRI::Util::is_class($nt->{not_after_date},'DateTime');
-     Net::DRI::Exception::usererr_invalid_parameters('notice accepted_date must be a Date::Time object') if exists $nt->{accepted_date} && !Net::DRI::Util::is_class($nt->{accepted_date},'DateTime');
-     my @notice;
-     push @notice,['launch:noticeID',$nt->{id}] unless exists $nt->{'validator_id'};
-     push @notice,['launch:noticeID',{validatorID => $nt->{'validator_id'}},$nt->{id}] if exists $nt->{'validator_id'};
-     push @notice,['launch:notAfter',Net::DRI::Util::dto2zstring($nt->{not_after_date})] if exists $nt->{not_after_date};
-     push @notice,['launch:acceptedDate',Net::DRI::Util::dto2zstring($nt->{accepted_date})] if exists $nt->{accepted_date};
-	   push @n2, ['launch:notice',@notice];
-    }
-   }
-		
+     if (ref $em eq 'XML::LibXML::Element')
+     {
+      push @n2, [$em];
+     } elsif ($em =~ m!<smd:encodedSignedMark xmlns:smd="urn:ietf:params:xml:ns:signedMark-1.0">\s*?(.*)</smd:encodedSignedMark>!s || $em =~ m!-----BEGIN ENCODED SMD-----\s*?(.*)\s*?-----END!s)
+     {
+      push @n2,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$1] if $1;       
+     } elsif ($em =~ m!^[A-Za-z0-9\+/\=\s]+$!s) # aleady base64 string
+     {
+      push @n2,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$em] if $em;
+     } else
+     {
+      Net::DRI::Exception::usererr_invalid_parameters('encodedSignedMark must ve a valid XML root element OR a string (e.g. imported from an Encoded SMD file)');
+     }      
+   }    
+  }
+
+  # augmented mark
   push @n2, ['ext:applicationInfo',{'type'=>'reference-url'},$rd->{reference_url} ] if $rd->{reference_url};
   push @n2, ['ext:applicationInfo',{'type'=>'trademark-id'},$rd->{trademark_id} ] if $rd->{trademark_id};
   push @n2, ['ext:applicationInfo',{'type'=>'trademark-issuer'},$rd->{trademark_issuer} ] if $rd->{trademark_issuer};
   push @n2, ['ext:applicationInfo',{'type'=>'intended-use'},$rd->{intended_use} ];
-	
   push @n, ['ext:augmentedMark' , {'xmlns:ext'=>$mes->ns('mark-ext')},@n2] if @n2;
+
+
+  # Claims  / Mixed
+  if (exists $lp->{notices})
+  {
+   foreach my $nt (@{$lp->{notices}})
+   {
+    Net::DRI::Exception::usererr_invalid_parameters('notice id') unless defined $nt->{id};
+    Net::DRI::Exception::usererr_invalid_parameters('notice not_after_date must be a Date::Time object') if exists $nt->{not_after_date} && !Net::DRI::Util::is_class($nt->{not_after_date},'DateTime');
+    Net::DRI::Exception::usererr_invalid_parameters('notice accepted_date must be a Date::Time object') if exists $nt->{accepted_date} && !Net::DRI::Util::is_class($nt->{accepted_date},'DateTime');
+    my @notice;
+    push @notice,['launch:noticeID',$nt->{id}] unless exists $nt->{'validator_id'};
+    push @notice,['launch:noticeID',{validatorID => $nt->{'validator_id'}},$nt->{id}] if exists $nt->{'validator_id'};
+    push @notice,['launch:notAfter',Net::DRI::Util::dto2zstring($nt->{not_after_date})] if exists $nt->{not_after_date};
+    push @notice,['launch:acceptedDate',Net::DRI::Util::dto2zstring($nt->{accepted_date})] if exists $nt->{accepted_date};
+    push @n, ['launch:notice',@notice];
+   }
+  }
+	
   shift $mes->command_extension($eid,\@n);
  }
  return;
