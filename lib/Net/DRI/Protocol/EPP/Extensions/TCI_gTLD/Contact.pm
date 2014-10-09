@@ -75,22 +75,29 @@ sub build_ext_data
  {
  	my $data = $contact->organization();
 	my $addr = $data->{legalAddr};
-	
-	my @addr;
+        my (@addr_loc,@addr_int);
 
-	my @streets = (ref $addr->{street}) ? @{$addr->{street}} : ($addr->{street});
+        my @streets_loc = (ref $addr->{street}[0]) ? @{$addr->{street}[0]} : ($addr->{street}[0]);
+        my @streets_int = (ref $addr->{street}[1]) ? @{$addr->{street}[1]} : ($addr->{street}[1]);
 
-  for my $street (@streets)
-	{
-		push @addr, ["contact:street", $street];
-	}
+        for my $street_loc (@streets_loc)
+        {
+          push @addr_loc, ['contact:street', $street_loc];
+        }
+        for my $street_int (@streets_int)
+        {
+          push @addr_int, ['contact:street', $street_int] if (defined $street_int && $street_int ne '');;
+        }
 
-	for my $key (qw(city sp pc cc))
-	{
-		push @addr, ["contact:$key", $addr->{$key}];
-	}
-	push @n, ['contact:legalAddr', @addr, {type => 'loc'}];
-	push @n, ['contact:TIN', $addr->{TIN}];
+        for my $key (qw(city sp pc cc))
+        {
+          push @addr_loc, ["contact:$key", $addr->{$key}[0]] if (defined $addr->{$key}[0] && $addr->{$key}[0] ne '');
+          push @addr_int, ["contact:$key", $addr->{$key}[1]] if (defined $addr->{$key}[1] && $addr->{$key}[1] ne '');
+        }
+
+        push @n, ['contact:legalAddr', @addr_loc, {type => 'loc'}] if @addr_loc;
+        push @n, ['contact:legalAddr', @addr_int, {type => 'int'}] if @addr_int;
+        push @n, ['contact:TIN', $data->{TIN}];
 
 	if ($op eq 'create')
 	{
