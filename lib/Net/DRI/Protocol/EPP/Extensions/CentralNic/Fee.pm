@@ -128,7 +128,7 @@ sub setup
 
 ####################################################################################################
 ### DEVELOPING
-## Please run t/621centralnic_epp.t and t/678mam_epp.t as they use different versions of the extension!
+## Please run t/621centralnic_epp.t, t/678mam_epp.t and t/693crr_epp.t as they use different versions of the extension!
 ####################################################################################################
 
 ## parse_greeting to determine extension version from server
@@ -144,7 +144,7 @@ sub parse_greeting
 ####################################################################################################
 ## Build / Parse helpers for 0.5/0.6
 
-sub fee_set_parse_05_06
+sub fee_set_parse_06
 {
   my $start = shift;
   return unless $start;
@@ -178,10 +178,10 @@ sub fee_set_parse_05_06
         $set->{description} .= "Refundable";
       }
       if ($content->hasAttribute('grace-period')) {
-        $set->{description} .= "(Grace " . $content->getAttribute('grace-period') . ")";
+        $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")";
       }
       if ($content->hasAttribute('applied') && $content->getAttribute('applied') eq ('immediate' || 'delayed')) {
-        $set->{description} .= "(Applied " . $content->getAttribute('applied') . ")";
+        $set->{description} .= "(Applied=> " . $content->getAttribute('applied') . ")";
       }
     } elsif ($name eq 'class')
     {
@@ -193,7 +193,7 @@ sub fee_set_parse_05_06
   return $set;
 }
 
-sub fee_set_build_05_06
+sub fee_set_build_06
 {
   my ($rp,$cmd,$domain)=@_;
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with key action, and optionally currency and duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'action');
@@ -341,7 +341,7 @@ sub check
   {
    foreach my $fee_set (@fees)
    {
-     @n = fee_set_build_05_06($fee_set,'check',$domain);
+     @n = fee_set_build_06($fee_set,'check',$domain);
      push @fee_set,@n if @n;
    }
    return unless @fee_set;
@@ -379,7 +379,7 @@ sub check_parse
       }
       next unless $dn;
       my $fee_set = fee_set_parse($content) if ($ver eq '0.4');
-      $fee_set = fee_set_parse_05_06($content) if ($ver eq ('0.5' || '0.6'));
+      $fee_set = fee_set_parse_06($content) if ($ver eq ('0.5' || '0.6'));
       if ($fee_set)
       {
         push @{$rinfo->{domain}->{$dn}->{fee}},$fee_set;
@@ -403,7 +403,7 @@ sub info
   foreach my $fee_set (@fees)
   {
     @n = fee_set_build($fee_set) if ($ver eq '0.4');
-    @n = fee_set_build_05_06($fee_set) if ($ver eq ('0.5' || '0.6'));
+    @n = fee_set_build_06($fee_set) if ($ver eq ('0.5' || '0.6'));
     my $eid=$mes->command_extension_register('fee','info');
     $mes->command_extension($eid,\@n);
   }
@@ -421,7 +421,7 @@ sub info_parse
   return unless defined $infdata;
 
   my $fee_set = fee_set_parse($infdata) if ($ver eq '0.4');
-  $fee_set = fee_set_parse_05_06($infdata) if ($ver eq ('0.5' || '0.6'));
+  $fee_set = fee_set_parse_06($infdata) if ($ver eq ('0.5' || '0.6'));
   if ($fee_set)
   {
     @{$rinfo->{domain}->{$oname}->{fee}} = $fee_set;
@@ -473,7 +473,7 @@ sub transform_build
   my @n;
   $rp = ref $rd->{fee} eq 'ARRAY' ? $rd->{fee}->[0] : $rd->{fee};
   push @n,['fee:currency',$rp->{currency}];
-  push @n,['fee:fee',$rp->{fee}] if $rp->{fee}; # allows server to omit elements if the command specified by the client is forbidden (8.3.5)
+  push @n,['fee:fee',$rp->{fee}];
 
   my $eid=$mes->command_extension_register('fee',$cmd);
   $mes->command_extension($eid,\@n);
