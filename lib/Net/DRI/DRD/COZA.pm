@@ -79,7 +79,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); } ## unknown precisely
 sub name     { return 'COZA'; }
-sub tlds     { return ('co.za'); }
+sub tlds     { return qw/co.za org.za/; }
 sub object_types { return (qw/domain contact/); }
 sub profile_types { return qw/epp/; }
 
