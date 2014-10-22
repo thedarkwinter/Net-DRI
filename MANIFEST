@@ -580,6 +580,7 @@ t/678mam_epp.t
 t/679cnnic_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
+t/693crr_epp.t
 t/701ovh_ws_live.t
 t/702bookmyname_ws_live.t
 t/703gandi_ws_live.t
