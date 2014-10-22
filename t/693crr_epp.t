@@ -6,10 +6,9 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
-use Data::Dumper;
 
 
-use Test::More tests => 86;
+use Test::More tests => 12;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -50,11 +49,12 @@ is($rc->is_success(),1,'domain_info is is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
 is($dri->get_info('name'),'foo.android','domain_info get_info (name)');
 $d = shift $rc->get_data('fee');
-print Dumper($d->{description});
 is($d->{currency},'USD','Fee extension: domain_info parse currency');
 is($d->{action},'create','Fee extension: domain_info parse action');
 is($d->{phase},'sunrise','Fee extension: domain_info parse phase');
 is($d->{duration}->years(),1,'Fee extension: domain_info parse duration');
-is($d->{fee},10.00,'Fee extension: domain_check parse fee');
+is($d->{fee},10.00,'Fee extension: domain_info parse fee');
+is($d->{description},'Refundable(Grace=>P5D)(Applied=>immediate)','Fee extension: domain_info parse human-readable description');
+is($d->{class},'premium-tier1','Fee extension: domain_info parse classe');
 
 exit 0;

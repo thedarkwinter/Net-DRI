@@ -180,8 +180,8 @@ sub fee_set_parse_06
       if ($content->hasAttribute('grace-period')) {
         $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")";
       }
-      if ($content->hasAttribute('applied') && $content->getAttribute('applied') eq ('immediate' || 'delayed')) {
-        $set->{description} .= "(Applied=> " . $content->getAttribute('applied') . ")";
+      if ($content->hasAttribute('applied') && $content->getAttribute('applied')=~m/^(?:immediate|delayed)$/) {
+        $set->{description} .= "(Applied=>" . $content->getAttribute('applied') . ")";
       }
     } elsif ($name eq 'class')
     {
