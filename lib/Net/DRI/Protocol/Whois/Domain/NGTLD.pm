@@ -142,14 +142,14 @@ sub standardize_keys
    $rr->{'registrar_phone'} = $v if $k =~ m/^sponsoring registrar phone/;
    $rr->{'registrar_fax'} = $v if $k =~ m/^sponsoring registrar fax/;
    $rr->{'iana_id'} = $v if $k =~ m/iana/;
-   $rr->{'status'} = $v if $k =~ m/status$/;
+   @{$rr->{'status'}} = map { s/\s.*$//; $_ } @{$v} if $k =~ m/status$/;
    
    $rr->{'created'} = $v if $k =~ m/(created|creation|registered|registration) (date|on)?$/;
    $rr->{'updated'} = $v if $k =~ m/(last )?update(d)? (date|on)?$/ && $k !~ /whois/;
    $rr->{'expires'} = $v if $k =~ m/(expiry|expiration) date$/;
    $rr->{'last_update'} = $v if $k =~ m/whois database/ && $k =~/last update/;
 
-   $rr->{'ns'} = $v if $k =~ m/name ?server/;
+   @{$rr->{'ns'}} = map { s/\s.*$//; $_ } @{$v} if $k =~ m/name ?server/;
    $rr->{'dnssec'} = $v if $k =~ m/dnssec/;
 
    # whois::common is case sensitive, so we need to use case sensive $uk for the keys

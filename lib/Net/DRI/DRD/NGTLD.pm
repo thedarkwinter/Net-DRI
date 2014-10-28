@@ -242,6 +242,7 @@ alsace aquitaine banque bzh corsica ovh paris
      tlds => ['alsace', 'aquitaine', 'banque', 'bzh', 'corsica', 'ovh', 'paris'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
      contact_i18n => 1, # can only use the "loc" type
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afnic';
 
 =pod
@@ -1152,6 +1153,7 @@ L<Net::DRI::Protocol::EPP::Extensions::COZA::Contact> http://co.za/epp/extension
      host_as_attr => 1,
      object_types => ['domain','contact'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'zacr';
 
 

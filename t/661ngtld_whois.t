@@ -5,7 +5,7 @@ use warnings;
 use Net::DRI;
 use Data::Dumper;
 
-use Test::More tests => 436;
+use Test::More tests => 506;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -18,9 +18,80 @@ my ($rc,$s,$h,@hs,$c,$r);
 
 ####################################################################################################
 # Afnic
-SKIP: {
-  skip '*** TODO : AFNIC',1;
-};
+$R2='Domain Name: nic.paris
+Domain ID: DOM000000000002-PARIS
+WHOIS Server: whois.nic.paris
+Referral URL: http://mondomaine.paris.fr
+Updated Date: 2014-02-13T16:45:56Z
+Creation Date: 2014-02-13T16:45:56Z
+Registry Expiry Date: 2015-02-13T16:45:56Z
+Sponsoring Registrar: Registry Operations
+Sponsoring Registrar IANA ID: 9999
+Domain Status: ok
+Registrant ID: NP101-PARIS
+Registrant Name: Ville de Paris
+Registrant Street: 4, rue Lobau
+Registrant City: Paris
+Registrant Postal Code: 75004
+Registrant Country: FR
+Registrant Phone: +33.143476538
+Registrant Email: support@afnic.fr
+Admin ID: NP101-PARIS
+Admin Name: Ville de Paris
+Admin Street: 4, rue Lobau
+Admin City: Paris
+Admin Postal Code: 75004
+Admin Country: FR
+Admin Phone: +33.143476538
+Admin Email: support@afnic.fr
+Tech ID: NP101-PARIS
+Tech Name: Ville de Paris
+Tech Street: 4, rue Lobau
+Tech City: Paris
+Tech Postal Code: 75004
+Tech Country: FR
+Tech Phone: +33.143476538
+Tech Email: support@afnic.fr
+Name Server: ns1.nic.fr
+Name Server: ns2.nic.fr
+Name Server: ns3.nic.fr
+DNSSEC: signedDelegation
+
+Rights restricted by copyright.
+See http://www.afnic.fr/afnic/web/mentions-legales-whois_en';
+
+$dri->add_registry('NGTLD',{provider=>'afnic','name'=>'paris'});
+$dri->target('paris')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->domain_info('nic.paris');
+is($rc->is_success(),1,'AFNIC domain_info is_success');
+is($dri->get_info('action'),'info','domain_info get_info (action)');
+is($dri->get_info('name'),'nic.paris','domain_info get_info (name)');
+is($dri->get_info('id'),'DOM000000000002-PARIS','domain_info get_info (id)');
+is($dri->get_info('clName'),'Registry Operations','domain_info get_info (clName)');
+is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)');
+is($dri->get_info('clWhois'),'whois.nic.paris','domain_info get_info (clWhois)');
+is($dri->get_info('clWebsite'),'http://mondomaine.paris.fr','domain_info get_info (clWebsite)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list');
+is($dri->get_info('crDate'),'2014-02-13T16:45:56','domain_info get_info (crDate)');
+is($dri->get_info('upDate'),'2014-02-13T16:45:56','domain_info get_info (upDate)');
+is($dri->get_info('exDate'),'2015-02-13T16:45:56','domain_info get_info (exDate)');
+is($dri->get_info('wuDate'),undef,'domain_info get_info (wuDate)'); # They don't seem to give this?
+$h=$dri->get_info('ns');
+isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
+@hs=$h->get_names();
+is_deeply(\@hs,['ns1.nic.fr','ns2.nic.fr','ns3.nic.fr'],'domain_info get_info (ns) get_names');
+$c=$dri->get_info('contact');
+isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
+is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
+is($c->get('registrant')->srid(),'NP101-PARIS','domain_info get_info (contact) registrant srid');
+is($c->get('admin')->srid(),'NP101-PARIS','domain_info get_info (contact) admin srid');
+is($c->get('tech')->srid(),'NP101-PARIS','domain_info get_info (contact) tech srid');
+$r = $c->get('registrant');
+isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
+is($r->name(),'Ville de Paris','domain_info get_info (contact) registrant name');
+is($r->org(),undef,'domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # Afilias
@@ -1436,9 +1507,142 @@ is($r->org(),'Nominet','domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # OpenRegistry
-SKIP: {
-  skip '*** TODO : OpenRegistry',1;
-};
+$R2='Domain Name: nic.gent
+Domain ID: d467697-gent
+WHOIS Server: fake.whois.server
+Referral URL: http://fake.url
+Updated Date: 2014-07-14T14:23:35.161Z
+Creation Date: 2014-04-18T09:42:38.146Z
+Registry Expiry Date: 2024-04-18T09:42:38.146Z
+Sponsoring Registrar: .gent Registry Registrar (nb)
+Sponsoring Registrar IANA ID: 9999
+Domain Status: ok http://www.icann.org/epp#OK
+Registrant ID: gent0001
+Registrant Name: .gent Registry
+Registrant Organization: COMBELL GROUP NV/SA
+Registrant Street: Skaldenstraat 121
+Registrant City: Gent
+Registrant State/Province:
+Registrant Postal Code: 9042
+Registrant Country: BE
+Registrant Phone: +32.92960290
+Registrant Phone Ext:
+Registrant Fax:
+Registrant Fax Ext:
+Registrant Email: info@dotgent.com
+Admin ID: gent-admin
+Admin Name: .gent Registry
+Admin Organization: COMBELL GROUP NV/SA
+Admin Street: Skaldenstraat 121
+Admin City: Gent
+Admin State/Province:
+Admin Postal Code: 9042
+Admin Country: BE
+Admin Phone: +32.92960290
+Admin Phone Ext:
+Admin Fax:
+Admin Fax Ext:
+Admin Email: info@dotgent.com
+Tech ID: gent-tech
+Tech Name: .gent Registry Back-end Operator
+Tech Organization: OpenRegistry S.A.
+Tech Street: 2, rue Leon Laval
+Tech City: Leudelange
+Tech State/Province:
+Tech Postal Code: 3372
+Tech Country: LU
+Tech Phone: +352.277227
+Tech Phone Ext:
+Tech Fax:
+Tech Fax Ext:
+Tech Email: gent@openregistry.com
+Name Server: a.ns.nic.gent (89.207.184.98)
+Name Server: a.ns.nic.gent (2a02:2790:0:2:0:0:0:53)
+Name Server: c.ns.nic.gent (54.247.68.190)
+Name Server: x.ns.nic.gent (195.253.64.4)
+Name Server: x.ns.nic.gent (2a01:5b0:4:0:0:0:0:4)
+Name Server: y.ns.nic.gent (195.253.64.7)
+Name Server: y.ns.nic.gent (2a01:5b0:4:0:0:0:0:7)
+DNSSEC: signedDelegation
+>>> Last update of WHOIS database: 2014-10-28T16:49:29.179Z <<<
+
+For more information on Whois status codes, please visit https://www.icann.org/resources/pages/epp-status-codes-2014-06-16-en.
+
+% WHOIS LEGAL STATEMENT AND TERMS & CONDITIONS
+% The WHOIS service offered by OpenRegistry and the access to the
+% records in the OpenRegistry WHOIS database are provided for information
+% purposes only. It allows persons to check whether a specific domain name
+% is still available or not and to obtain information related to the
+% registration records of existing domain names. You are not authorized to
+% access or query our WHOIS  database through the use of electronic
+% processes that are high-volume and  automated except as reasonably
+% necessary to register domain names or modify existing registrations.
+%
+% OpenRegistry cannot, under any circumstances, be held liable should the
+% stored information prove to be wrong, incomplete or inaccurate in any sense.
+%
+% By submitting a WHOIS query you agree not to use the information made
+% available to:
+%   - Allow, enable or otherwise support the transmission of unsolicited,
+%     commercial advertising or other solicitations whether via email, telephone
+%     or otherwise;
+%   - Target advertising in any possible way;
+%   - Cause nuisance in any possible way to the registrants by sending (whether
+%     by automated, electronic processes capable of enabling high volumes or
+%     other possible means) messages to them.
+%
+% Without prejudice to the above, it is explicitly forbidden to extract, copy
+% and/or use or re-utilise in any form and  by any means (electronically or
+% not) the whole or a quantitatively or qualitatively substantial part of the
+% contents of the WHOIS database without prior and explicit permission by
+% OpenRegistry, nor in any attempt hereof, to apply automated, electronic
+% processes to OpenRegistry (or its systems).
+%
+% By submitting the query you agree that any reproduction and/or transmission
+% of data for commercial purposes will always be considered as the extraction
+% of a substantial part of the content of the WHOIS database. You also agree
+% to abide by this policy and accept that OpenRegistry can take measures to
+% limit the use of its WHOIS services in order to protect the privacy of its
+% registrants and/or the integrity of the database. OpenRegistry reserves the
+% right  to restrict your access to the WHOIS database in its sole discretion
+% to ensure operational stability.  OpenRegistry may restrict or terminate your
+% access to the WHOIS database for failure to abide by these terms of use.
+%
+% OpenRegistry reserves the right to modify these terms at any time.
+';
+
+$dri->add_registry('NGTLD',{provider=>'openreg',name=>'gent'});
+$dri->target('gent')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->domain_info('nic.gent');
+is($rc->is_success(),1,'OPENREGISTRY domain_info is_success');
+is($dri->get_info('action'),'info','domain_info get_info (action)');
+is($dri->get_info('name'),'nic.gent','domain_info get_info (name)');
+is($dri->get_info('id'),'d467697-gent','domain_info get_info (id)');
+is($dri->get_info('clName'),'.gent Registry Registrar (nb)','domain_info get_info (clName)');
+is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
+is($dri->get_info('clWhois'),'fake.whois.server','domain_info get_info (clWhois)');
+is($dri->get_info('clWebsite'),'http://fake.url','domain_info get_info (clWebsite)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list'); # FIXME, should this not be lower-cased somewhere?
+isa_ok($dri->get_info('crDate'),'DateTime','domain_info get_info (crDate)');
+is($dri->get_info('upDate'),'2014-07-14T14:23:35','domain_info get_info (upDate)');
+is($dri->get_info('exDate'),'2024-04-18T09:42:38','domain_info get_info (exDate)');
+is($dri->get_info('wuDate'),'2014-10-28T16:49:29','domain_info get_info (wuDate) undef');
+$h=$dri->get_info('ns');
+isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
+@hs=$h->get_names();
+is_deeply(\@hs,['a.ns.nic.gent','c.ns.nic.gent','x.ns.nic.gent','y.ns.nic.gent'],'domain_info get_info (ns) get_names');
+$c=$dri->get_info('contact');
+isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
+is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
+is($c->get('registrant')->srid(),'gent0001','domain_info get_info (contact) registrant srid');
+is($c->get('admin')->srid(),'gent-admin','domain_info get_info (contact) admin srid');
+is($c->get('tech')->srid(),'gent-tech','domain_info get_info (contact) tech srid');
+$r = $c->get('registrant');
+isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
+is($r->name(),'.gent Registry','domain_info get_info (contact) registrant name');
+is($r->org(),'COMBELL GROUP NV/SA','domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # PIR
@@ -1931,8 +2135,118 @@ is($r->org(),'Verisign, Inc.','domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # ZACR
-SKIP: {
-  skip '*** TODO : ZACR Does not seem to have implemented a whois server system yet',1;
-};
+$R2='Domain Name: nic.joburg
+Domain ID: dom_C-9999
+WHOIS Server: joburg-whois1.registry.net.za
+
+Updated Date: 2014-09-29T11:32:01Z
+Creation Date: 2014-06-09T08:18:44Z
+Registry Expiry Date: 2998-12-31T22:00:00Z
+Sponsoring Registrar: DNServices
+Sponsoring Registrar IANA ID: 9999 
+Domain Status: Registered until renewal date
+
+Registrant ID: dnservices
+Registrant Name: DNServices
+Registrant Organization: 
+Registrant Street: COZA House Gazelle Close Corporate Park South 
+Registrant City: Midrand
+Registrant State/Province: Gauteng
+Registrant Postal Code: 1685
+Registrant Country: ZA
+Registrant Phone: Tel: +27.113140077
+Registrant Phone Ext: 
+Registrant Fax: Fax: None
+Registrant Fax Ext: 
+Registrant Email: Email: support@dnservices.co.za
+
+Admin ID: dnservices
+Admin Name: DNServices
+Admin Organization: 
+Admin Street: COZA House Gazelle Close Corporate Park South 
+Admin City: Midrand
+Admin State/Province: Gauteng
+Admin Postal Code: 1685
+Admin Country: ZA
+Admin Phone: +27.113140077
+Admin Phone Ext: 
+Admin Fax: 
+Admin Fax Ext: 
+Admin Email: support@dnservices.co.za
+
+Billing ID: dnservices
+Billing Name: DNServices
+Billing Organization: 
+Billing Street: COZA House Gazelle Close Corporate Park South 
+Billing City: Midrand
+Billing State/Province: Gauteng
+Billing Postal Code: 1685
+Billing Country: ZA
+Billing Phone: +27.113140077
+Billing Phone Ext: 
+Billing Fax: 
+Billing Fax Ext: 
+Billing Email: support@dnservices.co.za
+
+Tech ID: dnservices
+Tech Name: DNServices
+Tech Organization: 
+Tech Street: COZA House Gazelle Close Corporate Park South 
+Tech City: Midrand
+Tech State/Province: Gauteng
+Tech Postal Code: 1685
+Tech Country: ZA
+Tech Phone: +27.113140077
+Tech Phone Ext: 
+Tech Fax: 
+Tech Fax Ext: 
+Tech Email: support@dnservices.co.za
+
+
+Name Server: ns1.dnservices.co.za
+Name Server: ns1.nic.joburg
+DNSSEC: unsigned
+>>> Last update of WHOIS database: 2014-10-28T17:35:44Z <<<
+
+#    WHOIS lookup made at 2014-10-28T17:35:44Z
+# --
+# The use of this Whois facility is subject to the following terms and
+# conditions. https://registry.net.za/whois_terms
+# Copyright (c) ZACR 1995-2014
+';
+
+$dri->add_registry('NGTLD',{provider=>'zacr',name=>'joburg'});
+$dri->target('joburg')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->domain_info('nic.joburg');
+is($rc->is_success(),1,'ZACR domain_info is_success');
+is($dri->get_info('action'),'info','domain_info get_info (action)');
+is($dri->get_info('name'),'nic.joburg','domain_info get_info (name)');
+is($dri->get_info('id'),'dom_C-9999','domain_info get_info (id)');
+is($dri->get_info('clName'),'DNServices','domain_info get_info (clName)');
+is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); 
+is($dri->get_info('clWhois'),'joburg-whois1.registry.net.za','domain_info get_info (clWhois)');
+is($dri->get_info('clWebsite'),undef,'domain_info get_info (clWebsite)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['Registered'],'domain_info get_info(status) list'); # FIXME - dodgy response
+is($dri->get_info('crDate'),'2014-06-09T08:18:44','domain_info get_info (crDate)');
+is($dri->get_info('upDate'),'2014-09-29T11:32:01','domain_info get_info (upDate)');
+is($dri->get_info('exDate'),'2998-12-31T22:00:00','domain_info get_info (exDate)');
+is($dri->get_info('wuDate'),'2014-10-28T17:35:44','domain_info get_info (wuDate) undef');
+$h=$dri->get_info('ns');
+isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
+@hs=$h->get_names();
+is_deeply(\@hs,['ns1.dnservices.co.za','ns1.nic.joburg'],'domain_info get_info (ns) get_names');
+$c=$dri->get_info('contact');
+isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
+is_deeply([$c->types()],['admin','billing','registrant','tech'],'domain_info get_info (contactSet) types');
+is($c->get('registrant')->srid(),'dnservices','domain_info get_info (contact) registrant srid');
+is($c->get('admin')->srid(),'dnservices','domain_info get_info (contact) admin srid');
+is($c->get('tech')->srid(),'dnservices','domain_info get_info (contact) tech srid');
+is($c->get('billing')->srid(),'dnservices','domain_info get_info (contact) tech srid');
+$r = $c->get('registrant');
+isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
+is($r->name(),'DNServices','domain_info get_info (contact) registrant name');
+is($r->org(),undef,'domain_info get_info (contact) registrant org');
 
 exit 0;
