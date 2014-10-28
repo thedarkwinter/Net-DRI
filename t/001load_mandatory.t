@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 448;
+use Test::More tests => 450;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -205,6 +205,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::ClientAttributes');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::TwoFactorAuth');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::ZoneManagement');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::Balance');
+use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::Registry');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AT::Result');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AT::IOptions');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AT::Message');
@@ -373,6 +374,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::CDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Registry');
+use_ok('Net::DRI::Protocol::EPP::Extensions::OpenRegistry::Domain');
 use_ok('Net::DRI::Protocol::DAS');
 use_ok('Net::DRI::Protocol::DAS::Message');
 use_ok('Net::DRI::Protocol::DAS::Connection');

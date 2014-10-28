@@ -339,6 +339,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NSgroup.pm
+lib/Net/DRI/Protocol/EPP/Extensions/OpenRegistry/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PIR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Contact.pm
@@ -385,6 +386,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/NameStore.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/PollLowBalance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/PollRGP.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/PremiumDomain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Registry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Suggestion.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Sync.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/TwoFactorAuth.pm
@@ -533,6 +535,7 @@ t/619coop_epp.t
 t/620lu_epp.t
 t/621centralnic_epp.t
 t/622vnds_epp_e164validation.t
+t/623vnds_epp_registry.t
 t/626nominet_epp.t
 t/627at_epp.t
 t/628de_rri.t
@@ -578,6 +581,7 @@ t/676ari_epp.t
 t/677pir_epp.t
 t/678mam_epp.t
 t/679cnnic_epp.t
+t/680openreg_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
 t/701ovh_ws_live.t

@@ -796,15 +796,11 @@ bom final
 
  $dri->add_registry('NGTLD',{provider=>'nominet'});
 
-=head3 Status: Not started
+=head3 Status: Working
 
 =head3 TLDs
 
 cymru wales
-
-=head3 Notes
-
-1. Not yet implemented - but it might work
 
 =cut
 
@@ -820,9 +816,9 @@ cymru wales
 
 =head2 OpenRegistry
 
- $dri->add_registry('NGTLD',{provider=>'openreg'});
+ $dri->add_registry('NGTLD',{provider=>'openreg'}); # or provider = openregistry
 
-=head3 Status: Not started
+=head3 Status: Working
 
 =head3 TLDs
 
@@ -831,9 +827,13 @@ gent boston
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
+     bep_type => 1, # dedicated registy
      tlds => ['gent','boston'],
-   } if $bep eq 'openreg';
+     host_as_attr => 1,
+     contact_i18n => 2,
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['OpenRegistry::Domain']}],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+   } if $bep =~ m/^openreg(istry)?$/;
 
 
 =pod
@@ -921,7 +921,7 @@ Contended TLD's not included
 
 =head3 TLDs
 
-dpml.pub actor airforce army attorney consulting dance degree democrat dentist engineer futbol gives haus immobilien kaufen lawyer market moda mortgage navy ninja pub rehab republican reviews rocks social software vet
+dpml.pub actor airforce army attorney auction consulting dance degree democrat dentist engineer futbol gives haus immobilien kaufen lawyer market moda mortgage navy ninja pub rehab republican reviews rocks social software vet
 
 Contended TLD's not included
 
@@ -942,7 +942,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.pub','actor','airforce','army','attorney','consulting','dance','degree','democrat','dentist','engineer','futbol','gives','haus','immobilien','kaufen','lawyer','market','moda','mortgage','navy','ninja','pub','rehab','republican','reviews','rocks','social','software','vet'],
+     tlds => ['dpml.pub','actor','airforce','army','attorney','auction','consulting','dance','degree','democrat','dentist','engineer','futbol','gives','haus','immobilien','kaufen','lawyer','market','moda','mortgage','navy','ninja','pub','rehab','republican','reviews','rocks','social','software','vet'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
      whois_server => 'whois.rightside.co',
      check_limit => 5,
@@ -1057,7 +1057,7 @@ tatar xn--d1acj3b
 
 =head3 TLDs
 
-art auction audio auto blackfriday cars christmas click deal design diet family fashion flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics pizza property racing realestate restaurant sale save school sexy shopping store style tattoo team tech video yoga
+art audio auto blackfriday cars christmas click deal design diet family fashion flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics pizza property racing realestate restaurant sale save school sexy shopping store style tattoo team tech video yoga
 
 Contended TLD's not included
 
@@ -1073,7 +1073,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','auction','audio','auto','blackfriday','cars','christmas','click','deal','design','diet','family','fashion','ﬂowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
+     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','design','diet','family','fashion','ﬂowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
