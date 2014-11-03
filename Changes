@@ -47,7 +47,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 = Minds & Machines: Split into mam(mamown) / mamclient / mamparter(mamsrs) for different systems
 = GMO, Adde gmogeo to geoTLDs
 = ARI TMCHApplication extension fixes
-+ CantralNIC Fee Extension support 0.4 and 0.5, but needs work!
++ CentralNIC Fee Extension support 0.4, 0.5 and 0.6, but needs work!
 = Afilias IDN bug fix
 = Afilias Validation & Price extensions (Paulo Jorge)
 + Verisign NameStore extension uses current_product for contacts/hosts

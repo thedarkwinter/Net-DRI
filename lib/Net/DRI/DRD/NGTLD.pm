@@ -490,7 +490,7 @@ xn--q9jyb4c ads android boo car dad day eat esq fly foo here how ing kid meme mo
  return {
      bep_type => 1, # dedicated
      tlds => ['xn--q9jyb4c','ads','android','boo','car','dad','day','eat','esq','fly','foo','here','how','ing','kid','meme','mov','new','prof','rsvp','soy','tour','zip'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],'disable_idn'=>1}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'crr';
 
