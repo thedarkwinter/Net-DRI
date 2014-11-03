@@ -523,8 +523,8 @@ sub renew
  $curexp=$curexp->clone()->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($curexp) && Net::DRI::Util::check_isa($curexp,'DateTime'));
  Net::DRI::Exception::usererr_invalid_parameters('current expiration date must be YYYY-MM-DD') unless $curexp=~m/^\d{4}-\d{2}-\d{2}$/;
 
- # currently only extensions for 1 year and 3 years are allowed
- unless (Net::DRI::Util::has_duration($rd) && $rd->{duration}->in_units('years') =~ m/^(?:1|3)$/)
+ # currently only extensions for 1, 3 and 5 years are allowed #
+ unless (Net::DRI::Util::has_duration($rd) && $rd->{duration}->in_units('years') =~ m/^(?:1|3|5)$/)
  {
 	Net::DRI::Exception::usererr_invalid_parameters('only extensions for 1 year and 3 years are allowed');
  }
