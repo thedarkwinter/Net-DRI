@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 45;
+use Test::More tests => 46;
 
 use Net::DRI::Exception;
 
@@ -26,9 +26,20 @@ $err=$e->as_string();
 
 like($err,qr/test message f3:A_B/,'backtrace of nested calls (final message)');
 ## \s* added because of perl 5.8.2 on netbsd : http://www.nntp.perl.org/group/perl.cpan.testers/2008/08/msg1973281.html
-like($err,qr/main::f1\('A',\s*'B'\) called at ${fn}/,'                          (first level)');
-like($err,qr/main::f2\('A',\s*'B'\) called at ${fn}/,'                          (second level)');
-like($err,qr/main::f3\('A',\s*'B'\) called at ${fn}/,'                          (third level)');
+
+# Since Carp Version 1.32, the these are now double quotes, so these tests need to be dependant on that.
+# Note thos does not seem to effect anything else
+if ($Carp::VERSION >= 1.32) {
+ cmp_ok($Carp::VERSION,'>=',1.32,"Carp Version is above 1.32 ($Carp::VERSION)");
+ like($err,qr/main::f1\("A",\s*"B"\) called at ${fn}/,'                          (first level)');
+ like($err,qr/main::f2\("A",\s*"B"\) called at ${fn}/,'                          (second level)');
+ like($err,qr/main::f3\("A",\s*"B"\) called at ${fn}/,'                          (third level)');
+} else {
+ cmp_ok($Carp::VERSION,'<',1.32,"Carp Version is 1.32 or older ($Carp::VERSION)");
+ like($err,qr/main::f1\('A',\s*'B'\) called at ${fn}/,'                          (first level)');
+ like($err,qr/main::f2\('A',\s*'B'\) called at ${fn}/,'                          (second level)');
+ like($err,qr/main::f3\('A',\s*'B'\) called at ${fn}/,'                          (third level)');
+}
 
 eval { Net::DRI::Exception->die(1,'test area die',788,'test message die'); };
 isa_ok($@,'Net::DRI::Exception','Exception->die() results');
