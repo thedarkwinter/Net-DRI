@@ -144,8 +144,8 @@ sub transport_protocol_default
  if ($type =~ m/^whois/)
  {
   return unless $self->_has_bep_key('whois_server') || $self->_has_bep_key('registrar_whois_server');
-  return ('Net::DRI::Transport::Socket',{remote_host=>$self->_get_bep_key('registrar_whois_server')},'Net::DRI::Protocol::Whois',{} ) if $type eq 'whois-registrar' && $self->_has_bep_key('registrar_whois_server');
-  return ('Net::DRI::Transport::Socket',{remote_host=>$self->_get_bep_key('whois_server')},'Net::DRI::Protocol::Whois',{} );
+  return ('Net::DRI::Transport::Socket',{remote_host=>$self->_get_bep_key('registrar_whois_server')},'Net::DRI::Protocol::Whois',{'NGTLD'=>1} ) if $type eq 'whois-registrar' && $self->_has_bep_key('registrar_whois_server');
+  return ('Net::DRI::Transport::Socket',{remote_host=>$self->_get_bep_key('whois_server')},'Net::DRI::Protocol::Whois',{'NGTLD'=>1} );
  }
  return;
 }
@@ -1258,7 +1258,7 @@ sub _build_price_query
    $rd->{fee} = 1;
  } elsif ($bep eq 'ari') {
    $rd->{price} = 1;
- } elsif ($bep =~ m/^(?:centralnic|gmo|mam)/) {
+ } elsif ($bep =~ m/^(?:centralnic|gmo|mam|crr)/) {
    my ($fee,@fees);
    foreach my $k (qw/currency action duration/)
    {

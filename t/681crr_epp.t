@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
 
-use Test::More tests => 12;
+use Test::More tests => 20;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -24,8 +24,11 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('NGTLD',{provider=>'crr'});
-$dri->target('crr')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
+#$dri->add_registry('NGTLD',{provider=>'crr'});
+#$dri->target('crr')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('CRR'); # For fun we are going to go old school DRD on this
+$dri->target('CRR')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
 my $s;
@@ -48,7 +51,8 @@ $rc=$dri->domain_info('foo.android');
 is($rc->is_success(),1,'domain_info is is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
 is($dri->get_info('name'),'foo.android','domain_info get_info (name)');
-$d = shift $rc->get_data('fee');
+my @fees = @{$dri->get_info('fee')};
+$d = $fees[0];
 is($d->{currency},'USD','Fee extension: domain_info parse currency');
 is($d->{action},'create','Fee extension: domain_info parse action');
 is($d->{phase},'sunrise','Fee extension: domain_info parse phase');
@@ -56,5 +60,15 @@ is($d->{duration}->years(),1,'Fee extension: domain_info parse duration');
 is($d->{fee},10.00,'Fee extension: domain_info parse fee');
 is($d->{description},'Refundable(Grace=>P5D)(Applied=>immediate)','Fee extension: domain_info parse human-readable description');
 is($d->{class},'premium-tier1','Fee extension: domain_info parse classe');
+
+# using the standardised methods
+is($dri->get_info('is_premium'),undef,'domain_check get_info (is_premium) undef'); # NOT SUPPORTED
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration) is DateTime::Duration');
+is($dri->get_info('price_duration')->years(),1,'domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),'10','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),undef,'domain_check get_info (renew_price) undef');
+is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');
+is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
 
 exit 0;

@@ -741,8 +741,11 @@ or (c) engage in or support unlawful behavior. CRR reserves the right to
 restrict or deny your access to the Whois database, and may modify these terms
 at any time.';
 
-$dri->add_registry('NGTLD',{provider=>'crr',tlds=>['xn--q9jyb4c']});
-$dri->target('crr')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+#$dri->add_registry('NGTLD',{provider=>'crr',tlds=>['xn--q9jyb4c']});
+#$dri->target('crr')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('CRR'); # For fun we are going to go old school DRD on this
+$dri->target('CRR')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+
 $rc = $dri->domain_info('nic.xn--q9jyb4c');
 is($rc->is_success(),1,'CRR domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');

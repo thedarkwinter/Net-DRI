@@ -88,16 +88,16 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'CRR'; }
-
 sub tlds     { return qw/xn--q9jyb4c ads android boo car dad day eat esq fly foo here how ing kid meme mov new prof rsvp soy tour zip/; }
 sub object_types { return ('domain','contact','ns'); }
-sub profile_types { return qw/epp/; }
+sub profile_types { return qw/epp whois/; }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
-
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}) if $type eq 'epp';
+ # Do we (the people) prefer to use Extensions::CRR instead of NEWGTLD with custom options?
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],'disable_idn'=>1}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host=>'whois.charlestonroadregistry.com'},'Net::DRI::Protocol::Whois',{'NGTLD'=>1}) if $type eq 'whois';
  return;
 }
 
