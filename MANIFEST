@@ -583,6 +583,7 @@ t/678mam_epp.t
 t/679cnnic_epp.t
 t/680openreg_epp.t
 t/681crr_epp.t
+t/682tci_gtld.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
 t/701ovh_ws_live.t
