@@ -90,7 +90,10 @@ sub info_parse
 
  my $infdata=$mes->get_extension('contact-nom-ext','infData');
  return unless $infdata;
-
+ 
+ ## TODO When the extension is in a notification e.g. registrar change then there is a domain object but no contact object so this dies unless we check it exists
+ ## - See the handshake request test which will fail if this line is commented out
+ return unless exists $rinfo->{contact};
  my $s=$rinfo->{contact}->{$oname}->{self};
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
