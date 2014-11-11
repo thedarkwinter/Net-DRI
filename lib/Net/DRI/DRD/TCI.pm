@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .XN--P1AI (РФ)/SU/RU policies
 ##
 ## Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-##               2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2011,2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -37,7 +37,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
 sub name     { return 'TCI'; }
 sub tlds     { return ('xn--p1ai', 'su', 'ru'); }
-sub object_types { return ('domain','contact','host'); }
+sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
@@ -125,7 +125,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-Copyright (c) 2011 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2011,2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

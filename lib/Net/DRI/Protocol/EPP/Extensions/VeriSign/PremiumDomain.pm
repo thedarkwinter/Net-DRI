@@ -27,6 +27,7 @@ sub register_commands
  my ($class,$version)=@_;
 
  return { 'domain' => { 'check'  => [ \&check, \&check_parse ],
+                        'check_multi'  => [ \&check, \&check_parse ],
                         'update' => [ \&update, undef ],
                       } };
 }

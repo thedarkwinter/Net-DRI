@@ -26,12 +26,12 @@ sub setup
 {
  my ($self,$rp) = @_;
  # These are the TANGO-RS extensions but use corenic namespaces
- $self->ns({ map { $_ => ['http://xmlns.corenic.net/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/idn auction/ }); 
+ $self->ns({ map { $_ => ['http://xmlns.corenic.net/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/idn auction mark-ext/ }); 
  $self->capabilities('domain_update','idn',['add','del']);
  $self->capabilities('domain_update','auction',['set']);
 }
 
-sub default_extensions { return qw/LaunchPhase GracePeriod SecDNS TANGO::IDN TANGO::Auction/; }
+sub default_extensions { return qw/LaunchPhase GracePeriod SecDNS TANGO::IDN TANGO::Auction TANGO::LaunchPhase/; }
 
 ####################################################################################################
 1;

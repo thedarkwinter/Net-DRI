@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 40;
+use Test::More tests => 59;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -51,6 +51,33 @@ is($lpres->{'phase'},'claims','domain_check get_info(phase) ');
 is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check get_info(claim_key) ');
 is($lpres->{'validator_id'},'sample','domain_check get_info(validator_id) ');
 
+# using a custom phase name with custom (autodetected)
+$lp = {type=>'claims','phase'=>'foobar'} ;
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="foobar">custom</launch:phase><launch:cd><launch:name exists="1">examplef.com</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('examplef.com',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>examplef.com</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="foobar">custom</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
+
+# using a claims phase with custom sub_phase
+$lp = { type=>'claims','phase'=>'claims', 'sub_phase'=>'barfoo' } ;
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="barfoo">claims</launch:phase><launch:cd><launch:name exists="1">examplef2.com</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('examplef2.com',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>examplef2.com</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="barfoo">claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
+
+# With multiple claims (launchphase-02), claim_key became 1 or more, so we need to make room for this without breaking backwards compatibility
+$lp = {type=>'claims'} ;
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="1">exampleg2.com</launch:name><launch:claimKey validatorID="tmch">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey><launch:claimKey validatorID="custom-tmch">20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('exampleg2.com',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exampleg2.com</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase>claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
+$lpres = $dri->get_info('lp');
+is($lpres->{'exist'},1,'domain_check get_info(exist)');
+is($lpres->{'phase'},'claims','domain_check get_info(phase)');
+# pre launchphase-02 method will only get the last claim, but its safe if there is only one claim
+is($lpres->{'claim_key'},'20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002','domain_check get_info(claim_key) ');
+is($lpres->{'validator_id'},'custom-tmch','domain_check get_info(validator_id) ');
+# added claims_count and claims in launchphase-02
+is($lpres->{'claims_count'},'2','domain_check get_info(claims_count)');
+is_deeply($lpres->{'claims'},[{claim_key=>'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','validator_id'=>'tmch'},{claim_key=>'20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002','validator_id'=>'custom-tmch'}],'domain_check get_info(claims_count)');
+
 # 3.1.1.  Claims Check Form Multi
 $lp = {type=>'claims'} ;
 $R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="0">examplea.com</launch:name></launch:cd><launch:cd><launch:name exists="1">exampleb.com</launch:name><launch:claimKey>2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
@@ -60,6 +87,25 @@ is($dri->get_info('exist','domain','examplea.com'),0,'domain_check_multi get_inf
 is($dri->get_info('exist','domain','exampleb.com'),1,'domain_check_multi get_info(exist) 2/2');
 $lpres = $dri->get_info('lp','domain','exampleb.com');
 is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check_multi get_info(claim_key) ');
+
+# With multiple claims (launchphase-02), claim_key became 1 or more, so we need to make room for this without breaking backwards compatibility
+$lp = {type=>'claims'} ;
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="0">examplea1.com</launch:name></launch:cd><launch:cd><launch:name exists="1">exampleb1.com</launch:name><launch:claimKey>2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd><launch:cd><launch:name exists="1">examplec1.com</launch:name><launch:claimKey validatorID="tmch">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey><launch:claimKey validatorID="custom-tmch">20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('examplea1.com','exampleb1.com','examplec1.com',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>examplea1.com</domain:name><domain:name>exampleb1.com</domain:name><domain:name>examplec1.com</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase>claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check_multi build_xml');
+is($dri->get_info('exist','domain','examplea1.com'),0,'domain_check_multi get_info(exist) 1/2');
+is($dri->get_info('exist','domain','exampleb1.com'),1,'domain_check_multi get_info(exist) 2/2');
+is($dri->get_info('exist','domain','examplec1.com'),1,'domain_check_multi get_info(exist) 2/2');
+$lpres = $dri->get_info('lp','domain','exampleb1.com');
+is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check_multi get_info(claim_key)');
+
+$lpres = $dri->get_info('lp','domain','examplec1.com');
+# pre launchphase-02 method will only get the last claim, but its safe if there is only one claim
+is($lpres->{'claim_key'},'20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002','domain_check get_info(claim_key) ');
+is($lpres->{'validator_id'},'custom-tmch','domain_check get_info(validator_id) ');
+# added claims_count and claims in launchphase-02
+is($lpres->{'claims_count'},'2','domain_check get_info(claims_count)');
+is_deeply($lpres->{'claims'},[{claim_key=>'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','validator_id'=>'tmch'},{claim_key=>'20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002','validator_id'=>'custom-tmch'}],'domain_check get_info(claims_count)');
 
 #3.1.2.  Availability Check Form
 $lp = {phase=>'idn-release',type=>'avail'};
@@ -95,13 +141,13 @@ is($lpres->{'phase'},'sunrise','domain_info get_info(phase) ');
 is($lpres->{'application_id'},'abc123','domain_info get_info(application_id) ');
 is($lpres->{'status'},'pendingAllocation','domain_info get_info(launch_status) ');
 my @marks = @{$lpres->{'marks'}};
-my $m = shift @marks;
+my $m = $marks[0];
 is ($m->{mark_name},'Example One','domain_info get_info(mark name)');
 
 $doc=$parser->parse_string('<?xml version="1.0" encoding="UTF-8"?>'.$markxml);
 $root=$doc->getDocumentElement();
 my $m2=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_mark($po,$root);
-is_deeply($m, shift $m2, 'data structures should be the same');
+is_deeply($m, @{$m2}[0], 'data structures should be the same');
 
 ## CREATE
 # 3.3.1.  Sunrise Create Form
@@ -376,6 +422,14 @@ $R2='';
 $rc=$dri->domain_create('example4.com',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=>$lp});
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.com</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd"><launch:phase>claims</launch:phase><launch:notice><launch:noticeID>abc123</launch:noticeID><launch:notAfter>2008-12-01T00:00:00Z</launch:notAfter><launch:acceptedDate>2009-10-01T00:00:00Z</launch:acceptedDate></launch:notice></launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml [claims create]');
 
+# create with multiple notices (launchphase-02 example although this was supported before anyway)
+$lp = {phase => 'claims', notices => [ 
+   {id=>'370d0b7c9223372036854775807',  validator_id=>'tmch',        not_after_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>10}),  accepted_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>9}) }, 
+   {id=>'470d0b7c9223654313275808',     validator_id=>'custom-tmch', not_after_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>10}),  accepted_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>9,second=>30}) } 
+ ] };
+$R2='';
+$rc=$dri->domain_create('example4.com',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=>$lp});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.com</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd"><launch:phase>claims</launch:phase><launch:notice><launch:noticeID validatorID="tmch">370d0b7c9223372036854775807</launch:noticeID><launch:notAfter>2014-06-19T10:00:00Z</launch:notAfter><launch:acceptedDate>2014-06-19T09:00:00Z</launch:acceptedDate></launch:notice><launch:notice><launch:noticeID validatorID="custom-tmch">470d0b7c9223654313275808</launch:noticeID><launch:notAfter>2014-06-19T10:00:00Z</launch:notAfter><launch:acceptedDate>2014-06-19T09:00:30Z</launch:acceptedDate></launch:notice></launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml [claims create]');
 
 #3.3.3.  General Create Form
 $lp = {phase => 'landrush','type' =>'application'};

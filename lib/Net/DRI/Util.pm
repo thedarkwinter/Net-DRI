@@ -22,6 +22,7 @@ use Time::HiRes ();
 use Encode ();
 use Module::Load;
 use Hash::KeyMorpher qw (to_mixed to_under);
+use Net::IDN::Encode;
 use Net::DRI::Exception;
 
 =pod
@@ -369,6 +370,31 @@ sub is_ipv6
  return 1 if ($bip=~m/^001/); ## global unicast (2000::/3)
  return 0; ## everything else is unassigned
 }
+
+# check if name is idn either in ace/puny or native
+sub is_idn
+{
+  my $n = shift;
+  return 0 unless $n;
+  return 1 if ($n !~ m/^[A-Za-z0-9.-]+$/); # native
+  return 1 if ($n =~ m/^xn--/); #ace
+  return 0;
+}
+
+# returns ace & unicode version if a domain name
+sub idn_get_ace_unicode
+{
+ my $domain = shift;
+ my ($ace,$idn);
+ eval {
+  $idn = ($domain =~ m/^xn--/) ? Net::IDN::Encode::domain_to_unicode($domain):$domain;
+  $ace = ($domain !~ m/^[A-Za-z0-9.-]+$/) ? Net::IDN::Encode::domain_to_ascii($domain):$domain;
+ };
+ return ($domain,$domain) if $@;
+ return ($ace,$idn);
+}
+
+
 
 ####################################################################################################
 

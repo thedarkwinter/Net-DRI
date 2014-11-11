@@ -1,5 +1,64 @@
 Net::DRI changelog from newest to oldest changes
 
+0.7-tdw 2014-10-30 DEVELOPMENT RELEASE
+!! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRP) or transports *might* not work in this version, however EPP over HTTPS is working as is RRI
+
++ Added Support for Afnic ngTLDs (Paulo Jorge) & Nominet & OpenRegistry
++ Minor fixes on LaunchPhase and Centralnic::Fee extensions
++ TMCH message codes added
++ Added extension Tago/CoreNIC AugmentedMark (Paulo Jorge)
++ VNDS Premium domains check_multi added (Paulo Jorge)
++ VNDS Registry Extension - Experimental (Paulo Jorge)
++ TLD corrections in NGTLD.DRD
+
+
+0.6-tdw 2014-09-16 DEVELOPMENT RELEASE
+!! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRP) or transports *might* not work in this version, however EPP over HTTPS is working as is RRI
+
+= Changed versioning to Net-DRI-0.X-tdw. Rather than rebasing from Net-DRI-0.96_06, I will import changes are required and called this version a fork.
++ Merged in various updates from Net-DRI-0.96_06 including EU, UK, PT, CZ, NL, CH, FR (Removed Email) DE, (Removed DCHK), OpenSRS TCI, ISPAPI, KeyRelay-03
+= LaunchPhase, allow custom phases for claims check form
+
+
+0.96_06_tdw_05 2014-09-08 DEVELOPMENT RELEASE
+!! Note, this is not an official release !!
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this version, however EPP over HTTPS is working.
+
+#### Core
++ $dri->get_info() now tries [de]camelized version of the request too
++ Customisable {domain/host/contact}_check_limit
++ force_native_idn option for DRDs where registry uses idn instead of puny in domain:name (expiremental, required for .IT)
+
+#### New gTLDS
++ Added CNNIC/Extensions
++ Added KNET/Extensions
++ Added ZACR/Extensions
++ NGTLD WHOIS protocol working for pretty much all
++ NGTLD Premium standardisation ($dri->get_info('is_premium / price_create / price_renew ...
++ Experimental domain_check_claims and domain_check_price methods
+= Minds & Machines: Split into mam(mamown) / mamclient / mamparter(mamsrs) for different systems
+= GMO, Adde gmogeo to geoTLDs
+= ARI TMCHApplication extension fixes
++ CantralNIC Fee Extension support 0.4 and 0.5, but needs work!
+= Afilias IDN bug fix
+= Afilias Validation & Price extensions (Paulo Jorge)
++ Verisign NameStore extension uses current_product for contacts/hosts
+
+#### ccTLDs
++ Added .CO DRD/Extension
++ Nominet - DirectRights extension + .UK sLD added
++ AT GracePeriod extension loads by default
++ IT IDNs fixed (force_native_idn)
++ DE added force_native_idn usage
+
 0.96_06_tdw_04 2014-05-12 DEVELOPMENT RELEASE
 !! Note, this is not an official release !!
 

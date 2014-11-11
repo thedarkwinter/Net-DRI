@@ -67,8 +67,8 @@ sub setup
 {
  my ($self,$rp)=@_;
  $self->{defaulti18ntype}='loc'; # The registry does not provide contact postalinfo i18n type, although it is mandatory by EPP
- $self->ns({ domain  => ['http://www.nic.cz/xml/epp/domain-1.3','domain-1.3.xsd'],
-             contact => ['http://www.nic.cz/xml/epp/contact-1.4','contact-1.4.xsd'],
+ $self->ns({ domain  => ['http://www.nic.cz/xml/epp/domain-1.4','domain-1.4.xsd'],
+             contact => ['http://www.nic.cz/xml/epp/contact-1.5','contact-1.5.xsd'],
           });
  $self->capabilities('domain_update','status',undef);
  $self->capabilities('domain_update','nsset',['set']);

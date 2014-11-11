@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .UK EPP Domain commands
 ##
-## Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -21,6 +21,7 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
+use Net::DRI::Protocol::EPP::Core::Domain;
 
 =pod
 
@@ -50,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
@@ -233,9 +234,7 @@ sub release
  Net::DRI::Exception::usererr_insufficient_parameters('registar_tag is required') unless $rd->{registrar_tag};
  Net::DRI::Exception::usererr_insufficient_parameters('To release an account you must specify alldomains.co.uk as the domain name') if defined $rd->{account_id} && $domain ne 'alldomains.co.uk'; # failsafe
  $mes->command(['update','r:release',sprintf('xmlns:r="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-release'))]);
- my @d;
- @d=(['r:domainName',$domain],['r:registrarTag',$rd->{registrar_tag}]) unless defined $rd->{account_id};
- @d=(['r:registrant',$rd->{account_id}],['r:registrarTag',$rd->{registrar_tag}]) if defined $rd->{account_id};
+ my @d=((defined $rd->{account_id} ? ['r:registrant',$rd->{account_id}] : ['r:domainName',$domain]),['r:registrarTag',$rd->{registrar_tag}]);
  $mes->command_body(\@d);
  return;
 }
@@ -265,7 +264,7 @@ sub handshake_reject
  return;
 }
 
-sub lock
+sub lock ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 {
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, OpenSRS Registry Driver
 ##
-## Copyright (c) 2008-2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -54,7 +54,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2012 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -77,8 +77,16 @@ sub new
 
 sub periods      { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name         { return 'OpenSRS'; }
-sub tlds         { return (qw/example com net org info biz mobi name asia at au be bz ca cc ch cn co de dk es eu fr in it li me com.mx mx nl tel tv co.uk org.uk uk us ws/); } ## see http://www.opensrs.com/services/domains/domains-pricing
-sub object_types { return ('domain','host'); }
+## See http://opensrs.com/site/services/domains/pricing
+sub tlds         { return (qw/com net org info biz mobi pro name asia tel/,
+                           qw/co me pw tv ws xxx jobs aero coop/,
+                           qw/ac ag ai ar br bz ca cc cl ec gd gs gy hn ht lc ms mx pe pm pr sr sx tc us uy vc ve vg/,
+                           qw/at be ch cz de dk es eu fi fr gr gg gl hr hu im is it je li lt lu lv md nl no pl pt ro ru se si ua uk/,
+                           qw/af am cn hk in io jp kg kr la mn my ph qa sg tl tm tw/,
+                           qw/ae cd cm il ly ma mu re sc sh so st to yt za/,
+                           qw/as au cx fm hm ki nu nz sb tf tk wf/,
+                          ); }
+sub object_types { return ('domain','ns'); }
 sub profile_types { return qw/xcp/; }
 
 sub transport_protocol_default

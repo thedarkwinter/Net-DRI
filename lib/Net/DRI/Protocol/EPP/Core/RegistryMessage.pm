@@ -111,30 +111,34 @@ sub parse_poll
  my %info;
  my $h=$po->commands();
 
- while (my ($htype,$hv)=each(%$h))
- {
-  ## Because of new Perl hash keys randomization, we must make sure review_complete action is done first
-  ## as it will setup $toname & such
-  my @k=keys(%$hv);
-  foreach my $haction ((grep { $_ eq 'review_complete' } @k),(sort { $a cmp $b } grep { $_ ne 'review_complete' } @k))
+ ## Because of new Perl hash keys randomization always process domain, contact, host before anything else
+ ## - this will ensure that panData is hit for the object in time before e.g. notifications
+ foreach my $htype ((sort { $a cmp $b } grep { $_ =~ m/domain|contact|host/ } keys %$h), (sort { $a cmp $b } grep { $_ !~ m/domain|contact|host/ } keys %$h)) {
+  foreach my $hv ($h->{$htype})
   {
-   next if $htype eq 'message' && $haction eq 'result';
-   foreach my $t (@{$hv->{$haction}})
+   ## Because of new Perl hash keys randomization, we must make sure review_complete action is done first
+   ## as it will setup $toname & such
+   my @k=keys(%$hv);
+   foreach my $haction ((grep { $_ eq 'review_complete' } @k),(sort { $a cmp $b } grep { $_ ne 'review_complete' } @k))
    {
-    my $pf=$t->[1];
-    next unless (defined($pf) && (ref($pf) eq 'CODE'));
-    $info{_processing_parse_poll}=1;
-    $pf->($po,$totype,$toaction,$toname,\%info);
-    delete $info{_processing_parse_poll};
-    my @tmp=grep { $_ ne '_internal' } keys %info;
-    next unless @tmp;
-    next if defined($toname); ## this must be there and not optimised as a last call further below as there can be multiple information to parse for a given $toname
-    Net::DRI::Exception::err_assert('EPP::parse_poll can not handle multiple types !') unless @tmp==1;
-    $totype=$tmp[0];
-    @tmp=keys %{$info{$totype}};
-    Net::DRI::Exception::err_assert('EPP::parse_poll can not handle multiple names !') unless @tmp==1; ## this may happen for check_multi !
-    $toname=$tmp[0];
-    $info{$totype}->{$toname}->{name}=$toname;
+    next if $htype eq 'message' && $haction eq 'result';
+    foreach my $t (@{$hv->{$haction}})
+    {
+     my $pf=$t->[1];
+     next unless (defined($pf) && (ref($pf) eq 'CODE'));
+     $info{_processing_parse_poll}=1;
+     $pf->($po,$totype,$toaction,$toname,\%info);
+     delete $info{_processing_parse_poll};
+     my @tmp=grep { $_ ne '_internal' } keys %info;
+     next unless @tmp;
+     next if defined($toname); ## this must be there and not optimised as a last call further below as there can be multiple information to parse for a given $toname
+     Net::DRI::Exception::err_assert('EPP::parse_poll can not handle multiple types !') unless @tmp==1;
+     $totype=$tmp[0];
+     @tmp=keys %{$info{$totype}};
+     Net::DRI::Exception::err_assert('EPP::parse_poll can not handle multiple names !') unless @tmp==1; ## this may happen for check_multi !
+     $toname=$tmp[0];
+     $info{$totype}->{$toname}->{name}=$toname;
+    }
    }
   }
  }

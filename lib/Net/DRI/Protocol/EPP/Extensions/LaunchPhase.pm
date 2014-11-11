@@ -1,11 +1,11 @@
-## Domain Registry Interface, EPP LaunchPhase Extensions (draft-ietf-eppext-launchphase-01)
+## Domain Registry Interface, EPP LaunchPhase Extensions (draft-ietf-eppext-launchphase-02)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
-## LaunchPhase ext based on IETF draft 01 : http://tools.ietf.org/html/draft-ietf-eppext-launchphase-01
+## LaunchPhase ext based on IETF draft 02 : http://tools.ietf.org/html/draft-ietf-eppext-launchphase-02
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ use Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::LaunchPhase - EPP LaunchPhase commands (draft-ietf-eppext-launchphase-01) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::LaunchPhase - EPP LaunchPhase commands (draft-ietf-eppext-launchphase-02) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -64,6 +64,10 @@ The LaunchPhase extension is used in  domain check, info, create, update, and de
   $rc = $dri->domain_check('example1.tld','example2.tld',{lp => {'type'=>'avail','phase'=>'sunrise'}});
   $lp = $dri->get_info('lp','domain','example2.tld');
   # note: check for validator_id as its optional but required when using claims_create
+  
+  ## LaunchPhase-02 introduced the possibility of having multiple claims key elements, but since we used a hash in this module we don't wont to break previous implementations.
+  # $lp->{claims_key} and $lp->{validator_id} still exist but if there are more than one then it will be the last claim key only.
+  # $lp->{claims} (array of hashes containting claims_key and validators) and $lp->{claims_count} (integer) have been added.
   
 =head2 info
 
@@ -239,7 +243,8 @@ sub check
 
  my $lp = $rd->{'lp'};
  Net::DRI::Exception::usererr_invalid_parameters('type must be claims or avail') if exists $lp->{type} && $lp->{type}  !~ m/^(claims|avail)$/;
- $lp->{phase} = 'claims' if exists $lp->{type} && $lp->{type} eq 'claims'; # according to RFC draft, phase should be claims when the type is claims.
+ # according to RFC draft, phase *should* be set claims when the type is claims, but we will not change it if the user has set something else so it can auto/custom it.
+ $lp->{phase} = 'claims' if exists $lp->{type} && $lp->{type} eq 'claims' && (!exists $lp->{phase} || !$lp->{phase});
  Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase};
  delete $lp->{application_id} if exists $lp->{application_id};
 
@@ -264,11 +269,10 @@ sub check_parse
  my $phaseel = $chkdata->getChildrenByTagNameNS($mes->ns('launch'),'phase')->shift();
  my $phase = (defined $phaseel && $phaseel->textContent()) ? $phaseel->textContent() : 'wtf';
  my $type = ($chkdata->hasAttribute('type'))?$chkdata->getAttribute('type'):undef;
- #$rinfo['domain']
- 
+
  foreach my $cd ($chkdata->getChildrenByTagNameNS($mes->ns('launch'),'cd'))
  {
-  my $domain;
+  my ($domain,@claims);
   foreach my $el (Net::DRI::Util::xml_list_children($cd))
   {
    my ($n,$c)=@$el;
@@ -281,9 +285,19 @@ sub check_parse
     $rinfo->{domain}->{$domain}->{lp}->{type} = $type if defined $type;
    } elsif ($n eq 'claimKey')
    {
+    # launchphase-02 can have multile claims with different validators (e.g. custom tmch and maybe in future govs etc)
+    my $claim = { claim_key => $c->textContent() };
+    $claim->{validator_id} = $c->getAttribute('validatorID') if $c->hasAttribute('validatorID');
+    push @claims,$claim;
+    
+    # pre launchphase-02 we only had one, but removing this might break some implementations so will store the last claim_key (which is more than likely the only one!)
     $rinfo->{domain}->{$domain}->{lp}->{claim_key} = $c->textContent();
     $rinfo->{domain}->{$domain}->{lp}->{validator_id} = $c->getAttribute('validatorID') if $c->hasAttribute('validatorID');
    }
+  }
+  if (@claims) {
+   $rinfo->{domain}->{$domain}->{lp}->{claims} = \@claims;
+   $rinfo->{domain}->{$domain}->{lp}->{claims_count} = $#claims+1;
   }
  }
  return;

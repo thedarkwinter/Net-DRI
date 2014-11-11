@@ -25,17 +25,16 @@ use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
 use DateTime::Duration;
 use DateTime::Format::ISO8601;
-use Data::Dumper;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee - CentralNic EPP Fee extension commands for Net::DRI (draft-brown-epp-fees-01 & 02)
+Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee - CentralNic EPP Fee extension commands for Net::DRI (draft-brown-epp-fees-01, 02 & 03)
 
 =head1 DESCRIPTION
 
-Adds the Price Extension (urn:ietf:params:xml:ns:fee-0.4 & -0.5) to domain commands. Minds and Machines is implementing fee-0.5, while CentralNic/GMO are using 0.4. This extension supports both versions. The extension is built by adding a hash to any domains commands. This pricing information is returned in all commands when requested.
+Adds the Price Extension (urn:ietf:params:xml:ns:fee-0.4, -0.5 & -0.6) to domain commands. Minds and Machines is implementing fee-0.5, while CentralNic/GMO are using 0.4. This extension supports both versions. The extension is built by adding a hash to any domains commands. This pricing information is returned in all commands when requested.
 
 CentralNic Fees extension is defined in http://tools.ietf.org/html/draft-brown-epp-fees-01
 
@@ -129,7 +128,7 @@ sub setup
 
 ####################################################################################################
 ### DEVELOPING
-## Please run t/621centralnic_epp.t and t/678mam_epp.t as they use different versions of the extension!
+## Please run t/621centralnic_epp.t, t/678mam_epp.t and t/693crr_epp.t as they use different versions of the extension!
 ####################################################################################################
 
 ## parse_greeting to determine extension version from server
@@ -141,10 +140,14 @@ sub parse_greeting
  $po->switch_to_highest_namespace_version('fee');
 }
 
-####################################################################################################
-## Build / Parse helpers for 0.5
 
-sub fee_set_parse_05
+####################################################################################################
+## Build / Parse helpers for 0.5/0.6
+
+## MH: TODO: Fix this parser to ADD fees togother, but still make each fee an individual element in an array with its attributes
+##           This upgrade from 0.5-0.6 works, but the extension needs to be reviewed now that we have a few different active implementations
+
+sub fee_set_parse_06
 {
   my $start = shift;
   return unless $start;
@@ -178,18 +181,22 @@ sub fee_set_parse_05
         $set->{description} .= "Refundable";
       }
       if ($content->hasAttribute('grace-period')) {
-        $set->{description} .= "(Grace " . $content->getAttribute('grace-period') . ")";
+        $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")";
+      }
+      if ($content->hasAttribute('applied') && $content->getAttribute('applied')=~m/^(?:immediate|delayed)$/) {
+        $set->{description} .= "(Applied=>" . $content->getAttribute('applied') . ")";
       }
     } elsif ($name eq 'class')
     {
       $set->{class} = $content->textContent();
+      $set->{'premium'} = 1 if $set->{class} eq 'premium';
     }
   }
   chomp $set->{description} if $set->{description};
   return $set;
 }
 
-sub fee_set_build_05
+sub fee_set_build_06
 {
   my ($rp,$cmd,$domain)=@_;
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with key action, and optionally currency and duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'action');
@@ -322,7 +329,7 @@ sub check
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
 
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6');
   if ($ver eq '0.4')
   {
    foreach my $fee_set (@fees)
@@ -333,11 +340,11 @@ sub check
    }
   }
 
-  if ($ver eq '0.5')
+  if ($ver eq ('0.5' || '0.6'))
   {
    foreach my $fee_set (@fees)
    {
-     @n = fee_set_build_05($fee_set,'check',$domain);
+     @n = fee_set_build_06($fee_set,'check',$domain);
      push @fee_set,@n if @n;
    }
    return unless @fee_set;
@@ -354,26 +361,26 @@ sub check_parse
   my $mes=$po->message();
   return unless $mes->is_success;
 
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6');
 
   my $chkdata=$mes->node_extension if ($ver eq '0.4');
-  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($ver eq '0.5');
+  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($ver eq '0.5' || $ver eq '0.6');
   return unless defined $chkdata;
 
   foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
   {
     my ($name,$content)=@$el;
-    if ($name =~ m/^(chkData|cd)$/) # chkData for 0.4, cd for 0.5
+    if ($name =~ m/^(chkData|cd)$/) # chkData for 0.4, cd for 0.5 & 0.6
     {
       my $dn = '';
       foreach my $el2 (Net::DRI::Util::xml_list_children($content))
       {
         my ($name2,$content2)=@$el2;
-        $dn = $content2->textContent() if $name2 =~ m/^(domain|name)$/; # domain for 0.4, name for 0.5
+        $dn = $content2->textContent() if $name2 =~ m/^(domain|name)$/; # domain for 0.4, name for 0.5 & 0.6
       }
       next unless $dn;
       my $fee_set = fee_set_parse($content) if ($ver eq '0.4');
-      $fee_set = fee_set_parse_05($content) if ($ver eq '0.5');
+      $fee_set = fee_set_parse_06($content) if ($ver eq ('0.5' || '0.6'));
       if ($fee_set)
       {
         push @{$rinfo->{domain}->{$dn}->{fee}},$fee_set;
@@ -389,7 +396,7 @@ sub info
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6');
  
   my (@n,@fees);
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
@@ -397,7 +404,7 @@ sub info
   foreach my $fee_set (@fees)
   {
     @n = fee_set_build($fee_set) if ($ver eq '0.4');
-    @n = fee_set_build_05($fee_set) if ($ver eq '0.5');
+    @n = fee_set_build_06($fee_set) if ($ver eq ('0.5' || '0.6'));
     my $eid=$mes->command_extension_register('fee','info');
     $mes->command_extension($eid,\@n);
   }
@@ -409,13 +416,13 @@ sub info_parse
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success();
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6');
 
   my $infdata=$mes->get_extension($mes->ns('fee'),'infData');
   return unless defined $infdata;
 
   my $fee_set = fee_set_parse($infdata) if ($ver eq '0.4');
-  $fee_set = fee_set_parse_05($infdata) if ($ver eq '0.5');
+  $fee_set = fee_set_parse_06($infdata) if ($ver eq ('0.5' || '0.6'));
   if ($fee_set)
   {
     @{$rinfo->{domain}->{$oname}->{fee}} = $fee_set;
@@ -458,7 +465,7 @@ sub transform_build
   my ($epp,$domain,$rd,$cmd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : '0.5';
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6');
 
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, fee') unless Net::DRI::Util::has_key($rd->{fee},'currency') && Net::DRI::Util::has_key($rd->{fee},'fee');
   my $rp=$rd->{fee};
@@ -467,7 +474,7 @@ sub transform_build
   my @n;
   $rp = ref $rd->{fee} eq 'ARRAY' ? $rd->{fee}->[0] : $rd->{fee};
   push @n,['fee:currency',$rp->{currency}];
-  push @n,['fee:fee',$rp->{fee}]; # need protect fee param?
+  push @n,['fee:fee',$rp->{fee}];
 
   my $eid=$mes->command_extension_register('fee',$cmd);
   $mes->command_extension($eid,\@n);

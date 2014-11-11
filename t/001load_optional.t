@@ -7,20 +7,13 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More tests => 10;
 
-SKIP: {
-	eval { require Net::SMTP; };
-	skip 'Module Net::SMTP is not installed, you need it if you want to use Net::DRI for: AFNIC (emails)',1 if $@;
-	require_ok('Net::DRI::Transport::SMTP');
-}
-
-# SKIP: {
-# 	eval { require MIME::Entity; };
-# 	skip 'Module MIME::Entity is not installed, you need it if you want to use Net::DRI for: AFNIC (emails)',2 if $@;
-# 	require_ok('Net::DRI::Protocol::AFNIC::Email::Message');
-# 	require_ok('Net::DRI::Protocol::AFNIC::Email'); ## depends on Message
-# }
+#SKIP: {
+#	eval { require Net::SMTP; };
+#	skip 'Module Net::SMTP is not installed, you need it if you want to use Net::DRI for: AFNIC (emails)',1 if $@;
+#	require_ok('Net::DRI::Transport::SMTP');
+#}
 
 SKIP: {
 	eval { require XMLRPC::Lite; };
