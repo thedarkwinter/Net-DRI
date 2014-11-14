@@ -922,7 +922,7 @@ Contended TLD's not included
 
 =head3 TLDs
 
-dpml.pub actor airforce army attorney auction consulting dance degree democrat dentist engineer futbol gives haus immobilien kaufen lawyer market moda mortgage navy ninja pub rehab republican reviews rocks social software vet
+dpml.pub actor airforce army attorney auction band consulting dance degree democrat dentist engineer forsale futbol gives haus immobilien kaufen lawyer market moda mortgage navy ninja pub rehab republican reviews rip rocks social software vet
 
 Contended TLD's not included
 
@@ -943,7 +943,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.pub','actor','airforce','army','attorney','auction','consulting','dance','degree','democrat','dentist','engineer','futbol','gives','haus','immobilien','kaufen','lawyer','market','moda','mortgage','navy','ninja','pub','rehab','republican','reviews','rocks','social','software','vet'],
+     tlds => ['dpml.pub','actor','airforce','army','attorney','auction','band','consulting','dance','degree','democrat','dentist','engineer','forsale','futbol','gives','haus','immobilien','kaufen','lawyer','market','moda','mortgage','navy','ninja','pub','rehab','republican','reviews','rip','rocks','social','software','vet'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
      whois_server => 'whois.rightside.co',
      check_limit => 5,
