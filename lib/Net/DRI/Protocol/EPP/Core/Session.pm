@@ -206,7 +206,7 @@ sub login
  ## TODO: allow choice of language if multiple choices (like fr+en in .CA) ?
  $tmp=Net::DRI::Util::has_key($rdata,'lang') ? $rdata->{lang} : $sdata->{lang};
  Net::DRI::Exception::usererr_insufficient_parameters('lang') unless defined $tmp;
- $tmp=$tmp->[0] if ref $tmp eq 'ARRAY';
+ $tmp = ((grep $_ eq 'en', @{$tmp}) ? 'en' : $tmp->[0]) if ref $tmp eq 'ARRAY'; # use 'en' by default if the server supports it, otherwise take the first it announced
  Net::DRI::Exception::usererr_invalid_parameters('lang') unless Net::DRI::Util::xml_is_language($tmp);
  push @o,['lang',$tmp];
 
