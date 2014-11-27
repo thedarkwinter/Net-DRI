@@ -360,10 +360,13 @@ sub parse
 
  ## trID
  my $trid=$res->getChildrenByTagNameNS($NS,'trID')->get_node(1); ## we search only for <trID> as direct child of <response>, hence getChildren and not getElements !
- my $tmp=Net::DRI::Util::xml_child_content($trid,$NS,'clTRID');
- $self->cltrid($tmp) if defined $tmp;
- $tmp=Net::DRI::Util::xml_child_content($trid,$NS,'svTRID');
- $self->svtrid($tmp) if defined $tmp;
+ if ($trid) { # According to RFC its required, but if a server decides not to this raises an exception if we don't check first
+  my $tmp=Net::DRI::Util::xml_child_content($trid,$NS,'clTRID');
+  $self->cltrid($tmp) if defined $tmp;
+  $tmp=Net::DRI::Util::xml_child_content($trid,$NS,'svTRID');
+  $self->svtrid($tmp) if defined $tmp;
+ }
+ 
  return;
 }
 
