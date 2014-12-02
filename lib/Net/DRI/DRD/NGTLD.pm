@@ -240,7 +240,7 @@ alsace aquitaine banque bzh corsica ovh paris
  return {
      bep_type => 1, # dedicated regsitry
      tlds => ['alsace', 'aquitaine', 'banque', 'bzh', 'corsica', 'ovh', 'paris'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,'custom'=>['AFNIC_GTLD::RegistryMessage']}],
      contact_i18n => 1, # can only use the "loc" type
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afnic';

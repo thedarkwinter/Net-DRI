@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 450;
+use Test::More tests => 451;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -291,6 +291,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::AFNIC::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AFNIC::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AFNIC::Status');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AFNIC::Session');
+use_ok('Net::DRI::Protocol::EPP::Extensions::AFNIC_GTLD::RegistryMessage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BR');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BR::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BR::Domain');

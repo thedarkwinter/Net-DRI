@@ -205,6 +205,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Status.pm
+lib/Net/DRI/Protocol/EPP/Extensions/AFNIC_GTLD/RegistryMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARI/ExAvail.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARI/IDNVariant.pm
@@ -583,6 +584,7 @@ t/678mam_epp.t
 t/679cnnic_epp.t
 t/680openreg_epp.t
 t/681crr_epp.t
+t/682afnic_gtld_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
 t/701ovh_ws_live.t
