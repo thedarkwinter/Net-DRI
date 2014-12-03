@@ -165,7 +165,7 @@ sub verify_name_domain
  my ($self,$ndr,$domain,$op)=@_;
  return $self->_verify_name_rules($domain,$op,{
      check_name => $self->_has_bep_key('verify_check_name')?$self->_get_bep_key('verify_check_name'):1, # default on, checks dots etc ?
-     icann_reserved => $self->_has_bep_key('verify_icann_reserved')?$self->_get_bep_key('verify_icann_reserved'):1, # default verify ICANN reservered
+     icann_reserved => $self->_has_bep_key('verify_icann_reserved')?$self->_get_bep_key('verify_icann_reserved'):0, # TODO - disabled for now, this process needs reviewing with new gTLDs NXD/collisions releases etc.
      my_tld => ($self->_get_bep_key('tlds')), # by default it will verify TLD if there is a TLD list
    });
 }
