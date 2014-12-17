@@ -543,9 +543,9 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
 =head3 TLDs
 
-accountant bid date download faith loan men review science trade webcam win
+accountant bid cricket date download faith loan men party racing review science trade webcam win
 
-Contended TLD's not included
+Contension: app baby bet cam charity forum game golf hockey hotel movie music rugby run search shop  soccer sport stream taxi
 
 =head3 Custom extensions
 
@@ -555,7 +555,9 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 
  return {
      bep_type => 1, # dedicated registy
-     tlds => ['accountant', 'bid', 'date', 'download', 'faith', 'loan', 'men', 'review', 'science', 'trade', 'webcam', 'win'],
+     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'men', 'party', 'racing', 'review', 'science', 'trade', 'webcam', 'win', # uncontended
+              'app', 'baby', 'bet', 'cam', 'charity', 'forum', 'game', 'golf', 'hockey', 'hotel', 'movie', 'music', 'rugby', 'run', 'search', 'shop', 'soccer', 'sport', 'stream', 'taxi',# contended
+             ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'ffm';
@@ -666,14 +668,16 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
 Uncontested: abogado bayern beer budapest casa cooking country fishing fit garden horse luxe miami nrw rodeo surf vodka wedding work yoga xn--g2xx48c
 
-Contested: app art baby beauty blog book cloud coupon cpa cricket data dds design dog eco fashiond gay home hotel inc latino law llc love pizza realestate school site soccer store style tech video vip
+Contested: app art baby beauty blog book cloud coupon cpa data dds design dog eco fashiond gay home hotel inc latino law llc love pizza realestate school site soccer store style tech video vip
 
+Collisions: cooking-collisions country-collisions fishing-collisions'horse-collisions rodeo-collisions vodka-collisions
 =cut
 
  return {
      bep_type => 2, # shared registry
      tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fishing', 'fit', 'garden', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'cricket', 'data', 'dds', 'design', 'dog', 'eco', 'fashiond', 'gay', 'home', 'hotel', 'inc', 'latino', 'law', 'llc', 'love', 'pizza', 'realestate', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video', 'vip',
+              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'data', 'dds', 'design', 'dog', 'eco', 'fashiond', 'gay', 'home', 'hotel', 'inc', 'latino', 'law', 'llc', 'love', 'pizza', 'realestate', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video', 'vip',
+              'cooking-collisions', 'country-collisions', 'fishing-collisions', 'horse-collisions', 'rodeo-collisions', 'vodka-collisions',
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
      whois_server => 'whois-dub.mm-registry.com',
