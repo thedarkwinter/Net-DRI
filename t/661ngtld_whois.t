@@ -5,7 +5,7 @@ use warnings;
 use Net::DRI;
 use Data::Dumper;
 
-use Test::More tests => 506;
+use Test::More tests => 529;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -322,10 +322,10 @@ Domain Name:NIC.WIKI
 Created On:2013-09-11T11:57:19.0Z
 Last Updated On:2014-03-28T15:17:00.0Z
 Expiration Date:2014-09-11T23:59:59.0Z
-Status:serverTransferProhibited
-Status:serverUpdateProhibited
-Status:serverDeleteProhibited
-Status:serverRenewProhibited
+Domain Status:serverTransferProhibited
+Domain Status:serverUpdateProhibited
+Domain Status:serverDeleteProhibited
+Domain Status:serverRenewProhibited
 Registrant ID:C11480
 Registrant Name:Domain Administrator
 Registrant Organization:CentralNic Ltd
@@ -789,7 +789,7 @@ Creation Date: 2013-10-02T17:56:35Z
 Registry Expiry Date: 2015-10-02T17:56:35Z
 Sponsoring Registrar: Donuts Internal (9999)
 Sponsoring Registrar IANA ID: 9999
-DomainStatus: ok
+Domain Status: ok https://www.icann.org/epp#ok
 Registrant ID: id01
 Registrant Name: Chris Cowherd
 Registrant Organization: Donuts Inc.
@@ -995,7 +995,7 @@ Referral URL:http://nic.tokyo
 Created On:2014-01-31T03:00:21.0Z
 Last Updated On:2014-01-31T03:00:21.0Z
 Expiration Date:2015-01-31T23:59:59.0Z
-Status:ok
+Domain Status:ok http://www.icann.org/epp#ok
 Registrant ID:H738825
 Registrant Name:Reserved Domain
 Registrant Organization:GMO Registry, Inc.
@@ -1414,9 +1414,110 @@ is($r->org(),'Bayern Connect GmbH','domain_info get_info (contact) registrant or
 
 ####################################################################################################
 # NIC.BR
-SKIP: {
-  skip '*** TODO : NIC.BR',1;
-};
+$R2='Domain Name: nic.rio
+Domain ID: D54-RIO
+WHOIS Server: whois.gtlds.nic.br
+Referral URL: http://whois.gtlds.nic.br
+Updated Date: 2014-07-15T21:22:05Z
+Creation Date: 2014-05-19T22:46:02Z
+Registry Expiry Date: 2015-07-15T21:22:05Z
+Sponsoring Registrar: NIC.br New gTLD Back-End Registry Services
+Sponsoring Registrar IANA ID: 9999
+Domain Status: ok https://www.icann.org/epp#ok
+Registrant ID: C4-R3
+Registrant Name: Empresa Municipal de Informatica SA - IPLANRIO
+Registrant Organization: 073.214.439/0001-90
+Registrant Street: Av. Presidente Vargas 3131 Sala 1204
+Registrant City: Rio de Janeiro
+Registrant State/Province: RJ
+Registrant Postal Code: 20210-030
+Registrant Country: BR
+Registrant Phone: +55.2139711818
+Registrant Phone Ext: 
+Registrant Fax: 
+Registrant Fax Ext: 
+Registrant Email: gtlds-rio@registro.br
+Admin ID: C4-R3
+Admin Name: Empresa Municipal de Informatica SA - IPLANRIO
+Admin Organization: 073.214.439/0001-90
+Admin Street: Av. Presidente Vargas 3131 Sala 1204
+Admin City: Rio de Janeiro
+Admin State/Province: RJ
+Admin Postal Code: 20210-030
+Admin Country: BR
+Admin Phone: +55.2139711818
+Admin Phone Ext: 
+Admin Fax: 
+Admin Fax Ext: 
+Admin Email: gtlds-rio@registro.br
+Tech ID: C4-R3
+Tech Name: Empresa Municipal de Informatica SA - IPLANRIO
+Tech Organization: 073.214.439/0001-90
+Tech Street: Av. Presidente Vargas 3131 Sala 1204
+Tech City: Rio de Janeiro
+Tech State/Province: RJ
+Tech Postal Code: 20210-030
+Tech Country: BR
+Tech Phone: +55.2139711818
+Tech Phone Ext: 
+Tech Fax: 
+Tech Fax Ext: 
+Tech Email: gtlds-rio@registro.br
+Name Server: ns.dns.br
+Name Server: ns2.dns.br
+DNSSEC: signedDelegation
+DS: 11428 SHA1 AA54FE72158B30BE7C622DDB9ECA06FAF8889B72
+DS Check Status: 2014-12-01T11:05:42Z DSOK
+>>> Last update of WHOIS database: 2014-12-05T15:17:30Z <<<
+
+% The queried data can only be used for technical or
+% administrative requirements associated with the Internet
+% or in order to contact the domain or block holder over
+% legal problems, being prohibited the distribution,
+% repackaging, modification, comercialization or
+% reproduction, in particular, to use it for advertising or
+% any similar purpose;
+% 
+% Any prohibited use or harvesting, may cause, without
+% previous warning, access restriction, without prejudice
+% of future legal action.
+%
+% For more information on Whois status codes, please visit 
+% https://www.icann.org/resources/pages/epp-status-codes-2014-06-16-en
+';
+
+$dri->add_registry('NGTLD',{provider=>'nicbr'});
+$dri->target('nicbr')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->domain_info('nic.rio');
+is($rc->is_success(),1,'NICBR domain_info is_success');
+is($dri->get_info('action'),'info','domain_info get_info (action)');
+is($dri->get_info('name'),'nic.rio','domain_info get_info (name)');
+is($dri->get_info('id'),'D54-RIO','domain_info get_info (id)');
+is($dri->get_info('clName'),'NIC.br New gTLD Back-End Registry Services','domain_info get_info (clName)');
+is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
+is($dri->get_info('clWhois'),'whois.gtlds.nic.br','domain_info get_info (clWhois)');
+is($dri->get_info('clWebsite'),'http://whois.gtlds.nic.br','domain_info get_info (clWebsite)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list');
+is($dri->get_info('crDate'),'2014-05-19T22:46:02','domain_info get_info (crDate)');
+is($dri->get_info('upDate'),'2014-07-15T21:22:05','domain_info get_info (upDate)');
+is($dri->get_info('exDate'),'2015-07-15T21:22:05','domain_info get_info (exDate)');
+is($dri->get_info('wuDate'),'2014-12-05T15:17:30','domain_info get_info (wuDate) undef');
+$h=$dri->get_info('ns');
+isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
+@hs=$h->get_names();
+is_deeply(\@hs,['ns.dns.br','ns2.dns.br'],'domain_info get_info (ns) get_names');
+$c=$dri->get_info('contact');
+isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
+is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
+is($c->get('registrant')->srid(),'C4-R3','domain_info get_info (contact) registrant srid');
+is($c->get('admin')->srid(),'C4-R3','domain_info get_info (contact) admin srid');
+is($c->get('tech')->srid(),'C4-R3','domain_info get_info (contact) tech srid');
+$r = $c->get('registrant');
+isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
+is($r->name(),'Empresa Municipal de Informatica SA - IPLANRIO','domain_info get_info (contact) registrant name');
+is($r->org(),'073.214.439/0001-90','domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # Nominet

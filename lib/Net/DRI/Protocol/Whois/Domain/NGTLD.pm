@@ -142,7 +142,7 @@ sub standardize_keys
    $rr->{'registrar_phone'} = $v if $k =~ m/^sponsoring registrar phone/;
    $rr->{'registrar_fax'} = $v if $k =~ m/^sponsoring registrar fax/;
    $rr->{'iana_id'} = $v if $k =~ m/iana/;
-   @{$rr->{'status'}} = map { s/\s.*$//; $_ } @{$v} if $k =~ m/status$/;
+   @{$rr->{'status'}} = map { s/\s.*$//; $_ } @{$v} if $k =~ m/^domain status$/;
    
    $rr->{'created'} = $v if $k =~ m/(created|creation|registered|registration) (date|on)?$/;
    $rr->{'updated'} = $v if $k =~ m/(last )?update(d)? (date|on)?$/ && $k !~ /whois/;
