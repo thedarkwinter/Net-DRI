@@ -780,17 +780,21 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
 
  $dri->add_registry('NGTLD',{provider=>'nicbr'});
 
-=head3 Status: Not started
+=head3 Status: Working
 
 =head3 TLDs
 
-bom final
+bom final rio
 
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
-     tlds => ['bom','final'],
+     bep_type => 2, # shared registy
+     host_as_attr => 1,
+     contact_i18n => 1, # LOC only
+     tlds => ['bom','final','rio'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
+     whois_server => 'whois.gtlds.nic.br',
    } if $bep eq 'nicbr';
 
 
