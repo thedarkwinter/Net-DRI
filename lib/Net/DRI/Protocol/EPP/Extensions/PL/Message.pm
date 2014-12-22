@@ -21,6 +21,7 @@ use strict;
 use warnings;
 
 use Net::DRI::Exception;
+use Data::Dumper;
 
 =pod
 
@@ -82,36 +83,98 @@ sub register_commands
 # parse additional notifications not handled elsewhere, at the mo this is just doing extdom
 sub parse
 {
- my ($po,$otype,$oaction,$oname,$rinfo)=@_; 
- my $mes=$po->message();
- return unless $mes->is_success();
- return unless my $msgid=$mes->msg_id();
-
- if (my $data=$mes->get_response('pl_domain','pollAuthInfo'))
- {
-  $oaction = 'pollAuthInfo';
-  $otype = 'domain';
-
-  my $domain=$data->getFirstChild();
-  foreach my $el (Net::DRI::Util::xml_list_children($domain))
+  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+  my $mes=$po->message();
+  return unless $mes->is_success();
+  return unless my $msgid=$mes->msg_id();
+  my @tmp; # used to parse at the end of this function the dom names if extdom-2.0
+  # pl_domain => extdom-2.0
+  foreach my $tmp_pl_domain (qw/pollAuthInfo pollDomainAutoRenewed pollDomainAutoRenewFailed dlgData expData pollDomainBlocked pollDomainUnblocked pollFutureRemoved pollTasteRemoved pollDomainJudicialRemoved trnData/)
   {
-   my ($n,$c)=@$el;
-   if ($n eq 'name')
-   {
-    $oname = $c->textContent();
-    $rinfo->{$otype}->{$oname}->{name}=$oname;
-    $rinfo->{$otype}->{$oname}->{exist}=1;
-    $rinfo->{$otype}->{$oname}->{action}=$oaction;
-   } elsif ($n eq 'authInfo')
-   {
-    foreach my $el2 (Net::DRI::Util::xml_list_children($c))
+    if (my $data=$mes->get_response('pl_domain',$tmp_pl_domain))
     {
-     my ($n2,$c2)=@$el2;
-     $rinfo->{$otype}->{$oname}->{auth} = {pw=>$c2->textContent()} if $n2 eq 'pw';
-    }
-   }
+      $oaction = $tmp_pl_domain;
+      $otype = 'domain';
+      foreach my $el (Net::DRI::Util::xml_list_children($data))
+      {
+        my ($n,$c) = @$el;
+        # for multiple domain names. @tmp is passed at the end of the function. we also pass the correspondent action
+        if ($n eq 'name' && $oaction =~ m/^(dlgData|expData)$/ )
+        {
+          $oname = $c->textContent();
+          push @tmp, $oname;
+        } elsif ($n eq 'name') { # use normal action. check next condition :)
+          $oname = $c->textContent();
+          $rinfo->{$otype}->{$oname}->{name}=$oname;
+          $rinfo->{$otype}->{$oname}->{exist}=1;
+          $rinfo->{$otype}->{$oname}->{action}=$oaction;
+        }
+        $rinfo->{$otype}->{$oname}->{date}= DateTime::Format::ISO8601->new()->parse_datetime($c->textContent()) if $n eq 'date';
+        $rinfo->{$otype}->{$oname}->{ex_date} = DateTime::Format::ISO8601->new()->parse_datetime($c->textContent()) if $n eq 'exDate';
+        $rinfo->{$otype}->{$oname}->{ns} = $c->textContent() if $n eq 'ns';
+        foreach my $el2 (Net::DRI::Util::xml_list_children($c))
+        {
+          my ($n2,$c2) = @$el2;
+          if ($n =~ m/^(domain|registrant|future|taste)$/) # add unless domainstandard auth
+          {
+            if ($n2 eq 'name')
+            {
+              $oname = $c2->textContent();
+              $rinfo->{$otype}->{$oname}->{name}=$oname;
+              $rinfo->{$otype}->{$oname}->{exist}=1;
+              $rinfo->{$otype}->{$oname}->{action}=$oaction;
+            } elsif ($n2 eq 'authInfo')
+            {
+              foreach my $el3 (Net::DRI::Util::xml_list_children($c2))
+              {
+                my ($n3,$c3)=@$el3;
+                if ($n eq 'domain' && $n3 eq 'pw')
+                {
+                  $rinfo->{$otype}->{$oname}->{'auth'} = {pw=>$c3->textContent()};
+                } else {
+                  $rinfo->{$otype}->{$oname}->{'auth_'.$n} = {pw=>$c3->textContent()};
+                }
+
+              }
+            }
+            $rinfo->{$otype}->{$oname}->{'id_'.$n} = $c2->textContent() if $n2 eq 'id';
+            $rinfo->{$otype}->{$oname}->{date}= DateTime::Format::ISO8601->new()->parse_datetime($c2->textContent()) if $n2 eq 'date';
+          }
+        }
+      }
+     }
   }
- }
+  # extepp => extepp-2.0
+  foreach my $tmp_extepp (qw/accountBalanceCrossed accountBalanceInsufficient passwdReminder/)
+  {
+    if (my $data=$mes->get_response('extepp',$tmp_extepp))
+    {
+      $oaction = $tmp_extepp;
+      $otype = 'extepp';
+      $oname = 'domain';
+      #my $domain=$data->getFirstChild();
+      foreach my $el4 (Net::DRI::Util::xml_list_children($data))
+      {
+        my ($n4,$c4)=@$el4;
+        $rinfo->{$otype}->{$oname}->{notification_level} = $c4->textContent() if $n4 eq 'notificationLevel';
+        $rinfo->{$otype}->{$oname}->{account_type} = $c4->textContent() if $n4 eq 'accountType';
+        $rinfo->{$otype}->{$oname}->{account_level} = $c4->textContent() if $n4 eq 'accountLevel';
+        $rinfo->{$otype}->{$oname}->{service_name} = $c4->textContent() if $n4 eq 'serviceName';
+        $rinfo->{$otype}->{$oname}->{domain_name} = $c4->textContent() if $n4 eq 'name'; # contains domain or future name
+        $rinfo->{$otype}->{$oname}->{ex_date} = DateTime::Format::ISO8601->new()->parse_datetime($c4->textContent()) if $n4 eq 'exDate';
+        $rinfo->{$otype}->{$oname}->{action}=$oaction;
+      }
+    }
+  }
+  # Multiple domain names for the extdom...
+  foreach (qw/dlgData expData/)
+  {
+    if (my $data=$mes->get_response('pl_domain',$_))
+    {
+      $rinfo->{$otype}->{$oname}->{extdom_names}= \@tmp;
+      $rinfo->{$otype}->{$oname}->{action}= $_;
+    }
+  }
 
  return;
 }

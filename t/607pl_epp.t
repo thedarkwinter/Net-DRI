@@ -6,8 +6,9 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
+use Data::Dumper;
 
-use Test::More tests => 171;
+use Test::More tests => 440;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -130,15 +131,13 @@ $R2 = $E1 . '<response><result code="1301"><msg lang="en">Command completed succ
 $rc = $dri->message_retrieve();
 is($rc->is_success(), 1, 'message_retrieve');
 is($dri->get_info('last_id'), 27389, 'message get_info last_id 1');
+#is_deeply([$dri->get_info('auth_domain', 'domain', 'test.com.pl')], [{ pw => 'JuhIFbrKfX4xReybrUe1pZs' }], 'message get_info auth pw');
 is_deeply([$dri->get_info('auth', 'domain', 'test.com.pl')], [{ pw => 'JuhIFbrKfX4xReybrUe1pZs' }], 'message get_info auth pw');
 is($dri->get_info('exist', 'domain', 'test.com.pl'), 1, 'Domain exists');
 is($dri->get_info('name', 'domain', 'test.com.pl'), 'test.com.pl', 'Domain name is correct');
 is($dri->get_info('action', 'message', 27389), 'pollAuthInfo', 'Action is pollAuthInfo');
 
-## more .PL message polling
-
 $R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="8308"><qDate>2008-04-18T07:03:35.880Z</qDate><msg lang="en">domain transfer requested</msg></msgQ><resData><domain:trnData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>syhosting.pl</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>theuser</domain:reID><domain:reDate>2008-04-18T07:03:35.487Z</domain:reDate><domain:acID>irgendwas</domain:acID><domain:acDate>2008-05-18T07:03:35.487Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
-
 $rc = $dri->message_retrieve();
 is($rc->is_success(), 1, 'message_retrieve');
 is($dri->get_info('last_id'), 8308, 'message get_info last_id 1');
@@ -146,7 +145,6 @@ is($dri->get_info('action', 'message', 8308), 'transfer', 'Action is correct');
 is($dri->get_info('content','message', 8308), 'domain transfer requested', 'Content is correct');
 is($dri->get_info('object_id', 'message', 8308), 'syhosting.pl', 'Object ID is correct');
 is($dri->get_info('object_type', 'message', 8308), 'domain', 'Object type is correct');
-
 
 ## .PL message polling: 5.5.5.1 - NASK_EPP_en_draft.pdf
 $R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="70"><qDate>2003-02-07T11:23:08.0Z</qDate><msg lang="en">Domain transferred.</msg></msgQ><resData><domain:trnData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0"xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example.tld</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2003-02-07T11:23:08.830Z</domain:reDate><domain:acID>NASK EPP Registry</domain:acID><domain:acDate>2003-02-07T11:23:08.830Z</domain:acDate><domain:exDate>2003-05-07T11:23:08.830Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
@@ -169,6 +167,356 @@ is($dri->get_info('acID','message',70),'NASK EPP Registry','message get_info acI
 is(''.$dri->get_info('acDate','message',70),'2003-02-07T11:23:08','message get_info acDate');
 is(''.$dri->get_info('exDate','message',70),'2003-05-07T11:23:08','message get_info exDate');
 
+## 9.1 - NASK_EPP_en_draft.pdf - Domain transfer requested
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="6" id="1651"><qDate>2005-06-03T06:41:41.927Z</qDate><msg lang="en">domain transfer requested</msg></msgQ><resData><domain:trnData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>bryzal.pl</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>wgtat</domain:reID><domain:reDate>2005-03-03T11:41:41.893Z</domain:reDate><domain:acID>dmrt0029000018</domain:acID><domain:acDate>2005-07-03T06:41:41.893Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),1651,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),1651,'message get_info last_id 2');
+is($dri->get_info('id','message',1651),1651,'message get_info id');
+is($dri->get_info('qdate','message',1651),'2005-06-03T06:41:41','message get_info qdate');
+is($dri->get_info('content','message',1651),'domain transfer requested','message get_info content');
+is($dri->get_info('lang','message',1651),'en','message ge t_info lang');
+is($dri->get_info('object_type','message',1651),'domain','message get_info object type');
+is($dri->get_info('name','message',1651),'bryzal.pl','message get_info name');
+is($dri->get_info('trStatus','message',1651),'pending','message get_info status');
+is($dri->get_info('reID','message',1651),'wgtat','message get_info reID');
+is($dri->get_info('reDate','message',1651),'2005-03-03T11:41:41','message get_info reDate');
+is($dri->get_info('acID','message',1651),'dmrt0029000018','message get_info acID');
+is($dri->get_info('acDate','message',1651),'2005-07-03T06:41:41','message get_info acDate');
+
+## 9.2 - NASK_EPP_en_draft.pdf - Domain transfer cancelled
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="1849"><qDate>2005-06-22T07:36:52.223Z</qDate><msg lang="en">domain transfer cancelled</msg></msgQ><resData><domain:trnData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>weaktest.pl</domain:name><domain:trStatus>clientCancelled</domain:trStatus><domain:reID>bart</domain:reID><domain:reDate>2005-06-22T07:33:30.0Z</domain:reDate><domain:acID>neta29805</domain:acID><domain:acDate>2005-06-22T07:36:52.202Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),1849,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),1849,'message get_info last_id 2');
+is($dri->get_info('id','message',1849),1849,'message get_info id');
+is($dri->get_info('qdate','message',1849),'2005-06-22T07:36:52','message get_info qdate');
+is($dri->get_info('content','message',1849),'domain transfer cancelled','message get_info content');
+is($dri->get_info('lang','message',1849),'en','message ge t_info lang');
+is($dri->get_info('object_type','message',1849),'domain','message get_info object type');
+is($dri->get_info('name','message',1849),'weaktest.pl','message get_info name');
+is($dri->get_info('trStatus','message',1849),'clientCancelled','message get_info status');
+is($dri->get_info('reID','message',1849),'bart','message get_info reID');
+is($dri->get_info('reDate','message',1849),'2005-06-22T07:33:30','message get_info reDate');
+is($dri->get_info('acID','message',1849),'neta29805','message get_info acID');
+is($dri->get_info('acDate','message',1849),'2005-06-22T07:36:52','message get_info acDate');
+
+## 9.3 - NASK_EPP_en_draft.pdf - Domain transfer expired
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="3" id="1900"><qDate>2005-06-22T12:04:18.323Z</qDate><msg lang="en">domain transfer expired</msg></msgQ><resData><domain:trnData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>pajac.pl</domain:name><domain:trStatus>serverCancelled</domain:trStatus><domain:reID>beep</domain:reID><domain:reDate>2005-05-12T12:38:49.0Z</domain:reDate><domain:acID>iap07</domain:acID><domain:acDate>2005-06-22T12:04:18.304Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),1900,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),1900,'message get_info last_id 2');
+is($dri->get_info('id','message',1900),1900,'message get_info id');
+is($dri->get_info('qdate','message',1900),'2005-06-22T12:04:18','message get_info qdate');
+is($dri->get_info('content','message',1900),'domain transfer expired','message get_info content');
+is($dri->get_info('lang','message',1900),'en','message ge t_info lang');
+is($dri->get_info('object_type','message',1900),'domain','message get_info object type');
+is($dri->get_info('name','message',1900),'pajac.pl','message get_info name');
+is($dri->get_info('trStatus','message',1900),'serverCancelled','message get_info status');
+is($dri->get_info('reID','message',1900),'beep','message get_info reID');
+is($dri->get_info('reDate','message',1900),'2005-05-12T12:38:49','message get_info reDate');
+is($dri->get_info('acID','message',1900),'iap07','message get_info acID');
+is($dri->get_info('acDate','message',1900),'2005-06-22T12:04:18','message get_info acDate');
+
+## 9.4 - NASK_EPP_en_draft.pdf - Domain transferred
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="5" id="1652"><qDate>2005-06-03T06:55:40.253Z</qDate><msg lang="en">domain transferred</msg></msgQ><resData><domain:trnData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>brzydal6.pl</domain:name><domain:trStatus>clientApproved</domain:trStatus><domain:reID>agnat1</domain:reID><domain:reDate>2005-06-03T06:41:41.0Z</domain:reDate><domain:acID>dmrt0029000018</domain:acID><domain:acDate>2005-06-03T06:55:40.186Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),1652,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),1652,'message get_info last_id 2');
+is($dri->get_info('id','message',1652),1652,'message get_info id');
+is($dri->get_info('qdate','message',1652),'2005-06-03T06:55:40','message get_info qdate');
+is($dri->get_info('content','message',1652),'domain transferred','message get_info content');
+is($dri->get_info('lang','message',1652),'en','message ge t_info lang');
+is($dri->get_info('object_type','message',1652),'domain','message get_info object type');
+is($dri->get_info('name','message',1652),'brzydal6.pl','message get_info name');
+is($dri->get_info('trStatus','message',1652),'clientApproved','message get_info status');
+is($dri->get_info('reID','message',1652),'agnat1','message get_info reID');
+is($dri->get_info('reDate','message',1652),'2005-06-03T06:41:41','message get_info reDate');
+is($dri->get_info('acID','message',1652),'dmrt0029000018','message get_info acID');
+is($dri->get_info('acDate','message',1652),'2005-06-03T06:55:40','message get_info acDate');
+
+## 9.5 - NASK_EPP_en_draft.pdf - Broken delegation
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="15" id="2013"><qDate>2005-06-30T14:58:29.579Z</qDate><msg lang="en">broken delegation</msg></msgQ><resData><extdom:dlgData xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:name>makota.com.pl</extdom:name><extdom:name>pikawa.net.pl</extdom:name><extdom:name>bzdziagwa.pl</extdom:name><extdom:ns>ns1.wisla.pl</extdom:ns></extdom:dlgData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),2013,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),2013,'message get_info last_id 2');
+is($dri->get_info('id','message',2013),2013,'message get_info id');
+is($dri->get_info('qdate','message',2013),'2005-06-30T14:58:29','message get_info qdate');
+is($dri->get_info('content','message',2013),'broken delegation','message get_info content');
+is($dri->get_info('lang','message',2013),'en','message ge t_info lang');
+is($dri->get_info('object_type','message',2013),'domain','message get_info object type');
+is($dri->get_info('action','message',2013),'dlgData','message get_info action');
+is_deeply($dri->get_info('extdom_names','message',2013),['makota.com.pl','pikawa.net.pl','bzdziagwa.pl'],'message get_info extdom_names');
+is($dri->get_info('ns','message',2013),'ns1.wisla.pl','message get_info ns');
+
+## 9.6 - NASK_EPP_en_draft.pdf - Future transfer requested
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="1536"><qDate>2005-05-25T09:37:46.581Z</qDate><msg lang="en">future transfer requested</msg></msgQ><resData><future:trnData xmlns:future="http://www.dns.pl/nask-epp-schema/future-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/future-2.0 future-2.0.xsd"><future:name>zombi.pl</future:name><future:trStatus>pending</future:trStatus><future:reID>ceti1</future:reID><future:reDate>2005-05-25T09:37:46.549Z</future:reDate><future:acID>cet352</future:acID><future:acDate>2005-06-24T09:37:46.549Z</future:acDate></future:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),1536,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),1536,'message get_info last_id 2');
+is($dri->get_info('id','message',1536),1536,'message get_info id');
+is($dri->get_info('qdate','message',1536),'2005-05-25T09:37:46','message get_info qdate');
+is($dri->get_info('content','message',1536),'future transfer requested','message get_info content');
+is($dri->get_info('lang','message',1536),'en','message get_info lang');
+is($dri->get_info('object_type','message',1536),'future','message get_info object type');
+is($dri->get_info('name','message',1536),'zombi.pl','message get_info name');
+is($dri->get_info('trStatus','message',1536),'pending','message get_info status');
+is($dri->get_info('reID','message',1536),'ceti1','message get_info reID');
+is($dri->get_info('reDate','message',1536),'2005-05-25T09:37:46','message get_info reDate');
+is($dri->get_info('acID','message',1536),'cet352','message get_info acID');
+is($dri->get_info('acDate','message',1536),'2005-06-24T09:37:46','message get_info acDate');
+
+## 9.7 - NASK_EPP_en_draft.pdf - Future transfer cancelled
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="6" id="1334"><qDate>2005-05-16T22:05:39.228Z</qDate><msg lang="en">future transfer cancelled</msg></msgQ><resData><future:trnData xmlns:future="http://www.dns.pl/nask-epp-schema/future-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/future-2.0 future-2.0.xsd"><future:name>futureexample.pl</future:name><future:trStatus>clientCancelled</future:trStatus><future:reID>infomix</future:reID><future:reDate>2005-05-16T22:03:44.0Z</future:reDate><future:acID>inm023</future:acID><future:acDate>2005-05-16T22:05:39.212Z</future:acDate></future:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),1334,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),1334,'message get_info last_id 2');
+is($dri->get_info('id','message',1334),1334,'message get_info id');
+is(''.$dri->get_info('qdate','message',1334),'2005-05-16T22:05:39','message get_info qdate');
+is($dri->get_info('content','message',1334),'future transfer cancelled','message get_info content');
+is($dri->get_info('lang','message',1334),'en','message get_info lang');
+is($dri->get_info('object_type','message',1334),'future','message get_info object type');
+is($dri->get_info('name','message',1334),'futureexample.pl','message get_info name');
+is($dri->get_info('trStatus','message',1334),'clientCancelled','message get_info status');
+is($dri->get_info('reID','message',1334),'infomix','message get_info reID');
+is($dri->get_info('reDate','message',1334),'2005-05-16T22:03:44','message get_info reDate');
+is($dri->get_info('acID','message',1334),'inm023','message get_info acID');
+is($dri->get_info('acDate','message',1334),'2005-05-16T22:05:39','message get_info acDate');
+
+## 9.8 - NASK_EPP_en_draft.pdf - Future transfer request expired
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="6" id="1334"><qDate>2005-05-16T22:05:39.228Z</qDate><msg lang="en">future transfer request expired</msg></msgQ><resData><future:trnData xmlns:future="http://www.dns.pl/nask-epp-schema/future-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/future-2.0 future-2.0.xsd"><future:name>futureexample.pl</future:name><future:trStatus>serverCancelled</future:trStatus><future:reID>infomax</future:reID><future:reDate>2005-05-16T22:02:52.0Z</future:reDate><future:acID>inm_test02</future:acID><future:acDate>2005-06-24T09:52:27.727Z</future:acDate></future:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),1334,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),1334,'message get_info last_id 2');
+is($dri->get_info('id','message',1334),1334,'message get_info id');
+is(''.$dri->get_info('qdate','message',1334),'2005-05-16T22:05:39','message get_info qdate');
+is($dri->get_info('content','message',1334),'future transfer request expired','message get_info content');
+is($dri->get_info('lang','message',1334),'en','message get_info lang');
+is($dri->get_info('object_type','message',1334),'future','message get_info object type');
+is($dri->get_info('name','message',1334),'futureexample.pl','message get_info name');
+is($dri->get_info('trStatus','message',1334),'serverCancelled','message get_info status');
+is($dri->get_info('reID','message',1334),'infomax','message get_info reID');
+is($dri->get_info('reDate','message',1334),'2005-05-16T22:02:52','message get_info reDate');
+is($dri->get_info('acID','message',1334),'inm_test02','message get_info acID');
+is($dri->get_info('acDate','message',1334),'2005-06-24T09:52:27','message get_info acDate');
+
+## 9.9 - NASK_EPP_en_draft.pdf - Future transferred
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="9" id="1538"><qDate>2005-05-25T09:51:20.909Z</qDate><msg lang="en">future transferred</msg></msgQ><resData><future:trnData xmlns:future="http://www.dns.pl/nask-epp-schema/future-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/future-2.0 future-2.0.xsd"><future:name>example.pl</future:name><future:trStatus>clientApproved</future:trStatus><future:reID>ceti1</future:reID><future:reDate>2005-05-25T09:37:46.0Z</future:reDate><future:acID>zet352</future:acID><future:acDate>2005-05-25T09:51:20.836Z</future:acDate></future:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),1538,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),1538,'message get_info last_id 2');
+is($dri->get_info('id','message',1538),1538,'message get_info id');
+is(''.$dri->get_info('qdate','message',1538),'2005-05-25T09:51:20','message get_info qdate');
+is($dri->get_info('content','message',1538),'future transferred','message get_info content');
+is($dri->get_info('lang','message',1538),'en','message get_info lang');
+is($dri->get_info('object_type','message',1538),'future','message get_info object type');
+is($dri->get_info('name','message',1538),'example.pl','message get_info name');
+is($dri->get_info('trStatus','message',1538),'clientApproved','message get_info status');
+is($dri->get_info('reID','message',1538),'ceti1','message get_info reID');
+is($dri->get_info('reDate','message',1538),'2005-05-25T09:37:46','message get_info reDate');
+is($dri->get_info('acID','message',1538),'zet352','message get_info acID');
+is($dri->get_info('acDate','message',1538),'2005-05-25T09:51:20','message get_info acDate');
+
+## 9.10 - NASK_EPP_en_draft.pdf - Soon domain expiration
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="2001"><qDate>2005-06-27T21:00:19.538Z</qDate><msg lang="en">soon domain expiration</msg></msgQ><resData><extdom:expData xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:name>ala.pl</extdom:name><extdom:name>ma.pl</extdom:name><extdom:name>kota.pl</extdom:name><extdom:exDate>2005-06-29T21:00:19.512Z</extdom:exDate></extdom:expData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),2001,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),2001,'message get_info last_id 2');
+is($dri->get_info('id','message',2001),2001,'message get_info id');
+is(''.$dri->get_info('qdate','message',2001),'2005-06-27T21:00:19','message get_info qdate');
+is($dri->get_info('content','message',2001),'soon domain expiration','message get_info content');
+is($dri->get_info('lang','message',2001),'en','message get_info lang');
+is($dri->get_info('object_type','message',2001),'domain','message get_info object type');
+is($dri->get_info('action','message',2001),'expData','message get_info action');
+is_deeply($dri->get_info('extdom_names','message',2001),['ala.pl','ma.pl','kota.pl'],'message get_info extdom_names');
+is($dri->get_info('ex_date','message',2001),'2005-06-29T21:00:19','message get_info exDate');
+
+## 9.11 - NASK_EPP_en_draft.pdf - Domain authorization information
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="2000"><qDate>2005-06-29T20:37:57.133Z</qDate><msg lang="en">domain authInfo</msg></msgQ><resData><extdom:pollAuthInfo xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:domain><extdom:name>nask.pl</extdom:name><extdom:authInfo><extdom:pw>cPxWt418</extdom:pw></extdom:authInfo></extdom:domain><extdom:registrant><extdom:id>tst12</extdom:id><extdom:authInfo><extdom:pw>Wct59Nka5</extdom:pw></extdom:authInfo></extdom:registrant></extdom:pollAuthInfo></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),2000,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),2000,'message get_info last_id 2');
+is($dri->get_info('id','message',2000),2000,'message get_info id');
+is(''.$dri->get_info('qdate','message',2000),'2005-06-29T20:37:57','message get_info qdate');
+is($dri->get_info('content','message',2000),'domain authInfo','message get_info content');
+is($dri->get_info('lang','message',2000),'en','message get_info lang');
+is($dri->get_info('object_type','message',2000),'domain','message get_info object type');
+is($dri->get_info('object_id','message',2000),'nask.pl','message get_info id');
+is($dri->get_info('action','message',2000),'pollAuthInfo','message get_info action');
+is($dri->get_info('name','message',2000),'nask.pl','message get_info name');
+is($dri->get_info('auth','message',2000)->{pw},'cPxWt418','message get_info authInfo (domain)');
+is($dri->get_info('id_registrant','message',2000),'tst12','message get_info id_registrant');
+is($dri->get_info('auth_registrant','message',2000)->{pw},'Wct59Nka5','message get_info authInfo (registrant)');
+
+## 9.12 - NASK_EPP_en_draft.pdf - Future finalized
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="2002"><qDate>2005-06-29T21:13:57.335Z</qDate><msg lang="en">future finalized</msg></msgQ><resData><domain:creData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example.pl</domain:name><domain:crDate>2005-06-29T21:13:57.327Z</domain:crDate><domain:exDate>2005-07-06T21:13:57.327Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),2002,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),2002,'message get_info last_id 2');
+is($dri->get_info('id','message',2002),2002,'message get_info id');
+is(''.$dri->get_info('qdate','message',2002),'2005-06-29T21:13:57','message get_info qdate');
+is($dri->get_info('content','message',2002),'future finalized','message get_info content');
+is($dri->get_info('lang','message',2002),'en','message get_info lang');
+is($dri->get_info('object_type','message',2002),'domain','message get_info object type');
+is($dri->get_info('object_id','message',2002),'example.pl','message get_info id');
+is($dri->get_info('action','message',2002),'create','message get_info action');
+is($dri->get_info('name','message',2002),'example.pl','message get_info name');
+is($dri->get_info('crDate','message',2002),'2005-06-29T21:13:57','message get_info crDate');
+is($dri->get_info('exDate','message',2002),'2005-07-06T21:13:57','message get_info exDate');
+
+## 9.13 - NASK_EPP_en_draft.pdf - Near password expiration
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="2003"><qDate>2005-06-29T21:17:26.288Z</qDate><msg lang="en">soon password expiration</msg></msgQ><resData><extepp:passwdReminder xmlns:extepp="http://www.dns.pl/nask-epp-schema/extepp-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extepp-2.0 extepp-2.0.xsd"><extepp:exDate>2005-07-06T21:17:26.273Z</extepp:exDate></extepp:passwdReminder></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),2003,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),2003,'message get_info last_id 2');
+is($dri->get_info('id','message',2003),2003,'message get_info id');
+is(''.$dri->get_info('qdate','message',2003),'2005-06-29T21:17:26','message get_info qdate');
+is($dri->get_info('content','message',2003),'soon password expiration','message get_info content');
+is($dri->get_info('lang','message',2003),'en','message get_info lang');
+is($dri->get_info('object_type','message','extepp'),undef,'message get_info object type');
+is($dri->get_info('object_id','message',2003),'domain','message get_info id');
+is($dri->get_info('action','message',2003),'passwdReminder','message get_info action');
+is($dri->get_info('name','message',2003),'domain','message get_info name');
+is($dri->get_info('ex_date','message',2003),'2005-07-06T21:17:26','message get_info exDate extepp');
+
+## 9.15 - NASK_EPP_en_draft.pdf - Domain unblocked
+$R2 = $E1 . '<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="2003"><qDate>2007-07-29T21:17:26.288Z</qDate><msg lang="en">domain unblocked</msg></msgQ><resData><extdom:pollDomainUnblocked xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:domain><extdom:name>domena.pl</extdom:name><extdom:date>2007-07-06T21:17:26.273Z</extdom:date></extdom:domain></extdom:pollDomainUnblocked></resData>' . $TRID . '</response>' . $E2;
+$rc = $dri->message_retrieve();
+is($rc->is_success(), 1, 'message_retrieve');
+is($dri->get_info('last_id'), 2003, 'message get_info last_id 1');
+is($dri->get_info('id','message',2003),2003,'message get_info id');
+is(''.$dri->get_info('qdate','message',2003),'2007-07-29T21:17:26','message get info qdate');
+is($dri->get_info('content','message',2003),'domain unblocked','message get_info content');
+is($dri->get_info('lang','message',2003),'en','message get_info lang');
+is($dri->get_info('object_type','message',2003),'domain','message get_info object_type');
+is($dri->get_info('object_id','message',2003),'domena.pl','message get_info object_id');
+is($dri->get_info('action','message',2003),'pollDomainUnblocked','message get_info action');
+is($dri->get_info('name','message',2003),'domena.pl','message get_info name');
+is(''.$dri->get_info('date','message',2003),'2007-07-06T21:17:26','message get_info date');
+
+## 9.16 - NASK_EPP_en_draft.pdf - Future removed due to a domain blockade
+$R2 = $E1 . '<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="2" id="2003"><qDate>2007-07-29T21:17:26.288Z</qDate><msg lang="en">future removed due to domain blockade</msg></msgQ><resData><extdom:pollFutureRemoved xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:future><extdom:name>b01.pl</extdom:name><extdom:date>2007-07-06T21:17:26.273Z</extdom:date></extdom:future></extdom:pollFutureRemoved></resData>' . $TRID . '</response>' . $E2;
+$rc = $dri->message_retrieve();
+is($rc->is_success(), 1, 'message_retrieve');
+is($dri->get_info('last_id'), 2003, 'message get_info last_id 1');
+is($dri->get_info('id','message',2003),2003,'message get_info id');
+is(''.$dri->get_info('qdate','message',2003),'2007-07-29T21:17:26','message get info qdate');
+is($dri->get_info('content','message',2003),'future removed due to domain blockade','message get_info content');
+is($dri->get_info('lang','message',2003),'en','message get_info lang');
+is($dri->get_info('object_type','message',2003),'domain','message get_info object_type');
+is($dri->get_info('object_id','message',2003),'b01.pl','message get_info object_id');
+is($dri->get_info('action','message',2003),'pollFutureRemoved','message get_info action');
+is($dri->get_info('name','message',2003),'b01.pl','message get_info name');
+is(''.$dri->get_info('date','message',2003),'2007-07-06T21:17:26','message get_info date');
+
+## 9.17 - NASK_EPP_en_draft.pdf - Domain taste removed due to a domain blockade
+$R2 = $E1 . '<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="2003"><qDate>2007-07-29T21:17:26.288Z</qDate><msg lang="en">taste removed due to domain blockade</msg></msgQ><resData><extdom:pollTasteRemoved xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:taste><extdom:name>b02.pl</extdom:name><extdom:date>2007-07-06T21:17:26.273Z</extdom:date></extdom:taste></extdom:pollTasteRemoved></resData>' . $TRID . '</response>' . $E2;
+$rc = $dri->message_retrieve();
+is($rc->is_success(), 1, 'message_retrieve');
+is($dri->get_info('last_id'), 2003, 'message get_info last_id 1');
+is($dri->get_info('id','message',2003),2003,'message get_info id');
+is(''.$dri->get_info('qdate','message',2003),'2007-07-29T21:17:26','message get info qdate');
+is($dri->get_info('content','message',2003),'taste removed due to domain blockade','message get_info content');
+is($dri->get_info('lang','message',2003),'en','message get_info lang');
+is($dri->get_info('object_type','message',2003),'domain','message get_info object_type');
+is($dri->get_info('object_id','message',2003),'b02.pl','message get_info object_id');
+is($dri->get_info('action','message',2003),'pollTasteRemoved','message get_info action');
+is($dri->get_info('name','message',2003),'b02.pl','message get_info name');
+is(''.$dri->get_info('date','message',2003),'2007-07-06T21:17:26','message get_info date');
+
+## 9.18 - NASK_EPP_en_draft.pdf - Domain judicially removed
+$R2 = $E1 . '<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="17830"><qDate>2008-01-04T12:34:52.238Z</qDate><msg lang="en">domain removed due to a legal valid decision of the court</msg></msgQ><resData><extdom:pollDomainJudicialRemoved xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:domain><extdom:name>judicialtest.pl</extdom:name><extdom:date>2007-07-06T21:17:26.273Z</extdom:date></extdom:domain></extdom:pollDomainJudicialRemoved></resData>' . $TRID . '</response>' . $E2;
+$rc = $dri->message_retrieve();
+is($rc->is_success(), 1, 'message_retrieve');
+is($dri->get_info('last_id'), 17830, 'message get_info last_id 1');
+is($dri->get_info('id','message',17830),17830,'message get_info id');
+is(''.$dri->get_info('qdate','message',17830),'2008-01-04T12:34:52','message get info qdate');
+is($dri->get_info('content','message',17830),'domain removed due to a legal valid decision of the court','message get_info content');
+is($dri->get_info('lang','message',17830),'en','message get_info lang');
+is($dri->get_info('object_type','message',17830),'domain','message get_info object_type');
+is($dri->get_info('object_id','message',17830),'judicialtest.pl','message get_info object_id');
+is($dri->get_info('action','message',17830),'pollDomainJudicialRemoved','message get_info action');
+is($dri->get_info('name','message',17830),'judicialtest.pl','message get_info name');
+is(''.$dri->get_info('date','message',17830),'2007-07-06T21:17:26','message get_info date');
+
+## 9.19 Non-sufficient funds on prepaid account
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="4" id="89010"><qDate>2009-10-19T09:34:31.178Z</qDate><msg lang="en">non-sufficient funds</msg></msgQ><resData><extepp:accountBalanceInsufficient xmlns:extepp="http://www.dns.pl/nask-epp-schema/extepp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extepp-2.0 extepp-2.0.xsd"><extepp:accountLevel>4.90</extepp:accountLevel><extepp:accountType>DOMAIN</extepp:accountType><extepp:serviceName>PREPAID_DOMAIN_FUNC_CREATE_1</extepp:serviceName><extepp:name>pp14.pl</extepp:name></extepp:accountBalanceInsufficient></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),89010,'message get_info last_id 1');
+is($dri->get_info('id','message',89010),89010,'message get_info id');
+is(''.$dri->get_info('qdate','message',89010),'2009-10-19T09:34:31','message get_info qdate');
+is($dri->get_info('content','message',89010),'non-sufficient funds','message get_info content');
+is($dri->get_info('lang','message',89010),'en','message get_info lang');
+is($dri->get_info('object_type','message','extepp'),undef,'message get_info object type');
+is($dri->get_info('object_id','message',89010),'domain','message get_info id');
+is($dri->get_info('action','message',89010),'accountBalanceInsufficient','message get_info action');
+is($dri->get_info('account_level','message',89010),'4.90','message get_info accountLevel');
+is($dri->get_info('account_type','message',89010),'DOMAIN','message get_info accountType');
+is($dri->get_info('service_name','message',89010),'PREPAID_DOMAIN_FUNC_CREATE_1','message get_info serviceName');
+is($dri->get_info('domain_name','message',89010),'pp14.pl','message get_info domain of future name');
+is($dri->get_info('name','message',89010),'domain','message get_info name');
+
+## 9.20 Prepaid account balance notification level reached
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="3" id="89021"><qDate>2009-10-19T09:44:24.118Z</qDate><msg lang="en">account balance notification level reached</msg></msgQ><resData><extepp:accountBalanceCrossed xmlns:extepp="http://www.dns.pl/nask-epp-schema/extepp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extepp-2.0 extepp-2.0.xsd"><extepp:notificationLevel>100.00</extepp:notificationLevel><extepp:accountType>DOMAIN</extepp:accountType></extepp:accountBalanceCrossed></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),89021,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),89021,'message get_info last_id 2');
+is($dri->get_info('id','message',89021),89021,'message get_info id');
+is(''.$dri->get_info('qdate','message',89021),'2009-10-19T09:44:24','message get_info qdate');
+is($dri->get_info('content','message',89021),'account balance notification level reached','message get_info content');
+is($dri->get_info('lang','message',89021),'en','message get_info lang');
+is($dri->get_info('object_type','message','extepp'),undef,'message get_info object type');
+is($dri->get_info('object_id','message',89021),'domain','message get_info id');
+is($dri->get_info('action','message',89021),'accountBalanceCrossed','message get_info action');
+is($dri->get_info('name','message',89021),'domain','message get_info name');
+is($dri->get_info('notification_level','message',89021),'100.00','message get_info notificationLevel');
+is($dri->get_info('account_type','message',89021),'DOMAIN','message get_info accountType');
+
+## 9.21 - NASK_EPP_en_draft.pdf
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="2" id="89024"><qDate>2009-10-19T09:52:31.128Z</qDate><msg lang="en">domain renewed automatically</msg></msgQ><resData><extdom:pollDomainAutoRenewed xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:name>ppr13.pl</extdom:name></extdom:pollDomainAutoRenewed></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),89024,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),89024,'message get_info last_id 2');
+is($dri->get_info('id','message',89024),89024,'message get_info id');
+is(''.$dri->get_info('qdate','message',89024),'2009-10-19T09:52:31','message get_info qdate');
+is($dri->get_info('content','message',89024),'domain renewed automatically','message get_info content');
+is($dri->get_info('lang','message',89024),'en','message get_info lang');
+is($dri->get_info('object_type','message',89024),'domain','message get_info object type');
+is($dri->get_info('object_id','message',89024),'ppr13.pl','message get_info id');
+is($dri->get_info('action','message',89024),'pollDomainAutoRenewed','message get_info action');
+is($dri->get_info('name','message',89024),'ppr13.pl','message get_info name');
+
+## 9.22 - NASK_EPP_en_draft.pdf
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="89025"><qDate>2009-10-19T09:56:51.131Z</qDate><msg lang="en">domain auto renewal failure due to domain status</msg></msgQ><resData><extdom:pollDomainAutoRenewFailed xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:name>ppr13.pl</extdom:name><extdom:date>2009-11-09T09:07:23.609Z</extdom:date></extdom:pollDomainAutoRenewFailed></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),89025,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),89025,'message get_info last_id 2');
+is($dri->get_info('id','message',89025),89025,'message get_info id');
+is(''.$dri->get_info('qdate','message',89025),'2009-10-19T09:56:51','message get_info qdate');
+is($dri->get_info('content','message',89025),'domain auto renewal failure due to domain status','message get_info content');
+is($dri->get_info('lang','message',89025),'en','message get_info lang');
+is($dri->get_info('object_type','message',89025),'domain','message get_info object_type');
+is($dri->get_info('object_id','message',89025),'ppr13.pl','message get_info object_id');
+is($dri->get_info('action','message',89025),'pollDomainAutoRenewFailed','message get_info action');
+is($dri->get_info('name','message',89025),'ppr13.pl','message get_info name');
+is(''.$dri->get_info('date','message',89025),'2009-11-09T09:07:23','message get_info date');
 
 ## Multiple level domain registration
 

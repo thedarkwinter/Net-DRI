@@ -75,6 +75,7 @@ sub setup
       pl_contact  => ['http://www.dns.pl/nask-epp-schema/extcon-2.0','extcon-2.0.xsd'],
       pl_domain   => ['http://www.dns.pl/nask-epp-schema/extdom-2.0','extdom-2.0.xsd'],
       future      => ['http://www.dns.pl/nask-epp-schema/future-2.0','future-2.0.xsd'],
+      extepp      => ['http://www.dns.pl/nask-epp-schema/extepp-2.0','extepp-2.0.xsd'],
     });
 
   $self->capabilities('host_update','name',undef); ## No change of hostnames

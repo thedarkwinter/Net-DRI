@@ -25,6 +25,7 @@ use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
 use DateTime::Duration;
 use DateTime::Format::ISO8601;
+use Data::Dumper;
 
 
 ####################################################################################################
@@ -289,17 +290,18 @@ sub transfer_parse
   my $trndata=$mes->get_response('future','trnData');
   return unless defined $trndata;
   
+  $oname = 'future' unless defined $oname;
   foreach my $el (Net::DRI::Util::xml_list_children($trndata))
   {
-  	my ($name,$content)=@$el;
-  	if ($name=~m/^(name|trStatus|reID|acID)$/)
-  	{
-  	  $rinfo->{future}->{$oname}->{$1}=$content->textContent();
-  	}
-  	elsif ($name=~m/^(reDate|acDate|exDate)$/)
-  	{
-  	  $rinfo->{future}->{$oname}->{$1}=$po->parse_iso8601($content->textContent());
-  	}
+    my ($name,$content)=@$el;
+    if ($name=~m/^(name|trStatus|reID|acID)$/)
+    {
+      $rinfo->{future}->{$oname}->{$1}=$content->textContent();
+    }
+    elsif ($name=~m/^(reDate|acDate|exDate)$/)
+    {
+      $rinfo->{future}->{$oname}->{$1}=$po->parse_iso8601($content->textContent());
+    }
   }
   return;
 }
