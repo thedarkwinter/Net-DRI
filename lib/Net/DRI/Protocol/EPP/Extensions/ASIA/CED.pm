@@ -150,9 +150,10 @@ sub user_info
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  my $infdata=$mes->get_extension('asia','infData');
- my $ceddata;
+ # if there are defined yet, then we should not be here. Hash randomisation fix seems to have fixed this anyway, but just to make sure.
+ return undef unless $infdata && $otype && $oname;
  my $contact = $rinfo->{$otype}->{$oname}->{self};
- my $c;
+ my ($ceddata,$c);
 
  my $ns=$mes->ns('asia');
  $ceddata = $infdata->getElementsByTagNameNS($ns, 'cedData')->shift() if (defined($infdata));

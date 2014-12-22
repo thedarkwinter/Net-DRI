@@ -113,7 +113,7 @@ sub parse_poll
 
  ## Because of new Perl hash keys randomization always process domain, contact, host before anything else
  ## - this will ensure that panData is hit for the object in time before e.g. notifications
- foreach my $htype ((sort { $a cmp $b } grep { $_ =~ m/domain|contact|host/ } keys %$h), (sort { $a cmp $b } grep { $_ !~ m/domain|contact|host/ } keys %$h)) {
+ foreach my $htype ('domain','contact','host', (sort { $a cmp $b } grep { $_ !~ m/domain|contact|host/ } keys %$h)) {
   foreach my $hv ($h->{$htype})
   {
    ## Because of new Perl hash keys randomization, we must make sure review_complete action is done first

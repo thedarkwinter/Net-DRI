@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 23;
+use Test::More tests => 32;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -246,5 +246,22 @@ is($dri->get_info('maintainer_url', 'domain', 'epptest23.asia'),
 my $ipr=$rc->get_data('ipr');
 is($ipr->{regDate},'2007-11-09T00:00:00','domain_info get_data(ipr) regDate');
 is($ipr->{appDate},'2007-11-09T00:00:00','domain_info get_data(ipr) appDate');
+
+#####################
+## Notifications
+
+# This poll test was added when a bug was causing an insufficient parameters exception on message_retrieve
+
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="22" id="12345"><qDate>2014-12-22T06:41:03.0Z</qDate><msg lang="en-US">Transfer Auto Approved.</msg></msgQ><resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>randomdomain.asia</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>ClientY</domain:reID><domain:reDate>2014-12-22T06:41:03.0Z</domain:reDate><domain:acID>ClientX</domain:acID><domain:acDate>2014-12-17T06:41:03.0Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),'12345','message_retrieve get_info(last_id)');
+is($dri->get_info('lang','message','12345'),'en-US','message get_info lang');
+is($dri->get_info('object_type','message','12345'),'domain','message get_info object_type');
+is($dri->get_info('object_id','message','12345'),'randomdomain.asia','message get_info id');
+is($dri->get_info('action','message','12345'),'transfer','message get_info action');
+is($dri->get_info('acID','message','12345'),'ClientX','message get_info acID');
+is($dri->get_info('reID','message','12345'),'ClientY','message get_info reID');
+is($dri->get_info('acDate','message','12345'),'2014-12-17T06:41:03','message get_info acDate');
+is($dri->get_info('reDate','message','12345'),'2014-12-22T06:41:03','message get_info reDate');
 
 exit 0;
