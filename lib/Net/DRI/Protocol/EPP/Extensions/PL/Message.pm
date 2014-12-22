@@ -21,7 +21,6 @@ use strict;
 use warnings;
 
 use Net::DRI::Exception;
-use Data::Dumper;
 
 =pod
 

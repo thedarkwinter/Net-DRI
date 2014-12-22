@@ -25,7 +25,6 @@ use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
 use DateTime::Duration;
 use DateTime::Format::ISO8601;
-use Data::Dumper;
 
 
 ####################################################################################################
