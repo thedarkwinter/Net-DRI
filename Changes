@@ -1,5 +1,23 @@
 Net::DRI changelog from newest to oldest changes
 
+0.8-tdw 2014-10-30 DEVELOPMENT RELEASE
+!! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRP) or transports *might* not work in this version, however EPP over HTTPS is working as is RRI
+
++ Added support for draft-brown-epp-fees-03 (fee-0.6) for CRR (Paulo Jorge)
+= Minor TMCH protocol fixes
++ LaunchPhase extension: updated to draft-ietf-eppext-launchphase-02
++ Fix some issues arising from Hash Randomisation 
+= NGTLD DRD TLD Corrections/Additions
++ EPP lang defaults to en at login if server supports it instead of first mentioned language
++ AFNIC gTLD: RegistryMessage parser to create LaunchPhase action from panData
++ NGTLD.DRD disable verify_icann_reserved() until its been updated as ICANN has changed some policies with 2 character labels
++ Added support for nic.br (.rio, .final, .bom)
++ ZA, fixes with greeting parse, add SecDNS support, and minor updates on COZADOMAIN extension
+
+
 0.7-tdw 2014-10-30 DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!
 

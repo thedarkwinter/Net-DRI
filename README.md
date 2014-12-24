@@ -1,4 +1,4 @@
-### Net-DRI-0.7-tdw
+### Net-DRI-0.8-tdw
 
 * * *
 #### Overview
@@ -12,7 +12,7 @@ Based on draft-ietf-eppext-launchphase-01
 Afnic, Afilias, ARI, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media, GMO Registry, KNET, KSRegistry (Starting Dot), Minds And Machines, Neustar, Nic.BR, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, Tango from KNIPP, UniRegistry, Verisign, ZACR
 
 ##### Planned/Possible support for providers
-CoCCA,SIDN, TCI
+CoCCA, SIDN, TCI
 
 ##### Trademark services
 TMCH (Deloitte)
