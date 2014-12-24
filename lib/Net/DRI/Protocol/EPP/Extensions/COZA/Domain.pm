@@ -1,4 +1,4 @@
-## Domain Registry Interface, .CO.ZA Domain EPP extension commands
+ ## Domain Registry Interface, .CO.ZA Domain EPP extension commands
 ## From http://registry.coza.net.za/doku.php?id=eppdomainextension
 ##
 ## Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
@@ -27,7 +27,7 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
-          update         => [ \&update , \&update_parse ],
+          update         => [ \&update , undef ],
           info           => [ \&info   , \&info_parse ],
          );
 
@@ -45,6 +45,7 @@ sub setup
 
 ####################################################################################################
 
+## There is no update_parse as this is done by result code and message
 sub update
 {
  my ($epp,$domain,$todo)=@_;
@@ -61,34 +62,19 @@ sub update
  my $cancel=$todo->set('cancel_action');
  if (defined $cancel)
  {
-  Net::DRI::Exception::usererr_invalid_parameters('cancel_action parameter must be PendingUpdate or PendingSuspension') unless $cancel=~m/^Pending(?:Update|Suspension)$/;
+  my @actions = qw/PendingManualSuspension PendingUpdate PendingManualDeletion PendingGracePeriodSuspension PendingSuspension PendingDeletion PendingClosedRedemption/;
+  Net::DRI::Exception::usererr_invalid_parameters("cancel_action parameter must be one of @actions") unless grep ($_ eq $cancel, @actions);
   my $eid=$mes->command_extension_register('cozadomain','update',{cancelPendingAction=>$cancel});
  }
  return;
 }
 
-sub update_parse
-{
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
-
- my $updata=$mes->get_extension('cozadomain','cozaData');
- return unless defined $updata;
-
-## We do not parse the <cozadomain:detail result="success">AutoRenew 'False' successful</cozadomain:detail>
- return;
-}
-
+## We always add the extension as it requests the extension back from the server with autorenew flags
 sub info
 {
  my ($epp,$domain,$rp)=@_;
  my $mes=$epp->message();
-
- return unless Net::DRI::Util::has_key($rp,'transfer_cost') && $rp->{transfer_cost};
-
  my $eid=$mes->command_extension_register('cozadomain','info');
- $mes->command_extension($eid,[['cozadomain:transferQuote','true']]);
  return;
 }
 
@@ -104,9 +90,6 @@ sub info_parse
  my $ns=$mes->ns('cozadomain');
  my $autorenew=Net::DRI::Util::xml_traverse($infdata,$ns,'autorenew');
  $rinfo->{domain}->{$oname}->{auto_renew}=Net::DRI::Util::xml_parse_boolean($autorenew->textContent()) if defined $autorenew;
-
- my $cost=Net::DRI::Util::xml_traverse($infdata,$ns,'transferQuoteRes','cost');
- $rinfo->{domain}->{$oname}->{transfer_cost}=0+$cost->textContent() if defined $cost;
  return;
 }
 

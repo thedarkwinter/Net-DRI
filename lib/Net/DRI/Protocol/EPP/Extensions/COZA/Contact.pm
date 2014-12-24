@@ -96,7 +96,7 @@ sub update
  my $cancel=$todo->set('cancel_action');
  return unless defined $cancel;
 
- Net::DRI::Exception::usererr_invalid_parameters('cancel_action parameter must be PendingUpdate') unless $cancel=~m/^Pending(?:Update)$/;
+ Net::DRI::Exception::usererr_invalid_parameters('cancel_action parameter must be PendingUpdate') unless $cancel eq 'PendingUpdate';
  my $eid=$mes->command_extension_register('cozacontact','update',{cancelPendingAction=>$cancel});
  return;
 }
