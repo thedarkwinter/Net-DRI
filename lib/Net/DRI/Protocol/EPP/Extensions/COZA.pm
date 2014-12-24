@@ -31,7 +31,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/COZA::Contact COZA::Domain/; }
+sub default_extensions { return qw/SecDNS COZA::Contact COZA::Domain/; }
 
 ####################################################################################################
 1;

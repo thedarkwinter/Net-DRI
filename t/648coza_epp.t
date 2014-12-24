@@ -6,7 +6,8 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 10;
+use Test::More tests => 19;
+
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -26,9 +27,32 @@ $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_registry('COZA',{client_id=>'examplerar'});
 $dri->target('COZA')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
+
+my $rc;
+
+####################################################################################################
+#### Parse Greeting and Load extensions correctly
+
+
+$R2='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><epp:epp xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"><epp:greeting><epp:svID>DNS EPP Server</epp:svID><epp:svDate>2014-12-24T12:20:41.260+02:00</epp:svDate><epp:svcMenu><epp:version>1.0</epp:version><epp:lang>en</epp:lang><epp:objURI>urn:ietf:params:xml:ns:domain-1.0</epp:objURI><epp:objURI>urn:ietf:params:xml:ns:contact-1.0</epp:objURI><epp:svcExtension><epp:extURI>urn:ietf:params:xml:ns:secDNS-1.1</epp:extURI><epp:extURI>http://co.za/epp/extensions/cozacontact-1-0</epp:extURI><epp:extURI>http://co.za/epp/extensions/cozadomain-1-0</epp:extURI></epp:svcExtension></epp:svcMenu><epp:dcp><epp:access><epp:personal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string"></epp:personal></epp:access><epp:statement><epp:purpose><epp:admin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string"></epp:admin></epp:purpose><epp:recipient><epp:same xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string"></epp:same></epp:recipient><epp:retention><epp:business xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string"></epp:business></epp:retention></epp:statement><epp:expiry><epp:relative>P365DT0H0M0S</epp:relative></epp:expiry></epp:dcp></epp:greeting></epp:epp>';
+$rc=$dri->process('session','noop',[]);
+is($R1,$E1.'<hello/>'.$E2,'session noop build (hello command)');
+is($rc->is_success(),1,'session noop is_success');
+is($rc->get_data('session','server','server_id'),'DNS EPP Server','session noop get_data(session,server,server_id)');
+is($rc->get_data('session','server','date'),'2014-12-24T12:20:41','session noop get_data(session,server,date)');
+is_deeply($rc->get_data('session','server','version'),['1.0'],'session noop get_data(session,server,version)');
+is_deeply($rc->get_data('session','server','lang'),['en'],'session noop get_data(session,server,lang)');
+is_deeply($rc->get_data('session','server','objects'),['urn:ietf:params:xml:ns:domain-1.0','urn:ietf:params:xml:ns:contact-1.0'],'session noop get_data(session,server,objects)');
+is_deeply($rc->get_data('session','server','extensions_announced'),['urn:ietf:params:xml:ns:secDNS-1.1','http://co.za/epp/extensions/cozacontact-1-0','http://co.za/epp/extensions/cozadomain-1-0'],'session noop get_data(session,server,extensions_announced)');
+is_deeply($rc->get_data('session','server','extensions_selected'),['urn:ietf:params:xml:ns:secDNS-1.1','http://co.za/epp/extensions/cozacontact-1-0','http://co.za/epp/extensions/cozadomain-1-0'],'session noop get_data(session,server,extensions_selected)');
+
+
+####################################################################################################
+#### COZADOMAIN extension
+
 $R2='<epp:epp xmlns:epp="urn:ietf:params:xml:ns:epp-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:cozadomain="http://co.za/epp/extensions/cozadomain-1-0"><epp:response><epp:result code="1000"><epp:msg>Domain Info Command completed successfully</epp:msg></epp:result><epp:resData><domain:infData><domain:name>exampledomain.co.za</domain:name><domain:roid>DOM_26I-COZA</domain:roid><domain:status s="ok">Domain Creation</domain:status><domain:registrant>rant1</domain:registrant><domain:ns><domain:hostAttr><domain:hostName>ns1.otherdomain.co.za</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.otherdomain.co.za</domain:hostName></domain:hostAttr></domain:ns><domain:clID>testrar1</domain:clID><domain:crID>testrar1</domain:crID><domain:crDate>2011-01-19T09:16:10Z</domain:crDate><domain:upID>testrar1</domain:upID><domain:upDate>2011-01-19T09:16:10Z</domain:upDate><domain:exDate>2013-01-18T09:16:10Z</domain:exDate><domain:authInfo><domain:pw>coza</domain:pw></domain:authInfo></domain:infData></epp:resData><epp:extension><cozadomain:infData><cozadomain:autorenew>true</cozadomain:autorenew></cozadomain:infData></epp:extension><epp:trID><epp:clTRID>CLTRID-12954285819-DV2N</epp:clTRID><epp:svTRID>DNS-EPP-12D9D8F7A69-8E651</epp:svTRID></epp:trID></epp:response></epp:epp>';
 
-my $rc=$dri->domain_info('exampledomain.co.za');
+$rc=$dri->domain_info('exampledomain.co.za');
 is($rc->get_data('auto_renew'),1,'get_data auto_renew');
 
 $R2='';

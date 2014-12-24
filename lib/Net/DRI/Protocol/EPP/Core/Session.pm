@@ -114,7 +114,7 @@ sub parse_greeting
      push @{$tmp{objects}},$cc->textContent();
     } elsif ($nn eq 'svcExtension')
     {
-     push @{$tmp{extensions_announced}},map { $_->textContent() } grep { $_->getName() eq 'extURI' } $cc->getChildNodes();
+     push @{$tmp{extensions_announced}},map { $_->textContent() } grep { $_->getName() =~ m/extURI$/ } $cc->getChildNodes();
     }
    }
   } elsif ($n eq 'dcp') ## Does anyone really use this data ??

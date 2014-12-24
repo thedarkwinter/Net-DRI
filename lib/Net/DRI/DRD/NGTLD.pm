@@ -270,7 +270,7 @@ Afilias has extended the .INFO plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afilias'}); # own tlds
 
-info xn--6frz82g black blue kim lgbt lotto meet organic pink red shiksha
+info xn--6frz82g black blue green kim lgbt lotto meet organic pink red shiksha
 
 Contended TLD's not included
 
@@ -278,7 +278,7 @@ Contended TLD's not included
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['info','xn--6frz82g','black','blue','kim','lgbt','lotto','meet','organic','pink','red','shiksha'],
+     tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','red','shiksha'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
