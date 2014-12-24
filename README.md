@@ -6,7 +6,7 @@
 Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.dotandco.com/services/software/Net-DRI/), [CPAN](http://search.cpan.org/dist/Net-DRI/) based on Net-DRI-0.96_05 that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.
 
 ##### LaunchPhase extension 
-Based on draft-ietf-eppext-launchphase-01
+Based on draft-ietf-eppext-launchphase-02
 
 ##### New gTLD backend providers (RO's)
 Afnic, Afilias, ARI, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media, GMO Registry, KNET, KSRegistry (Starting Dot), Minds And Machines, Neustar, Nic.BR, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, Tango from KNIPP, UniRegistry, Verisign, ZACR
