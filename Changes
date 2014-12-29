@@ -1,5 +1,8 @@
 Net::DRI changelog from newest to oldest changes
 
+0.9-tdw-pre
++ TCI nGTLD Support (Thanks to patches from Dmitry Belyavsky and Paulo Jorge)
+
 0.8-tdw 2014-10-30 DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!
 

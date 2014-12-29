@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 451;
+use Test::More tests => 456;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -79,6 +79,7 @@ use_ok('Net::DRI::DRD::ISPAPI');
 use_ok('Net::DRI::DRD::BH');
 use_ok('Net::DRI::DRD::COZA');
 use_ok('Net::DRI::DRD::TCI');
+use_ok('Net::DRI::DRD::TCI_gTLD');
 use_ok('Net::DRI::DRD::SO');
 use_ok('Net::DRI::DRD::ID');
 use_ok('Net::DRI::DRD::UPU');
@@ -138,6 +139,7 @@ use_ok('Net::DRI::Data::Contact::CIRA');
 use_ok('Net::DRI::Data::Contact::IT');
 use_ok('Net::DRI::Data::Contact::COZA');
 use_ok('Net::DRI::Data::Contact::TCI');
+use_ok('Net::DRI::Data::Contact::TCI_gTLD');
 use_ok('Net::DRI::Data::Contact::ES');
 use_ok('Net::DRI::Data::Contact::UNIREG');
 use_ok('Net::DRI::Data::Contact::CNNIC');
@@ -332,6 +334,9 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::TCI');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Message');
+use_ok('Net::DRI::Protocol::EPP::Extensions::TCI_gTLD');
+use_ok('Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Contact');
+use_ok('Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Registrar');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CloudRegistry');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CloudRegistry::LaunchPhase');

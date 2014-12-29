@@ -1045,14 +1045,16 @@ $dri->add_registry('NGTLD',{provider=>'tci'});
 
 =head3 TLDs
 
-tatar xn--d1acj3b
+moscow tatar xn--d1acj3b xn--1-7sbc5ceg xn--2-7sbc5ceg  xn--80adxhks
 
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
-     tlds => ['tatar','xn--d1acj3b'],
-     # TCI cctlds has Contact Object and Extensions Object, these may be required
+     bep_type => 1, # dedicated registy
+     tlds => ['moscow', 'tatar', 'xn--d1acj3b', 'xn--1-7sbc5ceg', 'xn--2-7sbc5ceg', 'xn--80adxhks'],
+     contact_i18n => 7, # and or ?
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::TCI_gTLD->new(@_); } } ],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TCI_gTLD',{}],
    } if $bep eq 'tci';
 
 =pod

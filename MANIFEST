@@ -50,6 +50,7 @@ lib/Net/DRI/Data/Contact/SE.pm
 lib/Net/DRI/Data/Contact/SIDN.pm
 lib/Net/DRI/Data/Contact/SWITCH.pm
 lib/Net/DRI/Data/Contact/TCI.pm
+lib/Net/DRI/Data/Contact/TCI_gTLD.pm
 lib/Net/DRI/Data/Contact/UNIREG.pm
 lib/Net/DRI/Data/Contact/US.pm
 lib/Net/DRI/Data/ContactSet.pm
@@ -131,6 +132,7 @@ lib/Net/DRI/DRD/SO.pm
 lib/Net/DRI/DRD/SWITCH.pm
 lib/Net/DRI/DRD/TANGO.pm
 lib/Net/DRI/DRD/TCI.pm
+lib/Net/DRI/DRD/TCI_gTLD.pm
 lib/Net/DRI/DRD/Telnic.pm
 lib/Net/DRI/DRD/TMDB.pm
 lib/Net/DRI/DRD/TRAVEL.pm
@@ -369,6 +371,9 @@ lib/Net/DRI/Protocol/EPP/Extensions/TCI/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI/Registrar.pm
+lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.pm
+lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Contact.pm
+lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Telnic.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/Centric.pm
@@ -585,6 +590,7 @@ t/679cnnic_epp.t
 t/680openreg_epp.t
 t/681crr_epp.t
 t/682afnic_gtld_epp.t
+t/683tci_gtld_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
 t/701ovh_ws_live.t
