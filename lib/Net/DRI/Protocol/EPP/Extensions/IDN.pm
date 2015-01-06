@@ -1,4 +1,4 @@
-## Domain Registry Interface, EPP IDN (draft-ietf-eppext-idnmap-01)
+## Domain Registry Interface, EPP IDN (draft-ietf-eppext-idnmap-02)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -106,7 +106,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::IDN - EPP IDN commands (draft-ietf-eppext-idnmap-01) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::IDN - EPP IDN commands (draft-ietf-eppext-idnmap-02) for Net::DRI
 
 =head1 DESCRIPTION
 
