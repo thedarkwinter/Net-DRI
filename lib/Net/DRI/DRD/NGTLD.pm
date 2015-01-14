@@ -270,7 +270,7 @@ Afilias has extended the .INFO plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afilias'}); # own tlds
 
-info xn--6frz82g black blue green kim lgbt lotto meet organic pink red shiksha
+info xn--6frz82g black blue green kim lgbt lotto meet organic pink poker red shiksha
 
 Contended TLD's not included
 
@@ -278,7 +278,7 @@ Contended TLD's not included
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','red','shiksha'],
+     tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','poker','red','shiksha'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
@@ -712,14 +712,14 @@ Contested: basketball group music
 
 Uncontested: bible gop kiwi
 
-Contested: broadway casino poker radio tickets tube
+Contested: broadway casino radio tickets tube
 
 =cut
 
  return {
      bep_type => 2, # shared registry
      tlds => ['bible', 'gop', 'kiwi',
-              'broadway', 'casino', 'poker', 'radio', 'tickets', 'tube'
+              'broadway', 'casino', 'radio', 'tickets', 'tube'
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
