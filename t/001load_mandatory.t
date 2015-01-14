@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 456;
+use Test::More tests => 461;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -103,6 +103,7 @@ use_ok('Net::DRI::DRD::GMO');
 use_ok('Net::DRI::DRD::CRR');
 use_ok('Net::DRI::DRD::NGTLD');
 use_ok('Net::DRI::DRD::CO');
+use_ok('Net::DRI::DRD::MX');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
 use_ok('Net::DRI::Data::Changes');
@@ -381,6 +382,10 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::CDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Registry');
 use_ok('Net::DRI::Protocol::EPP::Extensions::OpenRegistry::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::MX');
+use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Message');
+use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Rar');
 use_ok('Net::DRI::Protocol::DAS');
 use_ok('Net::DRI::Protocol::DAS::Message');
 use_ok('Net::DRI::Protocol::DAS::Connection');
