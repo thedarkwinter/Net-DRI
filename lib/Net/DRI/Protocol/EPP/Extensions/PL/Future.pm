@@ -2,7 +2,7 @@
 ## Comlaude EPP extensions
 ##
 ## Copyright (c) 2007,2008,2009 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2013-2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -289,17 +289,18 @@ sub transfer_parse
   my $trndata=$mes->get_response('future','trnData');
   return unless defined $trndata;
   
+  $oname = 'future' unless defined $oname;
   foreach my $el (Net::DRI::Util::xml_list_children($trndata))
   {
-  	my ($name,$content)=@$el;
-  	if ($name=~m/^(name|trStatus|reID|acID)$/)
-  	{
-  	  $rinfo->{future}->{$oname}->{$1}=$content->textContent();
-  	}
-  	elsif ($name=~m/^(reDate|acDate|exDate)$/)
-  	{
-  	  $rinfo->{future}->{$oname}->{$1}=$po->parse_iso8601($content->textContent());
-  	}
+    my ($name,$content)=@$el;
+    if ($name=~m/^(name|trStatus|reID|acID)$/)
+    {
+      $rinfo->{future}->{$oname}->{$1}=$content->textContent();
+    }
+    elsif ($name=~m/^(reDate|acDate|exDate)$/)
+    {
+      $rinfo->{future}->{$oname}->{$1}=$po->parse_iso8601($content->textContent());
+    }
   }
   return;
 }

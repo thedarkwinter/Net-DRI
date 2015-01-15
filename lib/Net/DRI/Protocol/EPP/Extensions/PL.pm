@@ -1,7 +1,7 @@
 ## Domain Registry Interface, NASK (.PL) EPP extensions (draft-zygmuntowicz-epp-pltld-03)
 ##
 ## Copyright (c) 2006,2008,2009,2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2013-2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -75,6 +75,7 @@ sub setup
       pl_contact  => ['http://www.dns.pl/nask-epp-schema/extcon-2.0','extcon-2.0.xsd'],
       pl_domain   => ['http://www.dns.pl/nask-epp-schema/extdom-2.0','extdom-2.0.xsd'],
       future      => ['http://www.dns.pl/nask-epp-schema/future-2.0','future-2.0.xsd'],
+      extepp      => ['http://www.dns.pl/nask-epp-schema/extepp-2.0','extepp-2.0.xsd'],
     });
 
   $self->capabilities('host_update','name',undef); ## No change of hostnames
