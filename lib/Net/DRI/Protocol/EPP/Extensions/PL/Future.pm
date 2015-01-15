@@ -1,5 +1,4 @@
 ## Domain Registry Interface, .PL Future EPP extension commands
-## Comlaude EPP extensions
 ##
 ## Copyright (c) 2007,2008,2009 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.

@@ -82,7 +82,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); } # the documentation doesn't mention the interval...
 sub name     { return 'MX'; }
 sub tlds     { return ('mx',map { $_.'.mx'} qw/com gob net org edu/ ); } # .gob.mx, .net.mx, .edu.mx requires authorization from the Registry
-sub object_types { return qw(domain contact ns rar); }
+sub object_types { return qw(domain contact ns); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
@@ -95,19 +95,12 @@ sub transport_protocol_default
 
 ####################################################################################################
 
-sub rar_info
-{
-  my ($self,$rar)=@_;
-  return $rar->process('rar','info');
-}
-
 sub domain_restore
 {
   my ($self,$ndr,$domain)=@_;
   $self->enforce_domain_name_constraints($ndr,$domain,'restore');
   return $ndr->process('domain','restore',[$domain]);
 }
-
 
 ####################################################################################################
 1;

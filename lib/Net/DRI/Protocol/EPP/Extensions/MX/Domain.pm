@@ -76,45 +76,18 @@ sub register_commands
  return { 'domain' => \%tmp };
 }
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:nicmx-domrst="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domrst')));
-}
-
 ####################################################################################################
 
-sub build_command
-{
- my ($domain)=@_;
- Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless (defined($domain) && $domain && !ref($domain));
- Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid domain name: '.$domain) unless Net::DRI::Util::is_hostname($domain);
- Net::DRI::Exception->die(1,'protocol/EPP',10,'Domain name not in .MX: '.$domain) unless $domain=~m/\.MX$/i;
- return ['nicmx-domrst:name',$domain];
-}
-
-sub restore_build_command
-{
-  my ($msg,$command,$restore)=@_;
-  my @res=ref $restore ? @$restore : ($restore);
-  Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless @res;
-  foreach my $r (@res)
-  {
-    Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless defined $r && $r;
-    Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid domain name: '.$r) unless Net::DRI::Util::xml_is_token($r,1,255);
-  }
-  my $tcommand='restore';
-  $msg->command([$command,'nicmx-domrst:'.$tcommand,sprintf('xmlns:nicmx-domrst="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('ext_domrst'))]);
-  return ['nicmx-domrst:name',$restore];
-}
-
-# created like it's in the manual - command looks strange!!! They say it's a domain_renew without the curExpDate and duration elements
 sub restore
 {
-  my ($epp,$domain,$rd)=@_;
+  my ($epp,$domain)=@_;
   my $mes=$epp->message();
-  my @d=restore_build_command($mes,'renew',$domain);
-  $mes->command_body(\@d);
+
+  Net::DRI::Exception::usererr_insufficient_parameters('Domain name is mandatory') unless defined $domain;
+  Net::DRI::Exception::usererr_insufficient_parameters('Invalid domain name') unless Net::DRI::Util::xml_is_token($domain,1,255);
+
+  $mes->command(['renew','nicmx-domrst:restore',sprintf('xmlns:nicmx-domrst="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domrst'))]);
+  $mes->command_body(['nicmx-domrst:name',$domain]);
   return;
 }
 

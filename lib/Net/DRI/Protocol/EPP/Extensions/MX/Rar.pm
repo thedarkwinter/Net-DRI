@@ -82,9 +82,7 @@ sub info
 {
   my ($epp)=@_;
   my $mes=$epp->message();
-  my $rar = 'info';
-  my $tcommand=ref $rar ? $rar->[0] : $rar;
-  $mes->command([$rar,'rar:'.$tcommand,sprintf('xmlns:rar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('rar'))]);
+  $mes->command(['info','rar:info',sprintf('xmlns:rar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('rar'))]);
   return;
 }
 

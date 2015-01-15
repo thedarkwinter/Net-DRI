@@ -1,5 +1,4 @@
 ## Domain Registry Interface, CentralNic EPP Fee extension
-## Comlaude EPP extensions
 ##
 ## Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
