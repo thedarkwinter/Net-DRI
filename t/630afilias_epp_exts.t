@@ -5,9 +5,10 @@ use warnings;
 
 use Net::DRI;
 use Net::DRI::Data::Raw;
-use Data::Dumper;
+use DateTime;
+use DateTime::Duration;
 
-use Test::More tests => 68;
+use Test::More tests => 78;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -17,11 +18,11 @@ our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
 our ($R1,$R2);
-sub mysend { my ($transport, $count, $msg) = @_; $R1 = $msg->as_string(); return 1; }
-sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2 ? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
-sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
+sub mysend  { my ($transport, $count, $msg) = @_; $R1 = $msg->as_string(); return 1; }
+sub myrecv  { return Net::DRI::Data::Raw->new_from_string($R2 ? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
+sub r       { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
-my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
+my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_registry('INFO',{clid => 'ClientX'});
 $dri->target('INFO')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
@@ -127,6 +128,7 @@ is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:d
 is($rc->is_success(),1,'domain_check idn new is_success');
 
 # New method (with IDN Object and extlang)
+$dri->cache_clear();
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example3.info</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check('example3.info',{'idn' => $dri->local_object('idn')->autodetect('','zh-tw') });
 is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.info</domain:name></domain:check></check><extension><idn:check xmlns:idn="urn:afilias:params:xml:ns:idn-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:idn-1.0 idn-1.0.xsd"><idn:script>zh-tw</idn:script></idn:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check idn new with extlang build');
@@ -194,4 +196,19 @@ is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium)');
 # Create - no example available but by the specifications it's the same as renew and transfer only changing the response node <price:creData>
 
 
-exit(0);
+####################################################################################################
+## RegistryMessage Extension
+$R2=$E1.'<response><result code="1301"><msg lang="en-US">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="2733"><qDate>2014-05-26T14:33:04.0Z</qDate><msg lang="en-US">{"changeType":"update","name":"example.info","addedStatuses":["serverUpdateProhibited"],"removedStatuses":[],"authInfoUpdated":true}</msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),2733,'message get_info last_id');
+is($dri->get_info('qdate','message',2733),'2014-05-26T14:33:04','message get_info qdate');
+is($dri->get_info('content','message',2733),'{"changeType":"update","name":"example.info","addedStatuses":["serverUpdateProhibited"],"removedStatuses":[],"authInfoUpdated":true}','message get_info content');
+is($dri->get_info('lang','message',2733),'en-US','message get_info lang');
+is($dri->get_info('change_type','message',2733),'update','message get_info change_type');
+is($dri->get_info('name','message',2733),'example.info','message get_info name');
+is_deeply($dri->get_info('added_statuses','message',2733),['serverUpdateProhibited'],'message get_info addedStatuses');
+is_deeply($dri->get_info('removed_statuses','message',2733),[],'message get_info removedStatuses');
+is($dri->get_info('auth_info_updated','message',2733),1,'message get_info authInfoUpdated');
+
+exit 0;
