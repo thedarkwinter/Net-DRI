@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 59;
+use Test::More tests => 67;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -128,6 +128,22 @@ $rc=$dri->domain_check('example4.com',{lp => $lp});
 is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.com</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="avail"><launch:phase name="landrush">claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check with subphase build_xml');
 is($dri->get_info('exist'),0,'domain_check get_info(exist)');
 
+#3.1.3.  Trademark Check Form => draft-ietf-eppext-launchphase-03
+$dri->cache_clear();
+$lp = {type=>'trademark'};
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:cd><launch:name exists="0">example1.com</launch:name></launch:cd><launch:cd><launch:name exists="1">example2.com</launch:name><launch:claimKey validatorID="tmch">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd><launch:cd><launch:name exists="1">example3.com</launch:name><launch:claimKey validatorID="tmch">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey><launch:claimKey validatorID="custom-tmch">20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example1.com','example2.com','example3.com',{lp => $lp});
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example1.com</domain:name><domain:name>example2.com</domain:name><domain:name>example3.com</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="trademark"/></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check_multi build_xml');
+is($dri->get_info('exist','domain','example1.com'),0,'domain_check_multi get_info(exist) 1/3');
+is($dri->get_info('exist','domain','example2.com'),1,'domain_check_multi get_info(exist) 2/3');
+is($dri->get_info('exist','domain','example3.com'),1,'domain_check_multi get_info(exist) 3/3');
+$lpres = $dri->get_info('lp','domain','example1.com');
+is($lpres->{'claim_key'},undef,'domain_check_multi get_info(claim_key) 1/3');
+$lpres = $dri->get_info('lp','domain','example2.com');
+is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check_multi get_info(claim_key) 2/3');
+$lpres = $dri->get_info('lp','domain','example3.com');
+is($lpres->{'claims_count'},'2','domain_check get_info(claims_count)');
+is_deeply($lpres->{'claims'},[{claim_key=>'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','validator_id'=>'tmch'},{claim_key=>'20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002','validator_id'=>'custom-tmch'}],'domain_check get_info(claims_count)');
 
 ## INFO
 #3.2.  EPP <info> Command
