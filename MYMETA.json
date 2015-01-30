@@ -4,7 +4,7 @@
       "Patrick Mevzek <netdri@dotandco.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.112621, CPAN::Meta::Converter version 2.142060",
+   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142060",
    "keywords" : [
       "DNS",
       "EPP",
@@ -117,6 +117,7 @@
             "Email::Valid" : "0",
             "Hash::KeyMorpher" : "0.09",
             "IO::Socket::SSL" : "1.31",
+            "JSON" : "0",
             "Locale::Language" : "0",
             "Locale::Script" : "0",
             "Module::Load" : "0",
@@ -127,7 +128,7 @@
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "web" : "nntp://news.dotandco.net/dotandco.discuss"
@@ -137,5 +138,5 @@
          "http://www.dotandco.com/services/software/Net-DRI/index.en#license"
       ]
    },
-   "version" : "0.96_05"
+   "version" : "0.8-tdw"
 }

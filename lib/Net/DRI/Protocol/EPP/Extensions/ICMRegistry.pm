@@ -33,7 +33,7 @@ sub setup
 }
 
 sub capabilities_add { return ('domain_update','association',['add','del','set']); }
-sub default_extensions { return qw/Afilias::IPR Afilias::IDNLanguage Afilias::Restore Afilias::Message Afilias::Association Afilias::Registrar/; }
+sub default_extensions { return qw/Afilias::IPR Afilias::IDNLanguage Afilias::Restore Afilias::Message Afilias::Association Afilias::Registrar Afilias::JSONMessage/; }
 
 ####################################################################################################
 1;
