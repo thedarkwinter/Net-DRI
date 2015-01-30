@@ -79,7 +79,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/GracePeriod Afilias::IPR ASIA::CED ASIA::Domain SecDNS Afilias::Registrar/; }
+sub default_extensions { return qw/GracePeriod Afilias::IPR ASIA::CED ASIA::Domain SecDNS Afilias::Registrar Afilias::JSONMessage/; }
 
 ####################################################################################################
 1;

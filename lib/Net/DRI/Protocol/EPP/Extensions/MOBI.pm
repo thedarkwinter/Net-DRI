@@ -72,7 +72,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/MOBI::Domain Afilias::Trademark Afilias::Registrar/; }
+sub default_extensions { return qw/MOBI::Domain Afilias::Trademark Afilias::Registrar Afilias::JSONMessage/; }
 
 ####################################################################################################
 1;

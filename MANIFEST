@@ -193,6 +193,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/Afilias.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Association.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/IDNLanguage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/IPR.pm
+lib/Net/DRI/Protocol/EPP/Extensions/Afilias/JSONMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/MaintainerUrl.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Afilias/Price.pm

@@ -5,6 +5,7 @@ Net::DRI changelog from newest to oldest changes
 + .MX EPP support, from Paulo Jorge
 + .PL Polling updates, from Paulo Jorge
 + .PL Obsolete domain code cleanup (using domain $self->{info}->{host_as_ns}=1;)
++ Afilias JSON Messge parse, from Paulo Jorge
 
 0.8-tdw 2014-10-30 DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!

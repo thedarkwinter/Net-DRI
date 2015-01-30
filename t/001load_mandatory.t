@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 461;
+use Test::More tests => 462;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -260,6 +260,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Association');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Validation');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Price');
+use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::JSONMessage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NAME');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NAME::EmailFwd');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet');

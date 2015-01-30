@@ -32,7 +32,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/Afilias::IPR Afilias::Message Afilias::Registrar/; } ## What else ?
+sub default_extensions { return qw/Afilias::IPR Afilias::Message Afilias::Registrar Afilias::JSONMessage/; } ## What else ?
 
 ####################################################################################################
 1;
