@@ -33,7 +33,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase Afilias::IPR Afilias::IDNLanguage Afilias::Message Afilias::Registrar Afilias::Price Afilias::JSONMessage/; }
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase Afilias::IPR Afilias::IDNLanguage Afilias::Message Afilias::Registrar Afilias::Price/; }
 
 ####################################################################################################
 

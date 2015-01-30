@@ -251,6 +251,7 @@ is($ipr->{appDate},'2007-11-09T00:00:00','domain_info get_data(ipr) appDate');
 ## Notifications
 
 # This poll test was added when a bug was causing an insufficient parameters exception on message_retrieve
+
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="22" id="12345"><qDate>2014-12-22T06:41:03.0Z</qDate><msg lang="en-US">Transfer Auto Approved.</msg></msgQ><resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>randomdomain.asia</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>ClientY</domain:reID><domain:reDate>2014-12-22T06:41:03.0Z</domain:reDate><domain:acID>ClientX</domain:acID><domain:acDate>2014-12-17T06:41:03.0Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),'12345','message_retrieve get_info(last_id)');
