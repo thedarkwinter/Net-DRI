@@ -30,7 +30,7 @@ sub setup
  $self->capabilities('domain_update','auction',['set']);
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase TANGO::IDN TANGO::Auction TANGO::LaunchPhase/; }
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase TANGO::IDN TANGO::Auction/; }
 
 ####################################################################################################
 1;
