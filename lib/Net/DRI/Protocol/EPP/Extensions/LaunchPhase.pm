@@ -55,7 +55,7 @@ The LaunchPhase extension is used in  domain check, info, create, update, and de
  
 =head2 check
 
-=item type (either 'claims' or 'avail')
+=item type (either 'claims', 'avail' or 'trademark')
 
 =item phase (phase will be set to 'claims' if type is claims)
 
@@ -242,16 +242,16 @@ sub check
  return unless Net::DRI::Util::has_key($rd,'lp');
 
  my $lp = $rd->{'lp'};
- Net::DRI::Exception::usererr_invalid_parameters('type must be claims or avail') if exists $lp->{type} && $lp->{type}  !~ m/^(claims|avail)$/;
+ Net::DRI::Exception::usererr_invalid_parameters('type must be claims or avail') if exists $lp->{type} && $lp->{type}  !~ m/^(claims|avail|trademark)$/;
  # according to RFC draft, phase *should* be set claims when the type is claims, but we will not change it if the user has set something else so it can auto/custom it.
  $lp->{phase} = 'claims' if exists $lp->{type} && $lp->{type} eq 'claims' && (!exists $lp->{phase} || !$lp->{phase});
- Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase};
+ Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase} || $lp->{type} eq 'trademark';
  delete $lp->{application_id} if exists $lp->{application_id};
 
  my $eid = (exists $lp->{type}) ? $mes->command_extension_register('launch','check',{type => $lp->{type}}) : undef;
  $eid=$mes->command_extension_register('launch','check') unless defined $eid;
 
- my @n = _build_idContainerType($lp);
+ my @n = _build_idContainerType($lp) unless $lp->{type} eq 'trademark'; # draft-ietf-eppext-launchphase-03
  $mes->command_extension($eid,\@n);
 
  return;
