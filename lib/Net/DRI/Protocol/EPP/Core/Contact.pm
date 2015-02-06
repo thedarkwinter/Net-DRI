@@ -196,7 +196,7 @@ sub info_parse
    $rinfo->{contact}->{$oname}->{$1}=$c->textContent();
   } elsif ($name=~m/^(crDate|upDate|trDate)$/)
   {
-   $rinfo->{contact}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+   $rinfo->{contact}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   } elsif ($name eq 'email')
   {
    $contact->email($c->textContent());
@@ -463,7 +463,7 @@ sub create_parse
    $rinfo->{contact}->{$oname}->{exist}=1;
   } elsif ($name=~m/^(crDate)$/)
   {
-   $rinfo->{contact}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+   $rinfo->{contact}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   }
  }
  return;
