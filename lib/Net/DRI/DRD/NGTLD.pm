@@ -379,7 +379,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @others = qw/la pw com.de/;
     my @ngtlds = qw/bar cafe college contact fans feedback host ink pid press reit rest space website wiki wme xyz/;
     my @ngtlds_contested = qw/cafe fans reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
-    my @ngtlds_pipeline = qw/art auto design sucks now hotel forum law golf school style chat gay group blog app mail love news llc/; # no expected dates given, probably contested strings
+    my @ngtlds_pipeline = qw/art auto design sucks now hotel forum golf school style chat gay group blog app mail love news llc/; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
     return {
@@ -666,17 +666,17 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: abogado bayern beer budapest casa cooking country fishing fit garden horse luxe miami nrw rodeo surf vodka wedding work yoga xn--g2xx48c
+Uncontested: abogado bayern beer budapest casa cooking country fishing fashion fit garden horse law luxe miami nrw rodeo surf vip vodka wedding work yoga xn--g2xx48c
 
-Contested: app art baby beauty blog book cloud coupon cpa data dds design dog eco fashiond gay home hotel inc latino law llc love realestate school site soccer store style tech video vip
+Contested: app art baby beauty blog book cloud coupon cpa data dds design dog eco  gay home hotel inc latino llc love realestate school site soccer store style tech video
 
 Collisions: cooking-collisions country-collisions fishing-collisions'horse-collisions rodeo-collisions vodka-collisions
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fishing', 'fit', 'garden', 'horse', 'luxe', 'miami', 'nrw', 'rodeo', 'surf', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'data', 'dds', 'design', 'dog', 'eco', 'fashiond', 'gay', 'home', 'hotel', 'inc', 'latino', 'law', 'llc', 'love', 'realestate', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video', 'vip',
+     tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fashion', 'fishing', 'fit', 'garden', 'horse', 'law',  'luxe', 'miami', 'nrw', 'rodeo', 'surf',  'vip', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
+              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'data', 'dds', 'design', 'dog', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'love', 'realestate', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video',
               'cooking-collisions', 'country-collisions', 'fishing-collisions', 'horse-collisions', 'rodeo-collisions', 'vodka-collisions',
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
@@ -1066,7 +1066,7 @@ moscow tatar xn--d1acj3b xn--1-7sbc5ceg xn--2-7sbc5ceg  xn--80adxhks
 
 =head3 TLDs
 
-art audio auto blackfriday cars christmas click deal design diet family fashion flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics property racing realestate sale save school sexy shopping store style tattoo team tech video yoga
+art audio auto blackfriday cars christmas click deal design diet family flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics property racing realestate sale save school sexy shopping store style tattoo team tech video yoga
 
 Contended TLD's not included
 
@@ -1082,7 +1082,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','design','diet','family','fashion','ﬂowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','property','racing','realestate','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
+     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','design','diet','family','ﬂowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','property','racing','realestate','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
