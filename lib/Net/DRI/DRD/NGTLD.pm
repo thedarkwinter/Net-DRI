@@ -1039,11 +1039,17 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.coreni
 
 $dri->add_registry('NGTLD',{provider=>'tci'});
 
-=head3 Status: Not started
+=head3 Status: Working
 
 =head3 TLDs
 
 moscow tatar xn--d1acj3b xn--1-7sbc5ceg xn--2-7sbc5ceg  xn--80adxhks
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Contact> http://www.tcinet.ru/epp/tci-contact-ext-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/epp/tci-domain-ext-1.0
 
 =cut
 
