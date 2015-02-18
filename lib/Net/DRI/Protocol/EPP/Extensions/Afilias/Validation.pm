@@ -72,7 +72,7 @@ sub update
 
   my $mes=$epp->message();
   my $eid=$mes->command_extension_register('validation','update');
-  my @n = ['validation:ownership',['validation:chg','']];
+  my @n = ['validation:chg',['validation:ownership','']];
   $mes->command_extension($eid,\@n);
 
   return;

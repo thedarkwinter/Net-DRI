@@ -66,7 +66,7 @@ $R2=$E1.'<response>'.r().'<extension><validation:updData xmlns:validation="urn:a
 $toc=Net::DRI::Data::Changes->new();
 $toc->set('validation',1); # set to a true value
 $rc=$dri->domain_update('testing2.ngo',$toc);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>testing2.ngo</domain:name></domain:update></update><extension><validation:update xmlns:validation="urn:afilias:params:xml:ns:validation-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:validation-1.0 validation-1.0.xsd"><validation:ownership><validation:chg/></validation:ownership></validation:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Validation extension: domain_update build');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>testing2.ngo</domain:name></domain:update></update><extension><validation:update xmlns:validation="urn:afilias:params:xml:ns:validation-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:validation-1.0 validation-1.0.xsd"><validation:chg><validation:ownership/></validation:chg></validation:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Validation extension: domain_update build');
 is($rc->is_success(),1,'domain_update is_success');
 $v=$rc->get_data('validation');
 is($v->{claim_id},'claimIDValue2','Validation extension: domain_update parse claimID');
