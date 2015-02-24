@@ -20,20 +20,32 @@ use warnings;
 use Net::DRI::Util;
 
 =pod
+
 =head1 NAME
+
 Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage - Message extensions based on http://www.ietf.org/internet-drafts/draft-mayrhofer-eppext-servicemessage-00.txt
+
 =head1 DESCRIPTION
+
 Adds the ServiceMessage extension (http://tld-box.at/xmlns/resdata-1.1) for parsing poll messages.
  
 =head1 SUPPORT
+
 For now, support questions should be sent to:
 E<lt>netdri@dotandco.comE<gt>
 Please also see the SUPPORT file in the distribution.
+
 =head1 SEE ALSO
+
 E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
+
 =head1 AUTHOR
+
 Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Michael Braunoeder, E<lt>mib@nic.atE<gt>
+
 =head1 COPYRIGHT
+
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
 (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
@@ -42,6 +54,7 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 See the LICENSE file that comes with this distribution for more details.
+
 =cut
 
 ####################################################################################################
