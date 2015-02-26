@@ -355,6 +355,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/PRO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PRO/AV.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PRO/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RegBox.pm
+lib/Net/DRI/Protocol/EPP/Extensions/RegBox/ServiceMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SecDNS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Contact.pm
@@ -592,6 +593,7 @@ t/680openreg_epp.t
 t/681crr_epp.t
 t/682afnic_gtld_epp.t
 t/683tci_gtld_epp.t
+t/684regbox_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
 t/701ovh_ws_live.t

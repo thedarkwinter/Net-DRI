@@ -18,7 +18,7 @@ use strict;
 use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase/; }
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase RegBox::ServiceMessage/; }
 sub core_contact_types { return ('admin','tech'); }
 
 ####################################################################################################

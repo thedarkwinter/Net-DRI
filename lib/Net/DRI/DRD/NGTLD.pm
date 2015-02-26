@@ -899,6 +899,10 @@ bh berlin brussels gmbh hamburg reise tirol versicherung vlaanderen voting wien 
 
 Contended TLD's not included
 
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at/xmlns/resdata-1.1
+
 =head3 Notes
 
 1. RegBox does not use the IDN extension.
