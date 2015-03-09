@@ -23,7 +23,7 @@ use warnings;
 use base qw/Net::DRI::DRD/;
 
 use DateTime::Duration;
-#use Net::DRI::Data::Contact::LV;
+use Net::DRI::Data::Contact::LV;
 
 =pod
 

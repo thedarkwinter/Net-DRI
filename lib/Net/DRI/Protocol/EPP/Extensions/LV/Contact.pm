@@ -98,10 +98,10 @@ sub contact_create_extension {
 	my $mes = $epp->message;
 	my @e;
 	
-	return unless defined $c->set('vat_nr') || $c->set('reg_nr');
+	return unless defined $c->vat_nr() || $c->reg_nr();
 	
-	push @e,[ 'lvcontact:vatNr', $c->set('vat_nr') ] if (defined $c->set('vat_nr'));
-	push @e,[ 'lvcontact:regNr', $c->set('reg_nr') ] if (defined $c->set('reg_nr'));
+	push @e,[ 'lvcontact:vatNr', $c->vat_nr() ] if (defined $c->vat_nr());
+	push @e,[ 'lvcontact:regNr', $c->reg_nr() ] if (defined $c->reg_nr());
 	
 	my $eid=$mes->command_extension_register('lvcontact:create',sprintf('xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_contact')));
 	$mes->command_extension($eid,\@e);
