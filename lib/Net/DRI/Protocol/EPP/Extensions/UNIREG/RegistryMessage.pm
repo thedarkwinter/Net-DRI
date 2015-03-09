@@ -43,7 +43,7 @@ sub parse
  
  # try to match LP related text in content
  my $content = $rinfo->{message}->{$msgid}->{content};
- if ($content =~ m!^Launch Application ([\w-]+) is now in status "(\w+)?"/"(\w+)?": (.*)?!) {
+ if (defined($content) && ($content =~ m!^Launch Application ([\w-]+) is now in status "(\w+)?"/"(\w+)?": (.*)?!)) {
   $rinfo->{message}->{$msgid}->{lp}->{application_id} = $1;
   $rinfo->{message}->{$msgid}->{lp}->{status} = $2; # FIXME: this could have multiple statuses, but requires the main LaunchPhase extension to support it
  }
