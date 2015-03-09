@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 35;
+use Test::More tests => 36;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -30,6 +30,13 @@ my $rc;
 my $s;
 my $d;
 my ($dh,@c,$idn);
+
+###################################################################################################
+## Tango uses the fee-0.6 of Gavin Brown (CentralNic) extension: https://tools.ietf.org/html/draft-brown-epp-fees-03
+$R2=$E1.'<greeting><svID>TANGO testing server</svID><svDate>2014-06-25T10:44:01.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.6</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.6','Fee 0.6 loaded correctly');
+
 
 ##################### 
 ## IDN Extension

@@ -666,7 +666,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: abogado bayern beer budapest casa cooking country fishing fashion fit garden horse law luxe miami nrw rodeo surf vip vodka wedding work yoga xn--g2xx48c
+Uncontested: abogado bayern beer budapest casa cooking country fishing fashion fit garden horse law luxe miami rodeo surf vip vodka wedding work yoga xn--g2xx48c
 
 Contested: app art baby beauty blog book cloud coupon cpa data dds design dog eco  gay home hotel inc latino llc love realestate school site soccer store style tech video
 
@@ -675,7 +675,7 @@ Collisions: cooking-collisions country-collisions fishing-collisions'horse-colli
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fashion', 'fishing', 'fit', 'garden', 'horse', 'law',  'luxe', 'miami', 'nrw', 'rodeo', 'surf',  'vip', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
+     tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fashion', 'fishing', 'fit', 'garden', 'horse', 'law',  'luxe', 'miami', 'rodeo', 'surf',  'vip', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
               'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'data', 'dds', 'design', 'dog', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'love', 'realestate', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video',
               'cooking-collisions', 'country-collisions', 'fishing-collisions', 'horse-collisions', 'rodeo-collisions', 'vodka-collisions',
              ],
