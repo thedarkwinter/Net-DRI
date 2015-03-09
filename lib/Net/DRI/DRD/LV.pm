@@ -1,4 +1,4 @@
-## Domain Registry Interface, .LV Policies for EPP
+## Domain Registry Interface, .LV Policies for EPP []http://www.nic.lv/eppdoc/html/index.html]
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.

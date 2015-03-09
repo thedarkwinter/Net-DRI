@@ -66,7 +66,9 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=( 
-          info => [ undef, \&info_parse ],
+		create => [ \&create, undef ],
+		update => [ \&update, undef ],
+		info   => [ undef, \&info_parse ],
          );
 
  return { 'contact' => \%tmp };
@@ -74,47 +76,36 @@ sub register_commands
 
 ####################################################################################################
 
-sub info_parse
-{
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
-
- my $infdata=$mes->get_extension('lv','infData');
- return unless $infdata;
-
- my $c=$infdata->getChildrenByTagNameNS($mes->ns('lv'),'ensInfo');
- return unless ($c && $c->size()==1);
- $c=$c->shift()->getFirstChild();
-
- my %ens;
- while($c)
- {
-  next unless ($c->nodeType() == 1); ## only for element nodes
-  my $name=$c->localname() || $c->nodeName();
-  next unless $name;
-
-  if (my ($tag)=($name=~m/^(\S+)$/))
-  {
-   $ens{Net::DRI::Util::remcam($tag)}=$c->getFirstChild()->getData();
-  }
-
- } continue { $c=$c->getNextSibling(); }
-
- $ens{last_checked_date}=DateTime::Format::ISO8601->new()->parse_datetime($ens{last_checked_date}) if exists($ens{last_checked_date});
-
- $rinfo->{contact}->{$oname}->{self}->ens(\%ens);
- return;
+sub create {
+	my ($epp,$contact)=@_;
+    return contact_create_extension($epp,$contact);
 }
 
-sub create 
-{
-		
-}
-
-sub update
-{
+sub update {
 	
+	
+	return;
+}
+
+sub info_parse {
+	
+	
+	return;
+}
+
+sub contact_create_extension {
+	my ($epp,$c) = @_;
+	my $mes = $epp->message;
+	my @e;
+	
+	return unless defined $c->set('vat_nr') || $c->set('reg_nr');
+	
+	push @e,[ 'lvcontact:vatNr', $c->set('vat_nr') ] if (defined $c->set('vat_nr'));
+	push @e,[ 'lvcontact:regNr', $c->set('reg_nr') ] if (defined $c->set('reg_nr'));
+	
+	my $eid=$mes->command_extension_register('lvcontact:create',sprintf('xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_contact')));
+	$mes->command_extension($eid,\@e);
+	return;
 }
 
 ####################################################################################################

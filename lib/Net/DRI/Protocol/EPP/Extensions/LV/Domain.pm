@@ -24,6 +24,7 @@ use Net::DRI::Util;
 use DateTime::Format::ISO8601;
 use Net::DRI::Protocol::EPP::Util;
 use Net::DRI::Data::Hosts;
+use Data::Dumper;
 
 
 =pod
@@ -69,7 +70,7 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=( 
-          update => [ 'update', 'update_parse' ],
+          update => [ \&update, undef ],
           info   => [ undef, \&info_parse ],
          );
 
@@ -78,25 +79,32 @@ sub register_commands
 
 ####################################################################################################
 
-#sub build_command_extension
-#{
-# my ($mes,$epp,$tag)=@_;
-# return $mes->command_extension_register($tag,sprintf('xmlns:frnic="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('frnic')));
-#}
-
 sub update
-{
+{ 
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
  
- return unless exists($rd->{add}) || exists($rd->{rem});
+ return unless defined $rd->set('auto_renew');
  my @e;
- push @e,['lvdomain:add'] if (exists($rd->{add}) && $rd->{add});
- push @e,['lvdomain:rem'] if (exists($rd->{rem}) && $rd->{rem});
+ my $user_message = $rd->set('auto_renew_message');
  
+ if ( $rd->set('auto_renew') eq 'true' ) {
+ 	 if (defined $user_message) {
+ 	 	push @e,['lvdomain:add',['lvdomain:status',{ s => 'clientAutoRenewProhibited', lang => $user_message->{'lang'} }, $user_message->{'message'} ]];
+ 	 } else {
+ 	 	push @e,['lvdomain:add',['lvdomain:status',{ s => 'clientAutoRenewProhibited'}]];
+ 	 }
+ } elsif ( $rd->set('auto_renew') eq 'false' ) {
+  	 if (defined $user_message) {
+ 	 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited', lang => $user_message->{'lang'} }, $user_message->{'message'} ]];
+ 	 } else {
+ 	 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited'}]];
+ 	 }	
+ }
+
  my $eid=$mes->command_extension_register('lvdomain:update',sprintf('xmlns:lvdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domain')));
  $mes->command_extension($eid,\@e);
- 
+
  return;
 }
 
@@ -105,6 +113,19 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
+ my $infdata=$mes->get_extension('domain','infData');
+ return unless $infdata;
+
+ my @status;
+ foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+ {
+  my ($name,$c)=@$el;
+  if ($name eq 'status')
+  {
+   push @status,$c->textContent();
+  }
+ }
+ $rinfo->{domain}->{$oname}->{auto_renew_status}=\@status;
  return;
 }
 
