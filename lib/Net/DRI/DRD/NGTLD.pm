@@ -1268,7 +1268,7 @@ sub _build_price_query
 {
  my ($self,$ndr,$rd)=@_;
  my $bep = lc($self->{info}->{provider});
- if ($bep =~ m/^(?:donuts|rightside)/) 
+ if ($bep =~ m/^(?:donuts|rightside|zacr)/)
  { 
   # they answer with fee anyway, so no action required on this one
  } elsif ($bep =~ m/^(?:neustar|ffm)/)
@@ -1276,7 +1276,7 @@ sub _build_price_query
    $rd->{fee} = 1;
  } elsif ($bep eq 'ari') {
    $rd->{price} = 1;
- } elsif ($bep =~ m/^(?:centralnic|gmo|mam|crr)/) {
+ } elsif ($bep =~ m/^(?:centralnic|gmo|mam|crr|tango)/) {
    my ($fee,@fees);
    foreach my $k (qw/currency action duration/)
    {
