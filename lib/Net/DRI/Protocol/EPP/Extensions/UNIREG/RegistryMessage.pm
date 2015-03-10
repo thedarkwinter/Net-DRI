@@ -39,10 +39,10 @@ sub parse
  my $mes=$po->message();
  return unless $mes->is_success();
  return unless my $msgid=$mes->msg_id();
+ return unless my $content = $rinfo->{message}->{$msgid}->{content}; # depending on order we may not have parsed this yet, defer for later
  return if defined $rinfo->{message}->{$msgid}->{lp}; # if they have a sent a proper lp extension in the message then use that
  
  # try to match LP related text in content
- my $content = $rinfo->{message}->{$msgid}->{content};
  if ($content =~ m!^Launch Application ([\w-]+) is now in status "(\w+)?"/"(\w+)?": (.*)?!) {
   $rinfo->{message}->{$msgid}->{lp}->{application_id} = $1;
   $rinfo->{message}->{$msgid}->{lp}->{status} = $2; # FIXME: this could have multiple statuses, but requires the main LaunchPhase extension to support it
