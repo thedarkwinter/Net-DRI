@@ -1,4 +1,4 @@
-## Domain Registry Interface, .LV Contact EPP extension commands
+## Domain Registry Interface, .LV Domain EPP extension commands
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -24,8 +24,7 @@ use Net::DRI::Util;
 use DateTime::Format::ISO8601;
 use Net::DRI::Protocol::EPP::Util;
 use Net::DRI::Data::Hosts;
-use Data::Dumper;
-
+use utf8;
 
 =pod
 
@@ -79,8 +78,7 @@ sub register_commands
 
 ####################################################################################################
 
-sub update
-{ 
+sub update { 
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
  
@@ -108,24 +106,31 @@ sub update
  return;
 }
 
-sub info_parse
-{
+sub info_parse {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $infdata=$mes->get_extension('domain','infData');
- return unless $infdata;
-
- my @status;
- foreach my $el (Net::DRI::Util::xml_list_children($infdata))
- {
-  my ($name,$c)=@$el;
-  if ($name eq 'status')
-  {
-   push @status,$c->textContent();
-  }
+ my $NS = $mes->ns('ext_domain');
+ my $c = $rinfo->{domain}->{$oname}->{self};
+ my $adata = $mes->get_extension('ext_domain','infData');
+ 
+ unless(defined($adata)) {
+ 	$rinfo->{domain}->{$oname}->{auto_renew}='1';
+ 	return;
+ } else {
+ 	$rinfo->{domain}->{$oname}->{auto_renew}='0';
  }
- $rinfo->{domain}->{$oname}->{auto_renew_status}=\@status;
+
+ my $msg = {};
+ 
+ foreach my $el (Net::DRI::Util::xml_list_children($adata)) {
+ 	my ($name,$c)=@$el;
+ 		if ($name eq 'status') {
+ 			$msg->{message} = $c->textContent();
+ 			$msg->{lang} = $c->getAttribute('lang') if $c->hasAttribute('lang');
+ 		}
+ }
+ $rinfo->{domain}->{$oname}->{auto_renew_message} = $msg;
  return;
 }
 

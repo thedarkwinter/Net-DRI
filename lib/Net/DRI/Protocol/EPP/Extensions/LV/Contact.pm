@@ -16,12 +16,12 @@
 
 package Net::DRI::Protocol::EPP::Extensions::LV::Contact;
 
-
 use strict;
 use warnings;
 
 use Net::DRI::Util;
 use DateTime::Format::ISO8601;
+use utf8;
 
 =pod
 
@@ -82,14 +82,44 @@ sub create {
 }
 
 sub update {
+	my ($epp, $c, $todo) = @_;
+	my $mes = $epp->message();
+	my $newc=$todo->set('info');
 	
+	my @e;
+	
+	return unless defined $c->vat_nr() || $c->reg_nr();
+	push @e,[ 'lvcontact:vatNr', $c->vat_nr() ] if (defined $c->vat_nr());
+	push @e,[ 'lvcontact:regNr', $c->reg_nr() ] if (defined $c->reg_nr());
+	
+	my $eid=$mes->command_extension_register('lvcontact:update',sprintf('xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_contact')));
+	$mes->command_extension($eid,\@e);
 	
 	return;
 }
 
 sub info_parse {
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+	my $mes=$po->message();
+	return unless $mes->is_success();
 	
+	my $NS = $mes->ns('ext_contact');
+	my $c = $rinfo->{contact}->{$oname}->{self};
+	my $adata = $mes->get_extension('ext_contact','infData');
 	
+	return unless $adata;
+	
+	my $id_info = {};
+	
+	foreach my $el (Net::DRI::Util::xml_list_children($adata)) {
+	 	my ($name,$c)=@$el;
+	 		if ($name eq 'vatNr') {
+	 			$id_info->{vatNr} = $c->textContent();
+	 		} elsif ($name eq 'regNr') {
+	 			$id_info->{regNr} = $c->textContent();
+	 		}
+	}
+	$rinfo->{contact}->{$oname}->{contact_pid_info} = $id_info;
 	return;
 }
 

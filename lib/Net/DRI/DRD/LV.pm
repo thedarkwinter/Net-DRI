@@ -79,22 +79,11 @@ sub tlds     { return ('lv'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
-sub transport_protocol_default
-{
+sub transport_protocol_default {
  my ($self,$type)=@_;
-
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::LV',{})          if $type eq 'epp';
- # Will be added later...I think
- #return ('Net::DRI::Transport::Socket',{remote_host=>'whois.lv'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
  return;
 }
-
-#sub set_factories
-#{
-# my ($self,$po)=@_;
-# $po->factories('contact',sub { return Net::DRI::Data::Contact::LV->new(@_); });
-# return;
-#}
 
 ####################################################################################################
 1;
