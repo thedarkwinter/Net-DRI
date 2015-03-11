@@ -379,7 +379,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @others = qw/la pw com.de/;
     my @ngtlds = qw/bar cafe college contact fans feedback host ink pid press reit rest space website wiki wme xyz/;
     my @ngtlds_contested = qw/cafe fans reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
-    my @ngtlds_pipeline = qw/art auto design sucks now hotel forum golf school style chat gay group blog app mail love news llc/; # no expected dates given, probably contested strings
+    my @ngtlds_pipeline = qw/art auto design sucks now hotel forum golf gay group blog app mail love news llc/; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
     return {
@@ -506,7 +506,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android boo cal car channel chrome dad 
 
 =head3 TLDs
 
-academy accountants agency architect associates bargains bike boutique builders business cab camera camp capital cards care careers cash catering center cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction contractors cool credit creditcard cruises dating deals delivery dental diamonds digital direct directory discount domains education email energy engineering enterprises equipment estate events exchange expert exposed fail fan farm finance financial fish fitness flights florist foundation fund furniture gallery games gifts glass graphics gratis gripe guide guru healthcare holdings holiday hospital house immo industries institute insure international investments kitchen land lease legal life lighting limited limo loans maison management marketing media medical memorial money network partners parts pets photography photos pictures pizza place plumbing productions properties recipes reisen rentals repair report restaurant sarl schule services shoes singles solar solutions sports supplies supply support surgery systems tax technology tienda tips tires today tools tours town toys training university vacations ventures viajes villas vin vision voyage watch world works wtf xn--czrs0t xn--unup4y xn--vhquv zone
+academy accountants agency apartments architect associates bargains bike bingo boutique builders business cab camera camp capital cards care careers cash casino catering center chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction contractors cool credit creditcard cruises dating deals delivery dental diamonds digital direct directory discount domains education email energy engineering enterprises equipment estate events exchange expert exposed fail fan farm finance financial fish fitness flights florist football foundation fund furniture gallery games gifts glass graphics gratis gripe guide guru healthcare holdings holiday hospital house immo industries institute insure international investments kitchen land lease legal life lighting limited limo loans maison management marketing media medical memorial money network partners parts pets photography photos pictures pizza place plumbing productions properties recipes reisen rentals repair report restaurant sarl school schule services shoes singles solar solutions sports style supplies supply support surgery systems tax technology tennis tienda tips tires today tools tours town toys training university vacations ventures viajes villas vin vision voyage watch world works wtf xn--czrs0t xn--unup4y xn--vhquv zone
 
 =head3 Custom extensions
 
@@ -525,7 +525,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.zone','academy','accountants','agency','architect','associates','bargains','bike','boutique','builders','business','cab','camera','camp','capital','cards','care','careers','cash','catering','center','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','contractors','cool','credit','creditcard','cruises','dating','deals','delivery','dental','diamonds','digital','direct','directory','discount','domains','education','email','energy','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','fail','fan','farm','finance','financial','fish','fitness','flights','florist','foundation','fund','furniture','gallery','games','gifts','glass','graphics','gratis','gripe','guide','guru','healthcare','holdings','holiday','hospital','house','immo','industries','institute','insure','international','investments','kitchen','land','lease','legal','life','lighting','limited','limo','loans','maison','management','marketing','media','medical','memorial','money','network','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','productions','properties','recipes','reisen','rentals','repair','report','restaurant','sarl','schule','services','shoes','singles','solar','solutions','sports','supplies','supply','support','surgery','systems','tax','technology','tienda','tips','tires','today','tools','tours','town','toys','training','university','vacations','ventures','viajes','villas','vin','vision','voyage','watch','world','works','wtf','xn--czrs0t','xn--unup4y','xn--vhquv','zone'],
+     tlds => ['dpml.zone','academy','accountants','agency','apartments','architect','associates','bargains','bike','bingo','boutique','builders','business','cab','camera','camp','capital','cards','care','careers','cash','casino','catering','center','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','contractors','cool','credit','creditcard','cruises','dating','deals','delivery','dental','diamonds','digital','direct','directory','discount','domains','education','email','energy','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','fail','fan','farm','finance','financial','fish','fitness','flights','florist','football','foundation','fund','furniture','gallery','games','gifts','glass','graphics','gratis','gripe','guide','guru','healthcare','holdings','holiday','hospital','house','immo','industries','institute','insure','international','investments','kitchen','land','lease','legal','life','lighting','limited','limo','loans','maison','management','marketing','media','medical','memorial','money','network','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','productions','properties','recipes','reisen','rentals','repair','report','restaurant','sarl','school','schule','services','shoes','singles','solar','solutions','sports','style','supplies','supply','support','surgery','systems','tax','technology','tennis','tienda','tips','tires','today','tools','tours','town','toys','training','university','vacations','ventures','viajes','villas','vin','vision','voyage','watch','world','works','wtf','xn--czrs0t','xn--unup4y','xn--vhquv','zone'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
      whois_server => 'whois.donuts.co',
      check_limit => 5,
@@ -668,7 +668,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
 Uncontested: abogado bayern beer budapest casa cooking country fishing fashion fit garden horse law luxe miami nrw rodeo surf vip vodka wedding work yoga xn--g2xx48c
 
-Contested: app art baby beauty blog book cloud coupon cpa data dds design dog eco  gay home hotel inc latino llc love realestate school site soccer store style tech video
+Contested: app art baby beauty blog book cloud coupon cpa data dds design dog eco  gay home hotel inc latino llc love realestate site soccer store tech video
 
 Collisions: cooking-collisions country-collisions fishing-collisions'horse-collisions rodeo-collisions vodka-collisions
 =cut
@@ -676,7 +676,7 @@ Collisions: cooking-collisions country-collisions fishing-collisions'horse-colli
  return {
      bep_type => 2, # shared registry
      tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fashion', 'fishing', 'fit', 'garden', 'horse', 'law',  'luxe', 'miami', 'nrw', 'rodeo', 'surf',  'vip', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'data', 'dds', 'design', 'dog', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'love', 'realestate', 'school', 'site', 'soccer', 'store', 'style', 'tech', 'video',
+              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'data', 'dds', 'design', 'dog', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'love', 'realestate', 'site', 'soccer', 'store', 'tech', 'video',
               'cooking-collisions', 'country-collisions', 'fishing-collisions', 'horse-collisions', 'rodeo-collisions', 'vodka-collisions',
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
@@ -712,14 +712,14 @@ Contested: basketball group music
 
 Uncontested: bible gop kiwi
 
-Contested: broadway casino radio tickets tube
+Contested: broadway radio tickets tube
 
 =cut
 
  return {
      bep_type => 2, # shared registry
      tlds => ['bible', 'gop', 'kiwi',
-              'broadway', 'casino', 'radio', 'tickets', 'tube'
+              'broadway', 'radio', 'tickets', 'tube'
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
@@ -1076,7 +1076,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/ep
 
 =head3 TLDs
 
-art audio auto blackfriday cars christmas click deal design diet family flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics property racing realestate sale save school sexy shopping store style tattoo team tech video yoga
+art audio auto blackfriday cars christmas click deal design diet family flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics property racing realestate sale save sexy shopping store tattoo team tech video yoga
 
 Contended TLD's not included
 
@@ -1092,7 +1092,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','design','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','property','racing','realestate','sale','save','school','sexy','shopping','store','style','tattoo','team','tech','video','yoga'],
+     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','design','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','property','racing','realestate','sale','save','sexy','shopping','store','tattoo','team','tech','video','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
