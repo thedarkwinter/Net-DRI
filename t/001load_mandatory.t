@@ -388,6 +388,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::OpenRegistry::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Message');
+use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Rar');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LV');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LV::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LV::Contact');

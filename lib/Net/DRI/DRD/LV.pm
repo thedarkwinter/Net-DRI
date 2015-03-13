@@ -24,6 +24,8 @@ use base qw/Net::DRI::DRD/;
 
 use DateTime::Duration;
 use Net::DRI::Data::Contact::LV;
+use Net::DRI::Util;
+use Net::DRI::Exception;
 
 =pod
 
@@ -68,14 +70,14 @@ sub new
 {
  my $class=shift;
  my $self=$class->SUPER::new(@_);
- $self->{info}->{host_as_attr}=1;
+ $self->{info}->{host_as_attr}=0;
  $self->{info}->{contact_i18n}=1; 
  return $self;
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'LV'; }
-sub tlds     { return ('lv'); }
+sub tlds     { return ('lv',map { $_.'.lv'} qw/com id net org edu asn conf/ ); } # .gob.lv, .net.lv, .edu.lv requires authorization from the Registry
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
