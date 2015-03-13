@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 54;
+use Test::More tests => 56;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -171,5 +171,17 @@ is($auto_renew_message->{'lang'},'en','domain_info_extension lang');
 $R2 = $E1 . '<response><resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example-mydomain.lv</domain:name><domain:roid>DOM-example-mydomain-LVNIC</domain:roid><domain:status s="ok" /><domain:registrant>regi0412-12345</domain:registrant><domain:contact type="admin">huma1208-192</domain:contact><domain:contact type="tech">client-adm0</domain:contact><domain:contact type="billing">client-bill</domain:contact><domain:ns><domain:hostAttr><domain:hostName>ns.example-mydomain.lv</domain:hostName><domain:hostAddr ip="v4">92.240.65.139</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns.nonexisting.lv</domain:hostName></domain:hostAttr></domain:ns><domain:clID>test-client</domain:clID><domain:crDate>2011-04-09T13:04:03+03:00</domain:crDate><domain:exDate>2012-04-09T13:04:03+03:00</domain:exDate><domain:upID>test-client</domain:upID><domain:upDate>2011-06-09T13:04:03+03:00</domain:upDate></domain:infData></resData><result code="1000"><msg>Command completed successfully</msg></result>' . $TRID . '</response>' . $E2;
 $rc = $dri->domain_info('example1-mydomain.lv');
 is($dri->get_info('auto_renew'),'1','domain_info_extension get_info(auto_renew) = 1 - clientAutoRenewAllowed');
+
+### 2.2 Domain Create
+$cs=$dri->local_object('contactset');
+$cs->add($dri->local_object('contact')->srid('test1106-27'),'registrant');
+$cs->add($dri->local_object('contact')->srid('huma1106-28'),'admin');
+$cs->add($dri->local_object('contact')->srid('__DEFAULT__'),'tech');
+$dh=$dri->local_object('hosts');
+$dh->add('ns.someserver.lv');
+$dh->add('a-new-domain.lv',['1.2.3.4'],[],1);
+$rc=$dri->domain_create('a-new-domain.lv',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,auth=>{pw=>'opqrstuv'}});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>a-new-domain.lv</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostAttr><domain:hostName>ns.someserver.lv</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>a-new-domain.lv</domain:hostName><domain:hostAddr ip="v4">1.2.3.4</domain:hostAddr></domain:hostAttr></domain:ns><domain:registrant>test1106-27</domain:registrant><domain:contact type="admin">huma1106-28</domain:contact><domain:contact type="tech">__DEFAULT__</domain:contact><domain:authInfo><domain:pw>opqrstuv</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml');
+is($rc->is_success(),1,'domain_create is_success');
 
 exit 0;

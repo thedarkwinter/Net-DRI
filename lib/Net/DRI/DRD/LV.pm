@@ -27,6 +27,8 @@ use Net::DRI::Data::Contact::LV;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
+__PACKAGE__->make_exception_for_unavailable_operations(qw/host_update host_current_status host_check host_exist host_delete host_create host_info/);
+
 =pod
 
 =head1 NAME
@@ -70,8 +72,8 @@ sub new
 {
  my $class=shift;
  my $self=$class->SUPER::new(@_);
- $self->{info}->{host_as_attr}=0;
- $self->{info}->{contact_i18n}=1; 
+ $self->{info}->{host_as_attr}=1;
+ $self->{info}->{contact_i18n}=1;
  return $self;
 }
 
