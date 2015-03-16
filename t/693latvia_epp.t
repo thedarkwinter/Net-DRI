@@ -184,4 +184,11 @@ $rc=$dri->domain_create('a-new-domain.lv',{pure_create=>1,duration=>DateTime::Du
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>a-new-domain.lv</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostAttr><domain:hostName>ns.someserver.lv</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>a-new-domain.lv</domain:hostName><domain:hostAddr ip="v4">1.2.3.4</domain:hostAddr></domain:hostAttr></domain:ns><domain:registrant>test1106-27</domain:registrant><domain:contact type="admin">huma1106-28</domain:contact><domain:contact type="tech">__DEFAULT__</domain:contact><domain:authInfo><domain:pw>opqrstuv</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml');
 is($rc->is_success(),1,'domain_create is_success');
 
+# Deletes one of the hosts from the domain [ david0comlaude145924.lv ].
+my $toc2  = $dri->local_object('changes');
+my $doUp2=$dri->local_object('hosts');
+$doUp2->add('ns.someserver.lv');
+$toc2->set( 'hosts', $doUp2 );
+$rc = $dri->domain_update('david0comlaude145924.lv', $toc2);
+
 exit 0;
