@@ -9,6 +9,8 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
+use Data::Dumper;
+
 use Test::More tests => 56;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -59,11 +61,11 @@ $co->cc('LV');
 $co->voice('+371.12345678');
 $co->fax('+371.87654321');
 $co->email('ghepardhus@snailmail.lv');
-$co->auth({pw=>'g34gzgh'});
-$co->set('vat_nr', 'LV12345678901'); # VAT Number of the legal entity
-$co->set('reg_nr', '12345678901'); # 'Personal ID' number of the legal entity
+#$co->auth({pw=>'g34gzgh'}); # This field is not used so ommitted. If included it is passed with the command.
+$co->vat('LV12345678901'); # VAT Number of the legal entity
+$co->orgno('12345678901'); # 'Personal ID' number of the legal entity
 $rc=$dri->contact_create($co);
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>josh-12647</contact:id><contact:postalInfo type="loc"><contact:name>James Black</contact:name><contact:org>Shark \'n\' Hammer, SIA</contact:org><contact:addr><contact:street>Neverending st.1111</contact:street><contact:city>Rīga</contact:city><contact:pc>LV-2000</contact:pc><contact:cc>LV</contact:cc></contact:addr></contact:postalInfo><contact:voice>+371.12345678</contact:voice><contact:fax>+371.87654321</contact:fax><contact:email>ghepardhus@snailmail.lv</contact:email><contact:authInfo><contact:pw>g34gzgh</contact:pw></contact:authInfo></contact:create></create><extension><lvcontact:create xmlns:lvcontact="http://www.nic.lv/epp/schema/lvcontact-ext-1.0" xsi:schemaLocation="http://www.nic.lv/epp/schema/lvcontact-ext-1.0 lvcontact-ext-1.0.xsd"><lvcontact:vatNr>LV12345678901</lvcontact:vatNr><lvcontact:regNr>12345678901</lvcontact:regNr></lvcontact:create></extension><clTRID>ABC-12345</clTRID></command></epp>','contact_create build');
+is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>josh-12647</contact:id><contact:postalInfo type="loc"><contact:name>James Black</contact:name><contact:org>Shark \'n\' Hammer, SIA</contact:org><contact:addr><contact:street>Neverending st.1111</contact:street><contact:city>Rīga</contact:city><contact:pc>LV-2000</contact:pc><contact:cc>LV</contact:cc></contact:addr></contact:postalInfo><contact:voice>+371.12345678</contact:voice><contact:fax>+371.87654321</contact:fax><contact:email>ghepardhus@snailmail.lv</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><extension><lvcontact:create xmlns:lvcontact="http://www.nic.lv/epp/schema/lvcontact-ext-1.0" xsi:schemaLocation="http://www.nic.lv/epp/schema/lvcontact-ext-1.0 lvcontact-ext-1.0.xsd"><lvcontact:vatNr>LV12345678901</lvcontact:vatNr><lvcontact:regNr>12345678901</lvcontact:regNr></lvcontact:create></extension><clTRID>ABC-12345</clTRID></command></epp>','contact_create build');
 is($rc->is_success(),1,'contact_create is_success');
 
 ### 1.1 Contact Update /w Extension
@@ -78,8 +80,8 @@ $co2->pc('012345');
 $co2->cc('LV');
 $co2->voice('+52.0123456789');
 $co2->email('example@example.lv');
-$co->set('vat_nr', 'LV12345678901'); # VAT Number of the legal entity
-$co->set('reg_nr', '12345678901'); # 'Personal ID' number of the legal entity
+$co->vat('LV12345678901'); # VAT Number of the legal entity
+$co->orgno('12345678901'); # 'Personal ID' number of the legal entity
 $toc->set('info',$co2);
 $rc=$dri->contact_update($co,$toc);
 is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:chg><contact:postalInfo type="loc"><contact:name>Example Latvia Name</contact:name><contact:addr><contact:street>Example Street 1</contact:street><contact:street>Example Street 2</contact:street><contact:city>Example Latvia City</contact:city><contact:pc>012345</contact:pc><contact:cc>LV</contact:cc></contact:addr></contact:postalInfo><contact:voice>+52.0123456789</contact:voice><contact:email>example@example.lv</contact:email></contact:chg></contact:update></update><extension><lvcontact:update xmlns:lvcontact="http://www.nic.lv/epp/schema/lvcontact-ext-1.0" xsi:schemaLocation="http://www.nic.lv/epp/schema/lvcontact-ext-1.0 lvcontact-ext-1.0.xsd"><lvcontact:vatNr>LV12345678901</lvcontact:vatNr><lvcontact:regNr>12345678901</lvcontact:regNr></lvcontact:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
@@ -131,11 +133,10 @@ is($dri->get_info('crID'),'niceppuser','contact_info get_info(crID)'),
 $d=$dri->get_info('crDate');
 isa_ok($d,'DateTime','contact_info get_info(crDate)');
 is("".$d,'2011-05-16T13:42:39','contact_info get_info(crDate) value');
-my $contact_pid_info = $dri->get_info('contact_pid_info');
-is(defined($contact_pid_info), 1 ,'contact_info_extension get_info(contact_pid_info) defined');
-is_deeply($dri->get_info('contact_pid_info'),{ vatNr => 'LV222212222112', regNr => '222212222112'},'contact_info_extension get_info(contact_pid_info) structure');
-is($contact_pid_info->{'vatNr'},'LV222212222112','contact_info_extension vatNr');
-is($contact_pid_info->{'regNr'},'222212222112','contact_info_extension regNr');
+is(defined($co->vat()), 1 ,'contact_info_extension vat() defined');
+is(defined($co->orgno()), 1 ,'contact_info_extension orgno() defined');
+is($co->vat(),'LV222212222112','contact_info_extension vatNr correct_value');
+is($co->orgno(),'222212222112','contact_info_extension regNr correct_value');
 
 ####################################################################################################
 ####### Domains Commands ########

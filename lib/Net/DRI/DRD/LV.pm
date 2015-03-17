@@ -1,4 +1,4 @@
-## Domain Registry Interface, .LV Policies for EPP []http://www.nic.lv/eppdoc/html/index.html]
+## Domain Registry Interface, .LV Policies for EPP [http://www.nic.lv/eppdoc/html/index.html]
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -14,7 +14,6 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-
 package Net::DRI::DRD::LV;
 
 use strict;
@@ -27,7 +26,7 @@ use Net::DRI::Data::Contact::LV;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/host_update host_current_status host_check host_exist host_delete host_create host_info domain_renew contact_transfer contact_renew/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/host_update host_current_status host_check host_exist host_delete host_create host_info domain_renew domain_transfer contact_transfer contact_renew/);
 
 =pod
 
@@ -43,7 +42,7 @@ Please see the README file for details.
 
 For now, support questions should be sent to:
 
-E<lt>netdri@dotandco.comE<gt>
+E<lt>d.makuni@live.co.uk<gt>
 
 Please also see the SUPPORT file in the distribution.
 
@@ -56,6 +55,10 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 David Makuni <d.makuni@live.co.uk>
 
 =head1 COPYRIGHT
+
+Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -79,13 +82,20 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'LV'; }
-sub tlds     { return ('lv',map { $_.'.lv'} qw/com id net org edu asn conf/ ); } # .edu.lv requires authorization from the Registry
+sub tlds     { return ('lv',map { $_.'.lv'} qw/com id net org edu asn conf/ ); } # .edu.lv requires authorization from the Registry.
 sub object_types { return ('domain','contact'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::LV',{})          if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::LV',{}) if $type eq 'epp';
+ return;
+}
+
+sub set_factories
+{
+ my ($self,$po)=@_;
+ $po->factories('contact',sub { return Net::DRI::Data::Contact::LV->new(@_); });
  return;
 }
 

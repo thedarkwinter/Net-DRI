@@ -1,4 +1,4 @@
-## Domain Registry Interface, .LV Contact EPP extension commands
+## Domain Registry Interface, .LV Contact EPP extension commands [http://www.nic.lv/eppdoc/html/extensions/lvcontact.html]
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -51,6 +51,10 @@ David Makuni <d.makuni@live.co.uk>
 
 =head1 COPYRIGHT
 
+Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -76,11 +80,6 @@ sub register_commands
 
 ####################################################################################################
 
-sub create {
-	my ($epp,$contact)=@_;
-    return contact_create_extension($epp,$contact);
-}
-
 sub update {
 	my ($epp, $c, $todo) = @_;
 	my $mes = $epp->message();
@@ -88,9 +87,9 @@ sub update {
 	
 	my @e;
 	
-	return unless defined $c->vat_nr() || $c->reg_nr();
-	push @e,[ 'lvcontact:vatNr', $c->vat_nr() ] if (defined $c->vat_nr());
-	push @e,[ 'lvcontact:regNr', $c->reg_nr() ] if (defined $c->reg_nr());
+	return unless defined $c->vat() || $c->orgno();
+	push @e,[ 'lvcontact:vatNr', $c->vat() ] if (defined $c->vat());
+	push @e,[ 'lvcontact:regNr', $c->orgno() ] if (defined $c->orgno());
 	
 	my $eid=$mes->command_extension_register('lvcontact:update',sprintf('xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_contact')));
 	$mes->command_extension($eid,\@e);
@@ -108,30 +107,28 @@ sub info_parse {
 	my $adata = $mes->get_extension('ext_contact','infData');
 	
 	return unless $adata;
-	
-	my $id_info = {};
-	
+		
+	my $s=$rinfo->{contact}->{$oname}->{self};
 	foreach my $el (Net::DRI::Util::xml_list_children($adata)) {
 	 	my ($name,$c)=@$el;
 	 		if ($name eq 'vatNr') {
-	 			$id_info->{vatNr} = $c->textContent();
+	 			$s->vat($c->textContent());
 	 		} elsif ($name eq 'regNr') {
-	 			$id_info->{regNr} = $c->textContent();
+	 			$s->orgno($c->textContent());
 	 		}
 	}
-	$rinfo->{contact}->{$oname}->{contact_pid_info} = $id_info;
 	return;
 }
 
-sub contact_create_extension {
+sub create {
 	my ($epp,$c) = @_;
 	my $mes = $epp->message;
 	my @e;
 	
-	return unless defined $c->vat_nr() || $c->reg_nr();
+	return unless defined $c->vat() || $c->orgno();
 	
-	push @e,[ 'lvcontact:vatNr', $c->vat_nr() ] if (defined $c->vat_nr());
-	push @e,[ 'lvcontact:regNr', $c->reg_nr() ] if (defined $c->reg_nr());
+	push @e,[ 'lvcontact:vatNr', $c->vat() ] if (defined $c->vat());
+	push @e,[ 'lvcontact:regNr', $c->orgno() ] if (defined $c->orgno());
 	
 	my $eid=$mes->command_extension_register('lvcontact:create',sprintf('xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_contact')));
 	$mes->command_extension($eid,\@e);

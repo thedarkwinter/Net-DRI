@@ -1,4 +1,4 @@
-## Domain Registry Interface, .LV EPP extensions
+## Domain Registry Interface, .LV EPP extensions [http://www.nic.lv/eppdoc/html/index.html]
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -49,6 +49,10 @@ David Makuni <d.makuni@live.co.uk>
 
 =head1 COPYRIGHT
 
+Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -68,7 +72,7 @@ sub setup
       ext_contact     => ['http://www.nic.lv/epp/schema/lvcontact-ext-1.0','lvcontact-ext-1.0.xsd'],
     });
 
-	foreach my $o (qw/vat_nr reg_nr/)  { $self->capabilities('contact_create',$o,['set']); }	
+	foreach my $o (qw/vat orgno/)  { $self->capabilities('contact_create',$o,['set']); }	
 	$self->capabilities('domain_update','auto_renew',['set']);
 	$self->capabilities('domain_update','auto_renew_message',['set']);
 	

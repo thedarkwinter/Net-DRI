@@ -1,4 +1,4 @@
-## Domain Registry Interface, Handling of contact data for .LV
+## Domain Registry Interface, Handling of contact data for .LV [http://www.nic.lv/eppdoc/html/index.html]
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -23,43 +23,32 @@ use base qw(Net::DRI::Data::Contact);
 
 use Net::DRI::Exception;
 
-__PACKAGE__->register_attributes(qw(vat_nr reg_nr));
-
-####################################################################################################
-
-
-
-####################################################################################################
-1;
+__PACKAGE__->register_attributes(qw(vat orgno));
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Data::Contact::TCI - Handle TCI contact data for Net::DRI
+Net::DRI::Data::Contact::LV - Handle LV contact data for Net::DRI
 
 =head1 DESCRIPTION
 
 This subclass of Net::DRI::Data::Contact adds accessors and validation for
-TCI specific data.
+LV specific data.
 
 =head1 METHODS
 
 The following accessors/mutators can be called in chain, as they all return the object itself.
 
-=head2 organization()
+=head2 reg_no()
 
-=head2 person()
-
-=head2 verified()
-
-=head2 unverified()
+=head2 vat_no()
 
 =head1 SUPPORT
 
 For now, support questions should be sent to:
 
-E<lt>netdri@dotandco.comE<gt>
+E<lt>d.makuni@live.co.uk<gt>
 
 Please also see the SUPPORT file in the distribution.
 
@@ -69,14 +58,13 @@ http://www.dotandco.com/services/software/Net-DRI/
 
 =head1 AUTHOR
 
-Dmitry Belyavsky, E<lt>beldmit@gmail.comE<gt>
-Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+David Makuni <d.makuni@live.co.uk>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-Copyright (c) 2011 Patrick Mevzek <netdri@dotandco.com>.
-All rights reserved.
+Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -86,3 +74,56 @@ the Free Software Foundation; either version 2 of the License, or
 See the LICENSE file that comes with this distribution for more details.
 
 =cut
+
+####################################################################################################
+
+sub validate
+{
+ my ($self,$change)=@_;
+ $change||=0;
+ my @errs;
+
+ $self->SUPER::validate($change); ## This will trigger exception if a problem is found.
+   
+ if (defined $self->vat() && $self->orgno()) {
+	 # Validation only applicable when both fields are present.
+	 # For Latvian legal persons, vatNr should match regNr field, with 'LV' prepended.
+	 	 
+	 push @errs,'vatNr must begin with "LV"' if ($self->vat() && $self->vat()!~m/^(LV)(.+)/); # Field must start with LV. No character limit.
+	 push @errs,'regNr must be numerical characters only when "vatNr" is present' if ($self->orgno() && $self->orgno()!~m/^(\d+)/); # Only numerical characters allowed. No character limit.
+ 	 
+ 	 my $vat=$self->vat();
+	 $vat =~ s/^(LV)(.+)/$2/g;
+	 my $reg=$self->orgno();
+	 
+	 push @errs,'vatNr should match regNr field, with "LV" prepended' if ( $vat ne $reg ); # vatNr should match regNr field, with "LV" prepended
+	 
+ } elsif (defined $self->orgno()) {
+ 	
+     # Latvian person code (orgno) format. Expected: 'DDMMYY-NNNNN'
+     push @errs,'regNr must be in this format "DDMMYY-NNNNN"' if ($self->orgno() && $self->orgno()!~m/^(\d{6})(-)(\d{5})/);
+ 	
+ } elsif (defined  $self->vat()) {
+
+     # vatNr field should be empty for private person. 
+     push @errs,'vatNr should be empty for a private individual' if ($self->vat() && $self->vat()=~m/^(?!\s*$).+/);
+ }
+ 
+ Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
+ return 1; ## everything is good!
+}
+
+sub init
+{
+ my ($self,$what,$ndr)=@_;
+
+ if ($what eq 'create')
+ {
+  my $a=$self->auth();
+  $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); #authInfo is not used and ignored!
+ }
+ return;
+}
+
+####################################################################################################
+1;
