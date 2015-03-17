@@ -79,7 +79,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'LV'; }
-sub tlds     { return ('lv',map { $_.'.lv'} qw/com id net org edu asn conf/ ); } # .gob.lv, .net.lv, .edu.lv requires authorization from the Registry
+sub tlds     { return ('lv',map { $_.'.lv'} qw/com id net org edu asn conf/ ); } # .edu.lv requires authorization from the Registry
 sub object_types { return ('domain','contact'); }
 sub profile_types { return qw/epp/; }
 
