@@ -9,8 +9,6 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Data::Dumper;
-
 use Test::More tests => 56;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
