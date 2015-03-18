@@ -23,7 +23,7 @@ use base qw/Net::DRI::DRD/;
 use Net::DRI::Exception;
 use DateTime::Duration;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/login contact_update contact_delete contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse domain_transfer_accept domains_transfer_reject domains_transfer_cancel/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/login contact_update contact_delete contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse domain_transfer_accept domains_transfer_reject domains_transfer_cancel host_delete/);
 
 =pod
 
