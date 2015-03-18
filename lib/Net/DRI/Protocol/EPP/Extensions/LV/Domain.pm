@@ -89,19 +89,19 @@ sub update {
  return unless defined $rd->set('auto_renew');
  my @e;
  my $user_message = $rd->set('auto_renew_message');
- 
- if ( $rd->set('auto_renew') eq 'true' ) {
+  
+ if ( $rd->set('auto_renew') eq 'false' || $rd->set('auto_renew') eq '0' || $rd->set('auto_renew') eq 'no') {
+ 	 if (defined $user_message) {
+ 	 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited', lang => $user_message->{'lang'} }, $user_message->{'message'} ]];
+ 	 } else {
+ 	 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited'}]];
+ 	 }	
+ } else {
  	 if (defined $user_message) {
  	 	push @e,['lvdomain:add',['lvdomain:status',{ s => 'clientAutoRenewProhibited', lang => $user_message->{'lang'} }, $user_message->{'message'} ]];
  	 } else {
  	 	push @e,['lvdomain:add',['lvdomain:status',{ s => 'clientAutoRenewProhibited'}]];
  	 }
- } elsif ( $rd->set('auto_renew') eq 'false' ) {
-  	 if (defined $user_message) {
- 	 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited', lang => $user_message->{'lang'} }, $user_message->{'message'} ]];
- 	 } else {
- 	 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited'}]];
- 	 }	
  }
 
  my $eid=$mes->command_extension_register('lvdomain:update',sprintf('xmlns:lvdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domain')));
