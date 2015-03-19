@@ -23,7 +23,7 @@ use base qw/Net::DRI::DRD/;
 use Net::DRI::Exception;
 use DateTime::Duration;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/login contact_update contact_delete contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse domain_transfer_accept domains_transfer_reject domains_transfer_cancel/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/login contact_update contact_delete contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse domain_transfer_accept domains_transfer_reject domains_transfer_cancel host_delete/);
 
 =pod
 
@@ -113,6 +113,17 @@ sub tray_info
   use Data::Dumper;
   return $reg->process('tray', 'info', [$rd]);
 }
+
+sub host_create
+{
+  my ($self, $ndr, $host) = @_;
+  my $ipv4 = $host->{'list'}[0][1];
+  my $ipv6 = $host->{'list'}[0][2];
+  # This Registry requires an IP to create a host. If the host to be created is outside the .ES zone, they ignore the IP provided.
+  Net::DRI::Exception::usererr_insufficient_parameters('RED.ES require an IP address (v4 or v6) to create a host object') if ( (@{$ipv4} || @{$ipv6}) == 0 );
+  return $ndr->process('host', 'create', [$host]);
+}
+
 ####################################################################################################
 
 1;
