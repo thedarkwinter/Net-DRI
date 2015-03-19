@@ -102,7 +102,7 @@ sub setup
    return;
 }
 
-sub default_extensions { return qw/ES::Session ES::Domain ES::Contact ES::Tray ES::Host/; }
+sub default_extensions { return qw/ES::Session ES::Domain ES::Contact ES::Tray/; }
 
 
 
