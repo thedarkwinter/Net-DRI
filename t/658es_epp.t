@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 40;
+use Test::More tests => 41;
 
 use Data::Dumper;
 
@@ -171,6 +171,11 @@ is($rc->is_success(), 1, 'contact_create is_success');
 
 ####################################################################################################
 
-
+####################################################################################################
+## Host commands
+#create
+$rc=$dri->host_create($dri->local_object('hosts')->add('ns14.testepp.es',['192.168.0.14'],['2001:0DB8:02de::0e13'],1));
+is($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns14.testepp.es</host:name><host:addr ip="v4">192.168.0.14</host:addr><host:addr ip="v6">2001:0DB8:02de::0e13</host:addr></host:create></create><extension><es_creds:es_creds xmlns:es_creds="urn:red.es:xml:ns:es_creds-1.0" xsi:schemaLocation="urn:red.es:xml:ns:es_creds-1.0 es_creds-1.0"><es_creds:clID>LOGIN</es_creds:clID><es_creds:pw>PASSWORD</es_creds:pw></es_creds:es_creds></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'host_create build');
+####################################################################################################
 
 exit(0);
