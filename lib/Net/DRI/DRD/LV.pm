@@ -71,13 +71,12 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub new
-{
- my $class=shift;
- my $self=$class->SUPER::new(@_);
- $self->{info}->{host_as_attr}=1;
- $self->{info}->{contact_i18n}=1;
- return $self;
+sub new {
+	my $class=shift;
+	my $self=$class->SUPER::new(@_);
+	$self->{info}->{host_as_attr}=1;
+	$self->{info}->{contact_i18n}=1;
+	return $self;
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
@@ -87,18 +86,15 @@ sub object_types { return ('domain','contact'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default {
- my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::LV',{}) if $type eq 'epp';
- 
- return;
+	my ($self,$type)=@_;
+	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::LV',{}) if $type eq 'epp';
+	return;
 }
 
-sub set_factories
-{
- my ($self,$po)=@_;
- $po->factories('contact',sub { return Net::DRI::Data::Contact::LV->new(@_); });
- 
- return;
+sub set_factories {
+	my ($self,$po)=@_;
+	$po->factories('contact',sub { return Net::DRI::Data::Contact::LV->new(@_); });
+	return;
 }
 
 ####################################################################################################
