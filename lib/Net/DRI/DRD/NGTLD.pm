@@ -313,7 +313,7 @@ xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunio
 
 =head3 TLDs
 
-xn--ngbc5azd xn--ngbrx abudhabi arab build dubai cancerresearch courses cuisinella krd luxury melbourne men menu monash physio schmidt study sucks sydney wtc
+xn--ngbc5azd xn--ngbrx abudhabi arab build dubai cancerresearch courses cuisinella krd luxury melbourne men menu monash one physio schmidt study sucks sydney wtc
 
 Contended TLD's not included
 
@@ -341,7 +341,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'cancerresearch', 'courses', 'cuisinella', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'physio', 'schmidt', 'study', 'sucks', 'sydney', 'wtc'],
+     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'cancerresearch', 'courses', 'cuisinella', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'one', 'physio', 'schmidt', 'study', 'sucks', 'sydney', 'wtc'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
      whois_server => 'whois.aridnrs.net.au',
    } if $bep eq 'ari';
