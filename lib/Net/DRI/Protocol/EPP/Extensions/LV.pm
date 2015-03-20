@@ -64,19 +64,22 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub setup
-{
-  my ($self,$rp)=@_;
-  $self->ns({
-      ext_domain      => ['http://www.nic.lv/epp/schema/lvdomain-ext-1.0','lvdomain-ext-1.0.xsd'],
-      ext_contact     => ['http://www.nic.lv/epp/schema/lvcontact-ext-1.0','lvcontact-ext-1.0.xsd'],
-    });
+sub setup {
+    my ( $self, $rp ) = @_;
+    $self->ns(
+        {
+            ext_domain => ['http://www.nic.lv/epp/schema/lvdomain-ext-1.0','lvdomain-ext-1.0.xsd'],
+            ext_contact => ['http://www.nic.lv/epp/schema/lvcontact-ext-1.0','lvcontact-ext-1.0.xsd'],
+        }
+    );
 
-	foreach my $o (qw/vat orgno/)  { $self->capabilities('contact_create',$o,['set']); }	
-	$self->capabilities('domain_update','auto_renew',['set']);
-	$self->capabilities('domain_update','auto_renew_message',['set']);
-	
-  return;
+    foreach my $o (qw/vat orgno/) {
+        $self->capabilities( 'contact_create', $o, ['set'] );
+    }
+    $self->capabilities( 'domain_update', 'auto_renew',         ['set'] );
+    $self->capabilities( 'domain_update', 'auto_renew_message', ['set'] );
+
+    return;
 }
 
 sub default_extensions { return qw/LV::Domain LV::Contact/; }

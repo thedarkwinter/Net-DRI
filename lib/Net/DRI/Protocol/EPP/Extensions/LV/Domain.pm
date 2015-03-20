@@ -69,76 +69,78 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub register_commands
-{
- my ($class,$version)=@_;
- my %tmp=( 
-          update => [ \&update, undef ],
-          info   => [ undef, \&info_parse ],
-         );
-
- return { 'domain' => \%tmp };
+sub register_commands {
+	my ( $class, $version)=@_;
+	my %tmp=( 
+		update => [ \&update, undef ],
+		info   => [ undef, \&info_parse ],
+	);
+	
+	return { 'domain' => \%tmp };
 }
 
 ####################################################################################################
 
 sub update { 
- my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
- 
- return unless defined $rd->set('auto_renew');
- 
- my @e;
- 
- my $user_message = $rd->set('auto_renew_message');
-  
- if ( $rd->set('auto_renew') eq 'false' || $rd->set('auto_renew') eq '0' || $rd->set('auto_renew') eq 'no') {
- 	 if (defined $user_message) {
- 	 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited', lang => $user_message->{'lang'} }, $user_message->{'message'} ]];
- 	 } else {
- 	 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited'}]];
- 	 }	
- } else {
- 	 if (defined $user_message) {
- 	 	push @e,['lvdomain:add',['lvdomain:status',{ s => 'clientAutoRenewProhibited', lang => $user_message->{'lang'} }, $user_message->{'message'} ]];
- 	 } else {
- 	 	push @e,['lvdomain:add',['lvdomain:status',{ s => 'clientAutoRenewProhibited'}]];
- 	 }
- }
+	my ($epp,$domain,$rd)=@_;
+	my $mes=$epp->message();
 
- my $eid=$mes->command_extension_register('lvdomain:update',sprintf('xmlns:lvdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domain')));
- $mes->command_extension($eid,\@e);
- 
- return;
+	return unless defined $rd->set('auto_renew');
+
+	my @e;
+
+	my $user_message = $rd->set('auto_renew_message');
+	 
+	if ( $rd->set('auto_renew') eq 'false' || $rd->set('auto_renew') eq '0' || $rd->set('auto_renew') eq 'no') {
+		 if (defined $user_message) {
+		 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited', lang => $user_message->{'lang'} }, $user_message->{'message'} ]];
+		 } else {
+		 	push @e,['lvdomain:rem',['lvdomain:status',{ s => 'clientAutoRenewProhibited'}]];
+		 }	
+	} else {
+		 if (defined $user_message) {
+		 	push @e,['lvdomain:add',['lvdomain:status',{ s => 'clientAutoRenewProhibited', lang => $user_message->{'lang'} }, $user_message->{'message'} ]];
+		 } else {
+		 	push @e,['lvdomain:add',['lvdomain:status',{ s => 'clientAutoRenewProhibited'}]];
+		 }
+	}
+
+	my $eid=$mes->command_extension_register('lvdomain:update',sprintf('xmlns:lvdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domain')));
+	$mes->command_extension($eid,\@e);
+
+	return;
 }
 
 sub info_parse {
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
- my $NS = $mes->ns('ext_domain');
- my $c = $rinfo->{domain}->{$oname}->{self};
- my $adata = $mes->get_extension('ext_domain','infData');
- 
- unless(defined($adata)) {
- 	$rinfo->{domain}->{$oname}->{auto_renew}='1';
- 	return;
- } else {
- 	$rinfo->{domain}->{$oname}->{auto_renew}='0';
- }
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+	my $mes=$po->message();
 
- my $msg = {};
- 
- foreach my $el (Net::DRI::Util::xml_list_children($adata)) {
- 	my ($name,$c)=@$el;
- 		if ($name eq 'status') {
- 			$msg->{message} = $c->textContent();
- 			$msg->{lang} = $c->getAttribute('lang') if $c->hasAttribute('lang');
- 		}
- }
- $rinfo->{domain}->{$oname}->{auto_renew_message} = $msg;
- 
- return;
+	return unless $mes->is_success();
+
+	my $NS = $mes->ns('ext_domain');
+	my $c = $rinfo->{domain}->{$oname}->{self};
+	my $adata = $mes->get_extension('ext_domain','infData');
+	 
+	unless(defined($adata)) {
+		$rinfo->{domain}->{$oname}->{auto_renew}='1';
+		return;
+	} else {
+		$rinfo->{domain}->{$oname}->{auto_renew}='0';
+	}
+
+	my $msg = {};
+
+	foreach my $el (Net::DRI::Util::xml_list_children($adata)) {
+		my ($name,$c)=@$el;
+			if ($name eq 'status') {
+				$msg->{message} = $c->textContent();
+				$msg->{lang} = $c->getAttribute('lang') if $c->hasAttribute('lang');
+			}
+	}
+
+	$rinfo->{domain}->{$oname}->{auto_renew_message} = $msg;
+
+	return;
 }
 
 ####################################################################################################

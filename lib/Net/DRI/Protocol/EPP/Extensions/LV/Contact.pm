@@ -66,75 +66,83 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub register_commands
-{
- my ($class,$version)=@_;
- my %tmp=( 
-		create => [ \&create, undef ],
-		update => [ \&update, undef ],
-		info   => [ undef, \&info_parse ],
-         );
+sub register_commands {
+    my ( $class, $version ) = @_;
+    my %tmp = (
+        create => [ \&create, undef ],
+        update => [ \&update, undef ],
+        info   => [ undef,    \&info_parse ],
+    );
 
- return { 'contact' => \%tmp };
+    return { 'contact' => \%tmp };
 }
 
 ####################################################################################################
 
 sub update {
-	my ($epp, $c, $todo) = @_;
-	my $mes = $epp->message();
-	my $newc=$todo->set('info');
-	
-	my @e;
-	
-	return unless defined $c->vat() || $c->orgno();
-	push @e,[ 'lvcontact:vatNr', $c->vat() ] if (defined $c->vat());
-	push @e,[ 'lvcontact:regNr', $c->orgno() ] if (defined $c->orgno());
-	
-	my $eid=$mes->command_extension_register('lvcontact:update',sprintf('xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_contact')));
-	$mes->command_extension($eid,\@e);
-	
-	return;
+    my ( $epp, $c, $todo ) = @_;
+    my $mes  = $epp->message();
+    my $newc = $todo->set('info');
+
+    my @e;
+
+    return unless defined $c->vat() || $c->orgno();
+    push @e, [ 'lvcontact:vatNr', $c->vat() ]   if ( defined $c->vat() );
+    push @e, [ 'lvcontact:regNr', $c->orgno() ] if ( defined $c->orgno() );
+
+    my $eid = $mes->command_extension_register(
+        'lvcontact:update',
+        sprintf( 'xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',
+            $mes->nsattrs('ext_contact') )
+    );
+    $mes->command_extension( $eid, \@e );
+
+    return;
 }
 
 sub info_parse {
-	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-	my $mes=$po->message();
-	return unless $mes->is_success();
-	
-	my $NS = $mes->ns('ext_contact');
-	my $c = $rinfo->{contact}->{$oname}->{self};
-	my $adata = $mes->get_extension('ext_contact','infData');
-	
-	return unless $adata;
-		
-	my $s=$rinfo->{contact}->{$oname}->{self};
-	foreach my $el (Net::DRI::Util::xml_list_children($adata)) {
-	 	my ($name,$c)=@$el;
-	 		if ($name eq 'vatNr') {
-	 			$s->vat($c->textContent());
-	 		} elsif ($name eq 'regNr') {
-	 			$s->orgno($c->textContent());
-	 		}
-	}
-	
-	return;
+    my ( $po, $otype, $oaction, $oname, $rinfo ) = @_;
+    my $mes = $po->message();
+    return unless $mes->is_success();
+
+    my $NS    = $mes->ns('ext_contact');
+    my $c     = $rinfo->{contact}->{$oname}->{self};
+    my $adata = $mes->get_extension( 'ext_contact', 'infData' );
+
+    return unless $adata;
+
+    my $s = $rinfo->{contact}->{$oname}->{self};
+    foreach my $el ( Net::DRI::Util::xml_list_children($adata) ) {
+        my ( $name, $c ) = @$el;
+        if ( $name eq 'vatNr' ) {
+            $s->vat( $c->textContent() );
+        }
+        elsif ( $name eq 'regNr' ) {
+            $s->orgno( $c->textContent() );
+        }
+    }
+
+    return;
 }
 
 sub create {
-	my ($epp,$c) = @_;
-	my $mes = $epp->message;
-	my @e;
-	
-	return unless defined $c->vat() || $c->orgno();
-	
-	push @e,[ 'lvcontact:vatNr', $c->vat() ] if (defined $c->vat());
-	push @e,[ 'lvcontact:regNr', $c->orgno() ] if (defined $c->orgno());
-	
-	my $eid=$mes->command_extension_register('lvcontact:create',sprintf('xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_contact')));
-	$mes->command_extension($eid,\@e);
-	
-	return;
+    my ( $epp, $c ) = @_;
+    my $mes = $epp->message;
+    my @e;
+
+    return unless defined $c->vat() || $c->orgno();
+
+    push @e, [ 'lvcontact:vatNr', $c->vat() ]   if ( defined $c->vat() );
+    push @e, [ 'lvcontact:regNr', $c->orgno() ] if ( defined $c->orgno() );
+
+    my $eid = $mes->command_extension_register(
+        'lvcontact:create',
+        sprintf( 'xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',
+            $mes->nsattrs('ext_contact') )
+    );
+    $mes->command_extension( $eid, \@e );
+
+    return;
 }
 
 ####################################################################################################
