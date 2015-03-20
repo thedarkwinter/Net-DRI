@@ -117,6 +117,7 @@ sub info_parse {
 	 			$s->orgno($c->textContent());
 	 		}
 	}
+	
 	return;
 }
 
@@ -132,6 +133,7 @@ sub create {
 	
 	my $eid=$mes->command_extension_register('lvcontact:create',sprintf('xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_contact')));
 	$mes->command_extension($eid,\@e);
+	
 	return;
 }
 

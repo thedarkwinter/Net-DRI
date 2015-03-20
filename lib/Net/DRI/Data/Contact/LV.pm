@@ -40,9 +40,9 @@ LV specific data.
 
 The following accessors/mutators can be called in chain, as they all return the object itself.
 
-=head2 reg_no()
+=head2 orgno()
 
-=head2 vat_no()
+=head2 vat()
 
 =head1 SUPPORT
 
@@ -85,31 +85,32 @@ sub validate
 
  $self->SUPER::validate($change); ## This will trigger exception if a problem is found.
    
- if (defined $self->vat() && $self->orgno()) {
+ if (( defined $self->vat() && $self->orgno() ) && $self->cc() eq 'LV') {
 	 # Validation only applicable when both fields are present.
 	 # For Latvian legal persons, vatNr should match regNr field, with 'LV' prepended.
-	 	 
-	 push @errs,'vatNr must begin with "LV"' if ($self->vat() && $self->vat()!~m/^(LV)(.+)/); # Field must start with LV. No character limit.
-	 push @errs,'regNr must be numerical characters only when "vatNr" is present' if ($self->orgno() && $self->orgno()!~m/^(\d+)/); # Only numerical characters allowed. No character limit.
+	 
+	 push @errs,'vatNr must begin with "LV" for latvian entities' if ($self->vat() && $self->vat()!~m/^(LV)(.+)/); # Field must start with LV. No character limit.
+	 push @errs,'regNr must be numerical characters only when "vatNr" is present for latvian entities' if ($self->orgno() && $self->orgno()!~m/^(\d+)/); # Only numerical characters allowed. No character limit.
  	 
  	 my $vat=$self->vat();
 	 $vat =~ s/^(LV)(.+)/$2/g;
 	 my $reg=$self->orgno();
 	 
-	 push @errs,'vatNr should match regNr field, with "LV" prepended' if ( $vat ne $reg ); # vatNr should match regNr field, with "LV" prepended
+	 push @errs,'vatNr should match regNr field, with "LV" prepended for latvian entities' if ( $vat ne $reg ); # vatNr should match regNr field, with "LV" prepended
 	 
- } elsif (defined $self->orgno()) {
+ } elsif (( defined $self->orgno() ) && $self->cc() eq 'LV' ) {
  	
      # Latvian person code (orgno) format. Expected: 'DDMMYY-NNNNN'
-     push @errs,'regNr must be in this format "DDMMYY-NNNNN"' if ($self->orgno() && $self->orgno()!~m/^(\d{6})(-)(\d{5})/);
+     push @errs,'regNr must be in this format "DDMMYY-NNNNN" for latvian entities' if ($self->orgno() && $self->orgno()!~m/^(\d{6})(-)(\d{5})/);
  	
- } elsif (defined  $self->vat()) {
+ } elsif (( defined $self->vat() ) && $self->cc() eq 'LV' ) {
 
      # vatNr field should be empty for private person. 
-     push @errs,'vatNr should be empty for a private individual' if ($self->vat() && $self->vat()=~m/^(?!\s*$).+/);
+     push @errs,'vatNr should be empty for a private latvian individual' if ($self->vat() && $self->vat()=~m/^(?!\s*$).+/);
  }
  
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
+ 
  return 1; ## everything is good!
 }
 
@@ -120,8 +121,9 @@ sub init
  if ($what eq 'create')
  {
   my $a=$self->auth();
-  $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); #authInfo is not used and ignored!
+  $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); #authInfo is not used and ignored if used!
  }
+ 
  return;
 }
 

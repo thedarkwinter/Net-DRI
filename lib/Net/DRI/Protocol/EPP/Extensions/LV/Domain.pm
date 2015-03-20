@@ -87,7 +87,9 @@ sub update {
  my $mes=$epp->message();
  
  return unless defined $rd->set('auto_renew');
+ 
  my @e;
+ 
  my $user_message = $rd->set('auto_renew_message');
   
  if ( $rd->set('auto_renew') eq 'false' || $rd->set('auto_renew') eq '0' || $rd->set('auto_renew') eq 'no') {
@@ -106,7 +108,7 @@ sub update {
 
  my $eid=$mes->command_extension_register('lvdomain:update',sprintf('xmlns:lvdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domain')));
  $mes->command_extension($eid,\@e);
-
+ 
  return;
 }
 
@@ -135,6 +137,7 @@ sub info_parse {
  		}
  }
  $rinfo->{domain}->{$oname}->{auto_renew_message} = $msg;
+ 
  return;
 }
 

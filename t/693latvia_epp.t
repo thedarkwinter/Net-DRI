@@ -56,6 +56,7 @@ $co->street(['Neverending st.1111']);
 $co->city('Rīga');
 $co->pc('LV-2000');
 $co->cc('LV');
+#$co->cc('GB');
 $co->voice('+371.12345678');
 $co->fax('+371.87654321');
 $co->email('ghepardhus@snailmail.lv');
@@ -180,6 +181,7 @@ $dh=$dri->local_object('hosts');
 $dh->add('ns.someserver.lv');
 $dh->add('a-new-domain.lv',['1.2.3.4'],[],1);
 $rc=$dri->domain_create('a-new-domain.lv',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,auth=>{pw=>'opqrstuv'}});
+#$rc=$dri->domain_create('nom-iq-tūdaliņ.lv',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,auth=>{pw=>'opqrstuv'}});
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>a-new-domain.lv</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostAttr><domain:hostName>ns.someserver.lv</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>a-new-domain.lv</domain:hostName><domain:hostAddr ip="v4">1.2.3.4</domain:hostAddr></domain:hostAttr></domain:ns><domain:registrant>test1106-27</domain:registrant><domain:contact type="admin">huma1106-28</domain:contact><domain:contact type="tech">__DEFAULT__</domain:contact><domain:authInfo><domain:pw>opqrstuv</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml');
 is($rc->is_success(),1,'domain_create is_success');
 
