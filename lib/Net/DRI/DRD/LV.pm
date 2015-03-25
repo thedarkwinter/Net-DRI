@@ -36,7 +36,9 @@ Net::DRI::Protocol::EPP::Extensions::LV - .LV EPP Contact extension commands for
 
 =head1 DESCRIPTION
 
-Please see the README file for details.
+Additional domain extension to manage auto renewal settings. See t/662lv_epp.t for example.
+
+Additional contact extension with 'vat' and 'orgno' fields, see L<Net::DRI::Data::Contact::LV>
 
 =head1 SUPPORT
 
