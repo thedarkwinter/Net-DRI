@@ -87,6 +87,8 @@ sub update {
     my @e;
 
     return unless defined $c->vat() || $c->orgno();
+    $c->orgno(undef) unless uc $newc->cc() eq 'LV'; # orgno only used for Latvian contacts
+    
     push @e, [ 'lvcontact:vatNr', $c->vat() ]   if ( defined $c->vat() );
     push @e, [ 'lvcontact:regNr', $c->orgno() ] if ( defined $c->orgno() );
 
@@ -131,6 +133,8 @@ sub create {
     my @e;
 
     return unless defined $c->vat() || $c->orgno();
+
+    $c->orgno(undef) unless uc $c->cc() eq 'LV'; # orgno only used for Latvian contacts
 
     push @e, [ 'lvcontact:vatNr', $c->vat() ]   if ( defined $c->vat() );
     push @e, [ 'lvcontact:regNr', $c->orgno() ] if ( defined $c->orgno() );
