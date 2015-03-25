@@ -81,6 +81,36 @@ sub register_commands {
 
 ####################################################################################################
 
+sub info_parse {
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+	my $mes=$po->message();
+
+	return unless $mes->is_success();
+
+	my $adata = $mes->get_extension('ext_domain','infData');
+	 
+	unless(defined($adata)) {
+		$rinfo->{domain}->{$oname}->{auto_renew}='1';
+		return;
+	} else {
+		$rinfo->{domain}->{$oname}->{auto_renew}='0';
+	}
+
+	my $msg = {};
+
+	foreach my $el (Net::DRI::Util::xml_list_children($adata)) {
+		my ($name,$c)=@$el;
+			if ($name eq 'status') {
+				$msg->{message} = $c->textContent();
+				$msg->{lang} = $c->getAttribute('lang') if $c->hasAttribute('lang');
+			}
+	}
+
+	$rinfo->{domain}->{$oname}->{auto_renew_message} = $msg;
+
+	return;
+}
+
 sub update { 
 	my ($epp,$domain,$rd)=@_;
 	my $mes=$epp->message();
@@ -107,38 +137,6 @@ sub update {
 
 	my $eid=$mes->command_extension_register('lvdomain:update',sprintf('xmlns:lvdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domain')));
 	$mes->command_extension($eid,\@e);
-
-	return;
-}
-
-sub info_parse {
-	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-	my $mes=$po->message();
-
-	return unless $mes->is_success();
-
-	my $NS = $mes->ns('ext_domain');
-	my $c = $rinfo->{domain}->{$oname}->{self};
-	my $adata = $mes->get_extension('ext_domain','infData');
-	 
-	unless(defined($adata)) {
-		$rinfo->{domain}->{$oname}->{auto_renew}='1';
-		return;
-	} else {
-		$rinfo->{domain}->{$oname}->{auto_renew}='0';
-	}
-
-	my $msg = {};
-
-	foreach my $el (Net::DRI::Util::xml_list_children($adata)) {
-		my ($name,$c)=@$el;
-			if ($name eq 'status') {
-				$msg->{message} = $c->textContent();
-				$msg->{lang} = $c->getAttribute('lang') if $c->hasAttribute('lang');
-			}
-	}
-
-	$rinfo->{domain}->{$oname}->{auto_renew_message} = $msg;
 
 	return;
 }

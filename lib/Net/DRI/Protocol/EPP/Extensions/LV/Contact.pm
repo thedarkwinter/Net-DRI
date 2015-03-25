@@ -79,35 +79,11 @@ sub register_commands {
 
 ####################################################################################################
 
-sub update {
-    my ( $epp, $c, $todo ) = @_;
-    my $mes  = $epp->message();
-    my $newc = $todo->set('info');
-
-    my @e;
-
-    return unless defined $c->vat() || $c->orgno();
-    $c->orgno(undef) unless uc $newc->cc() eq 'LV'; # orgno only used for Latvian contacts
-    
-    push @e, [ 'lvcontact:vatNr', $c->vat() ]   if ( defined $c->vat() );
-    push @e, [ 'lvcontact:regNr', $c->orgno() ] if ( defined $c->orgno() );
-
-    my $eid = $mes->command_extension_register(
-        'lvcontact:update',
-        sprintf( 'xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',
-            $mes->nsattrs('ext_contact') )
-    );
-    $mes->command_extension( $eid, \@e );
-
-    return;
-}
-
 sub info_parse {
     my ( $po, $otype, $oaction, $oname, $rinfo ) = @_;
     my $mes = $po->message();
     return unless $mes->is_success();
 
-    my $NS    = $mes->ns('ext_contact');
     my $c     = $rinfo->{contact}->{$oname}->{self};
     my $adata = $mes->get_extension( 'ext_contact', 'infData' );
 
@@ -141,6 +117,29 @@ sub create {
 
     my $eid = $mes->command_extension_register(
         'lvcontact:create',
+        sprintf( 'xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',
+            $mes->nsattrs('ext_contact') )
+    );
+    $mes->command_extension( $eid, \@e );
+
+    return;
+}
+
+sub update {
+    my ( $epp, $c, $todo ) = @_;
+    my $mes  = $epp->message();
+    my $newc = $todo->set('info');
+
+    my @e;
+
+    return unless defined $c->vat() || $c->orgno();
+    $c->orgno(undef) unless uc $newc->cc() eq 'LV'; # orgno only used for Latvian contacts
+
+    push @e, [ 'lvcontact:vatNr', $c->vat() ]   if ( defined $c->vat() );
+    push @e, [ 'lvcontact:regNr', $c->orgno() ] if ( defined $c->orgno() );
+
+    my $eid = $mes->command_extension_register(
+        'lvcontact:update',
         sprintf( 'xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',
             $mes->nsattrs('ext_contact') )
     );
