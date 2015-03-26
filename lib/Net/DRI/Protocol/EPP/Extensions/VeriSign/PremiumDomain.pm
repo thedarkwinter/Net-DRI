@@ -46,65 +46,62 @@ sub setup
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- unless ($domain =~ /\.sky$/) {
-   my $mes=$epp->message();
+ return if $rd->{'skip_premium'}; # if defined don't use this extension. Used for some TLDs example: sky
+ my $mes=$epp->message();
 
-   my $pd;
-   if (Net::DRI::Util::has_key($rd,'premium_domain'))
-   {
-    $pd=$rd->{premium_domain};
-   } else
-   {
-    my $def=$epp->default_parameters();
-    if (Net::DRI::Util::has_key($def,'premium_domain'))
-    {
-     $pd=$def->{premium_domain};
-    } else
-    {
-     Net::DRI::Exception::usererr_insufficient_parameters('Premium domain flag must be provided');
-    }
-   }
-   Net::DRI::Exception::usererr_invalid_parameters('Premium domain flag must be true/false/1/0') unless Net::DRI::Util::xml_is_boolean($pd);
-
-   my $eid=$mes->command_extension_register('premiumdomain:check',sprintf('xmlns:premiumdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('premiumdomain')));
-   $mes->command_extension($eid,['premiumdomain:flag',$pd]);
+ my $pd;
+ if (Net::DRI::Util::has_key($rd,'premium_domain'))
+ {
+  $pd=$rd->{premium_domain};
+ } else
+ {
+  my $def=$epp->default_parameters();
+  if (Net::DRI::Util::has_key($def,'premium_domain'))
+  {
+   $pd=$def->{premium_domain};
+  } else
+  {
+   Net::DRI::Exception::usererr_insufficient_parameters('Premium domain flag must be provided');
+  }
  }
+ Net::DRI::Exception::usererr_invalid_parameters('Premium domain flag must be true/false/1/0') unless Net::DRI::Util::xml_is_boolean($pd);
+
+ my $eid=$mes->command_extension_register('premiumdomain:check',sprintf('xmlns:premiumdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('premiumdomain')));
+ $mes->command_extension($eid,['premiumdomain:flag',$pd]);
  return;
 }
 
 sub check_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- unless ($oname =~ /\.sky$/) {
-   my $mes=$po->message();
-   return unless $mes->is_success();
+ my $mes=$po->message();
+ return unless $mes->is_success();
 
-   my $chkdata=$mes->get_extension('premiumdomain','chkData');
-   return unless defined $chkdata;
+ my $chkdata=$mes->get_extension('premiumdomain','chkData');
+ return unless defined $chkdata;
 
-   foreach my $cd ($chkdata->getChildrenByTagNameNS($mes->ns('premiumdomain'),'cd'))
+ foreach my $cd ($chkdata->getChildrenByTagNameNS($mes->ns('premiumdomain'),'cd'))
+ {
+  my $domain;
+  foreach my $el (Net::DRI::Util::xml_list_children($cd))
+  {
+   my ($n,$c)=@$el;
+   if ($n eq 'name')
    {
-    my $domain;
-    foreach my $el (Net::DRI::Util::xml_list_children($cd))
-    {
-     my ($n,$c)=@$el;
-     if ($n eq 'name')
-     {
-      $domain=lc($c->textContent());
-      $rinfo->{domain}->{$domain}->{is_premium}=Net::DRI::Util::xml_parse_boolean($c->getAttribute('premium'));
-     } elsif ($n eq 'price')
-     {
-      $rinfo->{domain}->{$domain}->{price}={ amount => 0+$c->textContent(), unit => $c->getAttribute('unit') };
-      $rinfo->{domain}->{$domain}->{create_price} = 0+$c->textContent(); ## compatible with newgtld method
-      $rinfo->{domain}->{$domain}->{price_currency} = $c->getAttribute('unit');
-      $rinfo->{domain}->{$domain}->{price_duration} = DateTime::Duration->new(years=>1);
-     } elsif ($n eq 'renewalPrice')
-     {
-      $rinfo->{domain}->{$domain}->{renewal_price}={ amount => 0+$c->textContent(), unit => $c->getAttribute('unit') };
-      $rinfo->{domain}->{$domain}->{renew_price}=0+$c->textContent();
-     }
-    }
+    $domain=lc($c->textContent());
+    $rinfo->{domain}->{$domain}->{is_premium}=Net::DRI::Util::xml_parse_boolean($c->getAttribute('premium'));
+   } elsif ($n eq 'price')
+   {
+    $rinfo->{domain}->{$domain}->{price}={ amount => 0+$c->textContent(), unit => $c->getAttribute('unit') };
+    $rinfo->{domain}->{$domain}->{create_price} = 0+$c->textContent(); ## compatible with newgtld method
+    $rinfo->{domain}->{$domain}->{price_currency} = $c->getAttribute('unit');
+    $rinfo->{domain}->{$domain}->{price_duration} = DateTime::Duration->new(years=>1);
+   } elsif ($n eq 'renewalPrice')
+   {
+    $rinfo->{domain}->{$domain}->{renewal_price}={ amount => 0+$c->textContent(), unit => $c->getAttribute('unit') };
+    $rinfo->{domain}->{$domain}->{renew_price}=0+$c->textContent();
    }
+  }
  }
  return;
 }
@@ -112,14 +109,13 @@ sub check_parse
 sub update
 {
  my ($po,$domain,$todo)=@_;
- unless ($domain =~ /\.sky$/) {
-   my $chg=$todo->set('premium_short_name');
-   return unless defined $chg && length $chg;
+ return if $todo->{'skip_premium'}; # if defined don't use this extension. Used for some TLDs example: sky
+ my $chg=$todo->set('premium_short_name');
+ return unless defined $chg && length $chg;
 
-   my $mes=$po->message();
-   my $eid=$mes->command_extension_register('premiumdomain:reassign',sprintf('xmlns:premiumdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('premiumdomain')));
-   $mes->command_extension($eid,['premiumdomain:shortName',$chg]);
- }
+ my $mes=$po->message();
+ my $eid=$mes->command_extension_register('premiumdomain:reassign',sprintf('xmlns:premiumdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('premiumdomain')));
+ $mes->command_extension($eid,['premiumdomain:shortName',$chg]);
  return;
 }
 
