@@ -47,7 +47,7 @@ is($rc->is_success(),1,'session logout is_success');
 ####################################################################################################
 ####### Contact Commands ########
 
-### 1.1 Contact Create /w Extension
+### 1.1 Contact Create
 $co=$dri->local_object('contact');
 $co->name('Johnny Login');
 $co->org('DK Hostmaster A/S');
