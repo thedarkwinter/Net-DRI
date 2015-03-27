@@ -18,6 +18,7 @@ package Net::DRI::Protocol::EPP::Extensions::DK::Contact;
 
 use strict;
 use warnings;
+
 use Net::DRI::Util;
 use DateTime::Format::ISO8601;
 use utf8;
@@ -80,7 +81,12 @@ sub create {
     my ( $epp, $c ) = @_;
     my $mes = $epp->message;
     
-    return unless defined $c->vat() || $c->userType();
+    return unless defined $c->vat() || $c->userType() || $c->ean();
+    
+    if (defined $c->ean()) {
+		my $eid1=$mes->command_extension_register('dkhm:EAN','xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-1.2"');
+		$mes->command_extension($eid1,$c->ean());
+	} 
     
 	if (defined $c->vat()) {
 		my $eid1=$mes->command_extension_register('dkhm:CVR','xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-1.2"');

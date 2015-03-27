@@ -73,10 +73,14 @@ sub setup {
         }
     );
 
-    foreach my $o (qw/vat userType/) {
+    foreach my $o (qw/vat userType ean/) {
         $self->capabilities( 'contact_create', $o, ['set'] );
     }
-
+    
+	$self->capabilities( 'domain_create', 'confirmationToken', ['set'] );
+	$self->capabilities( 'domain_create', 'trackingNo', ['set'] );
+	$self->capabilities( 'domain_check', 'domainAdvisory', ['set'] );
+	
     return;
 }
 

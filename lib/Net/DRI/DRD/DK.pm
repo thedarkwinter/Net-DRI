@@ -74,7 +74,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub new {
 	my $class=shift;
 	my $self=$class->SUPER::new(@_);
-	$self->{info}->{host_as_attr}=1;
+	$self->{info}->{host_as_attr}=0;
 	$self->{info}->{contact_i18n}=4;
 	return $self;
 }
@@ -88,7 +88,7 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default {
 	my ($self,$type)=@_;
 	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::DK',{}) if $type eq 'epp';
-	#return ('Net::DRI::Transport::Socket',{remote_host=>'whois.dk-hostmaster.dk'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois'; # WHOIS is supported
+	#return ('Net::DRI::Transport::Socket',{remote_host=>'whois.dk-hostmaster.dk'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois'; # WHOIS support avaliable...
 	return;
 }
 

@@ -81,7 +81,50 @@ sub register_commands {
 
 ####################################################################################################
 
+sub create {
+	my ($epp,$domain,$rd)=@_;
+	my $mes=$epp->message();
+	
+	return unless Net::DRI::Util::has_key($rd,'confirmationToken');
+	
+	my $eid1=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-1.2"');
+	$mes->command_extension($eid1,$rd->{confirmationToken});
+}
 
+sub create_parse {
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+	
+	my $mes=$po->message();
+	return unless $mes->is_success();
+
+	my $NS = $mes->ns('ext_domain');
+	my $c = $rinfo->{domain}->{$oname}->{self};	
+	
+	my $adata = $mes->get_extension('ext_domain','trackingNo');
+    return unless $adata;
+	
+	$rinfo->{domain}->{$oname}->{trackingNo} = $adata->getFirstChild()->textContent();
+	
+	return;
+}
+
+sub check_parse {
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+	my $mes=$po->message();
+	return unless $mes->is_success();
+	
+	my $adata = $mes->get_extension('ext_domain','domainAdvisory');
+    return unless $adata;
+    
+    my $msg = {};
+    
+    $msg->{domain_name} = $adata->getAttribute('domain') if $adata->hasAttribute('domain');
+    $msg->{advisory} = $adata->getAttribute('advisory') if $adata->hasAttribute('advisory');
+    
+    $rinfo->{domain}->{$oname}->{domainAdvisory} = $msg;
+    
+    return;
+}
 
 ####################################################################################################
 1;
