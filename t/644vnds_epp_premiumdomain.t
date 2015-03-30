@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 13;
+use Test::More tests => 14;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -59,6 +59,19 @@ $rc=$dri->domain_check(qw/example1.tv example2.tv example3.tv/);
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example1.tv</domain:name><domain:name>example2.tv</domain:name><domain:name>example3.tv</domain:name></domain:check></check><extension><premiumdomain:check xmlns:premiumdomain="http://www.verisign.com/epp/premiumdomain-1.0" xsi:schemaLocation="http://www.verisign.com/epp/premiumdomain-1.0 premiumdomain-1.0.xsd"><premiumdomain:flag>1</premiumdomain:flag></premiumdomain:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multiple build premium_domain=1');
 
 # 3.2.5 EPP <update> Command (also tested previously)
+
+##################################################
+
+
+##################################################
+# test for NGTLDs that don't use this extension
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
+$dri->add_registry('NGTLD',{provider=>'verisign'});
+$dri->target('verisign')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example.sky</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example.sky');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.sky</domain:name></domain:check></check><extension><namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1" xsi:schemaLocation="http://www.verisign-grs.com/epp/namestoreExt-1.1 namestoreExt-1.1.xsd"><namestoreExt:subProduct>SKY</namestoreExt:subProduct></namestoreExt:namestoreExt></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check no premium domain');
 
 ##################################################
 

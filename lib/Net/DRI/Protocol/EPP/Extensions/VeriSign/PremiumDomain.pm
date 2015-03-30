@@ -20,6 +20,8 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
+my @nopremium_tlds = qw/azure bing hotmail microsoft sca shell sky xbox windows/;
+
 ####################################################################################################
 
 sub register_commands
@@ -46,8 +48,12 @@ sub setup
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- return if $rd->{'skip_premium'}; # if defined don't use this extension. Used for some TLDs example: sky
  my $mes=$epp->message();
+
+ # we check before if it's a brand TLD. If it's we don't use this extension
+ foreach (@nopremium_tlds) {
+  return if ($domain =~ /\.$_$/);
+ }
 
  my $pd;
  if (Net::DRI::Util::has_key($rd,'premium_domain'))
@@ -109,7 +115,12 @@ sub check_parse
 sub update
 {
  my ($po,$domain,$todo)=@_;
- return if $todo->{'skip_premium'}; # if defined don't use this extension. Used for some TLDs example: sky
+
+ # we check before if it's a brand TLD. If it's we don't use this extension
+ foreach (@nopremium_tlds) {
+  return if ($domain =~ /\.$_$/);
+ }
+
  my $chg=$todo->set('premium_short_name');
  return unless defined $chg && length $chg;
 
