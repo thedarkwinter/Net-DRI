@@ -86,7 +86,7 @@ sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default {
-	my ($self,$type)=@_;
+    my ($self,$type)=@_;
 	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::DK',{}) if $type eq 'epp';
 	#return ('Net::DRI::Transport::Socket',{remote_host=>'whois.dk-hostmaster.dk'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois'; # WHOIS support avaliable...
 	return;
