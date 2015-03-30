@@ -111,8 +111,8 @@ sub validate {
 		
 	} elsif ( $self->userType() eq 'association' ) {
 		
-		# 'ean' is mandatory for this contact type.
-		push @errs,'"ean" field is mandatory for this contact type (association)' unless ($self->ean());
+		# 'ean' is mandatory for this contact type. Validation Specified within the EPP spec but field is currently unimplemented.
+		# push @errs,'"ean" field is mandatory for this contact type (association)' unless ($self->ean());
 		
 	} elsif ( $self->userType() eq 'individual' ) {
 		
