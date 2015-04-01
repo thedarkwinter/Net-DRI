@@ -1034,10 +1034,12 @@ Fee extension is currently only used in .NRW and for domain_check command only.
 
 =cut
 
+ return
+ 
  return {
      bep_type => 1, # dedicated registy
      tlds => ['ruhr','cologne','gmx','ifm','koeln','nrw'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TANGO',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TANGO',{enable_fee => ($tld eq 'nrw')}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'tango';
 
