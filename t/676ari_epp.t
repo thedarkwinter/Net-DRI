@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 78;
+use Test::More tests => 84;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -89,6 +89,7 @@ $rc=$dri->domain_update('example3.menu',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.menu</domain:name></domain:update></update><extension><kv:update xmlns:kv="urn:X-ar:params:xml:ns:kv-1.0" xsi:schemaLocation="urn:X-ar:params:xml:ns:kv-1.0 kv-1.0.xsd"><kv:kvlist name="bn"><kv:item key="abn">18 092 242 209</kv:item><kv:item key="entityType">Australian Private Company</kv:item></kv:kvlist></kv:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update variants build_xml');
 
 
+
 ##################### 
 ## exAvail Extension
 
@@ -148,18 +149,32 @@ is($dri->get_info('is_premium','domain','standard.menu'),0,'domain_check get_inf
 is($dri->get_info('create_price','domain','higher.menu'),500.00,'domain_check get_info (create_price)');
 is($dri->get_info('is_premium','domain','higher.menu'),1,'domain_check get_info (is_premium)');
 
-
 # domain create - # domain renew and domain transfer work exactly the same
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example9.menu</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
 $price = { 'price' => 100 };
 $rc=$dri->domain_create('example9.menu',{pure_create=>1,auth=>{pw=>'2fooBAR'},price => $price });
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example9.menu</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><price:create xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack><price:price>100</price:price></price:ack></price:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create price build_xml');
+is($rc->is_success(),1,'domain_create is_success');
 is($dri->get_info('action'),'create','domain_create get_info(action)');
 
 # domain create with plain ack (no price)
 $rc=$dri->domain_create('example10.menu',{pure_create=>1,auth=>{pw=>'2fooBAR'},price => 1 });
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example10.menu</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><price:create xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack/></price:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create price build_xml');
+is($rc->is_success(),1,'domain_create is_success');
 
+# update (RGP Restore)
+$toc=Net::DRI::Data::Changes->new();
+$toc->set('rgp',{ op => 'request'});
+$toc->set('price', 1);
+$rc=$dri->domain_update('example11.menu',$toc);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example11.menu</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="request"/></rgp:update><price:update xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack/></price:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_request +charge');
+is($rc->is_success(),1,'domain_update is_success');
+
+# rbp restore with explicit price
+$toc->set('price', {price => 100});
+$rc=$dri->domain_update('example11.menu',$toc);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example11.menu</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="request"/></rgp:update><price:update xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack><price:price>100</price:price></price:ack></price:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_request +charge');
+is($rc->is_success(),1,'domain_update is_success');
 
 ##################### 
 ## TMCHApplication Extension (TMCH + Application = LaunchPhase type system)

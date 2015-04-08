@@ -76,9 +76,10 @@ sub register_commands
  my %tmp=(
      check=> [ \&check, \&check_parse ],
      check_multi => [ \&check, \&check_parse],
-     create => [ \&create, undef, ],
+     create => [ \&create, undef ],
      transer => [ \&transfer, undef ],
      renew => [ \&renew, undef ],
+     update => [ \&update, undef ],
      );
  return { 'domain' => \%tmp };
 }
@@ -87,6 +88,7 @@ sub setup
 {
  my ($class,$po,$version)=@_;
  $po->ns({ 'price' => [ 'urn:ar:params:xml:ns:price-1.2','price-1.2.xsd' ]});
+ $po->capabilities('domain_update','price',['set']);
  return;
 }
 
@@ -175,18 +177,23 @@ sub create { return ack_price(@_,'create'); }
 sub transfer { return ack_price(@_,'transfer'); }
 sub renew { return ack_price(@_,'renew'); }
 
+sub update {
+   my ($epp,$domain,$todo)=@_;
+   return unless my $ch = $todo->set('price');
+   return ack_price($epp,$domain,{price=>$ch},'update');
+}
+
 sub ack_price
 {
  my ($epp,$domain,$rd,$cmd)=@_;
  my $mes=$epp->message();
- return unless Net::DRI::Util::has_key($rd,'price') && defined $cmd && $cmd =~ m/^(create|transfer|renew)$/;
+ return unless Net::DRI::Util::has_key($rd,'price') && defined $cmd && $cmd =~ m/^(create|transfer|renew|update)$/;
 
  my (@n,@a);
  if (Net::DRI::Util::has_key($rd->{price},'price') || Net::DRI::Util::has_key($rd->{price},'renewal_price'))
  {
   my $price = $rd->{price};
   push @a,['price:price',$price->{price}] if $price->{price};
-  push @a,['price:renewalPrice',$price->{renewal_price}] if $price->{renewal_price};
  }
  push @n,['price:ack',@a];
  my $eid=$mes->command_extension_register('price',$cmd);
