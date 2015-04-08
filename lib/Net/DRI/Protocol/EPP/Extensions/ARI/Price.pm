@@ -1,7 +1,7 @@
 ## Domain Registry Interface, EPP ARI Price Extension
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2013-2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -25,11 +25,11 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ARI::Price - Price Extensions for ARI : L<http://ausregistry.github.io/doc/price-1.0/price-1.0.html>
+Net::DRI::Protocol::EPP::Extensions::ARI::Price - Price Extensions for ARI : L<http://ausregistry.github.io/doc/price-1.2/price-1.2.html>
 
 =head1 DESCRIPTION
 
-Adds the Price Extension (urn:ar:params:xml:ns:price-1.0) to domain commands. The extension is built by adding a hash to check, create, transfer and renew commands. This pricing information is returned instead of the standard information of a check command, which can optionally include a duration.
+Adds the Price Extension (urn:ar:params:xml:ns:price-1.2) to domain commands. The extension is built by adding a hash to check, create, transfer and renew commands. This pricing information is returned instead of the standard information of a check command, which can optionally include a duration.
 
  eg. 
 my $price = { duration=>DateTime::Duration->new(years=>5) };
@@ -75,6 +75,7 @@ sub register_commands
  my ($class,$version)=@_;
  my %tmp=(
      check=> [ \&check, \&check_parse ],
+     check_multi => [ \&check, \&check_parse],
      create => [ \&create, undef, ],
      transer => [ \&transfer, undef ],
      renew => [ \&renew, undef ],
@@ -85,7 +86,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'price' => [ 'urn:ar:params:xml:ns:price-1.0','price-1.0.xsd' ]});
+ $po->ns({ 'price' => [ 'urn:ar:params:xml:ns:price-1.2','price-1.2.xsd' ]});
  return;
 }
 
@@ -98,13 +99,13 @@ sub set_premium_values {
  return unless exists $rinfo->{domain}->{$oname}->{price} && (ref $rinfo->{domain}->{$oname}->{price} eq 'HASH');
  my $ch = $rinfo->{domain}->{$oname}->{price};
  $rinfo->{domain}->{$oname}->{is_premium} = $ch->{premium};
- #$rinfo->{domain}->{$oname}->{price_category} = undef;
+ $rinfo->{domain}->{$oname}->{price_category} = $ch->{category};
  #$rinfo->{domain}->{$oname}->{price_currency} = undef; # this depends on registrar contract
  $rinfo->{domain}->{$oname}->{price_duration} = $ch->{duration};
  $rinfo->{domain}->{$oname}->{create_price} = $ch->{price};
  $rinfo->{domain}->{$oname}->{renew_price} = $ch->{renewal_price};
- #$rinfo->{domain}->{$oname}->{restore_price} = undef; # not implemented in this extension
- #$rinfo->{domain}->{$oname}->{transfer_price} = undef; # not implemented in this extension
+ $rinfo->{domain}->{$oname}->{restore_price} = $ch->{restore_price};
+ $rinfo->{domain}->{$oname}->{transfer_price} = $ch->{transfer_price};
  return;
 }
 
@@ -148,9 +149,14 @@ sub check_parse
       $rinfo->{domain}->{$dn}->{action}='check';
       $rinfo->{domain}->{$dn}->{price}->{premium} = $c2->getAttribute('premium') if $c2->hasAttribute('premium');
      }
-     elsif ($n2 =~ m/^(price|renewalPrice)$/)
+     elsif ($n2 =~ m/^(createPrice|renewalPrice|transferPrice|restorePrice|reason)$/)
      {
       $rinfo->{domain}->{$dn}->{price}->{Net::DRI::Util::xml2perl($n2)} = $c2->textContent();
+     }
+     elsif ($n2 eq 'category')
+     {
+      $rinfo->{domain}->{$dn}->{price}->{Net::DRI::Util::xml2perl($n2)} = $c2->textContent();
+      $rinfo->{domain}->{$dn}->{price}->{premium} = (uc($c2->textContent()) eq 'STANDARD') ? 0 : 1; # technicall this means nonstandard rather than premium
      }
      elsif ($n2 eq 'period')
      {
@@ -158,6 +164,7 @@ sub check_parse
        $rinfo->{domain}->{$dn}->{price}->{duration} = ($u eq 'm') ? DateTime::Duration->new(months=>$t) : DateTime::Duration->new(years=>$t);
      }
     }
+    $rinfo->{domain}->{$dn}->{price}->{price} = $rinfo->{domain}->{$dn}->{price}->{create_price}; # to maintain backwards compatibility!
     set_premium_values($po,$otype,$oaction,$dn,$rinfo);
    }
  }
