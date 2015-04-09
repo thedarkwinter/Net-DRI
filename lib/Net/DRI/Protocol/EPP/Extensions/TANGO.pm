@@ -30,7 +30,12 @@ sub setup
  $self->capabilities('domain_update','auction',['set']);
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase TANGO::IDN TANGO::Auction CentralNic::Fee/; }
+sub default_extensions {
+ my ($self,$pp) = @_;
+ my @ext = qw/GracePeriod SecDNS LaunchPhase TANGO::IDN TANGO::Auction/;
+ push @ext, 'CentralNic::Fee' if $pp->{enable_fee};
+ return @ext;
+}
 
 ####################################################################################################
 1;

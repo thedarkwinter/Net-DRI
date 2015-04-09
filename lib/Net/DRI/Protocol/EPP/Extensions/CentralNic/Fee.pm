@@ -136,7 +136,7 @@ sub parse_greeting
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless defined $mes->node_greeting();
- $po->switch_to_highest_namespace_version('fee');
+ eval { $po->switch_to_highest_namespace_version('fee'); }; # dont crash if server hasn't announced
 }
 
 
