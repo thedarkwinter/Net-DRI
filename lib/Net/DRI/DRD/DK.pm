@@ -42,7 +42,7 @@ Please see the README file for details.
 
 For now, support questions should be sent to:
 
-E<lt>d.makuni@live.co.uk<gt>
+E<lt>netdri@dotandco.comE<gt>
 
 Please also see the SUPPORT file in the distribution.
 
@@ -74,8 +74,8 @@ See the LICENSE file that comes with this distribution for more details.
 sub new {
 	my $class=shift;
 	my $self=$class->SUPER::new(@_);
-	$self->{info}->{host_as_attr}=0;
-	$self->{info}->{contact_i18n}=4;
+	$self->{info}->{host_as_attr}=0; 
+	$self->{info}->{contact_i18n}=4; ## LOC+INT (Loc for .dk contacts, int for rest of world)
 	return $self;
 }
 
@@ -86,9 +86,8 @@ sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default {
-    my ($self,$type)=@_;
+  my ($self,$type)=@_;
 	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::DK',{}) if $type eq 'epp';
-	#return ('Net::DRI::Transport::Socket',{remote_host=>'whois.dk-hostmaster.dk'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois'; # WHOIS support avaliable...
 	return;
 }
 

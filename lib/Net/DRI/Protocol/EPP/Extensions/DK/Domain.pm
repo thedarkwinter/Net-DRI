@@ -85,10 +85,10 @@ sub create {
 	my ($epp,$domain,$rd)=@_;
 	my $mes=$epp->message();
 	
-	return unless Net::DRI::Util::has_key($rd,'confirmationToken');
+	return unless Net::DRI::Util::has_key($rd,'confirmation_token');
 	
 	my $eid1=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-1.2"');
-	$mes->command_extension($eid1,$rd->{confirmationToken});
+	$mes->command_extension($eid1,$rd->{confirmation_token});
 }
 
 sub create_parse {
@@ -114,16 +114,13 @@ sub check_parse {
 	return unless $mes->is_success();
 	
 	my $adata = $mes->get_extension('ext_domain','domainAdvisory');
-    return unless $adata;
-    
-    my $msg = {};
-    
-    $msg->{domain_name} = $adata->getAttribute('domain') if $adata->hasAttribute('domain');
-    $msg->{advisory} = $adata->getAttribute('advisory') if $adata->hasAttribute('advisory');
-    
-    $rinfo->{domain}->{$oname}->{domainAdvisory} = $msg;
-    
-    return;
+  return unless $adata;
+   
+  if ($adata->hasAttribute('domain') && $adata->getAttribute('advisory'))
+  {
+   $rinfo->{domain}->{$adata->getAttribute('domain')}->{advisory} = $adata->getAttribute('advisory');
+	}
+  return;
 }
 
 ####################################################################################################

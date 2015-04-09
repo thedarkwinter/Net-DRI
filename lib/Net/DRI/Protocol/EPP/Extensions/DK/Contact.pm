@@ -93,9 +93,9 @@ sub create {
 		$mes->command_extension($eid1,$c->vat());
 	} 
 	
-	if (defined $c->userType()) {
+	if (defined $c->type()) {
 		my $eid2=$mes->command_extension_register('dkhm:userType','xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-1.2"');
-		$mes->command_extension($eid2,$c->userType());
+		$mes->command_extension($eid2,$c->type());
 	}
 		
     return;

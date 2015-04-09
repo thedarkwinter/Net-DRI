@@ -72,15 +72,6 @@ sub setup {
             ext_domain => ['urn:dkhm:params:xml:ns:dkhm-1.2','dkhm-1.2.xsd'],
         }
     );
-
-    foreach my $o (qw/vat userType ean/) {
-        $self->capabilities( 'contact_create', $o, ['set'] );
-    }
-    
-	$self->capabilities( 'domain_create', 'confirmationToken', ['set'] );
-	$self->capabilities( 'domain_create', 'trackingNo', ['set'] );
-	$self->capabilities( 'domain_check', 'domainAdvisory', ['set'] );
-	
     return;
 }
 
