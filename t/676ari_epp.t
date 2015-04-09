@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 92;
+use Test::More tests => 93;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -113,13 +113,14 @@ is($ea->{'primary_domain_name'},'example.menu','domain_check get_info ex_avail p
 
 # domain check
 my $price = { duration=>DateTime::Duration->new(years=>5) };
-$R2=$E1.'<response>'.r().'<extension><price:chkData xmlns:price="urn:ar:params:xml:ns:price-1.2"><cd><name>random.menu</name><category>PREMIUM CAT 2</category><period unit="y">5</period><createPrice>500</createPrice><renewalPrice>500</renewalPrice><transferPrice>50</transferPrice><restorePrice>40</restorePrice></cd></price:chkData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<extension><price:chkData xmlns:price="urn:ar:params:xml:ns:price-1.2"><cd><name>random.menu</name><category>PREMIUM CAT 2</category><period unit="y">5</period><createPrice>500</createPrice><renewPrice>500</renewPrice><transferPrice>50</transferPrice><restorePrice>40</restorePrice></cd></price:chkData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check('random.menu',{price => $price});
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>random.menu</domain:name></domain:check></check><extension><price:check xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:period unit="y">5</price:period></price:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check price build_xml');
 $price = $dri->get_info('price');
 is($price->{premium},'1','domain_check get_info price premium');
 is($price->{price},500.00,'domain_check get_info price price');
 is($price->{create_price},500.00,'domain_check get_info create_price');
+is($price->{renew_price},500.00,'domain_check get_info price renewal_price');
 is($price->{renewal_price},500.00,'domain_check get_info price renewal_price');
 is($price->{transfer_price},50.00,'domain_check get_info price transfer_price');
 is($price->{restore_price},40.00,'domain_check get_info price restore_price');
@@ -136,7 +137,7 @@ is($dri->get_info('restore_price'),40,'domain_check get_info (restore_price) und
 
 # domain check multi
 $price = { duration=>DateTime::Duration->new(years=>1) };
-$R2=$E1.'<response>'.r().'<extension><price:chkData xmlns:price="urn:ar:params:xml:ns:price-1.2"><cd><name>standard.menu</name><category>STANDARD</category><period unit="y">5</period><createPrice>50</createPrice><renewalPrice>50</renewalPrice><transferPrice>5</transferPrice><restorePrice>40</restorePrice></cd><cd><name>lower.menu</name><category>DISCOUNT CAT 1</category><period unit="y">5</period><createPrice>5</createPrice><renewalPrice>5</renewalPrice><transferPrice>1</transferPrice><restorePrice>40</restorePrice></cd><cd><name>higher.menu</name><category>PREMIUM CAT 2</category><period unit="y">5</period><createPrice>500</createPrice><renewalPrice>500</renewalPrice><transferPrice>50</transferPrice><restorePrice>40</restorePrice></cd></price:chkData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<extension><price:chkData xmlns:price="urn:ar:params:xml:ns:price-1.2"><cd><name>standard.menu</name><category>STANDARD</category><period unit="y">5</period><createPrice>50</createPrice><renewPrice>50</renewPrice><transferPrice>5</transferPrice><restorePrice>40</restorePrice></cd><cd><name>lower.menu</name><category>DISCOUNT CAT 1</category><period unit="y">5</period><createPrice>5</createPrice><renewPrice>5</renewPrice><transferPrice>1</transferPrice><restorePrice>40</restorePrice></cd><cd><name>higher.menu</name><category>PREMIUM CAT 2</category><period unit="y">5</period><createPrice>500</createPrice><renewPrice>500</renewPrice><transferPrice>50</transferPrice><restorePrice>40</restorePrice></cd></price:chkData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check('standard.menu','lower.menu','higher.menu',{price => $price});
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>standard.menu</domain:name><domain:name>lower.menu</domain:name><domain:name>higher.menu</domain:name></domain:check></check><extension><price:check xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:period unit="y">1</price:period></price:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check price build_xml');
 

@@ -151,7 +151,7 @@ sub check_parse
       $rinfo->{domain}->{$dn}->{action}='check';
       $rinfo->{domain}->{$dn}->{price}->{premium} = $c2->getAttribute('premium') if $c2->hasAttribute('premium');
      }
-     elsif ($n2 =~ m/^(createPrice|renewalPrice|transferPrice|restorePrice|reason)$/)
+     elsif ($n2 =~ m/^(createPrice|renewPrice|transferPrice|restorePrice|reason)$/)
      {
       $rinfo->{domain}->{$dn}->{price}->{Net::DRI::Util::xml2perl($n2)} = $c2->textContent();
      }
@@ -167,6 +167,7 @@ sub check_parse
      }
     }
     $rinfo->{domain}->{$dn}->{price}->{price} = $rinfo->{domain}->{$dn}->{price}->{create_price}; # to maintain backwards compatibility!
+    $rinfo->{domain}->{$dn}->{price}->{renewal_price} = $rinfo->{domain}->{$dn}->{price}->{renew_price}; # to maintain backwards compatibility!
     set_premium_values($po,$otype,$oaction,$dn,$rinfo);
    }
  }
