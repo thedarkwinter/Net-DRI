@@ -126,7 +126,6 @@ sub new
  $self->{info}->{contact_check_limit} = $self->_has_bep_key('contact_check_limit') ? $self->_get_bep_key('contact_check_limit') : $self->{info}->{check_limit}; #  default to check_limit if no host_check_limit
  $self->{info}->{host_check_limit} = $self->_has_bep_key('host_check_limit') ? $self->_get_bep_key('host_check_limit') : $self->{info}->{check_limit}; #  default to check_limit if no hostn_check_limit
  $self->{info}->{domain_check_limit} = $self->_has_bep_key('domain_check_limit') ? $self->_get_bep_key('domain_check_limit') : $self->{info}->{check_limit}; #  default to check_limit if no domain_check_limit
-
  return $self;
 }
 
@@ -264,6 +263,8 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:n
 
 L<Net::DRI::Protocol::EPP::Extensions::Afilias::Price> urn:ietf:params:xml:ns:price-1.0
 
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
+
 =head3 Afilias Own TLDs
 
 Afilias has extended the .INFO plaform to include these newGTLDs
@@ -276,10 +277,11 @@ Contended TLD's not included
 
 =cut
 
+ ## TODO : set brown_fee_version correctly at end of april, and fix tests in 630 and 660
  return {
      bep_type => 2, # shared registry
      tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','poker','red','shiksha'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => ((time() < 1429574400) ? undef : '0.7')}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
 
@@ -295,10 +297,11 @@ xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunio
 
 =cut
 
+ ## TODO : set brown_fee_version correctly at end of april, and fix tests in 630 and 660
  return {
      bep_type => 2, # shared registry
      tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','bnpparibas','creditunion','ged','global','hiv','indians','irish','ltda','onl','porn','rich','storage','vegas','vote','voto'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => ((time() < 1430179200) ? undef : '0.7')}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
 
@@ -385,7 +388,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     return {
      bep_type => 2, # shared registry
      tlds => \@tlds,
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
      verify_icann_reserved => 0,
      verify_check_name => 0,
@@ -490,7 +493,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android boo cal car channel chrome dad 
  return {
      bep_type => 1, # dedicated
      tlds => ['xn--flw351e','xn--q9jyb4c','xn--qcka1pmc','ads','android','boo','cal','car','channel','chrome','dad','day','eat','esq','fly','foo','gbiz','gle','gmail','google','here','how','ing','kid','meme','mov','new','nexus','prod','prof','rsvp','soy','tour','youtube','zip'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],'disable_idn'=>1}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'], 'disable_idn'=>1, 'brown_fee_version' => '0.6'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'crr';
 
@@ -590,14 +593,14 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
  return {
      bep_type => 2, # shared registry
      tlds => ['nagoya','tokyo','yokohama'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmo';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['okinawa','ryukyu'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmogeo';
    
@@ -1283,14 +1286,14 @@ sub _build_price_query
    $rd->{fee} = 1;
  } elsif ($bep eq 'ari') {
    $rd->{price} = 1;
- } elsif ($bep =~ m/^(?:centralnic|gmo|mam|crr|tango)/) {
+ } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}}) {
    my ($fee,@fees);
    foreach my $k (qw/currency action duration/)
    {
      $fee->{$k} = $rd->{$k} if exists $rd->{$k};
    }
-   $fee->{currency} = 'USD' unless exists $fee->{currency} || $bep =~ m/^mam/; # FIXME: fee-0.5 should not set values for currency and duration
-   $fee->{duration} = 1 unless exists $fee->{duration} || $bep =~ m/^mam/;
+   $fee->{currency} = 'USD' unless exists $fee->{currency} || $bep !~ m/^gmo/; # fee-0.5+ should not set values for currency and duration as these will default
+   $fee->{duration} = 1 unless exists $fee->{duration} || $bep !~ m/^gmo/;
    $fee->{duration} = $ndr->local_object('duration','years',$fee->{duration}) if exists $fee->{duration} && ref $fee->{duration} eq '' && $fee->{duration} =~ m/^\d$/;
    @{$rd->{fee}} = ();
    foreach (qw/create renew transfer restore/) {

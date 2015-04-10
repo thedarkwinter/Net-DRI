@@ -120,8 +120,11 @@ sub register_commands
 sub setup
 {
   my ($class,$po,$version)=@_;
-  $po->ns({ 'fee' => [ 'urn:ietf:params:xml:ns:fee-0.4','fee-0.4.xsd' ] }); ## this will get bumped to fee-0.5 after login if server supports it
-  $po->capabilities('domain_update','fee',['set']); # add the fee extension in the domain_update command...
+  # update from 0.4 - 0.5 has big changes, so lets default to 0.5 unless specified. 
+  # This means any commands called before greeting will use that version until its bumped to highest version
+  my $v = (exists $po->{brown_fee_version} && $po->{brown_fee_version} =~ m/^\d\.\d$/) ? $po->{brown_fee_version} : '0.5';
+  $po->ns({ 'fee' => [ 'urn:ietf:params:xml:ns:fee-'.$v,'fee-'.$v.'.xsd' ] });
+  $po->capabilities('domain_update','fee',['set']);
   return;
 }
 
