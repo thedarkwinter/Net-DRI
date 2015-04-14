@@ -1034,8 +1034,6 @@ Fee extension is currently only used in .NRW and for domain_check command only.
 
 =cut
 
- return
- 
  return {
      bep_type => 1, # dedicated registy
      tlds => ['ruhr','cologne','gmx','ifm','koeln','nrw'],
