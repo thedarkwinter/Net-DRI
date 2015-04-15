@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 71;
+use Test::More tests => 77;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -143,6 +143,18 @@ is($drd->{bep}->{bep_type},2,'nicbr: bep_type');
 is($drd->{info}->{check_limit},13,'nicbr: check_limit');
 is_deeply([$dri->tlds()],['bom','final','rio'],'nicbr: tlds');
 
+
+# Verisign
+$rc = $dri->add_registry('NGTLD',{provider => 'verisign'});
+is($rc->{last_registry},'verisign','verisign add_registry');
+$rc = $dri->target('verisign')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{verisign}->{driver};
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['VeriSign::Sync', 'VeriSign::PollLowBalance', 'VeriSign::PollRGP', 'VeriSign::IDNLanguage', 'VeriSign::WhoWas', 'VeriSign::Suggestion', 'VeriSign::ClientAttributes', 'VeriSign::TwoFactorAuth', 'VeriSign::ZoneManagement', 'VeriSign::Balance', 'VeriSign::NameStore', 'VeriSign::PremiumDomain']}],'verisign: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::ClientAttributes VeriSign::TwoFactorAuth VeriSign::ZoneManagement VeriSign::Balance VeriSign::NameStore VeriSign::PremiumDomain/],'verisign: loaded_modules');
+is($drd->{bep}->{bep_type},2,'verisign: bep_type');
+is($drd->{info}->{check_limit},13,'verisign: check_limit');
+is_deeply([$dri->tlds()],['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','bank','career','cfd','crs','java','maif','markets','ooo','oracle','pictet','realtor','sca','sky','spreadbetting','trading'],'verisign: tlds');
+
 ####################################################################################################
 #### ngTLD Methods
 my ($lpres,$ch1);
@@ -169,8 +181,5 @@ is($lpres->{'exist'},1,'domain_check_claims get_info(exist)');
 is($lpres->{'phase'},'claims','domain_check_claims get_info(phase)');
 is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check_claims get_info(claim_key)');
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
-
-
-
 
 exit 0;
