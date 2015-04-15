@@ -58,12 +58,9 @@ sub check
   if (Net::DRI::Util::has_key($def,'premium_domain'))
   {
    $pd=$def->{premium_domain};
-  } else
-  {
-   Net::DRI::Exception::usererr_insufficient_parameters('Premium domain flag must be provided');
   }
  }
- Net::DRI::Exception::usererr_invalid_parameters('Premium domain flag must be true/false/1/0') unless Net::DRI::Util::xml_is_boolean($pd);
+ return unless Net::DRI::Util::xml_is_boolean($pd) && $pd;
 
  my $eid=$mes->command_extension_register('premiumdomain:check',sprintf('xmlns:premiumdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('premiumdomain')));
  $mes->command_extension($eid,['premiumdomain:flag',$pd]);
