@@ -111,11 +111,11 @@ is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns
 is($rc->is_success(), 1, 'domain_update is success');
 
 #renew
-$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:exDate>2015-01-01T00:00:00.00</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
-my $du = DateTime::Duration->new( years => 1);
+$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:exDate>2015-01-01T00:00:00.01</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
+my $du = DateTime::Duration->new( years => 2);
 my $exp = DateTime->new(year  => 2013,month => 01,day   => 01);
 $rc = $dri->domain_renew('test1.es',{duration=>$du,current_expiration=>$exp} );
-is($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:curExpDate>2013-01-01</domain:curExpDate><domain:period unit="y">1</domain:period><domain:renewOp>accept</domain:renewOp></domain:renew></renew>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_renew build');
+is($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:renewOp>accept</domain:renewOp><domain:curExpDate>2013-01-01T00:00:00.01</domain:curExpDate><domain:period unit="y">2</domain:period></domain:renew></renew>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_renew build');
 is($rc->is_success(), 1, 'domain_renew is success');
 is($dri->get_info('exDate'),'2015-01-01T00:00:00','domain_renew get_info(exDate)');
 
