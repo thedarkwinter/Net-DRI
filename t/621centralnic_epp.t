@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 151;
+use Test::More tests => 152;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -281,7 +281,7 @@ $rc=$dri->domain_info('foo.space');
 is($rc->is_success(),1,'domain_info is is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
 is($dri->get_info('name'),'foo.space','domain_info get_info (name)');
-my @fees = @{$dri->get_info('fee')};
+@fees = @{$dri->get_info('fee')};
 $d = $fees[0];
 is($d->{currency},'USD','Fee extension: domain_info parse currency');
 is($d->{action},'create','Fee extension: domain_info parse action');
@@ -295,6 +295,7 @@ is($dri->get_info('is_premium'),undef,'domain_check get_info (is_premium) undef'
 isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration) is DateTime::Duration');
 is($dri->get_info('price_duration')->years(),1,'domain_check get_info (price_duration)');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('price_category'),'premium-tier1','domain_check get_info (price_currency)');
 is($dri->get_info('create_price'),'10','domain_check get_info (create_price)');
 is($dri->get_info('renew_price'),undef,'domain_check get_info (renew_price) undef');
 is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');

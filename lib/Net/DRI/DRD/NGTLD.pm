@@ -281,7 +281,7 @@ Contended TLD's not included
  return {
      bep_type => 2, # shared registry
      tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','poker','red','shiksha'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => ((time() < 1429574400) ? undef : '0.7')}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
 
@@ -301,7 +301,7 @@ xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunio
  return {
      bep_type => 2, # shared registry
      tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','bnpparibas','creditunion','ged','global','hiv','indians','irish','ltda','onl','porn','rich','storage','vegas','vote','voto'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => ((time() < 1430179200) ? undef : '0.7')}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
 

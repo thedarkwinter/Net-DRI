@@ -312,7 +312,7 @@ sub set_premium_values {
  foreach my $ch (@{$rinfo->{domain}->{$oname}->{fee}})
  {
   $rinfo->{domain}->{$oname}->{is_premium} = $ch->{premium};
-  $rinfo->{domain}->{$oname}->{price_category} = $ch->{description};
+  $rinfo->{domain}->{$oname}->{price_category} = $ch->{class};
   $rinfo->{domain}->{$oname}->{price_currency} = $ch->{currency};
   $rinfo->{domain}->{$oname}->{price_duration} = $ch->{duration};
   $rinfo->{domain}->{$oname}->{$ch->{action} .'_price'} = $ch->{fee}; # action can be create/renew/transfer/restore. extension only returns what was requested
