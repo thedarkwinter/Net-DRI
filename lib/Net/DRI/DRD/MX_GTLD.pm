@@ -1,4 +1,4 @@
-## Domain Registry Interface, AFNIC Registry Driver for GTLDs
+## Domain Registry Interface, MX Registry Driver for GTLDs
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
