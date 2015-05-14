@@ -113,6 +113,7 @@ lib/Net/DRI/DRD/ME.pm
 lib/Net/DRI/DRD/MN.pm
 lib/Net/DRI/DRD/MOBI.pm
 lib/Net/DRI/DRD/MX.pm
+lib/Net/DRI/DRD/MX_GTLD.pm
 lib/Net/DRI/DRD/NAME.pm
 lib/Net/DRI/DRD/NEUSTAR.pm
 lib/Net/DRI/DRD/NGTLD.pm
@@ -321,6 +322,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/ME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX.pm
+lib/Net/DRI/Protocol/EPP/Extensions/MX_GTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/Rar.pm
@@ -601,6 +603,7 @@ t/681crr_epp.t
 t/682afnic_gtld_epp.t
 t/683tci_gtld_epp.t
 t/684regbox_epp.t
+t/685mx_gtld_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
 t/701ovh_ws_live.t

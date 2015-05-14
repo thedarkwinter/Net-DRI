@@ -1,4 +1,4 @@
-## Domain Registry Interface, .MX policies from 'EPP Manual 2.0 MX.PDF'
+## Domain Registry Interface, .MX_GTLD policies from 'LAT Implementation Guide EPP.PDF'
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::MX;
+package Net::DRI::Protocol::EPP::Extensions::MX_GTLD;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::MX - .MX EPP extensions 'EPP Manual 2.0 MX.PDF' for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::MX_GTLD
 
 =head1 DESCRIPTION
 
@@ -68,16 +68,17 @@ sub setup
   my ($self,$rp)=@_;
   $self->ns({
       rar         => ['http://www.nic.mx/rar-1.0','rar-1.0.xsd'],
-      ext_msg     => ['http://www.nic.mx/nicmx-msg-1.0','nicmx-msg-1.0.xsd'],         # service messages (Mandatory extension in order to open session)
-      ext_res     => ['http://www.nic.mx/nicmx-res-1.0','nicmx-res-1.0.xsd'],         # result codes
-      ext_rar     => ['http://www.nic.mx/nicmx-rar-1.0','nicmx-rar-1.0.xsd'],         # rar
-      ext_domrst  => ['http://www.nic.mx/nicmx-domrst-1.0','nicmx-domrst-1.0.xsd'],   # domain:restore
+      ext_msg     => ['http://www.nic.mx/niclat-msg-1.0','niclat-msg-1.0.xsd'],           # service messages
+      ext_res     => ['http://www.nic.mx/nicmx-res-1.0','nicmx-res-1.0.xsd'],             # result codes
+      ext_rar     => ['http://www.nic.mx/nicmx-rar-1.0','nicmx-rar-1.0.xsd'],             # rar
+      ext_adm     => ['http://www.nic.mx/nicmx-admstatus-1.1','nicmx-admstatus-1.1.xsd'], # administrative status
+      ext_idn     => ['http://www.nic.lat/nicmx-idn-1.0','nicmx-idn-1.0.xsd'],            # IDNs
     });
 
   return;
 }
 
-sub default_extensions { return qw/MX::Message MX::Rar MX::Domain/; }
+sub default_extensions { return qw/GracePeriod LaunchPhase MX::Message MX::Rar MX::Domain SecDNS/; } # TODO: implement ext_idn
 
 ####################################################################################################
 1;

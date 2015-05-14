@@ -987,6 +987,30 @@ amsterdam
 =pod
 
 
+=head2 MX
+
+ $dri->add_registry('NGTLD',{provider=>'mx'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+lat
+
+
+=cut
+
+ return {
+     bep_type => 1, # dedicated Registry
+     tlds => ['lat'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::MX_GTLD',{}],
+     contact_i18n => 1,
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+   } if $bep eq 'mx';
+
+=pod
+
+
 =head2 StartingDot (Provided by Key Sytems)
 
  $dri->add_registry('NGTLD',{provider=>'startingdot'});
