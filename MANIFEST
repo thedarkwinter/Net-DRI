@@ -112,6 +112,7 @@ lib/Net/DRI/DRD/MAM.pm
 lib/Net/DRI/DRD/ME.pm
 lib/Net/DRI/DRD/MN.pm
 lib/Net/DRI/DRD/MOBI.pm
+lib/Net/DRI/DRD/MX.pm
 lib/Net/DRI/DRD/NAME.pm
 lib/Net/DRI/DRD/NEUSTAR.pm
 lib/Net/DRI/DRD/NGTLD.pm
@@ -210,6 +211,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Status.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC_GTLD/RegistryMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARI.pm
+lib/Net/DRI/Protocol/EPP/Extensions/ARI/Block.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARI/ExAvail.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARI/IDNVariant.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARI/KeyValue.pm
@@ -318,6 +320,10 @@ lib/Net/DRI/Protocol/EPP/Extensions/LU/Status.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/MX.pm
+lib/Net/DRI/Protocol/EPP/Extensions/MX/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/MX/Message.pm
+lib/Net/DRI/Protocol/EPP/Extensions/MX/Rar.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NAME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NAME/EmailFwd.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/CO.pm
@@ -355,6 +361,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/PRO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PRO/AV.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PRO/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RegBox.pm
+lib/Net/DRI/Protocol/EPP/Extensions/RegBox/ServiceMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SecDNS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Contact.pm
@@ -576,6 +583,7 @@ t/655idn_epp.t
 t/656icann_smd.t
 t/657it_epp.t
 t/658es_epp.t
+t/659mx_epp.t
 t/660ngtld_epp.t
 t/661ngtld_whois.t
 t/670launchphase.t
@@ -592,6 +600,7 @@ t/680openreg_epp.t
 t/681crr_epp.t
 t/682afnic_gtld_epp.t
 t/683tci_gtld_epp.t
+t/684regbox_epp.t
 t/691deloitte_tmch.t
 t/692tmdb_tmdb.t
 t/701ovh_ws_live.t

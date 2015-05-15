@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 124;
+use Test::More tests => 152;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -34,7 +34,7 @@ my $d;
 my ($dh,@c,$toc,$cs,$c1,$c2);
 
 ####################################################################################################
-## Centralnic (currenty) Uses the 0.4 version of Gavin Browns (CentralNic) extension. We use a greeting here to switch the namespace version here to 0.5
+## Centralnic (currenty) Uses the 0.4 version of Gavin Browns (CentralNic) extension. We use a greeting here to switch the namespace version here to -0.7
 $R2=$E1.'<greeting><svID>CentralNic EPP server EPP-OTE.CENTRALNIC.COM</svID><svDate>2014-06-25T10:44:01.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.4</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.4','Fee 0.4 loaded correctly');
@@ -81,21 +81,21 @@ is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price
 is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
 
 ## Check: multiple domains
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example1.cafe</domain:name></domain:cd><domain:cd><domain:name avail="0">example2.bar</domain:name><domain:reason>In use</domain:reason></domain:cd><domain:cd><domain:name avail="0">example3.wiki</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example1.cafe</fee:domain><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example2.bar</fee:domain><fee:currency>EUR</fee:currency><fee:action phase="claims" subphase="landrush">create</fee:action><fee:period unit="y">2</fee:period><fee:fee>5.00</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example3.wiki</fee:domain><fee:currency>EUR</fee:currency><fee:action>transfer</fee:action><fee:period unit="y">2</fee:period><fee:fee>2.50</fee:fee></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example1.space</domain:name></domain:cd><domain:cd><domain:name avail="0">example2.bar</domain:name><domain:reason>In use</domain:reason></domain:cd><domain:cd><domain:name avail="0">example3.wiki</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example1.space</fee:domain><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example2.bar</fee:domain><fee:currency>EUR</fee:currency><fee:action phase="claims" subphase="landrush">create</fee:action><fee:period unit="y">2</fee:period><fee:fee>5.00</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example3.wiki</fee:domain><fee:currency>EUR</fee:currency><fee:action>transfer</fee:action><fee:period unit="y">2</fee:period><fee:fee>2.50</fee:fee></fee:chkData></extension>'.$TRID.'</response>'.$E2;
 my @fees = ( 
-  {domain=>'example1.cafe',currency=>'USD',action=>'create',phase=>'sunrise',duration=>$dri->local_object('duration','years',1)},
+  {domain=>'example1.space',currency=>'USD',action=>'create',phase=>'sunrise',duration=>$dri->local_object('duration','years',1)},
   {domain=>'example2.bar',currency=>'EUR',action=>'create',phase=>'claims',sub_phase=>'landrush',duration=>$dri->local_object('duration','years',2)},
   {domain=>'example3.wiki',currency=>'EUR',action=>'transfer',duration=>$dri->local_object('duration','years',2)}
 );
-$rc=$dri->domain_check('example1.cafe','example2.bar','example3.wiki',{fee=>\@fees});
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example1.cafe</domain:name><domain:name>example2.bar</domain:name><domain:name>example3.wiki</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example1.cafe</fee:domain><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period></fee:check><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example2.bar</fee:domain><fee:currency>EUR</fee:currency><fee:action phase="claims" subphase="landrush">create</fee:action><fee:period unit="y">2</fee:period></fee:check><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example3.wiki</fee:domain><fee:currency>EUR</fee:currency><fee:action>transfer</fee:action><fee:period unit="y">2</fee:period></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check multi build');
+$rc=$dri->domain_check('example1.space','example2.bar','example3.wiki',{fee=>\@fees});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example1.space</domain:name><domain:name>example2.bar</domain:name><domain:name>example3.wiki</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example1.space</fee:domain><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period></fee:check><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example2.bar</fee:domain><fee:currency>EUR</fee:currency><fee:action phase="claims" subphase="landrush">create</fee:action><fee:period unit="y">2</fee:period></fee:check><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example3.wiki</fee:domain><fee:currency>EUR</fee:currency><fee:action>transfer</fee:action><fee:period unit="y">2</fee:period></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check multi build');
 is($rc->is_success(),1,'domain_check multi is_success');
 is($dri->get_info('action'),'check','domain_check multi get_info (action)');
-is($dri->get_info('exist','domain','example1.cafe'),0,'domain_check multi get_info(exist) 1/2');
+is($dri->get_info('exist','domain','example1.space'),0,'domain_check multi get_info(exist) 1/2');
 is($dri->get_info('exist','domain','example2.bar'),1,'domain_check multi get_info(exist) 2/3');
 is($dri->get_info('exist','domain','example3.wiki'),1,'domain_check multi get_info(exist) 3/3');
-$d = shift $dri->get_info('fee','domain','example1.cafe');
-is($d->{domain},'example1.cafe','domain_check multi get_info(domain) 1/3');
+$d = shift $dri->get_info('fee','domain','example1.space');
+is($d->{domain},'example1.space','domain_check multi get_info(domain) 1/3');
 is($d->{currency},'USD','domain_check multi get_info(currency) 1/3');
 is($d->{action},'create','domain_check multi get_info(action) 1/3');
 is($d->{phase},'sunrise','domain_check multi get_info(phase) 1/3');
@@ -117,7 +117,7 @@ is($d->{duration}->years(),'2','domain_check multi get_info(duration) 3/3');
 is($d->{fee},'2.50','domain_check multi get_info(fee) 3/3');
 # using the standardised methods
 is($dri->get_info('is_premium','domain','example3.wiki'),undef,'domain_check_multi get_info (is_premium) undef');
-is($dri->get_info('price_duration','domain','example1.cafe')->years(),1,'domain_check get_info (price_duration)');
+is($dri->get_info('price_duration','domain','example1.space')->years(),1,'domain_check get_info (price_duration)');
 is($dri->get_info('create_price','domain','example2.bar'),'5.00','domain_check_multi get_info (create_price)');
 is($dri->get_info('transfer_price','domain','example3.wiki'),'2.50','domain_check_multi get_info (transfer_price)');
 
@@ -155,13 +155,13 @@ is($dri->get_info('restore_price'),'27.00','domain_check_price get_info (restore
 
 
 ## Info
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name><domain:roid>EXAMPLE1-REP</domain:roid><domain:status s="ok" /><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:ns><domain:hostObj>ns1.example.cafe</domain:hostObj><domain:hostObj>ns1.example.bar</domain:hostObj></domain:ns><domain:host>ns1.example.cafe</domain:host><domain:host>ns2.example.cafe</domain:host><domain:clID>ClientX</domain:clID><domain:crID>ClientY</domain:crID><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:upID>ClientX</domain:upID><domain:upDate>1999-12-03T09:00:00.0Z</domain:upDate><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate><domain:trDate>2000-04-08T09:00:00.0Z</domain:trDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><fee:infData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:infData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_info('example.cafe',{fee=>{currency=>'USD',phase=>'sunrise',action=>'create',duration=>$dri->local_object('duration','years',1)}});
-is_string($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">example.cafe</domain:name></domain:info></info><extension><fee:info xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period></fee:info></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_info build');
-$rc=$dri->domain_info('example.cafe');
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.space</domain:name><domain:roid>EXAMPLE1-REP</domain:roid><domain:status s="ok" /><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:ns><domain:hostObj>ns1.example.space</domain:hostObj><domain:hostObj>ns1.example.bar</domain:hostObj></domain:ns><domain:host>ns1.example.space</domain:host><domain:host>ns2.example.space</domain:host><domain:clID>ClientX</domain:clID><domain:crID>ClientY</domain:crID><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:upID>ClientX</domain:upID><domain:upDate>1999-12-03T09:00:00.0Z</domain:upDate><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate><domain:trDate>2000-04-08T09:00:00.0Z</domain:trDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><fee:infData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('example.space',{fee=>{currency=>'USD',phase=>'sunrise',action=>'create',duration=>$dri->local_object('duration','years',1)}});
+is_string($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">example.space</domain:name></domain:info></info><extension><fee:info xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period></fee:info></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_info build');
+$rc=$dri->domain_info('example.space');
 is($rc->is_success(),1,'domain_info is is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'example.cafe','domain_info get_info (name)');
+is($dri->get_info('name'),'example.space','domain_info get_info (name)');
 is($dri->get_info('roid'),'EXAMPLE1-REP','domain_info get_info (roid)');
 $s=$dri->get_info('status');
 isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
@@ -207,15 +207,15 @@ is($d->{fee},'10.00','Fee extension: domain_check parse fee');
 
 ### EPP Transform Commands ###
 ## Create
-$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:creData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.space</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:creData></extension>'.$TRID.'</response>'.$E2;
 $cs=$dri->local_object('contactset');
 $c1=$dri->local_object('contact')->srid('jd1234');
 $c2=$dri->local_object('contact')->srid('sh8013');
 $cs->set($c1,'registrant');
 $cs->set($c2,'admin');
 $cs->set($c2,'tech');
-$rc=$dri->domain_create('example.cafe',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.example.bar'],['ns2.example.bar']),contact=>$cs,auth=>{pw=>'2fooBAR'},fee=>{currency=>'USD',fee=>'5.00'}});
-is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.bar</domain:hostObj><domain:hostObj>ns2.example.bar</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build');
+$rc=$dri->domain_create('example.space',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.example.bar'],['ns2.example.bar']),contact=>$cs,auth=>{pw=>'2fooBAR'},fee=>{currency=>'USD',fee=>'5.00'}});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.space</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.bar</domain:hostObj><domain:hostObj>ns2.example.bar</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build');
 is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
@@ -223,18 +223,18 @@ is($d->{currency},'USD','Fee extension: domain_create parse currency');
 is($d->{fee},5.00,'Fee extension: domain_create parse fee');
 
 ## Renew
-$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate></domain:renData></resData><extension><fee:renData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:renData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_renew('example.cafe',{duration => DateTime::Duration->new(years=>5), current_expiration => DateTime->new(year=>2000,month=>4,day=>3),fee=>{currency=>'USD',fee=>'5.00'}});
-is_string($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name><domain:curExpDate>2000-04-03</domain:curExpDate><domain:period unit="y">5</domain:period></domain:renew></renew><extension><fee:renew xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:renew></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_renew build');
+$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.space</domain:name><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate></domain:renData></resData><extension><fee:renData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:renData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_renew('example.space',{duration => DateTime::Duration->new(years=>5), current_expiration => DateTime->new(year=>2000,month=>4,day=>3),fee=>{currency=>'USD',fee=>'5.00'}});
+is_string($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.space</domain:name><domain:curExpDate>2000-04-03</domain:curExpDate><domain:period unit="y">5</domain:period></domain:renew></renew><extension><fee:renew xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:renew></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_renew build');
 is($rc->is_success(),1,'domain_renew is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_renew parse currency');
 is($d->{fee},5.00,'Fee extension: domain_renew parse fee');
 
 ## Transfer
-$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-08T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID><domain:acDate>2000-06-13T22:00:00.0Z</domain:acDate><domain:exDate>2002-09-08T22:00:00.0Z</domain:exDate></domain:trnData></resData><extension><fee:trnData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:trnData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_transfer_start('example.cafe',{auth => {pw=>'2fooBAR',roid=>"JD1234-REP"},duration=>DateTime::Duration->new(years=>1),fee=>{currency=>'USD',fee=>'5.00'}});
-is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name><domain:period unit="y">1</domain:period><domain:authInfo><domain:pw roid="JD1234-REP">2fooBAR</domain:pw></domain:authInfo></domain:transfer></transfer><extension><fee:transfer xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_transfer build');
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.space</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-08T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID><domain:acDate>2000-06-13T22:00:00.0Z</domain:acDate><domain:exDate>2002-09-08T22:00:00.0Z</domain:exDate></domain:trnData></resData><extension><fee:trnData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:trnData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_start('example.space',{auth => {pw=>'2fooBAR',roid=>"JD1234-REP"},duration=>DateTime::Duration->new(years=>1),fee=>{currency=>'USD',fee=>'5.00'}});
+is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.space</domain:name><domain:period unit="y">1</domain:period><domain:authInfo><domain:pw roid="JD1234-REP">2fooBAR</domain:pw></domain:authInfo></domain:transfer></transfer><extension><fee:transfer xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_transfer build');
 is($rc->is_success(),1,'domain_transfer is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_transfer parse currency');
@@ -245,8 +245,8 @@ $R2=$E1.'<response>'.r().'<extension><fee:updData xmlns:fee="urn:ietf:params:xml
 $toc=Net::DRI::Data::Changes->new();
 $toc->set('registrant',$dri->local_object('contact')->srid('sh8013'));
 $toc->set('fee',{currency=>'USD',fee=>'5.00'});
-$rc=$dri->domain_update('example.cafe',$toc);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name><domain:chg><domain:registrant>sh8013</domain:registrant></domain:chg></domain:update></update><extension><fee:update xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_update build');
+$rc=$dri->domain_update('example.space',$toc);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.space</domain:name><domain:chg><domain:registrant>sh8013</domain:registrant></domain:chg></domain:update></update><extension><fee:update xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_update build');
 is($rc->is_success(),1,'domain_update is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_transfer parse currency');
@@ -256,9 +256,9 @@ is($d->{fee},5.00,'Fee extension: domain_transfer parse fee');
 
 ## Claims check
 my $lp = {type=>'claims'};
-$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="1">example.cafe</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('example.cafe',{lp => $lp});
-is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cafe</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase>claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="1">example.space</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example.space',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.space</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase>claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
 my $lpres = $dri->get_info('lp');
 is($lpres->{'exist'},1,'domain_check get_info(exist)');
 is($lpres->{'phase'},'claims','domain_check get_info(phase) ');
@@ -266,4 +266,58 @@ is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','
 is($lpres->{'validator_id'},'sample','domain_check get_info(validator_id) ');
 
 
+
+####################################################################################################
+## 0.7 version of Gavin Browns (CentralNic) extension. We use a greeting here to switch the namespace version here to 0.6
+$R2=$E1.'<greeting><svID>SUPER EPP Server epp.charlestonroadregistry.com</svID><svDate>2014-11-21T10:10:46.0751Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:fee-0.7</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.7','Fee 0.7 loaded correctly');
+
+# domain info
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foo.space</domain:name><domain:roid>EXAMPLE1-REP</domain:roid><domain:status s="ok" /><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj><domain:hostObj>ns1.example.net</domain:hostObj></domain:ns><domain:host>ns1.foo.space</domain:host><domain:host>ns2.foo.space</domain:host><domain:clID>ClientX</domain:clID><domain:crID>ClientY</domain:crID><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:upID>ClientX</domain:upID><domain:upDate>1999-12-03T09:00:00.0Z</domain:upDate><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate><domain:trDate>2000-04-08T09:00:00.0Z</domain:trDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><fee:infData xmlns:fee="urn:ietf:params:xml:ns:fee-0.7" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.7 fee-0.7.xsd"><fee:currency>USD</fee:currency><fee:command phase="sunrise">create</fee:command><fee:period unit="y">1</fee:period><fee:fee refundable="1" grace-period="P5D" applied="immediate">10.00</fee:fee><fee:class>premium-tier1</fee:class></fee:infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('foo.space',{fee=>{currency=>'USD',phase=>'sunrise',action=>'create',duration=>$dri->local_object('duration','years',1)}});
+is_string($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">foo.space</domain:name></domain:info></info><extension><fee:info xmlns:fee="urn:ietf:params:xml:ns:fee-0.7" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.7 fee-0.7.xsd"><fee:currency>USD</fee:currency><fee:command phase="sunrise">create</fee:command><fee:period unit="y">1</fee:period></fee:info></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_info build');
+$rc=$dri->domain_info('foo.space');
+is($rc->is_success(),1,'domain_info is is_success');
+is($dri->get_info('action'),'info','domain_info get_info (action)');
+is($dri->get_info('name'),'foo.space','domain_info get_info (name)');
+@fees = @{$dri->get_info('fee')};
+$d = $fees[0];
+is($d->{currency},'USD','Fee extension: domain_info parse currency');
+is($d->{action},'create','Fee extension: domain_info parse action');
+is($d->{phase},'sunrise','Fee extension: domain_info parse phase');
+is($d->{duration}->years(),1,'Fee extension: domain_info parse duration');
+is($d->{fee},10.00,'Fee extension: domain_info parse fee');
+is($d->{description},'Refundable(Grace=>P5D)(Applied=>immediate)','Fee extension: domain_info parse human-readable description');
+is($d->{class},'premium-tier1','Fee extension: domain_info parse classe');
+# using the standardised methods
+is($dri->get_info('is_premium'),undef,'domain_check get_info (is_premium) undef'); # NOT SUPPORTED
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration) is DateTime::Duration');
+is($dri->get_info('price_duration')->years(),1,'domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('price_category'),'premium-tier1','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),'10','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),undef,'domain_check get_info (renew_price) undef');
+is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');
+is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
+
+## domain create
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.space</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.7" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.7 fee-0.7.xsd"><fee:currency>USD</fee:currency><fee:period unit="y">1</fee:period><fee:fee>5.00</fee:fee><fee:balance>-5.00</fee:balance><fee:creditLimit>1000.00</fee:creditLimit></fee:creData></extension>'.$TRID.'</response>'.$E2;
+$cs=$dri->local_object('contactset');
+$c1=$dri->local_object('contact')->srid('jd1234');
+$c2=$dri->local_object('contact')->srid('sh8013');
+$cs->set($c1,'registrant');
+$cs->set($c2,'admin');
+$cs->set($c2,'tech');
+$rc=$dri->domain_create('exdomain.space',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.example.bar'],['ns2.example.bar']),contact=>$cs,auth=>{pw=>'2fooBAR'},fee=>{currency=>'USD',fee=>'5.00'}});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.space</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.bar</domain:hostObj><domain:hostObj>ns2.example.bar</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.7" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.7 fee-0.7.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build');
+is($rc->is_success(),1,'domain_create is is_success');
+is($dri->get_info('action'),'create','domain_create get_info (action)');
+$d=$rc->get_data('fee');
+is($d->{currency},'USD','Fee extension: domain_create parse currency');
+is($d->{fee},5.00,'Fee extension: domain_create parse fee');
+is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
+is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
+
+####################################################################################################
 exit 0;

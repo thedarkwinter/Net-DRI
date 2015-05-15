@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 40;
+use Test::More tests => 41;
 
 use Data::Dumper;
 
@@ -111,11 +111,11 @@ is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns
 is($rc->is_success(), 1, 'domain_update is success');
 
 #renew
-$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:exDate>2015-01-01T00:00:00.00</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
-my $du = DateTime::Duration->new( years => 1);
+$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:exDate>2015-01-01T00:00:00.01</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
+my $du = DateTime::Duration->new( years => 2);
 my $exp = DateTime->new(year  => 2013,month => 01,day   => 01);
 $rc = $dri->domain_renew('test1.es',{duration=>$du,current_expiration=>$exp} );
-is($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:curExpDate>2013-01-01</domain:curExpDate><domain:period unit="y">1</domain:period><domain:renewOp>accept</domain:renewOp></domain:renew></renew>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_renew build');
+is($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:renewOp>accept</domain:renewOp><domain:curExpDate>2013-01-01T00:00:00.01</domain:curExpDate><domain:period unit="y">2</domain:period></domain:renew></renew>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_renew build');
 is($rc->is_success(), 1, 'domain_renew is success');
 is($dri->get_info('exDate'),'2015-01-01T00:00:00','domain_renew get_info(exDate)');
 
@@ -171,6 +171,11 @@ is($rc->is_success(), 1, 'contact_create is_success');
 
 ####################################################################################################
 
-
+####################################################################################################
+## Host commands
+#create
+$rc=$dri->host_create($dri->local_object('hosts')->add('ns14.testepp.es',['192.168.0.14'],['2001:0DB8:02de::0e13'],1));
+is($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns14.testepp.es</host:name><host:addr ip="v4">192.168.0.14</host:addr><host:addr ip="v6">2001:0DB8:02de::0e13</host:addr></host:create></create><extension><es_creds:es_creds xmlns:es_creds="urn:red.es:xml:ns:es_creds-1.0" xsi:schemaLocation="urn:red.es:xml:ns:es_creds-1.0 es_creds-1.0"><es_creds:clID>LOGIN</es_creds:clID><es_creds:pw>PASSWORD</es_creds:pw></es_creds:es_creds></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'host_create build');
+####################################################################################################
 
 exit(0);

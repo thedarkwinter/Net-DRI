@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 10;
+use Test::More tests => 12;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -77,5 +77,11 @@ is($dri->get_info('last_id'),'123','message_retrieve get_info(last_id)');
 my  $lp = $dri->get_info('lp','message',123);
 is($lp->{'application_id'},'LA_xyzabc-UR','message_retrieve get_info lp->{application_id}');
 is($lp->{'status'},'pendingValidation','message_retrieve get_info lp->{status}');
+
+# added after warning output from poll with <resData>
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="9" id="124"><qDate>2014-02-01T16:00:00.000Z</qDate><msg>Transfer request abcde-007410 / CO_xxxx111122223333-ISC.</msg></msgQ><resData><contact:trnData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>abcde-007410</contact:id><contact:trStatus>pending</contact:trStatus><contact:reID>registrar_a</contact:reID><contact:reDate>2014-12-02T16:00:00.000Z</contact:reDate><contact:acID>registrar_b</contact:acID><contact:acDate>2014-12-07T16:00:00.000Z</contact:acDate></contact:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),'124','message_retrieve get_info(last_id)');
+is($dri->get_info('reID','message',124),'registrar_a','message_retrieve get_info(reID)');
 
 exit 0;

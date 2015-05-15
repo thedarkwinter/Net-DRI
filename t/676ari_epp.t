@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 65;
+use Test::More tests => 93;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -31,6 +31,7 @@ my $rc;
 my $s;
 my $d;
 my ($dh,@c,$idn);
+
 
 ##################### 
 ## IDN Extension + Variants Extensions (both use the Net::DRI::Data::IDN Object) : IDNVariant.pm
@@ -88,6 +89,7 @@ $rc=$dri->domain_update('example3.menu',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.menu</domain:name></domain:update></update><extension><kv:update xmlns:kv="urn:X-ar:params:xml:ns:kv-1.0" xsi:schemaLocation="urn:X-ar:params:xml:ns:kv-1.0 kv-1.0.xsd"><kv:kvlist name="bn"><kv:item key="abn">18 092 242 209</kv:item><kv:item key="entityType">Australian Private Company</kv:item></kv:kvlist></kv:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update variants build_xml');
 
 
+
 ##################### 
 ## exAvail Extension
 
@@ -111,29 +113,69 @@ is($ea->{'primary_domain_name'},'example.menu','domain_check get_info ex_avail p
 
 # domain check
 my $price = { duration=>DateTime::Duration->new(years=>5) };
-$R2=$E1.'<response>'.r().'<extension><price:chkData xmlns:price="urn:ar:params:xml:ns:price-1.0"><price:cd><price:name premium="1">example9.menu</price:name><price:period unit="y">5</price:period><price:price>100.00</price:price><price:renewalPrice>100.00</price:renewalPrice></price:cd></price:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('example9.menu',{price => $price} );
-is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example9.menu</domain:name></domain:check></check><extension><price:check xmlns:price="urn:ar:params:xml:ns:price-1.0" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.0 price-1.0.xsd"><price:period unit="y">5</price:period></price:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check price build_xml');
+$R2=$E1.'<response>'.r().'<extension><price:chkData xmlns:price="urn:ar:params:xml:ns:price-1.2"><cd><name>random.menu</name><category>PREMIUM CAT 2</category><period unit="y">5</period><createPrice>500</createPrice><renewPrice>500</renewPrice><transferPrice>50</transferPrice><restorePrice>40</restorePrice></cd></price:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('random.menu',{price => $price});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>random.menu</domain:name></domain:check></check><extension><price:check xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:period unit="y">5</price:period></price:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check price build_xml');
 $price = $dri->get_info('price');
 is($price->{premium},'1','domain_check get_info price premium');
-is($price->{price},'100.00','domain_check get_info price price');
-is($price->{renewal_price},'100.00','domain_check get_info price renewal_price');
+is($price->{price},500.00,'domain_check get_info price price');
+is($price->{create_price},500.00,'domain_check get_info create_price');
+is($price->{renew_price},500.00,'domain_check get_info price renewal_price');
+is($price->{renewal_price},500.00,'domain_check get_info price renewal_price');
+is($price->{transfer_price},50.00,'domain_check get_info price transfer_price');
+is($price->{restore_price},40.00,'domain_check get_info price restore_price');
+is($price->{category},'PREMIUM CAT 2','domain_check get_info price renewal_price');
 isa_ok($price->{duration},'DateTime::Duration','domain_check get_info duration');
 # using the standardised methods
 is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium)');
 isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration)');
 is($dri->get_info('price_currency'),undef,'domain_check get_info (price_currency) undef');
-is($dri->get_info('create_price'),'100.00','domain_check get_info (create_price)');
-is($dri->get_info('renew_price'),'100.00','domain_check get_info (renew_price)');
-is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');
-is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
+is($dri->get_info('create_price'),500.00,'domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),500.00,'domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price'),50,'domain_check get_info (transfer_price) undef');
+is($dri->get_info('restore_price'),40,'domain_check get_info (restore_price) undef');
+
+# domain check multi
+$price = { duration=>DateTime::Duration->new(years=>1) };
+$R2=$E1.'<response>'.r().'<extension><price:chkData xmlns:price="urn:ar:params:xml:ns:price-1.2"><cd><name>standard.menu</name><category>STANDARD</category><period unit="y">5</period><createPrice>50</createPrice><renewPrice>50</renewPrice><transferPrice>5</transferPrice><restorePrice>40</restorePrice></cd><cd><name>lower.menu</name><category>DISCOUNT CAT 1</category><period unit="y">5</period><createPrice>5</createPrice><renewPrice>5</renewPrice><transferPrice>1</transferPrice><restorePrice>40</restorePrice></cd><cd><name>higher.menu</name><category>PREMIUM CAT 2</category><period unit="y">5</period><createPrice>500</createPrice><renewPrice>500</renewPrice><transferPrice>50</transferPrice><restorePrice>40</restorePrice></cd></price:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('standard.menu','lower.menu','higher.menu',{price => $price});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>standard.menu</domain:name><domain:name>lower.menu</domain:name><domain:name>higher.menu</domain:name></domain:check></check><extension><price:check xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:period unit="y">1</price:period></price:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check price build_xml');
+
+$price = $dri->get_info('price','domain','higher.menu');
+is($price->{premium},'1','domain_check get_info price premium');
+is($dri->get_info('create_price','domain','lower.menu'),5.00,'domain_check get_info (create_price)');
+is($dri->get_info('is_premium','domain','lower.menu'),1,'domain_check get_info (is_premium)');
+is($dri->get_info('create_price','domain','standard.menu'),50.00,'domain_check get_info (create_price)');
+is($dri->get_info('is_premium','domain','standard.menu'),0,'domain_check get_info (is_premium)');
+is($dri->get_info('create_price','domain','higher.menu'),500.00,'domain_check get_info (create_price)');
+is($dri->get_info('is_premium','domain','higher.menu'),1,'domain_check get_info (is_premium)');
 
 # domain create - # domain renew and domain transfer work exactly the same
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example9.menu</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+$price = { 'price' => 100 };
 $rc=$dri->domain_create('example9.menu',{pure_create=>1,auth=>{pw=>'2fooBAR'},price => $price });
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example9.menu</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><price:create xmlns:price="urn:ar:params:xml:ns:price-1.0" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.0 price-1.0.xsd"><price:ack><price:price>100.00</price:price><price:renewalPrice>100.00</price:renewalPrice></price:ack></price:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create price build_xml');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example9.menu</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><price:create xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack><price:price>100</price:price></price:ack></price:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create price build_xml');
+is($rc->is_success(),1,'domain_create is_success');
 is($dri->get_info('action'),'create','domain_create get_info(action)');
 
+# domain create with plain ack (no price)
+$rc=$dri->domain_create('example10.menu',{pure_create=>1,auth=>{pw=>'2fooBAR'},price => 1 });
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example10.menu</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><price:create xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack/></price:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create price build_xml');
+is($rc->is_success(),1,'domain_create is_success');
+
+# update (RGP Restore)
+$toc=Net::DRI::Data::Changes->new();
+$toc->set('rgp',{ op => 'request'});
+$toc->set('price', 1);
+$rc=$dri->domain_update('example11.menu',$toc);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example11.menu</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="request"/></rgp:update><price:update xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack/></price:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_request +charge');
+is($rc->is_success(),1,'domain_update is_success');
+
+# rbp restore with explicit price
+$toc->set('price', {price => 100});
+$rc=$dri->domain_update('example11.menu',$toc);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example11.menu</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="request"/></rgp:update><price:update xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack><price:price>100</price:price></price:ack></price:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_request +charge');
+is($rc->is_success(),1,'domain_update is_success');
 
 ##################### 
 ## TMCHApplication Extension (TMCH + Application = LaunchPhase type system)
@@ -347,5 +389,27 @@ $lp = {'application_id'=>'abc123' };
 $R2='';
 $rc=$dri->domain_delete('example8.menu',{pure_delete=>1,lp=>$lp});
 is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example8.menu</domain:name></domain:delete></delete><extension><application:delete xmlns:application="urn:ar:params:xml:ns:application-1.0" xsi:schemaLocation="urn:ar:params:xml:ns:application-1.0 application-1.0.xsd"><application:id>abc123</application:id></application:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete lp build_xml');
+
+
+##################### 
+## Block Extension
+
+# domain info
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example22.menu</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:infData></resData><extension><infData xmlns="urn:ar:params:xml:ns:block-1.0"><id>BLK-1</id></infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('example22.menu',{block_id => 'BLK-1'});
+is($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">example22.menu</domain:name></domain:info></info><extension><block:info xmlns:block="urn:ar:params:xml:ns:block-1.0" xsi:schemaLocation="urn:ar:params:xml:ns:block-1.0 block-1.0.xsd"><block:id>BLK-1</block:id></block:info></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_info block build_xml');
+is($dri->get_info('action'),'info','domain_info get_info(action)');
+is($dri->get_info('name'),'example22.menu','domain_info get_info name');
+is($dri->get_info('block_id'),'BLK-1','domain_info get_info name');
+
+# domain create - # domain renew and domain transfer work exactly the same
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example23.menu</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData><extension><creData xmlns="urn:ar:params:xml:ns:block-1.0"><id>BLK-2</id></creData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_create('example23.menu',{pure_create=>1,auth=>{pw=>'2fooBAR'},block_id => 'BLK-2'});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example23.menu</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><block:create xmlns:block="urn:ar:params:xml:ns:block-1.0" xsi:schemaLocation="urn:ar:params:xml:ns:block-1.0 block-1.0.xsd"><block:id>BLK-2</block:id></block:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create price build_xml');
+is($rc->is_success(),1,'domain_create is_success');
+is($dri->get_info('action'),'create','domain_create get_info(action)');
+is($dri->get_info('block_id'),'BLK-2','domain_info get_info name');
+
+# domain renew & delete are the same
 
 exit 0;

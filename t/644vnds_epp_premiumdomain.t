@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 13;
+use Test::More tests => 23;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -59,6 +59,30 @@ $rc=$dri->domain_check(qw/example1.tv example2.tv example3.tv/);
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example1.tv</domain:name><domain:name>example2.tv</domain:name><domain:name>example3.tv</domain:name></domain:check></check><extension><premiumdomain:check xmlns:premiumdomain="http://www.verisign.com/epp/premiumdomain-1.0" xsi:schemaLocation="http://www.verisign.com/epp/premiumdomain-1.0 premiumdomain-1.0.xsd"><premiumdomain:flag>1</premiumdomain:flag></premiumdomain:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multiple build premium_domain=1');
 
 # 3.2.5 EPP <update> Command (also tested previously)
+
+##################################################
+# Test manually setting the premium domain flag
+$R2='';
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
+$dri->add_registry('NGTLD',{provider=>'verisign'});
+$dri->target('verisign')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example1.ooo</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example1.ooo');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example1.ooo</domain:name></domain:check></check><extension><namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1" xsi:schemaLocation="http://www.verisign-grs.com/epp/namestoreExt-1.1 namestoreExt-1.1.xsd"><namestoreExt:subProduct>OOO</namestoreExt:subProduct></namestoreExt:namestoreExt></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check no premium domain');
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example2.ooo</domain:name></domain:cd></domain:chkData></resData><extension><premiumdomain:chkData xmlns:premiumdomain="http://www.verisign.com/epp/premiumdomain-1.0" xsi:schemaLocation="http://www.verisign.com/epp/premiumdomain-1.0 premiumdomain-1.0.xsd"><premiumdomain:cd><premiumdomain:name premium="1">example2.ooo</premiumdomain:name><premiumdomain:price unit="USD">125.00</premiumdomain:price><premiumdomain:renewalPrice unit="USD">75.00</premiumdomain:renewalPrice></premiumdomain:cd></premiumdomain:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example2.ooo', {premium_domain => 1});
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example2.ooo</domain:name></domain:check></check><extension><namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1" xsi:schemaLocation="http://www.verisign-grs.com/epp/namestoreExt-1.1 namestoreExt-1.1.xsd"><namestoreExt:subProduct>OOO</namestoreExt:subProduct></namestoreExt:namestoreExt><premiumdomain:check xmlns:premiumdomain="http://www.verisign.com/epp/premiumdomain-1.0" xsi:schemaLocation="http://www.verisign.com/epp/premiumdomain-1.0 premiumdomain-1.0.xsd"><premiumdomain:flag>1</premiumdomain:flag></premiumdomain:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build premium_domain=1');
+is($rc->get_data('is_premium'),1,'domain_check premium=1 get_data(is_premium)');
+is_deeply($rc->get_data('price'),{unit=>'USD',amount=>125.00},'domain_check premium=1 get_data(price)');
+is_deeply($rc->get_data('renewal_price'),{unit=>'USD',amount=>75.00},'domain_check premium=1 get_data(renewal_price)');
+# using the standardised methods
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium)');
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),125,'domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),75,'domain_check get_info (renew_price)');
 
 ##################################################
 
