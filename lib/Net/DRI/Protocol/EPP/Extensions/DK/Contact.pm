@@ -81,7 +81,7 @@ sub create {
     my ( $epp, $c ) = @_;
     my $mes = $epp->message;
     
-    return unless defined $c->vat() || $c->userType() || $c->ean();
+    return unless defined $c->vat() || $c->type() || $c->ean();
     
     if (defined $c->ean()) {
 		my $eid1=$mes->command_extension_register('dkhm:EAN','xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-1.2"');
