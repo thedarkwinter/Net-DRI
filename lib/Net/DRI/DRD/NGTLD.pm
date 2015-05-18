@@ -973,7 +973,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  $dri->add_registry('NGTLD',{provider=>'sidn'});
 
-=head3 Status: Not started
+=head3 Status: Working
 
 =head3 TLDs
 
@@ -983,8 +983,11 @@ amsterdam
 =cut
 
  return {
-     bep_type => undef, # TODO: check this
+     bep_type => 1, # dedicated Registry
      tlds => ['amsterdam'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::SIDN_GTLD',{}],
+     contact_i18n => 1, ## LOC only
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'sidn';
 
 =pod
