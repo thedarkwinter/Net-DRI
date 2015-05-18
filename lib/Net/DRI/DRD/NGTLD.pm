@@ -986,6 +986,7 @@ amsterdam
      bep_type => 1, # dedicated Registry
      tlds => ['amsterdam'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::SIDN_GTLD',{}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::SIDN->new(@_); } } ],
      contact_i18n => 1, ## LOC only
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'sidn';

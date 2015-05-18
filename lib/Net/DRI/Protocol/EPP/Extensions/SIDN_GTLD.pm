@@ -21,6 +21,9 @@ use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
 
+use Net::DRI::Util;
+use Net::DRI::Data::Contact::SIDN;
+
 =pod
 
 =head1 NAME

@@ -39,7 +39,7 @@ sub validate
  }
 
  my @errs;
- push @errs,'legal_form' if (defined $self->legal_form() && $self->legal_form()!~m!^(?:ANDERS|BGG|BRO|BV|BVI/O|COOP|CV|EENMANSZAAK|EESV|KERK|MAATSCHAP|NV|OWM|PERSOON|REDR|STICHTING|VERENIGING|VOF)$!o);
+ push @errs,'legal_form' if (defined $self->legal_form() && $self->legal_form()!~m!^(?:ANDERS|BEG|BRO|BV|BVI/O|COOP|CV|EENMANSZAAK|EESV|KERK|MAATSCHAP|NV|OWM|PERSOON|REDR|STICHTING|VERENIGING|VOF)$!o);
 
  ## Changes from core EPP
  push @errs,'pc' if (defined $self->cc() && $self->cc() eq 'NL' && ! $self->pc());
