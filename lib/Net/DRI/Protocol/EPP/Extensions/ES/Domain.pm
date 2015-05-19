@@ -165,8 +165,22 @@ sub renew
 {
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
- push $mes->{'command_body'},['domain:renewOp','accept'];  
+
+ # core + mandatory Registry exDate format
+ my $curexp=Net::DRI::Util::has_key($rd,'current_expiration')? $rd->{current_expiration} : undef;
+ Net::DRI::Exception::usererr_insufficient_parameters('current expiration date') unless defined($curexp);
+ $curexp=$curexp->clone()->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($curexp) && Net::DRI::Util::check_isa($curexp,'DateTime'));
+ Net::DRI::Exception::usererr_invalid_parameters('current expiration date must be YYYY-MM-DD') unless $curexp=~m/^\d{4}-\d{2}-\d{2}$/;
+ $curexp = $curexp . 'T00:00:00.01'; # now we append this since it's mandotory for this command
+ my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,'renew',$domain);
+ push @d,['domain:renewOp','accept'];
+ push @d,['domain:curExpDate',$curexp];
+ push @d,Net::DRI::Protocol::EPP::Util::build_period($rd->{duration}) if Net::DRI::Util::has_duration($rd);
+ $mes->command_body(\@d);
+
  domain_extension($mes,$rd);
+
+ return;
 }
 
 sub transfer_request

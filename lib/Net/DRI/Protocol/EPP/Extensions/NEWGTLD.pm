@@ -33,6 +33,7 @@ sub default_extensions {
  my ($self,$pp) = @_;
  my @ext = qw/GracePeriod SecDNS LaunchPhase/;
  push @ext, 'IDN' unless (exists $pp->{disable_idn} && $pp->{disable_idn});
+ $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
  if (exists $pp->{custom} )
  {
   my @custom = (ref $pp->{custom} eq 'ARRAY') ? @{$pp->{custom}} : ($pp->{custom});

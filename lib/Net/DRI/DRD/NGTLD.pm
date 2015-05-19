@@ -126,7 +126,6 @@ sub new
  $self->{info}->{contact_check_limit} = $self->_has_bep_key('contact_check_limit') ? $self->_get_bep_key('contact_check_limit') : $self->{info}->{check_limit}; #  default to check_limit if no host_check_limit
  $self->{info}->{host_check_limit} = $self->_has_bep_key('host_check_limit') ? $self->_get_bep_key('host_check_limit') : $self->{info}->{check_limit}; #  default to check_limit if no hostn_check_limit
  $self->{info}->{domain_check_limit} = $self->_has_bep_key('domain_check_limit') ? $self->_get_bep_key('domain_check_limit') : $self->{info}->{check_limit}; #  default to check_limit if no domain_check_limit
-
  return $self;
 }
 
@@ -264,6 +263,8 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:n
 
 L<Net::DRI::Protocol::EPP::Extensions::Afilias::Price> urn:ietf:params:xml:ns:price-1.0
 
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
+
 =head3 Afilias Own TLDs
 
 Afilias has extended the .INFO plaform to include these newGTLDs
@@ -276,10 +277,11 @@ Contended TLD's not included
 
 =cut
 
+ ## TODO : set brown_fee_version correctly at end of april, and fix tests in 630 and 660
  return {
      bep_type => 2, # shared registry
      tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','poker','red','shiksha'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
 
@@ -295,10 +297,11 @@ xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunio
 
 =cut
 
+ ## TODO : set brown_fee_version correctly at end of april, and fix tests in 630 and 660
  return {
      bep_type => 2, # shared registry
      tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','bnpparibas','creditunion','ged','global','hiv','indians','irish','ltda','onl','porn','rich','storage','vegas','vote','voto'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
 
@@ -385,7 +388,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     return {
      bep_type => 2, # shared registry
      tlds => \@tlds,
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
      verify_icann_reserved => 0,
      verify_check_name => 0,
@@ -490,7 +493,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android boo cal car channel chrome dad 
  return {
      bep_type => 1, # dedicated
      tlds => ['xn--flw351e','xn--q9jyb4c','xn--qcka1pmc','ads','android','boo','cal','car','channel','chrome','dad','day','eat','esq','fly','foo','gbiz','gle','gmail','google','here','how','ing','kid','meme','mov','new','nexus','prod','prof','rsvp','soy','tour','youtube','zip'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],'disable_idn'=>1}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'], 'disable_idn'=>1, 'brown_fee_version' => '0.6'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'crr';
 
@@ -590,14 +593,14 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
  return {
      bep_type => 2, # shared registry
      tlds => ['nagoya','tokyo','yokohama'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmo';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['okinawa','ryukyu'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmogeo';
    
@@ -669,7 +672,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 Uncontested: abogado bayern beer budapest casa cooking country fashion fishing fit garden horse law luxe miami rodeo surf vip vodka wedding work yoga xn--g2xx48c
 
 
-Contested: app art baby beauty blog book cloud coupon cpa data dds dog eco gay home hotel inc latino llc love realestate soccer store tech video
+Contested: app art baby beauty blog book cloud coupon cpa data dds dog eco gay home hotel inc latino llc love realestate soccer store tech
 
 Collisions: cooking-collisions country-collisions fishing-collisions'horse-collisions rodeo-collisions vodka-collisions
 =cut
@@ -677,7 +680,7 @@ Collisions: cooking-collisions country-collisions fishing-collisions'horse-colli
  return {
      bep_type => 2, # shared registry
      tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fashion', 'fishing', 'fit', 'garden', 'horse', 'law',  'luxe', 'miami', 'rodeo', 'surf',  'vip', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'data', 'dds', 'dog', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'love', 'realestate', 'soccer', 'store', 'tech', 'video',
+              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'data', 'dds', 'dog', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'love', 'realestate', 'soccer', 'store', 'tech',
               'cooking-collisions', 'country-collisions', 'fishing-collisions', 'horse-collisions', 'rodeo-collisions', 'vodka-collisions',
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
@@ -1034,8 +1037,6 @@ Fee extension is currently only used in .NRW and for domain_check command only.
 
 =cut
 
- return
- 
  return {
      bep_type => 1, # dedicated registy
      tlds => ['ruhr','cologne','gmx','ifm','koeln','nrw'],
@@ -1083,7 +1084,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/ep
 
 =head3 TLDs
 
-art audio auto blackfriday cars christmas click deal diet family flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics property racing realestate sale save sexy shopping store tattoo team tech video yoga
+art audio auto blackfriday cars christmas click deal diet family flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics property racing realestate save sexy shopping store tattoo team tech yoga
 
 Contended TLD's not included
 
@@ -1099,7 +1100,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','property','racing','realestate','sale','save','sexy','shopping','store','tattoo','team','tech','video','yoga'],
+     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','property','racing','realestate','save','sexy','shopping','store','tattoo','team','tech','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
@@ -1117,7 +1118,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =head3 TLDs
 
-xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe bank career cfd crs java maif markets ooo oracle pictet realtor sca sky spreadbetting trading
+xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe azure bank bing career cfd crs hotmail java maif markets microsoft ooo oracle pictet realtor sca shell sky spreadbetting trading xbox windows
 
 Contended TLD's not included
 
@@ -1139,9 +1140,9 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain>
 =cut
 
  return {
-     bep_type => 2, # FIXME: shared - on cc-tv-jobs server?
+     bep_type => 2, 
      contact_i18n => 2, # FIXME: they appear to only accept one address, might be they either is valid?
-     tlds => ['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','bank','career','cfd','crs','java','maif','markets','ooo','oracle','pictet','realtor','sca','sky','spreadbetting','trading'],
+     tlds => ['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','azure','bank','bing','career','cfd','crs','hotmail','java','maif','markets','microsoft','ooo','oracle','pictet','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['VeriSign::Sync', 'VeriSign::PollLowBalance', 'VeriSign::PollRGP', 'VeriSign::IDNLanguage', 'VeriSign::WhoWas', 'VeriSign::Suggestion', 'VeriSign::ClientAttributes', 'VeriSign::TwoFactorAuth', 'VeriSign::ZoneManagement', 'VeriSign::Balance', 'VeriSign::NameStore', 'VeriSign::PremiumDomain']}],
      whois_server => 'ccwhois.verisign-grs.com',
    } if $bep eq 'verisign';
@@ -1283,14 +1284,16 @@ sub _build_price_query
    $rd->{fee} = 1;
  } elsif ($bep eq 'ari') {
    $rd->{price} = 1;
- } elsif ($bep =~ m/^(?:centralnic|gmo|mam|crr|tango)/) {
+ } elsif ($bep eq 'verisign') {
+   $rd->{premium_domain} = 1;
+ } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}}) {
    my ($fee,@fees);
    foreach my $k (qw/currency action duration/)
    {
      $fee->{$k} = $rd->{$k} if exists $rd->{$k};
    }
-   $fee->{currency} = 'USD' unless exists $fee->{currency} || $bep =~ m/^mam/; # FIXME: fee-0.5 should not set values for currency and duration
-   $fee->{duration} = 1 unless exists $fee->{duration} || $bep =~ m/^mam/;
+   $fee->{currency} = 'USD' unless exists $fee->{currency} || $bep !~ m/^gmo/; # fee-0.5+ should not set values for currency and duration as these will default
+   $fee->{duration} = 1 unless exists $fee->{duration} || $bep !~ m/^gmo/;
    $fee->{duration} = $ndr->local_object('duration','years',$fee->{duration}) if exists $fee->{duration} && ref $fee->{duration} eq '' && $fee->{duration} =~ m/^\d$/;
    @{$rd->{fee}} = ();
    foreach (qw/create renew transfer restore/) {

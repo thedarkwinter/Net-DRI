@@ -80,7 +80,10 @@ sub new
 sub set
 {
  my ($self,$regname,$type,$key,$data,$ttl)=@_;
- Net::DRI::Exception::err_insufficient_parameters() unless Net::DRI::Util::all_valid($regname,$type,$key);
+
+ #Net::DRI::Exception::err_insufficient_parameters() unless Net::DRI::Util::all_valid($regname,$type,$key);
+ # Just ignore cache set rather than causing an exception which is difficult to trace (try host_check on 6 names on a registry that has max 5)
+ return unless Net::DRI::Util::all_valid($regname,$type,$key);
 
  my $now=Net::DRI::Util::microtime();
  $ttl=$self->{ttl} unless defined($ttl);
