@@ -42,21 +42,31 @@ They are needed only for registrant contacts.
 
 =head2 application_purpose()
 
-Intended Usage of Domain:
-P1 – Business for profit
-P2 – Nonprofit
-P3 – Personal
-P4 – Educational
-P5 – Governmental
+=head4 Intended Usage of Domain:
+
+P1 = Business for profit
+
+P2 = Nonprofit
+
+P3 = Personal
+
+P4 = Educational
+
+P5 = Governmental
 
 =head2 nexus_category()
 
-Nexus Category: 
-C11 – US Citizen
-C12 – Permanent Resident
-C21 – US Organization
-C31 – Foreign organization doing business in US
-C32 – Foreign organization with US office
+=head4 Nexus Category:
+
+C11 = US Citizen
+
+C12 = Permanent Resident
+
+C21 = US Organization
+
+C31 = Foreign organization doing business in US
+
+C32 = Foreign organization with US office
 
 =head1 SUPPORT
 
@@ -92,24 +102,24 @@ See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
 sub validate {
-	my ($self,$change)=@_;
-	$change||=0;
-	my @errs;
+        my ($self,$change)=@_;
+        $change||=0;
+        my @errs;
 
-	$self->SUPER::validate($change); ## will trigger an Exception if problem
+        $self->SUPER::validate($change); ## will trigger an Exception if problem
 
- 	if (defined($self->application_purpose())) {
- 		push @errs,'application_purpose' unless ($self->application_purpose()=~m/^P[1-5]$/ || ($change && ($self->application_purpose() eq '')));
- 	}
+        if (defined($self->application_purpose())) {
+                push @errs,'application_purpose' unless ($self->application_purpose()=~m/^P[1-5]$/ || ($change && ($self->application_purpose() eq '')));
+        }
 
-	if (defined($self->nexus_category())) {
-		push @errs,'nexus_category' unless ($self->nexus_category()=~m!^C(?:1[12]|21|3[12]/([A-Z][A-Z]))$! || ($change && ($self->nexus_category() eq '')));
-		push @errs,'nexus_category' if ($1 && !exists($Net::DRI::Util::CCA2{$1}));
-	}
+        if (defined($self->nexus_category())) {
+                push @errs,'nexus_category' unless ($self->nexus_category()=~m!^C(?:1[12]|21|3[12]/([A-Z][A-Z]))$! || ($change && ($self->nexus_category() eq '')));
+                push @errs,'nexus_category' if ($1 && !exists($Net::DRI::Util::CCA2{$1}));
+        }
 
-	Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
+        Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
 
-	return 1; ## everything ok.
+        return 1; ## everything ok.
 }
 
 ####################################################################################################
