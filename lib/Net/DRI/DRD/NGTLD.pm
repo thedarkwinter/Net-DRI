@@ -382,7 +382,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @others = qw/la pw com.de/;
     my @ngtlds = qw/bar college contact design fan fans feedback host ink online pid press reit rest site space website wiki wme xyz/;
     my @ngtlds_contested = qw/reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
-    my @ngtlds_pipeline = qw/art auto now hotel forum gay group blog app mail love news llc/; # no expected dates given, probably contested strings
+    my @ngtlds_pipeline = qw/art auto now hotel forum gay group blog app mail love llc/; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
     return {
@@ -938,7 +938,7 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
 
 =head3 TLDs
 
-dpml.pub actor airforce army attorney auction band consulting dance degree democrat dentist engineer forsale futbol gives haus immobilien kaufen lawyer market moda mortgage navy ninja pub rehab republican reviews rip rocks sale social software vet video
+dpml.pub actor airforce army attorney auction band consulting dance degree democrat dentist engineer forsale futbol gives haus immobilien kaufen lawyer market moda mortgage navy ninja news pub rehab republican reviews rip rocks sale social software vet video
 
 Contended TLD's not included
 
@@ -959,7 +959,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.pub','actor','airforce','army','attorney','auction','band','consulting','dance','degree','democrat','dentist','engineer','forsale','futbol','gives','haus','immobilien','kaufen','lawyer','market','moda','mortgage','navy','ninja','pub','rehab','republican','reviews','rip','rocks','sale','social','software','vet','video'],
+     tlds => ['dpml.pub','actor','airforce','army','attorney','auction','band','consulting','dance','degree','democrat','dentist','engineer','forsale','futbol','gives','haus','immobilien','kaufen','lawyer','market','moda','mortgage','navy','ninja','news','pub','rehab','republican','reviews','rip','rocks','sale','social','software','vet','video'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
      whois_server => 'whois.rightside.co',
      check_limit => 5,
@@ -1084,7 +1084,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/ep
 
 =head3 TLDs
 
-art audio auto blackfriday cars christmas click deal diet family flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics property racing realestate save sexy shopping store tattoo team tech yoga
+art audio auto blackfriday cars christmas click deal diet family flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom photo pics property realestate save sexy shopping store tattoo team tech yoga
 
 Contended TLD's not included
 
@@ -1100,7 +1100,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','property','racing','realestate','save','sexy','shopping','store','tattoo','team','tech','yoga'],
+     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','photo','pics','property','realestate','save','sexy','shopping','store','tattoo','team','tech','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
