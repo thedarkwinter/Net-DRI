@@ -41,11 +41,31 @@ They are needed only for registrant contacts.
 
 =head2 application_purpose()
 
-intended usage for the domain name
+=head4 Intended Usage of Domain:
+
+P1 = Business for profit
+
+P2 = Nonprofit
+
+P3 = Personal
+
+P4 = Educational
+
+P5 = Governmental
 
 =head2 nexus_category()
 
-the nexus cateogry
+=head4 Nexus Category:
+
+C11 = US Citizen
+
+C12 = Permanent Resident
+
+C21 = US Organization
+
+C31 = Foreign organization doing business in US
+
+C32 = Foreign organization with US office
 
 =head1 SUPPORT
 
