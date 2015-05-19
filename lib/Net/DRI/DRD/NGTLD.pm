@@ -1084,7 +1084,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/ep
 
 =head3 TLDs
 
-art audio auto blackfriday cars christmas click deal diet family flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics property racing realestate save sexy shopping store tattoo team tech yoga
+art audio auto blackfriday cars christmas click deal diet family flowers free game garden gift guitars help hiphop home hosting inc juegos link lol love mom news photo pics property realestate save sexy shopping store tattoo team tech yoga
 
 Contended TLD's not included
 
@@ -1100,7 +1100,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','property','racing','realestate','save','sexy','shopping','store','tattoo','team','tech','yoga'],
+     tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','mom','news','photo','pics','property','realestate','save','sexy','shopping','store','tattoo','team','tech','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
