@@ -271,7 +271,7 @@ Afilias has extended the .INFO plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afilias'}); # own tlds
 
-info xn--6frz82g black blue green kim lgbt lotto meet organic pink poker red shiksha
+info xn--6frz82g black blue green kim lgbt lotto meet organic pink poker red shiksha voto
 
 Contended TLD's not included
 
@@ -280,7 +280,7 @@ Contended TLD's not included
  ## TODO : set brown_fee_version correctly at end of april, and fix tests in 630 and 660
  return {
      bep_type => 2, # shared registry
-     tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','poker','red','shiksha'],
+     tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','poker','red','shiksha','voto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
@@ -293,14 +293,14 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunion ged global hiv indians irish ltda onl porn rich storage vegas vote voto
+xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunion ged global hiv indians irish ltda onl porn rich storage vegas vote
 
 =cut
 
  ## TODO : set brown_fee_version correctly at end of april, and fix tests in 630 and 660
  return {
      bep_type => 2, # shared registry
-     tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','bnpparibas','creditunion','ged','global','hiv','indians','irish','ltda','onl','porn','rich','storage','vegas','vote','voto'],
+     tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','bnpparibas','creditunion','ged','global','hiv','indians','irish','ltda','onl','porn','rich','storage','vegas','vote'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
