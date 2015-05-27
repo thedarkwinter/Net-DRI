@@ -271,16 +271,15 @@ Afilias has extended the .INFO plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afilias'}); # own tlds
 
-info xn--6frz82g black blue green kim lgbt lotto meet organic pink poker red shiksha
+info xn--6frz82g black blue green kim lgbt lotto meet organic pink poker red shiksha vote voto
 
 Contended TLD's not included
 
 =cut
 
- ## TODO : set brown_fee_version correctly at end of april, and fix tests in 630 and 660
  return {
      bep_type => 2, # shared registry
-     tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','poker','red','shiksha'],
+     tlds => ['info','xn--6frz82g','black','blue','green','kim','lgbt','lotto','meet','organic','pink','poker','red','shiksha','vote','voto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
@@ -293,14 +292,13 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunion ged global hiv indians irish ltda onl porn rich storage vegas vote voto
+xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunion ged global hiv indians irish ltda onl porn rich storage vegas
 
 =cut
 
- ## TODO : set brown_fee_version correctly at end of april, and fix tests in 630 and 660
  return {
      bep_type => 2, # shared registry
-     tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','bnpparibas','creditunion','ged','global','hiv','indians','irish','ltda','onl','porn','rich','storage','vegas','vote','voto'],
+     tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','bnpparibas','creditunion','ged','global','hiv','indians','irish','ltda','onl','porn','rich','storage','vegas'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
@@ -453,7 +451,6 @@ Contended TLD's not included
 
 =pod
 
-
 =head2 CoCCA
 
  $dri->add_registry('NGTLD',{provider=>'cocca'});
@@ -509,7 +506,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android boo cal car channel chrome dad 
 
 =head3 TLDs
 
-academy accountants agency apartments architect associates bargains bike bingo boutique builders business cab cafe camera camp capital cards care careers cash casino catering center chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction contractors cool credit creditcard cruises dating deals delivery dental diamonds digital direct directory discount domains education email energy engineering enterprises equipment estate events exchange expert exposed express fail farm finance financial fish fitness flights florist football foundation fund furniture gallery games gifts gold golf glass graphics gratis gripe guide guru healthcare holdings holiday hospital house immo industries institute insure international investments kitchen land lease legal life lighting limited limo loans maison management marketing media medical memorial money movie network partners parts pets photography photos pictures pizza place plumbing plus productions properties recipes reisen rentals repair report restaurant sarl school schule services shoes singles solar solutions sports style supplies supply support surgery systems tax technology tennis tienda tips tires today tools tours town toys training university vacations ventures viajes villas vin vision voyage watch world works wtf xn--czrs0t xn--unup4y xn--vhquv zone
+academy accountants agency apartments architect associates bargains bike bingo boutique builders business cab cafe camera camp capital cards care careers cash casino catering center chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction contractors cool credit creditcard cruises dating deals delivery dental diamonds digital direct directory discount domains education email energy engineering enterprises equipment estate events exchange expert exposed express fail farm finance financial fish fitness flights florist football foundation fund furniture gallery games gifts gold golf glass graphics gratis gripe guide guru healthcare holdings holiday hospital house immo industries institute insure international investments jewelry kitchen land lease legal life lighting limited limo loans maison management marketing media medical memorial money movie network partners parts pets photography photos pictures pizza place plumbing plus productions properties recipes reisen rentals repair report restaurant sarl school schule services shoes singles solar solutions sports style supplies supply support surgery systems tax technology tennis tienda tips tires today tools tours town toys training university vacations ventures viajes villas vin vision voyage watch world works wtf xn--czrs0t xn--unup4y xn--vhquv zone
 
 =head3 Custom extensions
 
@@ -528,7 +525,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.zone','academy','accountants','agency','apartments','architect','associates','bargains','bike','bingo','boutique','builders','business','cab','cafe','camera','camp','capital','cards','care','careers','cash','casino','catering','center','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','contractors','cool','credit','creditcard','cruises','dating','deals','delivery','dental','diamonds','digital','direct','directory','discount','domains','education','email','energy','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','express','fail','farm','finance','financial','fish','fitness','flights','florist','football','foundation','fund','furniture','gallery','games','gifts','gold','golf','glass','graphics','gratis','gripe','guide','guru','healthcare','holdings','holiday','hospital','house','immo','industries','institute','insure','international','investments','kitchen','land','lease','legal','life','lighting','limited','limo','loans','maison','management','marketing','media','medical','memorial','money','movie','network','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','plus','productions','properties','recipes','reisen','rentals','repair','report','restaurant','sarl','school','schule','services','shoes','singles','solar','solutions','sports','style','supplies','supply','support','surgery','systems','tax','technology','tennis','tienda','tips','tires','today','tools','tours','town','toys','training','university','vacations','ventures','viajes','villas','vin','vision','voyage','watch','world','works','wtf','xn--czrs0t','xn--unup4y','xn--vhquv','zone'],
+     tlds => ['dpml.zone','academy','accountants','agency','apartments','architect','associates','bargains','bike','bingo','boutique','builders','business','cab','cafe','camera','camp','capital','cards','care','careers','cash','casino','catering','center','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','contractors','cool','credit','creditcard','cruises','dating','deals','delivery','dental','diamonds','digital','direct','directory','discount','domains','education','email','energy','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','express','fail','farm','finance','financial','fish','fitness','flights','florist','football','foundation','fund','furniture','gallery','games','gifts','gold','golf','glass','graphics','gratis','gripe','guide','guru','healthcare','holdings','holiday','hospital','house','immo','industries','institute','insure','international','investments','jewelry','kitchen','land','lease','legal','life','lighting','limited','limo','loans','maison','management','marketing','media','medical','memorial','money','movie','network','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','plus','productions','properties','recipes','reisen','rentals','repair','report','restaurant','sarl','school','schule','services','shoes','singles','solar','solutions','sports','style','supplies','supply','support','surgery','systems','tax','technology','tennis','tienda','tips','tires','today','tools','tours','town','toys','training','university','vacations','ventures','viajes','villas','vin','vision','voyage','watch','world','works','wtf','xn--czrs0t','xn--unup4y','xn--vhquv','zone'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
      whois_server => 'whois.donuts.co',
      check_limit => 5,
@@ -628,7 +625,7 @@ Contended TLD's not included
 =cut
 
  return {
-     bep_type => 2, # shared registry - TODO TBC
+     bep_type => 2,
      tlds => ['xn--45q11c','xn--3bst00m','xn--ses554g','xn--efvy88h','xn--czr694b','xn--czru2d','xn--6qq986b3xl','xn--30rr7y','xn--imr513n','xn--otu796d','xn--9et52u','wang','top'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
