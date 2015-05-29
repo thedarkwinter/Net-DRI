@@ -1226,7 +1226,7 @@ sub message_count
 ##       this whole part would need to be redefined, see TODO file
 ####################################################################################################
 
-## For AFNIC ARNES (subclassed) BE EURid LU
+## For AFNIC ARNES (subclassed) BE EURid LU RO
 sub domain_trade_start
 {
  my ($self,$ndr,$domain,$rd)=@_;
@@ -1248,6 +1248,14 @@ sub domain_trade_stop
  my ($self,$ndr,$domain,$rd)=@_;
  $self->enforce_domain_name_constraints($ndr,$domain,'trade');
  return $ndr->process('domain','trade_cancel',[$domain,$rd]);
+}
+
+## For RO
+sub domain_trade_approve
+{
+ my ($self,$ndr,$domain,$rd)=@_;
+ $self->enforce_domain_name_constraints($ndr,$domain,'trade');
+ return $ndr->process('domain','trade_approve',[$domain,$rd]);
 }
 
 ## Used by AT & NO but not with same EPP command name => impossible to factorize here
