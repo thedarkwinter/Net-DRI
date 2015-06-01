@@ -72,15 +72,15 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands {
 	my ( $class, $version)=@_;
 	my %tmp=(
-		create =>			[ \&create, undef ],
-		trade_request =>	[ \&trade_request, \&trade_request_parse ],
-		trade_approve =>	[ \&trade_approve, undef ],
-		trade_query =>		[ \&trade_query, \&trade_query_parse],
-		transfer_request =>	[ \&transfer_request, undef],
-		update =>			[ \&update, undef],
-		renew =>			[ \&renew, undef],
-		info =>				[ \&info, undef],
-		check =>			[ \&check, undef]
+		create =>				[ \&create, undef ],
+		trade_request =>		[ \&trade_request, \&trade_request_parse ],
+		trade_approve =>		[ \&trade_approve, undef ],
+		trade_query =>			[ \&trade_query, \&trade_query_parse],
+		transfer_request =>		[ \&transfer_request, undef],
+		update =>				[ \&update, undef],
+		renew =>				[ \&renew, undef],
+		info =>					[ \&info, undef],
+		check =>				[ \&check, undef]
 	);
 
 	return { 'domain' => \%tmp };
@@ -150,7 +150,7 @@ sub trade_request_parse {
 			$rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();
 		}
 	} continue { $c=$c->getNextSibling(); }
-	
+
 	return;
 }
 
@@ -178,7 +178,6 @@ sub trade_query {
 	my ($epp,$domain,$rd)=@_;
 	my $mes=$epp->message();
 	my (@e,@f);
-	my ($tid);
 
 	my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['trade',{'op'=>'query'}],$domain);
 	$mes->command_body(\@d);

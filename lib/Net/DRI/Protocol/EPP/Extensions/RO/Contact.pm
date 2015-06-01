@@ -69,7 +69,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands {
 	my ( $class, $version ) = @_;
 	my %tmp = (
-		create => [ \&create, undef ],
+		create =>	[ \&create, undef ],
 	);
 	return { 'contact' => \%tmp };
 }
@@ -91,7 +91,7 @@ sub create {
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_contact_ext')));
 	$mes->command_extension($eid,\@e);
-	
+
 	return;
 }
 
