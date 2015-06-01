@@ -990,9 +990,9 @@ amsterdam
 =pod
 
 
-=head2 MX
+=head2 NicMX
 
- $dri->add_registry('NGTLD',{provider=>'mx'});
+ $dri->add_registry('NGTLD',{provider=>'nicmx'});
 
 =head3 Status: Working
 
@@ -1000,6 +1000,11 @@ amsterdam
 
 lat
 
+=head3 Custom extensions
+
+L<NET::DRI::Protocol::EPP::Extensions::MX::Domain>
+L<NET::DRI::Protocol::EPP::Extensions::MX::Rar>
+L<NET::DRI::Protocol::EPP::Extensions::MX::Message>
 
 =cut
 
@@ -1009,7 +1014,7 @@ lat
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::MX_GTLD',{}],
      contact_i18n => 1,
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'mx';
+   } if $bep eq 'nicmx';
 
 =pod
 
