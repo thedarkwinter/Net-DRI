@@ -21,21 +21,30 @@ sub parse
   return unless $mes->is_success();
 
   my $msgid=$mes->msg_id();
+  my @ns = ('nicmx', 'niclat'); # to parse into message defined by the Registry
+  # TODO: confirm the next 3 variable. Check if MX didn't change because of NGTLD!
+  my $min_type_id = 4;
+  my $max_type_id = 11;
+  my $ex_date_renew = 6;
 
-  foreach my $res($mes->get_extension($mes->ns('ext_msg'),'nicmx'))
-  {
-    next unless $res;
-    foreach my $el(Net::DRI::Util::xml_list_children($res))
+  foreach (@ns) {
+    $max_type_id = 22 if $_ eq 'niclat'; # more codes for .LAT TLD
+    $ex_date_renew = 5 if $_ eq 'niclat'; # date renew code different from .MX. Why? :(
+    foreach my $res($mes->get_extension($mes->ns('ext_msg'),$_))
     {
-      my ($n,$c)=@$el;
-      if ($n eq 'msgTypeID')
+      next unless $res;
+      foreach my $el(Net::DRI::Util::xml_list_children($res))
       {
-        Net::DRI::Exception::usererr_invalid_parameters('msgTypeID can only take values from 4 to 11') unless ($c->textContent() >= 4 && $c->textContent() <= 11);
-        $rinfo->{message}->{$msgid}->{msg_type_id}=$c->textContent();
+        my ($n,$c)=@$el;
+        if ($n eq 'msgTypeID')
+        {
+          Net::DRI::Exception::usererr_invalid_parameters('msgTypeID can only take values from ' . $min_type_id . ' to ' . $max_type_id) unless ($c->textContent() >= $min_type_id && $c->textContent() <= $max_type_id);
+          $rinfo->{message}->{$msgid}->{msg_type_id}=$c->textContent();
+        }
+        $rinfo->{message}->{$msgid}->{object}=$c->textContent() if $n eq 'object';
+        $rinfo->{message}->{$msgid}->{msDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/msDate$/);
+        $rinfo->{message}->{$msgid}->{exDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/exDate$/ && $rinfo->{message}->{$msgid}->{msg_type_id} eq $ex_date_renew); # only used in the notice of renewal (Type 6 for MX and Type 5 for LAT)
       }
-      $rinfo->{message}->{$msgid}->{object}=$c->textContent() if $n eq 'object';
-      $rinfo->{message}->{$msgid}->{msDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/msDate$/);
-      $rinfo->{message}->{$msgid}->{exDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/exDate$/ && $rinfo->{message}->{$msgid}->{msg_type_id} eq 6); # only used in the notice of renewal (Type 6)
     }
   }
 
