@@ -6,6 +6,13 @@ Net::DRI changelog from newest to oldest changes
 + .PL Polling updates, from Paulo Jorge
 + .PL Obsolete domain code cleanup (using domain $self->{info}->{host_as_ns}=1;)
 + Afilias JSON Messge parse, from Paulo Jorge
++ Afilias Validation extension
++ ServiceMessage extension (Michael Braunoeder)
++ .ES host fix (Paulo Jorge)
++ Tango-RS added support for draft-brown-fees for .nrw (Paulo Jorge)
++ ARI updated to Price-1.2, added Block-1.0
++ draft-brown-epp-fees-03 (fee-0.7)
+
 
 0.8-tdw 2014-10-30 DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!
