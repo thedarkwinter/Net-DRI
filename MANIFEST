@@ -131,6 +131,7 @@ lib/Net/DRI/DRD/RegBox.pm
 lib/Net/DRI/DRD/SC.pm
 lib/Net/DRI/DRD/SE.pm
 lib/Net/DRI/DRD/SIDN.pm
+lib/Net/DRI/DRD/SIDN_GLTD.pm
 lib/Net/DRI/DRD/SO.pm
 lib/Net/DRI/DRD/SWITCH.pm
 lib/Net/DRI/DRD/TANGO.pm
@@ -379,6 +380,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Host.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Notifications.pm
+lib/Net/DRI/Protocol/EPP/Extensions/SIDN_GTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SWITCH.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO/Auction.pm
@@ -696,6 +698,7 @@ t/Net/DRI/Protocol/EPP/Extensions/ResellerObject.t
 t/Net/DRI/Protocol/EPP/Extensions/SecDNS.t
 t/Net/DRI/Protocol/EPP/Extensions/ServiceMessage.t
 t/Net/DRI/Protocol/EPP/Extensions/SIDN.t
+t/Net/DRI/Protocol/EPP/Extensions/SIDN_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/SWITCH.t
 t/Net/DRI/Protocol/EPP/Extensions/Tango.t
 t/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.t
