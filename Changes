@@ -1,6 +1,9 @@
 Net::DRI changelog from newest to oldest changes
 
-0.9-tdw-pre 2015-06-02 DEVELOPMENT RELEASE
+0.10-pre
++ .LV Support (from David Makuni)
+
+0.9-tdw 2015-06-02 DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!
 + TCI nGTLD Support (Thanks to patches from Dmitry Belyavsky and Paulo Jorge)
 + .MX EPP support, from Paulo Jorge

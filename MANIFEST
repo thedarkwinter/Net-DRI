@@ -40,6 +40,7 @@ lib/Net/DRI/Data/Contact/IIS.pm
 lib/Net/DRI/Data/Contact/IT.pm
 lib/Net/DRI/Data/Contact/JOBS.pm
 lib/Net/DRI/Data/Contact/LU.pm
+lib/Net/DRI/Data/Contact/LV.pm
 lib/Net/DRI/Data/Contact/NO.pm
 lib/Net/DRI/Data/Contact/Nominet.pm
 lib/Net/DRI/Data/Contact/NYC.pm
@@ -108,6 +109,7 @@ lib/Net/DRI/DRD/ISPAPI.pm
 lib/Net/DRI/DRD/IT.pm
 lib/Net/DRI/DRD/LC.pm
 lib/Net/DRI/DRD/LU.pm
+lib/Net/DRI/DRD/LV.pm
 lib/Net/DRI/DRD/MAM.pm
 lib/Net/DRI/DRD/ME.pm
 lib/Net/DRI/DRD/MN.pm
@@ -319,6 +321,9 @@ lib/Net/DRI/Protocol/EPP/Extensions/LU/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LU/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LU/Poll.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LU/Status.pm
+lib/Net/DRI/Protocol/EPP/Extensions/LV.pm
+lib/Net/DRI/Protocol/EPP/Extensions/LV/Contact.pm
+lib/Net/DRI/Protocol/EPP/Extensions/LV/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.pm
@@ -668,6 +673,7 @@ t/Net/DRI/Protocol/EPP/Extensions/IT.pm
 t/Net/DRI/Protocol/EPP/Extensions/KeyRelay.t
 t/Net/DRI/Protocol/EPP/Extensions/LaunchPhase.t
 t/Net/DRI/Protocol/EPP/Extensions/LU.t
+t/Net/DRI/Protocol/EPP/Extensions/LV.t
 t/Net/DRI/Protocol/EPP/Extensions/MAM.t
 t/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.t
 t/Net/DRI/Protocol/EPP/Extensions/MX.pm
