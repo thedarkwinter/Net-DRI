@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 89;
+use Test::More tests => 104;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -264,5 +264,36 @@ is($dri->get_info('msg_type_id','message',31),5,'message get_info msgTypeID');
 is($dri->get_info('object','message',31),'suspended-01.lat','message get_info object');
 is(''.$dri->get_info('msDate','message',31),'2012-02-18T17:15:54','message get_info msDate');
 is(''.$dri->get_info('exDate','message',31),'2014-02-18T17:15:54','message get_info exDate');
+
+## Administrative Status extension
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>extexample.lat</domain:name><domain:roid>foobar</domain:roid><domain:status s="ok"/><domain:registrant>latreg</domain:registrant><domain:contact type="admin">latadmin</domain:contact><domain:contact type="billing">latbilling</domain:contact><domain:contact type="tech">latech</domain:contact><domain:ns><domain:hostObj>ns1.extexample.lat</domain:hostObj><domain:hostObj>ns2.extexample.lat</domain:hostObj></domain:ns><domain:clID>rar_foobar</domain:clID><domain:crDate>2015-05-11T21:43:58.0Z</domain:crDate></domain:infData></resData><extension><nicmx-as:adminStatus xmlns:nicmx-as="http://www.nic.mx/nicmx-admstatus-1.1"><nicmx-as:value>suspendedByExternalAuthority</nicmx-as:value><nicmx-as:msg lang="en">The domain has been suspended by an URS determination.</nicmx-as:msg></nicmx-as:adminStatus></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('extexample.lat');
+is_string($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">extexample.lat</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info build');
+is($rc->is_success(),1,'domain_info is_success');
+is($dri->get_info('value'),'suspendedByExternalAuthority','domain_info get_info(value)');
+is($dri->get_info('msg'),'The domain has been suspended by an URS determination.','domain_info get_info(msg)');
+is($dri->get_info('lang'),'en','domain_info get_info(lang)');
+
+# IDNs
+## domain_create
+my $idn = $dri->local_object('idn')->autodetect('idnexample.lat','es');
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>idnexample.lat</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_create('idnexample.lat',{pure_create=>1,auth=>{pw=>'2fooBAR'},'idn' => $idn});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>idnexample.lat</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><idn:create xmlns:idn="http://www.nic.lat/nicmx-idn-1.0" xsi:schemaLocation="http://www.nic.lat/nicmx-idn-1.0 nicmx-idn-1.0.xsd"><idn:lang>ES</idn:lang></idn:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml');
+is($dri->get_info('action'),'create','domain_create get_info(action)');
+## domain_check
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">idn-check-example.lat</domain:name></domain:cd></domain:chkData></resData><extension><idn:checkResData xmlns:idn="http://www.nic.lat/nicmx-idn-1.0" xsi:schemaLocation="http://www.nic.lat/nicmx-idn-1.0 nicmx-idn-1.0.xsd"><idn:name>foobar_name</idn:name><idn:base>foobar_base</idn:base><idn:lang>es</idn:lang></idn:checkResData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('idn-check-example.lat');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>idn-check-example.lat</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build_xml');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info(action)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+is($dri->get_info('idn_name'),'foobar_name','domain_check get_info(name)');
+is($dri->get_info('idn_base'),'foobar_base','domain_check get_info(base)');
+is($dri->get_info('idn_lang'),'es','domain_check get_info(lang)');
+## domain_info
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>idn-info-example.lat</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:infData></resData><extension><idn:infoResData xmlns:idn="http://www.nic.lat/nicmx-idn-1.0" xsi:schemaLocation="http://www.nic.lat/nicmx-idn-1.0 nicmx-idn-1.0.xsd"><idn:lang>fr</idn:lang></idn:infoResData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('idn-info-example.lat');
+is($dri->get_info('idn_lang'),'fr','domain_check get_info(lang)');
 
 exit 0;
