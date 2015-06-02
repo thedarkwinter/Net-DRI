@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Contact commands (RFC5733)
 ##
-## Copyright (c) 2005-2010,2012-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2010,2012-2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2010,2012-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2010,2012-2013,2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -208,13 +208,13 @@ sub info_parse
    $contact->fax(Net::DRI::Protocol::EPP::Util::parse_tel($c));
   } elsif ($name eq 'postalInfo')
   {
-   parse_postalinfo($po,$c,\%cd);
+   Net::DRI::Protocol::EPP::Util::parse_postalinfo($po,$c,\%cd);
   } elsif ($name eq 'authInfo') ## we only try to parse the authInfo version defined in the RFC, other cases are to be handled by extensions
   {
    $contact->auth({pw => Net::DRI::Util::xml_child_content($c,$mes->ns('contact'),'pw')});
   } elsif ($name eq 'disclose')
   {
-   $contact->disclose(parse_disclose($c));
+   $contact->disclose(Net::DRI::Protocol::EPP::Util::parse_disclose($c));
   }
  }
 
@@ -229,71 +229,6 @@ sub info_parse
  $rinfo->{contact}->{$oname}->{status}=$po->create_local_object('status')->add(@s);
  $rinfo->{contact}->{$oname}->{self}=$contact;
  return;
-}
-
-sub parse_postalinfo
-{
- my ($epp,$c,$rcd)=@_;
- my $type=$c->getAttribute('type'); ## int or loc, mandatory in EPP !
- $type=$epp->{defaulti18ntype} if (!defined($type) && defined($epp->{defaulti18ntype}));
- my $ti={loc=>0,int=>1}->{$type};
-
- foreach my $el (Net::DRI::Util::xml_list_children($c))
- {
-  my ($name,$n)=@$el;
-  if ($name eq 'name')
-  {
-   $rcd->{name}->[$ti]=$n->textContent();
-  } elsif ($name eq 'org')
-  {
-   $rcd->{org}->[$ti]=$n->textContent();
-  } elsif ($name eq 'addr')
-  {
-   my @street;
-   foreach my $sel (Net::DRI::Util::xml_list_children($n))
-   {
-    my ($name2,$nn)=@$sel;
-    if ($name2 eq 'street')
-    {
-     push @street,$nn->textContent();
-    } elsif ($name2 eq 'city')
-    {
-     $rcd->{city}->[$ti]=$nn->textContent();
-    } elsif ($name2 eq 'sp')
-    {
-     $rcd->{sp}->[$ti]=$nn->textContent();
-    } elsif ($name2 eq 'pc')
-    {
-     $rcd->{pc}->[$ti]=$nn->textContent();
-    } elsif ($name2 eq 'cc')
-    {
-     $rcd->{cc}->[$ti]=$nn->textContent();
-    }
-   }
-   $rcd->{street}->[$ti]=\@street;
-  }
- }
- return;
-}
-
-sub parse_disclose ## RFC 4933 §2.9
-{
- my $c=shift;
- my $flag=Net::DRI::Util::xml_parse_boolean($c->getAttribute('flag'));
- my %tmp;
- foreach my $el (Net::DRI::Util::xml_list_children($c))
- {
-  my ($name,$n)=@$el;
-  if ($name=~m/^(name|org|addr)$/)
-  {
-   my $t=$n->getAttribute('type');
-   $tmp{$1.'_'.$t}=$flag;
-  } elsif ($name=~m/^(voice|fax|email)$/)
-  {
-   $tmp{$1}=$flag;
-  }
- }
- return \%tmp;
 }
 
 sub transfer_query
@@ -339,93 +274,26 @@ sub transfer_parse
 sub build_authinfo
 {
  my ($contact,$ns)=@_;
- $ns = 'contact' unless $ns;
+ $ns//='contact';
  my $az=$contact->auth();
  return () unless ($az && ref($az) && exists($az->{pw}));
  return [$ns.':authInfo',[$ns.':pw',$az->{pw}]];
 }
 
-sub build_disclose
-{
- my ($contact,$ns)=@_;
- $ns = 'contact' unless $ns;
- my $d=$contact->disclose();
- return () unless ($d && ref($d));
- my %v=map { $_ => 1 } values(%$d);
- return () unless (keys(%v)==1); ## 1 or 0 as values, not both at same time
- my @d;
- push @d,[$ns.':name',{type=>'int'}] if (exists($d->{name_int}) && !exists($d->{name}));
- push @d,[$ns.':name',{type=>'loc'}] if (exists($d->{name_loc}) && !exists($d->{name}));
- push @d,[$ns.':name',{type=>'int'}],['contact:name',{type=>'loc'}] if exists($d->{name});
- push @d,[$ns.':org',{type=>'int'}] if (exists($d->{org_int}) && !exists($d->{org}));
- push @d,[$ns.':org',{type=>'loc'}] if (exists($d->{org_loc}) && !exists($d->{org}));
- push @d,[$ns.':org',{type=>'int'}],['contact:org',{type=>'loc'}] if exists($d->{org});
- push @d,[$ns.':addr',{type=>'int'}] if (exists($d->{addr_int}) && !exists($d->{addr}));
- push @d,[$ns.':addr',{type=>'loc'}] if (exists($d->{addr_loc}) && !exists($d->{addr}));
- push @d,[$ns.':addr',{type=>'int'}],['contact:addr',{type=>'loc'}] if exists($d->{addr});
- push @d,[$ns.':voice'] if exists($d->{voice});
- push @d,[$ns.':fax']   if exists($d->{fax});
- push @d,[$ns.':email'] if exists($d->{email});
- return [$ns.':disclose',@d,{flag=>(keys(%v))[0]}];
-}
-
 sub build_cdata
 {
  my ($contact,$v,$ns)=@_;
- $ns = 'contact' unless $ns;
- my $hasloc=$contact->has_loc();
- my $hasint=$contact->has_int();
- if ($hasint && !$hasloc && (($v & 5) == $v))
- {
-  $contact->int2loc();
-  $hasloc=1;
- } elsif ($hasloc && !$hasint && (($v & 6) == $v))
- {
-  $contact->loc2int();
-  $hasint=1;
- }
+ $ns//='contact';
 
- my (@postl,@posti,@addrl,@addri);
- _do_locint(\@postl,\@posti,$contact,'name',$ns);
- _do_locint(\@postl,\@posti,$contact,'org',$ns);
- _do_locint(\@addrl,\@addri,$contact,'street',$ns);
- _do_locint(\@addrl,\@addri,$contact,'city',$ns);
- _do_locint(\@addrl,\@addri,$contact,'sp',$ns);
- _do_locint(\@addrl,\@addri,$contact,'pc',$ns);
- _do_locint(\@addrl,\@addri,$contact,'cc',$ns);
- push @postl,[$ns.':addr',@addrl] if @addrl;
- push @posti,[$ns.':addr',@addri] if @addri;
-
- my @d;
- push @d,[$ns.':postalInfo',@postl,{type=>'loc'}] if (($v & 5) && $hasloc); ## loc+int OR loc
- push @d,[$ns.':postalInfo',@posti,{type=>'int'}] if (($v & 6) && $hasint); ## loc+int OR int
+ my @d=Net::DRI::Protocol::EPP::Util::build_postalinfo($contact,$v,$ns);
 
  push @d,Net::DRI::Protocol::EPP::Util::build_tel($ns.':voice',$contact->voice()) if defined($contact->voice());
  push @d,Net::DRI::Protocol::EPP::Util::build_tel($ns.':fax',$contact->fax()) if defined($contact->fax());
  push @d,[$ns.':email',$contact->email()] if defined($contact->email());
  push @d,build_authinfo($contact,$ns);
- push @d,build_disclose($contact,$ns);
+ push @d,Net::DRI::Protocol::EPP::Util::build_disclose($contact->disclose(),$ns);
 
  return @d;
-}
-
-sub _do_locint
-{
- my ($rl,$ri,$contact,$what,$ns)=@_;
- $ns = 'contact' unless $ns;
-
- my @tmp=$contact->$what();
- return unless @tmp;
- if ($what eq 'street')
- {
-  if (defined($tmp[0])) { foreach (@{$tmp[0]}) { push @$rl,[$ns.':street',$_]; } };
-  if (defined($tmp[1])) { foreach (@{$tmp[1]}) { push @$ri,[$ns.':street',$_]; } };
- } else
- {
-  if (defined($tmp[0])) { push @$rl,[$ns.':'.$what,$tmp[0]]; }
-  if (defined($tmp[1])) { push @$ri,[$ns.':'.$what,$tmp[1]]; }
- }
- return;
 }
 
 sub create

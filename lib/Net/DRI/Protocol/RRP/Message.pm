@@ -1,6 +1,6 @@
 ## Domain Registry Interface, RRP Message
 ##
-## Copyright (c) 2005-2008,2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2008,2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2008,2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2008,2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -190,13 +190,13 @@ sub entities
   {
    return unless (exists($self->{entities}));
    $k=lc($k);
-   foreach my $i (keys(%{$self->{entities}})) { next unless (lc($i) eq $k); $k=$i; last; };
+   foreach my $i ( sort { $a cmp $b } keys %{$self->{entities}} ) { next if lc $i ne $k; $k=$i; last; };
    return unless (exists($self->{entities}->{$k}));
    return wantarray()? @{$self->{entities}->{$k}} : join(' ',@{$self->{entities}->{$k}});
   }
  } else ## nothing given => get list of keys
  {
-  return exists($self->{entities})? keys(%{$self->{entities}}) : ();
+  return exists $self->{entities} ? ( sort { $a cmp $b } keys %{$self->{entities}} ) : ();
  }
 }
 

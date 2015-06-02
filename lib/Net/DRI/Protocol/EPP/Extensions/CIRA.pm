@@ -1,6 +1,6 @@
 ## Domain Registry Interface, CIRA (.CA) EPP extensions
 ##
-## Copyright (c) 2010 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -37,7 +37,7 @@ sub setup
 }
 
 sub core_contact_types { return ('admin','tech'); } ## No billing contact in .CA
-sub default_extensions { return qw/CIRA::Domain CIRA::Contact CIRA::Agreement CIRA::Notifications/; }
+sub default_extensions { return qw/CIRA::Domain CIRA::Contact CIRA::Agreement CIRA::Notifications CIRA::IDN/; }
 
 ####################################################################################################
 1;
@@ -72,7 +72,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

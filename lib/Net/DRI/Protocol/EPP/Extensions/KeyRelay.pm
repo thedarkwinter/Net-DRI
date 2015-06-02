@@ -1,6 +1,6 @@
-## Domain Registry Interface, Key Relay Mapping for EPP (draft-gieben-epp-keyrelay-03)
+## Domain Registry Interface, Key Relay Mapping for EPP (draft-ietf-eppext-keyrelay-02)
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::KeyRelay;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -37,11 +38,14 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'keyrelay' => [ 'urn:ietf:params:xml:ns:keyrelay-1.0','keyrelay-1.0.xsd' ],
+ $po->ns({
+           'keyrelay' => [ 'urn:ietf:params:xml:ns:keyrelay-1.0','keyrelay-1.0.xsd' ],
            'secDNS'   => [ 'urn:ietf:params:xml:ns:secDNS-1.1','secDNS-1.1.xsd' ], ## force 1.1 here
          });
  return;
 }
+
+sub implements { return 'http://tools.ietf.org/html/draft-ietf-eppext-keyrelay-02'; }
 
 ####################################################################################################
 
@@ -51,21 +55,21 @@ sub format_duration
  my $duration='P';
  my $tmp='';
 
- my @u=qw/years months weeks days hours minutes seconds/;
- my @d=$d->in_units(@u[0..3]);
+ state $ru=[qw/years months weeks days hours minutes seconds/];
+ my @d=$d->in_units(@$ru[0..3]);
  foreach my $wi (0..$#d)
  {
   next unless $d[$wi] > 0;
-  $tmp.=$d[$wi].uc(substr($u[$wi],0,1));
+  $tmp.=$d[$wi].uc(substr($ru->[$wi],0,1));
  }
  $duration.=$tmp if length $tmp;
  $tmp='';
 
- @d=$d->in_units(@u[4..6]);
+ @d=$d->in_units(@$ru[4..6]);
  foreach my $wi (0..$#d)
  {
   next unless $d[$wi] > 0;
-  $tmp.=$d[$wi].uc(substr($u[4+$wi],0,1));
+  $tmp.=$d[$wi].uc(substr($ru->[4+$wi],0,1));
  }
  $duration.='T'.$tmp if length $tmp;
  return $duration;
@@ -82,12 +86,13 @@ sub command
  my @d;
  push @d,['keyrelay:name',$domain];
 
+ my @dd;
  Net::DRI::Exception::usererr_insufficient_parameters('secdns is mandatory') unless Net::DRI::Util::has_key($rd,'secdns');
  Net::DRI::Exception::usererr_invalid_parameters('secdns value must be an array reference with key data') unless ref $rd->{secdns} eq 'ARRAY' && @{$rd->{secdns}};
- push @d,map { ['keyrelay:keyData',Net::DRI::Protocol::EPP::Extensions::SecDNS::format_keydata($_)] } @{$rd->{secdns}};
+ push @dd,map { ['keyrelay:keyData',Net::DRI::Protocol::EPP::Extensions::SecDNS::format_keydata($_)] } @{$rd->{secdns}};
 
  Net::DRI::Exception::usererr_insufficient_parameters('authInfo is mandatory') unless Net::DRI::Util::has_auth($rd);
- push @d,['keyrelay:authInfo',['domain:pw',$rd->{auth}->{pw},exists $rd->{auth}->{roid} ? { 'roid' => $rd->{auth}->{roid} } : undef]];
+ push @dd,['keyrelay:authInfo',['domain:pw',$rd->{auth}->{pw},exists $rd->{auth}->{roid} ? { 'roid' => $rd->{auth}->{roid} } : undef]];
 
  ## Now optional parameters
  if (Net::DRI::Util::has_key($rd,'expiry'))
@@ -95,17 +100,18 @@ sub command
   my $exp=$rd->{expiry};
   if (Net::DRI::Util::is_class($exp,'DateTime'))
   {
-   push @d,['keyrelay:expiry',['keyrelay:absolute',$exp->strftime('%FT%T.%6N%z')]];
+   push @dd,['keyrelay:expiry',['keyrelay:absolute',$exp->strftime('%FT%T.%6N%z')]];
   } elsif (Net::DRI::Util::is_class($exp,'DateTime::Duration'))
   {
-   push @d,['keyrelay:expiry',['keyrelay:relative',format_duration($exp)]];
+   push @dd,['keyrelay:expiry',['keyrelay:relative',format_duration($exp)]];
   } else {
    Net::DRI::Exception::usererr_invalid_parameters('expiry value must be a DateTime or a DateTime::Duration object');
   }
  }
+ push @d,['keyrelay:keyRelayData',@dd];
 
- my $eid=$mes->command_extension_register(['keyrelay','domain','secDNS'],'command');
- $mes->command_extension($eid,[['keyrelay:keyrelay',@d],['keyrelay:clTRID',$mes->cltrid()]]);
+ $mes->command(['create','keyrelay:create',sprintf('xmlns:keyrelay="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('keyrelay'))]);
+ $mes->command_body(\@d);
 
  return;
 }
@@ -113,9 +119,9 @@ sub command
 sub parse_duration
 {
  my ($po,$dur)=@_;
- my %m1=qw/Y years M months W weeks D days/;
- my %m2=qw/H hours M minutes S seconds/;
- my $rm=\%m1;
+ state $rm1={ qw/Y years M months W weeks D days/ };
+ state $rm2={ qw/H hours M minutes S seconds/ };
+ my $rm=$rm1;
  my $tmp=$dur;
  my @d;
  Net::DRI::Exception::err_assert('Unknown duration format: '.$tmp) unless $tmp=~s/^P//;
@@ -124,7 +130,7 @@ sub parse_duration
   my $token=$1;
   if ($token eq 'T')
   {
-   $rm=\%m2;
+   $rm=$rm2;
    next;
   }
   my ($v,$t)=($token=~m/^(\d+)(\S)$/);
@@ -140,26 +146,48 @@ sub notification_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $data=$mes->get_response($mes->ns('keyrelay'),'response');
+ my $data=$mes->get_response($mes->ns('keyrelay'),'infData');
  return unless defined $data;
 
+ my %r = ( type => 'keyrelay' );
+ foreach my $el (Net::DRI::Util::xml_list_children($data))
+ {
+  my ($name,$node)=@$el;
+  if ($name eq 'name')
+  {
+   $oname=$node->textContent();
+  } elsif ($name eq 'keyRelayData')
+  {
+   _parse_keyrelay($po,$node,\%r);
+  } elsif ($name eq 'crDate')
+  {
+   $r{date}=$po->parse_iso8601($node->textContent());
+  } elsif ($name=~m/^(?:reID|acID)$/)
+  {
+   $r{$name}=$node->textContent();
+  }
+ }
+
+ $r{name}=$oname;
+ $rinfo->{domain}->{$oname}->{relay}=\%r;
+
+ return;
+}
+ 
+sub _parse_keyrelay
+{
+ my ($po, $data, $rd)=@_;
+
+ my $mes=$po->message();
  my $ns=$mes->ns('keyrelay');
- $data=Net::DRI::Util::xml_traverse($data,$ns,'panData');
- return unless defined $data;
 
- my %r;
  my @secdns;
  foreach my $el (Net::DRI::Util::xml_list_children($data))
  {
   my ($name,$node)=@$el;
   if ($name eq 'name')
   {
-   $oname=lc $node->textContent();
-   $rinfo->{domain}->{$oname}->{action}='review';
-   $rinfo->{domain}->{$oname}->{result}=Net::DRI::Util::xml_parse_boolean($node->getAttribute('paResult'));
-  } elsif ($name eq 'paDate')
-  {
-   $rinfo->{domain}->{$oname}->{date}=$po->parse_iso8601($node->textContent());
+   $rd->{name}=lc $node->textContent();
   } elsif ($name eq 'keyData')
   {
    my %n;
@@ -167,26 +195,22 @@ sub notification_parse
    push @secdns,\%n;
   } elsif ($name eq 'authInfo')
   {
-   $r{auth}={pw => Net::DRI::Util::xml_child_content($node,$mes->ns('domain'),'pw')};
+   $rd->{auth}={pw => Net::DRI::Util::xml_child_content($node,$mes->ns('domain'),'pw')};
   } elsif ($name eq 'expiry')
   {
    my $exp;
    if (defined($exp=Net::DRI::Util::xml_child_content($node,$ns,'absolute')))
    {
-    $r{expiry}=$po->parse_iso8601($exp);
+    $rd->{expiry}=$po->parse_iso8601($exp);
    } elsif (defined($exp=Net::DRI::Util::xml_child_content($node,$ns,'relative')))
    {
-    $r{expiry}=parse_duration($po,$exp);
+    $rd->{expiry}=parse_duration($po,$exp);
    }
-  } elsif ($name=~m/^(?:reID|acID)$/)
-  {
-   $r{$name}=$node->textContent();
   }
  }
 
- $r{secdns}=\@secdns;
- $rinfo->{domain}->{$oname}->{keyrelay}=\%r;
- 
+ $rd->{secdns}=\@secdns;
+
  return;
 }
 
@@ -199,7 +223,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::KeyRelay - EPP Key Relay mapping (draft-gieben-epp-keyrelay-03) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::KeyRelay - EPP Key Relay mapping (draft-ietf-eppext-keyrelay-02) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -223,7 +247,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2013,2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -2,7 +2,7 @@
 #
 #
 # A Net::DRI example
-# See also t/606eurid_epp.t
+# See also t/Net/DRI/Protocol/EPP/Extensions/EURid.t
 
 use utf8;
 use strict;

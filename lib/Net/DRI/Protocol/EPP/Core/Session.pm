@@ -117,7 +117,8 @@ sub parse_greeting
      push @{$tmp{extensions_announced}},map { $_->textContent() } grep { $_->getName() =~ m/extURI$/ } $cc->getChildNodes();
     }
    }
-   # TRIM the .xsd file extension off the end of e.g.  urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd
+   # trim the trailing .xsd file extension e.g.  urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd
+   # t/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.t provides example of failure on this issue 
    s/\s+.*xsd$// for @{$tmp{objects}};
    s/\s+.*xsd$// for @{$tmp{extensions_announced}};
   } elsif ($n eq 'dcp') ## Does anyone really use this data ??
@@ -209,7 +210,8 @@ sub login
  ## TODO: allow choice of language if multiple choices (like fr+en in .CA) ?
  $tmp=Net::DRI::Util::has_key($rdata,'lang') ? $rdata->{lang} : $sdata->{lang};
  Net::DRI::Exception::usererr_insufficient_parameters('lang') unless defined $tmp;
- $tmp = ((grep $_ eq 'en', @{$tmp}) ? 'en' : $tmp->[0]) if ref $tmp eq 'ARRAY'; # use 'en' by default if the server supports it, otherwise take the first it announced
+ # use 'en' by default if the server supports it, otherwise take the first it announced
+ $tmp = ((grep $_ eq 'en', @{$tmp}) ? 'en' : $tmp->[0]) if ref $tmp eq 'ARRAY';
  Net::DRI::Exception::usererr_invalid_parameters('lang') unless Net::DRI::Util::xml_is_language($tmp);
  push @o,['lang',$tmp];
 

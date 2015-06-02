@@ -1,6 +1,6 @@
 ## Domain Registry Interface, "Universal Postal Union" Registry Driver for .POST
 ##
-## Copyright (c) 2012-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2012-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2012-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -73,7 +73,7 @@ sub new
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return 'UPU'; }
-sub tlds          { return (qw/post edu.post org.post com.post/, map { lc($_).'.post' } keys %Net::DRI::Util::CCA2); }
+sub tlds          { return (qw/post edu.post org.post com.post/, map { lc($_).'.post' } sort { $a cmp $b } keys %Net::DRI::Util::CCA2); }
 sub object_types  { return qw/domain ns contact/; }
 sub profile_types { return qw/epp whois/; }
 

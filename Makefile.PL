@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use ExtUtils::MakeMaker;
+use ExtUtils::MakeMaker 6.64;
 
 WriteMakefile(
     NAME                => 'Net::DRI',
@@ -20,7 +20,6 @@ WriteMakefile(
         'IO::Socket::SSL' => '1.31',
         'Email::Valid' => 0,
         'XML::LibXML' => '1.99',
-        'Net::SAML2::XML::Sig' => '0.22',
         'Module::Load' => 0,
         'Hash::KeyMorpher' => '0.09',
 	      'Net::IDN::Encode' => 0,
@@ -28,14 +27,19 @@ WriteMakefile(
 	      'Locale::Script' => 0,
 	      'JSON' => 0,
     },
-    BUILD_REQUIRES => {
+    TEST_REQUIRES => {
         'Test::More' => 0,
         'Test::LongString' => 0,
 
     },
     EXE_FILES => [ 'bin/drish' ],
-    MIN_PERL_VERSION    => '5.8.0', ## as reported by perlver from Perl::MinimumVersion
+    MIN_PERL_VERSION    => '5.10.0', ## as reported by perlver from Perl::MinimumVersion
     META_ADD            => { optional_features => {
+                                                   email => { description => 'Support of transport by emails',
+                                                              requires => {
+                                                                           'Net::SMTP' => 0,
+                                                                          },
+                                                            },
                                                    webservices => { description => 'Support of webservices for the following registry drivers: Gandi, BookMyName, OVH',
                                                                     requires => {
                                                                                  'XMLRPC::Lite' => 0,
@@ -54,7 +58,7 @@ WriteMakefile(
                                                                             'Digest::MD5' => 0,
                                                                            },
                                                              },
-                                                   iris => { description => 'Support of IRIS inflation/deflation & DNS SRV records for .DE and .FR IRIS DCHK service',
+                                                   iris => { description => 'Support of IRIS inflation/deflation & DNS SRV records for .FR IRIS DCHK service',
                                                              requires => {
                                                                           'IO::Uncompress::RawInflate' => 0,
                                                                           'IO::Compress::RawDeflate' => 0,
@@ -63,8 +67,11 @@ WriteMakefile(
                                                            },
                                                    smd => { description => 'Support for ICANN TMCH signed mark content (new gTLDs)',
                                                             requires => {
-                                                                         'Net::SAML2' => 0,
                                                                          'MIME::Base64' => 0,
+                                                                         'Crypt::OpenSSL::X509' => 0,
+                                                                         'Crypt::OpenSSL::RSA' => 0,
+                                                                         'Digest::SHA' => 0,
+                                                                         'XML::LibXML::XPathContext' => 0,
                                                                         },
                                                           },
                                                   },
@@ -75,4 +82,5 @@ WriteMakefile(
                            },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Net-DRI-*' },
+    test                => { TESTS => 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t t/*/*/*/*/*.t t/*/*/*/*/*/*.t t/*/*/*/*/*/*/*.t' },
 );

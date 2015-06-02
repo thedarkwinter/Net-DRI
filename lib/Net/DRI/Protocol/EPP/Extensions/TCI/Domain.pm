@@ -58,7 +58,7 @@ sub create
  my $def=$epp->default_parameters();
  if ($def && (ref($def) eq 'HASH') && exists($def->{domain_create}) && (ref($def->{domain_create}) eq 'HASH'))
  {
-  $rd={} unless ($rd && (ref($rd) eq 'HASH') && keys(%$rd));
+  $rd={} unless ($rd && ref $rd eq 'HASH' && keys %$rd);
   while(my ($k,$v)=each(%{$def->{domain_create}}))
   {
    next if exists($rd->{$k});
@@ -193,7 +193,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-Copyright (c) 2011-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2011-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

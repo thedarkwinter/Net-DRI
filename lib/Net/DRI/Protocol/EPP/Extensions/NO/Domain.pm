@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .NO Domain extensions
 ##
-## Copyright (c) 2008-2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+## Copyright (c) 2008-2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
 ##                    All rights reserved.
 ##
@@ -54,7 +54,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+Copyright (c) 2008-2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
 All rights reserved.
 
@@ -126,7 +126,7 @@ sub applicant_dataset {
     my @e;
     my $eid;
 
-    return unless ( $rd && defined($rd->{applicantdataset}) && keys(%{$rd->{applicantdataset}}) );
+    return unless ( ref $rd eq 'HASH' && defined $rd->{applicantdataset} && keys %{$rd->{applicantdataset}} );
 
     return unless ($command eq 'create' || $command eq 'update');
 
@@ -243,8 +243,7 @@ sub delete { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
     my $dfr = $rd->{deletefromregistry};
     my $fs  = $rd->{facets};
 
-    return unless ( ( defined($ddate) || defined($dfd) || defined($dfr) || defined($fs) ) && (
-			$ddate || $dfd || $dfr || $fs ) );
+    return unless ( ( defined($dfd) || defined($dfr) || defined($fs) ) && ( $dfd || $dfr || $fs ) );
 
     if (defined($dfd) && ref($dfd)) { 
          Net::DRI::Util::check_isa($dfd,'DateTime');

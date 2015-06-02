@@ -1,6 +1,6 @@
 ## Domain Registry Interface, HTTP/HTTPS Transport
 ##
-## Copyright (c) 2008-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2011,2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -14,17 +14,16 @@
 
 package Net::DRI::Transport::HTTP;
 
-use base qw(Net::DRI::Transport);
 use strict;
 use warnings;
 
-use Time::HiRes ();
-use LWP::UserAgent 6.02;
-
+use base qw(Net::DRI::Transport);
 
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
+use LWP::UserAgent 6.02;
+use Time::HiRes ();
 
 =pod
 
@@ -85,7 +84,7 @@ similar array; it can be used to filter out some services from those given by th
 (optional) a callback (code ref) executed after each exchange with the registry, being called with the following parameters: the transport object,
 the phase (1 for greeting+login, 2 for all normal operations, 3 for logout), the count (if we retried multiple times to send the same message),
 the message sent (HTTP::Request object) and the response received (HTTP::Response object). This can be used to verify/diagnose SSL details,
-see example in file t/704opensrs_xcp_live.t
+see example in file t/live/opensrs_xcp.t
 
 =head2 local_host
 
@@ -109,7 +108,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2011,2013,2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

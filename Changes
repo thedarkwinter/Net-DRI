@@ -1,6 +1,7 @@
 Net::DRI changelog from newest to oldest changes
 
-0.9-tdw-pre
+0.9-tdw-pre 2015-06-02 DEVELOPMENT RELEASE
+!! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!
 + TCI nGTLD Support (Thanks to patches from Dmitry Belyavsky and Paulo Jorge)
 + .MX EPP support, from Paulo Jorge
 + .PL Polling updates, from Paulo Jorge
@@ -201,6 +202,68 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 + Added Protocol for TMDB which supports SMDRL and CNIS only
 + Added TMDB DRD using TMDB.pm
 
+0.96_07 2015-05-25 DEVELOPMENT RELEASE
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+
++ bump minimum perl version required to 5.10.0 (using // and state operator)
++ ExtUtils::MakeMaker version 6.64 at least is needed
++ Protocol/EPP/Extensions/ResellerInfo : new module to implement draft-zhou-eppext-reseller-00
++ Protocol/EPP/Extensions/ResellerObject : new module to implement draft-zhou-eppext-reseller-mapping-00
++ Protocol/EPP/Extensions/ServiceMessage : new module to implement draft-mayrhofer-eppext-servicemessage-00
++ Protocol/EPP/Extensions/CIRA/IDN : new module to implement draft-wilcox-cira-idn-eppext-00
++ Protocol/EPP/Extensions/AllocationToken : new module to implement draft-gould-allocation-token-01
++ Protocol/EPP/Extensions/KeyRelay : updated to draft draft-ietf-eppext-keyrelay-02
++ Protocol/EPP/Extensions/IDN : updated to draft draft-ietf-eppext-idnmap-02
++ Protocol/EPP/Extensions/ICANN/MarkSignedMark : updated to draft draft-ietf-eppext-tmch-smd-01
++ Protocol/EPP/Extensions/ICANN/MarkSignedMark : add full local XMLsec validation (for that you need: Crypt::OpenSSL::X509 Crypt::OpenSSL::RSA Digest::SHA XML::LibXML::XPathContext)
+= various updates to simplify operations, specifically tests, and convert to more modern perl
+= sort all keys of associative arrays, to take into account randomization in newer perl versions
+= Util : update list of country codes
+= Protocol::_load() : allow to remove classes to load from default list of extensions (see examples of use in various test files)
+= Protocol/EPP/Extensions/VeriSign : load NameStore by default (as suggested by Michael Holloway)
+= Protocol/EPP/Extensions/ISPAPI : handling updates (patch by Anthony Schneider)
+= reorganization of tests under t/ : each test has the same name as the module it tests, when possible
+= DRD/ICANN::ALLOW2 updates (taking into account new gTLDs)
+= Protocol/EPP/Core/RegistryMessage : forward data about notification messages too
+- Protocol/RRP was loading EPP extensions instead of RRP ones
+- Protocol/EPP/Extensions/COOP/Contact : bugfix in sprintf use
+- Protocol/EPP/Extensions/VeriSign/ZoneManagement : fix typo in error message (ttl instead of tll)
+- Protocol/EPP/Core/Domain & other modules parsing domain:info replies : do not duplicate contacts with same id, make sure to re-use the objects
+
+0.96_06 2014-09-10 DEVELOPMENT RELEASE
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+
++ better Perl Kwalitee support (less POD errors, better list of files to skip, etc…)
++ Nominet : various updates from registry, switching to standard EPP (patch by Michael Holloway, with minor changes)
++ Protocol/EPP/Extensions/IDN : upgrade to draft-obispo-epp-idn-03
+= DRD/PL : add waw in list of TLD (cherry-pick of ea06a142d0ed238b2722798a2c28ac543b10b811 from Jimmy Bergman)
+= DRD/OpenSRS : update list of supported TLDs
+= DRD/DENIC : remove D-CHK support as service was removed by registry
+= Protocol/EPP/Connection : better handling of connectivity issues (patch by Michael Holloway)
+= Protocol/EPP/Extensions/KeyRelay : implement draft version -03
+= Protocol/EPP/Extensions/CZ : version bump at the FRED registry (cherry-pick of c909ead7caed43f6f0aeff2edd0ddff28b72e5d4 and f367c5c71653652134f595cc841cca0f46ce7a3f from Tonnerre Lombard)
+= Protocol/EPP/Extensions/SWITCH : load GracePeriod extension by default (cherry-pick of 620096e6dd97c57baf90653f30e016d478ac2780 from Tonnerre Lombard)
+= Protocol/EPP/Message + Protocol/OpenSRS/XCP/Domain : make date parsing more forgiving (cherry-pick of 604c714c7245f3abbc88a6ac585344ea3d3e9fd2 from Jimmy Bergman)
+= Protocol/EPP/Extensions/PL : add SecDNS by default (cherry-pick of 760a32b65a4eadc52c4cf97fec1291e4566082bd from Jimmy Bergman)
+= Protocol/EPP/Extensions/BIZ : add SecDNS by default (cherry-pick of 6bc4a3c87d3ceb9999c8aba5f7a865f3f6a32072 from Jimmy Bergman)
+= Protocol/OpenSRS/XCP/Domain : allow f_bypass_confirm (cherry-pick of 99362c0e39acfe5e506f89ec5de3484cb0cd8095 from Jimmy Bergman)
+= Protocol/EPP/Extensions/ISPAPI : add SecDNS by default (bugreport by Tobias Mädel)
+= Protocol/EPP/Extensions/ICANN/MarkSignedMark : upgrade to draft-lozano-tmch-smd-03
+= Protocol/EPP/Extensions/SIDN : add KeyRelay extension by default
+= .PT bugfixes (cherry-pick from a9ca927b54d993f5bf8ae440e376ea9acabd0501 by Jimmy Bergman)
+= Fix IDN support for .BIZ (cherry-pick of dc8ab4e0cabca57bddc1878cbda948a4107faaf6 from Jimmy Bergman, and adaptations)
+= EURid updates for registry changes (patch by Michael Kefeder)
+= AFNIC : completely remove support for emails, as service not offered anymore by registry
+- Protocol/EPP/Extensions/FCCN/Domain : pass perlcritic level 4
+- Data/Contact/OpenSRS : BUGFIX in regex found with perl 5.17 ( http://www.cpantesters.org/cpan/report/3456cc8e-b24c-11e2-b2b7-fe16c1508286 )
+- DRD/ASIA : fix whois server hostname (cherry-pick of e6a82f7f16a628959ff0ca6bdfad5e81bce64ec8 from Tonnerre Lombard)
+- DRD/{TCI,OpenSRS} : bugfix in list of object_types
+- Shell : better protection during dates handling
+
 0.96_05 2013-05-01 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
@@ -213,7 +276,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 + Protocol/EPP/Extensions/KeyRelay : new EPP extension implementing draft-gieben-epp-keyrelay-02
 + Protocol/EPP/Extensions/AusRegistry/Variant : new EPP extension (used in some new gTLDs applications)
 + Protocol/EPP/Extensions/AusRegistry/IDN : new EPP extension (used in some new gTLDs applications)
-+ Protocol/EPP/Extensions/AusRegistry/KeyValye : new EPP extension (used in some new gTLDs applications)
++ Protocol/EPP/Extensions/AusRegistry/KeyValue : new EPP extension (used in some new gTLDs applications)
 + Protocol/EPP/Extensions/IDN : implementation of draft-obispo-epp-idn-02 (used in some new gTLDs applications)
 + Protocol/EPP/Extensions/VeriSign/Balance : new EPP extension (https://www.verisigninc.com/assets/epp-balance-mapping.pdf)
 + DRD/UPU : .POST registry
@@ -237,8 +300,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 = Data/Contact/NO : added support for the anonymousPersonIdentifier
 = Data/Contact/NO : fixed a bug introduced in 0.96
 = .NO Result.pm : use a new API method available in 0.96: Also return conditions by the new add_to_extra_info method
-= .NO Host.pm : modified to support multiple host contacts, as the host schema says (Any restrictions in number is from now on up to registry policy. Note that the host_info() now returns an array for the host c
-ontact(s), so clients may need to be adapted.)
+= .NO Host.pm : modified to support multiple host contacts, as the host schema says (Any restrictions in number is from now on up to registry policy. Note that the host_info() now returns an array for the host contact(s), so clients may need to be adapted.)
 = t/633norid_epp.t : adjusted to the host change
 = eg/epp_client_no.pl : adjusted to the host change
 = Logging::Syslog : removed concatenation of facility to priority as it does not seem to work

@@ -228,7 +228,7 @@ sub info_parse
    $contact->$name(Net::DRI::Protocol::EPP::Util::parse_tel($c));
   } elsif ($name eq 'postalInfo')
   {
-   Net::DRI::Protocol::EPP::Core::Contact::parse_postalinfo($po,$c,\%cd);
+   Net::DRI::Protocol::EPP::Util::parse_postalinfo($po,$c,\%cd);
   } elsif ($name eq 'authInfo') ## we only try to parse the authInfo version defined in the RFC, other cases are to be handled by extensions
   {
    $contact->auth({pw => Net::DRI::Util::xml_child_content($c,$mes->ns('contact'),'pw')});

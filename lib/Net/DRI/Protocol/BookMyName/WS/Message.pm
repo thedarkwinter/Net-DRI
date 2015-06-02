@@ -1,6 +1,6 @@
 ## Domain Registry Interface, BookMyName Web Services Message
 ##
-## Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -130,7 +130,7 @@ sub result_status
  my ($op,$rc,$rv)=($self->operation(),$self->retcode(),$self->retval());
  my $ok=$self->is_success();
  my $k=$rc.','.$rv;
- my $eppcode=(exists $CODES{$op} && ref $CODES{$op} eq 'HASH' && keys(%{$CODES{$op}}) && exists $CODES{$op}->{$k})? $CODES{$op}->{$k} : 'COMMAND_FAILED';
+ my $eppcode=(exists $CODES{$op} && ref $CODES{$op} eq 'HASH' && exists $CODES{$op}->{$k})? $CODES{$op}->{$k} : 'COMMAND_FAILED';
  return Net::DRI::Protocol::ResultStatus->new('bookmyname_ws',100*$rc+$rv,$ok ? 'COMMAND_SUCCESSFUL' : $eppcode,$ok,'retcode='.$rc.' retval='.$rv,'en');
 }
 

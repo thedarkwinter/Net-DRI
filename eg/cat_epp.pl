@@ -2,7 +2,7 @@
 #
 #
 # A Net::DRI example
-# See also t/613cat_epp.t
+# See also t/Net/DRI/Protocol/EPP/Extensions/CAT.t
 
 use utf8;
 use strict;

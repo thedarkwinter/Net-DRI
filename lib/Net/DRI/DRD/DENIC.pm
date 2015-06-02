@@ -1,7 +1,7 @@
 ## Domain Registry Interface, DENIC policies
 ##
 ## Copyright (c) 2007,2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
-##           (c) 2010,2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2010,2011,2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2012-2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -54,7 +54,7 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-          (c) 2010,2011 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2010,2011,2014 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2012 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 

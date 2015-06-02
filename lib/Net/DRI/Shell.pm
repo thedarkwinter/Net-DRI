@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Shell interface
 ##
-## Copyright (c) 2008-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -702,7 +702,7 @@ sub complete
 
  if ($line=~m/^domain_\S+\s+\S*$/)
  {
-  my @p=grep { /^$text/ } keys(%{$ctx->{completion}->{domains}});
+  my @p=sort { $a cmp $b } grep { /^$text/ } keys(%{$ctx->{completion}->{domains}});
   if (defined $ctx->{dri}->registry())
   {
    my @tlds=$ctx->{dri}->registry()->driver()->tlds();
@@ -887,7 +887,7 @@ sub process
   }
  }
 
- foreach my $k (grep { /\./ } keys(%p))
+ foreach my $k (sort { $a cmp $b } grep { /\./ } keys %p)
  {
   my ($tk,$sk)=split(/\./,$k,2);
   $p{$tk}={} unless exists($p{$tk});
@@ -1142,7 +1142,7 @@ sub do_show
  {
   my $rp=$ctx->{dri}->available_registries_profiles(1);
   $m='';
-  foreach my $reg (sort(keys(%$rp)))
+  foreach my $reg (sort { $a cmp $b } keys %$rp)
   {
    $m.=$reg.': '.join(' ',@{$rp->{$reg}})."\n";
   }
@@ -1165,7 +1165,7 @@ sub do_show
  } elsif ($ra->[0] eq 'config')
  {
   $m='';
-  foreach my $k (sort(keys(%{$ctx->{config}})))
+  foreach my $k (sort { $a cmp $b } keys %{$ctx->{config}})
   {
    $m.=$k.'='.$ctx->{config}->{$k}."\n";
   }
@@ -1185,7 +1185,7 @@ sub do_get_info_all
  my ($ctx,$cmd,$ra,$rh)=@_;
  my $rp=$ctx->{dri}->get_info_all(@$ra);
  my $m='';
- foreach my $k (sort(keys(%$rp)))
+ foreach my $k (sort { $a cmp $b } keys %$rp)
  {
   $m.=$k.': '.pretty_string($rp->{$k},0)."\n";
  }
@@ -1258,9 +1258,9 @@ sub do_domain_update
  my $dom=shift(@$ra);
  my $toc=$ctx->{dri}->local_object('changes');
  my ($radd,$rdel,$rset)=build_update($ctx,$rh);
- foreach my $k (keys %$radd) { $toc->add($k,$radd->{$k}); }
- foreach my $k (keys %$rdel) { $toc->del($k,$rdel->{$k}); }
- foreach my $k (keys %$rset) { $toc->set($k,$rset->{$k}); }
+ foreach my $k (sort { $a cmp $b } keys %$radd) { $toc->add($k,$radd->{$k}); }
+ foreach my $k (sort { $a cmp $b } keys %$rdel) { $toc->del($k,$rdel->{$k}); }
+ foreach my $k (sort { $a cmp $b } keys %$rset) { $toc->set($k,$rset->{$k}); }
  return wrap_command_domain($ctx,$cmd,$dom,$toc);
 }
 
@@ -1358,9 +1358,9 @@ sub do_host
   my $h=shift(@$ra);
   my $toc=$ctx->{dri}->local_object('changes');
   my ($radd,$rdel,$rset)=build_update($ctx,$rh);
-  if (keys %$radd) { foreach my $k (keys %$radd) { if ($k eq 'ip') { $radd->{$k}=build_hosts($ctx,[$h,ref $radd->{$k} ? @{$radd->{$k}} : ($radd->{$k})]); } $toc->add($k,$radd->{$k}); } }
-  if (keys %$rdel) { foreach my $k (keys %$rdel) { if ($k eq 'ip') { $rdel->{$k}=build_hosts($ctx,[$h,ref $rdel->{$k} ? @{$rdel->{$k}} : ($rdel->{$k})]); } $toc->del($k,$rdel->{$k}); } }
-  if (keys %$rset) { foreach my $k (keys %$rset) { $toc->set($k,$rset->{$k}); } }
+  if (keys %$radd) { foreach my $k (sort { $a cmp $b } keys %$radd) { if ($k eq 'ip') { $radd->{$k}=build_hosts($ctx,[$h,ref $radd->{$k} ? @{$radd->{$k}} : ($radd->{$k})]); } $toc->add($k,$radd->{$k}); } }
+  if (keys %$rdel) { foreach my $k (sort { $a cmp $b } keys %$rdel) { if ($k eq 'ip') { $rdel->{$k}=build_hosts($ctx,[$h,ref $rdel->{$k} ? @{$rdel->{$k}} : ($rdel->{$k})]); } $toc->del($k,$rdel->{$k}); } }
+  if (keys %$rset) { foreach my $k (sort { $a cmp $b } keys %$rset) { $toc->set($k,$rset->{$k}); } }
   $ctx->{completion}->{hosts}->{$rset->{'name'}}=time() if exists $rset->{'name'};
   @p=($h,$toc);
  } else
@@ -1403,8 +1403,8 @@ sub do_contact
    build_contact($ctx,$c2,$rset);
    $toc->set('info',$c2);
   }
-  if (keys %$radd) { foreach my $k (keys %$radd) { $toc->add($k,$radd->{$k}); } }
-  if (keys %$rdel) { foreach my $k (keys %$rdel) { $toc->del($k,$rdel->{$k}); } }
+  if (keys %$radd) { foreach my $k (sort { $a cmp $b } keys %$radd) { $toc->add($k,$radd->{$k}); } }
+  if (keys %$rdel) { foreach my $k (sort { $a cmp $b } keys %$rdel) { $toc->del($k,$rdel->{$k}); } }
   @p=($toc);
  } else
  {
@@ -1583,8 +1583,8 @@ sub build_update
  my (%add,%rem);
 
  ## Some normalizations
- foreach my $k (grep { /^[+-]?status$/ } keys(%$rd)) { $rd->{$k}=build_status($ctx,ref $rd->{$k} ? $rd->{$k} : [ $rd->{$k} ]); }
- foreach my $k (grep { /^[+-]?ns$/ }     keys(%$rd)) { $rd->{$k}=build_hosts($ctx,[ map { split(/\s+/,$_) } ref $rd->{$k} ? @{$rd->{$k}} : ($rd->{$k})]); }
+ foreach my $k (sort { $a cmp $b } grep { /^[+-]?status$/ } keys(%$rd)) { $rd->{$k}=build_status($ctx,ref $rd->{$k} ? $rd->{$k} : [ $rd->{$k} ]); }
+ foreach my $k (sort { $a cmp $b } grep { /^[+-]?ns$/ }     keys(%$rd)) { $rd->{$k}=build_hosts($ctx,[ map { split(/\s+/,$_) } ref $rd->{$k} ? @{$rd->{$k}} : ($rd->{$k})]); }
  build_auth($rd);
 
  my @ct=qw/admin tech billing/; ## How to retrieve non core contact types ?
@@ -1593,7 +1593,7 @@ sub build_update
  foreach my $op (qw/+ -/)
  {
   my %c;
-  foreach my $k (grep { /^[${op}](?:${ctr})$/ } keys(%$rd) )
+  foreach my $k (sort { $a cmp $b } grep { /^[${op}](?:${ctr})$/ } keys %$rd )
   {
    $c{substr($k,1)}=$rd->{$k};
    delete($rd->{$k});
@@ -1604,12 +1604,12 @@ sub build_update
  $rd->{registrant}=build_contact($ctx,$ctx->{dri}->local_object('contact'),{srid => $rd->{registrant}}) if exists $rd->{registrant};
 
  ## Now split in two hashes
- foreach my $k (grep { /^\+/ } keys(%$rd))
+ foreach my $k (sort { $a cmp $b } grep { /^\+/ } keys %$rd)
  {
   $add{substr($k,1)}=$rd->{$k};
   delete($rd->{$k});
  }
- foreach my $k (grep { /^-/ } keys(%$rd))
+ foreach my $k (sort { $a cmp $b } grep { /^-/ } keys %$rd)
  {
   $rem{substr($k,1)}=$rd->{$k};
   delete($rd->{$k});
@@ -1632,7 +1632,7 @@ sub pretty_string
   return $vi;
  }
  return join(' ',@$v) if (ref($v) eq 'ARRAY');
- return join(' ',map { $_.'='.$v->{$_} } keys(%$v)) if (ref($v) eq 'HASH');
+ return join(' ',map { $_.'='.$v->{$_} } sort { $a cmp $b } keys(%$v)) if (ref($v) eq 'HASH');
  return ($full? "Ns:\n": '').$v->as_string(1) if ($v->isa('Net::DRI::Data::Hosts'));
  return ($full? "Contact:\n" : '').$v->as_string() if ($v->isa('Net::DRI::Data::Contact'));
  if ($v->isa('Net::DRI::Data::ContactSet'))
@@ -1655,13 +1655,13 @@ sub dump_info
 {
  my ($ctx,$rh)=@_;
  my @r;
- foreach my $k1 (sort(keys(%$rh)))
+ foreach my $k1 (sort { $a cmp $b } keys %$rh)
  {
-  foreach my $k2 (sort(keys(%{$rh->{$k1}})))
+  foreach my $k2 (sort { $a cmp $b } keys %{$rh->{$k1}})
   {
    next if ($k1 eq 'session' && $k2 eq 'exchange' && $ctx->{config}->{verbose}==0);
    push @r,$k1.','.$k2;
-   foreach my $k3 (sort(keys(%{$rh->{$k1}->{$k2}})))
+   foreach my $k3 (sort { $a cmp $b } keys %{$rh->{$k1}->{$k2}})
    {
     push @r,"\t".$k3.': '.pretty_string($rh->{$k1}->{$k2}->{$k3},0);
    }

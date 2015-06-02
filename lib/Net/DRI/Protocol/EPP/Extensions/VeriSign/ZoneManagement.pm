@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign Zone Management EPP extension
 ##
-## Copyright (c) 2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2012,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -64,7 +64,7 @@ sub _generate_rrecs
   }
   if (Net::DRI::Util::has_key($r,'ttl'))
   {
-   Net::DRI::Exception::usererr_invalid_parameters('In RR, for key "tll", value must be an XML integeter, if provided') unless Net::DRI::Util::verify_int($r->{ttl});
+   Net::DRI::Exception::usererr_invalid_parameters('In RR, for key "ttl", value must be an XML integeter, if provided') unless Net::DRI::Util::verify_int($r->{ttl});
    push @rr,['zoneMgt:ttl',$r->{ttl}];
   }
   Net::DRI::Exception::usererr_insufficient_parameters('In RR, "rdata" key must exist') unless Net::DRI::Util::has_key($r,'rdata');
@@ -175,7 +175,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2012,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

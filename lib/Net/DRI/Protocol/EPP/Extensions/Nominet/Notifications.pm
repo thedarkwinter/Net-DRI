@@ -19,6 +19,7 @@ use strict;
 use warnings;
 
 use Net::DRI::Util;
+use Net::DRI::Protocol::EPP::Util;
 
 =pod
 
@@ -48,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2009,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2009,2013,2015 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
@@ -81,7 +82,7 @@ sub parse_contact
  return unless $id;
  my $cont = $po->create_local_object('contact')->srid($id);
  my $pi = {};
- Net::DRI::Protocol::EPP::Core::Contact::parse_postalinfo($po,$data->getChildrenByTagNameNS($ns,'postalInfo')->shift(),$pi);
+ Net::DRI::Protocol::EPP::Util::parse_postalinfo($po,$data->getChildrenByTagNameNS($ns,'postalInfo')->shift(),$pi);
  foreach ($cont->attributes()) {
    next if $_ eq 'srid';
    $cont->$_(Net::DRI::Util::xml_child_content($data,$ns,$_));

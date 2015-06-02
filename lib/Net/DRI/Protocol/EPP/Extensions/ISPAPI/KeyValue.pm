@@ -1,6 +1,6 @@
 ## Domain Registry Interface, ISPAPI (aka HEXONET) Key-Value EPP extensions
 ##
-## Copyright (c) 2010,2013 HEXONET GmbH, http://www.hexonet.net,
+## Copyright (c) 2010,2013-2015 HEXONET GmbH, http://www.hexonet.net,
 ##                    Jens Wagner <info@hexonet.net>
 ## All rights reserved.
 ##
@@ -50,7 +50,7 @@ Jens Wagner, E<lt>jwagner@hexonet.netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2013 HEXONET GmbH, E<lt>http://www.hexonet.netE<gt>,
+Copyright (c) 2010,2013-2015 HEXONET GmbH, E<lt>http://www.hexonet.netE<gt>,
 Alexander Biehl <abiehl@hexonet.net>,
 Jens Wagner <jwagner@hexonet.net>
 All rights reserved.
@@ -73,7 +73,7 @@ sub register_commands
           check => [ \&create_keyvalue, \&parse_keyvalue ],
           info => [ \&create_keyvalue, \&parse_keyvalue ],
           create => [ \&create_keyvalue, \&parse_keyvalue ],
-          update => [ \&create_keyvalue, \&parse_keyvalue ],
+          update => [ \&create_keyvalue_update, \&parse_keyvalue ],
           transfer_request => [ \&create_keyvalue, \&parse_keyvalue ],
          );
  my %api=(
@@ -104,7 +104,7 @@ sub create_keyvalue_extension
 
  my @kv = ();
 
- foreach my $key ( keys %{$hash} ) {
+ foreach my $key ( sort { $a cmp $b } keys %{$hash} ) {
   my $value = $hash->{$key};
   if ( defined $value ) {
    push @kv, ['keyvalue:kv', { key => $key, value => $value }];
@@ -127,6 +127,17 @@ sub create_keyvalue
  return unless Net::DRI::Util::has_key($rd,'keyvalue');
 
  return create_keyvalue_extension($epp, $rd->{keyvalue});
+}
+
+
+sub create_keyvalue_update
+{
+ my ($epp,$domain,$todo) = @_;
+ my $mes=$epp->message();
+
+ return unless $todo->set('keyvalue');
+
+ return create_keyvalue_extension($epp, $todo->set('keyvalue'));
 }
 
 

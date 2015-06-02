@@ -201,14 +201,7 @@ sub validate
  my $q=$self->qualification();
  if (defined $q)
  {
-  if (ref $q eq 'HASH')
-  {
-   my @k=keys %$q;
-   push @errs,'qualification' if grep { ! /^(?:identification|reachable)$/ } @k;
-  } else
-  {
-   push @errs,'qualification';
-  }
+  push @errs,'qualification' if ref $q ne 'HASH' || grep { ! /^(?:identification|reachable)$/ } keys %$q;
  }
 
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;

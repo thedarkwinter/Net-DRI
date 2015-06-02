@@ -89,7 +89,7 @@ sub validate
  my ($self,$change)=@_;
  $change||=0;
  my @errs;
- 
+
  $self->auth({'pw' => ''});
  $self->SUPER::validate($change);
 

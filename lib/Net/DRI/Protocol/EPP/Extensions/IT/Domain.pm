@@ -149,7 +149,7 @@ sub parse
                                 $cont->{$name2} = $po->parse_iso8601($c2->textContent()) if $name2 =~ /Date$/;
                                 $cont->{$name2} = Net::DRI::Protocol::EPP::Util::parse_tel($c2) if $name2 =~ /^voice|fax$/;
                                 $cont->{status} = $po->create_local_object('status')->add(Net::DRI::Protocol::EPP::Util::parse_node_status($c2)) if $name2 eq 'status';
-                                Net::DRI::Protocol::EPP::Core::Contact::parse_postalinfo($po,$c2,\%pi) if $name2 eq 'postalInfo';
+                                Net::DRI::Protocol::EPP::Util::parse_postalinfo($po,$c2,\%pi) if $name2 eq 'postalInfo';
                         } 
                         foreach my $key (keys %pi) { $cont->{$key} = $pi{$key}; }
 

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Protocol (STD 69)
 ##
-## Copyright (c) 2005-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2011,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -52,7 +52,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2011,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -101,13 +101,15 @@ sub new
  return $self;
 }
 
+my $BASE='Net::DRI::Protocol::EPP::Extensions::';
+
 sub _load
 {
  my ($self,$rp)=@_;
  my $extramods=$rp->{extensions};
  my @class=$self->core_modules($rp);
- push @class,map { 'Net::DRI::Protocol::EPP::Extensions::'.$_; } $self->default_extensions($rp) if $self->can('default_extensions');
- push @class,map { my $f=$_; $f='Net::DRI::Protocol::EPP::Extensions::'.$f unless ($f=~s/^\+//); $f; } (ref $extramods ? @$extramods : ($extramods)) if defined $extramods && $extramods;
+ push @class,map { $BASE.$_; } $self->default_extensions($rp) if $self->can('default_extensions');
+ push @class,map { my $f=$_; if ($f=~m/^([^+])(.+)$/) { $f = $1 eq '-' ? '-'.$BASE.$2 : $BASE.$1.$2; } $f; } (ref $extramods ? @$extramods : ($extramods)) if defined $extramods && $extramods;
  return $self->SUPER::_load(@class);
 }
 

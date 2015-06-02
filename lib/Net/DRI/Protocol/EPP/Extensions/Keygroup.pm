@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EURid/DNSBE Keygroup EPP Extension
 ##
-## Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -162,7 +162,7 @@ sub info_parse
   }
  }
 
- $rinfo->{keygroup}->{$oname}->{keys}=\@k;
+ $rinfo->{keygroup}->{$oname}->{'keys'}=\@k;
  return;
 }
 
@@ -247,7 +247,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

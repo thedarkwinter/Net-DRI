@@ -115,12 +115,12 @@ sub build_command
  push(@ret, ['emailFwd:period', { unit => 'y' },
   	$info->{period}->in_units('years')]) if (defined($info->{period}));
  push(@ret, ['emailFwd:registrant', $info->{registrant}]) if (defined($info->{registrant}));
- foreach my $type (keys %{$contacts})
+ foreach my $type (sort { $a cmp $b } keys %$contacts)
  {
   push(@ret, ['emailFwd:contact', {type => $type}, $contacts->{$type}]);
  }
 
- foreach my $auth (keys %{$authid})
+ foreach my $auth (sort { $a cmp $b } keys %$authid)
  {
   push(@auth, ['emailFwd:' . $auth, $authid->{$auth}]);
  }

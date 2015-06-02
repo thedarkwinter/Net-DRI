@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Protocol Utility functions
 ##
-## Copyright (c) 2009,2010 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009,2010,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,6 +17,7 @@ package Net::DRI::Protocol::EPP::Util;
 use utf8;
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -152,7 +153,7 @@ sub build_ns
 {
  my ($epp,$ns,$domain,$xmlns,$noip)=@_;
  # hostasns = <domain:ns>ns1.test.com</domain:ns>
- return map { ['domain:ns',$_] } $ns->get_names() if ($epp->{hostasns} ==1 );  
+ return map { ['domain:ns',$_] } $ns->get_names() if ($epp->{hostasns} == 1);  
 
  my @d;
  my $asattr=$epp->{hostasattr};
@@ -221,15 +222,148 @@ sub parse_ns ## RFC 4931 §1.1
 ## was Core::Domain::build_contact_noregistrant
 sub build_core_contacts
 {
- my ($epp,$cs)=@_;
+ my ($epp,$cs,$ns)=@_;
  my @d;
  # All nonstandard contacts go into the extension section
  my %r=map { $_ => 1 } $epp->core_contact_types();
  foreach my $t (sort(grep { exists($r{$_}) } $cs->types()))
  {
   my @o=$cs->get($t);
-  push @d,map { ['domain:contact',$_->srid(),{'type'=>$t}] } @o;
+  push @d,map { [ ($ns // 'domain').':contact',$_->srid(),{'type'=>$t}] } @o;
  }
+ return @d;
+}
+
+sub parse_postalinfo
+{
+ my ($epp,$pi,$rcd)=@_;
+ my $type=$pi->getAttribute('type'); ## int or loc, mandatory in EPP !
+ $type=$epp->{defaulti18ntype} if (!defined($type) && defined($epp->{defaulti18ntype}));
+ state $index={'loc' => 0, 'int' => 1};
+ my $ti=$index->{$type};
+
+ foreach my $el (Net::DRI::Util::xml_list_children($pi))
+ {
+  my ($name,$node)=@$el;
+  if ($name=~m/^(name|org)$/)
+  {
+   $rcd->{$name}->[$ti]=$node->textContent();
+  } elsif ($name eq 'addr')
+  {
+   my @street;
+   foreach my $sel (Net::DRI::Util::xml_list_children($node))
+   {
+    my ($subname,$subnode)=@$sel;
+    if ($subname eq 'street')
+    {
+     push @street,$subnode->textContent();
+    } elsif ($subname=~m/^(city|sp|pc|cc)$/)
+    {
+     $rcd->{$subname}->[$ti]=$subnode->textContent();
+    }
+   }
+   $rcd->{street}->[$ti]=\@street;
+  }
+ }
+ return;
+}
+
+sub parse_disclose
+{
+ my ($disclose)=@_;
+ my $flag=Net::DRI::Util::xml_parse_boolean($disclose->getAttribute('flag'));
+ my %r;
+ foreach my $el (Net::DRI::Util::xml_list_children($disclose))
+ {
+  my ($name,$node)=@$el;
+  if ($name=~m/^(name|org|addr)$/)
+  {
+   $r{$1.'_'.$node->getAttribute('type')}=$flag;
+  } else
+  {
+   $r{$name}=$flag;
+  }
+ }
+ return \%r;
+}
+
+sub build_disclose
+{
+ my ($d,$ns,@items)=@_;
+ $ns//='contact';
+ return () unless $d && ref $d eq 'HASH';
+ my %v=map { $_ => 1 } values %$d;
+ return () unless keys(%v)==1; ## 1 or 0 as values, not both at same time
+ my @d;
+
+ state $l1 = [ qw/name org addr/ ];
+ foreach my $item (@$l1)
+ {
+  if (exists $d->{$item})
+  {
+   push @d,[$ns.':'.$item,{type=>'int'}],[$ns.':name',{type=>'loc'}];
+  } else
+  {
+   push @d,[$ns.':'.$item,{type=>'int'}] if exists $d->{$item.'_int'};
+   push @d,[$ns.':'.$item,{type=>'loc'}] if exists $d->{$item.'_loc'};
+  }
+ }
+ state $l2 = [ qw/voice fax email/ ];
+ foreach my $item (@$l2, @items)
+ {
+  push @d,[$ns.':'.$item] if exists $d->{$item};
+ }
+ return [$ns.':disclose',@d,{flag=>(keys(%v))[0]}];
+}
+
+sub _do_locint
+{
+ my ($rl,$ri,$contact,$ns,$what)=@_;
+ my @tmp=$contact->$what();
+ return unless @tmp;
+ if ($what eq 'street')
+ {
+  if (defined($tmp[0])) { foreach (@{$tmp[0]}) { push @$rl,[$ns.':street',$_]; } };
+  if (defined($tmp[1])) { foreach (@{$tmp[1]}) { push @$ri,[$ns.':street',$_]; } };
+ } else
+ {
+  if (defined($tmp[0])) { push @$rl,[$ns.':'.$what,$tmp[0]]; }
+  if (defined($tmp[1])) { push @$ri,[$ns.':'.$what,$tmp[1]]; }
+ }
+ return;
+}
+
+sub build_postalinfo
+{
+ my ($contact,$v,$ns)=@_;
+ $ns//='contact';
+ my $hasloc=$contact->has_loc();
+ my $hasint=$contact->has_int();
+ if ($hasint && !$hasloc && (($v & 5) == $v))
+ {
+  $contact->int2loc();
+  $hasloc=1;
+ } elsif ($hasloc && !$hasint && (($v & 6) == $v))
+ {
+  $contact->loc2int();
+  $hasint=1;
+ }
+
+ my (@postl,@posti,@addrl,@addri);
+ _do_locint(\@postl,\@posti,$contact,$ns,'name');
+ _do_locint(\@postl,\@posti,$contact,$ns,'org');
+ _do_locint(\@addrl,\@addri,$contact,$ns,'street');
+ _do_locint(\@addrl,\@addri,$contact,$ns,'city');
+ _do_locint(\@addrl,\@addri,$contact,$ns,'sp');
+ _do_locint(\@addrl,\@addri,$contact,$ns,'pc');
+ _do_locint(\@addrl,\@addri,$contact,$ns,'cc');
+ push @postl,[$ns.':addr',@addrl] if @addrl;
+ push @posti,[$ns.':addr',@addri] if @addri;
+
+ my @d;
+ push @d,[$ns.':postalInfo',@postl,{type=>'loc'}] if (($v & 5) && $hasloc); ## loc+int OR loc
+ push @d,[$ns.':postalInfo',@posti,{type=>'int'}] if (($v & 6) && $hasint); ## loc+int OR int
+
  return @d;
 }
 
@@ -266,7 +400,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009,2010 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009,2010,2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

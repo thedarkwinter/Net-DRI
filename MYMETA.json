@@ -4,7 +4,7 @@
       "Patrick Mevzek <netdri@dotandco.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.112621, CPAN::Meta::Converter version 2.142060",
+   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.112621, CPAN::Meta::Converter version 2.142690",
    "keywords" : [
       "DNS",
       "EPP",
@@ -96,8 +96,7 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Test::LongString" : "0",
-            "Test::More" : "0"
+            "ExtUtils::MakeMaker" : "0"
          }
       },
       "configure" : {
@@ -122,9 +121,14 @@
             "Locale::Script" : "0",
             "Module::Load" : "0",
             "Net::IDN::Encode" : "0",
-            "Net::SAML2::XML::Sig" : "0.22",
             "XML::LibXML" : "1.99",
-            "perl" : "5.008000"
+            "perl" : "5.010000"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Test::LongString" : "0",
+            "Test::More" : "0"
          }
       }
    },

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, OpenSRS XCP Message
 ##
-## Copyright (c) 2008-2010,2012-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2012-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -54,7 +54,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2012-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2012-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -138,7 +138,7 @@ sub get_body
  push @d,'<dt_assoc>';
  my $d=$self->command(); ## ref hash with at least action & object keys, maybe more (such as cookie)
  $d->{protocol}='XCP';
- foreach my $k (sort(keys(%$d)))
+ foreach my $k (sort { $a cmp $b } keys %$d)
  {
   push @d,'<item key="',$k,'">',$d->{$k},'</item>';
  }
@@ -165,7 +165,7 @@ sub _obj2dt
   } elsif ($ref eq 'HASH')
   {
    my @c;
-   foreach my $k (sort(keys(%$el)))
+   foreach my $k (sort { $a cmp $b } keys %$el)
    {
     $k=~s/"/&quot;/g;
     my $v=$el->{$k};

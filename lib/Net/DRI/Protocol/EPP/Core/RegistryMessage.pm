@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Registry messages commands (RFC5730)
 ##
-## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2013,2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -153,6 +153,13 @@ sub parse_poll
  while(my ($k,$v)=each(%{$info{$totype}->{$toname}}))
  {
   $rd->{$k}=$v;
+ }
+ if (exists $info{message}->{$msgid})
+ {
+  while(my ($k,$v)=each(%{$info{message}->{$msgid}}))
+  {
+   $rd->{$k}=$v;
+  }
  }
  ## Also update data about the queried object, for easier access
  while(my ($k,$v)=each(%$rd))

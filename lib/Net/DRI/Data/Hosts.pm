@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Implements a list of host (names+ip) with order preserved
 ##
-## Copyright (c) 2005-2009,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2009,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -131,7 +131,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2009,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2009,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -324,7 +324,7 @@ sub as_string
   my $s=$el->[0];
   my $ips=join(',',@{$el->[1]},@{$el->[2]});
   $s.=' ['.$ips.']' if $ips;
-  $s.=' {'.join(' ',map { $_.'='.$el->[3]->{$_} } keys(%{$el->[3]})).'}' if (defined $el->[3] && %{$el->[3]});
+  $s.=' {'.join(' ',map { $_.'='.$el->[3]->{$_} } sort { $a cmp $b } keys %{$el->[3]}).'}' if (defined $el->[3] && %{$el->[3]});
   push @s,$s;
  }
  return join(' ',@s);

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Registry object
 ##
-## Copyright (c) 2005-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2011,2013-2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -58,7 +58,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2011,2013-2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -248,10 +248,10 @@ sub get_info
    return $self->{cache}->get($type,$key,$what,$regname.'.'.$p);
   } else
   {
-   return $self->{last_data}->{$what} if exists $self->{last_data}->{$what};
+   return unless exists $self->{last_data}->{$what};
+   return $self->{last_data}->{$what};
   }
  }
- return;
 }
 
 sub get_info_all
@@ -280,8 +280,7 @@ sub get_info_all
 sub get_info_keys
 {
  my ($self,$type,$key)=@_;
- my $rh=$self->get_info_all($type,$key);
- my @r=sort { $a cmp $b } keys %$rh;
+ my @r=sort { $a cmp $b } keys %{ $self->get_info_all($type,$key) };
  return @r;
 }
 
@@ -653,7 +652,7 @@ sub _extract_oname
  my $o=$pa->[0];
  return 'session' unless defined($o);
  $o=$o->[1] if (ref($o) eq 'ARRAY'); ## should be enough for _multi but still a little strange
- return (Net::DRI::Util::normalize_name($otype,$o))[1] unless ref($o); ## ?? ## TODO ## this fails t/626nominet line 306
+ return (Net::DRI::Util::normalize_name($otype,$o))[1] unless ref($o); ## ?? ## TODO ## this fails t/Net/DRI/Protocol/EPP/Extensions/Nominet.t line 306
  return (Net::DRI::Util::normalize_name('nsgroup',$otype eq 'nsgroup'? $o->name() : $o->get_details(1)))[1] if Net::DRI::Util::isa_hosts($o);
  return $o->srid() if Net::DRI::Util::isa_contact($o);
  return 'session';

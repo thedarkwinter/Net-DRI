@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .CAT Defensive Registration EPP extension commands
 ##
-## Copyright (c) 2006-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2010,2013-2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2010,2013-2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -153,7 +153,7 @@ sub build_maintainer
 sub build_trademark
 {
  my ($d)=@_;
- Net::DRI::Exception::usererr_insufficient_parameters('trademark is mandatory') unless (defined($d) && (ref($d) eq 'HASH') && keys(%$d));
+ Net::DRI::Exception::usererr_insufficient_parameters('trademark is mandatory') unless (defined $d && ref $d eq 'HASH' && keys %$d);
  my %t=%$d;
  my @n;
  if (exists($t{name}))
@@ -248,7 +248,7 @@ sub info_parse
 
  my (@s,%t);
  my $cs=$po->create_local_object('contactset');
-
+ my %ccache;
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
@@ -267,10 +267,14 @@ sub info_parse
    push @s,Net::DRI::Protocol::EPP::Util::parse_node_status($c);
   } elsif ($name eq 'registrant')
   {
-   $cs->set($po->create_local_object('contact')->srid($c->textContent()),'registrant');
+   my $id=$c->textContent();
+   $ccache{$id}=$po->create_local_object('contact')->srid($id) unless exists $ccache{$id};
+   $cs->set($ccache{$id},'registrant');
   } elsif ($name eq 'contact')
   {
-   $cs->add($po->create_local_object('contact')->srid($c->textContent()),$c->getAttribute('type'));
+   my $id=$c->textContent();
+   $ccache{$id}=$po->create_local_object('contact')->srid($id) unless exists $ccache{$id};
+   $cs->add($ccache{$id},$c->getAttribute('type'));
   } elsif ($name=~m/^(clID|crID|upID)$/)
   {
    $rinfo->{defreg}->{$oname}->{$1}=$c->textContent();
@@ -321,7 +325,7 @@ sub create
  my ($epp,$id,$ri)=@_;
  my @d=build_command($epp,'create',$id);
 
- Net::DRI::Exception::usererr_invalid_parameters('A ref hash with all info must be provided alongside the id') unless (defined($ri) && (ref($ri) eq 'HASH') && keys(%$ri));
+ Net::DRI::Exception::usererr_invalid_parameters('A ref hash with all info must be provided alongside the id') unless (defined $ri && ref $ri eq 'HASH' && keys %$ri);
 
  ## Period, OPTIONAL
  if (exists($ri->{duration}))

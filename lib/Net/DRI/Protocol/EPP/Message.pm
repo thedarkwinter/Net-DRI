@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Message
 ##
-## Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -29,7 +29,7 @@ use Net::DRI::Protocol::EPP::Util;
 use Net::DRI::Util;
 
 use base qw(Class::Accessor::Chained::Fast Net::DRI::Protocol::Message);
-__PACKAGE__->mk_accessors(qw(version command command_body cltrid svtrid msg_id node_resdata node_extension node_msg node_greeting));
+__PACKAGE__->mk_accessors(qw(version command command_body cltrid svtrid msg_id node_resdata node_extension node_msg node_greeting operation));
 
 =pod
 
@@ -59,7 +59,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,11 +75,12 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub new
 {
- my ($class,$trid)=@_;
+ my ($class,$trid,$otype,$oaction)=@_;
  my $self={ results => [], ns => {} };
  bless($self,$class);
 
  $self->cltrid($trid) if (defined $trid && length $trid);
+ $self->operation([$otype,$oaction]);
  return $self;
 }
 
@@ -175,7 +176,7 @@ sub command_extension_register
   $ocmd=(ref $nss eq 'ARRAY' ? $nss->[0] : $nss).':'.$command;
   $ons=$self->nsattrs($nss);
   ## This is used for other *generic* attributes, not for xmlns: ones !
-  $ons.=' '.join(' ',map { sprintf('%s="%s"',$_,$otherattrs->{$_}) } keys %$otherattrs) if defined $otherattrs && ref $otherattrs eq 'HASH' && keys %$otherattrs;
+  $ons.=' '.join(' ',map { sprintf('%s="%s"',$_,$otherattrs->{$_}) } sort { $a cmp $b } keys %$otherattrs) if defined $otherattrs && ref $otherattrs eq 'HASH' && keys %$otherattrs;
  }
  $self->{extension}->[$eid]=[$ocmd,$ons,[]];
  return $eid;
@@ -204,7 +205,7 @@ sub as_string
  ($cmd,$ocmd,$ons)=@$rc if (defined $rc && ref $rc);
 
  my $attr='';
- ($cmd,$attr)=($cmd->[0],' '.join(' ',map { $_.'="'.$cmd->[1]->{$_}.'"' } sort keys(%{$cmd->[1]}))) if (defined $cmd && ref $cmd);
+ ($cmd,$attr)=($cmd->[0],' '.join(' ',map { $_.'="'.$cmd->[1]->{$_}.'"' } sort { $a cmp $b } keys(%{$cmd->[1]}))) if (defined $cmd && ref $cmd);
 
  if (defined $cmd)
  {
@@ -333,7 +334,7 @@ sub parse
    $self->msg_id($id);
 
    my $qdate=Net::DRI::Util::xml_child_content($msgq,$NS,'qDate');
-   $d{qdate}=DateTime::Format::ISO8601->new()->parse_datetime($qdate) if defined $qdate && length $qdate;
+   eval { $d{qdate}=DateTime::Format::ISO8601->new()->parse_datetime($qdate) if defined $qdate && length $qdate; };
 
    my $msg=$msgq->getChildrenByTagNameNS($NS,'msg');
    if ($msg->size())

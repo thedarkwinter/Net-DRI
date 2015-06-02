@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .RU/.SU/.XN--P1AI EPP REgistrar Extension for Net::DRI
 ##
 ## Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-##               2011-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2011-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -55,42 +55,42 @@ sub update
 	my (@add,@del);
 	if ($email_add)
 	{
-		for my $key (keys %$email_add)
+		foreach my $key (sort { $a cmp $b } keys %$email_add)
 		{
 			my @emails = @{$email_add->{$key}};
 
-			for my $email (@emails)
+			foreach my $email (@emails)
 			{
-				push @add, ['registrar:email', $email, {"type" => $key}];
+				push @add, ['registrar:email', $email, {'type' => $key}];
 			}
 		}
 	}
 	if ($ip_add)
 	{
-		for my $ip (@$ip_add)
+		foreach my $ip (@$ip_add)
 		{
-			push @add, ['registrar:addr', $ip, {"ip" => "v4"}];
+			push @add, ['registrar:addr', $ip, {'ip' => 'v4'}];
 		}
 	}
 
 	if ($email_del)
 	{
-		for my $key (keys %$email_del)
+		foreach my $key (sort { $a cmp $b } keys %$email_del)
 		{
 			my @emails = @{$email_add->{$key}};
 
-			for my $email (@emails)
+			foreach my $email (@emails)
 			{
-				push @del, ['registrar:email', $email, {"type" => $key}];
+				push @del, ['registrar:email', $email, {'type' => $key}];
 			}
 		}
 	}
 
 	if ($ip_del)
 	{
-		for my $ip (@$ip_del)
+		foreach my $ip (@$ip_del)
 		{
-			push @del, ['registrar:addr', $ip, {"ip" => "v4"}];
+			push @del, ['registrar:addr', $ip, {'ip' => 'v4'}];
 		}
 	}
 
@@ -253,7 +253,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-Copyright (c) 2011-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2011-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

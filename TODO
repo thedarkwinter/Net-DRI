@@ -14,6 +14,7 @@ All
 Net::DRI
         * IDN support (in a cross registry fashion) with Net-IDN-Tools (1)
         * Exception handling using Exception::Class instead of internal implementation ? (1)
+        * Exception handling using Devel::StackTrace
 
 Net::DRI::DRD
         * bulk operations (many domains at once)
@@ -42,5 +43,6 @@ Net::DRI::Protocol::EPP::Message
 
 Net::DRI::DRD::Contact
         * better report of errors in validate() with details on what is expected (1)
+        * better handling of loc/int data (a contact with only int content will not pass validate)
 
 (1) would be great to have before releasing Net::DRI version 1.0

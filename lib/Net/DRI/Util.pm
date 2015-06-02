@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Misc. useful functions
 ##
-## Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -53,7 +53,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -68,9 +68,33 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-## See http://www.iso.org/iso/country_codes/updates_on_iso_3166.htm for updates
-## Done up to & including VI-13 (2012-08-02)
-our %CCA2=map { $_ => 1 } qw/AF AX AL DZ AS AD AO AI AQ AG AR AM AW AU AT AZ BS BH BD BB BY BE BZ BJ BL BM BT BO BQ BA BW BV BR IO BN BG BF BI KH CM CA CV CW KY CF TD CL CN CX CC CO KM CG CD CK CR CI HR CU CY CZ DK DJ DM DO EC EG SV SX GQ ER EE ET FK FO FJ FI FR GF PF TF GA GM GE DE GH GI GR GL GD GP GU GT GG GN GW GY HT HM HN HK HU IS IN ID IR IQ IE IM IL IT JM JP JE JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MO MK MG MW MY MV ML MT MH MQ MR MU YT MX FM MD ME MF MC MN MS MA MZ MM NA NR NP NL NC NZ NI NE NG NU NF MP NO OM PK PW PS PA PG PY PE PH PN PL PT PR QA RE RO RS RU RW SH KN LC PM VC WS SM ST SA SN CS SC SL SG SK SI SB SO ZA GS SS ES LK SD SR SJ SZ SE CH SY TW TJ TZ TH TL TG TK TO TT TN TR TM TC TV UG UA AE GB US UM UY UZ VU VA VE VN VG VI WF EH YE ZM ZW/;
+## See https://www.iso.org/obp/ui/#search , select 'Country codes', then 'Officially assigned', order by Alpha-2 code (last checked on 2015-05-24)
+##                        qw/.A .B .C .D .E .F .G .H .I .J .K .L .M .N .O .P .Q .R .S .T .U .V .W .X .Y .Z
+our %CCA2=map { $_ => 1 } qw/         AD AE AF AG    AI       AL AM    AO    AQ AR AS AT AU    AW AX    AZ/,
+                          qw/BA BB    BD BE BF BG BH BI BJ    BL BM BN BO    BQ BR BS BT    BV BW    BY BZ/,
+                          qw/CA    CC CD    CF CG CH CI    CK CL CM CN CO       CR       CU CV CW CX CY CZ/,
+                          qw/            DE             DJ DK    DM    DO                               DZ/,
+                          qw/      EC    EE    EG EH                            ER ES ET                  /,
+                          qw/                        FI FJ FK    FM    FO       FR                        /,
+                          qw/GA GB    GD GE GF GG GH GI       GL GM GN    GP GQ GR GS GT GU    GW    GY   /,
+                          qw/                              HK    HM HN          HR    HT HU               /,
+                          qw/         ID IE                   IL IM IN IO    IQ IR IS IT                  /,
+                          qw/            JE                      JM    JO JP                              /,
+                          qw/            KE    KG KH KI          KM KN    KP    KR             KW    KY KZ/,
+                          qw/LA LB LC                LI    LK                   LR LS LT LU LV       LY   /,
+                          qw/MA    MC MD ME MF MG MH       MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ/,
+                          qw/NA    NC    NE NF NG    NI       NL       NO NP    NR       NU             NZ/,
+                          qw/                                    OM                                       /,
+                          qw/PA          PE PF PG PH       PK PL PM PN          PR PS PT       PW    PY   /,
+                          qw/QA                                                                           /,
+                          qw/            RE                            RO          RS    RU    RW         /,
+                          qw/SA SB SC SD SE    SG SH SI SJ SK SL SM SN SO       SR SS ST    SV    SX SY SZ/,
+                          qw/      TC TD    TF TG TH    TJ TK TL TM TN TO       TR    TT    TV TW       TZ/,
+                          qw/UA                UG                UM                US                UY UZ/,
+                          qw/VA    VC    VE    VG    VI             VN                   VU               /,
+                          qw/               WF                                     WS                     /,
+                          qw/            YE                                           YT                  /,
+                          qw/ZA                                  ZM                            ZW         /;
 
 sub all_valid
 {
@@ -520,13 +544,13 @@ sub xml_write
 {
  my $rd=shift;
  my @t;
- foreach my $d ((ref($rd->[0]))? @$rd : ($rd)) ## $d is a node=ref array
+ foreach my $d (ref $rd->[0] ? @$rd : ($rd)) ## $d is a node=ref array
  {
   my @c; ## list of children nodes
   my %attr;
   foreach my $e (grep { defined } @$d)
   {
-   if (ref($e) eq 'HASH')
+   if (ref $e eq 'HASH')
    {
     while(my ($k,$v)=each(%$e)) { $attr{$k}=$v; }
    } else
@@ -535,7 +559,7 @@ sub xml_write
    }
   }
   my $tag=shift(@c);
-  my $attr=keys(%attr)? ' '.join(' ',map { $_.'="'.$attr{$_}.'"' } sort(keys(%attr))) : '';
+  my $attr=keys(%attr)? ' '.join(' ',map { $_.'="'.$attr{$_}.'"' } sort { $a cmp $b } keys %attr) : '';
   if (ref $tag eq 'XML::LibXML::Element') # MH: it its an XML Element just push it straight; this is used by LaunchPhase to push signedMarks in
   {
    push @t, $tag;
@@ -700,8 +724,8 @@ sub dns_srv_order
 sub load_module
 {
  my ($class,$etype)=@_;
- eval { Module::Load::load($class); };
- Net::DRI::Exception::err_failed_load_module($etype,$class,$@) if $@;
+ my $ok = eval { Module::Load::load($class); 1; };
+ Net::DRI::Exception::err_failed_load_module($etype,$class,$@ // 'unknown error') if ! defined $ok || ! $ok || $@;
  return;
 }
 

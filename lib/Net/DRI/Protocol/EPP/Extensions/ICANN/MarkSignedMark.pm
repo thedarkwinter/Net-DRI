@@ -22,6 +22,7 @@ use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
 
 use XML::LibXML ();
+use Encode;
 
 ####################################################################################################
 
@@ -32,6 +33,8 @@ sub setup
            'signedMark' => [ 'urn:ietf:params:xml:ns:signedMark-1.0','signedMark-1.0'] });
  return;
 }
+
+sub implements { return 'https://tools.ietf.org/html/draft-ietf-eppext-tmch-smd-01'; }
 
 my %xml2perl = ( trademark       => 'trademark',
                  treatyOrStatute => 'treaty_statute',
@@ -500,9 +503,9 @@ sub lined_content
  my (@es,$r);
  foreach my $e (@e)
  {
-   $r = $e->textContent();
- $r=~s/\s+//g;
-   push @es,$r;
+  $r = $e->textContent();
+  $r=~s/\s+//g;
+  push @es,$r;
  }
  return $es[0] if $numel==1;
  return \@es; # this will probably break things as nothing is expecting an array, however at least doesn't cause a syntax
@@ -550,21 +553,65 @@ sub parse_signed_mark
    $s{'value'}=lined_content($node,$signs,qw/SignatureValue/);
    ## TODO: handle other algorithms
    $s{'key'}={ algorithm => 'rsa', 
-               modulus => lined_content($node,$signs,qw/KeyInfo KeyValue RSAKeyValue Modulus/),
-               exponent => lined_content($node,$signs,qw/KeyInfo KeyValue RSAKeyValue Exponent/),
                x509_certificate => lined_content($node,$signs,qw/KeyInfo X509Data X509Certificate/),
              };
-
-   $s{'validated'} = undef;
-   eval { ## If not installed then ignore. This should maybe be replaced with Net::TMCH if it does the job?
-    require Net::SAML2::XML::Sig;
-    $s{'validated'}=Net::SAML2::XML::Sig->new()->verify($start->toString()); ## TODO : is this working ok ?
-   };
-
+   $s{'validated'}=_validate_xmldsig($start);
    $smark{'signature'}=\%s;
   }
  }
  return \%smark;
+}
+
+sub _validate_xmldsig
+{
+ my ($xml,$rs)=@_;
+
+ require XML::LibXML::XPathContext;
+ require Digest::SHA;
+ require Crypt::OpenSSL::X509;
+ require Crypt::OpenSSL::RSA;
+ require MIME::Base64;
+
+ my $xpc=XML::LibXML::XPathContext->new();
+ $xpc->registerNs('ds','http://www.w3.org/2000/09/xmldsig#');
+
+ foreach my $node ($xpc->findnodes('//ds:Reference',$xml))
+ {
+  my $for=$node->getAttribute('URI');
+  $for=~s/^#//;
+  my $cnode=$xpc->findnodes("//*[\@id='${for}' or \@Id='${for}']",$xml);
+  return 0 unless $cnode->size() == 1;
+
+  $cnode=$cnode->get_node(1); ## node on which we perform the digest operation
+
+  my %algos=map { $_->getAttribute('Algorithm') => 1 } $xpc->findnodes('ds:Transforms/ds:Transform',$node);
+  return 0 unless exists $algos{'http://www.w3.org/2001/10/xml-exc-c14n#'};
+
+  my $xmlstring=$cnode->toStringEC14N(0,exists $algos{'http://www.w3.org/2000/09/xmldsig#enveloped-signature'} ? q{(. | .//node() | .//@* | .//namespace::*)[not(self::comment() or ancestor-or-self::ds:Signature)]} : undef,$xpc);
+
+  return 0 unless defined $xmlstring && $xpc->findnodes('ds:DigestValue',$node)->get_node(1)->textContent() eq _sha256b64padded($xmlstring);
+ }
+
+ my $cert=$xpc->findnodes('//ds:X509Certificate',$xml)->get_node(1)->textContent();
+ $cert=~s/ /\n/g;
+ my $certobj=Crypt::OpenSSL::X509->new_from_string("-----BEGIN CERTIFICATE-----\n".$cert."\n-----END CERTIFICATE-----", Crypt::OpenSSL::X509::FORMAT_PEM());
+ my $key=Crypt::OpenSSL::RSA->new_public_key($certobj->pubkey());
+ $key->use_sha256_hash();
+
+ my $xmlsi=$xpc->find('//ds:SignedInfo',$xml)->get_node(1);
+ $xmlsi->setNamespace('http://www.w3.org/2000/09/xmldsig#','ds',0);
+ my $sigval=$xpc->findnodes('//ds:SignatureValue',$xmlsi)->get_node(1)->textContent();
+ $sigval=~s!\s+!!g;
+ my $verify=$key->verify($xmlsi->toStringEC14N(0), MIME::Base64::decode_base64($sigval));
+ return (defined $verify && $verify) ? 1 : 0;
+}
+
+sub _sha256b64padded
+{
+ my ($in)=@_;
+ my $out = Digest::SHA::sha256_base64($in);
+ while (length($out) % 4) { $out .= '='; }
+ return $out;
 }
 
 sub parse_encoded_signed_mark
@@ -586,10 +633,8 @@ sub parse_encoded_signed_mark
 
  require MIME::Base64;
  my $xml=MIME::Base64::decode_base64($content);
-
- my $parser=XML::LibXML->new();
- my $doc=$parser->parse_string($xml);
- my $root=$doc->getDocumentElement();
+ $xml=Encode::decode('UTF-8',$xml,Encode::FB_CROAK | Encode::LEAVE_SRC);
+ my $root=XML::LibXML->load_xml(no_cdata => 1, no_blanks => 1, no_network => 1, string => $xml)->documentElement();
  Net::DRI::Exception::err_invalid_parameter('Decoding should give a signedMark root element') unless $root->localname() eq 'signedMark';
 
  return parse_signed_mark($po,$root);
@@ -604,7 +649,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark - ICANN TMCH Mark/Signed Mark EPP Extension (draft-ietf-eppext-tmch-smd-00) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark - ICANN TMCH Mark/Signed Mark EPP Extension (draft-ietf-eppext-tmch-smd-01) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -628,7 +673,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2013-2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

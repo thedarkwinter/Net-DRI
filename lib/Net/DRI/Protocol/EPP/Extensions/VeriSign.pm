@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign EPP extensions
 ##
-## Copyright (c) 2006,2008-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -30,8 +30,7 @@ Net::DRI::Protocol::EPP::Extensions::VeriSign - VeriSign EPP extensions for Net:
 
 Please see the README file for details.
 
-Note that the NameStore extension is not loaded by default, and you should probably load it in all cases.
-See file t/616vnds_epp_namestore.t in distribution for examples of use.
+Note that the PremiumDomain extension is not loaded by default.
 
 =head1 SUPPORT
 
@@ -51,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2008-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,18 +73,16 @@ sub setup
  return;
 }
 
-## List of VeriSign extensions: http://www.verisign.com/domain-name-services/current-registrars/epp-sdk/index.html
-## and documentation: http://www.verisign.com/domain-name-services/domain-information-center/domain-name-resources/
+## List of VeriSign extensions: http://www.verisigninc.com/en_US/channel-resources/domain-registry-products/epp-sdks/index.xhtml?loc=en_US
 sub default_extensions
 {
  my ($self,$rp)=@_;
  my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::ClientAttributes VeriSign::TwoFactorAuth VeriSign::ZoneManagement VeriSign::Balance GracePeriod SecDNS/;
  push @c,'VeriSign::WhoisInfo'   if !exists $rp->{default_product} || (defined $rp->{default_product} && $rp->{default_product} ne 'dotCC' && $rp->{default_product} ne 'dotTV' );
  push @c,'VeriSign::JobsContact' if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'dotJOBS';
+ push @c,'VeriSign::NameStore'; ## this must come last
  return @c;
 }
-
-## Extensions not loaded by default: NameStore, PremiumDomain
 
 ####################################################################################################
 1;

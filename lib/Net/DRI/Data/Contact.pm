@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Handling of contact data
 ##
-## Copyright (c) 2005-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2010,2013-2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,7 +50,7 @@ EPP allows a localized form (content is in unrestricted UTF-8) and international
 (content MUST be represented in a subset of UTF-8 that can be represented 
 in the 7-bit US-ASCII character set). Not all registries support both forms.
 
-When setting values, you pass wo elements as a list (first the localized form, 
+When setting values, you pass two elements as a list (first the localized form,
 then the internationalized one), or only one element that will be taken as the localized form.
 When getting values, in list context you get back both values, in scalar context you get
 back the first one, that is the localized form.
@@ -162,7 +162,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2010,2013-2015 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -313,14 +313,14 @@ sub as_string
  $sep='|' unless (defined($sep) && $sep);
  my $st=$self->street();
  my @v=grep { defined } ($self->srid(),$self->name(),$self->org(),defined($st)? join(' // ',@$st) : undef,$self->city(),$self->sp(),$self->pc(),$self->cc(),$self->voice(),$self->fax(),$self->email());
- my @ot=grep { ! /^(?:name|org|street|city|sp|pc|cc|email|voice|fax|loid|roid|srid|auth|disclose)$/ } sort(keys(%$self));
+ my @ot=sort { $a cmp $b } grep { ! /^(?:name|org|street|city|sp|pc|cc|email|voice|fax|loid|roid|srid|auth|disclose)$/ } keys %$self;
  foreach my $ot (@ot) ## extra attributes defined in subclasses
  {
   my $v=$self->$ot();
   next unless defined($v);
   if (ref($v) eq 'HASH')
   {
-   my @iv=sort(keys(%$v));
+   my @iv=sort { $a cmp $b } keys %$v;
    my @r;
    foreach my $k (@iv)
    {

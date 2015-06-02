@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Encapsulating result status, standardized on EPP codes
 ##
-## Copyright (c) 2005,2006,2008-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005,2006,2008-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -194,7 +194,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005,2006,2008-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005,2006,2008-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -313,18 +313,26 @@ sub local_get_data
  return $d->{$k1};
 }
 
+sub _rh2a
+{
+ my ($in)=@_;
+ return $in unless wantarray;
+ my @r=sort { $a cmp $b } keys %$in;
+ return @r;
+}
+
 sub local_get_data_collection
 {
  my ($self,$k1,$k2)=@_;
  my $d=$self->{'data'};
 
- if (! defined $k1)             { return wantarray ? keys %$d : $d; }
+ if (! defined $k1)             { return _rh2a($d); }
  ($k1,undef)=Net::DRI::Util::normalize_name($k1,'');
  if (! exists $d->{$k1})        { return; }
- if (! defined $k2)             { return wantarray ? keys %{$d->{$k1}} : $d->{$k1}; }
+ if (! defined $k2)             { return _rh2a($d->{$k1}); }
  ($k1,$k2)=Net::DRI::Util::normalize_name($k1,$k2);
  if (! exists $d->{$k1}->{$k2}) { return; }
- return wantarray ? keys %{$d->{$k1}->{$k2}} : $d->{$k1}->{$k2};
+ return _rh2a($d->{$k1}->{$k2});
 }
 
 sub is_success
@@ -372,7 +380,8 @@ sub get_data_collection
   {
    foreach my $lr ($self->local_get_data_collection($k1,$k2)) { $r{$lr}=1; }
   } continue { $self=$self->next(); }
-  return keys(%r);
+  my @r=sort { $a cmp $b } keys %r;
+  return @r;
  } else
  {
   my @r;
@@ -397,12 +406,12 @@ sub _merge
  my %tmp;
  foreach my $rh (@hashes)
  {
-  foreach my $key (keys %$rh)
+  foreach my $key (sort { $a cmp $b } keys %$rh)
   {
    push @{$tmp{$key}},$rh->{$key};
   }
  }
- foreach my $key (keys %tmp)
+ foreach my $key (sort { $a cmp $b } keys %tmp)
  {
   $r{$key}=_merge($deep+1,@{$tmp{$key}});
  }
@@ -432,13 +441,13 @@ sub new_error   { my ($class,$code,@p)=@_; return $class->new('epp',$code,undef,
 sub local_as_string
 {
  my ($self,$withinfo)=@_;
- my $b=sprintf('%s %d %s',$self->local_is_success()? 'SUCCESS' : 'ERROR',$self->code(),length $self->message() ? ($self->code() eq $self->native_code()? $self->message() : $self->message().' ['.$self->native_code().']') : '(No message given)');
+ my $r=sprintf('%s %d %s',$self->local_is_success()? 'SUCCESS' : 'ERROR',$self->code(),length $self->message() ? ($self->code() eq $self->native_code()? $self->message() : $self->message().' ['.$self->native_code().']') : '(No message given)');
  if (defined $withinfo && $withinfo)
  {
   my @i=$self->local_get_extended_results();
-  $b.="\n".join("\n",map { my $rh=$_; "\t".(join(' ',map { $_.'='.(defined $rh->{$_} ? $rh->{$_} : '<undef>') } sort keys %$rh)) } @i) if @i;
+  $r.="\n".join("\n",map { my $rh=$_; "\t".(join(' ',map { $_.'='.(defined $rh->{$_} ? $rh->{$_} : '<undef>') } sort { $a cmp $b } keys %$rh)) } @i) if @i;
  }
- return $b;
+ return $r;
 }
 
 sub as_string

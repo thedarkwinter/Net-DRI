@@ -211,15 +211,20 @@ sub info_parse
    $status->add('pendingTransfer');
    my %p;
    my $cs=$po->create_local_object('contactset');
+   my %ccache;
    foreach my $subel (Net::DRI::Util::xml_list_children($c))
    {
     my ($subname,$subc)=@$subel;
     if ($subname eq 'registrant')
     {
-     $cs->set($po->create_local_object('contact')->srid($subc->textContent()),'registrant');
+     my $id=$subc->textContent();
+     $ccache{$id}=$po->create_local_object('contact')->srid($id) unless exists $ccache{$id};
+     $cs->set($ccache{$id},'registrant');
     } elsif ($subname eq 'contact')
     {
-     $cs->add($po->create_local_object('contact')->srid($subc->textContent()),$subc->getAttribute('type'));
+     my $id=$subc->textContent();
+     $ccache{$id}=$po->create_local_object('contact')->srid($id) unless exists $ccache{$id};
+     $cs->add($ccache{$id},$subc->getAttribute('type'));
     } elsif ($subname eq 'initiationDate')
     {
      $p{initiationDate}=$po->parse_iso8601($subc->textContent());

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .CAT Domain EPP extension commands
 ##
-## Copyright (c) 2006-2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2012-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2012-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -138,7 +138,7 @@ sub add_puntcat_extension
 {
  my ($rd)=@_;
  my @n;
- return @n unless (defined $rd && (ref $rd eq 'HASH') && keys %$rd);
+ return @n unless (defined $rd && ref $rd eq 'HASH' && keys %$rd);
 
  if (exists $rd->{name_variant} && defined $rd->{name_variant})
  {

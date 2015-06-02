@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .NO Host extensions
 ##
-## Copyright (c) 2008,2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+## Copyright (c) 2008,2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
 ##                    All rights reserved.
 ##
@@ -49,7 +49,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+Copyright (c) 2008,2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
 All rights reserved.
 
@@ -218,8 +218,8 @@ sub create {
        } else {
            # $c may be a contact set, contact object or a direct scalar
            my @contacts;
-           if (Net::DRI::Util::isa_contactset($c)) { 
-              foreach my $cn (keys %{ $$c{'c'} } ) { 
+           if (Net::DRI::Util::isa_contactset($c)) {
+              foreach my $cn (sort { $a cmp $b } keys %{ $$c{'c'} } ) {
                    push @contacts, ${$$c{'c'}}{$cn}->[0]->srid(); 
                }
            } elsif (Net::DRI::Util::isa_contact($c)) { 
@@ -275,7 +275,7 @@ sub update {
            # $c may be a contact set, contact object or a direct scalar
            my @contacts;
            if (Net::DRI::Util::isa_contactset($c)) { 
-              foreach my $cn (keys %{ $$c{'c'} } ) { 
+              foreach my $cn (sort { $a cmp $b } keys %{ $$c{'c'} } ) {
                    push @contacts, ${$$c{'c'}}{$cn}->[0]->srid(); 
                }
            } elsif (Net::DRI::Util::isa_contact($c)) { 
@@ -308,7 +308,7 @@ sub update {
            # $c may be a contact set, contact object or a direct scalar
            my @contacts;
            if (Net::DRI::Util::isa_contactset($c)) { 
-              foreach my $cn (keys %{ $$c{'c'} } ) { 
+              foreach my $cn (sort { $a cmp $b } keys %{ $$c{'c'} } ) {
                    push @contacts, ${$$c{'c'}}{$cn}->[0]->srid(); 
                }
            } elsif (Net::DRI::Util::isa_contact($c)) { 
