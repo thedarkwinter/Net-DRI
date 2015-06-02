@@ -1,6 +1,7 @@
 ## Domain Registry Interface, Handling of contact data for .US
 ##
-## Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -79,14 +80,15 @@ Please also see the SUPPORT file in the distribution.
 
 http://www.dotandco.com/services/software/Net-DRI/
 
-=head1 AUTHOR
+=head1 AUTHOR(S)
 
 Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+David Makuni E<lt>d.makuni@live.co.ukE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>.
-All rights reserved.
+Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk> All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -99,28 +101,25 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub validate
-{
- my ($self,$change)=@_;
- $change||=0;
- my @errs;
+sub validate {
+        my ($self,$change)=@_;
+        $change||=0;
+        my @errs;
 
- $self->SUPER::validate($change); ## will trigger an Exception if problem
+        $self->SUPER::validate($change); ## will trigger an Exception if problem
 
- if (defined($self->application_purpose()))
- {
-  push @errs,'application_purpose' unless ($self->application_purpose()=~m/^P[1-5]$/ || ($change && ($self->application_purpose() eq '')));
- }
+        if (defined($self->application_purpose())) {
+                push @errs,'application_purpose' unless ($self->application_purpose()=~m/^P[1-5]$/ || ($change && ($self->application_purpose() eq '')));
+        }
 
- if (defined($self->nexus_category()))
- {
-  push @errs,'nexus_category' unless ($self->nexus_category()=~m!^C(?:1[12]|21|3[12]/([A-Z][A-Z]))$! || ($change && ($self->nexus_category() eq '')));
-  push @errs,'nexus_category' if ($1 && !exists($Net::DRI::Util::CCA2{$1}));
- }
+        if (defined($self->nexus_category())) {
+                push @errs,'nexus_category' unless ($self->nexus_category()=~m!^C(?:1[12]|21|3[12]/([A-Z][A-Z]))$! || ($change && ($self->nexus_category() eq '')));
+                push @errs,'nexus_category' if ($1 && !exists($Net::DRI::Util::CCA2{$1}));
+        }
 
- Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
+        Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
 
- return 1; ## everything ok.
+        return 1; ## everything ok.
 }
 
 ####################################################################################################

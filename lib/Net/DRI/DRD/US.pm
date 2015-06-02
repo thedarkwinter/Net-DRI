@@ -1,7 +1,8 @@
 ## Domain Registry Interface, .US policies
 ##
 ## Copyright (c) 2007,2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
-##           (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -22,6 +23,10 @@ use base qw/Net::DRI::DRD/;
 
 use DateTime::Duration;
 use Net::DRI::Data::Contact::US;
+use Net::DRI::Util;
+use Net::DRI::Exception;
+
+__PACKAGE__->make_exception_for_unavailable_operations(qw//);
 
 =pod
 
@@ -48,13 +53,14 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 =head1 AUTHOR
 
 Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+David Makuni E<lt>d.makuni@live.co.ukE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2007,2008,2009 Tonnerre Lombard E<lt>tonnerre.lombard@sygroup.chE<gt>.
-          (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>.
-All rights reserved.
-
+Copyright (c) 2007,2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
+          (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+		  (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+		  
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -66,13 +72,12 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub new
-{
- my $class=shift;
- my $self=$class->SUPER::new(@_);
- $self->{info}->{host_as_attr}=0;
- $self->{info}->{contact_i18n}=6; ## INT only or INT+LOC (but not LOC only)
- return $self;
+sub new {
+	my $class=shift;
+	my $self=$class->SUPER::new(@_);
+	$self->{info}->{host_as_attr}=0;
+	$self->{info}->{contact_i18n}=2; ## INT only
+	return $self;
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
@@ -81,31 +86,27 @@ sub tlds     { return ('us'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }
 
-sub transport_protocol_default
-{
- my ($self,$type)=@_;
-
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::US',{})              if $type eq 'epp';
- return ('Net::DRI::Transport::Socket',{remote_host=>'whois.nic.us'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
- return;
+sub transport_protocol_default {
+	my ($self,$type)=@_;
+	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::US',{})              if $type eq 'epp';
+	return ('Net::DRI::Transport::Socket',{remote_host=>'whois.nic.us'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
+	return;
 }
 
-sub set_factories
-{
- my ($self,$po)=@_;
- $po->factories('contact',sub { return Net::DRI::Data::Contact::US->new(@_); });
- return;
+sub set_factories {
+	my ($self,$po)=@_;
+	$po->factories('contact',sub { return Net::DRI::Data::Contact::US->new(@_); });
+	return;
 }
 
 ####################################################################################################
 
-sub verify_name_domain
-{
- my ($self,$ndr,$domain,$op)=@_;
- return $self->_verify_name_rules($domain,$op,{check_name => 1,
-                                               my_tld => 1,
-                                               icann_reserved => 1,
-                                              });
+sub verify_name_domain {
+	my ($self,$ndr,$domain,$op)=@_;
+	return $self->_verify_name_rules($domain,$op,{check_name => 1,
+	                                              my_tld => 1,
+	                                              icann_reserved => 1,
+	                                             });
 }
 
 ####################################################################################################
