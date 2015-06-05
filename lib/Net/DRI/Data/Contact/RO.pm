@@ -96,34 +96,32 @@ sub validate {
 	$self->SUPER::validate($change); ## This will trigger exception if a problem is found.
 
 	# 'srid' field validation.
-	push @errs,'"srid" is specified by the registry and MUST be set to "AUTO"' if ($self->srid() ne 'AUTO');
+	push @errs,'"srid" is specified by the registry and MUST be set to "AUTO"' if ((defined $self->srid()) && ($self->srid() ne 'AUTO'));
 
 	# 'org' field validation.
-	push @errs,'"org" field is not used and must be left blank' if ($self->org() ne '');
+	push @errs,'"org" field is not used and must be left blank' if ((defined $self->org()) && ($self->org() ne ''));
 
-	# registry specified 'mandatory' fields for all contacts.
+	# registry specified 'mandatory' fields for create commands
+	if (!$change) {
 	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: type field is mandatory') unless ($self->type());
-	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: vat field is mandatory. For individuals it must be "NI/SSN" or equivalent ID number') unless ($self->vat());
-	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: name field is mandatory') unless ($self->name());
-	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: city field is mandatory') unless ($self->city());
-	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: cc field is mandatory') unless ($self->cc());
-	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: voice field is mandatory') unless ($self->voice());
+	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: vat field is mandatory. For private individuals it must be "NI/SSN" or equivalent ID number') unless ($self->vat());
+	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: orgno field is mandatory') unless ($self->orgno());
+	}
+	
+	# other registry specified 'mandatory' fields
+	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: sp field is mandatory') unless ($self->sp());
 	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: email field is mandatory') unless ($self->email());
 
-	# 'vat' field validation
-	push @errs,'"vat" field must be 5 to 40 characters long' if ( $self->vat()!~m/^.{5,40}$/ );
+	# 'vat' and 'orgno' field length validation
+	push @errs,'"vat" field must be 5 to 40 characters long' if ((defined $self->vat()) && ($self->vat()!~m/^.{5,40}$/));
+	push @errs,'"orgno" field must be 1 to 40 characters long' if ((defined $self->vat()) && ($self->orgno()!~m/^.{1,40}$/));
 
 	# 'type' valid values - p / ap / nc / c / gi / pi / o
 	my @type_values= qw(p ap nc c gi pi o);
+	if (defined $self->type()) {
 	push @errs,'"type" field can only accept the values: p / ap / nc / c / gi / pi / o' unless (grep {$_ eq $self->type()} @type_values);
-
-	# 'orgno' field validation for certain contact 'types'
-	my @orgno_type_values= qw(nc c gi pi o);
-	if (grep {$_ eq $self->type()} @orgno_type_values) {
-		push @errs,'"orgno" field must be defined for this contact type' if ($self->orgno() eq '');
-		push @errs,'"orgno" field must be 1 to 40 characters long' if ( $self->orgno()!~m/^.{1,40}$/ );
 	}
-
+	
 	Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
 	return 1; # PASSED
 }
