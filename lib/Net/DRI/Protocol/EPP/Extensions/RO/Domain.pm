@@ -96,6 +96,12 @@ sub create {
 	$mes->command(['create','domain:create',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ro_domain'))]);
 	return unless ( (defined $rd->{'reserve_domain'}) || (defined $rd->{'domain_terms'}) );
 
+	# Domain Password Validation
+	Net::DRI::Exception::usererr_insufficient_parameters('auth-pw is required for .RO') 
+		unless ((defined $rd->{auth}->{pw}) && ($rd->{auth}->{pw} ne ''));
+	Net::DRI::Exception::usererr_invalid_parameters('auth-pw supplied must have no spaces; one capital, small & special character with length between 6-40') 
+		unless ($rd->{auth}->{pw}=~ m/^[a-z0-9\-\.\,\:\;\[\]\{\}\_\+\=\@\#\$\^\*\?\!\|\~]{6,40}$/i);
+
 	push @f,['rotld:agreement',{legal_use => $rd->{'domain_terms'}->{'legal_use'}, registration_rules => $rd->{'domain_terms'}->{'reg_rules'}}];
 	if ($rd->{'reserve_domain'}->{'reserve'} == 1) {push @f,['rotld:reserve'];}
 

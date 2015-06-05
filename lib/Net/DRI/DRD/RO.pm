@@ -26,7 +26,7 @@ use DateTime::Duration;
 use Net::DRI::Exception;
 use Net::DRI::Data::Contact::RO;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw//);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_delete host_update host_current_status host_check host_exist host_delete host_create host_info contact_delete contact_transfer contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse/);
 
 =pod
 
@@ -74,14 +74,14 @@ See the LICENSE file that comes with this distribution for more details.
 sub new {
 	my $class=shift;
 	my $self=$class->SUPER::new(@_);
-	$self->{info}->{host_as_attr}=0;
+	$self->{info}->{host_as_attr}=2;
 	$self->{info}->{contact_i18n}=2;
 	return $self;
 }
 
 sub periods			{ return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name			{ return 'RO'; }
-sub tlds			{ return ('ro',map { $_.'.ro'} qw/arts co com firm info org rec store tm www/ ); }
+sub tlds			{ return ('ro',map { $_.'.ro'} qw/arts com firm info org rec store tm www nt/ ); }
 sub object_types	{ return ('domain','contact','ns'); }
 sub profile_types	{ return qw/epp/; }
 
