@@ -39,7 +39,7 @@ is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Sock
 $R2='';
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build');
-is($rc->is_success(),1,'session noop is_success'); # Code 2101 (Unimplemented Command) - Seems okay for keepalive...
+is($rc->is_success(),1,'session noop is_success'); # Code 2101 (Unimplemented Command) - Seems okay for keepalive use ONLY though...
 $R2=$E1.'<response>'.r(1500).$TRID.'</response>'.$E2;
 $rc=$dri->process('session','logout',[]);
 is($R1,$E1.'<command><logout/><clTRID>ABC-12345</clTRID></command>'.$E2,'session logout build');
