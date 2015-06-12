@@ -383,6 +383,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::NEWGTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG::Centric');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG::RegistryMessage');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG::Market');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNITEDTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNITEDTLD::Finance');

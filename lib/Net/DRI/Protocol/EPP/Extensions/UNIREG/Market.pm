@@ -20,8 +20,6 @@ use strict;
 use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
-#use Net::DRI::Data::Contact::UNIREG;
-use Data::Dumper;
 
 =pod
 
@@ -31,37 +29,22 @@ Net::DRI::Protocol::EPP::Extensions::UNIREG::Market - Market Extension for UniRe
 
 =head1 DESCRIPTION
 
-Adds the UniRegistry Registrant Market Extension (http://ns.uniregistry.net/centric-1.0 ) to domain commands. This extensions is returned from the domain_info command, and used in domain_create and by adding contact type 'urc' to a contactset, and domain_update by setting the 'urc' with a contact object. The contact object should be created as a URC  L<Net::DRI::Data::Contact::UNIREG> contact,  and contains the below additional data. Note, the URC contact does not have a handle at the registry. You need to create / update using the acual contact data each time.
+Adds the Uniregistry Market extension. Uniregistry Market is a Uniregistry service designed for registrar partners. It provides the ability to check for object availability, create, cancel, and approve inquiries as well as the ability to buy objects in real time using the EPP protocol.
 
-=item alt_email (valid email address)
-
-=item mobile (valid phone number
-
-=item challenge (array of hashes listing security questions and examples; min 3, max 5)
-
-=head1 SYNPOSIS
+=head1 SYNOPSIS
  
- # domain info
- my $rc = $dri->domain_info('domain.tld');
- my $urc = $dri->get_info('contact')->get('urc');
+ # market check => used to determine if an object is available in the Uniregistry Market
+ my $rc = $dri->market_check(qw/example1.tld example2.tld/, { 'type_attr'=>'domain', 'suggestions_attr'=>'true'});
 
- # setting urc contact data
- my $urc = $dri->local_object('urc_contact'); # urc_contact is object type!
- $urc->name('...')->org('..'); # starndard contact defailts
- $urc->alt_email('...');
- $urc->mobile('+1.6504231234');
- my @ch = ( {question => 'Question 1',answer=>'Answer 1'},{question => 'Question 2',answer=>'Answer 2'},{question => 'Question 3',answer=>'Answer 3'} );
- $urc->challenge(\@ch);
+ # market info => check for the status of orders placed on the Uniregistry Market
+ my $rc = $dri->market_info('my_order_id');
 
- # domain create
- my $cs=$dri->local_object('contactset');
- #$cs->set($c1,'registrant'); # whatever your other contacts are
- $cs->set($urc,'urc'); # set urc contact
- $rc = $dri->domain_create('domain.tld',{... contact => $cs} );
+ # market create => used in the Uniregistry Market to place an order ("bin" or "offer"). The operation is processed in real time.
+ $contact = { 'fname'=>'John', 'lname'=>'Doe', 'email'=>'jdoe@example.com', 'voice'=>'+1.123456789' };
+ $rc = $dri->market_create('example.tld', { 'order_type'=>'offer', 'amount'=>15000, 'contact'=>$contact });
 
- # domain update
- $toc->set('urc',$urc); # Note, sending the contact not contactset
- $rc=$dri->domain_update('domain.tld',$toc);
+ # market update => is used to complete an order that has "accepted" on the Uniregistry Market
+ $rc=$dri->market_update('my_order_id', { 'order'=>'complete' });
 
 =head1 SUPPORT
 
@@ -102,9 +85,9 @@ sub register_commands
   my ($class,$version)=@_;
   my %tmp=(
             check    => [ \&check, \&check_parse],
-            create   => [ \&create, \&create_parse],
+            create   => [ \&create, \&info_parse],
             info     => [ \&info, \&info_parse ],
-#            update   => [ \&update, \&parse_update ],
+            update   => [ \&update, \&info_parse ],
          );
   $tmp{check_multi}=$tmp{check};
   return { 'market' => \%tmp };
@@ -114,49 +97,62 @@ sub setup
 {
   my ($self,$po) = @_;
   $po->ns( { 'market' => ['http://ns.uniregistry.net/market-1.0','market-1.0.xsd']} );
-#  $po->capabilities('market_update','market',['set']);
   return;
 }
 
 ####################################################################################################
 sub check
 {
-  my ($epp,$market,$rd)=@_;
-#  print Dumper($market);
-#  print Dumper($rd);
+  my ($epp,$market,$todo)=@_;
   my $mes=$epp->message();
-  
-  my $market_attr;
-  if (Net::DRI::Util::has_key($rd,'type'))
-  {
-    $market_attr=$rd->{'type'};
-  } else 
-  {
-    $market_attr='domain';
-  }
-  return unless $market_attr;
-  print Dumper($market_attr);
-  my @m=market_build_command($mes,'check',$market);
+  my @m=market_build_command($mes,'check',$market,$todo);
   $mes->command_body(\@m);
   return;
 }
-
-#sub check
-#{
-#  my ($epp,$market,$rd)=@_;
-#  print Dumper($market);
-#  print Dumper($rd);
-#  my $mes=$epp->message();
-#  $mes->command(['check','market:check',sprintf('xmlns:market="%s" xsi:schemaLocation="%s %s" type="domain" suggestions="false"',$mes->nsattrs('market'))]);
-#  return;
-#}
-
 
 sub check_parse
 {
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
-  
+  return unless $mes->is_success();
+
+  my $chkdata=$mes->get_response('market','chkData');
+  return unless defined $chkdata;
+
+  foreach my $cd ($chkdata->getChildrenByTagNameNS($mes->ns('market'),'cd'))
+  {
+    my $market;
+    my @suggestions=();
+    foreach my $el (Net::DRI::Util::xml_list_children($cd))
+    {
+      my ($name,$content)=@$el;
+      if ($name eq 'name')
+      {
+        $market=lc($content->textContent());
+        $rinfo->{market}->{$market}->{action}='check';
+        $rinfo->{market}->{$market}->{exist}=1-Net::DRI::Util::xml_parse_boolean($content->getAttribute('avail')); # attribute whose value indicate whether the object is available or not on the Uniregistry Market at the time of processing
+        $rinfo->{market}->{$market}->{bin}=1-Net::DRI::Util::xml_parse_boolean($content->getAttribute('bin')) if $content->getAttribute('bin'); # attribute whose value indicate whether object is available for "Buy It Now"
+        $rinfo->{market}->{$market}->{offer}=1-Net::DRI::Util::xml_parse_boolean($content->getAttribute('offer')) if $content->getAttribute('offer'); # attribute whose value indicate whether object is available for "Inquiries"
+      } elsif ($name eq 'suggestion')
+      {
+        my $suggestion={};
+        foreach my $el2 (Net::DRI::Util::xml_list_children($content))
+        {
+          my ($name2,$content2)=@$el2;
+          if ($name2 eq 'name')
+          {
+            $suggestion->{name}=$content2->textContent();
+            $suggestion->{bin}=1-Net::DRI::Util::xml_parse_boolean($content2->getAttribute('bin')); # attribute whose value indicate whether object is available for "Buy It Now"
+            $suggestion->{offer}=1-Net::DRI::Util::xml_parse_boolean($content2->getAttribute('offer')); # attribute whose value indicate whether object is available for "Inquiries"
+          }
+          $suggestion->{price}=$content2->textContent() if $name2 eq 'price';
+        }
+        push @suggestions, $suggestion;
+      }
+      $rinfo->{market}->{$market}->{price}=$content->textContent() if $name eq 'price';
+    }
+    @{$rinfo->{market}->{$market}->{suggestion}}=@suggestions if @suggestions;
+  }
   return;
 }
 
@@ -173,15 +169,6 @@ sub create
   return;
 }
 
-sub create_parse
-{
-  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-  my $mes=$po->message();
-  return unless $mes->is_success();
-  
-  return;
-}
-
 sub info
 {
 my ($epp,$market,$rd)=@_;
@@ -195,29 +182,41 @@ sub info_parse
 {
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
+  my $resdata;
   return unless $mes->is_success();
-
-  my $infData=$mes->get_response('market','infData');
-  return unless defined $infData;
-
-  $oname = 'market' unless defined $oname;
-  foreach my $el (Net::DRI::Util::xml_list_children($infData))
+  foreach my $res (qw/creData upData infData/)
   {
-    my ($name,$content)=@$el;
-    $name = 'order_id' if $name eq 'orderID';
-    $rinfo->{market}->{$oname}->{$name}=$content->textContent() if $name =~ m/^(order_id|name|amount|status)$/; # plain text
-    $rinfo->{market}->{$oname}->{'type_attr'}=$content->getAttribute('type') if $name eq 'name';
-    $rinfo->{market}->{$oname}->{$name}=$po->parse_iso8601($content->textContent()) if $name =~ m/^(crDate|upDate)$/; # date fields
-    if ($name eq 'transferInfo')
+    next unless $resdata=$mes->get_response($mes->ns('market'),$res);
+    $oname = 'market' unless defined $oname;
+    foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
-      $rinfo->{market}->{$oname}->{'transfer_info'}={pw=>Net::DRI::Util::xml_child_content($content,$mes->ns('market'),'pw')};
-    } elsif ($name eq 'holdExpiryDate')
-    {
-      $rinfo->{market}->{$oname}->{'hold_expiry_date'}=$po->parse_iso8601($content->textContent()) if $name eq 'holdExpiryDate';
-    } 
+      my ($name,$content)=@$el;
+      $name = 'order_id' if $name eq 'orderID';
+      $rinfo->{market}->{$oname}->{$name}=$content->textContent() if $name =~ m/^(order_id|name|amount|status)$/; # plain text
+      $rinfo->{market}->{$oname}->{'type_attr'}=$content->getAttribute('type') if $name eq 'name';
+      $rinfo->{market}->{$oname}->{$name}=$po->parse_iso8601($content->textContent()) if $name =~ m/^(crDate|upDate)$/; # date fields
+      if ($name eq 'transferInfo')
+      {
+        $rinfo->{market}->{$oname}->{'transfer_info'}={pw=>Net::DRI::Util::xml_child_content($content,$mes->ns('market'),'pw')};
+      } elsif ($name eq 'holdExpiryDate')
+      {
+        $rinfo->{market}->{$oname}->{'hold_expiry_date'}=$po->parse_iso8601($content->textContent()) if $name eq 'holdExpiryDate';
+      }
+    }
+    $rinfo->{market}->{$oname}->{action}=$oaction;
+    $rinfo->{market}->{$oname}->{type}='market';
   }
-  $rinfo->{market}->{$oname}->{action}='info';
-  $rinfo->{market}->{$oname}->{type}='market';
+  return;
+}
+
+sub update
+{
+  my ($epp,$market,$rd)=@_;
+  my $mes=$epp->message();
+  my @m=market_build_command($mes,'update',$market);
+  Net::DRI::Exception::usererr_invalid_parameters('Invalid market order. Should be: "acknowledge", "cancel" or "complete" ') unless $rd->{order}=~m/^(acknowledge|cancel|complete)$/;
+  push @m, ['market:'.$rd->{order}];
+  $mes->command_body(\@m);
   return;
 }
 
@@ -229,15 +228,9 @@ sub market_build_command
   
   my $tcommand=ref $command ? $command->[0] : $command;
   
-  if ($command =~ m/^(?:check|create)$/)
+  if ($command eq 'create')
   {
     Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless @m;
-#    foreach my $m (@m)
-#    {
-#    	print Dumper($m);
-#      Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless defined $m && $m;
-#      Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid domain name: '.$m) unless Net::DRI::Util::xml_is_token($m,1,255);
-#    }
     if ($marketattr->{name_type})
     {
       @market=map { ['market:name',$_,{'type'=>$marketattr->{name_type}}] } @m;
@@ -246,10 +239,25 @@ sub market_build_command
       @market=map { ['market:name',$_,{'type'=>'domain'}] } @m;
     }
     $msg->command([$command,'market:'.$tcommand,sprintf('xmlns:market="%s" xsi:schemaLocation="%s %s" type="'.$marketattr->{order_type}.'"',$msg->nsattrs('market'))]);
-  } elsif ($command eq 'info')
+  } elsif ($command =~ m/^(?:info|update)$/)
   {
     @market=map { ['market:orderID',$_,$marketattr] } @m;
     $msg->command([$command,'market:'.$tcommand,sprintf('xmlns:market="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('market'))]);
+  } elsif ($command eq 'check')
+  {
+    Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless @m;
+    foreach (@m)
+    {
+      push @market, ['market:name', $_] unless ref $_ eq 'HASH';
+    }
+    if ($marketattr->{type_attr} || $marketattr->{suggestions_attr})
+    {
+      $marketattr->{type_attr} = 'domain' unless defined $marketattr->{type_attr};
+      $marketattr->{suggestions_attr} = 'false' unless defined $marketattr->{suggestions_attr};
+      $msg->command([$command,'market:'.$tcommand,sprintf('xmlns:market="%s" xsi:schemaLocation="%s %s" type="'.$marketattr->{type_attr}.'" suggestions="'.$marketattr->{suggestions_attr}.'"',$msg->nsattrs('market'))]);
+    } else {
+      $msg->command([$command,'market:'.$tcommand,sprintf('xmlns:market="%s" xsi:schemaLocation="%s %s" type="domain" suggestions="false"',$msg->nsattrs('market'))]);
+    }
   }
   return @market;
 }

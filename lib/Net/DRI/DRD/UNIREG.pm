@@ -121,7 +121,7 @@ sub market_check
    Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in market_check') if defined $rd;
    $rd=Net::DRI::Util::create_params('market_check',$p);
   }
-  $self->enforce_domain_name_constraints($ndr,$p,'check');
+  #$self->enforce_domain_name_constraints($ndr,$p,'check');
   push @names,$p;
  }
  Net::DRI::Exception::usererr_insufficient_parameters('market_check needs at least one domain name to check') unless @names;
@@ -167,8 +167,20 @@ sub market_check
 
 sub market_info
 {
- my ($self,$reg,$id,$rd)=@_;
- return $reg->process('market','info',[$id,$rd]);
+ my ($self,$reg,$id)=@_;
+ return $reg->process('market','info',[$id]);
+}
+
+sub market_create
+{
+  my ($self,$reg,$id,$rd)=@_;
+  return $reg->process('market','create',[$id,$rd]);
+}
+
+sub market_update
+{
+  my ($self,$reg,$rd,$todo)=@_;
+  return $reg->process('market','update',[$rd,$todo]);
 }
 
 ####################################################################################################
