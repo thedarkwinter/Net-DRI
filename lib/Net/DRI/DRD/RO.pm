@@ -4,7 +4,7 @@
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
-## This file is part of Net::DRI
+## This file is part of Net::DRI.
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -79,11 +79,11 @@ sub new {
 	return $self;
 }
 
-sub periods			{ return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name			{ return 'RO'; }
-sub tlds			{ return ('ro',map { $_.'.ro'} qw/arts com firm info org rec store tm www nt/ ); }
-sub object_types	{ return ('domain','contact','ns'); }
-sub profile_types	{ return qw/epp/; }
+sub periods         { return map { DateTime::Duration->new(years => $_) } (1..10); }
+sub name            { return 'RO'; }
+sub tlds            { return ('ro',map { $_.'.ro'} qw/arts com firm info org rec store tm www nt/ ); }
+sub object_types    { return ('domain','contact','ns'); }
+sub profile_types   { return qw/epp/; }
 
 sub transport_protocol_default {
 	my ($self,$type)=@_;

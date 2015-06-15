@@ -4,7 +4,7 @@
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
-## This file is part of Net::DRI
+## This file is part of Net::DRI.
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -72,15 +72,15 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands {
 	my ( $class, $version)=@_;
 	my %tmp=(
-		create =>				[ \&create, undef ],
-		trade_request =>		[ \&trade_request, \&trade_request_parse ],
-		trade_approve =>		[ \&trade_approve, undef ],
-		trade_query =>			[ \&trade_query, \&trade_query_parse],
-		transfer_request =>		[ \&transfer_request, undef],
-		update =>				[ \&update, undef],
-		renew =>				[ \&renew, undef],
-		info =>					[ \&info, undef],
-		check =>				[ \&check, undef]
+		create =>               [ \&create, \&create_parse ],
+		trade_request =>        [ \&trade_request, \&trade_request_parse ],
+		trade_approve =>        [ \&trade_approve, undef ],
+		trade_query =>          [ \&trade_query, \&trade_query_parse],
+		transfer_request =>     [ \&transfer_request, undef],
+		update =>               [ \&update, undef],
+		renew =>                [ \&renew, undef],
+		info =>                 [ \&info, undef],
+		check =>                [ \&check, \&check_parse]
 	);
 
 	return { 'domain' => \%tmp };
@@ -97,10 +97,13 @@ sub create {
 	return unless ( (defined $rd->{'reserve_domain'}) || (defined $rd->{'domain_terms'}) );
 
 	# Domain Password Validation
-	Net::DRI::Exception::usererr_insufficient_parameters('auth-pw is required for .RO') 
+	Net::DRI::Exception::usererr_insufficient_parameters('auth-pw is required for .RO')
 		unless ((defined $rd->{auth}->{pw}) && ($rd->{auth}->{pw} ne ''));
-	Net::DRI::Exception::usererr_invalid_parameters('auth-pw supplied must have no spaces; one capital, small & special character with length between 6-40') 
+	Net::DRI::Exception::usererr_invalid_parameters('auth-pw supplied must have no spaces; one capital, small & special character with length between 6-40')
 		unless ($rd->{auth}->{pw}=~ m/^[a-z0-9\-\.\,\:\;\[\]\{\}\_\+\=\@\#\$\^\*\?\!\|\~]{6,40}$/i);
+
+	# Domain Contact Validation
+	validate_contacts($rd);
 
 	push @f,['rotld:agreement',{legal_use => $rd->{'domain_terms'}->{'legal_use'}, registration_rules => $rd->{'domain_terms'}->{'reg_rules'}}];
 	if ($rd->{'reserve_domain'}->{'reserve'} == 1) {push @f,['rotld:reserve'];}
@@ -108,6 +111,30 @@ sub create {
 	push @e,['rotld:create',['rotld:domain',@f]];
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
 	$mes->command_extension($eid,\@e);
+	return;
+}
+
+sub create_parse {
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+	my $mes=$po->message();
+	return unless $mes->is_success();
+
+	my $idndata=$mes->get_extension('ro_idn_ext','mapping');
+	return unless defined $idndata;
+
+	my $ns=$mes->ns('ro_idn_ext');
+	$idndata=$idndata->getChildrenByTagNameNS($ns,'name');
+	return unless $idndata->size();
+
+	my $c=$idndata->shift->getFirstChild();
+	while($c) {
+		next unless ($c->nodeType() == 1); # element nodes ONLY
+		my $name=$c->localname() || $c->nodeName();
+		next unless $name && $c->getFirstChild();
+		if ($name=~m/^(ace|unicode)$/) {
+			$rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData() if (defined $c);
+		}
+	} continue { $c=$c->getNextSibling(); }
 	return;
 }
 
@@ -127,7 +154,6 @@ sub trade_request {
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
 	$mes->command_extension($eid,\@e);
-
 	return;
 }
 
@@ -156,7 +182,6 @@ sub trade_request_parse {
 			$rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();
 		}
 	} continue { $c=$c->getNextSibling(); }
-
 	return;
 }
 
@@ -176,7 +201,6 @@ sub trade_approve {
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
 	$mes->command_extension($eid,\@e);
-
 	return;
 }
 
@@ -196,7 +220,6 @@ sub trade_query {
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
 	$mes->command_extension($eid,\@e);
-
 	return;
 }
 
@@ -225,7 +248,6 @@ sub trade_query_parse {
 			$rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData() if (defined $c);
 		}
 	} continue { $c=$c->getNextSibling(); }
-
 	return;
 }
 
@@ -245,7 +267,6 @@ sub transfer_request {
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
 	$mes->command_extension($eid,\@e);
-
 	return;
 }
 
@@ -261,7 +282,6 @@ sub update {
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
 	$mes->command_extension($eid,\@e);
-
 	return;
 }
 
@@ -283,6 +303,69 @@ sub check {
 	my ($epp,$domain,$rd)=@_;
 	my $mes=$epp->message();
 	$mes->command(['check','domain:check',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ro_domain'))]);
+	return;
+}
+
+sub check_parse {
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+	my $mes=$po->message();
+	return unless $mes->is_success();
+	my $msg = {};
+
+	# IDN & Domain Renew Availability Extension(s)
+	my $idndata=$mes->get_extension('ro_idn_ext','mapping');
+	my $trddata=$mes->get_extension('ro_domain_ext','ext');
+	return unless ((defined $idndata) || (defined $trddata));
+
+	if (defined $idndata) {
+		my $ns=$mes->ns('ro_idn_ext');
+		$idndata=$idndata->getChildrenByTagNameNS($ns,'name');
+		if ($idndata->size()) {
+			my $c=$idndata->shift->getFirstChild();
+			while($c) {
+				next unless ($c->nodeType() == 1); # element nodes ONLY
+				my $name=$c->localname() || $c->nodeName();
+				next unless $name && $c->getFirstChild();
+				if ($name=~m/^(ace|unicode)$/) {
+					$rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData() if (defined $c);
+				}
+			} continue { $c=$c->getNextSibling(); }
+		}
+	}
+
+	if (defined $trddata) {
+		foreach my $el (Net::DRI::Util::xml_list_children($trddata)) {
+			my ($name,$c)=@$el;
+				if ($name eq 'check_renew_availability') {
+					$msg->{renewable} = $c->getAttribute('renewable') if $c->hasAttribute('renewable');
+				}
+		}
+		my $ns=$mes->ns('ro_domain_ext');
+		$trddata=$trddata->getChildrenByTagNameNS($ns,'check_renew_availability');
+		if ($trddata->size()) {
+			my $c=$trddata->shift->getFirstChild();
+			while($c) {
+				next unless ($c->nodeType() == 1); # element nodes ONLY
+				my $name=$c->localname() || $c->nodeName();
+				next unless $name && $c->getFirstChild();
+				if ($name=~m/^(reason|name)$/) {
+					$msg->{reason} = $c->getFirstChild()->getData() if (defined $c);
+				}
+			} continue { $c=$c->getNextSibling(); }
+			$rinfo->{domain}->{$oname}->{renew_availability} = $msg;
+		}
+	}
+	return;
+}
+
+sub validate_contacts {
+	my $rd=shift;
+	my $cont=$rd->{contact}->types();
+	foreach my $t (qw/registrant/) {
+		my $cont=$rd->{contact}->get($t);
+		Net::DRI::Exception::usererr_invalid_parameters('"srid" for registrant is set to "AUTO". Contact must be created before domain is registered.') if ($cont->{'srid'} =~ m/^(AUTO)/i);
+		Net::DRI::Exception::usererr_invalid_parameters('invalid registrant contact "srid". Must begin with "C" then 1-12 numbers.') unless ($cont->{'srid'} =~ m/^(C)([0-9]){1,12}/i);
+	}
 	return;
 }
 

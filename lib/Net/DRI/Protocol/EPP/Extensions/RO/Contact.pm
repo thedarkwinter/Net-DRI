@@ -4,7 +4,7 @@
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
-## This file is part of Net::DRI
+## This file is part of Net::DRI.
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands {
 	my ( $class, $version ) = @_;
 	my %tmp = (
-		create =>	[ \&create, undef ],
+		create =>     [ \&create, undef ],
 	);
 	return { 'contact' => \%tmp };
 }
@@ -91,7 +91,6 @@ sub create {
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_contact_ext')));
 	$mes->command_extension($eid,\@e);
-
 	return;
 }
 
