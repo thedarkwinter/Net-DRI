@@ -4,7 +4,7 @@
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
-## This file is part of Net::DRI
+## This file is part of Net::DRI.
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -44,6 +44,8 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 =head2 vat()
 
+VAT is mandatory for .RO Contacts.
+
 =head2 type()
 
 Legend:
@@ -52,8 +54,8 @@ ap - Authorized Person
 nc - Non-Commercial Organization
 c - Commercial
 gi - Government Institute
-pi - Public Institute (VAT Mandatory)
-o - Other Juridical 
+pi - Public Institute
+o - Other Juridical
 
 =head1 SUPPORT
 
@@ -100,8 +102,9 @@ sub validate {
 
 	# registry specified 'mandatory' fields for create commands
 	if (!$change) {
-		if ($self->type() eq 'pi') {
-			Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: vat field is mandatory.') unless ($self->vat());
+		if ($self->cc() eq 'RO') {
+			Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: vat field is mandatory for romanian contacts') unless ($self->vat());
+			Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: VAT number given must be in the correct format for romanian contacts') unless ($self->vat()=~ m/(RO)?[0-9]{2,10}/i);
 		}
 		# 'srid' field validation
 		push @errs,'"srid" is specified by the registry and MUST be set to "AUTO"' if ((defined $self->srid()) && ($self->srid() ne 'AUTO'));
@@ -129,7 +132,6 @@ sub validate {
 
 sub init {
 	my ($self,$what,$ndr)=@_;
-
 	if ($what eq 'create') {
 		my $a=$self->auth();
 		$self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); #authInfo is not used!

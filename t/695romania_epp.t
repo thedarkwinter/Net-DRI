@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 33;
+use Test::More tests => 43;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -77,6 +77,19 @@ is($R1,$E1.'<command><create><domain:create xmlns:domain="http://www.rotld.ro/xm
 #is($R1,$E1.'<command><create><domain:create xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-hizd3lof.ro</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>a.ns.1.test-4oakyw-3.ro</domain:hostObj><domain:hostObj>ns1.example.com</domain:hostObj><domain:hostObj>ns1.example.net</domain:hostObj><domain:hostObj>a.ns.1.test-hizd3lof.ro</domain:hostObj></domain:ns><domain:registrant>C618518</domain:registrant><domain:authInfo><domain:pw>111aA1@11</domain:pw></domain:authInfo></domain:create></create><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:create><rotld:domain><rotld:agreement legal_use="yes" registration_rules="yes"/></rotld:domain></rotld:create></rotld:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create ns & terms_only object_method build_xml');
 is($rc->is_success(),1,'domain_create ns & terms_only is_success');
 
+### 1.1.1 Domain Create w/o reservation w/ terms w/ IDN
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-gbdppjee-ăîșțâ.ro</domain:name><domain:crDate>2015-05-27T08:24:52Z</domain:crDate></domain:creData></resData><extension><idn:mapping xmlns:idn="http://www.rotld.ro/xml/epp/idn-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/idn-1.0 idn-1.0.xsd"><idn:name><idn:ace>xn--test-gbdppjee--ohb5qsnr6odb.ro</idn:ace><idn:unicode>test-gbdppjee-ăîșțâ.ro</idn:unicode></idn:name></idn:mapping></extension>'.$TRID.'</response>'.$E2; 
+$cs=$dri->local_object('contactset');
+$cs->add($dri->local_object('contact')->srid('C1192942'),'registrant');
+$cs->add($dri->local_object('contact')->srid(''),'tech');
+$dh=$dri->local_object('hosts');
+$dh->add('xn--0la.xn--n-oxa.xn--fda.xn--test-gbdppjee--ohb5qsnr6odb.ro',['192.0.2.2'],['1080:0:0:0:8:800:200C:417A'],1);
+$domain_terms = {'legal_use' => 'yes', 'reg_rules' => 'yes'};
+$reserve_domain = {'reserve' => '0'};
+$rc=$dri->domain_create('xn--test-gbdppjee--ohb5qsnr6odb.ro',{domain_terms=>$domain_terms,reserve_domain=>$reserve_domain,pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,auth=>{pw=>'Parol@1'}});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>xn--test-gbdppjee--ohb5qsnr6odb.ro</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostAttr><domain:hostName>xn--0la.xn--n-oxa.xn--fda.xn--test-gbdppjee--ohb5qsnr6odb.ro</domain:hostName><domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr><domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr></domain:hostAttr></domain:ns><domain:registrant>C1192942</domain:registrant><domain:contact type="tech"/><domain:authInfo><domain:pw>Parol@1</domain:pw></domain:authInfo></domain:create></create><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:create><rotld:domain><rotld:agreement legal_use="yes" registration_rules="yes"/></rotld:domain></rotld:create></rotld:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create ns & terms & idn build_xml');
+is($rc->is_success(),1,'domain_create ns & terms & idn is_success');
+
 ### 1.2 Domain Trade Start (Obtaining an Authorization Key)
 $R2=$E1.'<response>'.r().'<resData><domain:trdData xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-ia8gq5cs.ro</domain:name><domain:trStatus /><domain:reID/><domain:reDate>2013-07-26T00:00:00Z</domain:reDate><domain:acID/><domain:acDate/><domain:exDate>2013-08-09T00:00:00Z</domain:exDate></domain:trdData></resData><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:trdData><rotld:domain><rotld:request><rotld:authorization_key>2f4MmCXsrRHE</rotld:authorization_key></rotld:request></rotld:domain></rotld:trdData></rotld:ext></extension>'.$TRID.'</response>'.$E2; 
 $rc=$dri->domain_trade_start('test-ia8gq5cs.ro');
@@ -143,6 +156,22 @@ $R2='';
 $rc = $dri->domain_info('test-5btc8khh-7.ro');
 is_string($R1,$E1.'<command><info><domain:info xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name hosts="all">test-5btc8khh-7.ro</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info build_xml');
 is($rc->is_success(), 1, 'domain_info is success');
+
+### 2.0 Domain Check with IDN
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="0">test-a8r7bs6j-ăîșțâ.ro</domain:name><domain:reason>Not Available</domain:reason></domain:cd></domain:chkData></resData><extension><idn:mapping xmlns:idn="http://www.rotld.ro/xml/epp/idn-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/idn-1.0 idn-1.0.xsd"><idn:name><idn:ace>xn--test-a8r7bs6j--ohb5qsnr6odb.ro</idn:ace><idn:unicode>test-a8r7bs6j-ăîșțâ.ro</idn:unicode></idn:name></idn:mapping><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:check_renew_availability renewable="0"><rotld:reason>OPERATION NOT SUPPORTED FOR YOUR REGISTRAR TYPE</rotld:reason></rotld:check_renew_availability></rotld:ext></extension>'.$TRID.'</response>'.$E2; 
+$rc = $dri->domain_check('xn--test-9gxjiy7m--ohb5qsnr6odb.ro');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>xn--test-9gxjiy7m--ohb5qsnr6odb.ro</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check idn build_xml');
+is($dri->get_info('ace'),'xn--test-a8r7bs6j--ohb5qsnr6odb.ro','domain_check_extension idn get_info(ace)');
+is($dri->get_info('unicode'),'test-a8r7bs6j-ăîșțâ.ro','domain_check_extension idn get_info(unicode)');
+is_deeply($dri->get_info('renew_availability'),{ renewable => '0', reason => 'OPERATION NOT SUPPORTED FOR YOUR REGISTRAR TYPE'},'domain_check_extension idn get_info(renew_availability) structure');
+is($rc->is_success(), 1, 'domain_check idn is success');
+
+### 2.0 Domain Check
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">romatime.ro</domain:name></domain:cd></domain:chkData></resData><extension><idn:mapping xmlns:idn="http://www.rotld.ro/xml/epp/idn-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/idn-1.0 idn-1.0.xsd" /><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:check_renew_availability renewable="0"><rotld:reason>OPERATION NOT SUPPORTED FOR YOUR REGISTRAR TYPE</rotld:reason></rotld:check_renew_availability></rotld:ext></extension>'.$TRID.'</response>'.$E2; 
+$rc = $dri->domain_check('romatime.ro');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>romatime.ro</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check dna build_xml');
+is_deeply($dri->get_info('renew_availability'),{ renewable => '0', reason => 'OPERATION NOT SUPPORTED FOR YOUR REGISTRAR TYPE'},'domain_check_extension dna get_info(renew_availability) structure');
+is($rc->is_success(), 1, 'domain_check dna is success');
 
 ####################################################################################################
 ####### Host Commands [No extensions or change from EPP 1.0] ########
