@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 104;
+use Test::More tests => 106;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -26,7 +26,7 @@ my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { re
 $dri->add_registry('NGTLD',{provider => 'nicmx','name'=>'lat'});
 $dri->target('lat')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-my ($rc,$co,$co2,$cs,$toc);
+my ($rc,$co,$co2,$cs,$toc,$s);
 
 ## epp:hello
 $R2='';
@@ -295,5 +295,11 @@ is($dri->get_info('idn_lang'),'es','domain_check get_info(lang)');
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>idn-info-example.lat</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:infData></resData><extension><idn:infoResData xmlns:idn="http://www.nic.lat/nicmx-idn-1.0" xsi:schemaLocation="http://www.nic.lat/nicmx-idn-1.0 nicmx-idn-1.0.xsd"><idn:lang>fr</idn:lang></idn:infoResData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('idn-info-example.lat');
 is($dri->get_info('idn_lang'),'fr','domain_check get_info(lang)');
+## domain_info - with ASCII format
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>xn--tst-bma.lat</domain:name><domain:roid>DOMAIN_119-LAT</domain:roid><domain:status s="inactive"/><domain:registrant>monitoreonicmxr</domain:registrant><domain:contact type="admin">monitoreonicmxr</domain:contact><domain:contact type="billing">monitoreonicmxr</domain:contact><domain:contact type="tech">monitoreonicmxr</domain:contact><domain:clID>rar_monit</domain:clID><domain:crDate>2015-06-09T17:23:01.0Z</domain:crDate></domain:infData></resData><extension><rgp:infData xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0"><rgp:rgpStatus s="addPeriod"/></rgp:infData><idn:infoResData xmlns:idn="http://www.nic.lat/nicmx-idn-1.0"><idn:lang>ES</idn:lang></idn:infoResData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('xn--tst-bma.lat');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status) +RGP');
+is($dri->get_info('idn_lang'),'ES','domain_check get_info(lang) idn');
 
 exit 0;
