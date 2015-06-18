@@ -178,7 +178,13 @@ sub fee_set_parse_07
       $set->{fee} = 0 unless exists $set->{fee};
       $set->{fee} += $content->textContent();
       $set->{description} = '' unless exists $set->{description};
-      $set->{description} = "\n" . $content->getAttribute('description') if $content->hasAttribute('description');
+      if ($content->hasAttribute('description'))
+      {
+        $set->{description} = "\n" . $content->getAttribute('description');
+        my $d = lc $content->getAttribute('description');
+        $d =~ s/ /_/g;
+        $set->{"fee_$d"} = 0 + $content->textContent();
+      }
       if ($content->hasAttribute('refundable') && $content->getAttribute('refundable') eq '1') {
         $set->{description} .= "Refundable";
       }
@@ -316,6 +322,7 @@ sub set_premium_values {
   $rinfo->{domain}->{$oname}->{price_currency} = $ch->{currency};
   $rinfo->{domain}->{$oname}->{price_duration} = $ch->{duration};
   $rinfo->{domain}->{$oname}->{$ch->{action} .'_price'} = $ch->{fee}; # action can be create/renew/transfer/restore. extension only returns what was requested
+  $rinfo->{domain}->{$oname}->{eap_price} = $ch->{fee_early_access_fee} if exists $ch->{fee_early_access_fee};
  }
  return;
 }
