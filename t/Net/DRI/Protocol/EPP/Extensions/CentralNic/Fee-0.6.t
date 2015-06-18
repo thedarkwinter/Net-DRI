@@ -31,7 +31,7 @@ my ($dh, @c, $fee);
 
 ####################################################################################################
 ## Fee extension version 0.6 http://tools.ietf.org/html/draft-brown-epp-fees-03
-## Fee-0.6 (In use by Charlseston Road Registry, Famous Four Media, and Neustar [at least for .co])
+## Fee-0.6 (In use by Charlseston Road Registry, Famous Four Media, and Neustar [at least for .co and .club])
 ## We use a greeting here to switch the namespace version here to -0.6 testing
 $R2=$E1.'<greeting><svID>Neustar EPP Server:co</svID><svDate>2015-06-18T10:03:23.0Z</svDate><svcMenu><version>1.0</version><lang>en-US</lang><objURI>urn:ietf:params:xml:ns:contact</objURI><objURI>urn:ietf:params:xml:ns:host</objURI><objURI>urn:ietf:params:xml:ns:domain</objURI><objURI>urn:ietf:params:xml:ns:svcsub</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:neulevel</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:fee-0.6</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
