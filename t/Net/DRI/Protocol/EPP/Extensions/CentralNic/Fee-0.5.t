@@ -6,8 +6,6 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
-use Data::Dumper;
-
 
 use Test::More tests => 86;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -22,7 +20,6 @@ sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
-
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_registry('NGTLD',{provider=>'mamclient'});
@@ -34,13 +31,14 @@ my $d;
 my ($dh,@c,$toc,$cs,$c1,$c2);
 
 ####################################################################################################
-## M+M Uses the 0.5 version of Gavin Browns (CentralNic) extension. We use a greeting here to switch the namespace version here to 0.5
+## Fee extension version 0.5 http://tools.ietf.org/html/draft-brown-epp-fees-02
+## Fee-0.5 (In use by CentralNic and Minds & Machines)
+## We use a greeting here to switch the namespace version here to -0.5 testing
 $R2=$E1.'<greeting><svID>Minds + Machines EPP Server epp-dub.mm-registry.com</svID><svDate>2014-06-25T10:08:59.0751Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.5</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.5','Fee 0.5 loaded correctly');
-
-
 ####################################################################################################
+
 ### EPP Check Commands Variants ###
 
 ## Check: single domain - minimum data

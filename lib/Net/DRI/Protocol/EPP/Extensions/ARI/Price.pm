@@ -123,6 +123,9 @@ sub check
  if (Net::DRI::Util::has_key($rd->{price},'duration') && UNIVERSAL::isa($rd->{'price'}->{'duration'},'DateTime::Duration'))
  {
   push @n, ['price:period',$rd->{'price'}->{'duration'}->in_units('years'),{'unit' => 'y'}];
+ } elsif (Net::DRI::Util::has_key($rd->{price},'duration') && $rd->{'price'}->{'duration'} =~ m/^(\d|10)$/)
+ {
+  push @n, ['price:period',$rd->{'price'}->{'duration'},{'unit' => 'y'}];
  }
  $mes->command_extension($eid,\@n );
  return;

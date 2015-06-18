@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 93;
+use Test::More tests => 96;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -134,6 +134,13 @@ is($dri->get_info('create_price'),500.00,'domain_check get_info (create_price)')
 is($dri->get_info('renew_price'),500.00,'domain_check get_info (renew_price)');
 is($dri->get_info('transfer_price'),50,'domain_check get_info (transfer_price) undef');
 is($dri->get_info('restore_price'),40,'domain_check get_info (restore_price) undef');
+
+# domain_check_price
+$R2=$E1.'<response>'.r().'<extension><price:chkData xmlns:price="urn:ar:params:xml:ns:price-1.2"><cd><name>random2.menu</name><category>PREMIUM CAT 3</category><period unit="y">5</period><createPrice>1000</createPrice><renewPrice>1000</renewPrice><transferPrice>50</transferPrice><restorePrice>40</restorePrice></cd></price:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check_price('random2.menu',{duration => 5});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>random2.menu</domain:name></domain:check></check><extension><price:check xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:period unit="y">5</price:period></price:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check price build_xml');
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium)');
+is($dri->get_info('create_price'),1000.00,'domain_check get_info (create_price)');
 
 # domain check multi
 $price = { duration=>DateTime::Duration->new(years=>1) };
