@@ -991,6 +991,37 @@ amsterdam
 =pod
 
 
+=head2 NicMX
+
+ $dri->add_registry('NGTLD',{provider=>'nicmx'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+lat
+
+=head3 Custom extensions
+
+L<NET::DRI::Protocol::EPP::Extensions::MX::Domain>
+L<NET::DRI::Protocol::EPP::Extensions::MX::Rar>
+L<NET::DRI::Protocol::EPP::Extensions::MX::Message>
+L<NET::DRI::Protocol::EPP::Extensions::MX::AdmStatus>
+L<NET::DRI::Protocol::EPP::Extensions::MX::IDN>
+
+=cut
+
+ return {
+     bep_type => 1, # dedicated Registry
+     tlds => ['lat'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::MX_GTLD',{}],
+     contact_i18n => 1,
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+   } if $bep eq 'nicmx';
+
+=pod
+
+
 =head2 StartingDot (Provided by Key Sytems)
 
  $dri->add_registry('NGTLD',{provider=>'startingdot'});
