@@ -18,7 +18,6 @@ package Net::DRI::Protocol::EPP::Extensions::UNIREG::RegistryMessage;
 use strict;
 use warnings;
 use Net::DRI::Util;
-use Data::Dumper;
 
 ####################################################################################################
 
