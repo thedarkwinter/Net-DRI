@@ -201,6 +201,7 @@ sub set_premium_values {
    $rinfo->{domain}->{$oname}->{has_fee} = 1;
    $rinfo->{domain}->{$oname}->{fee_category} = $ch->{category};
    $rinfo->{domain}->{$oname}->{fee_price} = $ch->{create};
+   $rinfo->{domain}->{$oname}->{eap_price} = $ch->{create} if $ch->{category} eq 'earlyAccess';
   }
  }
  return;

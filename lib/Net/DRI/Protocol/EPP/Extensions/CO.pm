@@ -1,4 +1,4 @@
-## Domain Registry Interface, Neulevel .BIZ EPP extensions
+## Domain Registry Interface, Neulevel .CO EPP extensions
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::BIZ;
+package Net::DRI::Protocol::EPP::Extensions::CO;
 
 use strict;
 use warnings;
@@ -23,7 +23,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::BIZ - Neulevel .BIZ EPP extensions for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::BIZ - Neulevel .CO EPP extensions for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -68,7 +68,11 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/NeuLevel::IDNLanguage NeuLevel::UIN SecDNS GracePeriod NeuLevel::Message/; }
+sub default_extensions {
+ my ($self,$pp) = @_;
+ $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
+ return qw/NeuLevel::IDNLanguage NeuLevel::UIN SecDNS GracePeriod NeuLevel::Message NeuLevel::CO CentralNic::Fee/;
+}
 
 ####################################################################################################
 1;

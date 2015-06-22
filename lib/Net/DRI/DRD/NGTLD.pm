@@ -558,7 +558,7 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
      tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'men', 'party', 'racing', 'review', 'science', 'trade', 'webcam', 'win', # uncontended
               'app', 'baby', 'bet', 'cam', 'charity', 'forum', 'game', 'hotel', 'music', 'rugby', 'search', 'shop', 'sport', 'stream',# contended
              ],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'ffm';
 
@@ -769,8 +769,17 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
 
  return {
      bep_type => 1, # dedicated registy
-     tlds => ['xn--rhqv96g','xn--g2xx48c','xn--nyqy26a','best','uno','safety','pharmacy','nyc','jetzt','taipei','qpon','moe','buzz','ceo','htc','club','whoswho','osaka'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}],
+     tlds => ['club'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::NYC->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::NYC'],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+   } if $bep eq 'neustar' && $tld eq 'club';
+
+ return {
+     bep_type => 1, # dedicated registy
+     tlds => ['xn--rhqv96g','xn--g2xx48c','xn--nyqy26a','best','uno','safety','pharmacy','nyc','jetzt','taipei','qpon','moe','buzz','ceo','htc','whoswho','osaka'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
 
@@ -1241,7 +1250,7 @@ All registries in the todo list here...
 }
 
 ####################################################################################################
-
+## These methods have been moved to DRD.pm
 =pod
 
 =head1 ngTLD Domain Methods
@@ -1257,30 +1266,6 @@ command.
  $rc = $dri->domain_check_claims('test.tld'); # standard claims lookup without phase name (use claims)
  $rc = $dri->domain_check_claims('test.tld',{'phase'=>'landrush','idn'=>{...}}); # claims lookup with phase name (recommended)
 
-=cut
-
-sub domain_check_claims
-{
- my ($self,$ndr,@names)=@_;
- my $bep = lc($self->{info}->{provider});
- my $rd = (@names && exists $names[-1] && ref $names[-1] eq 'HASH' ) ? pop @names : {};
- my $lp = { 'phase' => 'claims', 'type'=>'claims' };
- if (defined $rd && exists $rd->{phase} && lc($rd->{phase}) ne 'claims')
- {
-  # By default, most registries do NOT use a sub_phase is claims lookups. Therefore if you specifiy a phase it will be ignored
-  # Afilias/ARI/CentralNIC/CoreNic/CRR/Donuts/GMO/KS/PIR/RegBox/Rightside/StartingDot/Tango/UniRegistry
-
-  # These registres use claims as phase + phase_name us sub_phase. domain_check_claims('test-validate.buzz',{phase=>'landrush'});
-  # Neustar/MAM/FFM/KNet   (Knet seems to work either way - but rather put it here)
-  $lp->{sub_phase} = $rd->{phase} if ($bep =~ m/^(?:neustar|mam|ffm|knet)/);
-  # i think there is much more to do here
- }
- $rd->{lp} = $lp;
- return $ndr->domain_check(@names,$rd);
-}
-
-=pod 
-
 =head2 domain_check_price
 
 Some ngTLD backend operators have extensions that support checking domain prices 
@@ -1294,63 +1279,6 @@ object) will be added to the lookup.
  $rc = $dri->domain_check_price('test.tld','test2.tld',{'currency'=>'USD','idn'=>{...}}); # any other arguments can be specified alongside
  
 =cut
-
-
-#### FIXME: Neustar requires phase
-sub domain_check_price
-{
- my ($self,$ndr,@names)=@_;
- my $rd = (@names && exists $names[-1] && ref $names[-1] eq 'HASH' ) ? pop @names : {};
- $rd = $self->_build_price_query($ndr,$rd);
- return $ndr->domain_check(@names,$rd);
-}
-
-#### FIXME: Neustar requires phase
-sub domain_info_price
-{
- my ($self,$ndr,$domain,$rd)=@_;
- $rd = $self->_build_price_query($ndr,$rd);
- return $ndr->domain_info($ndr,$domain,$rd);
-}
-
-sub _build_price_query
-{
- my ($self,$ndr,$rd)=@_;
- my $bep = lc($self->{info}->{provider});
- if ($bep =~ m/^(?:donuts|rightside|zacr)/)
- { 
-  # they answer with fee anyway, so no action required on this one
- } elsif ($bep =~ m/^(?:neustar|ffm)/)
- {
-   $rd->{fee} = 1;
- } elsif ($bep eq 'ari') {
-   $rd->{price} = 1;
- } elsif ($bep eq 'verisign') {
-   $rd->{premium_domain} = 1;
- } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}}) {
-   my ($fee,@fees);
-   foreach my $k (qw/currency action duration/)
-   {
-     $fee->{$k} = $rd->{$k} if exists $rd->{$k};
-   }
-   $fee->{currency} = 'USD' unless exists $fee->{currency} || $bep !~ m/^gmo/; # fee-0.5+ should not set values for currency and duration as these will default
-   $fee->{duration} = 1 unless exists $fee->{duration} || $bep !~ m/^gmo/;
-   $fee->{duration} = $ndr->local_object('duration','years',$fee->{duration}) if exists $fee->{duration} && ref $fee->{duration} eq '' && $fee->{duration} =~ m/^\d$/;
-   @{$rd->{fee}} = ();
-   foreach (qw/create renew transfer restore/) {
-     my $feetype = { %{$fee} };
-     $feetype->{action} = $_;
-     push @fees,$feetype;
-   }
-   $rd->{fee} = \@fees;
- }
- foreach (qw/currency action duration/)
- {
-   delete $rd->{$_} if exists $rd->{$_};
- }
- return $rd;
-}
-
 
 ####################################################################################################
 

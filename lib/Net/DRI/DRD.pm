@@ -1393,6 +1393,99 @@ sub registrar_balance
 }
 
 ####################################################################################################
+## Premium domains, these function attempt to standardise lookup by calling a single domain_check_price sub
+# $rc = $dri->domain_check_price('test.tld','test2.tld'); # defaults to USD / create / 1 year
+# $rc = $dri->domain_check_price('test.tld','test2.tld',{'currency'=>'USD','duration'=>'1'}); # manually
+# $rc = $dri->domain_check_price('test.tld','test2.tld',{'currency'=>'USD','idn'=>{...}}); # any other arguments can be specified alongside
+
+sub domain_check_price
+{
+ my ($self,$ndr,@names)=@_;
+ my $rd = (@names && exists $names[-1] && ref $names[-1] eq 'HASH' ) ? pop @names : {};
+ $rd = $self->_build_price_query($ndr,$rd);
+ return $ndr->domain_check(@names,$rd);
+}
+
+sub domain_info_price
+{
+ my ($self,$ndr,$domain,$rd)=@_;
+ $rd = $self->_build_price_query($ndr,$rd);
+ return $ndr->domain_info($ndr,$domain,$rd);
+}
+
+sub _build_price_query
+{
+ my ($self,$ndr,$rd)=@_;
+ my $bep = exists $self->{info}->{provider} ? lc($self->{info}->{provider}) : '';
+
+ if (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge', @{$ndr->protocol()->{loaded_modules}})
+ {
+  # they answer with charge extension anyway, so no action required on this one
+ } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::Afilias::Price', @{$ndr->protocol()->{loaded_modules}})
+ {
+  # they answer with price extension anyway, so no action required on this one
+ } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::NeuLevel::Fee', @{$ndr->protocol()->{loaded_modules}})
+ {
+   $rd->{fee} = 1;
+ } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::ARI::Price', @{$ndr->protocol()->{loaded_modules}})
+ {
+   $rd->{price} = exists $rd->{duration} ? {duration => $rd->{duration}} :1;
+ } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain', @{$ndr->protocol()->{loaded_modules}})
+ {
+   $rd->{premium_domain} = 1;
+ } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}})
+ {
+   my ($fee,@fees);
+   foreach my $k (qw/currency action duration/)
+   {
+     $fee->{$k} = $rd->{$k} if exists $rd->{$k};
+   }
+   $fee->{currency} = 'USD' unless exists $fee->{currency} || $bep !~ m/^gmo/; # fee-0.5+ should not set values for currency and duration as these will default
+   $fee->{duration} = 1 unless exists $fee->{duration} || $bep !~ m/^gmo/;
+   $fee->{duration} = $ndr->local_object('duration','years',$fee->{duration}) if exists $fee->{duration} && ref $fee->{duration} eq '' && $fee->{duration} =~ m/^\d$/;
+   @{$rd->{fee}} = ();
+   foreach (qw/create renew transfer restore/)
+   {
+     my $feetype = { %{$fee} };
+     $feetype->{action} = $_;
+     push @fees,$feetype;
+   }
+   $rd->{fee} = \@fees;
+ }
+ foreach (qw/currency action duration/)
+ {
+   delete $rd->{$_} if exists $rd->{$_};
+ }
+ return $rd;
+}
+
+####################################################################################################
+## Claims, wrap up claims checks
+#$rc = $dri->domain_check_claims('test.tld'); # standard claims lookup without phase name (use claims)
+#$rc = $dri->domain_check_claims('test.tld',{'phase'=>'landrush','idn'=>{...}}); # claims lookup with phase name (recommended)
+
+sub domain_check_claims
+{
+ my ($self,$ndr,@names)=@_;
+ my $bep = exists $self->{info}->{provider} ? lc($self->{info}->{provider}) : '';
+ my $rd = (@names && exists $names[-1] && ref $names[-1] eq 'HASH' ) ? pop @names : {};
+ my $lp = { 'phase' => 'claims', 'type'=>'claims' };
+ if (defined $rd && exists $rd->{phase} && lc($rd->{phase}) ne 'claims')
+ {
+  # By default, most registries do NOT use a sub_phase is claims lookups. Therefore if you specifiy a phase it will be ignored
+  # Afilias/ARI/CentralNIC/CoreNic/CRR/Donuts/GMO/KS/PIR/RegBox/Rightside/StartingDot/Tango/UniRegistry
+
+  # These registres use claims as phase + phase_name us sub_phase. domain_check_claims('test-validate.buzz',{phase=>'landrush'});
+  # Neustar/MAM/FFM/KNet   (Knet seems to work either way - but rather put it here)
+  $lp->{sub_phase} = $rd->{phase} if ($bep =~ m/^(?:neustar|mam|ffm|knet)/);
+  # i think there is much more to do here
+ }
+ $rd->{lp} = $lp;
+ return $ndr->domain_check(@names,$rd);
+}
+
+
+####################################################################################################
 # Misc
 ####################################################################################################
 

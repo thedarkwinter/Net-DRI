@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 23;
+use Test::More tests => 26;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -83,6 +83,14 @@ isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_i
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
 is($dri->get_info('create_price'),125,'domain_check get_info (create_price)');
 is($dri->get_info('renew_price'),75,'domain_check get_info (renew_price)');
+
+# domain_check_price
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example3.ooo</domain:name></domain:cd></domain:chkData></resData><extension><premiumdomain:chkData xmlns:premiumdomain="http://www.verisign.com/epp/premiumdomain-1.0" xsi:schemaLocation="http://www.verisign.com/epp/premiumdomain-1.0 premiumdomain-1.0.xsd"><premiumdomain:cd><premiumdomain:name premium="1">example3.ooo</premiumdomain:name><premiumdomain:price unit="USD">195.00</premiumdomain:price><premiumdomain:renewalPrice unit="USD">175.00</premiumdomain:renewalPrice></premiumdomain:cd></premiumdomain:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check_price('example3.ooo');
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium)');
+is($dri->get_info('create_price'),195,'domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),175,'domain_check get_info (renew_price)');
+
 
 ##################################################
 

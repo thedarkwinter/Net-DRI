@@ -6,10 +6,8 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
-use Data::Dumper;
 
-
-use Test::More tests => 86;
+use Test::More tests => 101;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -22,7 +20,6 @@ sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
-
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_registry('NGTLD',{provider=>'mamclient'});
@@ -34,13 +31,14 @@ my $d;
 my ($dh,@c,$toc,$cs,$c1,$c2);
 
 ####################################################################################################
-## M+M Uses the 0.5 version of Gavin Browns (CentralNic) extension. We use a greeting here to switch the namespace version here to 0.5
+## Fee extension version 0.5 http://tools.ietf.org/html/draft-brown-epp-fees-02
+## Fee-0.5 (In use by CentralNic and Minds & Machines)
+## We use a greeting here to switch the namespace version here to -0.5 testing
 $R2=$E1.'<greeting><svID>Minds + Machines EPP Server epp-dub.mm-registry.com</svID><svDate>2014-06-25T10:08:59.0751Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.5</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.5','Fee 0.5 loaded correctly');
-
-
 ####################################################################################################
+
 ### EPP Check Commands Variants ###
 
 ## Check: single domain - minimum data
@@ -131,15 +129,8 @@ is($dri->get_info('renew_price'),10.00,'domain_check_price get_info (renew_price
 is($dri->get_info('transfer_price'),5,'domain_check_price get_info (transfer_price)');
 is($dri->get_info('restore_price'),20,'domain_check_price get_info (restore_price)');
 
-
-
 ####################################################################################################
 ### EPP Info Command ###
-
-
-
-#<fee:currency>USD</fee:currency><fee:command phase="sunrise">create</fee:command><fee:period unit="y">1</fee:period>
-
 
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdom4.kiwi</domain:name><domain:roid>EXAMPLE1-REP</domain:roid><domain:status s="ok" /><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:ns><domain:hostObj>ns1.exdomain.kiwi</domain:hostObj><domain:hostObj>ns1.example.bar</domain:hostObj></domain:ns><domain:host>ns1.exdomain.kiwi</domain:host><domain:host>ns2.exdomain.kiwi</domain:host><domain:clID>ClientX</domain:clID><domain:crID>ClientY</domain:crID><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:upID>ClientX</domain:upID><domain:upDate>1999-12-03T09:00:00.0Z</domain:upDate><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate><domain:trDate>2000-04-08T09:00:00.0Z</domain:trDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><fee:infData xmlns:fee="urn:ietf:params:xml:ns:fee-0.5" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.5 fee-0.5.xsd"><fee:currency>USD</fee:currency><fee:command phase="sunrise">create</fee:command><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('exdom4.kiwi',{fee=>{currency=>'USD',phase=>'sunrise',action=>'create',duration=>$dri->local_object('duration','years',1)}});
@@ -212,19 +203,36 @@ is($rc->is_success(),1,'domain_update is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_transfer parse currency');
 is($d->{fee},5.00,'Fee extension: domain_transfer parse fee');
-### END: EPP Transform Commands ###
+
 ####################################################################################################
+## EAP
+$dri->add_registry('NGTLD',{provider=>'centralnic'});
+$dri->target('centralnic')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-## Claims check
-my $lp = {type=>'claims'};
-$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="1">exdomain.kiwi</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('exdomain.kiwi',{lp => $lp});
-is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.kiwi</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase>claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
-my $lpres = $dri->get_info('lp');
-is($lpres->{'exist'},1,'domain_check get_info(exist)');
-is($lpres->{'phase'},'claims','domain_check get_info(phase) ');
-is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check get_info(claim_key) ');
-is($lpres->{'validator_id'},'sample','domain_check get_info(validator_id) ');
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">eapdom1.wiki</domain:name></domain:cd><domain:cd><domain:name avail="1">eapdom1.kiwi</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.5"><fee:cd><fee:name>eapdom1.wiki</fee:name><fee:currency>USD</fee:currency><fee:command>create</fee:command><fee:period unit="y">1</fee:period><fee:fee description="Registration Fee" refundable="1">20.00</fee:fee><fee:fee description="Early Access Fee" refundable="0">1000.00</fee:fee></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('eapdom1.wiki',{fee=>{action=>'create'}});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>eapdom1.wiki</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.5" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.5 fee-0.5.xsd"><fee:domain><fee:name>eapdom1.wiki</fee:name><fee:command>create</fee:command></fee:domain></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build');
+is($dri->get_info('action'),'check','domain_check get_info(action)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+$d = shift $dri->get_info('fee');
+is($d->{domain},'eapdom1.wiki','Fee extension: domain_check single parse domain');
+is($d->{premium},0,'Fee extension: domain_check single parse premium');
+is($d->{currency},'USD','Fee extension: domain_check single parse currency');
+is($d->{action},'create','Fee extension: domain_check single parse action');
+is($d->{duration}->years(),1,'Fee extension: domain_check singe parse duration');
+is($d->{fee},1020.00,'Fee extension: domain_check singe parse fee');
+is($d->{fee_registration_fee},20.00,'Fee extension: domain_check singe parse registration_fee');
+is($d->{fee_early_access_fee},1000.00,'Fee extension: domain_check singe parse early_access_fee');
 
+# using the standardised methods
+is($dri->get_info('is_premium'),0,'domain_check get_info (is_premium) no');
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration) is DateTime::Duration');
+is($dri->get_info('price_duration')->years(),1,'domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),1020.00,'domain_check get_info (create_price)');
+is($dri->get_info('eap_price'),1000.00,'domain_check get_info (eap_price)');
+is($dri->get_info('renew_price'),undef,'domain_check get_info (renew_price) undef');
+is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');
+is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
 
 exit 0;

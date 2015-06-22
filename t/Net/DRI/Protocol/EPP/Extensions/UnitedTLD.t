@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 63;
+use Test::More tests => 64;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -132,6 +132,7 @@ is($dri->get_info('exist'),0,'domain_check get_info (exist)');
 is($ch1->{type},'price','domain_check get_info (ch1 charge type)');
 is($ch2->{type},'fee','domain_check get_info (ch2 charge type)');
 is($ch2->{category},'earlyAccess','domain_check get_info (ch2 charge category)');
+is($dri->get_info('eap_price'),10000.00,'domain_check get_info (eap_price)');
 
 # Create with multiple charge:sets
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>premium.actor</domain:name><domain:crDate>2013-10-16T16:52:24.013Z</domain:crDate><domain:exDate>2014-10-16T16:52:24.013Z</domain:exDate></domain:creData></resData><extension><charge:creData xmlns:charge="http://www.unitedtld.com/epp/charge-1.0"><charge:set><charge:category name="Price Category A">premium</charge:category><charge:type>price</charge:type><charge:amount command="create">999.9900</charge:amount><charge:amount command="renew">999.9900</charge:amount><charge:amount command="transfer">750.0000</charge:amount><charge:amount command="update" name="restore">1249.9900</charge:amount></charge:set><charge:set><charge:category>earlyAccess</charge:category><charge:type>fee</charge:type><charge:amount command="create">10000</charge:amount></charge:set></charge:creData></extension>'.$TRID.'</response>'.$E2;
