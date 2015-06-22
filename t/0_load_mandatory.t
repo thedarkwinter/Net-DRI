@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 480;
+use Test::More tests => 481;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -384,6 +384,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::NEWGTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG::Centric');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG::RegistryMessage');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG::Market');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNITEDTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UNITEDTLD::Finance');

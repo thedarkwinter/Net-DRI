@@ -1130,6 +1130,15 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =cut
 
+ if ($bep eq 'unireg') {
+  # These methods are in the DRD
+  require Net::DRI::DRD::UNIREG;
+  *market_check = sub { return Net::DRI::DRD::UNIREG::market_check(@_); };
+  *market_info= sub { return Net::DRI::DRD::UNIREG::market_info(@_); };
+  *market_create= sub { return Net::DRI::DRD::UNIREG::market_create(@_); };
+  *market_update= sub { return Net::DRI::DRD::UNIREG::market_update(@_); };
+ }
+
  return {
      bep_type => 2, # shared registry
      tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','realestate','save','sexy','shopping','store','tattoo','yoga'],

@@ -47,6 +47,19 @@ sub parse
   $rinfo->{message}->{$msgid}->{lp}->{application_id} = $1;
   $rinfo->{message}->{$msgid}->{lp}->{status} = $2; # FIXME: this could have multiple statuses, but requires the main LaunchPhase extension to support it
  }
+
+ # market object get info from market_info but we need to define name and object_id
+ foreach my $res($mes->get_response('market','infData'))
+ {
+  next unless $res;
+  foreach my $el (Net::DRI::Util::xml_list_children($res))
+  {
+   next unless $el;
+   my ($name,$content)=@$el;
+   $rinfo->{message}->{$msgid}->{'object_id'} = $content->textContent() if $name eq 'orderID';
+   $rinfo->{message}->{$msgid}->{'name'} = $content->textContent() if $name eq 'name';
+  }
+ }
  return;
 }
 

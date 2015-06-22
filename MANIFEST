@@ -401,6 +401,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Telnic.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/Centric.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/Market.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/RegistryMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNITEDTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNITEDTLD/Charge.pm
@@ -710,6 +711,7 @@ t/Net/DRI/Protocol/EPP/Extensions/Tango.t
 t/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/Telnic.t
 t/Net/DRI/Protocol/EPP/Extensions/UniReg.t
+t/Net/DRI/Protocol/EPP/Extensions/UNIREG/Market.t
 t/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/US/Contact.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/Balance.t
