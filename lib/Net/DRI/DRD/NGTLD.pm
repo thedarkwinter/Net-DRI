@@ -1130,6 +1130,15 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =cut
 
+ if ($bep eq 'unireg') {
+  # These methods are in the DRD
+  require Net::DRI::DRD::UNIREG;
+  *market_check = sub { return Net::DRI::DRD::UNIREG::market_check(@_); };
+  *market_info= sub { return Net::DRI::DRD::UNIREG::market_info(@_); };
+  *market_create= sub { return Net::DRI::DRD::UNIREG::market_create(@_); };
+  *market_update= sub { return Net::DRI::DRD::UNIREG::market_update(@_); };
+ }
+
  return {
      bep_type => 2, # shared registry
      tlds => ['art','audio','auto','blackfriday','cars','christmas','click','deal','diet','family','flowers','free','game','garden','gift','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','realestate','save','sexy','shopping','store','tattoo','yoga'],
@@ -1340,82 +1349,6 @@ sub _build_price_query
    delete $rd->{$_} if exists $rd->{$_};
  }
  return $rd;
-}
-
-#####
-# FIXME: this shouldn't be done here. Discuss with Michael Holloway for a possible solution :)
-#####
-sub market_check
-{
- my ($self,$ndr,@p)=@_;
- my (@names,$rd);
- foreach my $p (@p)
- {
-  if (defined $p && ref $p eq 'HASH')
-  {
-   Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in market_check') if defined $rd;
-   $rd=Net::DRI::Util::create_params('market_check',$p);
-  }
-  #$self->enforce_domain_name_constraints($ndr,$p,'check');
-  push @names,$p;
- }
- Net::DRI::Exception::usererr_insufficient_parameters('market_check needs at least one domain name to check') unless @names;
- $rd={} unless defined $rd;
-
- my (@rs,@todo);
- my (%seendom,%seenrc);
- foreach my $domain (@names)
- {
-  next if exists $seendom{$domain};
-  $seendom{$domain}=1;
-  my $rs=$ndr->try_restore_from_cache('market',$domain,'check');
-  if (! defined $rs)
-  {
-   push @todo,$domain;
-  } else
-  {
-   push @rs,$rs unless exists $seenrc{''.$rs}; ## Some ResultStatus may relate to multiple domain names (this is why we are doing this anyway !), so make sure not to use the same ResultStatus multiple times
-   $seenrc{''.$rs}=1;
-  }
- }
- return Net::DRI::Util::link_rs(@rs) unless @todo;
-
- if (@todo > 1 && $ndr->protocol()->has_action('market','check_multi'))
- {
-  my $l=$self->info('check_limit');
-  if (! defined $l)
-  {
-   $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for domain_check action. Please report if you know the correct value');
-   $l=10;
-  }
-  while (@todo)
-  {
-   my @lt=splice(@todo,0,$l);
-   push @rs,$ndr->process('market','check_multi',[\@lt,$rd]);
-  }
- } else ## either one domain only, or more than one but no check_multi available at protocol level
- {
-  push @rs,map { $ndr->process('market','check',[$_,$rd]); } @todo;
- }
- return Net::DRI::Util::link_rs(@rs);
-}
-
-sub market_info
-{
- my ($self,$reg,$id)=@_;
- return $reg->process('market','info',[$id]);
-}
-
-sub market_create
-{
-  my ($self,$reg,$id,$rd)=@_;
-  return $reg->process('market','create',[$id,$rd]);
-}
-
-sub market_update
-{
-  my ($self,$reg,$rd,$todo)=@_;
-  return $reg->process('market','update',[$rd,$todo]);
 }
 
 ####################################################################################################
