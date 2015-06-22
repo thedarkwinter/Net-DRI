@@ -37,7 +37,7 @@ Adds the UniRegistry Registrant Centric Extension (http://ns.uniregistry.net/cen
 
 =item challenge (array of hashes listing security questions and examples; min 3, max 5)
 
-=head1 SYNPOSIS
+=head1 SYNOPSIS
  
  # domain info
  my $rc = $dri->domain_info('domain.tld');
