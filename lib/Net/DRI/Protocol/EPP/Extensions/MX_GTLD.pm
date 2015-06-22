@@ -78,7 +78,7 @@ sub setup
   return;
 }
 
-sub default_extensions { return qw/GracePeriod LaunchPhase MX::Message MX::Rar MX::Domain SecDNS/; } # TODO: implement ext_idn
+sub default_extensions { return qw/GracePeriod LaunchPhase MX::AdmStatus MX::Message MX::Rar MX::Domain MX::IDN SecDNS/; }
 
 ####################################################################################################
 1;
