@@ -33,6 +33,7 @@ lib/Net/DRI/Data/Contact/CNNIC.pm
 lib/Net/DRI/Data/Contact/COOP.pm
 lib/Net/DRI/Data/Contact/COZA.pm
 lib/Net/DRI/Data/Contact/DENIC.pm
+lib/Net/DRI/Data/Contact/DK.pm
 lib/Net/DRI/Data/Contact/ES.pm
 lib/Net/DRI/Data/Contact/EURid.pm
 lib/Net/DRI/Data/Contact/FCCN.pm
@@ -90,6 +91,7 @@ lib/Net/DRI/DRD/CRR.pm
 lib/Net/DRI/DRD/CZ.pm
 lib/Net/DRI/DRD/Deloitte.pm
 lib/Net/DRI/DRD/DENIC.pm
+lib/Net/DRI/DRD/DK.pm
 lib/Net/DRI/DRD/DONUTS.pm
 lib/Net/DRI/DRD/ES.pm
 lib/Net/DRI/DRD/EURid.pm
@@ -274,6 +276,9 @@ lib/Net/DRI/Protocol/EPP/Extensions/CZ.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CZ/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CZ/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CZ/NSSET.pm
+lib/Net/DRI/Protocol/EPP/Extensions/DK.pm
+lib/Net/DRI/Protocol/EPP/Extensions/DK/Contact.pm
+lib/Net/DRI/Protocol/EPP/Extensions/DK/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DNSBE.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DNSBE/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DNSBE/Domain.pm
@@ -672,6 +677,7 @@ t/Net/DRI/Protocol/EPP/Extensions/COOP.t
 t/Net/DRI/Protocol/EPP/Extensions/COZA.t
 t/Net/DRI/Protocol/EPP/Extensions/CRR.t
 t/Net/DRI/Protocol/EPP/Extensions/CZ.t
+t/Net/DRI/Protocol/EPP/Extensions/DK.t
 t/Net/DRI/Protocol/EPP/Extensions/DNSBE.t
 t/Net/DRI/Protocol/EPP/Extensions/E164.t
 t/Net/DRI/Protocol/EPP/Extensions/E164Validation.t
