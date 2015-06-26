@@ -1256,14 +1256,6 @@ sub domain_trade_stop
  return $ndr->process('domain','trade_cancel',[$domain,$rd]);
 }
 
-## For RO
-sub domain_trade_approve
-{
- my ($self,$ndr,$domain,$rd)=@_;
- $self->enforce_domain_name_constraints($ndr,$domain,'trade');
- return $ndr->process('domain','trade_approve',[$domain,$rd]);
-}
-
 ## Used by AT & NO but not with same EPP command name => impossible to factorize here
 ##sub domain_withdraw
 ##sub domain_transfer_execute

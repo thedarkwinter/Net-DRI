@@ -97,5 +97,11 @@ sub set_factories {
 	return;
 }
 
+sub domain_trade_approve {
+	my ($self,$ndr,$domain,$rd)=@_;
+	$self->enforce_domain_name_constraints($ndr,$domain,'trade');
+	return $ndr->process('domain','trade_approve',[$domain,$rd]);
+}
+
 ####################################################################################################
 1;
