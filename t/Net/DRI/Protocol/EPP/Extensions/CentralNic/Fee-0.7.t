@@ -59,7 +59,7 @@ is($d->{fee},10.00,'Fee extension: domain_info parse fee');
 is($d->{description},'Refundable(Grace=>P5D)(Applied=>immediate)','Fee extension: domain_info parse human-readable description');
 is($d->{class},'premium-tier1','Fee extension: domain_info parse classe');
 # using the standardised methods
-is($dri->get_info('is_premium'),undef,'domain_check get_info (is_premium) undef'); # NOT SUPPORTED
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium) undef'); # NOT SUPPORTED
 isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration) is DateTime::Duration');
 is($dri->get_info('price_duration')->years(),1,'domain_check get_info (price_duration)');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');

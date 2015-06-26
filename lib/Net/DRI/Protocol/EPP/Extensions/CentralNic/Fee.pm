@@ -197,7 +197,7 @@ sub fee_set_parse_07
     } elsif ($name eq 'class')
     {
       $set->{class} = $content->textContent();
-      $set->{'premium'} = 1 if $set->{class} eq 'premium';
+      $set->{'premium'} = 1 && $set->{class} =~ m/(premium|tier.)/i;
     }
   }
   chomp $set->{description} if $set->{description};
@@ -317,7 +317,7 @@ sub set_premium_values {
  return unless exists $rinfo->{domain}->{$oname}->{fee} && (ref $rinfo->{domain}->{$oname}->{fee} eq 'ARRAY');
  foreach my $ch (@{$rinfo->{domain}->{$oname}->{fee}})
  {
-  $rinfo->{domain}->{$oname}->{is_premium} = $ch->{premium};
+  $rinfo->{domain}->{$oname}->{is_premium} = $ch->{premium} unless $rinfo->{domain}->{$oname}->{is_premium};
   $rinfo->{domain}->{$oname}->{price_category} = $ch->{class};
   $rinfo->{domain}->{$oname}->{price_currency} = $ch->{currency};
   $rinfo->{domain}->{$oname}->{price_duration} = $ch->{duration};

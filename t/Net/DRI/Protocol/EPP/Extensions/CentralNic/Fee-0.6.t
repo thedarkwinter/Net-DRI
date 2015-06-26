@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 19;
+use Test::More tests => 29;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -60,8 +60,25 @@ isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_i
 is($dri->get_info('price_duration')->years(),1,'domain_check get_info (price_duration)');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
 is($dri->get_info('create_price'),'20','domain_check get_info (create_price)');
-is($dri->get_info('renew_price'),20,'domain_check get_info (renew_price) undef');
-is($dri->get_info('transfer_price'),20,'domain_check get_info (transfer_price) undef');
+is($dri->get_info('renew_price'),20,'domain_check get_info (renew_price) 20');
+is($dri->get_info('transfer_price'),20,'domain_check get_info (transfer_price) 20');
 is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="0">expensiveshoes.co</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns="urn:ietf:params:xml:ns:fee-0.6" xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:cd><fee:name>expensiveshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">create</fee:command><fee:period unit="y">1</fee:period><fee:fee>12000.00</fee:fee><fee:class>CO Tier5</fee:class></fee:cd><fee:cd><fee:name>expensiveshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">renew</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee><fee:class>CO Default Tier</fee:class></fee:cd><fee:cd><fee:name>expensiveshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">transfer</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee><fee:class>CO Default Tier</fee:class></fee:cd><fee:cd><fee:name>expensiveshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">restore</fee:command><fee:period unit="y">1</fee:period></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check_price('expensiveshoes.co');
+is($rc->is_success(),1,'domain_check_price is is_success');
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium) 1');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),12000,'domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),20,'domain_check get_info (renew_price) 20');
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="0">ruggedshoes.co</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns="urn:ietf:params:xml:ns:fee-0.6" xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:cd><fee:name>ruggedshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">create</fee:command><fee:period unit="y">1</fee:period><fee:fee>7000.00</fee:fee><fee:class>CO Tier4</fee:class></fee:cd><fee:cd><fee:name>ruggedshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">renew</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee><fee:class>CO Default Tier</fee:class></fee:cd><fee:cd><fee:name>ruggedshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">transfer</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee><fee:class>CO Default Tier</fee:class></fee:cd><fee:cd><fee:name>ruggedshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">restore</fee:command><fee:period unit="y">1</fee:period></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check_price('ruggedshoes.co');
+is($rc->is_success(),1,'domain_check_price is is_success');
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium) undef');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),7000,'domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),20,'domain_check get_info (renew_price) undef');
+
 
 exit 0;
