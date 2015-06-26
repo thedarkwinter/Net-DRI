@@ -74,7 +74,6 @@ sub setup {
 			ro_domain =>        ['http://www.rotld.ro/xml/epp/domain-1.0','domain-1.0.xsd'],
 		}
 	);
-	$self->capabilities( 'domain_trade_approve', 'tid', ['set'] );
 	$self->capabilities( 'domain_update', 'activate_domain', ['set'] );
 	return;
 }

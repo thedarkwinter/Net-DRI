@@ -107,7 +107,7 @@ sub validate {
 			Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: VAT number given must be in the correct format for romanian contacts') unless ($self->vat()=~ m/(RO)?[0-9]{2,10}/i);
 		}
 		# 'srid' field validation
-		push @errs,'"srid" is specified by the registry and MUST be set to "AUTO"' if ((defined $self->srid()) && ($self->srid() ne 'AUTO'));
+		push @errs,'"srid" is specified by the registry and MUST be set to "auto"' if ((defined $self->srid()) && ($self->srid()!~m/^(AUTO)$/i));
 		# 'type' field validation
 		Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: type field is mandatory') unless ($self->type());
 	}
