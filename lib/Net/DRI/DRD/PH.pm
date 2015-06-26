@@ -24,7 +24,6 @@ use base qw/Net::DRI::DRD/;
 use Net::DRI::Util;
 use DateTime::Duration;
 use Net::DRI::Exception;
-use Net::DRI::Data::Contact::PH;
 
 __PACKAGE__->make_exception_for_unavailable_operations(qw//);
 
@@ -87,13 +86,12 @@ sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default {
 	my ($self,$type)=@_;
-	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::PH',{}) if $type eq 'epp';
+	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP',{}) if $type eq 'epp';
 	return;
 }
 
 sub set_factories {
 	my ($self,$po)=@_;
-	$po->factories('contact',sub { return Net::DRI::Data::Contact::PH->new(@_); });
 	return;
 }
 
