@@ -127,6 +127,7 @@ lib/Net/DRI/DRD/NU.pm
 lib/Net/DRI/DRD/OpenSRS.pm
 lib/Net/DRI/DRD/ORG.pm
 lib/Net/DRI/DRD/OVH.pm
+lib/Net/DRI/DRD/PH.pm
 lib/Net/DRI/DRD/PL.pm
 lib/Net/DRI/DRD/PRO.pm
 lib/Net/DRI/DRD/PT.pm
