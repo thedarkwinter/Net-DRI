@@ -19,7 +19,7 @@ use warnings;
 
 use base qw/Net::DRI::DRD/;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_renew domain_transfer_stop domain_update_status domain_update_status_add domain_update_status_del domain_update_status_set contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse contact_update_status contact_update_status_add contact_update_status_del contact_update_status_set host_update_status host_update_status_add host_update_status_del host_update_status_set host_update_name_set/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_stop domain_update_status domain_update_status_add domain_update_status_del domain_update_status_set contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse contact_update_status contact_update_status_add contact_update_status_del contact_update_status_set host_update_status host_update_status_add host_update_status_del host_update_status_set host_update_name_set/);
 
 ####################################################################################################
 
@@ -34,7 +34,7 @@ sub new
 
 sub name          { return 'SIDN'; }
 sub tlds          { return (qw/nl/); }
-sub periods       { return; } ## registry does not expect any duration at all
+sub periods       { return map { DateTime::Duration->new(months => $_) } (1,3,12); } # default 3 months. Accept as well 1 year <=> 12 months
 sub object_types  { return (qw/domain contact ns/); }
 sub profile_types { return qw/das epp/; }
 

@@ -65,6 +65,9 @@ sub info_parse
   } elsif ($name eq 'limited')
   {
    $rinfo->{domain}->{$oname}->{limited}=Net::DRI::Util::xml_parse_boolean($c->textContent());
+  } elsif ($name eq 'period')
+  {
+   $rinfo->{domain}->{$oname}->{period}=$c->textContent();
   }
  }
  return;

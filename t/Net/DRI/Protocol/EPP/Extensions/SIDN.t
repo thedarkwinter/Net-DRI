@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 19;
+use Test::More tests => 20;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -46,10 +46,11 @@ is_deeply([$rc->get_extended_results()],[{from=>'sidn',type=>'text',message=>'Wa
 ####################################################################################################
 ## Domain commands
 
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>doris.nl</domain:name><domain:roid>DNM_700-SIDN</domain:roid><domain:status s="ok"/><domain:registrant>TES000079-SL1SL</domain:registrant><domain:contact type="admin">TES000079-SO1SO</domain:contact><domain:contact type="tech">TES000079-SL1SL</domain:contact><domain:ns><domain:hostObj>ns1.doris.nl</domain:hostObj></domain:ns><domain:host>ns2.doris.nl</domain:host><domain:host>ns3.doris.nl</domain:host><domain:host>ns4.doris.nl</domain:host><domain:host>ns1.doris.nl</domain:host><domain:clID>SIDN0</domain:clID><domain:crID>SIDN0</domain:crID><domain:crDate>2009-08-10T00:00:00.000+02:00</domain:crDate><domain:upID>SIDN0</domain:upID><domain:upDate>2009-08-10T00:00:00.000+02:00</domain:upDate><domain:trDate>2010-08-12T00:00:00.000+02:00</domain:trDate><domain:authInfo><domain:pw>token4556</domain:pw></domain:authInfo></domain:infData></resData><extension xmlns:urn1="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0"><urn1:ext><urn1:infData><urn1:domain><urn1:optOut>false</urn1:optOut><urn1:limited>false</urn1:limited></urn1:domain></urn1:infData></urn1:ext></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>doris.nl</domain:name><domain:roid>DNM_700-SIDN</domain:roid><domain:status s="ok"/><domain:registrant>TES000079-SL1SL</domain:registrant><domain:contact type="admin">TES000079-SO1SO</domain:contact><domain:contact type="tech">TES000079-SL1SL</domain:contact><domain:ns><domain:hostObj>ns1.doris.nl</domain:hostObj></domain:ns><domain:host>ns2.doris.nl</domain:host><domain:host>ns3.doris.nl</domain:host><domain:host>ns4.doris.nl</domain:host><domain:host>ns1.doris.nl</domain:host><domain:clID>SIDN0</domain:clID><domain:crID>SIDN0</domain:crID><domain:crDate>2009-08-10T00:00:00.000+02:00</domain:crDate><domain:upID>SIDN0</domain:upID><domain:upDate>2009-08-10T00:00:00.000+02:00</domain:upDate><domain:trDate>2010-08-12T00:00:00.000+02:00</domain:trDate><domain:authInfo><domain:pw>token4556</domain:pw></domain:authInfo></domain:infData></resData><extension xmlns:urn1="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0"><urn1:ext><urn1:infData><urn1:domain><urn1:optOut>false</urn1:optOut><urn1:limited>false</urn1:limited><urn1:period>3</urn1:period></urn1:domain></urn1:infData></urn1:ext></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('doris.nl');
 is($rc->get_data('opt_out'),0,'domain_info opt_out');
 is($rc->get_data('limited'),0,'domain_info limited');
+is($rc->get_data('period'),3,'domain_info period');
 
 $R2='';
 $rc=$dri->domain_undelete('DOMAINdelete37.nl');
