@@ -1436,7 +1436,7 @@ sub _build_price_query
  } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}})
  {
    my ($fee,@fees);
-   foreach my $k (qw/currency action duration/)
+   foreach my $k (qw/currency action duration phase sub_phase/)
    {
      $fee->{$k} = $rd->{$k} if exists $rd->{$k};
    }

@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
 =head3 TLDs
 
-bar college contact design fan fans feedback host ink online pid press reit rest site space tech website wiki wme xyz
+bar college contact design fan fans feedback host ink online pid press reit rest site space tech tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -378,7 +378,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/la pw com.de/;
-    my @ngtlds = qw/bar college contact design fan fans feedback host ink love online pid press reit rest site space tech website wiki wme xyz/;
+    my @ngtlds = qw/bar college contact design fan fans feedback host ink love online pid press reit rest site space tech tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
     my @ngtlds_pipeline = qw/art auto now hotel forum gay group blog app mail llc/; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
@@ -543,7 +543,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
 =head3 TLDs
 
-accountant bid cricket date download faith loan men party racing review science trade webcam win
+accountant bid cricket date download faith loan party racing review science trade webcam win
 
 Contension: app baby bet cam charity forum game hotel music rugby search shop  sport stream
 
@@ -555,7 +555,7 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 
  return {
      bep_type => 1, # dedicated registy
-     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'men', 'party', 'racing', 'review', 'science', 'trade', 'webcam', 'win', # uncontended
+     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'trade', 'webcam', 'win', # uncontended
               'app', 'baby', 'bet', 'cam', 'charity', 'forum', 'game', 'hotel', 'music', 'rugby', 'search', 'shop', 'sport', 'stream',# contended
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
@@ -713,14 +713,14 @@ Contested: basketball group music
 
 Uncontested: bible gop kiwi
 
-Contested: broadway radio tickets tube
+Contested: broadway radio tube
 
 =cut
 
  return {
      bep_type => 2, # shared registry
      tlds => ['bible', 'gop', 'kiwi',
-              'broadway', 'radio', 'tickets', 'tube'
+              'broadway', 'radio', 'tube'
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],

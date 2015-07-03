@@ -43,7 +43,7 @@ is($rc->{last_registry},'mamclient','mamclient: add_registry');
 $rc = $dri->target('mamclient')->add_current_profile('p1-mamclient','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'mamclient: add_current_profile');
 is($dri->name(),'mamclient','mamclient: name');
-is_deeply([$dri->tlds()],['bible','gop','kiwi','broadway','radio','tickets','tube'],'mamclient: tlds');
+is_deeply([$dri->tlds()],['bible','gop','kiwi','broadway','radio','tube'],'mamclient: tlds');
 @periods = $dri->periods();
 is($#periods,9,'mamclient: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'mamclient: object_types');
