@@ -21,7 +21,6 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
-use Data::Dumper;
 =pod
 
 =head1 NAME
@@ -96,6 +95,11 @@ sub info_parse
    $name = Net::DRI::Util::to_under($name) if $name =~ m/^(ipMaestra|autoRenew)$/; # these two fields are mixed case in xml
    $rinfo->{domain}->{$oname}->{$name}=$c->textContent();
   }
+  
+  # get auto_renew outside <infData> element
+  my $autorenew=$mes->get_response('domain','autoRenew');
+  return unless defined $autorenew;
+  $rinfo->{domain}->{$oname}->{'auto_renew'} = $autorenew->textContent();
 }
 
 sub create
