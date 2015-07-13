@@ -676,7 +676,11 @@ sub domain_renew
  $rd=Net::DRI::Util::create_params('domain_renew',$rd);
  Net::DRI::Util::check_isa($rd->{duration},'DateTime::Duration') if Net::DRI::Util::has_key($rd,'duration');
  Net::DRI::Util::check_isa($rd->{current_expiration},'DateTime') if Net::DRI::Util::has_key($rd,'current_expiration');
- Net::DRI::Exception->die(0,'DRD',3,'Invalid duration') if $self->verify_duration_renew($ndr,$rd->{duration},$domain,$rd->{current_expiration});
+ if ($domain =~ m/\.(nl)$/) { # for SIDN force to use verify_duration_create() to be able to set period for the last period element for subscription
+  Net::DRI::Exception->die(0,'DRD',3,'Invalid duration') if $self->verify_duration_create($ndr,$rd->{duration},$domain);
+ } else {
+  Net::DRI::Exception->die(0,'DRD',3,'Invalid duration') if $self->verify_duration_renew($ndr,$rd->{duration},$domain,$rd->{current_expiration});
+ }
 
  return $ndr->process('domain','renew',[$domain,$rd]);
 }
