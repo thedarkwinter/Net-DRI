@@ -73,6 +73,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub new {
     my $class = shift;
     my $self = $class->SUPER::new(@_);
+    $self->{info}->{contact_i18n} = 1;    # LOC only
     $self->{info}->{host_as_attr} = 0;    # means make host objects
     $self->{info}->{use_null_auth}= 1;    # means using domain:null for empty authinfo password
     return $self;
