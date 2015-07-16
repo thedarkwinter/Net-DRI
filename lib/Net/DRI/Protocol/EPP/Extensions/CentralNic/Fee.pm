@@ -183,6 +183,7 @@ sub fee_set_parse_07
         $set->{description} = "\n" . $content->getAttribute('description');
         my $d = lc $content->getAttribute('description');
         $d =~ s/ /_/g;
+        $d = 'early_access_fee' if $d =~ m/early_access/;
         $set->{"fee_$d"} = 0 + $content->textContent();
       }
       if ($content->hasAttribute('refundable') && $content->getAttribute('refundable') eq '1') {
