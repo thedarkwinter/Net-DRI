@@ -114,7 +114,7 @@ sub create
 # copied the entire sub from EPP::Core::Domain, and added .es stuff in the middle
 sub update
 {
- my ($epp,$domain,$todo)=@_;
+ my ($epp,$domain,$todo,$rd)=@_;
  my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a non empty Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
@@ -162,6 +162,7 @@ sub update
  $chg=$todo->set('auth');
  push @chg,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$chg,1) if ($chg && (ref $chg eq 'HASH') && exists $chg->{pw});
  push @d,['domain:chg',@chg] if @chg;
+ push @d,['domain:autoRenew', $rd->{'auto_renew'}] if $rd->{'auto_renew'} && $rd->{'auto_renew'}=~m/^(?:true|false)$/;
  $mes->command_body(\@d);
 }
 
