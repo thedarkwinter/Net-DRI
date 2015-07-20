@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 44;
+use Test::More tests => 42;
 
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -104,12 +104,11 @@ $cs = $dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('12347'), 'tech');
 $changes->del('contact', $cs);
 $changes->add('ns',$dri->local_object('hosts')->set(['ns3.example.info']));
-$rc = $dri->domain_update('test1.es', $changes, {'auto_renew' => 'true'});
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:add><domain:ns>ns3.example.info</domain:ns><domain:contact type="tech">98765</domain:contact></domain:add><domain:rem><domain:contact type="tech">12347</domain:contact></domain:rem><domain:autoRenew>true</domain:autoRenew></domain:update></update>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_update build');
-is($rc->is_success(), 1, 'domain_update with auto_renew is success');
+$changes->set('auto_renew','true');
 $rc = $dri->domain_update('test1.es', $changes);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:add><domain:ns>ns3.example.info</domain:ns><domain:contact type="tech">98765</domain:contact></domain:add><domain:rem><domain:contact type="tech">12347</domain:contact></domain:rem></domain:update></update>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_update build');
-is($rc->is_success(), 1, 'domain_update without auto_renew is success');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:add><domain:ns>ns3.example.info</domain:ns><domain:contact type="tech">98765</domain:contact></domain:add><domain:rem><domain:contact type="tech">12347</domain:contact></domain:rem><domain:autoRenew>true</domain:autoRenew></domain:update></update>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_update build');
+is($rc->is_success(), 1, 'domain_update is success');
+
 
 #renew
 $R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:exDate>2015-01-01T00:00:00.01</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
