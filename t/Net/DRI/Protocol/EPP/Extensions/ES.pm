@@ -6,9 +6,8 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 41;
+use Test::More tests => 44;
 
-use Data::Dumper;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -64,10 +63,11 @@ is($dri->get_info('exist'),0,'domain_check get_info(exist)');
 is($dri->get_info('exist','domain','test1.es'),0,'domain_check get_info(exist) from cache');
 
 #info
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:crDate>2013-01-01T13:00:00.0</domain:crDate><domain:exDate>2014-01-01T13:00:00.0</domain:exDate><domain:es_codPeticion>0</domain:es_codPeticion><domain:ns>ns1.example.com</domain:ns><domain:ns>ns1.example.net</domain:ns><domain:registrant>12345</domain:registrant><domain:contact type="admin">12346</domain:contact><domain:contact type="billing">12348</domain:contact><domain:contact type="tech">12347</domain:contact><domain:authInfo><domain:pw>pass</domain:pw></domain:authInfo><domain:es_marca>123</domain:es_marca><domain:es_inscripcion>12355</domain:es_inscripcion><domain:es_accion_comercial>555</domain:es_accion_comercial><domain:autoRenew>true</domain:autoRenew></domain:infData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:autoRenew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">true</domain:autoRenew><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:roid>test1.es</domain:roid><domain:status s="ok"/><domain:registrant><![CDATA[Example Name Contact]]></domain:registrant><domain:contact type="admin">ENC7-ESNIC-F4</domain:contact><domain:contact type="billing">ENC7-ESNIC-F4</domain:contact><domain:contact type="tech">ENC7-ESNIC-F4</domain:contact><domain:ns>ns1.example.com</domain:ns><domain:ns>ns1.example.net</domain:ns><domain:clID>Agente System Test</domain:clID><domain:crDate>2005-09-15T00:00:00.01</domain:crDate><domain:exDate>2014-01-01T13:00:00</domain:exDate><domain:es_marca>123</domain:es_marca></domain:infData></resData>'.$TRID.'</response>'.$E2;
 $rc = $dri->domain_info('test1.es');
 is($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">test1.es</domain:name></domain:info></info>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_info build');
 is($rc->is_success(), 1, 'domain_info is success');
+is($dri->get_info('auto_renew'),'true','domain_info get_info(auto_renew)');
 is($dri->get_info('exDate'),'2014-01-01T13:00:00','domain_info get_info(exDate)');
 $ns = $dri->get_info('ns', 'domain', 'test1.es');
 is(join(',', $ns->get_names()), 'ns1.example.com,ns1.example.net', 'domain_info get_info(ns)');
@@ -104,11 +104,12 @@ $cs = $dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('12347'), 'tech');
 $changes->del('contact', $cs);
 $changes->add('ns',$dri->local_object('hosts')->set(['ns3.example.info']));
-$changes->add('auto_renew','no');
-$changes->del('auto_renew','yes');
+$rc = $dri->domain_update('test1.es', $changes, {'auto_renew' => 'true'});
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:add><domain:ns>ns3.example.info</domain:ns><domain:contact type="tech">98765</domain:contact></domain:add><domain:rem><domain:contact type="tech">12347</domain:contact></domain:rem><domain:autoRenew>true</domain:autoRenew></domain:update></update>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_update build');
+is($rc->is_success(), 1, 'domain_update with auto_renew is success');
 $rc = $dri->domain_update('test1.es', $changes);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:add><domain:ns>ns3.example.info</domain:ns><domain:contact type="tech">98765</domain:contact><domain:autoRenew>false</domain:autoRenew></domain:add><domain:rem><domain:contact type="tech">12347</domain:contact><domain:autoRenew>true</domain:autoRenew></domain:rem></domain:update></update>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_update build');
-is($rc->is_success(), 1, 'domain_update is success');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:add><domain:ns>ns3.example.info</domain:ns><domain:contact type="tech">98765</domain:contact></domain:add><domain:rem><domain:contact type="tech">12347</domain:contact></domain:rem></domain:update></update>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_update build');
+is($rc->is_success(), 1, 'domain_update without auto_renew is success');
 
 #renew
 $R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:exDate>2015-01-01T00:00:00.01</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
