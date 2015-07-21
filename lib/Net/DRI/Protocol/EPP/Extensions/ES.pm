@@ -85,7 +85,7 @@ sub setup
  $self->capabilities('domain_update','inscripcion',[ 'add','del']);
  $self->capabilities('domain_update','accion_comercial',[ 'add','del']);
  $self->capabilities('domain_update','codaux',[ 'add','del']);
- $self->capabilities('domain_update','auto_renew',[ 'add','del']);
+ $self->capabilities('domain_update','auto_renew',[ 'add', 'del', 'set']);
  $self->capabilities('bandeja_info');
  
  $self->factories('message',sub {  # add the es_creds extension to all commands

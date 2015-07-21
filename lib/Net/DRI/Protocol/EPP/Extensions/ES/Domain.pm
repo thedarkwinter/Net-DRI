@@ -162,7 +162,8 @@ sub update
  $chg=$todo->set('auth');
  push @chg,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$chg,1) if ($chg && (ref $chg eq 'HASH') && exists $chg->{pw});
  push @d,['domain:chg',@chg] if @chg;
- push @d,['domain:autoRenew', $rd->{'auto_renew'}] if $rd->{'auto_renew'} && $rd->{'auto_renew'}=~m/^(?:true|false)$/;
+ my $auto_renew=$todo->set('auto_renew');
+ push @d,['domain:autoRenew', $auto_renew] if ($auto_renew && $auto_renew =~m/^(?:true|false)$/);
  $mes->command_body(\@d);
 }
 
