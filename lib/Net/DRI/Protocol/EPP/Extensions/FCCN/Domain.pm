@@ -147,7 +147,6 @@ sub info
  my $mes=$epp->message();
 
  $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name info') unless (Net::DRI::Util::has_key($rd,'roid'));
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:info');
  my @n=add_roid($rd->{roid});
@@ -194,7 +193,6 @@ sub update
  my $mes=$epp->message();
 
  $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name update') unless (Net::DRI::Util::has_key($rd,'roid'));
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:update');
  my @n=add_roid($rd->{roid});
@@ -208,7 +206,6 @@ sub renew
  my $mes=$epp->message();
 
  $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name renew') unless (Net::DRI::Util::has_key($rd,'roid'));
 
  my $c=Net::DRI::Util::has_key($rd,'duration');
  foreach my $d (qw/auto_renew not_renew/)
@@ -231,7 +228,6 @@ sub renounce
  my $mes=$epp->message();
 
  $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name renounce') unless (Net::DRI::Util::has_key($rd,'roid'));
 
  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
  $mes->command_body(\@d);
@@ -250,7 +246,6 @@ sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
  my $mes=$epp->message();
 
  $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name delete') unless (Net::DRI::Util::has_key($rd,'roid'));
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:delete');
  my @n=add_roid($rd->{roid});
