@@ -67,7 +67,7 @@ sub register_commands
  my %tmp=( 
           create => [ \&create, undef ],
           update => [ \&update, undef ],
-          info   => [ \&info, \&info_parse ],
+          info   => [ undef, \&info_parse ],
          );
 
  return { 'contact' => \%tmp };
@@ -115,15 +115,6 @@ sub update
 
  my $eid=build_command_extension($mes,$epp,'ptcontact:update');
  $mes->command_extension($eid,\@n);
- return;
-}
-
-sub info
-{
- my ($epp,$contact)=@_;
- my $mes=$epp->message();
-
- push $mes->{'command_body'},['contact:authInfo',['contact:pw','']] unless $contact->auth(); # force auth to empty if not defined (mandatory)
  return;
 }
 

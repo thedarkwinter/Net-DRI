@@ -1003,6 +1003,7 @@ sub contact_delete
 {
  my ($self,$ndr,$contact,$ep)=@_;
  $self->err_invalid_contact($contact) unless (Net::DRI::Util::isa_contact($contact) && $contact->srid());
+ $contact->init('delete',$ndr) if $contact->can('init');
  $ep=Net::DRI::Util::create_params('contact_delete',$ep);
  my $rc=$ndr->process('contact','delete',[$contact,$ep]);
  return $rc;
@@ -1013,6 +1014,7 @@ sub contact_info
  my ($self,$ndr,$contact,$ep)=@_;
  $self->err_invalid_contact($contact) unless (Net::DRI::Util::isa_contact($contact) && $contact->srid());
  $ep=Net::DRI::Util::create_params('contact_info',$ep);
+ $contact->init('info',$ndr) if $contact->can('init');
  my $rc=$ndr->try_restore_from_cache('contact',$contact->srid(),'info');
  if (! defined $rc) { $rc=$ndr->process('contact','info',[$contact,$ep]); }
  return $rc;

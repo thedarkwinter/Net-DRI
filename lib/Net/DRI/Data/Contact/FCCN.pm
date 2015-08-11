@@ -99,8 +99,6 @@ sub validate
  push @errs,'identification' if ($self->identification() && (($self->identification()->{type} && $self->identification()->{type}!~m/^(?:010|020|030|040|110)$/) || (! Net::DRI::Util::xml_is_token($self->identification()->{value},1,20))));
  push @errs,'mobile' if ($self->mobile() && !Net::DRI::Util::xml_is_token($self->mobile(),undef,17) && $self->mobile()!~m/^\+[0-9]{1,3}\.[0-9]{1,14}(?:x\d+)?$/);
 
- $self->auth({pw => ''}) unless $self->auth();
-
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
 
  return 1; ## everything ok.
@@ -109,12 +107,8 @@ sub validate
 sub init
 {
  my ($self,$what,$ndr)=@_;
-
- if ($what eq 'create')
- {
-  my $a=$self->auth();
-  $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); ## Mandatory but can be empty
- }
+ my $a=$self->auth();
+ $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); ## Mandatory but can be empty for create and info commands
  return;
 }
 

@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 21;
+use Test::More tests => 22;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -101,6 +101,9 @@ $R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:para
 $co->srid('c1006449');
 my $co2=$dri->local_object('contact')->srid('c1006449');
 $rc=$dri->contact_info($co2);
+is_string($R1,$E1.'<command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>c1006449</contact:id><contact:authInfo><contact:pw/></contact:authInfo></contact:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info');
+
+
 $co2=$dri->get_info('self');
 is_deeply($co2->identification(),{type => undef, value=>'234561728'},'contact_info get_info(self) identification');
 is($co2->mobile(),'+33.9689304','contact_info get_info(self) mobile');
