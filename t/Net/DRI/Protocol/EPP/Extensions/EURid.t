@@ -609,29 +609,6 @@ is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns=
 $rc=$dri->domain_remind('abc.eu',{destination=>'buyer'});
 is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:command><eurid:transferRemind><eurid:domainname>abc.eu</eurid:domainname><eurid:destination>buyer</eurid:destination></eurid:transferRemind><eurid:clTRID>TRID-0001</eurid:clTRID></eurid:command></eurid:ext></extension></epp>','domain_remind destionation=owner build');
 
-## page 19
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="3" id="6830"><qDate>2008-09-18T21:29:28.179+02:00</qDate><msg>Transfer of domain name mytransferdomain.eu</msg></msgQ><resData><eurid:pollRes><eurid:action>CONFIRM</eurid:action><eurid:domainname>mytransferdomain.eu</eurid:domainname><eurid:returncode>1155</eurid:returncode><eurid:type>TRANSFER</eurid:type></eurid:pollRes></resData>'.$TRID.'</response>'.$E2;
-$rc=$dri->message_retrieve();
-## This is a *very* convoluted way to access data, it is only done so to test everything is there
-$s=$rc->get_data('message','session','last_id');
-is($s,6830,'notification get_data(message,session,last_id)');
-$s=$rc->get_data('message',$s,'name');
-is($s,'mytransferdomain.eu','notification get_data(message,ID,name)');
-is($rc->get_data('domain',$s,'object_type'),$rc->get_data('object_type'),'notification get_data(domain,X,Y)=get_data(Y)');
-is($rc->get_data('exist'),1,'notification get_data(exist)');
-is($rc->get_data('return_code'),1155,'notification get_data(return_code)');
-is($rc->get_data('action'),'confirm_transfer','notification get_data(action)');
-is($rc->get_data('id'),6830,'notification get_data(id)');
-
-## Another form found in the wild
-
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="4682495"><qDate>2011-10-31T23:25:17.071Z</qDate><msg>Watermark Reached</msg></msgQ><resData><eurid:pollRes><eurid:action>REACHED</eurid:action><eurid:level>1000.00</eurid:level><eurid:returncode>1000</eurid:returncode><eurid:type>WATERMARK</eurid:type></eurid:pollRes></resData>'.$TRID.'</response>'.$E2;
-$rc=$dri->message_retrieve();
-$s=$rc->get_data('message','session','last_id');
-is($rc->get_data('message',$s,'action'),'reached_watermark','notification !domain get_data(action)');
-is($rc->get_data('message',$s,'return_code'),1000,'notification !domain get_data(return_code)');
-is($rc->get_data('message',$s,'level'),'1000.00','notification !domain get_data(level)');
-
 
 ################################################################################################################
 
