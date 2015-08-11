@@ -64,7 +64,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp,$params)=@_;
- my $namespace_base = (defined($params) && ref($params) eq "HASH" && defined($params->{"namespace_base"})) ? $params->{"namespace_base"} : "http://www.dns.pt/xml/epp";
+ my $namespace_base = (defined($params) && ref($params) eq "HASH" && defined($params->{"namespace_base"})) ? $params->{"namespace_base"} : "http://epp.dns.pt/schemas"; # TODO: do not forget to change to: http://eppdev.dns.pt/schemas when working on their OT&E :)
 
  $self->ns({ ptdomain  => ["$namespace_base/ptdomain-1.0",'ptdomain-1.0.xsd'],
              ptcontact => ["$namespace_base/ptcontact-1.0",'ptcontact-1.0.xsd'],
