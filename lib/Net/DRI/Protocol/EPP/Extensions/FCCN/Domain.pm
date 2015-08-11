@@ -192,7 +192,7 @@ sub update
  my ($epp,$domain,$toc,$rd)=@_;
  my $mes=$epp->message();
 
- $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
+ $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:update');
  my @n=add_roid($rd->{roid});
@@ -205,7 +205,7 @@ sub renew
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
+ $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
  my $c=Net::DRI::Util::has_key($rd,'duration');
  foreach my $d (qw/auto_renew not_renew/)
@@ -227,7 +227,7 @@ sub renounce
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
+ $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
  $mes->command_body(\@d);
@@ -245,7 +245,7 @@ sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
+ $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:delete');
  my @n=add_roid($rd->{roid});
