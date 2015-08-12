@@ -1,4 +1,4 @@
-## Domain Registry Interface, Mark & Signed Mark for EPP (draft-ietf-eppext-tmch-smd-00)
+## Domain Registry Interface, Mark & Signed Mark for EPP (draft-ietf-eppext-tmch-smd-02)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
