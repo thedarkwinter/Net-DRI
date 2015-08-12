@@ -29,11 +29,11 @@ use DateTime::Format::ISO8601;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee - CentralNic EPP Fee extension commands for Net::DRI (draft-brown-epp-fees-01, 02 & 03)
+Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee - CentralNic EPP Fee extension commands for Net::DRI (draft-brown-epp-fees-01, 02, 03, 04, and 05)
 
 =head1 DESCRIPTION
 
-Adds the Price Extension (urn:ietf:params:xml:ns:fee-0.4, -0.5, -0.6, & -0.7) to domain commands. This extension supports both versions. The extension is built by adding a hash to any domains commands. This pricing information is returned in all commands when requested.
+Adds the Price Extension (urn:ietf:params:xml:ns:fee-0.4, -0.5, -0.6, -0.7, -0.8) to domain commands. This extension supports both versions. The extension is built by adding a hash to any domains commands. This pricing information is returned in all commands when requested.
 
 CentralNic Fees extension is defined in http://tools.ietf.org/html/draft-brown-epp-fees-01
 
@@ -103,7 +103,7 @@ sub register_commands
   );
 
   my %d=(
-            info  => [ \&info, \&info_parse ],
+            info  => [ \&info, \&info_parse ], # Info command support dropped in draft-05 (-0.8)
             check => [ \&check, \&check_parse ],
             transfer_query => [ undef, \&transform_parse], ## does not add any elements to the command but does include elements in the response
             create => [ \&create, \&transform_parse ], ## extension adds elements to both the EPP <create> command and response
@@ -144,12 +144,12 @@ sub parse_greeting
 
 
 ####################################################################################################
-## Build / Parse helpers for 0.5 to 0.7
+## Build / Parse helpers for 0.5 to 0.8
 
 ## MH: TODO: Fix this parser to ADD fees togother, but still make each fee an individual element in an array with its attributes
-##           This upgrade from 0.5-0.6-0.7 works, but the extension needs to be reviewed now that we have a few different active implementations
+##           This upgrade from 0.5-0.6-0.8 works, but the extension needs to be reviewed now that we have a few different active implementations
 
-sub fee_set_parse_07
+sub fee_set_parse_08
 {
   my $start = shift;
   return unless $start;
@@ -205,7 +205,7 @@ sub fee_set_parse_07
   return $set;
 }
 
-sub fee_set_build_07
+sub fee_set_build_08
 {
   my ($rp,$cmd,$domain)=@_;
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with key action, and optionally currency and duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'action');
@@ -339,7 +339,7 @@ sub check
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
 
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7');
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
   if ($ver eq '0.4')
   {
    foreach my $fee_set (@fees)
@@ -350,11 +350,11 @@ sub check
    }
   }
 
-  if ($ver eq ('0.5' || '0.6' || '0.7'))
+  if ($ver eq ('0.5' || '0.6' || '0.7' || '0.8'))
   {
    foreach my $fee_set (@fees)
    {
-     @n = fee_set_build_07($fee_set,'check',$domain);
+     @n = fee_set_build_08($fee_set,'check',$domain);
      push @fee_set,@n if @n;
    }
    return unless @fee_set;
@@ -371,26 +371,26 @@ sub check_parse
   my $mes=$po->message();
   return unless $mes->is_success;
 
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7');
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
 
   my $chkdata=$mes->node_extension if ($ver eq '0.4');
-  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($ver eq '0.5' || $ver eq '0.6' || $ver eq '0.7');
+  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($ver eq '0.5' || $ver eq '0.6' || $ver eq '0.7' || $ver eq '0.8');
   return unless defined $chkdata;
 
   foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
   {
     my ($name,$content)=@$el;
-    if ($name =~ m/^(chkData|cd)$/) # chkData for 0.4, cd for 0.5 & 0.6 & 0.7
+    if ($name =~ m/^(chkData|cd)$/) # chkData for 0.4, cd for 0.5 & 0.6 & 0.7 & 0.8
     {
       my $dn = '';
       foreach my $el2 (Net::DRI::Util::xml_list_children($content))
       {
         my ($name2,$content2)=@$el2;
-        $dn = $content2->textContent() if $name2 =~ m/^(domain|name)$/; # domain for 0.4, name for 0.5 & 0.6 & 0.7
+        $dn = $content2->textContent() if $name2 =~ m/^(domain|name)$/; # domain for 0.4, name for 0.5 & 0.6 & 0.7 & 0.8
       }
       next unless $dn;
       my $fee_set = fee_set_parse($content) if ($ver eq '0.4');
-      $fee_set = fee_set_parse_07($content) if ($ver eq ('0.5' || '0.6' || '0.7'));
+      $fee_set = fee_set_parse_08($content) if ($ver eq ('0.5' || '0.6' || '0.7' || '0.8'));
       if ($fee_set)
       {
         push @{$rinfo->{domain}->{$dn}->{fee}},$fee_set;
@@ -406,15 +406,16 @@ sub info
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7');
- 
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
+  return if $ver eq '0.8'; # as of 0.6 (draft -05) info is no longer supported. Returning an exception will do more harm then good, so just ignore
+  
   my (@n,@fees);
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
   foreach my $fee_set (@fees)
   {
     @n = fee_set_build($fee_set) if ($ver eq '0.4');
-    @n = fee_set_build_07($fee_set) if ($ver eq ('0.5' || '0.6' || '0.7'));
+    @n = fee_set_build_08($fee_set) if ($ver eq ('0.5' || '0.6' || '0.7' || '0.8'));
     my $eid=$mes->command_extension_register('fee','info');
     $mes->command_extension($eid,\@n);
   }
@@ -426,13 +427,13 @@ sub info_parse
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success();
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7');
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
 
   my $infdata=$mes->get_extension($mes->ns('fee'),'infData');
   return unless defined $infdata;
 
   my $fee_set = fee_set_parse($infdata) if ($ver eq '0.4');
-  $fee_set = fee_set_parse_07($infdata) if ($ver eq ('0.5' || '0.6' || '0.7'));
+  $fee_set = fee_set_parse_08($infdata) if ($ver eq ('0.5' || '0.6' || '0.7' || '0.8'));
   if ($fee_set)
   {
     @{$rinfo->{domain}->{$oname}->{fee}} = $fee_set;
@@ -475,7 +476,7 @@ sub transform_build
   my ($epp,$domain,$rd,$cmd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7');
+  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
 
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, fee') unless Net::DRI::Util::has_key($rd->{fee},'currency') && Net::DRI::Util::has_key($rd->{fee},'fee');
   my $rp=$rd->{fee};
