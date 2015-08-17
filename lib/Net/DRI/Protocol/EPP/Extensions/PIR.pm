@@ -33,7 +33,14 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase Afilias::IPR Afilias::IDNLanguage Afilias::Message Afilias::Registrar Afilias::Validation Afilias::Price/; }
+sub default_extensions {
+ my ($self,$pp) = @_;
+ $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
+ my @extensions = qw/GracePeriod SecDNS LaunchPhase Afilias::IPR Afilias::IDNLanguage Afilias::Message Afilias::Registrar Afilias::JSONMessage Afilias::Validation CentralNic::Fee/;
+ return @extensions;
+}
+
+
 
 ####################################################################################################
 
