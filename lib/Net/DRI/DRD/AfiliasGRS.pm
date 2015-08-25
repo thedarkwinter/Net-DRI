@@ -79,22 +79,27 @@ sub new {
 	my $class=shift;
 	my $self=$class->SUPER::new(@_);
 	$self->{info}->{host_as_attr}=0;
-	$self->{info}->{contact_i18n}=4; ## LOC+INT 
+	$self->{info}->{contact_i18n}=4; 
 	return $self;
 }
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return 'AfiliasGRS'; }
-sub tlds          { return ('ag','bz','lc','mn','sc','vc'); }
+sub tlds          { return ('ag',(map { $_.'.ag'} qw/co com net nom org/),
+							'bz',(map { $_.'.bz'} qw/co com net/),
+							'lc',(map { $_.'.lc'} qw/co com l net org p/),
+							'mn',
+							'sc',(map { $_.'.sc'} qw/com net org/),
+							'vc',(map { $_.'.vc'} qw/com net org/)); }
 sub object_types  { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default {
 	my ($self,$type)=@_;
 	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP',{}) if $type eq 'epp';
+	return ('Net::DRI::Transport::Socket',{remote_host=>'whois2.afilias-grs.info'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
 	return;
 }
 
 ####################################################################################################
-
 1;
