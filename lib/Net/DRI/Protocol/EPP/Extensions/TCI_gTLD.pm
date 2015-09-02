@@ -40,7 +40,7 @@ sub setup
 # return @c;
 #}
 
-sub default_extensions { return qw(TCI_gTLD::Contact TCI_gTLD::Domain SecDNS GracePeriod LaunchPhase); }
+sub default_extensions { return qw(TCI_gTLD::Contact TCI_gTLD::Domain GracePeriod SecDNS LaunchPhase IDN); }
 
 ####################################################################################################
 1;
