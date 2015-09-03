@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 486;
+use Test::More tests => 487;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -99,6 +99,7 @@ use_ok('Net::DRI::DRD::UNIREG');
 use_ok('Net::DRI::DRD::UNITEDTLD');
 use_ok('Net::DRI::DRD::ZACR');
 use_ok('Net::DRI::DRD::AfiliasSRS');
+use_ok('Net::DRI::DRD::AfiliasGRS');
 use_ok('Net::DRI::DRD::GMO');
 use_ok('Net::DRI::DRD::CRR');
 use_ok('Net::DRI::DRD::NGTLD');
