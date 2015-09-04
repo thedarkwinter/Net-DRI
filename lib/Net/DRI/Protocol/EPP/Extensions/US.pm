@@ -64,6 +64,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
+ $self->ns({neulevel => ['urn:ietf:params:xml:ns:neulevel-1.0','neulevel-1.0.xsd']});
  return;
 }
 

@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 5;
+use Test::More tests => 7;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -36,12 +36,22 @@ $c->nexus_category('C31/DE');
 my $rc=$dri->contact_create($c);
 is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>abcde</contact:id><contact:postalInfo type="loc"><contact:name>abc</contact:name><contact:org>abc.org</contact:org><contact:addr><contact:street>123 d street</contact:street><contact:city>reston</contact:city><contact:sp>VA</contact:sp><contact:pc>20194</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:postalInfo type="int"><contact:name>abc</contact:name><contact:org>abc.org</contact:org><contact:addr><contact:street>123 d street</contact:street><contact:city>reston</contact:city><contact:sp>VA</contact:sp><contact:pc>20194</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:fax x="1234">+1.2345678901</contact:fax><contact:email>xxx@yyy.com</contact:email><contact:authInfo><contact:pw>123456</contact:pw></contact:authInfo></contact:create></create><extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>AppPurpose=P1 NexusCategory=C31/DE</neulevel:unspec></neulevel:extension></extension><clTRID>coricopat-9978-1002</clTRID></command>'.$E2,'contact_create with nexus info build');
 
+## new test for info_parse
+$R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>abcdef</contact:id><contact:roid>ABCDEF-US</contact:roid><contact:status s="linked"/><contact:status s="clientDeleteProhibited"/><contact:postalInfo type="loc"><contact:name>abc</contact:name><contact:org>abc.org</contact:org><contact:addr><contact:street>123 d street</contact:street><contact:city>reston</contact:city><contact:sp>VA</contact:sp><contact:pc>20194</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:fax x="1234">+1.2345678901</contact:fax><contact:email>xxx@yyy.com</contact:email><contact:clID>ClientY</contact:clID><contact:crID>ClientX</contact:crID><contact:crDate>2002-04-03T22:00:00.0Z</contact:crDate><contact:upID>ClientX</contact:upID><contact:upDate>2002-12-03T09:00:00.0Z</contact:upDate><contact:trDate>2000-04-08T09:00:00.0Z</contact:trDate><contact:authInfo><contact:pw>123456</contact:pw></contact:authInfo></contact:infData></resData><extension><neulevel:extension xmlns="urn:ietf:params:xml:ns:neulevel-1.0" xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>AppPurpose=P2 NexusCategory=C31/US</neulevel:unspec></neulevel:extension></extension><trID><clTRID>coricopat-9978-1003</clTRID><svTRID>54322-XYZ</svTRID></trID></response>'.$E2;
+my $co=$dri->local_object('contact')->srid('abcdef')->auth({pw=>'123456'});
+$rc=$dri->contact_info($co);
+$c=$dri->get_info('self','contact','abcdef');
+is($c->application_purpose(),'P2','contact_info parse AppPurpose');
+is($c->nexus_category(),'C31/US','contact_info parse NexusCategory');
+
+## this old test I think is wrong, but the info_parse function was modified to still handle in case
 $R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>abcde</contact:id><contact:roid>ABCDE-US</contact:roid><contact:status s="linked"/><contact:status s="clientDeleteProhibited"/><contact:postalInfo type="loc"><contact:name>abc</contact:name><contact:org>abc.org</contact:org><contact:addr><contact:street>123 d street</contact:street><contact:city>reston</contact:city><contact:sp>VA</contact:sp><contact:pc>20194</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:fax x="1234">+1.2345678901</contact:fax><contact:email>xxx@yyy.com</contact:email><contact:clID>ClientY</contact:clID><contact:crID>ClientX</contact:crID><contact:crDate>2002-04-03T22:00:00.0Z</contact:crDate><contact:upID>ClientX</contact:upID><contact:upDate>2002-12-03T09:00:00.0Z</contact:upDate><contact:trDate>2000-04-08T09:00:00.0Z</contact:trDate><contact:authInfo><contact:pw>123456</contact:pw></contact:authInfo></contact:infData></resData><extension>AppPurpose=P1 NexusCategory=C11</extension><trID><clTRID>coricopat-9978-1003</clTRID><svTRID>54322-XYZ</svTRID></trID></response>'.$E2;
-my $co=$dri->local_object('contact')->srid('abcde')->auth({pw=>'123456'});
+$co=$dri->local_object('contact')->srid('abcde')->auth({pw=>'123456'});
 $rc=$dri->contact_info($co);
 $c=$dri->get_info('self','contact','abcde');
 is($c->application_purpose(),'P1','contact_info parse AppPurpose');
 is($c->nexus_category(),'C11','contact_info parse NexusCategory');
+
 
 $R2='';
 $co=$dri->local_object('contact')->srid('abc');
