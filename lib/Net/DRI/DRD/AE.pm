@@ -77,7 +77,7 @@ sub new {
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return 'AE'; }
-sub tlds          { return ('ae',map { $_.'.ae'} qw/net co org/ ); }
+sub tlds          { return ('ae',map { $_.'.ae'} qw/net co org sch/ ); }
 sub object_types  { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
