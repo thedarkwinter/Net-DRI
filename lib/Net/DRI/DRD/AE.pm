@@ -77,7 +77,7 @@ sub new {
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return 'AE'; }
-sub tlds          { return ('ae',map { $_.'.ae'} qw/net co/ ); }
+sub tlds          { return ('ae',map { $_.'.ae'} qw/net co org/ ); }
 sub object_types  { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
@@ -91,6 +91,14 @@ sub set_factories {
 	my ($self,$po)=@_;
 	$po->factories('contact',sub { return Net::DRI::Data::Contact::AE->new(@_); });
 	return;
+}
+
+####################################################################################################
+
+sub verify_name_domain
+{
+ my ($self,$ndr,$domain,$op)=@_;
+ return $self->_verify_name_rules($domain,$op,{check_name => 0});
 }
 
 ####################################################################################################
