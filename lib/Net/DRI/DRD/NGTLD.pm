@@ -569,10 +569,11 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 
 =head2 GMO Registry
 
-GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo') and a separate shared account for geoTLDs (set provider to 'gmogeo')
+GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo') and a separate shared account for geoTLDs (set provider to 'gmogeo'), and possibly more.
 
  $dri->add_registry('NGTLD',{provider=>'gmo'}); # Own: nagoya tokyo yokohama
  $dri->add_registry('NGTLD',{provider=>'gmogeo'}); # Geo: okinawa ryukyu
+ $dri->add_registry('NGTLD',{provider=>'gmokyoto'}); # kyoto
 
 =head3 Status: Untested
 
@@ -600,6 +601,12 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmogeo';
+ return {
+     bep_type => 2, # shared registry
+     tlds => ['kyoto'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
+     whois_server => 'whois.centralnic.com',
+   } if $bep eq 'gmokyoto';   
    
 =pod
 
