@@ -744,7 +744,7 @@ Contested: broadway radio tube
 
 =head3 TLDs
 
-xn--rhqv96g xn--g2xx48c xn--nyqy26a best earth uno safety pharmacy nyc jetzt taipei qpon moe buzz ceo htc club whoswho osaka
+xn--rhqv96g xn--g2xx48c xn--nyqy26a best earth hsbc uno safety pharmacy nyc jetzt taipei qpon moe buzz ceo htc club whoswho osaka
 
 Contended TLD's not included
 
@@ -774,6 +774,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar' && $tld eq 'nyc';
 
+ ## these use CentralNic::Fee
  return {
      bep_type => 1, # dedicated registy
      tlds => ['club','earth'],
@@ -781,11 +782,12 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::NYC->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::NYC'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'neustar' && $tld eq 'club';
+   } if $bep eq 'neustar' && $tld =~ m/(?:club|earth)/;
 
+ ## these use NeuLevel::Fee or no Fee extension
  return {
      bep_type => 1, # dedicated registy
-     tlds => ['xn--rhqv96g','xn--g2xx48c','xn--nyqy26a','best','uno','safety','pharmacy','nyc','jetzt','taipei','qpon','moe','buzz','ceo','htc','whoswho','osaka'],
+     tlds => ['xn--rhqv96g','xn--g2xx48c','xn--nyqy26a','best','hsbc', 'uno','safety','pharmacy','nyc','jetzt','taipei','qpon','moe','buzz','ceo','htc','whoswho','osaka'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
