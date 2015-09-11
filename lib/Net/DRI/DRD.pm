@@ -1425,6 +1425,9 @@ sub _build_price_query
  if (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge', @{$ndr->protocol()->{loaded_modules}})
  {
   # they answer with charge extension anyway, so no action required on this one
+ } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::AFNIC_gTLD::PremiumDomain', @{$ndr->protocol()->{loaded_modules}})
+ {
+  # they answer with charge extension anyway, so no action required on this one
  } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::Afilias::Price', @{$ndr->protocol()->{loaded_modules}})
  {
   # they answer with price extension anyway, so no action required on this one
