@@ -249,30 +249,8 @@ is_deeply([$s->get_names()],['ns1.eurid.eu','ns2.eurid.eu','ns3.eurid.eu','ns4.e
 ############################################################################################################
 ## Domain
 
-## p.50
-$R2=$E1.'<response>'.r().'<resData><domain:creData><domain:name>mykingdom.eu</domain:name><domain:crDate>2005-09-29T13:47:32.000Z</domain:crDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
-$cs=$dri->local_object('contactset');
-$cs->set($dri->local_object('contact')->srid('mvw14'),'registrant');
-$cs->set($dri->local_object('contact')->srid('mt24'),'tech');
-$cs->set($dri->local_object('contact')->srid('jj1'),'billing');
-$rc=$dri->domain_create('mykingdom.eu',{pure_create=>1,contact=>$cs});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>mykingdom.eu</domain:name><domain:registrant>mvw14</domain:registrant><domain:contact type="billing">jj1</domain:contact><domain:contact type="tech">mt24</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><clTRID>TRID-0001</clTRID></command>'.$E2,'domain_create build 1');
-is($rc->is_success(),1,'domain_create is_success 1');
-my $crdate=$dri->get_info('crDate');
-is(''.$crdate,'2005-09-29T13:47:32','domain_create get_info(crDate) 1');
 
 
-## p.52
-$R2=$E1.'<response>'.r().'<resData><domain:creData><domain:name>everything.eu</domain:name><domain:crDate>2005-09-29T14:25:50.000Z</domain:crDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
-$cs->set($dri->local_object('contact')->srid('mt24'),'admin');
-$dh=$dri->local_object('hosts');
-$dh->add('ns.eurid.eu');
-$dh->add('ns.everything.eu',['193.12.11.1']);
-$rc=$dri->domain_create('everything.eu',{pure_create=>1,contact=>$cs,duration=>DateTime::Duration->new(years=>1),ns=>$dh});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>everything.eu</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostAttr><domain:hostName>ns.eurid.eu</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>ns.everything.eu</domain:hostName><domain:hostAddr ip="v4">193.12.11.1</domain:hostAddr></domain:hostAttr></domain:ns><domain:registrant>mvw14</domain:registrant><domain:contact type="admin">mt24</domain:contact><domain:contact type="billing">jj1</domain:contact><domain:contact type="tech">mt24</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><clTRID>TRID-0001</clTRID></command></epp>','domain_create build 2');
-is($rc->is_success(),1,'domain_create is_success 2');
-$crdate=$dri->get_info('crDate');
-is(''.$crdate,'2005-09-29T14:25:50','domain_create get_info(crDate) 2');
 
 
 ## p.55
@@ -439,45 +417,6 @@ is($dri->get_info('exist','domain','something.eu'),0,'domain_check multi get_inf
 is($dri->get_info('exist','domain','mything.eu'),0,'domain_check multi get_info(exist) 7/7');
 
 
-## p.78
-$R2=$E1.'<response>'.r().'<resData><domain:infData><domain:name>ecom.eu</domain:name><domain:roid>19204-EURID</domain:roid><domain:status s="ok"/><domain:registrant>mvw14</domain:registrant><domain:contact type="billing">jj1</domain:contact><domain:contact type="tech">mmai1</domain:contact><domain:ns><domain:hostAttr><domain:hostName>ns.anything.eu</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>ns.everything.eu</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>ns.unknown.eu</domain:hostName></domain:hostAttr></domain:ns><domain:clID>t000006</domain:clID><domain:crID>t000006</domain:crID><domain:crDate>2005-09-29T14:45:35.000Z</domain:crDate><domain:upID>t000006</domain:upID><domain:upDate>2005-09-29T14:45:35.000Z</domain:upDate><domain:exDate>2006-09-29T15:45:35.0Z</domain:exDate></domain:infData></resData><extension><eurid:ext><eurid:infData><eurid:domain><eurid:nsgroup>nsgroup-eurid2</eurid:nsgroup></eurid:domain></eurid:infData></eurid:ext></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_info('ecom.eu');
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><info><domain:info xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name hosts="all">ecom.eu</domain:name></domain:info></info><clTRID>TRID-0001</clTRID></command></epp>','domain_info build');
-is($rc->is_success(),1,'domain_info is_success');
-is($dri->get_info('exist'),1,'domain_info get_info(exist)');
-is($dri->get_info('roid'),'19204-EURID','domain_info get_info(roid)');
-$s=$dri->get_info('status');
-isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
-is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list');
-is($s->is_active(),1,'domain_info get_info(status) is_active');
-$s=$dri->get_info('contact');
-isa_ok($s,'Net::DRI::Data::ContactSet','domain_info get_info(contact)');
-is_deeply([$s->types()],['billing','registrant','tech'],'domain_info get_info(contact) types');
-is($s->get('registrant')->srid(),'mvw14','domain_info get_info(contact) registrant srid');
-is($s->get('billing')->srid(),'jj1','domain_info get_info(contact) billing srid');
-is($s->get('tech')->srid(),'mmai1','domain_info get_info(contact) tech srid');
-$dh=$dri->get_info('ns');
-isa_ok($dh,'Net::DRI::Data::Hosts','domain_info get_info(ns)');
-@c=$dh->get_names();
-is_deeply(\@c,['ns.anything.eu','ns.everything.eu','ns.unknown.eu'],'domain_info get_info(ns) get_names');
-is($dri->get_info('clID'),'t000006','domain_info get_info(clID)');
-is($dri->get_info('crID'),'t000006','domain_info get_info(crID)');
-$d=$dri->get_info('crDate');
-isa_ok($d,'DateTime','domain_info get_info(crDate)');
-is(''.$d,'2005-09-29T14:45:35','domain_info get_info(crDate) value');
-is($dri->get_info('upID'),'t000006','domain_info get_info(upID)');
-$d=$dri->get_info('upDate');
-isa_ok($d,'DateTime','domain_info get_info(upDate)');
-is(''.$d,'2005-09-29T14:45:35','domain_info get_info(upDate) value');
-$d=$dri->get_info('exDate');
-isa_ok($d,'DateTime','domain_info get_info(exDate)');
-is(''.$d,'2006-09-29T15:45:35','domain_info get_info(exDate) value');
-$d=$dri->get_info('nsgroup');
-isa_ok($d,'ARRAY','domain_info get_info(nsgroup)');
-is(@$d,1,'domain_info get_info(nsgroup) count');
-$d=$d->[0];
-isa_ok($d,'Net::DRI::Data::Hosts','domain_info get_info(nsgroup) [0]');
-is($d->name(),'nsgroup-eurid2','domain_info get_info(nsgroup) [0] value');
 
 ## Examples from https://secure.registry.eu/images/Library/release%20notes%205%201.pdf (in effect since 2007-08-06)
 

@@ -78,6 +78,7 @@ sub new
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=1;
  $self->{info}->{contact_i18n}=1; ## LOC only
+ $self->{info}->{force_native_idn}=1; # use native IDN in domain:name
  return $self;
 }
 

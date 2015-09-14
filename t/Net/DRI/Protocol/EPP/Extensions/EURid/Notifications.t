@@ -112,3 +112,5 @@ is($dri->get_info('detail','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),und
 is($dri->get_info('object_type','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),'DOMAIN','message_retrieve get_info object_type');
 is($dri->get_info('object_unicode','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),'secure-domain.eu','message_retrieve get_info object_unicode');
 is($dri->get_info('exist','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),'1','message_retrieve get_info exist');
+
+exit 0;
