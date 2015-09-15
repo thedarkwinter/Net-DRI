@@ -86,6 +86,11 @@ $dh->add('ns2.hosting.ae');
 $rc=$dri->domain_create('in--valid.ae',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),contact=>$cs,ns=>$dh,auth=>{pw=>''}});
 is($rc->is_success(),1,'epp_test - question 4');
 
+###################### Question 15 ###########################
+# Initiate Domain Transfer...
+$rc=$dri->domain_transfer_start('transferme.co.ae',{auth=>{pw=>'fg673hsTH'},duration=>DateTime::Duration->new(years=>0)});
+is($rc->is_success(),1,'epp_test - question 15');
+
 #####################################################################################################
 ######### Closing Commands ########
 
