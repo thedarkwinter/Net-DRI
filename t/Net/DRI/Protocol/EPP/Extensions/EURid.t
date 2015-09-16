@@ -313,19 +313,6 @@ is($rc->is_success(),0,'domain_update 2 is_success');
 is_deeply([$rc->get_extended_results()],[{type=>'text',from=>'eurid',message=>'Contact mt24 is not linked to domain ecom'}],'domain_update 2 info');
 
 
-## p.61
-$R2=$E1.'<response>'.r().'<extension><eurid:ext><eurid:result><eurid:msg>OK</eurid:msg></eurid:result></eurid:ext></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_delete('ecom.eu',{pure_delete=>1,deleteDate=>DateTime->new(year=>2005,month=>9,day=>29,hour=>14,minute=>40,second=>51)});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><delete><domain:delete xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>ecom.eu</domain:name></domain:delete></delete><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:delete><eurid:domain><eurid:deleteDate>2005-09-29T14:40:51.000000000Z</eurid:deleteDate></eurid:domain></eurid:delete></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_delete build');
-is($rc->is_success(),1,'domain_delete is_success');
-
-## Release 5.6, page 28
-$R2=$E1.'<response>'.r().'<extension><eurid:ext><eurid:result><eurid:msg>OK</eurid:msg></eurid:result></eurid:ext></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_delete('domain-to-update-overwrite-true.eu',{pure_delete=>1,deleteDate=>DateTime->new(year=>2010,month=>1,day=>1,hour=>0,minute=>0,second=>0)});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><delete><domain:delete xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>domain-to-update-overwrite-true.eu</domain:name></domain:delete></delete><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:delete><eurid:domain><eurid:deleteDate>2010-01-01T00:00:00.000000000Z</eurid:deleteDate></eurid:domain></eurid:delete></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_delete build'); 
-is($rc->is_success(),1,'domain_delete is_success');
-
-
 
 
 ## p.63

@@ -197,13 +197,52 @@ $dh=$dri->get_info('nsgroup');
 isa_ok($dh->[0],'Net::DRI::Data::Hosts','domain_info get_info(nsgroup)');
 is($dri->get_info('keygroup'), 'keygroup-1350898304165', 'domain get_info(name)');
 
-## TODO: when dynUpdate is implemented, these two domain_info's should be tested
+#### TODO: when dynUpdate is implemented, these two domain_info's should be tested
 
 ## 2.1.09/domains/domain-info/domain-info10-resp.xml
 # Domain info without authcode with a successful DYNUPDATE reply section
 
 ## domains/domain-info/domain-info11-resp.xml
 # Domain info without authcode with a failed DYNUPDATE reply section
+
+########################################################################################################
+### DOMAIN_CREATE
+
+########################################################################################################
+### DOMAIN_UPDATE
+
+########################################################################################################
+### DOMAIN_RENEW
+
+########################################################################################################
+### DOMAIN_DELETE
+
+## 2.1.09/domains/domain-delete/domain-delete01-cmd.xml
+# Delete domain with a deletion date
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$rc=$dri->domain_delete('testdelete-1349683848.eu',{pure_delete=>1,deleteDate=>DateTime->new(year=>2015,month=>1,day=>1,hour=>0,minute=>0,second=>0)});
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>testdelete-1349683848.eu</domain:name></domain:delete></delete><extension><domain-ext:delete xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-1.1" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-ext-1.1 domain-ext-1.1.xsd"><domain-ext:schedule><domain-ext:delDate>2015-01-01T00:00:00.000000000Z</domain-ext:delDate></domain-ext:schedule></domain-ext:delete></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_delete (exDate) build');
+is($rc->is_success(),1,'domain_delete is_success');
+
+## 2.1.09/domains/domain-delete/domain-delete02-cmd.xml
+# Delete domain immediately
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$rc=$dri->domain_delete('testdelete-1349683850.eu',{pure_delete=>1});
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>testdelete-1349683850.eu</domain:name></domain:delete></delete><clTRID>ABC-12345</clTRID></command></epp>','domain_delete (exDate) build');
+is($rc->is_success(),1,'domain_delete is_success');
+
+## 2.1.09/domains/domain-delete/domain-undelete01-cmd.xml
+# Cancel scheduled deletion
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$rc=$dri->domain_delete('testdelete-1349683848.eu',{pure_delete=>1,cancel=>1});
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>testdelete-1349683848.eu</domain:name></domain:delete></delete><extension><domain-ext:delete xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-1.1" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-ext-1.1 domain-ext-1.1.xsd"><domain-ext:cancel/></domain-ext:delete></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_delete (exDate) build');
+is($rc->is_success(),1,'domain_delete is_success');
+
+########################################################################################################
+### DOMAIN_TRANSFER
+
+
+
 
 
 exit 0;
