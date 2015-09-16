@@ -79,6 +79,7 @@ sub new
  $self->{info}->{host_as_attr}=1;
  $self->{info}->{contact_i18n}=1; ## LOC only
  $self->{info}->{force_native_idn}=1; # use native IDN in domain:name
+ $self->{info}->{check_limit}=12; # TBC - example has 12
  return $self;
 }
 

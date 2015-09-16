@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 53;
+use Test::More tests => 84;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -37,6 +37,66 @@ $R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2014-09-13T09:31:14.123Z</svDate
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{'secDNS'}->[0],'urn:ietf:params:xml:ns:secDNS-1.1','secDNS 1.1 for server announcing 1.0 + 1.1');
 is($dri->protocol()->ns()->{'domain-ext'}->[0],'http://www.eurid.eu/xml/epp/domain-ext-1.1','domain-ext 1.1 for server announcing 1.1');
+
+########################################################################################################
+### DOMAIN_CHECK
+
+## 2.1.09/domains/domain-check/domain-check01-resp.xml
+# Example of domain check command of multiple domain names
+# Response edited, long domain removed, and we need to check availableDate and idn extensions
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="true">some-domain-info-0000000000.eu</domain:name></domain:cd><domain:cd><domain:name avail="false">some-domain-info-1349951245.eu</domain:name><domain:reason lang="en">in use</domain:reason></domain:cd><domain:cd><domain:name avail="false">some-domain-info-1349951246.eu</domain:name><domain:reason lang="en">quarantine</domain:reason></domain:cd><domain:cd><domain:name avail="false">andalucia.eu</domain:name><domain:reason lang="en">reserved</domain:reason></domain:cd><domain:cd><domain:name avail="false">andalucía.eu</domain:name><domain:reason lang="en">reserved</domain:reason></domain:cd><domain:cd><domain:name avail="false">agias.eu</domain:name><domain:reason lang="en">blocked</domain:reason></domain:cd><domain:cd><domain:name avail="false">rey-españa.eu</domain:name><domain:reason lang="en">blocked</domain:reason></domain:cd><domain:cd><domain:name avail="false">20karat.eu</domain:name><domain:reason lang="en">in use</domain:reason></domain:cd><domain:cd><domain:name avail="false">crédit-suisse.eu</domain:name><domain:reason lang="en">in use</domain:reason></domain:cd><domain:cd><domain:name avail="false">bandit-corp.eu</domain:name><domain:reason lang="en">suspended</domain:reason></domain:cd><domain:cd><domain:name avail="false">court-order-seized.eu</domain:name><domain:reason lang="en">seized</domain:reason></domain:cd></domain:chkData></resData><extension><domain-ext:chkData xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-1.1"><domain-ext:domain><domain-ext:name>some-domain-info-1349951246.eu</domain-ext:name><domain-ext:availableDate>2014-10-23T13:52:13.392Z</domain-ext:availableDate></domain-ext:domain></domain-ext:chkData><idn:mapping xmlns:idn="http://www.eurid.eu/xml/epp/idn-1.0"><idn:name><idn:ace>xn--andaluca-i2a.eu</idn:ace><idn:unicode>andalucía.eu</idn:unicode></idn:name><idn:name><idn:ace>xn--crdit-suisse-ceb.eu</idn:ace><idn:unicode>crédit-suisse.eu</idn:unicode></idn:name><idn:name><idn:ace>xn--rey-espaa-s6a.eu</idn:ace><idn:unicode>rey-españa.eu</idn:unicode></idn:name></idn:mapping></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('some-domain-info-0000000000.eu','some-domain-info-1349951245.eu','some-domain-info-1349951246.eu','andalucia.eu','andalucía.eu','agias.eu','rey-españa.eu','20karat.eu','crédit-suisse.eu','bandit-corp.eu','court-order-seized.eu');
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>some-domain-info-0000000000.eu</domain:name><domain:name>some-domain-info-1349951245.eu</domain:name><domain:name>some-domain-info-1349951246.eu</domain:name><domain:name>andalucia.eu</domain:name><domain:name>andalucía.eu</domain:name><domain:name>agias.eu</domain:name><domain:name>rey-españa.eu</domain:name><domain:name>20karat.eu</domain:name><domain:name>crédit-suisse.eu</domain:name><domain:name>bandit-corp.eu</domain:name><domain:name>court-order-seized.eu</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command></epp>','domain_check build');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('exist','domain','some-domain-info-0000000000.eu'),0,'domain_check get_info(exist)');
+is($dri->get_info('exist','domain','some-domain-info-1349951245.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','some-domain-info-1349951245.eu'),'in use','domain_check get_info(exist_reason)');
+is($dri->get_info('exist','domain','some-domain-info-1349951246.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','some-domain-info-1349951246.eu'),'quarantine','domain_check get_info(exist_reason)');
+$d=$dri->get_info('availableDate','domain','some-domain-info-1349951246.eu');
+SKIP: { ## TODO
+  skip 'TODO: availableDate (domain-ext) not yet parsed on domain_check',2;
+  isa_ok($d,'DateTime','domain_check get_info(availableDate)');
+  is(''.$d,'2014-10-23T16:11:55','domain_check get_info(availableDate) value');
+};
+is($dri->get_info('exist','domain','andalucia.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','andalucia.eu'),'reserved','domain_check get_info(exist_reason)');
+is($dri->get_info('exist','domain','andalucía.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','andalucía.eu'),'reserved','domain_check get_info(exist_reason)');
+is($dri->get_info('name_ace','domain','andalucía.eu'),'xn--andaluca-i2a.eu','domain_check get_info(name_ace)');
+SKIP: { ## TODO
+  skip 'TODO: ace (idn) not yet parsed on domain_check',1;
+  is($dri->get_info('ace','domain','andalucía.eu'),'xn--andaluca-i2a.eu','domain_check get_info(ace)');
+};
+is($dri->get_info('exist','domain','agias.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','agias.eu'),'blocked','domain_check get_info(exist_reason)');
+is($dri->get_info('exist','domain','rey-españa.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','rey-españa.eu'),'blocked','domain_check get_info(exist_reason)');
+is($dri->get_info('exist','domain','20karat.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','20karat.eu'),'in use','domain_check get_info(exist_reason)');
+is($dri->get_info('exist','domain','crédit-suisse.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','crédit-suisse.eu'),'in use','domain_check get_info(exist_reason)');
+is($dri->get_info('exist','domain','bandit-corp.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','bandit-corp.eu'),'suspended','domain_check get_info(exist_reason)');
+is($dri->get_info('exist','domain','court-order-seized.eu'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','court-order-seized.eu'),'seized','domain_check get_info(exist_reason)');
+
+## 2.1.09/domains/domain-check/domain-check02-resp.xml
+# Querying the availability of a locked domain name
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="false">europa.eu</domain:name><domain:reason lang="en">in use</domain:reason></domain:cd></domain:chkData></resData><extension><domain-ext:chkData xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-1.1"><domain-ext:domain><domain-ext:name>europa.eu</domain-ext:name><domain-ext:status s="serverTransferProhibited"/></domain-ext:domain></domain-ext:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('europa.eu');
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>europa.eu</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command></epp>','domain_check build');
+is($rc->is_success(),1,'domain_check is_success');
+$s=$dri->get_info('status');
+SKIP: { ## TODO
+  skip 'TODO: status (domain-ext) not yet parsed on domain_check',2;
+  isa_ok($s,'Net::DRI::Data::StatusList','domain_check get_info(status)');
+  is_deeply([$s->list_status()],['serverTransferProhibited'],'domain_check get_info(status) list');
+};
+
+
+########################################################################################################
+### DOMAIN_INFO
 
 ## 2.1.09/domains/domain-info/domain-info01-resp.xml 
 # Status in use and not locked/1 onsite & 1 tech contact/2 name servers with glues (IPv4 and IPv6)/no DNSSEC
