@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 53;
+use Test::More tests => 54;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -28,6 +28,12 @@ $dri->target('EURid')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>
 my ($rc,$s,$d,$co,$toc,$cs,$h,$dh,@c);
 
 ########################################################################################################
+
+## Process greetings to select namespace versions
+$R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2014-09-13T09:31:14.123Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrar-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/nsgroup-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/keygroup-1.1</objURI><svcExtension><extURI>http://www.eurid.eu/xml/epp/contact-ext-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-1.1</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/idn-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dynUpdate-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/authInfo-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.2</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($dri->protocol()->ns()->{'poll'}->[0],'http://www.eurid.eu/xml/epp/poll-1.2','poll 1.2 for server announcing 1.1 + 1.2');
+
 
 # 1. Poll request command (case of 2 messages in queue). First message is a "TRANSFER AWAY" event.
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="b023fc6a-aa54-422e-b61c-445ca1d8f48a"><qDate>2014-09-14T11:36:16.882Z</qDate><msg>Domain name transferred away: transfer-away.eu</msg></msgQ><resData><poll:pollData xmlns:poll="http://www.eurid.eu/xml/epp/poll-1.2"><poll:context>TRANSFER</poll:context><poll:objectType>DOMAIN</poll:objectType><poll:object>transfer-away.eu</poll:object><poll:objectUnicode>transfer-away.eu</poll:objectUnicode><poll:action>AWAY</poll:action><poll:code>2306</poll:code><poll:registrar>test_registrar</poll:registrar></poll:pollData></resData>'.$TRID.'</response>'.$E2;
