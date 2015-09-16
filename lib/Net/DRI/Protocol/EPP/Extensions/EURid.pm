@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2005,2007-2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>.
+##               2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -26,7 +27,7 @@ use Net::DRI::Data::Contact::EURid;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::EURid - EURid (.EU) EPP extensions (release 5.6) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::EURid - EURid (.EU) EPP extensions (documentation 2.1.09) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -70,9 +71,7 @@ sub setup
  my ($self,$rp)=@_;
  my $version=$self->version();
 
-## NOT handled : dss, dynUpdate, euridcom
-# $self->ns({_main => ['http://www.eurid.eu/xml/epp/epp-1.0','epp-1.0.xsd']});
-# $self->ns({ map { $_ => ['http://www.eurid.eu/xml/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/extendedInfo pendingTransaction/ });
+## NOT handled : dynUpdate
  $self->ns({ map { $_ => ['http://www.eurid.eu/xml/epp/'.$_.'-1.1',$_.'-1.1.xsd'] } qw/nsgroup/ });
  $self->capabilities('contact_update','status',undef); ## No changes in status possible for .EU domains/contacts
  $self->capabilities('domain_update','status',undef);
@@ -85,7 +84,7 @@ sub setup
 ## TODO Keygroup momentarily not used, in order to upgrade it to -1.1
 ## TODO same for nsgroup, but -1.0 is still alowed
 ## TODO EURid::Message removed for now
-sub default_extensions { return qw/EURid::Session EURid::Domain EURid::Contact EURid::Registrar EURid::Notifications EURid::IDN NSgroup SecDNS/; }
+sub default_extensions { return qw/EURid::Domain EURid::Contact EURid::Registrar EURid::Notifications EURid::IDN NSgroup SecDNS/; }
 
 ####################################################################################################
 1;
