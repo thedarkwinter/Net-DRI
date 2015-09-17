@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 487;
+use Test::More tests => 489;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -152,6 +152,7 @@ use_ok('Net::DRI::Data::Contact::CNNIC');
 use_ok('Net::DRI::Data::Contact::RegBox');
 use_ok('Net::DRI::Data::Contact::LV');
 use_ok('Net::DRI::Data::Contact::DK');
+use_ok('Net::DRI::Data::Contact::TANGO');
 use_ok('Net::DRI::Transport::Socket');
 use_ok('Net::DRI::Transport::Dummy');
 use_ok('Net::DRI::Transport::Defer');
@@ -376,6 +377,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::TANGO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TANGO::Auction');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TANGO::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase');
+use_ok('Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ES');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ES::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ES::Domain');
