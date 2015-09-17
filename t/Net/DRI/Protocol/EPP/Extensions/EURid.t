@@ -322,84 +322,6 @@ is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns=
 is($rc->is_success(),1,'domain_undelete is_success');
 
 
-## p.67
-$R2=$E1.'<response>'.r().'<extension><eurid:ext><eurid:result><eurid:msg>OK</eurid:msg></eurid:result></eurid:ext></extension>'.$TRID.'</response>'.$E2;
-my %rd;
-$rd{trDate}=DateTime->new(year=>2005,month=>9,day=>29,hour=>22);
-$cs=$dri->local_object('contactset');
-$cs->set($dri->local_object('contact')->srid('jj1'),'billing');
-$cs->set($dri->local_object('contact')->srid('ak4589'),'registrant');
-$cs->set($dri->local_object('contact')->srid('mt24'),'tech');
-$rd{contact}=$cs;
-$rd{nsgroup}=$dri->local_object('hosts')->name('nsgroup-eurid');
-$rc=$dri->domain_transfer_start('something.eu',\%rd);
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><transfer op="request"><domain:transfer xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>something.eu</domain:name></domain:transfer></transfer><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:transfer><eurid:domain><eurid:registrant>ak4589</eurid:registrant><eurid:trDate>2005-09-29T22:00:00.000000000Z</eurid:trDate><eurid:billing>jj1</eurid:billing><eurid:tech>mt24</eurid:tech><eurid:nsgroup>nsgroup-eurid</eurid:nsgroup></eurid:domain></eurid:transfer></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_transfer_start build');
-is($rc->is_success(),1,'domain_transfer_start is_success');
-
-
-## Release 5.5, page 16
-$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
-%rd=();
-$rd{trDate}=DateTime->new(year=>2008,month=>4,day=>22,hour=>22);
-$cs=$dri->local_object('contactset');
-$cs->set($dri->local_object('contact')->srid('c4436955'),'billing');
-$cs->set('#auto#','registrant');
-$cs->set($dri->local_object('contact')->srid('c4436957'),'tech');
-$rd{contact}=$cs;
-$rd{owner_auth_code}='238110218175066'; ## see also RN 5.5 Addedum page 2
-$rc=$dri->domain_transfer_start('something.eu',\%rd);
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><transfer op="request"><domain:transfer xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>something.eu</domain:name></domain:transfer></transfer><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:transfer><eurid:domain><eurid:registrant>#AUTO#</eurid:registrant><eurid:trDate>2008-04-22T22:00:00.000000000Z</eurid:trDate><eurid:billing>c4436955</eurid:billing><eurid:tech>c4436957</eurid:tech></eurid:domain><eurid:ownerAuthCode>238110218175066</eurid:ownerAuthCode></eurid:transfer></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_transfer_start with owner_auth_code build');
-
-## Release 5.5 page 20
-$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
-%rd=();
-$rc=$dri->domain_transfer_stop('superdomain.eu',{reason => 'The reason for cancelling the transfer'});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><transfer op="cancel"><domain:transfer xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>superdomain.eu</domain:name></domain:transfer></transfer><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:cancel><eurid:reason>The reason for cancelling the transfer</eurid:reason></eurid:cancel></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_transfer_stop build');
-is($rc->is_success(),1,'domain_transfer_stop is_success');
-
-
-## p.70
-$R2=$E1.'<response>'.r().'<extension><eurid:ext><eurid:result><eurid:msg>Content check ok</eurid:msg></eurid:result></eurid:ext></extension>'.$TRID.'</response>'.$E2;
-%rd=();
-$cs=$dri->local_object('contactset');
-$cs->set($dri->local_object('contact')->srid('jd1'),'billing');
-$cs->set($dri->local_object('contact')->srid('js5'),'registrant');
-$cs->set($dri->local_object('contact')->srid('jb1'),'tech');
-$rd{contact}=$cs;
-$rd{trDate}=DateTime->new(year=>2002,month=>2,day=>18,hour=>22);
-$rd{ns}=$dri->local_object('hosts')->add('ns1.superdomain.eu',['1.2.3.4'])->add('ns.test.eu');
-$rd{nsgroup}='mynsgroup1';
-$rc=$dri->domain_transfer_quarantine_start('superdomain.eu',\%rd);
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><transferq op="request"><domain:transferq xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>superdomain.eu</domain:name></domain:transferq></transferq><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:transferq><eurid:domain><eurid:registrant>js5</eurid:registrant><eurid:trDate>2002-02-18T22:00:00.000000000Z</eurid:trDate><eurid:billing>jd1</eurid:billing><eurid:tech>jb1</eurid:tech><eurid:ns xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:hostAttr><domain:hostName>ns1.superdomain.eu</domain:hostName><domain:hostAddr ip="v4">1.2.3.4</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns.test.eu</domain:hostName></domain:hostAttr></eurid:ns><eurid:nsgroup>mynsgroup1</eurid:nsgroup></eurid:domain></eurid:transferq></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_transfer_quarantine_start build'); ## 3 corrections from EURid sample
-is($rc->is_success(),1,'domain_transfer_quarantine_start is_success');
-
-## Release 5.5, page 22
-$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
-%rd=();
-$rc=$dri->domain_transfer_quarantine_stop('superdomain.eu',{reason => 'The reason for cancelling the transfer from quarantine'});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><transferq op="cancel"><domain:transferq xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>superdomain.eu</domain:name></domain:transferq></transferq><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:cancel><eurid:reason>The reason for cancelling the transfer from quarantine</eurid:reason></eurid:cancel></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_transfer_quarantine_stop build');
-is($rc->is_success(),1,'domain_transfer_quarantine_stop is_success');
-
-## p.72
-$R2=$E1.'<response>'.r().'<extension><eurid:ext><eurid:result><eurid:msg>OK</eurid:msg></eurid:result></eurid:ext></extension>'.$TRID.'</response>'.$E2;
-%rd=();
-$cs=$dri->local_object('contactset');
-$cs->set($dri->local_object('contact')->srid('jj1'),'billing');
-$cs->set($dri->local_object('contact')->srid('ak4589'),'registrant');
-$cs->set($dri->local_object('contact')->srid('mt24'),'tech');
-$rd{contact}=$cs;
-$rd{trDate}=DateTime->new(year=>2005,month=>9,day=>29,hour=>22);
-$rd{nsgroup}='nsgroup-eurid';
-$rc=$dri->domain_trade_start('fox.eu',\%rd);
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><trade op="request"><domain:trade xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>fox.eu</domain:name></domain:trade></trade><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:trade><eurid:domain><eurid:registrant>ak4589</eurid:registrant><eurid:trDate>2005-09-29T22:00:00.000000000Z</eurid:trDate><eurid:billing>jj1</eurid:billing><eurid:tech>mt24</eurid:tech><eurid:nsgroup>nsgroup-eurid</eurid:nsgroup></eurid:domain></eurid:trade></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_trade build'); ## corrected from EURid sample
-is($rc->is_success(),1,'domain_trade build');
-
-## Release 5.5 page 20
-$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
-%rd=();
-$rc=$dri->domain_trade_stop('superdomain.eu',{reason => 'The reason for cancelling the trade'});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><trade op="cancel"><domain:trade xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>superdomain.eu</domain:name></domain:trade></trade><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:cancel><eurid:reason>The reason for cancelling the trade</eurid:reason></eurid:cancel></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_trade_stop build');
-
 # §5.2
 $R2=$E1.'<response>'.r().'<resData><domain:infData><domain:name>0001-internaltradedomain-0001-test.eu</domain:name><domain:roid>3787827-EURID</domain:roid><domain:status s="ok"/><domain:registrant>c195332</domain:registrant><domain:contact type="billing">c31</domain:contact><domain:contact type="tech">c34</domain:contact><domain:clID>a000005</domain:clID><domain:crID>a000005</domain:crID><domain:crDate>2007-07-31T16:02:21.000Z</domain:crDate><domain:upID>a000005</domain:upID><domain:upDate>2007-07-31T16:50:25.000Z</domain:upDate><domain:exDate>2008-07-31T16:02:21.000Z</domain:exDate></domain:infData></resData><extension><eurid:ext><eurid:infData><eurid:domain><eurid:nsgroup>test</eurid:nsgroup></eurid:domain></eurid:infData></eurid:ext><extendedInfo:infData xmlns:extendedInfo="http://www.eurid.eu/xml/epp/extendedInfo-1.0"><extendedInfo:onhold>false</extendedInfo:onhold><extendedInfo:quarantined>false</extendedInfo:quarantined></extendedInfo:infData><pendingTransaction:infData xmlns:pendingTransaction="http://www.eurid.eu/xml/epp/pendingTransaction-1.0"><pendingTransaction:trade><pendingTransaction:domain><pendingTransaction:registrant>c7557462</pendingTransaction:registrant><pendingTransaction:trDate>2007-07-30T22:00:00.000Z</pendingTransaction:trDate><pendingTransaction:billing>c31</pendingTransaction:billing><pendingTransaction:tech>c34</pendingTransaction:tech></pendingTransaction:domain><pendingTransaction:initiationDate>2007-07-31T16:19:58.000Z</pendingTransaction:initiationDate><pendingTransaction:status>NotYetApproved</pendingTransaction:status><pendingTransaction:replySeller>NoAnswer</pendingTransaction:replySeller><pendingTransaction:replyBuyer>NoAnswer</pendingTransaction:replyBuyer></pendingTransaction:trade></pendingTransaction:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('0001-internaltradedomain-0001-test.eu');
@@ -555,20 +477,6 @@ $R2=Encode::decode('iso-8859-15',$R2);
 ####################################################################################################
 ## Release 7.1
 
-## p.19
-
-$R2='';
-%rd=();
-$cs=$dri->local_object('contactset');
-$cs->set($dri->local_object('contact')->srid('c129179'),'billing');
-$cs->set($dri->local_object('contact')->srid('c9232372'),'registrant');
-$cs->set($dri->local_object('contact')->srid('c7838742'),'tech');
-$rd{contact}=$cs;
-$rd{secdns}=[{keyTag=>'6615',alg=>7,digestType=>1,digest=>'e8dadacffab754e9cf40b919d6f698c03309f47c',maxSigLife=>604800,key_flags=>257,key_protocol=>3,key_alg=>7,key_pubKey=>'AwEAAcTnEOkfH1FsT9EI2BmjMB83uDWXpSp57YHa0v6Xg60Usm3Y2Fct1emy+h0+uDstyUl5eILy9eO2eI67m5r0Lck='}];
-$rc=$dri->domain_trade_start('ktz.eu',\%rd);
-
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><trade op="request"><domain:trade xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>ktz.eu</domain:name></domain:trade></trade><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:trade><eurid:domain><eurid:registrant>c9232372</eurid:registrant><eurid:billing>c129179</eurid:billing><eurid:tech>c7838742</eurid:tech></eurid:domain></eurid:trade></eurid:ext><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.0 secDNS-1.0.xsd"><secDNS:dsData><secDNS:keyTag>6615</secDNS:keyTag><secDNS:alg>7</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>e8dadacffab754e9cf40b919d6f698c03309f47c</secDNS:digest><secDNS:maxSigLife>604800</secDNS:maxSigLife><secDNS:keyData><secDNS:flags>257</secDNS:flags><secDNS:protocol>3</secDNS:protocol><secDNS:alg>7</secDNS:alg><secDNS:pubKey>AwEAAcTnEOkfH1FsT9EI2BmjMB83uDWXpSp57YHa0v6Xg60Usm3Y2Fct1emy+h0+uDstyUl5eILy9eO2eI67m5r0Lck=</secDNS:pubKey></secDNS:keyData></secDNS:dsData></secDNS:create></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_trade +DNSSEC build');
-
 ## Keygroups
 
 $rc=$dri->keygroup_create('kwkwwyjzorsqljbvlssqhzz');
@@ -613,32 +521,6 @@ is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns=
 
 $rc=$dri->keygroup_update('latrvxveoruzciiuuqfurexahnxqf',$dri->local_object('changes')->set('keys',[{keyTag=>49049,flags=>256,protocol=>3,alg=>7,pubKey=>'AwEAAaQx/SAfK9rmTYsyThhUgvUBQORqQhUNbcIx67sfUtC6Ii1WHn0CdIMcO8FUMT3PE7BhJ04zYiJdX2Gr6VEHXW0='},{keyTag=>57695,flags=>256,protocol=>3,alg=>7,pubKey=>'AwEAAdVHFEnY8q8xuiiSO0XvX0LWlcCMWQByFyyCzPFfUmso0677qjIZ YEF/fIx/WJuIRup1/Ay58U8pvCnsk0iXIV0='}]));
 is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><update><keygroup:update xmlns:keygroup="http://www.eurid.eu/xml/epp/keygroup-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/keygroup-1.0 keygroup-1.0.xsd"><keygroup:name>latrvxveoruzciiuuqfurexahnxqf</keygroup:name><keygroup:key><keygroup:keyTag>49049</keygroup:keyTag><keygroup:flags>256</keygroup:flags><keygroup:protocol>3</keygroup:protocol><keygroup:algorithm>7</keygroup:algorithm><keygroup:pubKey>AwEAAaQx/SAfK9rmTYsyThhUgvUBQORqQhUNbcIx67sfUtC6Ii1WHn0CdIMcO8FUMT3PE7BhJ04zYiJdX2Gr6VEHXW0=</keygroup:pubKey></keygroup:key><keygroup:key><keygroup:keyTag>57695</keygroup:keyTag><keygroup:flags>256</keygroup:flags><keygroup:protocol>3</keygroup:protocol><keygroup:algorithm>7</keygroup:algorithm><keygroup:pubKey>AwEAAdVHFEnY8q8xuiiSO0XvX0LWlcCMWQByFyyCzPFfUmso0677qjIZ YEF/fIx/WJuIRup1/Ay58U8pvCnsk0iXIV0=</keygroup:pubKey></keygroup:key></keygroup:update></update><clTRID>TRID-0001</clTRID></command></epp>','keygroup_update add 2 keys');
-
-
-## domain_update with keygroup => not specified in documentation nor XML schemas !
-
-
-%rd=();
-$rd{duration}=DateTime::Duration->new(years => 1);
-$cs=$dri->local_object('contactset');
-$cs->set($dri->local_object('contact')->srid('c4436955'),'billing');
-$cs->set($dri->local_object('contact')->srid('c11130723'),'registrant');
-$cs->set($dri->local_object('contact')->srid('c4436957'),'tech');
-$rd{contact}=$cs;
-$rd{keygroup}='lmgpblhauvcmlxyrlldlhxzyzsguzesshqqkubcteacsc';
-$rc=$dri->domain_transfer_start('avaialebledomainsaname2xr.eu',\%rd);
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><transfer op="request"><domain:transfer xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>avaialebledomainsaname2xr.eu</domain:name><domain:period unit="y">1</domain:period></domain:transfer></transfer><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:transfer><eurid:domain><eurid:registrant>c11130723</eurid:registrant><eurid:billing>c4436955</eurid:billing><eurid:tech>c4436957</eurid:tech><eurid:keygroup>lmgpblhauvcmlxyrlldlhxzyzsguzesshqqkubcteacsc</eurid:keygroup></eurid:domain></eurid:transfer></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_transfer_start + keygroup build');
-
-
-%rd=();
-$cs=$dri->local_object('contactset');
-$cs->set($dri->local_object('contact')->srid('c4436955'),'billing');
-$cs->set($dri->local_object('contact')->srid('c11130723'),'registrant');
-$cs->set($dri->local_object('contact')->srid('c4436957'),'tech');
-$rd{contact}=$cs;
-$rd{keygroup}='roxqcrztngn';
-$rc=$dri->domain_trade_start('cxlbbmyncvebyqsum.eu',\%rd);
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.eurid.eu/xml/epp/epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eurid.eu/xml/epp/epp-1.0 epp-1.0.xsd"><command><trade op="request"><domain:trade xmlns:domain="http://www.eurid.eu/xml/epp/domain-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>cxlbbmyncvebyqsum.eu</domain:name></domain:trade></trade><extension><eurid:ext xmlns:eurid="http://www.eurid.eu/xml/epp/eurid-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/eurid-1.0 eurid-1.0.xsd"><eurid:trade><eurid:domain><eurid:registrant>c11130723</eurid:registrant><eurid:billing>c4436955</eurid:billing><eurid:tech>c4436957</eurid:tech><eurid:keygroup>roxqcrztngn</eurid:keygroup></eurid:domain></eurid:trade></eurid:ext></extension><clTRID>TRID-0001</clTRID></command></epp>','domain_trade_start + keygroup build');
 
 
 

@@ -316,6 +316,7 @@ sub transfer_request
   push @d,['domain-ext:contact',$cbill->srid(),{type => 'billing'}] if Net::DRI::Util::isa_contact($cbill,'Net::DRI::Data::Contact::EURid');
   push @d,add_contact('tech',$cs,9) if $cs->has_type('tech');
   push @d,add_contact('onsite',$cs,5) if $cs->has_type('onsite');
+  push @d,add_contact('reseller',$cs,5) if $cs->has_type('reseller');
  }
 
  push @d,Net::DRI::Protocol::EPP::Util::build_ns($epp,$rd->{ns},$domain,'domain-ext') if Net::DRI::Util::has_ns($rd);
