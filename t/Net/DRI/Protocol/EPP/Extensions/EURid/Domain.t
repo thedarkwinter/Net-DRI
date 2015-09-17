@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 106;
+use Test::More tests => 122;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -208,8 +208,78 @@ is($dri->get_info('keygroup'), 'keygroup-1350898304165', 'domain_info get_info(n
 ########################################################################################################
 ### DOMAIN_CREATE
 
+## 2.1.09/domains/domain-create/domain-create02-cmd.xml
+# Domain create with IDN, 2 name servers, 1 onsite and a reseller contact
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domínio-0002.eu</domain:name><domain:crDate>2014-09-13T13:15:17.075Z</domain:crDate><domain:exDate>2015-09-13T21:59:59.999Z</domain:exDate></domain:creData></resData><extension><idn:mapping xmlns:idn="http://www.eurid.eu/xml/epp/idn-1.0"><idn:name><idn:ace>xn--domnio-0002-qcb.eu</idn:ace><idn:unicode>domínio-0002.eu</idn:unicode></idn:name></idn:mapping></extension>'.$TRID.'</response>'.$E2;
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('c113'),'registrant');
+$cs->set($dri->local_object('contact')->srid('c10'),'billing');
+$cs->set($dri->local_object('contact')->srid('c163'),'onsite');
+$cs->set($dri->local_object('contact')->srid('c164'),'reseller');
+$dh=$dri->local_object('hosts');
+$dh->add('a.alpha.al');
+$dh->add('b.bravo.bb');
+$rc=$dri->domain_create('domínio-0002.eu',{pure_create=>1,contact=>$cs,ns=>$dh});
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domínio-0002.eu</domain:name><domain:ns><domain:hostAttr><domain:hostName>a.alpha.al</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>b.bravo.bb</domain:hostName></domain:hostAttr></domain:ns><domain:registrant>c113</domain:registrant><domain:contact type="billing">c10</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><domain-ext:create xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-1.1" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-ext-1.1 domain-ext-1.1.xsd"><domain-ext:contact type="onsite">c163</domain-ext:contact><domain-ext:contact type="reseller">c164</domain-ext:contact></domain-ext:create></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_create build');
+is($rc->is_success(),1,'domain_create is_success');
+is($dri->get_info('name'),'domínio-0002.eu','domain_create get_info(name)');
+is($dri->get_info('name_idn'),'domínio-0002.eu','domain_create get_info(name_idn)');
+is($dri->get_info('name_ace'),'xn--domnio-0002-qcb.eu','domain_create get_info(name_ace)');
+is($dri->get_info('unicode'),'domínio-0002.eu','domain_create get_info(unicode)');
+is($dri->get_info('ace'),'xn--domnio-0002-qcb.eu','domain_create get_info(ace)');
+is($dri->get_info('crDate'),'2014-09-13T13:15:17','domain_create get_info(crDate)');
+is($dri->get_info('exDate'),'2015-09-13T21:59:59','domain_create get_info(exDate)');
+
+## 2.1.09/domains/domain-create/domain-create03-cmd.xml
+# Domain create with 2 name servers with glue (IPv4 and IPv6), 2 name server groups, 1 tech and 1 onsite contact and for a period of 3 years
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domaine-0004.eu</domain:name><domain:crDate>2014-09-13T13:15:17.075Z</domain:crDate><domain:exDate>2015-09-13T21:59:59.999Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('c160'),'registrant');
+$cs->set($dri->local_object('contact')->srid('c10'),'billing');
+$cs->set($dri->local_object('contact')->srid('c159'),'tech');
+$cs->set($dri->local_object('contact')->srid('c163'),'onsite');
+$dh=$dri->local_object('hosts');
+$dh->add('a.domaine-0004.eu',['123.45.67.8']);
+$dh->add('b.domaine-0004.eu',[],['2001:da8:85a3:0:0:8a2e:371:7333']);
+my $dh2=$dri->local_object('hosts')->name('nsg-a-1349684934');
+my $dh3=$dri->local_object('hosts')->name('nsg-b-1349684934');
+$rc=$dri->domain_create('domaine-0004.eu',{pure_create=>1,contact=>$cs,ns=>$dh});
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domaine-0004.eu</domain:name><domain:ns><domain:hostAttr><domain:hostName>a.domaine-0004.eu</domain:hostName><domain:hostAddr ip="v4">123.45.67.8</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>b.domaine-0004.eu</domain:hostName><domain:hostAddr ip="v6">2001:da8:85a3:0:0:8a2e:371:7333</domain:hostAddr></domain:hostAttr></domain:ns><domain:registrant>c160</domain:registrant><domain:contact type="billing">c10</domain:contact><domain:contact type="tech">c159</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><domain-ext:create xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-1.1" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-ext-1.1 domain-ext-1.1.xsd"><domain-ext:contact type="onsite">c163</domain-ext:contact></domain-ext:create></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_create build');
+is($rc->is_success(),1,'domain_create is_success');
+is($dri->get_info('name'),'domaine-0004.eu','domain_create get_info(name)');
+is($dri->get_info('crDate'),'2014-09-13T13:15:17','domain_create get_info(crDate)');
+is($dri->get_info('exDate'),'2015-09-13T21:59:59','domain_create get_info(exDate)');
+
+## 2.1.09/domains/domain-create/domain-create04-cmd.xml
+# Domain create with 1 tech contact, 1 name server (1 glue IPv4), DNSSEC with 2 keys (KSK, ZSK) and for a period of 1 year
+# See SecDNS
+
 ########################################################################################################
 ### DOMAIN_UPDATE
+
+## 2.1.09/domains/domain-update/domain_update01 && 02-cmd.xml
+# Add and remove tech contact, add and remove onsite contact, add reseller contact, change registrant
+# Change NSGroup (KeyGroup not supported)
+# Only checking onsite/reseller
+$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$toc=$dri->local_object('changes');
+my $cs1 = $dri->local_object('contactset');
+my $cs2 = $dri->local_object('contactset');
+$cs1->set($dri->local_object('contact')->srid('c165'),'onsite');
+$cs1->set($dri->local_object('contact')->srid('c164'),'reseller');
+$cs2->set($dri->local_object('contact')->srid('c163'),'onsite');
+$toc->add('contact',$cs1);
+$toc->del('contact',$cs2);
+$toc->add('nsgroup', $dri->local_object('hosts')->name('nsg-b-1349684934'));
+$toc->del('nsgroup', $dri->local_object('hosts')->name('nsg-a-1349684934'));
+# $toc->add('keygroup','keygroup-1350898304275'); FIXME, not supported yet in KeyGroup
+# $toc->del('keygroup','keygroup-1350898304165'); FIXME, not supported yet in KeyGroup
+$rc=$dri->domain_update('testmldomupd-14092012001-01.eu',$toc);
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>testmldomupd-14092012001-01.eu</domain:name></domain:update></update><extension><domain-ext:update xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-1.1" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-ext-1.1 domain-ext-1.1.xsd"><domain-ext:add><domain-ext:nsgroup>nsg-b-1349684934</domain-ext:nsgroup><domain-ext:contact type="onsite">c165</domain-ext:contact><domain-ext:contact type="reseller">c164</domain-ext:contact></domain-ext:add><domain-ext:rem><domain-ext:nsgroup>nsg-a-1349684934</domain-ext:nsgroup><domain-ext:contact type="onsite">c163</domain-ext:contact></domain-ext:rem></domain-ext:update></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_update build');
+# ADD <domain-ext:keygroup>keygroup-1350898304275</domain-ext:keygroup>
+is($rc->is_success(),1,'domain_update 1 is_success');
+
+## The rest are all standard EPP / SecDNS
 
 ########################################################################################################
 ### DOMAIN_RENEW

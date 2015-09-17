@@ -113,6 +113,7 @@ sub create
 
  my @n;
  push @n,map { ['domain-ext:contact',$_->srid(),{'type'=>'onsite'}] } $cs->get('onsite');
+ push @n,map { ['domain-ext:contact',$_->srid(),{'type'=>'reseller'}] } $cs->get('reseller');
  push @n,add_nsgroup($rd->{nsgroup})             if Net::DRI::Util::has_key($rd,'nsgroup');
  push @n,['domain-ext:keygroup',$rd->{keygroup}] if Net::DRI::Util::has_key($rd,'keygroup') && Net::DRI::Util::xml_is_token($rd->{keygroup},1,100);
  ## TODO domain-ext-voucher
@@ -146,6 +147,7 @@ sub update
   my @todo;
   push @todo,add_nsgroup($nsgadd) if $nsgadd;
   push @todo,map { ['domain-ext:contact',$_->srid(),{'type'=>'onsite'}] } $cadd->get('onsite') if $cadd;
+  push @todo,map { ['domain-ext:contact',$_->srid(),{'type'=>'reseller'}] } $cadd->get('reseller') if $cadd;
   push @n,['domain-ext:add',@todo] if @todo;
  }
  if ($nsgdel || $cdel)
@@ -153,6 +155,7 @@ sub update
   my @todo;
   push @todo,add_nsgroup($nsgdel) if $nsgdel;
   push @todo,map { ['domain-ext:contact',$_->srid(),{'type'=>'onsite'}] } $cdel->get('onsite') if $cdel;
+  push @todo,map { ['domain-ext:contact',$_->srid(),{'type'=>'reseller'}] } $cdel->get('reseller') if $cdel;
   push @n,['domain-ext:rem',@todo] if @todo;
  }
 ## TODO : handle domain-ext:keygroup
