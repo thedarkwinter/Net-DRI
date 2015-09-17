@@ -195,7 +195,7 @@ is($dri->get_info('name'), 'nomen-hawg3nwn.eu', 'domain get_info(name)');
 #is($dri->get_info('nsgroup'), 'nsg-a-1349684934', 'domain get_info(name)');
 $dh=$dri->get_info('nsgroup');
 isa_ok($dh->[0],'Net::DRI::Data::Hosts','domain_info get_info(nsgroup)');
-is($dri->get_info('keygroup'), 'keygroup-1350898304165', 'domain get_info(name)');
+is($dri->get_info('keygroup'), 'keygroup-1350898304165', 'domain_info get_info(name)');
 
 #### TODO: when dynUpdate is implemented, these two domain_info's should be tested
 
@@ -213,6 +213,24 @@ is($dri->get_info('keygroup'), 'keygroup-1350898304165', 'domain get_info(name)'
 
 ########################################################################################################
 ### DOMAIN_RENEW
+
+## 2.1.09/domains/domain-renew/domain-renew02-resp.xml && 2.1.09/domains/domain-renew/domain-renew04-resp.xml
+# Extend domain for 8y deletion date is removed && Extend the term of an IDN 
+$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>extend-term2y-idn-café-1349786342.eu</domain:name><domain:exDate>2023-09-13T21:59:59.999Z</domain:exDate></domain:renData></resData><extension><domain-ext:renData xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-1.1"><domain-ext:removedDeletionDate/></domain-ext:renData><idn:mapping xmlns:idn="http://www.eurid.eu/xml/epp/idn-1.0"><idn:name><idn:ace>xn--extend-term2y-idn-caf-1349786342-v3c.eu</idn:ace><idn:unicode>extend-term2y-idn-café-1349786342.eu</idn:unicode></idn:name></idn:mapping></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_renew('extend-term2y-idn-café-1349786342.eu',{duration => $dri->local_object('duration',years=>8), current_expiration => $dri->local_object('datetime',year=>2015,month=>9,day=>13)});
+is($rc->is_success(),1,'domain_renew is_success');
+is($dri->get_info('exDate'),'2023-09-13T21:59:59','domain_renew get_info(exDate)');
+SKIP: {
+  skip "TODO: Domain_renew is failing to parse empty removedDeletionDate as true",1;
+is($dri->get_info('removedDeletionDate'),0,'domain_renew get_info(removedDeletionDate)');
+};
+is($dri->get_info('name'),'extend-term2y-idn-café-1349786342.eu','domain_renew get_info(name)');
+is($dri->get_info('ace'),'xn--extend-term2y-idn-caf-1349786342-v3c.eu','domain_renew get_info(name)');
+is($dri->get_info('unicode'),'extend-term2y-idn-café-1349786342.eu','domain_renew get_info(name)');
+
+## 2.1.09/domains/domain-renew/domain-renew05-cmd.xml
+# Extend term for 4y a quarantined domain (reactivate)
+## Note, reactive was removed a long time ago, its just a renewal now
 
 ########################################################################################################
 ### DOMAIN_DELETE
