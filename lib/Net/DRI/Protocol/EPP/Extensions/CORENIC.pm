@@ -19,6 +19,7 @@ use strict;
 use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
+use Net::DRI::Data::Contact::TANGO; # README: at the moment only CORENIC use this validation (for .swiss only). Since the EPP implementation is similar keep using TANGO!
 
 ####################################################################################################
 
@@ -26,12 +27,18 @@ sub setup
 {
  my ($self,$rp) = @_;
  # These are the TANGO-RS extensions but use corenic namespaces
- $self->ns({ map { $_ => ['http://xmlns.corenic.net/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/idn auction mark-ext/ }); 
+ $self->ns({
+  (map { $_ => ['http://xmlns.corenic.net/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/idn auction mark-ext/),
+  'el' => ['http://xmlns.corenic.net/epp/contact-eligibility-1.0','contact-eligibility-1.0.xsd'],
+ });
  $self->capabilities('domain_update','idn',['add','del']);
  $self->capabilities('domain_update','auction',['set']);
+ $self->factories('contact',sub { return Net::DRI::Data::Contact::TANGO->new(); });
+
+ return;
 }
 
-sub default_extensions { return qw/LaunchPhase GracePeriod SecDNS TANGO::IDN TANGO::Auction TANGO::LaunchPhase/; }
+sub default_extensions { return qw/LaunchPhase GracePeriod SecDNS TANGO::IDN TANGO::Auction TANGO::LaunchPhase TANGO::ContactEligibility/; }
 
 ####################################################################################################
 1;

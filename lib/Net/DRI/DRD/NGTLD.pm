@@ -414,6 +414,8 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> : http://xmlns.corenic.ne
 
 L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
+L<Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
+
 =cut
 
  return {

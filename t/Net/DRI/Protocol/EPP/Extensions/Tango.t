@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 48;
+use Test::More tests => 61;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -33,7 +33,7 @@ $dri->target('nrw')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&
 my $rc;
 my $s;
 my $d;
-my ($dh,@c,$idn);
+my ($dh,@c,$idn,$co,$co2);
 
 ###################################################################################################
 ## Tango uses the fee-0.6 of Gavin Brown (CentralNic) extension: https://tools.ietf.org/html/draft-brown-epp-fees-03 for .NRW
@@ -312,6 +312,89 @@ is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params
 $lp = {phase => 'claims', notices => [ {id=>'abc123','not_after_date'=>DateTime->new({year=>2008,month=>12}),'accepted_date'=>DateTime->new({year=>2009,month=>10}) } ] }; # notices = array of hashes
 $rc=$dri->domain_create('examplen-d.scot',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=>$lp,intended_use=>'fooBAR'});
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>examplen-d.scot</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd"><launch:phase>claims</launch:phase><ext:augmentedMark xmlns:ext="http://xmlns.corenic.net/epp/mark-ext-1.0"><ext:applicationInfo type="intended-use">fooBAR</ext:applicationInfo></ext:augmentedMark><launch:notice><launch:noticeID>abc123</launch:noticeID><launch:notAfter>2008-12-01T00:00:00Z</launch:notAfter><launch:acceptedDate>2009-10-01T00:00:00Z</launch:acceptedDate></launch:notice></launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create GA phase');
+
+
+#####################
+## Contact Eligibility Extension
+
+$dri->add_registry('NGTLD',{provider => 'corenic',name=>'swiss'});
+$dri->{registries}->{swiss}->{driver}->{info}->{contact_i18n} = 2;
+$dri->target('swiss')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
+# contact info
+$R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:roid>SH8013-REP</contact:roid><contact:status s="linked"/><contact:status s="clientDeleteProhibited"/><contact:postalInfo type="int"><contact:name>Hans Mustermann</contact:name><contact:org>Musterfirma</contact:org><contact:addr><contact:street>Beispielweg 1</contact:street><contact:city>Bern</contact:city><contact:sp>Bern</contact:sp><contact:pc>123456</contact:pc><contact:cc>CH</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.com</contact:email><contact:clID>ClientY</contact:clID><contact:crID>ClientX</contact:crID><contact:crDate>1999-04-03T22:00:00.0Z</contact:crDate><contact:upID>ClientX</contact:upID><contact:upDate>1999-12-03T09:00:00.0Z</contact:upDate><contact:trDate>2000-04-08T09:00:00.0Z</contact:trDate><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo><contact:disclose flag="0"><contact:voice/><contact:email/></contact:disclose></contact:infData></resData><extension><el:infData xmlns:el="http://xmlns.corenic.net/epp/contact-eligibility-1.0"><el:enterpriseID>DE-ID-122322322</el:enterpriseID><el:validationStatus>validationPending</el:validationStatus></el:infData></extension>'.$TRID.'</response>'.$E2;
+$co=$dri->local_object('contact')->srid('sh8013')->auth({pw=>'2fooBAR'});
+$rc=$dri->contact_info($co);
+is($R1,$E1.'<command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo></contact:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_info build');
+is($dri->is_success(),1,'contact_info is_success');
+is($dri->get_info('action'),'info','contact_info get_info(action)');
+is($dri->get_info('enterprise_id'),'DE-ID-122322322','contact_info get_info(enterpriseID)');
+is($dri->get_info('validation_status'),'validationPending','contact_info get_info(validationStatus)');
+
+# contact create
+$R2='';
+$co=$dri->local_object('contact')->srid('sh8013');
+$co->name('Hans Mustermann');
+$co->org('Musterfirma');
+$co->street(['Beispielweg 1']);
+$co->city('Bern');
+$co->sp('Bern');
+$co->pc('123456');
+$co->cc('CH');
+$co->voice('+1.7035555555x1234');
+$co->fax('+1.7035555556');
+$co->email('jdoe@example.com');
+$co->auth({pw=>'2fooBAR'});
+$co->disclose({voice=>0,email=>0});
+$co->enterprise_id('DE-ID-122322322');
+$rc=$dri->contact_create($co);
+is($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:postalInfo type="int"><contact:name>Hans Mustermann</contact:name><contact:org>Musterfirma</contact:org><contact:addr><contact:street>Beispielweg 1</contact:street><contact:city>Bern</contact:city><contact:sp>Bern</contact:sp><contact:pc>123456</contact:pc><contact:cc>CH</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.com</contact:email><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo><contact:disclose flag="0"><contact:voice/><contact:email/></contact:disclose></contact:create></create><extension><el:create xmlns:el="http://xmlns.corenic.net/epp/contact-eligibility-1.0" xsi:schemaLocation="http://xmlns.corenic.net/epp/contact-eligibility-1.0 contact-eligibility-1.0.xsd"><el:enterpriseID>DE-ID-122322322</el:enterpriseID></el:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+is($rc->is_success(),1,'contact_create is_success');
+
+# contact update: changing the eligibility information of a contact, along with other contact data
+$R2='';
+$co=$dri->local_object('contact')->srid('sh8013');
+$toc=$dri->local_object('changes');
+$toc->add('status',$dri->local_object('status')->no('delete'));
+$co2=$dri->local_object('contact');
+$co2->name('Hans Mustermann');
+$co2->org('');
+$co2->street(['Beispielweg 1']);
+$co2->city('Bern');
+$co2->sp('Bern');
+$co2->pc('123456');
+$co2->cc('CH');
+$co2->voice('+1.7034444444');
+$co2->fax('');
+$co2->auth({pw=>'2fooBAR'});
+$co2->disclose({voice=>1,email=>1});
+$co2->enterprise_id('DE-ID-122322325');
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:add><contact:status s="clientDeleteProhibited"/></contact:add><contact:chg><contact:postalInfo type="int"><contact:name>Hans Mustermann</contact:name><contact:org/><contact:addr><contact:street>Beispielweg 1</contact:street><contact:city>Bern</contact:city><contact:sp>Bern</contact:sp><contact:pc>123456</contact:pc><contact:cc>CH</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.7034444444</contact:voice><contact:fax/><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo><contact:disclose flag="1"><contact:voice/><contact:email/></contact:disclose></contact:chg></contact:update></update><extension><el:update xmlns:el="http://xmlns.corenic.net/epp/contact-eligibility-1.0" xsi:schemaLocation="http://xmlns.corenic.net/epp/contact-eligibility-1.0 contact-eligibility-1.0.xsd"><el:chg><el:enterpriseID>DE-ID-122322325</el:enterpriseID></el:chg></el:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build along other contact data');
+is($rc->is_success(),1,'contact_update is_success');
+
+# contact update: changing the eligibility information of a contact, retaining other contact data
+$R2='';
+$co=$dri->local_object('contact')->srid('sh8013');
+$toc=$dri->local_object('changes');
+$co2=$dri->local_object('contact');
+$co2->enterprise_id('DE-ID-122322324');
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id></contact:update></update><extension><el:update xmlns:el="http://xmlns.corenic.net/epp/contact-eligibility-1.0" xsi:schemaLocation="http://xmlns.corenic.net/epp/contact-eligibility-1.0 contact-eligibility-1.0.xsd"><el:chg><el:enterpriseID>DE-ID-122322324</el:enterpriseID></el:chg></el:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build retaining other contact data');
+is($rc->is_success(),1,'contact_update is_success');
+
+# contact update: removing the eligibility information of a contact, retaining other contact data
+$R2='';
+$co=$dri->local_object('contact')->srid('sh8013');
+$toc=$dri->local_object('changes');
+$co2=$dri->local_object('contact');
+$co2->enterprise_id('');
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id></contact:update></update><extension><el:update xmlns:el="http://xmlns.corenic.net/epp/contact-eligibility-1.0" xsi:schemaLocation="http://xmlns.corenic.net/epp/contact-eligibility-1.0 contact-eligibility-1.0.xsd"><el:chg><el:enterpriseID/></el:chg></el:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build removing the eligibility information');
+is($rc->is_success(),1,'contact_update is_success');
 
 
 exit 0;
