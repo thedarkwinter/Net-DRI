@@ -51,6 +51,7 @@ lib/Net/DRI/Data/Contact/RegBox.pm
 lib/Net/DRI/Data/Contact/SE.pm
 lib/Net/DRI/Data/Contact/SIDN.pm
 lib/Net/DRI/Data/Contact/SWITCH.pm
+lib/Net/DRI/Data/Contact/TANGO.pm
 lib/Net/DRI/Data/Contact/TCI.pm
 lib/Net/DRI/Data/Contact/TCI_gTLD.pm
 lib/Net/DRI/Data/Contact/UNIREG.pm
@@ -64,6 +65,7 @@ lib/Net/DRI/Data/StatusList.pm
 lib/Net/DRI/DRD.pm
 lib/Net/DRI/DRD/AdamsNames.pm
 lib/Net/DRI/DRD/AERO.pm
+lib/Net/DRI/DRD/AfiliasGRS.pm
 lib/Net/DRI/DRD/AfiliasSRS.pm
 lib/Net/DRI/DRD/AFNIC.pm
 lib/Net/DRI/DRD/AFNIC_GTLD.pm
@@ -216,6 +218,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC/Status.pm
+lib/Net/DRI/Protocol/EPP/Extensions/AFNIC_GTLD/PremiumDomain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AFNIC_GTLD/RegistryMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AllocationToken.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARI.pm
@@ -395,6 +398,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/SIDN_GTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SWITCH.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO/Auction.pm
+lib/Net/DRI/Protocol/EPP/Extensions/TANGO/ContactEligibility.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO/LaunchPhase.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI.pm
@@ -670,6 +674,7 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.4.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.5.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.6.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.7.t
+t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.8.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC_gTLD.t
