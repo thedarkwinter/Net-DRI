@@ -8,6 +8,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
+use Data::Dumper;
 
 use Test::More tests => 61;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -29,6 +30,8 @@ $dri->target('ruhr')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\
 $dri->add_registry('NGTLD',{provider => 'Tango',name=>'nrw'});
 $dri->target('nrw')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
+$dri->add_registry('NGTLD',{provider => 'corenic',name=>'eus'});
+$dri->target('eus')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
 my $s;
@@ -128,6 +131,7 @@ is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.ruhr</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:infData></resData><extension><auction:infData xmlns:auction="http://xmlns.tango-rs.net/epp/auction-1.0" xsi:schemaLocation="http://xmlns.tango-rs.net/epp/auction-1.0 auction-1.0.xsd"><auction:bid currency="EUR">10000.00</auction:bid></auction:infData></extension>'.$TRID.'</response>'.$E2;$rc=$dri->domain_info('example3.ruhr');
 is($dri->get_info('action'),'info','domain_info get_info(action)');
 my $auction = $dri->get_info('auction');
+print Dumper($auction);
 is($auction->{bid},'10000.00','domain_info get_info(bid)');
 is($auction->{currency},'EUR','domain_info get_info(currency)');
 
@@ -138,6 +142,7 @@ is($auction->{currency},'EUR','domain_info get_info(currency)');
 $dri->target('nrw');
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example4.nrw</domain:name></domain:cd><domain:cd><domain:name avail="1">example4.nrw</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.6"><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>create</fee:command><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:cd><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>renew</fee:command><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:cd><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>transfer</fee:command><fee:period unit="y">1</fee:period><fee:fee>5.00</fee:fee></fee:cd><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>restore</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check_price('example4.nrw');
+print Dumper($rc);
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.nrw</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:domain><fee:name>example4.nrw</fee:name><fee:command>create</fee:command></fee:domain><fee:domain><fee:name>example4.nrw</fee:name><fee:command>renew</fee:command></fee:domain><fee:domain><fee:name>example4.nrw</fee:name><fee:command>transfer</fee:command></fee:domain><fee:domain><fee:name>example4.nrw</fee:name><fee:command>restore</fee:command></fee:domain></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check_price build');
 is($dri->get_info('action'),'check','domain_check_price get_info(action)');
 is($dri->get_info('exist'),0,'domain_check_price get_info(exist)');
@@ -396,5 +401,43 @@ $rc=$dri->contact_update($co,$toc);
 is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id></contact:update></update><extension><el:update xmlns:el="http://xmlns.corenic.net/epp/contact-eligibility-1.0" xsi:schemaLocation="http://xmlns.corenic.net/epp/contact-eligibility-1.0 contact-eligibility-1.0.xsd"><el:chg><el:enterpriseID/></el:chg></el:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build removing the eligibility information');
 is($rc->is_success(),1,'contact_update is_success');
 
+#####################
+## Promotion Extension
+
+# domain create: with promotional code
+$dri->target('eus');
+$R2='';
+my $cs=$dri->local_object('contactset');
+$cs->add($dri->local_object('contact')->srid('abc123'),'registrant');
+$cs->add($dri->local_object('contact')->srid('def456'),'admin');
+$cs->add($dri->local_object('contact')->srid('ghi789'),'tech');
+$dh=$dri->local_object('hosts');
+$dh->add('ns1.example.net');
+$dh->add('ns2.example.net');
+my $promo_c='EXAMPLE-PROMO-1231';
+$rc=$dri->domain_create('example.eus',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,auth=>{pw=>'secret42'},promo_code=>$promo_c} );
+is($rc->is_success(),1,'domain_create is_success adding promotion extension');
+is_string($R1,$E1.'<command><create><domain:create xmlns="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.net</domain:hostObj><domain:hostObj>ns2.example.net</domain:hostObj></domain:ns><domain:registrant>abc123</domain:registrant><domain:contact type="admin">def456</domain:contact><domain:contact type="tech">ghi789</domain:contact><domain:authInfo><domain:pw>secret42</domain:pw></domain:authInfo></domain:create></create><extension><promo:create xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml adding promotion extension');
+
+# domain renew: with promotional code
+$R2='';
+$rc=$dri->domain_renew('example.eus',{current_expiration => DateTime->new(year=>2015,month=>04,day=>03),duration=>DateTime::Duration->new(years=>1),promo_code=>$promo_c});
+is_string($R1,$E1.'<command><update><domain:renew xmlns="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:curExpDate>2015-04-03</domain:curExpDate><domain:period unit="y">1</domain:period></domain:renew></update><extension><promo:renew xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:renew></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build adding promotion extension');
+is($rc->is_success(),1,'domain_renew is_success adding promotion extension');
+
+# domain promo info: testing promotional codes info commands
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><promo:infData xmlns:promo="http://xmlns.domini.cat/epp/promo-1.0"><promo:promo><promo:promotionName>Promotion 2015</promo:promotionName><promo:validity from="2015-01-01T00:00:00.0Z" to="2015-04-01T00:00:00.0Z" /><promo:utilization avail="true"><promo:enabled>true</promo:enabled><promo:operations>create renew</promo:operations><promo:codeUsable>true</promo:codeUsable><promo:inValidityPeriod>true</promo:inValidityPeriod><promo:validDomainName>true</promo:validDomainName></promo:utilization></promo:promo><promo:pricing><promo:total value="20.00" mu="EUR" /></promo:pricing></promo:infData></resData>' . $TRID . '</response>' . $E2;
+my $promo_hash = {dom_name => {name => 'example.eus'},
+				  dom_pric => {type => 'create',
+				 			   period => '2',
+				 			   period_unit => 'y'},
+				  dom_refd => {rdate => DateTime->new(year=>2016,month=>07,day=>01,hour=>10,minute=>10,second=>0)},
+				  dom_phra => {phrase => 'custom',
+				 			   custom_phrase => 'special-phase'}};
+$rc=$dri->promo_info('EXAMPLE-PROMO-1231',{promo_data=>$promo_hash});
+is_string($R1,$E1.'<command><info ><promo:info xmlns:promo="http://xmlns.corenic.net/epp/promotion-info-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code><promo:domain><promo:name>example.eus</promo:name></promo:domain><promo:pricing><promo:create><promo:period unit="y">2</promo:period></promo:create></promo:pricing><promo:refdate>2016-07-01T10:10:00.0Z</promo:refdate><promo:phase name="special-phase">custom</promo:phase></promo:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_promo_info build quering promotion details');
+is($rc->is_success(),1,'domain_promo_info is_success quering promotion details');
+
+# domain promo info parse: testing the parsing of promotional information from the response
 
 exit 0;
