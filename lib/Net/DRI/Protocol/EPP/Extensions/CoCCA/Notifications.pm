@@ -1,4 +1,4 @@
-## Domain Registry Interface, PH notifications
+## Domain Registry Interface, CoCCA/PH notifications
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::PH::Notifications;
+package Net::DRI::Protocol::EPP::Extensions::CoCCA::Notifications;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use utf8;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::PH::Notifications - PH EPP Notifications Handling for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::CoCCA::Notifications - CoCCA/.PH EPP Notifications Handling for Net::DRI
 
 =head1 DESCRIPTION
 

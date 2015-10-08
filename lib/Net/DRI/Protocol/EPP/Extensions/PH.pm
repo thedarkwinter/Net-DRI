@@ -70,7 +70,7 @@ sub setup {
     return;
 }
 
-sub default_extensions { return qw/PH::Notifications/; }
+sub default_extensions { return qw/CoCCA::Notifications/; }
 
 ####################################################################################################
 1;
