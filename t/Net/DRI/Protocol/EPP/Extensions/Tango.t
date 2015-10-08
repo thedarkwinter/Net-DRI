@@ -8,7 +8,6 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
-use Data::Dumper;
 
 use Test::More tests => 61;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -131,7 +130,6 @@ is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.ruhr</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:infData></resData><extension><auction:infData xmlns:auction="http://xmlns.tango-rs.net/epp/auction-1.0" xsi:schemaLocation="http://xmlns.tango-rs.net/epp/auction-1.0 auction-1.0.xsd"><auction:bid currency="EUR">10000.00</auction:bid></auction:infData></extension>'.$TRID.'</response>'.$E2;$rc=$dri->domain_info('example3.ruhr');
 is($dri->get_info('action'),'info','domain_info get_info(action)');
 my $auction = $dri->get_info('auction');
-print Dumper($auction);
 is($auction->{bid},'10000.00','domain_info get_info(bid)');
 is($auction->{currency},'EUR','domain_info get_info(currency)');
 
@@ -142,7 +140,6 @@ is($auction->{currency},'EUR','domain_info get_info(currency)');
 $dri->target('nrw');
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example4.nrw</domain:name></domain:cd><domain:cd><domain:name avail="1">example4.nrw</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.6"><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>create</fee:command><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:cd><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>renew</fee:command><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:cd><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>transfer</fee:command><fee:period unit="y">1</fee:period><fee:fee>5.00</fee:fee></fee:cd><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>restore</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check_price('example4.nrw');
-print Dumper($rc);
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.nrw</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:domain><fee:name>example4.nrw</fee:name><fee:command>create</fee:command></fee:domain><fee:domain><fee:name>example4.nrw</fee:name><fee:command>renew</fee:command></fee:domain><fee:domain><fee:name>example4.nrw</fee:name><fee:command>transfer</fee:command></fee:domain><fee:domain><fee:name>example4.nrw</fee:name><fee:command>restore</fee:command></fee:domain></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check_price build');
 is($dri->get_info('action'),'check','domain_check_price get_info(action)');
 is($dri->get_info('exist'),0,'domain_check_price get_info(exist)');
