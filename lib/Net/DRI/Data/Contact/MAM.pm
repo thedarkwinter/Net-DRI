@@ -43,7 +43,7 @@ Token with maxLength value="256"
 
 =head2 accreditation_year()
 
-???? ASK MAM
+Token with length value="5"??? => Ask MAM since it's not defined in their XSD - based in their tecnical example!
 
 =head2 jurisdiction_cc()
 
@@ -95,9 +95,9 @@ sub validate
  if ($self->accreditation_id() || $self->accreditation_body() || $self->accreditation_year() || $self->jurisdiction_cc())
  {
   Net::DRI::Exception::usererr_insufficient_parameters('accreditation_id, accreditation_body, accreditation_year and jurisdiction_cc are mandatory for MAM Qualified Lawyer extension!') unless ($self->accreditation_id() && $self->accreditation_body() && $self->accreditation_year() && $self->jurisdiction_cc());
-  push @errs, 'accreditation_id, accreditation_body and jurisdiction_sp should exist and should be a string between 1 and 256 characters' unless (Net::DRI::Util::xml_is_string($self->accreditation_id(),1,256) && Net::DRI::Util::xml_is_string($self->accreditation_body(),1,256) && Net::DRI::Util::xml_is_string($self->jurisdiction_sp(),1,256));
-  push @errs, 'accreditation_year is represented by a four­‐digit year including the century (ex.: 2015Z)' unless Net::DRI::Util::xml_is_string($self->accreditation_year(),5,5);
-  push @errs, 'jurisdiction_cc should be a string with 2 characters (ex.: US)' unless Net::DRI::Util::xml_is_string($self->jurisdiction_cc(),2,2);
+  push @errs, 'accreditation_id, accreditation_body and jurisdiction_sp should exist and should be a string between 1 and 256 characters' unless (Net::DRI::Util::xml_is_token($self->accreditation_id(),1,256) && Net::DRI::Util::xml_is_token($self->accreditation_body(),1,256) && Net::DRI::Util::xml_is_token($self->jurisdiction_sp(),1,256));
+  push @errs, 'accreditation_year is represented by a four­‐digit year including the century (ex.: 2015Z)' unless Net::DRI::Util::xml_is_token($self->accreditation_year(),5,5);
+  push @errs, 'jurisdiction_cc should be a string with 2 characters (ex.: US)' unless Net::DRI::Util::xml_is_token($self->jurisdiction_cc(),2,2);
   Net::DRI::Exception::usererr_invalid_parameters(join(' / ',@errs)) if @errs;
  }
  

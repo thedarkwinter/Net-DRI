@@ -7,9 +7,8 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
-use Data::Dumper;
 
-use Test::More tests => 11;
+use Test::More tests => 13;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -27,7 +26,7 @@ $dri->add_registry('NGTLD',{provider => 'MAM'} );
 $dri->{registries}->{MAM}->{driver}->{info}->{contact_i18n} = 2; # force to use type="int" only. both enabled by default for NGTLDs :)
 $dri->target('MAM')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-my ($rc,$co);
+my ($rc,$co,$co2,$toc);
 
 ##########################################
 ## Qualified Lawyer Extension - EPP Query Commands
@@ -78,20 +77,21 @@ is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:para
 is($rc->is_success(),1,'contact_create qualified lawyer is_success');
 # END: contact create
 
-## contact update
-#$R2='';
-#$co=$dri->local_object('contact')->srid('aw2015');
-#my $co2=$dri->local_object('contact');
-#$co2->accreditation_id('KS-123456');
-#$co2->accreditation_body('Kansas Bar Association');
-#$co2->accreditation_year('2003Z');
-#$co2->jurisdiction_cc('US');
-#$co2->jurisdiction_sp('Kansas');
-#my $toc->set('info',$co2);
-#$rc=$dri->contact_update($co,$toc);
-#is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>aw2015</contact:id></contact:update></update><extension><qualifiedLawyer:update xmlns:qualifiedLawyer="http://www.mindsandmachines.com/epp/qualifiedLawyer-1.0" xsi:schemaLocation="http://www.mindsandmachines.com/epp/qualifiedLawyer-1.0 qualifiedLawyer-1.0.xsd"><qualifiedLawyer:accreditationId>KS-123456</qualifiedLawyer:accreditationId><qualifiedLawyer:accreditationBody>Kansas Bar Association</qualifiedLawyer:accreditationBody><qualifiedLawyer:accreditationYear>2003Z</qualifiedLawyer:accreditationYear><qualifiedLawyer:jurisdictionCC>US</qualifiedLawyer:jurisdictionCC><qualifiedLawyer:jurisdictionSP>Kansas</qualifiedLawyer:jurisdictionSP></qualifiedLawyer:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update qualified lawyer build');
-#is($rc->is_success(),1,'contact_update qualified lawyer is_success');
-## END: contact update
+# contact update
+$R2='';
+$co=$dri->local_object('contact')->srid('aw2015');
+$toc=$dri->local_object('changes');
+$co2=$dri->local_object('contact');
+$co2->accreditation_id('UK-123456');
+$co2->accreditation_body('London Bar Association');
+$co2->accreditation_year('2015Z');
+$co2->jurisdiction_cc('UK');
+$co2->jurisdiction_sp('London');
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>aw2015</contact:id></contact:update></update><extension><qualifiedLawyer:update xmlns:qualifiedLawyer="http://www.mindsandmachines.com/epp/qualifiedLawyer-1.0" xsi:schemaLocation="http://www.mindsandmachines.com/epp/qualifiedLawyer-1.0 qualifiedLawyer-1.0.xsd"><qualifiedLawyer:accreditationId>UK-123456</qualifiedLawyer:accreditationId><qualifiedLawyer:accreditationBody>London Bar Association</qualifiedLawyer:accreditationBody><qualifiedLawyer:accreditationYear>2015Z</qualifiedLawyer:accreditationYear><qualifiedLawyer:jurisdictionCC>UK</qualifiedLawyer:jurisdictionCC><qualifiedLawyer:jurisdictionSP>London</qualifiedLawyer:jurisdictionSP></qualifiedLawyer:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update qualified lawyer build');
+is($rc->is_success(),1,'contact_update qualified lawyer is_success');
+# END: contact update
 
 ## END: Qualified Lawyer Extension - EPP Transform Commands
 ##########################################

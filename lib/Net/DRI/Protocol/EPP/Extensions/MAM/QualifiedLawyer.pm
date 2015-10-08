@@ -22,7 +22,6 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 use Net::DRI::Data::Contact::MAM;
-use Data::Dumper;
 
 =pod
 
@@ -144,11 +143,12 @@ sub create
 
 sub update
 {
- my ($epp,$contact)=@_;
+ my ($epp,$contact,$todo)=@_;
  my $mes=$epp->message();
- return unless $contact->{'accreditation_id'}; # only checking this param. Other mandatory params protection under Data::Contact::MAM :)
- 
- my @n = build_qualified_lawyer($contact);
+ my $extc=$todo->set('info');
+ return unless $extc->{'accreditation_id'}; # only checking this param. Other mandatory params protection under Data::Contact::MAM :)
+
+ my @n = build_qualified_lawyer($extc);
  return unless @n;
  
  my $eid=$mes->command_extension_register('qualifiedLawyer','update');
