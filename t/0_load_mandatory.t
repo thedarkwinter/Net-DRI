@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 489;
+use Test::More tests => 491;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -153,6 +153,7 @@ use_ok('Net::DRI::Data::Contact::RegBox');
 use_ok('Net::DRI::Data::Contact::LV');
 use_ok('Net::DRI::Data::Contact::DK');
 use_ok('Net::DRI::Data::Contact::TANGO');
+use_ok('Net::DRI::Data::Contact::MAM');
 use_ok('Net::DRI::Transport::Socket');
 use_ok('Net::DRI::Transport::Dummy');
 use_ok('Net::DRI::Transport::Defer');
@@ -414,6 +415,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::DK::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX_GTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::AdmStatus');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::IDN');
+use_ok('Net::DRI::Protocol::EPP::Extensions::MAM::QualifiedLawyer');
 use_ok('Net::DRI::Protocol::DAS');
 use_ok('Net::DRI::Protocol::DAS::Message');
 use_ok('Net::DRI::Protocol::DAS::Connection');
