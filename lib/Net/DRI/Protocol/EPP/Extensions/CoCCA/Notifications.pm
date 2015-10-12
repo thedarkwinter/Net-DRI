@@ -1,8 +1,8 @@
 ## Domain Registry Interface, CoCCA/PH notifications
 ##
-## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,9 +50,9 @@ David Makuni <d.makuni@live.co.uk>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -85,19 +85,12 @@ sub parse_poll {
 	my $id=$mes->msg_id();
 	my $node=$rinfo->{message}->{$id}->{content};
 
-	# parse the rest of the data in the message.
-	if ( $node =~ /<(.*)><domain><name>(.*)?<\/name><change>(.*)?<\/change><details>(.*)?<\/details><\/domain><\/offlineUpdate>/gi ) {
-		
-		# set variables
-		$otype = 'message';
-		$oname = 'session';
-		if (defined($1)) {$oaction = $1} else {$oaction = 'offlineUpdate'};
-		
-		# write keys to hash
-		$rinfo->{$otype}->{$oname}->{action} = $1 if defined($1);
-		$rinfo->{$otype}->{$oname}->{name} = $2 if defined($2);
-		$rinfo->{$otype}->{$oname}->{change} = $3 if defined($3);
-		$rinfo->{$otype}->{$oname}->{details} = $4 if defined($4);
+	# parse the rest of the data in the message (CDATA)
+	if ( $node =~ /<offlineUpdate><domain><name>(.*)?<\/name><change>(.*)?<\/change><details>(.*)?<\/details><\/domain><\/offlineUpdate>/gi ) {
+		$oaction = $rinfo->{$otype}->{$oname}->{action} = 'offline_update';
+		$rinfo->{$otype}->{$oname}->{name} = $1 if defined($1);
+		$rinfo->{$otype}->{$oname}->{change} = $2 if defined($2);
+		$rinfo->{$otype}->{$oname}->{details} = $3 if defined($3);
 	}
 
 	return;

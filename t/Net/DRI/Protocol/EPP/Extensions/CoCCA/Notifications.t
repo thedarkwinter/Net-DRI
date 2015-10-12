@@ -53,7 +53,7 @@ $rc=$dri->message_retrieve();
 is($rc->is_success(),1,'message_retrieve is_success [207]');
 my $last_id = $dri->get_info('last_id');
 is($last_id,'207','message_retrieve get_info(last_id) - 207');
-is($dri->get_info('action'),'offlineUpdate','message_poll get_info(action)');
+is($dri->get_info('action'),'offline_update','message_poll get_info(action)');
 is($dri->get_info('name'),'domain1.com.ph','message_poll get_info(name)');
 is($dri->get_info('change'),'UNKNOWN','message_poll get_info(change)');
 is($dri->get_info('details'),'','message_poll get_info(details)');
@@ -64,7 +64,7 @@ $rc=$dri->message_retrieve();
 is($rc->is_success(),1,'message_retrieve is_success [520]');
 $last_id = $dri->get_info('last_id');
 is($last_id,'520','message_retrieve get_info(last_id) - 520');
-is($dri->get_info('action'),'offlineUpdate','message_poll get_info(action)');
+is($dri->get_info('action'),'offline_update','message_poll get_info(action)');
 is($dri->get_info('name'),'domain2.ph','message_poll get_info(name)');
 is($dri->get_info('change'),'NAMESERVERS_CHANGED','message_poll get_info(change)');
 is($dri->get_info('details'),'Domain Nameservers Updated','message_poll get_info(details)');
@@ -75,7 +75,7 @@ $rc=$dri->message_retrieve();
 is($rc->is_success(),1,'message_retrieve is_success [594]');
 $last_id = $dri->get_info('last_id');
 is($last_id,'594','message_retrieve get_info(last_id) - 594');
-is($dri->get_info('action'),'offlineUpdate','message_poll get_info(action)');
+is($dri->get_info('action'),'offline_update','message_poll get_info(action)');
 is($dri->get_info('name'),'domain3.com.ph','message_poll get_info(name)');
 is($dri->get_info('change'),'RENEWAL','message_poll get_info(change)');
 is($dri->get_info('details'),'Domain renewed for 1y','message_poll get_info(details)');
@@ -86,12 +86,9 @@ $rc=$dri->message_retrieve();
 is($rc->is_success(),1,'message_retrieve is_success [595]');
 $last_id = $dri->get_info('last_id');
 is($last_id,'595','message_retrieve get_info(last_id) - 595');
-is($dri->get_info('action'),'offlineUpdate','message_poll get_info(action)');
+is($dri->get_info('action'),'offline_update','message_poll get_info(action)');
 is($dri->get_info('name'),'domain4.ph','message_poll get_info(name)');
 is($dri->get_info('change'),'DELETION','message_poll get_info(change)');
 is($dri->get_info('details'),'Domain deleted','message_poll get_info(details)');
-
-####################################################################################################
-####### Domains Commands ########
 
 exit 0;
