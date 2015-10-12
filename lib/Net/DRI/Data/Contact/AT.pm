@@ -125,10 +125,10 @@ sub init
 {
  my ($self,$what,$ndr)=@_;
 
+ $self->auth({pw=>''}); ## Mandatory in EPP, not used by .AT
  if ($what eq 'create')
  {
   my $a=$self->auth();
-  $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); ## Mandatory in EPP, not used by .AT
   $self->srid('auto') unless defined($self->srid()); ## we can not choose the ID
  }
  return;
