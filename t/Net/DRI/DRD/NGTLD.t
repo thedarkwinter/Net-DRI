@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 80;
+use Test::More tests => 87;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -161,6 +161,18 @@ is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::P
 is($drd->{bep}->{bep_type},2,'verisign: bep_type');
 is($drd->{info}->{check_limit},13,'verisign: check_limit');
 is_deeply([$dri->tlds()],['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','azure','bank','bing','broker','career','cfd','crs','forex','hotmail','java','maif','markets','microsoft','ooo','oracle','pictet','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],'verisign: tlds');
+
+# CoCCA
+$rc = $dri->add_registry('NGTLD',{provider => 'cocca'});
+is($rc->{last_registry},'cocca','cocca: add_registry');
+$rc = $dri->target('cocca')->add_current_profile('p1-cocca','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{cocca}->{driver};
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CoCCA::Notifications')}],'cocca: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CoCCA::Notifications/],'cocca: loaded_modules');
+is($drd->{info}->{check_limit},13,'cocca: check_limit');
+is($drd->{info}->{host_check_limit},13,'cocca: host_check_limit');
+is($dri->info('contact_check_limit'),13,'cocca: contact_check_limit');
+is($drd->{info}->{domain_check_limit},13,'cocca: domain_check_limit');
 
 ####################################################################################################
 #### ngTLD Methods

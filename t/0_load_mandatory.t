@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 491;
+use Test::More tests => 494;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -108,6 +108,7 @@ use_ok('Net::DRI::DRD::MX');
 use_ok('Net::DRI::DRD::RegBox');
 use_ok('Net::DRI::DRD::LV');
 use_ok('Net::DRI::DRD::DK');
+use_ok('Net::DRI::DRD::PH');
 use_ok('Net::DRI::DRD::MX_GTLD');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
@@ -342,6 +343,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::COZA');
 use_ok('Net::DRI::Protocol::EPP::Extensions::COZA::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::COZA::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CoCCA::IPVerification');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CoCCA::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Domain');
@@ -416,6 +418,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::MX_GTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::AdmStatus');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MAM::QualifiedLawyer');
+use_ok('Net::DRI::Protocol::EPP::Extensions::PH');
 use_ok('Net::DRI::Protocol::DAS');
 use_ok('Net::DRI::Protocol::DAS::Message');
 use_ok('Net::DRI::Protocol::DAS::Connection');
