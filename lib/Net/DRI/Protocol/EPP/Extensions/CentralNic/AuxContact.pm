@@ -119,7 +119,7 @@ sub create
  my @n;
  foreach my $ctype ($cs->types)
  {
-  next if $ctype =~ m/^(registrant|admin|bill|tech)$/;
+  next if $ctype =~ m/^(registrant|admin|billing|tech)$/;
   my $cont = $cs->get($ctype);
   push @n,['auxcontact:contact',{type => $ctype},$cont->srid()];
  }
@@ -143,7 +143,7 @@ sub update
  {
   foreach $ctype ($toadd->types)
   {
-   next if $ctype =~ m/^(registrant|admin|bill|tech)$/;
+   next if $ctype =~ m/^(registrant|admin|billing|tech)$/;
    $cont = $toadd->get($ctype);
    push @add, ['auxcontact:contact',{type => $ctype},$cont->srid()];
   }
