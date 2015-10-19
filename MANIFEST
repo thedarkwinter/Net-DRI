@@ -256,6 +256,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/CAT/DefensiveRegistration.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CAT/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Agreement.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Contact.pm
@@ -675,6 +676,7 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.5.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.6.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.7.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.8.t
+t/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC_gTLD.t
