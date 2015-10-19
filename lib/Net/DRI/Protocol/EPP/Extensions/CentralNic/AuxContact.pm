@@ -1,4 +1,4 @@
-## Domain Registry Interface, CentralNic EPP Registration Type extension
+## Domain Registry Interface, CentralNic EPP Auxiliary Contact extension
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CentralNic::RegType;
+package Net::DRI::Protocol::EPP::Extensions::CentralNic::AuxContact;
 
 use strict;
 use warnings;
@@ -26,15 +26,15 @@ use Net::DRI::Protocol::EPP::Util;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CentralNic::RegType - CentralNic Registration Type Extension (draft-brown-regtype)
+Net::DRI::Protocol::EPP::Extensions::CentralNic::AuxContact- CentralNic Auxiliary Contact Extension (draft-brown-auxcontact)
 
 =head1 DESCRIPTION
 
-Adds the RegType extension for (currently only .feebback).
+Adds the Auxiliary Contact extension for (currently only .feebback).
 
-CentralNic RegType extension is defined in https://gitlab.centralnic.com/centralnic/epp-registration-type-extension/blob/master/draft-brown-regtype.txt
+.Feedback uses the extra contact type "real-registrant"
 
-=item reg_type
+CentralNic auxcontact extension is defined in https://gitlab.centralnic.com/centralnic/epp-auxcontact-extension/blob/master/draft-brown-auxcontact.txt
 
 Specify the registration rype.
 
@@ -84,7 +84,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'regType' => [ 'urn:ietf:params:xml:ns:regtype-0.1','regtype-0.1.xsd' ] });
+ $po->ns({ 'auxcontact' => [ 'urn:ietf:params:xml:ns:auxcontact-0.1','auxcontact-0.1.xsd' ] });
  $po->capabilities('domain_update','reg_type',['set']);
  return;
 }
@@ -94,17 +94,19 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $infdata=$mes->get_extension($mes->ns('regType'),'infData');
+ my $infdata=$mes->get_extension($mes->ns('auxcontact'),'infData');
  return unless defined $infdata;
+ 
+ my $contact=$rinfo->{domain}->{$oname}->{contact};
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
    my ($n,$c)=@$el;
-   if ($n eq 'type')
+   if ($n eq 'contact')
    {
-    $rinfo->{domain}->{$oname}->{reg_type}=$c->textContent();
+    my $ctype = $c->getAttribute('type') if $c->hasAttribute('type');
+    $rinfo->{$otype}->{$oname}->{contact}->set($po->create_local_object('contact')->srid($c->textContent()),$ctype) if $ctype;
    }
  }
-
  return;
 }
 
@@ -112,12 +114,18 @@ sub create
 {
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
- return unless Net::DRI::Util::has_key($rd,'reg_type');
+ my $cs=$rd->{contact};
 
  my @n;
- push @n,['regType:type',$rd->{reg_type}];
+ foreach my $ctype ($cs->types)
+ {
+  next if $ctype =~ m/^(registrant|admin|bill|tech)$/;
+  my $cont = $cs->get($ctype);
+  push @n,['auxcontact:contact',{type => $ctype},$cont->srid()];
+ }
+ return unless @n;
 
- my $eid=$mes->command_extension_register('regType','create');
+ my $eid=$mes->command_extension_register('auxcontact','create');
  $mes->command_extension($eid,\@n);
  
  return;
@@ -127,15 +135,39 @@ sub update
 {
  my ($epp,$domain,$todo)=@_;
  my $mes=$epp->message();
- return unless $todo->set('reg_type');
+ return unless $todo->add('contact') || $todo->del('contact');
+ my (@n,$toadd,@add,$todel,@del,$cont,$ctype);
 
- my @n;
- push @n,['regType:chg',['regType:type',$todo->set('reg_type')]];
+ # add
+ if ($toadd = $todo->add('contact'))
+ {
+  foreach $ctype ($toadd->types)
+  {
+   next if $ctype =~ m/^(registrant|admin|bill|tech)$/;
+   $cont = $toadd->get($ctype);
+   push @add, ['auxcontact:contact',{type => $ctype},$cont->srid()];
+  }
+  push @n,['auxcontact:add',@add] if @add;
+ }
 
- my $eid=$mes->command_extension_register('regType','update');
+ # del
+ if ($todel = $todo->del('contact'))
+ {
+  foreach $ctype ($todel->types)
+  {
+   next if $ctype =~ m/^(registrant|admin|bill|tech)$/;
+   $cont = $todel->get($ctype);
+   push @del, ['auxcontact:contact',{type => $ctype},$cont->srid()];
+  }
+  push @n,['auxcontact:rem',@del] if @del;
+ }
+
+ return unless @n;
+ my $eid=$mes->command_extension_register('auxcontact','update');
  $mes->command_extension($eid,\@n);
  
  return;
+
 }
 
 ####################################################################################################
