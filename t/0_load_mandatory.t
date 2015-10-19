@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 491;
+use Test::More tests => 493;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -250,6 +250,8 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::LU::Poll');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LU::Status');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::RegType');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::AuxContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ASIA');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ASIA::CED');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ASIA::Domain');
