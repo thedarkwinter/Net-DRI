@@ -87,7 +87,7 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/domain-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.1',$ns.'-1.1.xsd' ] });
+  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.2',$ns.'-1.2.xsd' ] });
  }
  foreach my $ns (qw/authInfo/)
  {

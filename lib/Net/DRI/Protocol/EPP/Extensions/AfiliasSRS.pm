@@ -27,7 +27,6 @@ sub setup
   ipr       => ['urn:afilias:params:xml:ns:ipr-1.1','ipr-1.1.xsd'],
   idn       => ['urn:afilias:params:xml:ns:idn-1.0','idn-1.0.xsd'],
   oxrs      => ['urn:afilias:params:xml:ns:oxrs-1.1','oxrs-1.1.xsd'],
-  price     => ['urn:afilias:params:xml:ns:price-1.0','price-1.0.xsd'],
   registrar => ['urn:ietf:params:xml:ns:registrar-1.0','registrar-1.0.xsd'],
  });
  return;

@@ -93,7 +93,7 @@ sub add_individual_and_consent
  return unless (defined($ind) || defined($cfp));
  my $eid=build_command_extension($mes,$epp,'extcon:'.$op);
  my @e;
- push @e,['extcon:individual',$ind]           if defined($ind);
+ push @e,['extcon:individual',$ind]           if defined($ind) && lc($op) eq 'create';
  push @e,['extcon:consentForPublishing',$cfp] if defined($cfp);
 
  $mes->command_extension($eid,\@e);

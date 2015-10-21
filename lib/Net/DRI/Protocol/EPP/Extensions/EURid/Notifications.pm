@@ -1,8 +1,9 @@
 ## Domain Registry Interface, EURid Registrar EPP extension notifications
-## (introduced in release 5.6 october 2008)
+## (based on EURid EPP_Guidelines_2_1_09, RegNotifications_051213.pdf (v1.2), schemas for poll-1.2)
 ##
 ## Copyright (c) 2009,2012-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
+##               2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -77,7 +78,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'poll' => [ 'http://www.eurid.eu/xml/epp/poll-1.1','poll-1.1.xsd' ] });
+ $po->ns({ 'poll' => [ 'http://www.eurid.eu/xml/epp/poll-1.2','poll-1.2.xsd' ] });
  return;
 }
 
@@ -96,25 +97,26 @@ sub parse
  foreach my $el (Net::DRI::Util::xml_list_children($poll))
  {
   my ($name,$c)=@$el;
-  if ($name=~m/^(context|object|action|code|detail|objectType|objectUnicode)$/)
+  if ($name=~m/^(context|object|action|code|detail|objectType|objectUnicode|registrar)$/)
   {
    $n{$1}=$c->textContent();
   }
  }
 
- if ($n{context}=~m/^(?:DOMAIN|TRANSFER)$/)
+ if ($n{context}=~m/^(?:DOMAIN|TRANSFER|DYNUPDATE|RESERVED_ACTIVATION|LEGAL|REGISTRY_LOCK)$/)
  {
   $oname=$n{object};
   $rinfo->{domain}->{$oname}->{context}=$n{context};
   $rinfo->{domain}->{$oname}->{notification_code}=$n{code};
   $rinfo->{domain}->{$oname}->{action}=$n{action};
   $rinfo->{domain}->{$oname}->{detail}=$n{detail} if exists $n{detail};
-  $rinfo->{domain}->{$oname}->{context}=$n{context};
   $rinfo->{domain}->{$oname}->{object_type}=$n{objectType};
-  $rinfo->{domain}->{$oname}->{object_unicode}=$n{objectUnicode};
+  $rinfo->{domain}->{$oname}->{object_unicode}=$n{objectUnicode} if exists $n{objectUnicode};
+  $rinfo->{domain}->{$oname}->{registrar}=$n{registrar} if exists $n{registrar};
   $rinfo->{domain}->{$oname}->{exist}=1;
  } else
  {
+  $n{level} = $n{object} if $n{context} eq 'WATERMARK'; # it used to be called level, so this is for backwards compat
   $rinfo->{session}->{notification}=\%n;
  }
  return;

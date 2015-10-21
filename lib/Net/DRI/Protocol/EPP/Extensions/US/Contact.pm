@@ -85,8 +85,29 @@ sub info_parse
  return unless $mes->is_success();
 
  my $contact=$rinfo->{contact}->{$oname}->{self};
- my $ext=$mes->node_extension();
 
+ # this code was added as the old code was not not working, but i have left the old code as a fallback in case
+ if (my $infdata = $mes->get_extension('neulevel','extension'))
+ {
+	foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+	{
+	 my ($name,$c)=@$el;
+	 if ($name eq 'unspec')
+	 {
+    foreach my $kv (split(/ /,$c->textContent()))
+    {
+     my ($k,$v) = split(/=/,$kv);
+     next unless $k =~ m/^(?:AppPurpose|NexusCategory)$/;
+     $contact->nexus_category($v) if $k eq 'NexusCategory';
+     $contact->application_purpose($v) if $k eq 'AppPurpose';
+    }
+   }
+	}
+	return;
+ }
+
+ # this was the previous code which I think is wrong, but lets leave as fallback
+ my $ext=$mes->node_extension();
  return unless (defined($ext) && $ext && $ext->getFirstChild());
  my %tmp=map { split(/=/,$_) } split(/\s+/,$ext->getFirstChild()->getData());
 
