@@ -95,7 +95,7 @@ sub build_cnnic_contact
  my @n;
 
  foreach my $name (qw/type contact purveyor mobile/) {
-  if ($name eq 'contact') {
+  if ($name eq 'contact' && $rd->$name()) {
    Net::DRI::Exception::usererr_insufficient_parameters('contact type mandatory! Should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') unless $rd->contact_type();
    push @n,['cnnic-contact:'.$name, {'type'=>($rd->contact_type())}, $rd->$name()];
   }
