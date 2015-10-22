@@ -21,7 +21,6 @@ use warnings;
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
-use Data::Dumper;
 
 =pod
 
@@ -47,7 +46,7 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
@@ -150,23 +149,35 @@ sub update
  my (@n,$toadd,@add,$todel,@del,@cont,@tmpadd,@tmpdel);
  my @extcon=('type','contact','purveyor','mobile');
  
-# foreach (@extcon) {
-#  # add
-#  if ($toadd = $todo->add($_)) {
-#   $toadd->{'contact_type'} = $todo->add('contact_type')->{'contact_type'} if $_ eq 'contact' && $todo->add('contact_type');
-#   push @add, build_cnnic_contact($toadd);
-#  }
-#  # del
-#  if ($todel = $todo->del($_)) {
-#   $todel->{'contact_type'} = $todo->del('contact_type')->{'contact_type'} if $_ eq 'contact' && $todo->add('contact_type');
-#    push @del, build_cnnic_contact($todel);
-#  }
-# }
-#
-# # add/del
-# push @n,['cnnic-contact:add',@add] if @add;
-# push @n,['cnnic-contact:rem',@del] if @del;
-  
+ foreach (@extcon) {
+  # add
+  if ($toadd = $todo->add($_))
+  {
+   if ($_ eq 'contact')
+   {
+    Net::DRI::Exception::usererr_insufficient_parameters('mandatory to update contactID and contact type which should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') unless $todo->add('contact_type');
+    Net::DRI::Exception::usererr_invalid_parameters('contact type should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') if $todo->add('contact_type')->{'contact_type'} !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/;
+    push @add, ['cnnic-contact:'.$_,$toadd->{$_},{'type'=>$todo->add('contact_type')->{'contact_type'}}] if $toadd->{$_};
+   } else {
+    push @add, ['cnnic-contact:'.$_,$toadd->{$_}] if $toadd->{$_};
+   }
+  }
+  # del
+  if ($todel = $todo->del($_)) {
+   if ($_ eq 'contact')
+   {
+    Net::DRI::Exception::usererr_insufficient_parameters('mandatory to update contactID and contact type which should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') unless $todo->del('contact_type');
+    Net::DRI::Exception::usererr_invalid_parameters('contact type should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') if $todo->del('contact_type')->{'contact_type'} !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/;
+    push @del, ['cnnic-contact:'.$_,$todel->{$_},{'type'=>$todo->del('contact_type')->{'contact_type'}}] if $todel->{$_};
+   } else {
+    push @del, ['cnnic-contact:'.$_,$todel->{$_}] if $todel->{$_};
+   }
+  }
+ }
+
+ # add/del
+ push @n,['cnnic-contact:add',@add] if @add;
+ push @n,['cnnic-contact:rem',@del] if @del;
  # chg
  push @n,['cnnic-contact:chg',build_cnnic_contact($todo->set('info'))] if $todo->set('info');
 

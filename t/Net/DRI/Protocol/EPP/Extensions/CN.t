@@ -2,12 +2,11 @@
 
 use strict;
 use warnings;
-use Data::Dumper;
 
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime;
-use Test::More tests => 75;
+use Test::More tests => 58;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -26,7 +25,7 @@ $dri->add_registry('CN');
 $dri->target('CN')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 print $@->as_string() if $@;
 
-my ($rc,$s,$d,$dh,@c,$c1,$co,$co2,$toc);
+my ($rc,$s,$d,$dh,@c,$c1,$co,$co2,$cs,$toc);
 
 
 ### Contact commands ###
@@ -91,11 +90,6 @@ $co2->email('a56165993@gmail.com');
 $co2->contact('110101190001010006');
 $co2->contact_type('SFZ');
 $toc->set('info',$co2);
-#$toc->add('mobile',$dri->local_object('contact')->mobile('+44.12348'));
-#$toc->del('purveyor',$dri->local_object('contact')->purveyor('blah'));
-#$toc->del('contact',$dri->local_object('contact')->contact('foobar'));
-#$toc->del('contact_type',$dri->local_object('contact')->contact_type('SFZ'));
-#$toc->del('mobile',$dri->local_object('contact')->mobile('foobar2'));
 $rc=$dri->contact_update($co,$toc);
 is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>cnnic</contact:id><contact:chg><contact:postalInfo type="loc"><contact:name>lily</contact:name><contact:org>itself</contact:org><contact:addr><contact:street>Foo</contact:street><contact:street>Bar</contact:street><contact:street>2</contact:street><contact:city>Example City</contact:city><contact:pc>20166-6503</contact:pc><contact:cc>CN</contact:cc></contact:addr></contact:postalInfo><contact:postalInfo type="int"><contact:name>lily</contact:name><contact:org>itself</contact:org><contact:addr><contact:street>Foo</contact:street><contact:street>Bar</contact:street><contact:street>2</contact:street><contact:city>Example City</contact:city><contact:pc>20166-6503</contact:pc><contact:cc>CN</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.9999999999</contact:voice><contact:fax>+1.5555555555</contact:fax><contact:email>a56165993@gmail.com</contact:email></contact:chg></contact:update></update><extension><cnnic-contact:update xmlns:cnnic-contact="urn:ietf:params:xml:ns:cnnic-contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-contact-1.0 cnnic-contact-1.0.xsd"><cnnic-contact:chg><cnnic-contact:contact type="SFZ">110101190001010006</cnnic-contact:contact></cnnic-contact:chg></cnnic-contact:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
 is($rc->is_success(),1,'contact_update is_success');
@@ -123,5 +117,81 @@ is($dri->get_info('acID'),'cns','contact_transfer_start get_info(acID)');
 $d=$dri->get_info('acDate');
 isa_ok($d,'DateTime','contact_transfer_start get_info(acDate)');
 is("".$d,'2015-02-11T03:41:23','contact_transfer_start get_info(acDate) value');
+
+
+### Domain commands ###
+
+## domain:info
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns="urn:ietf:params:xml:ns:domain-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cn</domain:name><domain:roid>20150206s10001s72989693-cn</domain:roid><domain:status s="ok"/><domain:registrant>cnnic</domain:registrant><domain:contact type="admin">cnnic</domain:contact><domain:contact type="billing">cnnic</domain:contact><domain:contact type="tech">cnnic</domain:contact><domain:ns><domain:hostObj>ns.m.cn</domain:hostObj></domain:ns><domain:clID>test</domain:clID><domain:crID>test</domain:crID><domain:crDate>2015-02-06T04:01:21.0Z</domain:crDate><domain:exDate>2018-02-06T04:01:21.0Z</domain:exDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><rgp:infData xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:rgpStatus s="addPeriod"/></rgp:infData><cnnic-domain:infData xmlns:cnnic-domain="urn:ietf:params:xml:ns:cnnic-domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-domain-1.0 cnnic-domain-1.0.xsd"><cnnic-domain:purveyor>mypurveyor</cnnic-domain:purveyor></cnnic-domain:infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('example.cn',{auth=>{pw=>'2fooBAR'}});
+is($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">example.cn</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info build with auth');
+is($dri->get_info('action'),'info','domain_info get_info(action)');
+is($dri->get_info('exist'),1,'domain_info get_info(exist)');
+is($dri->get_info('roid'),'20150206s10001s72989693-cn','domain_info get_info(roid)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['addPeriod','ok'],'domain_info get_info(status) list');
+is($s->is_active(),1,'domain_info get_info(status) is_active');
+$s=$dri->get_info('contact');
+isa_ok($s,'Net::DRI::Data::ContactSet','domain_info get_info(contact)');
+is_deeply([$s->types()],['admin','billing','registrant','tech'],'domain_info get_info(contact) types');
+is($s->get('registrant')->srid(),'cnnic','domain_info get_info(contact) registrant srid');
+is($s->get('admin')->srid(),'cnnic','domain_info get_info(contact) admin srid');
+is($s->get('billing')->srid(),'cnnic','domain_info get_info(contact) billing srid');
+is($s->get('tech')->srid(),'cnnic','domain_info get_info(contact) tech srid');
+$dh=$dri->get_info('ns');
+isa_ok($dh,'Net::DRI::Data::Hosts','domain_info get_info(ns)');
+@c=$dh->get_names();
+is_deeply(\@c,['ns.m.cn'],'domain_info get_info(ns) get_names');
+is($dri->get_info('clID'),'test','domain_info get_info(clID)');
+is($dri->get_info('crID'),'test','domain_info get_info(crID)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','domain_info get_info(crDate)');
+is("".$d,'2015-02-06T04:01:21','domain_info get_info(crDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_info get_info(exDate)');
+is("".$d,'2018-02-06T04:01:21','domain_info get_info(exDate) value');
+is_deeply($dri->get_info('auth'),{pw=>'2fooBAR'},'domain_info get_info(auth)');
+# domain extensions
+is($dri->get_info('purveyor'),'mypurveyor','domain_info get_info(purveyor)');
+
+## domain:create
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns="urn:ietf:params:xml:ns:domain-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cn</domain:name><domain:crDate>2015-02-06T04:01:21.0Z</domain:crDate><domain:exDate>2018-02-06T04:01:21.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+$cs=$dri->local_object('contactset');
+$c1=$dri->local_object('contact')->srid('cnnic');
+$cs->set($c1,'registrant');
+$cs->set($c1,'admin');
+$cs->set($c1,'billing');
+$cs->set($c1,'tech');
+$rc=$dri->domain_create('example.cn',{pure_create=>1,duration=>DateTime::Duration->new(years=>3),ns=>$dri->local_object('hosts')->set(['ns.m.cn']),contact=>$cs,auth=>{pw=>'fooBAR'},purveyor=>'mypurveyor',type=>'E'});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cn</domain:name><domain:period unit="y">3</domain:period><domain:ns><domain:hostObj>ns.m.cn</domain:hostObj></domain:ns><domain:registrant>cnnic</domain:registrant><domain:contact type="admin">cnnic</domain:contact><domain:contact type="billing">cnnic</domain:contact><domain:contact type="tech">cnnic</domain:contact><domain:authInfo><domain:pw>fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><cnnic-domain:create xmlns:cnnic-domain="urn:ietf:params:xml:ns:cnnic-domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-domain-1.0 cnnic-domain-1.0.xsd"><cnnic-domain:type>E</cnnic-domain:type><cnnic-domain:purveyor>mypurveyor</cnnic-domain:purveyor></cnnic-domain:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is($dri->get_info('action'),'create','domain_create get_info(action)');
+is($dri->get_info('exist'),1,'domain_create get_info(exist)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','domain_create get_info(crDate)');
+is("".$d,'2015-02-06T04:01:21','domain_create get_info(crDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_create get_info(exDate)');
+is("".$d,'2018-02-06T04:01:21','domain_create get_info(exDate) value');
+
+## domain:update
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->add('ns',$dri->local_object('hosts')->set('a.test.cn'));
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('cnnic2'),'admin');
+$toc->add('contact',$cs);
+$toc->add('status',$dri->local_object('status')->no('delete'));
+$toc->del('ns',$dri->local_object('hosts')->set('ns.m.cn'));
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('cnnic1'),'admin');
+$toc->del('contact',$cs);
+$toc->set('registrant',$dri->local_object('contact')->srid('registrant1'));
+$toc->set('auth',{pw=>'2BARfoo'});
+$toc->set('type','I');
+$toc->set('purveyor','mynewpurveyor');
+$rc=$dri->domain_update('example.cn',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cn</domain:name><domain:add><domain:ns><domain:hostObj>a.test.cn</domain:hostObj></domain:ns><domain:contact type="admin">cnnic2</domain:contact><domain:status s="clientDeleteProhibited"/></domain:add><domain:rem><domain:ns><domain:hostObj>ns.m.cn</domain:hostObj></domain:ns><domain:contact type="admin">cnnic1</domain:contact></domain:rem><domain:chg><domain:registrant>registrant1</domain:registrant><domain:authInfo><domain:pw>2BARfoo</domain:pw></domain:authInfo></domain:chg></domain:update></update><extension><cnnic-domain:update xmlns:cnnic-domain="urn:ietf:params:xml:ns:cnnic-domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-domain-1.0 cnnic-domain-1.0.xsd"><cnnic-domain:chg><cnnic-domain:type>I</cnnic-domain:type><cnnic-domain:purveyor>mynewpurveyor</cnnic-domain:purveyor></cnnic-domain:chg></cnnic-domain:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
+is($rc->is_success(),1,'domain_update is_success');
 
 exit 0;

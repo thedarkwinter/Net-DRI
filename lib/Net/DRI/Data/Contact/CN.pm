@@ -91,7 +91,7 @@ sub validate
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
  push @errs, 'type should be: I (individual) or E (enterprise)' if ( $self->type() && $self->type() !~ m/^(?:I|E)$/ );
- push @errs, 'contact type should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT' if ( $self->contact_type && $self->contact_type() !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/ );
+ push @errs, 'contact type should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT' if ( $self->contact_type() && $self->contact_type() !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/ );
  push @errs, 'contact code should be a token between 1 and 50 characters' if ( $self->contact() && !Net::DRI::Util::xml_is_token($self->contact(),1,50) );
  push @errs, 'purveyor should be a token between 3 and 16 characters' if ( $self->purveyor() &&!Net::DRI::Util::xml_is_token($self->purveyor(),3,16) );
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;

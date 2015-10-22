@@ -68,14 +68,17 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
+ # contact
  foreach my $o (qw/type contact contact_type purveyor mobile/)  { $self->capabilities('contact_update',$o,['add','del']); }
  $self->capabilities('contact_update','info',['set']);
  $self->factories('contact',sub { return Net::DRI::Data::Contact::CN->new(); });
+ # domain
+ foreach my $o (qw/type purveyor/)  { $self->capabilities('domain_update',$o,['set']); }
 
  return;
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS CNNIC::CDN CN::Contact/; }
+sub default_extensions { return qw/GracePeriod SecDNS CNNIC::CDN CN::Contact CN::Domain/; }
 
 ####################################################################################################
 1;
