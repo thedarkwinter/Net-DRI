@@ -129,7 +129,7 @@ sub create
 {
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
- Net::DRI::Exception::usererr_insufficient_parameters('purveyor extension field is mandatory for domain create!') unless $rd->{purveyor}; # TODO: double check on their OT&E. by the XSD is mandatory...
+ Net::DRI::Exception::usererr_insufficient_parameters('purveyor extension field is mandatory for domain create!') unless $rd->{purveyor};
  my @n=build_cnnic_domain($rd);
  return unless @n;
  my $eid=$mes->command_extension_register('cnnic-domain','create');
