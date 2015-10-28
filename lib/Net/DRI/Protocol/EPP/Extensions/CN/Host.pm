@@ -1,4 +1,4 @@
-## Domain Registry Interface, CNNIC Domain EPP Extension
+## Domain Registry Interface, CNNIC Host EPP Extension
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CN::Domain;
+package Net::DRI::Protocol::EPP::Extensions::CN::Host;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CN::Domain - CN Domain Extension
+Net::DRI::Protocol::EPP::Extensions::CN::Host - CN Host Extension
 
 =head1 DESCRIPTION
 
@@ -76,28 +76,28 @@ sub register_commands
            info     => [ undef, \&info_parse],
         );
 
- return { 'domain' => \%tmp };
+ return { 'host' => \%tmp };
 }
 
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({ 'cnnic-domain' => [ 'urn:ietf:params:xml:ns:cnnic-domain-1.0','cnnic-domain-1.0.xsd' ] });
+ $po->ns({ 'cnnic-host' => [ 'urn:ietf:params:xml:ns:cnnic-host-1.0','cnnic-host-1.0.xsd' ] });
 
  return;
 }
 
 ####################################################################################################
 
-sub build_cnnic_domain
+sub build_cnnic_host
 {
- my ($rd) = shift;
+ my ($rh) = shift;
  my @n;
- my @extdom=('type','purveyor'); # domain extension fields
+ my @exthost=('purveyor'); # host extension fields
  
- Net::DRI::Exception::usererr_invalid_parameters('Invalid domain type. Should be: I (individual) or E (enterprise)" ') if ( exists $rd->{'type'} && $rd->{'type'} !~ m/^(I|E)$/ ); # Only E type domain can be registered according to CNNIC’s policy.
- foreach (@extdom) {
-   push @n,['cnnic-domain:'.$_, $rd->{$_}] if $rd->{$_};
+ Net::DRI::Exception::usererr_invalid_parameters('purveyor extension field must be a token between: 3-16!') if !Net::DRI::Util::xml_is_token($rh->{purveyor},3,16);
+ foreach (@exthost) {
+   push @n,['cnnic-host:'.$_, $rh->{$_}] if $rh->{$_};
  }
 
  return @n;
@@ -110,12 +110,13 @@ sub info_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
- return unless my $data=$mes->get_extension($mes->ns('cnnic-domain'),'infData');
+
+ return unless my $data=$mes->get_extension($mes->ns('cnnic-host'),'infData');
  foreach my $el (Net::DRI::Util::xml_list_children($data)) 
  {
   my ($n,$c)=@$el;
-  foreach my $el2(qw/type purveyor/) {
-   $rinfo->{domain}->{$oname}->{$el2} = $c->textContent() if $n eq $el2;
+  foreach my $el2(qw/purveyor/) {
+   $rinfo->{host}->{$oname}->{$el2} = $c->textContent() if $n eq $el2;
   }
  }
 
@@ -127,13 +128,14 @@ sub info_parse
 
 sub create
 {
- my ($epp,$domain,$rd)=@_;
+ my ($epp,$host,$rh)=@_;
  my $mes=$epp->message();
- Net::DRI::Exception::usererr_insufficient_parameters('purveyor extension field is mandatory for domain create!') unless $rd->{purveyor};
- Net::DRI::Exception::usererr_invalid_parameters('purveyor extension field must be a token between: 3-16!') unless $rd->{purveyor} && Net::DRI::Util::xml_is_token($rd->{purveyor},3,16);
- my @n=build_cnnic_domain($rd);
+
+ return unless $rh->{'purveyor'};
+ Net::DRI::Exception::usererr_invalid_parameters('purveyor extension field must be a token between: 3-16!') if !Net::DRI::Util::xml_is_token($rh->{'purveyor'},3,16);
+ my @n=build_cnnic_host($rh);
  return unless @n;
- my $eid=$mes->command_extension_register('cnnic-domain','create');
+ my $eid=$mes->command_extension_register('cnnic-host','create');
  $mes->command_extension($eid,\@n);
 
  return;
@@ -141,31 +143,30 @@ sub create
 
 sub update
 {
- my ($epp,$domain,$todo)=@_;
+ my ($epp,$host,$todo)=@_;
  my $mes=$epp->message();
- my (@n,@nextdom);
- my @extdom=('type','purveyor');
+ my (@n,@nexthost);
+ my @exthost=('purveyor');
 
- return unless( $todo->set('type') || $todo->set('purveyor') );
- Net::DRI::Exception::usererr_invalid_parameters('Invalid domain type. Should be: I (individual) or E (enterprise)" ') if ( $todo->set('type') !~ m/^(I|E)$/ ); # Only E type domain can be registered according to CNNIC’s policy.
+ return unless( $todo->set('purveyor') );
  Net::DRI::Exception::usererr_invalid_parameters('purveyor extension field must be a token between: 3-16!') if !Net::DRI::Util::xml_is_token($todo->set('purveyor'),3,16);
 
  # add / del
  # by their XSD comments:
- # Child elements of <cnnic-domain:update> command
+ # Child elements of <cnnic-host:update> command
  # Cannot be added or removed, only change is allowed
  # At least one element should be present
 
  # chg
- foreach (@extdom)
+ foreach (@exthost)
  {
-  push @nextdom, ['cnnic-domain:'.$_,$todo->set($_)] if $todo->set($_);
+  push @nexthost, ['cnnic-host:'.$_,$todo->set($_)] if $todo->set($_);
  }
 
- push @n,['cnnic-domain:chg',@nextdom];
+ push @n,['cnnic-host:chg',@nexthost];
  return unless @n;
 
- my $eid=$mes->command_extension_register('cnnic-domain','update');
+ my $eid=$mes->command_extension_register('cnnic-host','update');
  $mes->command_extension($eid,\@n);
 
  return;

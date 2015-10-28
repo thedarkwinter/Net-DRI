@@ -78,7 +78,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS CNNIC::CDN CN::Contact CN::Domain/; }
+sub default_extensions { return qw/GracePeriod SecDNS CNNIC::CDN CN::Contact CN::Domain CN::Host/; }
 
 ####################################################################################################
 1;

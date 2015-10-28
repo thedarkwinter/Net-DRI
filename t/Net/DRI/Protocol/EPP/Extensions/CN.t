@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime;
-use Test::More tests => 58;
+use Test::More tests => 63;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -193,5 +193,21 @@ $toc->set('purveyor','mynewpurveyor');
 $rc=$dri->domain_update('example.cn',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cn</domain:name><domain:add><domain:ns><domain:hostObj>a.test.cn</domain:hostObj></domain:ns><domain:contact type="admin">cnnic2</domain:contact><domain:status s="clientDeleteProhibited"/></domain:add><domain:rem><domain:ns><domain:hostObj>ns.m.cn</domain:hostObj></domain:ns><domain:contact type="admin">cnnic1</domain:contact></domain:rem><domain:chg><domain:registrant>registrant1</domain:registrant><domain:authInfo><domain:pw>2BARfoo</domain:pw></domain:authInfo></domain:chg></domain:update></update><extension><cnnic-domain:update xmlns:cnnic-domain="urn:ietf:params:xml:ns:cnnic-domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-domain-1.0 cnnic-domain-1.0.xsd"><cnnic-domain:chg><cnnic-domain:type>I</cnnic-domain:type><cnnic-domain:purveyor>mynewpurveyor</cnnic-domain:purveyor></cnnic-domain:chg></cnnic-domain:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
 is($rc->is_success(),1,'domain_update is_success');
+
+
+### Host commands ###
+
+## host:info
+$R2=$E1.'<response>'.r().'<resData><host:infData xmlns="urn:ietf:params:xml:ns:host-1.0" xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.m.cn</host:name><host:roid>host7039266-cn</host:roid><host:status s="clientUpdateProhibited"/><host:addr ip="v6">0000:0000:0000:0000:0000:0000:c0a8:00c7</host:addr><host:addr ip="v4">192.168.0.199</host:addr><host:clID>test</host:clID><host:crID>test</host:crID><host:crDate>2015-02-06T03:23:45.000Z</host:crDate><host:upID>test</host:upID><host:upDate>2015-02-06T03:29:23.0Z</host:upDate></host:infData></resData><extension><cnnic-host:infData xmlns:cnnic-host="urn:ietf:params:xml:ns:cnnic-host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-host-1.0 cnnic-host-1.0.xsd"><cnnic-host:purveyor>my-purveyor</cnnic-host:purveyor></cnnic-host:infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->host_info('ns1.m.cn');
+is($R1,$E1.'<command><info><host:info xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.m.cn</host:name></host:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'host_info build');
+is($dri->get_info('action'),'info','host_info get_info(action)');
+is($dri->get_info('exist'),1,'host_info get_info(exist)');
+is($dri->get_info('purveyor'),'my-purveyor','host_info get_info(purveyor)');
+
+## host:create
+$R2='';
+$rc=$dri->host_create($dri->local_object('hosts')->add('ns.bj.cn',['218.241.111.111'],['']),{purveyor=>'mypurveyor'});
+is($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns.bj.cn</host:name><host:addr ip="v4">218.241.111.111</host:addr></host:create></create><extension><cnnic-host:create xmlns:cnnic-host="urn:ietf:params:xml:ns:cnnic-host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-host-1.0 cnnic-host-1.0.xsd"><cnnic-host:purveyor>mypurveyor</cnnic-host:purveyor></cnnic-host:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'host_create build');
 
 exit 0;
