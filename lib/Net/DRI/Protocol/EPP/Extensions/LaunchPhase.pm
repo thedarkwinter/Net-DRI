@@ -1,11 +1,11 @@
-## Domain Registry Interface, EPP LaunchPhase Extensions (draft-ietf-eppext-launchphase-06)
+## Domain Registry Interface, EPP LaunchPhase Extensions (draft-ietf-eppext-launchphase-07)
 ## 
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
-## LaunchPhase ext based on IETF draft 06 : http://tools.ietf.org/html/draft-ietf-eppext-launchphase-06
+## LaunchPhase ext based on IETF WG draft 07 : http://tools.ietf.org/html/draft-ietf-eppext-launchphase-07
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ use Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::LaunchPhase - EPP LaunchPhase commands (draft-ietf-eppext-launchphase-06) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::LaunchPhase - EPP LaunchPhase commands (draft-ietf-eppext-launchphase-07) for Net::DRI
 
 =head1 DESCRIPTION
 
