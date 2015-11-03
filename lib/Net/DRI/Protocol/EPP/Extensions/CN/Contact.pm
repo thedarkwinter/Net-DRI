@@ -94,10 +94,10 @@ sub build_cnnic_contact
  my ($rd) = shift;
  my @n;
 
- foreach my $name (qw/type contact purveyor mobile/) {
-  if ($name eq 'contact' && $rd->$name()) {
-   Net::DRI::Exception::usererr_insufficient_parameters('contact type mandatory! Should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') unless $rd->contact_type();
-   push @n,['cnnic-contact:'.$name, {'type'=>($rd->contact_type())}, $rd->$name()];
+ foreach my $name (qw/type orgno purveyor mobile/) {
+  if ($name eq 'orgno' && $rd->$name()) {
+   Net::DRI::Exception::usererr_insufficient_parameters('orgtype mandatory! Should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') unless $rd->orgtype();
+   push @n,['cnnic-contact:contact', {'type'=>($rd->orgtype())}, $rd->$name()];
   }
   else {
    push @n,['cnnic-contact:'.$name, $rd->$name()] if $rd->$name();
@@ -118,9 +118,11 @@ sub info_parse
  foreach my $el (Net::DRI::Util::xml_list_children($data)) 
  {
   my ($n,$c)=@$el;
-  foreach my $el2(qw/type contact purveyor mobile/) {
-   $rinfo->{contact}->{$oname}->{$el2} = $c->textContent() if $n eq $el2;
-   $rinfo->{contact}->{$oname}->{$el2.'_type'} = $c->getAttribute('type') if $el2 eq 'contact' && $n eq $el2;
+  if ($n eq 'contact') {
+   $rinfo->{contact}->{$oname}->{'orgno'} = $c->textContent();
+   $rinfo->{contact}->{$oname}->{'orgtype'} = $c->getAttribute('type');
+  } elsif ($n =~ m/^(type|purveyor|mobile)$/) {
+   $rinfo->{contact}->{$oname}->{$n} = $c->textContent();
   }
  }
 
@@ -147,28 +149,28 @@ sub update
  my ($epp,$contact,$todo)=@_;
  my $mes=$epp->message();
  my (@n,$toadd,@add,$todel,@del,@cont,@tmpadd,@tmpdel);
- my @extcon=('type','contact','purveyor','mobile');
+ my @extcon=('type','orgno','purveyor','mobile');
  
  foreach (@extcon) {
   # add
   if ($toadd = $todo->add($_))
   {
-   if ($_ eq 'contact')
+   if ($_ eq 'orgno')
    {
-    Net::DRI::Exception::usererr_insufficient_parameters('mandatory to update contactID and contact type which should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') unless $todo->add('contact_type');
-    Net::DRI::Exception::usererr_invalid_parameters('contact type should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') if $todo->add('contact_type')->{'contact_type'} !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/;
-    push @add, ['cnnic-contact:'.$_,$toadd->{$_},{'type'=>$todo->add('contact_type')->{'contact_type'}}] if $toadd->{$_};
+    Net::DRI::Exception::usererr_insufficient_parameters('mandatory to update orgno and orgtype which should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') unless $todo->add('orgtype');
+    Net::DRI::Exception::usererr_invalid_parameters('orgtype should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') if $todo->add('orgtype')->{'orgtype'} !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/;
+    push @add, ['cnnic-contact:contact',$toadd->{$_},{'type'=>$todo->add('orgtype')->{'orgtype'}}] if $toadd->{$_};
    } else {
     push @add, ['cnnic-contact:'.$_,$toadd->{$_}] if $toadd->{$_};
    }
   }
   # del
   if ($todel = $todo->del($_)) {
-   if ($_ eq 'contact')
+   if ($_ eq 'orgno')
    {
-    Net::DRI::Exception::usererr_insufficient_parameters('mandatory to update contactID and contact type which should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') unless $todo->del('contact_type');
-    Net::DRI::Exception::usererr_invalid_parameters('contact type should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') if $todo->del('contact_type')->{'contact_type'} !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/;
-    push @del, ['cnnic-contact:'.$_,$todel->{$_},{'type'=>$todo->del('contact_type')->{'contact_type'}}] if $todel->{$_};
+    Net::DRI::Exception::usererr_insufficient_parameters('mandatory to update orgno and orgtype which should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') unless $todo->del('orgtype');
+    Net::DRI::Exception::usererr_invalid_parameters('orgtype should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT') if $todo->del('orgtype')->{'orgtype'} !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/;
+    push @del, ['cnnic-contact:contact',$todel->{$_},{'type'=>$todo->del('orgtype')->{'orgtype'}}] if $todel->{$_};
    } else {
     push @del, ['cnnic-contact:'.$_,$todel->{$_}] if $todel->{$_};
    }

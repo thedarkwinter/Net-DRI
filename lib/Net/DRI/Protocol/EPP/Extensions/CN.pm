@@ -69,7 +69,7 @@ sub setup
 {
  my ($self,$rp)=@_;
  # contact
- foreach my $o (qw/type contact contact_type purveyor mobile/)  { $self->capabilities('contact_update',$o,['add','del']); }
+ foreach my $o (qw/type orgno orgtype purveyor mobile/)  { $self->capabilities('contact_update',$o,['add','del']); }
  $self->capabilities('contact_update','info',['set']);
  $self->factories('contact',sub { return Net::DRI::Data::Contact::CN->new(); });
  # domain

@@ -18,7 +18,7 @@ use strict;
 use warnings;
 
 use base qw(Net::DRI::Data::Contact);
-__PACKAGE__->register_attributes(qw(type contact contact_type purveyor mobile));
+__PACKAGE__->register_attributes(qw(type orgno orgtype purveyor mobile));
 
 use Net::DRI::Exception;
 use Net::DRI::Util;
@@ -41,11 +41,11 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 One of I (domestic individual contact) or E (domestic enterprise contact)
 
-=head2 cont_type()
+=head2 orgtype()
 
 One of SFZ, HZ, JGZ, ORG, YYZZ or QT
 
-=head2 cont_code()
+=head2 orgno()
 
 String between 1 and 50 characters
 
@@ -91,8 +91,8 @@ sub validate
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
  push @errs, 'type should be: I (individual) or E (enterprise)' if ( $self->type() && $self->type() !~ m/^(?:I|E)$/ );
- push @errs, 'contact type should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT' if ( $self->contact_type() && $self->contact_type() !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/ );
- push @errs, 'contact code should be a token between 1 and 50 characters' if ( $self->contact() && !Net::DRI::Util::xml_is_token($self->contact(),1,50) );
+ push @errs, 'orgtype should be one of these: SFZ, HZ, JGZ, ORG, YYZZ or QT' if ( $self->orgtype() && $self->orgtype() !~ m/^(?:SFZ|HZ|JGZ|ORG|YYZZ|QT)$/ );
+ push @errs, 'orgno should be a token between 1 and 50 characters' if ( $self->orgno() && !Net::DRI::Util::xml_is_token($self->orgno(),1,50) );
  push @errs, 'purveyor should be a token between 3 and 16 characters' if ( $self->purveyor() &&!Net::DRI::Util::xml_is_token($self->purveyor(),3,16) );
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
 
