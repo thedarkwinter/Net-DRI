@@ -231,6 +231,7 @@ sub promo_info {
 	my ($epp,$promo_c,$rd)=@_;
 	my $mes=$epp->message();
 	my (@g);
+	our $tmp_promo_c = $promo_c; # since they don't return it in the info code, we need to sort of "know it"
 	
 	# build mandatory xml elements
 	my $prom_info = $rd->{'promo_data'};
@@ -266,10 +267,15 @@ sub promo_info_parse {
 	return unless $mes->is_success();
 	my $msg = {};
 	my ($proData,$priData,$utiData,$c);
+	our $tmp_promo_c;
 	
 	my $infdata=$mes->get_response('promo_info_r','infData');
  	return unless defined $infdata;
- 	 
+
+    $otype='promo';
+    $oaction='info';
+    $oname = $tmp_promo_c; # normally this should be the id of the object you are looking up, but they don't seem to return it
+
  	# separate the promo,utilization and pricing section
  	foreach my $el (Net::DRI::Util::xml_list_children($infdata)) {
 		my ($name,$c)=@$el;		

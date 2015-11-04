@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 61;
+use Test::More tests => 82;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -436,5 +436,28 @@ is_string($R1,$E1.'<command><info ><promo:info xmlns:promo="http://xmlns.corenic
 is($rc->is_success(),1,'domain_promo_info is_success quering promotion details');
 
 # domain promo info parse: testing the parsing of promotional information from the response
+my $promo_validity = $dri->get_info('validity');
+my $promo_utilization = $dri->get_info('utilization');
+my $promo_total = $dri->get_info('total');
+my $promo_promotionName = $dri->get_info('promotionName');
+# validity
+is(defined($promo_validity), 1 ,'promo_info get_info(validity) defined');
+is($promo_validity->{'validUntil'},'2015-04-01T00:00:00.0Z','promo_info parse (validUntil)');
+is($promo_validity->{'validFrom'},'2015-01-01T00:00:00.0Z','promo_info parse (validFrom)');
+# utilization
+is(defined($promo_utilization), 1 ,'promo_info get_info(utilization) defined');
+is($promo_utilization->{'validDomainName'},'true','promo_info parse (validDomainName)');
+is($promo_utilization->{'codeUsable'},'true','promo_info parse (codeUsable)');
+is($promo_utilization->{'available'},'true','promo_info parse (available)');
+is($promo_utilization->{'operations'},'create renew','promo_info parse (operations)');
+is($promo_utilization->{'inValidityPeriod'},'true','promo_info parse (inValidityPeriod)');
+is($promo_utilization->{'enabled'},'true','promo_info parse (enabled)');
+# total
+is(defined($promo_total), 1 ,'promo_info get_info(total) defined');
+is($promo_total->{'price'},'20.00','promo_info parse (price)');
+is($promo_total->{'currency'},'EUR','promo_info parse (currency)');
+# promotion name
+is(defined($promo_promotionName), 1 ,'promo_info get_info(promotionName) defined');
+is($promo_promotionName,'Promotion 2015','promo_info parse (promotionName)');
 
 exit 0;
