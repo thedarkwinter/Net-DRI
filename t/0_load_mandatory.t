@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 493;
+use Test::More tests => 499;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -109,6 +109,7 @@ use_ok('Net::DRI::DRD::RegBox');
 use_ok('Net::DRI::DRD::LV');
 use_ok('Net::DRI::DRD::DK');
 use_ok('Net::DRI::DRD::MX_GTLD');
+use_ok('Net::DRI::DRD::CN');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
 use_ok('Net::DRI::Data::Changes');
@@ -154,6 +155,7 @@ use_ok('Net::DRI::Data::Contact::LV');
 use_ok('Net::DRI::Data::Contact::DK');
 use_ok('Net::DRI::Data::Contact::TANGO');
 use_ok('Net::DRI::Data::Contact::MAM');
+use_ok('Net::DRI::Data::Contact::CN');
 use_ok('Net::DRI::Transport::Socket');
 use_ok('Net::DRI::Transport::Dummy');
 use_ok('Net::DRI::Transport::Defer');
@@ -418,6 +420,10 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::MX_GTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::AdmStatus');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MAM::QualifiedLawyer');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CN');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CN::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CN::Contact');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CN::Host');
 use_ok('Net::DRI::Protocol::DAS');
 use_ok('Net::DRI::Protocol::DAS::Message');
 use_ok('Net::DRI::Protocol::DAS::Connection');
