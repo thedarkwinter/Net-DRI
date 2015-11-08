@@ -29,6 +29,7 @@ lib/Net/DRI/Data/Contact/BE.pm
 lib/Net/DRI/Data/Contact/BR.pm
 lib/Net/DRI/Data/Contact/CAT.pm
 lib/Net/DRI/Data/Contact/CIRA.pm
+lib/Net/DRI/Data/Contact/CN.pm
 lib/Net/DRI/Data/Contact/CNNIC.pm
 lib/Net/DRI/Data/Contact/COOP.pm
 lib/Net/DRI/Data/Contact/COZA.pm
@@ -84,6 +85,7 @@ lib/Net/DRI/DRD/BZ.pm
 lib/Net/DRI/DRD/CAT.pm
 lib/Net/DRI/DRD/CentralNic.pm
 lib/Net/DRI/DRD/CIRA.pm
+lib/Net/DRI/DRD/CN.pm
 lib/Net/DRI/DRD/CO.pm
 lib/Net/DRI/DRD/CoCCA.pm
 lib/Net/DRI/DRD/COOP.pm
@@ -266,6 +268,10 @@ lib/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CloudRegistry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CloudRegistry/LaunchPhase.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CN.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CN/Contact.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CN/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CN/Host.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/CDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Contact.pm
@@ -681,6 +687,7 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.8.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
+t/Net/DRI/Protocol/EPP/Extensions/CN.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.t
 t/Net/DRI/Protocol/EPP/Extensions/COOP.t

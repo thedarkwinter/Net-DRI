@@ -4,7 +4,7 @@
       "Patrick Mevzek <netdri@dotandco.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.112621, CPAN::Meta::Converter version 2.142690",
+   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.112621, CPAN::Meta::Converter version 2.150005",
    "keywords" : [
       "DNS",
       "EPP",
@@ -142,5 +142,6 @@
          "http://www.dotandco.com/services/software/Net-DRI/index.en#license"
       ]
    },
-   "version" : "0.96_05"
+   "version" : "0.96_05",
+   "x_serialization_backend" : "JSON::PP version 2.27300"
 }
