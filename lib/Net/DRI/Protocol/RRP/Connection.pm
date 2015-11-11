@@ -165,7 +165,7 @@ sub find_code
 sub transport_default
 {
  my ($self,$tname)=@_;
- return (defer => 0, socktype => 'ssl', ssl_version => 'TLSv1', remote_port => 648);
+ return (defer => 0, socktype => 'ssl', ssl_version => 'TLSv12', remote_port => 648);
 }
 
 ####################################################################################################
