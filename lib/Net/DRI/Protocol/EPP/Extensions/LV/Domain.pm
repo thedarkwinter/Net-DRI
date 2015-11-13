@@ -88,6 +88,7 @@ sub info_parse {
 	return unless $mes->is_success();
 
 	my $adata = $mes->get_extension('ext_domain','infData');
+	return unless $oname; # don't parse unless we already know the object (for polls)
 	 
 	unless(defined($adata)) {
 		$rinfo->{domain}->{$oname}->{auto_renew}='1';

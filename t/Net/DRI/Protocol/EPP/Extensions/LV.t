@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 56;
+use Test::More tests => 66;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -181,5 +181,22 @@ $dh->add('a-new-domain.lv',['1.2.3.4'],[],1);
 $rc=$dri->domain_create('a-new-domain.lv',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,auth=>{pw=>'opqrstuv'}});
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>a-new-domain.lv</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostAttr><domain:hostName>ns.someserver.lv</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>a-new-domain.lv</domain:hostName><domain:hostAddr ip="v4">1.2.3.4</domain:hostAddr></domain:hostAttr></domain:ns><domain:registrant>test1106-27</domain:registrant><domain:contact type="admin">huma1106-28</domain:contact><domain:contact type="tech">__DEFAULT__</domain:contact><domain:authInfo><domain:pw>opqrstuv</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml');
 is($rc->is_success(),1,'domain_create is_success');
+
+
+####################################################################################################
+####### Poll Test ########
+
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ id="555" count="1"><qDate>2015-11-10T15:00:00+02:00</qDate><msg lang="en">[Transfer:Requested] Transfer of domain name [testdomain1.lv], currently managed by [old_registrar], was REQUESTED by [new_regisrtar]. [old_registrar] should approve or reject it until [2015-11-16 00:00:00].</msg></msgQ><resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>testdomain1.lv</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>new_regisrtar</domain:reID><domain:reDate>2015-11-10T00:00:00+02:00</domain:reDate><domain:acID>old_registrar</domain:acID><domain:acDate>2015-11-16T00:00:00+02:00</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),555,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),555,'message get_info last_id 2');
+is($dri->get_info('id','message',555),555,'message get_info id');
+is(''.$dri->get_info('qdate','message',555),'2015-11-10T15:00:00','message get_info qdate');
+is($dri->get_info('content','message',555),'[Transfer:Requested] Transfer of domain name [testdomain1.lv], currently managed by [old_registrar], was REQUESTED by [new_regisrtar]. [old_registrar] should approve or reject it until [2015-11-16 00:00:00].','message get_info msg');
+is($dri->get_info('lang','message',555),'en','message get_info lang');
+is($dri->get_info('object_type','message','555'),'domain','message get_info object_type');
+is($dri->get_info('object_id','message','555'),'testdomain1.lv','message get_info id');
+is($dri->get_info('action','message','555'),'transfer','message get_info action'); ## with this, we know what action has triggered this delayed message
+is($dri->get_info('reID','message','555'),'new_regisrtar','message get_info reID');
 
 exit 0;
