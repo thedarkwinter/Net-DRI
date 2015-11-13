@@ -33,7 +33,7 @@ sub setup
   'promo' => ['http://xmlns.corenic.net/epp/promotion-1.0','promotion-1.0.xsd'],
   'promo_info' => ['http://xmlns.corenic.net/epp/promotion-info-1.0','promotion-info-1.0.xsd'],
   'promo_info_r' => ['http://xmlns.domini.cat/epp/promo-1.0','promo-1.0.xsd'],
-  'domain' => ['urn:ietf:params:xml:ns:domain-1.0','domain-1.0.xsd'],
+  #'domain' => ['urn:ietf:params:xml:ns:domain-1.0','domain-1.0.xsd'], # PJ: REMOVE ME. LOAD UNDER DRI/Protocol/EPP.pm (line: 91)
  });
  $self->capabilities('domain_update','idn',['add','del']);
  $self->capabilities('domain_update','auction',['set']);

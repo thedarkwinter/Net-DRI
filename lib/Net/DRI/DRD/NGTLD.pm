@@ -130,7 +130,7 @@ sub new
 sub periods       { return $_[0]->_has_bep_key('periods') ? @{$_[0]->_get_bep_key('periods')} : return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return $_[0]->_has_bep_key('name') ? $_[0]->_get_bep_key('name') : 'NGTLD'; }
 sub tlds          { return $_[0]->_has_bep_key('tlds') ? @{$_[0]->_get_bep_key('tlds')} : (); }
-sub object_types  { return $_[0]->_has_bep_key('object_types') ? @{$_[0]->_get_bep_key('object_types')} : ('domain','contact','ns','promo'); }
+sub object_types  { return $_[0]->_has_bep_key('object_types') ? @{$_[0]->_get_bep_key('object_types')} : ('domain','contact','ns'); }
 sub profile_types { return $_[0]->_has_bep_key('whois_server') ? ('epp','whois') : ('epp'); }
 #sub profile_types { return $_[0]->_has_bep_key('profile_types') ? @{$_[0]->_get_bep_key('profile_types')} : ('epp'); }
 
@@ -413,22 +413,16 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.coreni
 
 L<Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
 
+
+
 =cut
 
  return {
      bep_type => 1, # dedicated registy
      tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{custom => ('Tango::Promotion')}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'corenic';
-   
- sub promo_info {
-	 my ($self,$ndr,$promo_cde,$rd)=@_;
-	 my $prod=$rd->{promo_data};
-	 my $dom=$rd->{promo_data}->{dom_name}->{name} if Net::DRI::Util::has_key($prod,'dom_name');
-	 $self->enforce_domain_name_constraints($ndr,$dom,'info') if defined($dom);	 
-	 return $ndr->process('promo','info',[$promo_cde,$rd]);
- }
 
 =pod
 

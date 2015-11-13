@@ -22,7 +22,7 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
-use utf8;
+
 
 =pod
 
