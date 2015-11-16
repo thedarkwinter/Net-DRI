@@ -314,7 +314,7 @@ xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunio
 
 =head3 TLDs
 
-xn--ngbc5azd xn--ngbrx abudhabi arab build dubai cancerresearch courses cuisinella film krd luxury melbourne men menu monash one physio schmidt study sucks sydney wtc
+xn--ngbc5azd xn--ngbrx abudhabi arab build dubai cancerresearch cloud courses cuisinella film krd luxury melbourne men menu monash one physio schmidt study sucks sydney wtc
 
 Contended TLD's not included
 
