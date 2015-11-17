@@ -314,7 +314,7 @@ xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunio
 
 =head3 TLDs
 
-xn--ngbc5azd xn--ngbrx abudhabi arab build dubai cancerresearch courses cuisinella film krd luxury melbourne men menu monash one physio schmidt study sucks sydney wtc
+xn--ngbc5azd xn--ngbrx abudhabi arab build dubai cancerresearch cloud courses cuisinella film krd luxury melbourne men menu monash one physio schmidt study sucks sydney wtc
 
 Contended TLD's not included
 
@@ -342,7 +342,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'cancerresearch', 'courses', 'cuisinella', 'film', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'one', 'physio', 'schmidt', 'study', 'sucks', 'sydney', 'wtc'],
+     tlds => ['xn--ngbc5azd', 'xn--ngbrx', 'abudhabi', 'arab', 'build', 'dubai', 'cancerresearch', 'cloud', 'courses', 'cuisinella', 'film', 'krd', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'one', 'physio', 'schmidt', 'study', 'sucks', 'sydney', 'wtc'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
      whois_server => 'whois.aridnrs.net.au',
    } if $bep eq 'ari';
@@ -678,7 +678,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 Uncontested: abogado bayern beer budapest casa cooking country fashion fishing fit garden horse law luxe miami rodeo surf vip vodka wedding work yoga xn--g2xx48c
 
 
-Contested: app art baby beauty blog book cloud coupon cpa data dds eco gay home hotel inc latino llc realestate store
+Contested: app art baby beauty blog book coupon cpa data dds eco gay home hotel inc latino llc realestate store
 
 Collisions: cooking-collisions country-collisions fishing-collisions'horse-collisions rodeo-collisions vodka-collisions
 =cut
@@ -686,7 +686,7 @@ Collisions: cooking-collisions country-collisions fishing-collisions'horse-colli
  return {
      bep_type => 2, # shared registry
      tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fashion', 'fishing', 'fit', 'garden', 'horse', 'law',  'luxe', 'miami', 'rodeo', 'surf',  'vip', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'cloud', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate', 'store',
+              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate', 'store',
               'cooking-collisions', 'country-collisions', 'fishing-collisions', 'horse-collisions', 'rodeo-collisions', 'vodka-collisions',
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee','MAM::QualifiedLawyer']}],
