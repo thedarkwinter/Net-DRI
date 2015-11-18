@@ -419,7 +419,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility> : http://xmlns
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -556,7 +556,7 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'trade', 'webcam', 'win', # uncontended
               'app', 'baby', 'cam', 'charity', 'forum', 'game', 'hotel', 'music', 'rugby', 'search', 'shop', 'sport', 'stream',# contended
              ],
@@ -768,7 +768,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
 
 =cut
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['nyc'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::EXTContact'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::NYC->new(@_); } } ],
@@ -778,7 +778,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
 
  ## these use CentralNic::Fee
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['club','earth'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::NYC->new(@_); } } ],
@@ -788,7 +788,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
 
  ## these use NeuLevel::Fee or no Fee extension
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['xn--rhqv96g','xn--g2xx48c','xn--nyqy26a','best','hsbc', 'uno','safety','pharmacy','nyc','jetzt','taipei','qpon','moe','buzz','ceo','htc','whoswho','osaka'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -810,7 +810,7 @@ bom final rio
 =cut
 
  return {
-     bep_type => 2, # shared registy
+     bep_type => 2, # shared registry
      host_as_attr => 1,
      contact_i18n => 1, # LOC only
      tlds => ['bom','final','rio'],
@@ -835,7 +835,7 @@ cymru wales bbc
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['cymru','wales','bbc'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -857,7 +857,7 @@ gent boston
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['gent','boston'],
      host_as_attr => 1,
      contact_i18n => 2,
@@ -934,7 +934,7 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['bh','berlin','brussels','gmbh','hamburg','tirol','versicherung','vlaanderen','voting','wien','ikano'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::RegBox->new(@_); } } ],
@@ -1091,7 +1091,7 @@ Fee extension is currently only used in .NRW and for domain_check command only.
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['ruhr','cologne','gmx','ifm','koeln','nrw'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TANGO',{enable_fee => ($tld eq 'nrw')}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -1119,7 +1119,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/ep
 =cut
 
  return {
-     bep_type => 2, # shared registy
+     bep_type => 2, # shared registry
      tlds => ['moscow', 'tatar', 'xn--d1acj3b', 'xn--1-7sbc5ceg', 'xn--2-7sbc5ceg', 'xn--80adxhks'],
      contact_i18n => 7, # and or ?
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::TCI_gTLD->new(@_); } } ],
@@ -1142,7 +1142,7 @@ xn--3ds443g xn--fiq228c5hs
 =cut
 
  return {
-     bep_type => 2, # shared registy
+     bep_type => 2, # shared registry
      tlds => ['xn--3ds443g', 'xn--fiq228c5hs'],
    } if $bep eq 'teleinfo';
 
