@@ -292,13 +292,13 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunion ged global hiv indians irish ltda onl porn rich sex srl storage vegas
+xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global hiv indians irish ltda onl porn rich sex srl storage vegas
 
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','bnpparibas','creditunion','ged','global','hiv','indians','irish','ltda','onl','porn','rich','sex','srl','storage','vegas'],
+     tlds => ['xxx','xn--4gbrim','xn--kput3i','adult','bnpparibas','creditunion','ged','global','hiv','indians','irish','ltda','onl','porn','rich','sex','srl','storage','vegas'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
@@ -1125,6 +1125,26 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/ep
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::TCI_gTLD->new(@_); } } ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TCI_gTLD',{}],
    } if $bep eq 'tci';
+
+=pod
+
+
+=head2 Teleinfo
+
+$dri->add_registry('NGTLD',{provider=>'teleinfo'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+xn--3ds443g xn--fiq228c5hs
+
+=cut
+
+ return {
+     bep_type => 2, # shared registy
+     tlds => ['xn--3ds443g', 'xn--fiq228c5hs'],
+   } if $bep eq 'teleinfo';
 
 =pod
 
