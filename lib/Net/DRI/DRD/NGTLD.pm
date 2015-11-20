@@ -490,7 +490,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android boo cal channel chrome dad day 
 =cut
 
  return {
-     bep_type => 1, # dedicated
+     bep_type => 2, # shared
      tlds => ['xn--flw351e','xn--q9jyb4c','xn--qcka1pmc','ads','android','boo','cal','channel','chrome','dad','day','eat','esq','fly','foo','gbiz','gle','gmail','google','here','how','ing','kid','meme','mov','new','nexus','prod','prof','rsvp','soy','tour','youtube','zip'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'], 'disable_idn'=>1, 'brown_fee_version' => '0.6'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
