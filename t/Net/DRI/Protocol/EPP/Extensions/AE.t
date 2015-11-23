@@ -11,7 +11,8 @@ use utf8;
 
 use Data::Dumper;
 
-use Test::More tests => 99;
+use Test::More tests => 7;
+
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -85,11 +86,6 @@ $dh->add('ns2.hosting.ae');
 ## Registering Domain...
 $rc=$dri->domain_create('in--valid.ae',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),contact=>$cs,ns=>$dh,auth=>{pw=>''}});
 is($rc->is_success(),1,'epp_test - question 4');
-
-###################### Question 15 ###########################
-# Initiate Domain Transfer...
-$rc=$dri->domain_transfer_start('transferme.co.ae',{auth=>{pw=>'fg673hsTH'},duration=>DateTime::Duration->new(years=>0)});
-is($rc->is_success(),1,'epp_test - question 15');
 
 #####################################################################################################
 ######### Closing Commands ########
