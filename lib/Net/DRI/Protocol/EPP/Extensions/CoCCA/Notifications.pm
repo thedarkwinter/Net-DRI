@@ -1,10 +1,10 @@
-## Domain Registry Interface, .PH [EPP - 1.0 Specification]
+## Domain Registry Interface, CoCCA/PH notifications
 ##
-## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
-## This file is part of Net::DRI.
+## This file is part of Net::DRI
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -14,24 +14,19 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::PH;
+package Net::DRI::Protocol::EPP::Extensions::CoCCA::Notifications;
 
 use strict;
 use warnings;
 
-use base qw/Net::DRI::DRD/;
-
-use DateTime::Duration;
 use Net::DRI::Util;
-use Net::DRI::Exception;
-
-__PACKAGE__->make_exception_for_unavailable_operations(qw//);
+use utf8;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::DRD::PH - .PH policies
+Net::DRI::Protocol::EPP::Extensions::CoCCA::Notifications - CoCCA/.PH EPP Notifications Handling for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -70,23 +65,34 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub new {
-	my $class=shift;
-	my $self=$class->SUPER::new(@_);
-	$self->{info}->{host_as_attr}=0;
-	$self->{info}->{contact_i18n}=1;
-	return $self;
+sub register_commands {
+ my ($class,$version)=@_;
+ my %tmp=(
+          retrieve => [ undef, \&parse_poll ],
+         );
+
+ return { 'message' => \%tmp };
 }
 
-sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name          { return 'PH'; }
-sub tlds          { return ('ph',map { $_.'.ph'} qw/com net org/ ); } 
-sub object_types  { return ('domain','contact','ns'); }
-sub profile_types { return qw/epp/; }
+####################################################################################################
 
-sub transport_protocol_default {
-	my ($self,$type)=@_;
-	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::PH',{}) if $type eq 'epp';
+sub parse_poll {
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+	my $mes=$po->message();
+	return unless $mes->is_success();
+
+	# get poll message id and content
+	my $id=$mes->msg_id();
+	my $node=$rinfo->{message}->{$id}->{content};
+
+	# parse the rest of the data in the message (CDATA)
+	if ( $node =~ /<offlineUpdate><domain><name>(.*)?<\/name><change>(.*)?<\/change><details>(.*)?<\/details><\/domain><\/offlineUpdate>/gi ) {
+		$oaction = $rinfo->{$otype}->{$oname}->{action} = 'offline_update';
+		$rinfo->{$otype}->{$oname}->{name} = $1 if defined($1);
+		$rinfo->{$otype}->{$oname}->{change} = $2 if defined($2);
+		$rinfo->{$otype}->{$oname}->{details} = $3 if defined($3);
+	}
+
 	return;
 }
 
