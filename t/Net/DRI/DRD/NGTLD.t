@@ -59,7 +59,7 @@ $rc = $dri->add_registry('NGTLD',{provider => 'donuts'});
 is($rc->{last_registry},'donuts','donuts: add_registry');
 $rc = $dri->target('donuts')->add_current_profile('p1-donuts','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{donuts}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],'donuts: epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],'donuts: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken UNITEDTLD::Charge UNITEDTLD::Finance/],'donuts: loaded_modules');
 is($drd->{bep}->{bep_type},2,'donuts: bep_type');
 is($drd->{info}->{check_limit},5,'donuts: check_limit');
@@ -136,7 +136,7 @@ $rc = $dri->target('crr')->add_current_profile('p1','epp',{f_send=>\&mysend,f_re
 $drd = $dri->{registries}->{crr}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],disable_idn=>1,'brown_fee_version' => '0.6'}],'crr: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase CentralNic::Fee/],'crr: loaded_modules');
-is($drd->{bep}->{bep_type},1,'crr: bep_type');
+is($drd->{bep}->{bep_type},2,'crr: bep_type');
 is($drd->{info}->{check_limit},13,'crr: check_limit');
 
 # CRR

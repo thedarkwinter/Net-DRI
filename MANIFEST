@@ -43,6 +43,7 @@ lib/Net/DRI/Data/Contact/IT.pm
 lib/Net/DRI/Data/Contact/JOBS.pm
 lib/Net/DRI/Data/Contact/LU.pm
 lib/Net/DRI/Data/Contact/LV.pm
+lib/Net/DRI/Data/Contact/MAM.pm
 lib/Net/DRI/Data/Contact/NO.pm
 lib/Net/DRI/Data/Contact/Nominet.pm
 lib/Net/DRI/Data/Contact/NYC.pm
@@ -278,6 +279,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Registry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/COOP.pm
 lib/Net/DRI/Protocol/EPP/Extensions/COOP/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CORENIC.pm
@@ -344,6 +346,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/LU/Status.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LV.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LV/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LV/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/MAM/QualifiedLawyer.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.pm
@@ -380,6 +383,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NSgroup.pm
 lib/Net/DRI/Protocol/EPP/Extensions/OpenRegistry/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/PH.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PIR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Contact.pm
@@ -690,6 +694,7 @@ t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/CN.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.t
+t/Net/DRI/Protocol/EPP/Extensions/CoCCA/Notifications.t
 t/Net/DRI/Protocol/EPP/Extensions/COOP.t
 t/Net/DRI/Protocol/EPP/Extensions/COZA.t
 t/Net/DRI/Protocol/EPP/Extensions/CRR.t
@@ -711,6 +716,7 @@ t/Net/DRI/Protocol/EPP/Extensions/LaunchPhase.t
 t/Net/DRI/Protocol/EPP/Extensions/LU.t
 t/Net/DRI/Protocol/EPP/Extensions/LV.t
 t/Net/DRI/Protocol/EPP/Extensions/MAM.t
+t/Net/DRI/Protocol/EPP/Extensions/MAM/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.t
 t/Net/DRI/Protocol/EPP/Extensions/MX.pm
 t/Net/DRI/Protocol/EPP/Extensions/MX_gTLD.t
