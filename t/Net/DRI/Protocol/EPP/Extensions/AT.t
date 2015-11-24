@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 36;
+use Test::More tests => 41;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -44,8 +44,8 @@ is($dri->get_info('roid', 'message', 374185914), undef,'message get_info roid');
 
 is($dri->get_info('content', 'message', 374185914), 'EPP response to a '.
 'transaction executed on your behalf: objecttype [domain] ' .
-	'command [transfer-execute] objectname [mydomain.at]',
-	'message get_info content');
+    'command [transfer-execute] objectname [mydomain.at]',
+    'message get_info content');
 is($dri->get_info('action', 'message', 374185914), 'transfer-execute','message get_info action');
 is($dri->get_info('object_type', 'message', 374185914), 'domain','message get_info object_type');
 is($dri->get_info('object_id', 'message', 374185914), 'mydomain.at','message get_info object_id');
@@ -89,6 +89,20 @@ is($dri->get_info('object_type', 'message', 523423542), 'domain','message get_in
 is($dri->get_info('object_id', 'message', 523423542), 'neingeist.at','message get_info object_id');
 is($dri->get_info('action', 'message', 523423542), 'transfer-execute','message get_info action');
 is($dri->get_info('keydate', 'message', 523423542), '0423','message get_info keydate');
+
+$R2 =$E1 . '<response> <result code="1000"> <msg>Command completed successfully</msg> </result> <resData> <domain:trnData xmlns="urn:ietf:params:xml:ns:domain-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"> <domain:name>beispiel.at</domain:name> <domain:trStatus>serverApproved</domain:trStatus> <domain:reID>Reg000</domain:reID> <domain:reDate>2007-03-09T15:47:31.00Z</domain:reDate> <domain:acID>Reg000</domain:acID> <domain:acDate>2007-03-09T15:47:31.00Z</domain:acDate> <domain:exDate>2009-09-08T22:00:00.00Z</domain:exDate> </domain:trnData> </resData> <extension> <at-ext-domain:keydate xmlns:at-ext-domain="http://www.nic.at/xsd/at-ext-domain-1.0" xsi:schemaLocation="http://www.nic.at/xsd/at-ext-domain-1.0 at-ext-domain-1.0.xsd">0309</at-ext-domain:keydate> </extension>' . $TRID . '</response>' . $E2;
+$rc = $dri->domain_transfer_execute('beispiel.at' , { token => 'MYTOKEN' } );
+is($rc->is_success(), 1, 'transfer execute successfully');
+is($dri->get_info('keydate'),'0309','transfer execute get keydate');
+
+$R2 =$E1 . '<response> <result code="1000"> <msg>Command completed successfully</msg> </result> <resData> <domain:trnData xmlns="urn:ietf:params:xml:ns:domain-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"> <domain:name>beispiel.at</domain:name> <domain:trStatus>serverApproved</domain:trStatus> <domain:reID>Reg000</domain:reID> <domain:reDate>2007-03-09T15:47:31.00Z</domain:reDate> <domain:acID>Reg000</domain:acID> <domain:acDate>2007-03-09T15:47:31.00Z</domain:acDate> <domain:exDate>2009-09-08T22:00:00.00Z</domain:exDate> </domain:trnData> </resData> <extension> <at-ext-domain:keydate xmlns:at-ext-domain="http://www.nic.at/xsd/at-ext-domain-1.0" xsi:schemaLocation="http://www.nic.at/xsd/at-ext-domain-1.0 at-ext-domain-1.0.xsd">0309</at-ext-domain:keydate> </extension>' . $TRID . '</response>' . $E2;
+$rc = $dri->domain_transfer_start('beispiel.at' , { token => 'MYTOKEN' } );
+is($rc->is_success(), 1, 'transfer request with keydate successfully');
+is($dri->get_info('keydate'),'0309','transfer request  get keydate');
+
+$R2 =$E1 . '<response> <result code="1000"> <msg>Command completed successfully</msg> </result> <resData> <domain:trnData xmlns="urn:ietf:params:xml:ns:domain-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"> <domain:name>beispiel.at</domain:name> <domain:trStatus>serverApproved</domain:trStatus> <domain:reID>Reg000</domain:reID> <domain:reDate>2007-03-09T15:47:31.00Z</domain:reDate> <domain:acID>Reg000</domain:acID> <domain:acDate>2007-03-09T15:47:31.00Z</domain:acDate> <domain:exDate>2009-09-08T22:00:00.00Z</domain:exDate> </domain:trnData> </resData>' . $TRID . '</response>' .   $E2;
+$rc = $dri->domain_transfer_start('beispiel.at' , { token => 'MYTOKEN' } );
+is($rc->is_success(), 1, 'transfer request without keydate successfully');
 
 exit 0;
 

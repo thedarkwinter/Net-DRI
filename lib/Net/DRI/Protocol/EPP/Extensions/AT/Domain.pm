@@ -69,9 +69,9 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands {
        my ( $class, $version ) = @_;
        my %tmp = (
-               nocommand        => [ \&extonly,          undef ],
+               nocommand        => [ \&extonly,          \&extonly_parse_result ],
                delete           => [ \&delete,           undef ],
-               transfer_request => [ \&transfer_request, undef ],
+               transfer_request => [ \&transfer_request, \&extonly_parse_result ],
 
        );
 
@@ -163,6 +163,20 @@ sub extonly {
 
        }
        return;
+}
+
+sub extonly_parse_result {
+    my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+    my $mes=$po->message();
+    return unless $mes->is_success();
+
+    my $keydatedata=$mes->get_extension($NS,'keydate');
+    return unless defined $keydatedata;
+    
+    my $keydate = $keydatedata->getFirstChild()->getData();
+    return unless defined $keydate;
+
+    $rinfo->{domain}->{$oname}->{keydate}=$keydate;
 }
 
 sub delete { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
