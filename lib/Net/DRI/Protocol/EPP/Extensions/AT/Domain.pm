@@ -71,7 +71,7 @@ sub register_commands {
        my %tmp = (
                nocommand        => [ \&extonly,          \&extonly_parse_result ],
                delete           => [ \&delete,           undef ],
-               transfer_request => [ \&transfer_request, undef ],
+               transfer_request => [ \&transfer_request, \&extonly_parse_result ],
 
        );
 
