@@ -1,4 +1,4 @@
-## Domain Registry Interface, Mark & Signed Mark for EPP (draft-ietf-eppext-tmch-smd-02)
+## Domain Registry Interface, Mark & Signed Mark for EPP (draft-ietf-eppext-tmch-smd-03)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -34,7 +34,7 @@ sub setup
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-ietf-eppext-tmch-smd-01'; }
+sub implements { return 'https://tools.ietf.org/html/draft-ietf-eppext-tmch-smd-03'; }
 
 my %xml2perl = ( trademark       => 'trademark',
                  treatyOrStatute => 'treaty_statute',
@@ -649,7 +649,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark - ICANN TMCH Mark/Signed Mark EPP Extension (draft-ietf-eppext-tmch-smd-01) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark - ICANN TMCH Mark/Signed Mark EPP Extension (draft-ietf-eppext-tmch-smd-03) for Net::DRI
 
 =head1 DESCRIPTION
 
