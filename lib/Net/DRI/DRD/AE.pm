@@ -95,11 +95,11 @@ sub set_factories {
 
 ####################################################################################################
 
-sub verify_name_domain
-{
- my ($self,$ndr,$domain,$op)=@_;
- return $self->_verify_name_rules($domain,$op,{check_name => 0});
-}
+#sub verify_name_domain
+#{
+# my ($self,$ndr,$domain,$op)=@_;
+# return $self->_verify_name_rules($domain,$op,{check_name => 0});
+#}
 
 ####################################################################################################
 1;

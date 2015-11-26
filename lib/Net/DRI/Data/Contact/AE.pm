@@ -22,8 +22,6 @@ use base qw/Net::DRI::Data::Contact/;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
-use Data::Dumper;
-
 =pod
 
 =head1 NAME
@@ -82,7 +80,7 @@ sub validate {
 
         Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
 
-        return 1; ## everything ok.
+        return 1; ## everything good.
 }
 
 ####################################################################################################
