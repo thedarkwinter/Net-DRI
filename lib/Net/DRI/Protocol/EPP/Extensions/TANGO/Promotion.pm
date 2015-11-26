@@ -22,7 +22,7 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
-
+use DateTime::Format::Strptime;
 
 =pod
 
@@ -73,10 +73,10 @@ sub register_commands {
 	my %tmp=(
 		create => [ \&create, undef ],
 		renew => [ \&renew, undef ],
-	);
+	); # domain commands
 	my %tmp1=(
 		info => [ \&promo_info, \&promo_info_parse ],
-	);
+	); # promotion commands
 	return { 'domain' => \%tmp,
 			 'promo' => \%tmp1
 	};
@@ -84,7 +84,7 @@ sub register_commands {
 
 ####################################################################################################
 
-sub build_promo {
+sub build_promo_extension {
 	my ($pr) = shift;
 	my @o;
 	
@@ -96,7 +96,7 @@ sub build_promo {
 	return @o;
 }
 
-sub promo_build_command {
+sub build_promo_command {
 	my ($msg,$command,$promo,$codeattr)=@_;
 	my @d;
 	
@@ -116,47 +116,42 @@ sub validate_promo_details {
 	my ($cdata) = shift;
 
 	# get hash data into variables
-	my $cn_name=$cdata->{dom_name}->{name} if Net::DRI::Util::has_key($cdata,'dom_name');	
-	my $cn_price_type=$cdata->{dom_pric}->{type} if Net::DRI::Util::has_key($cdata,'dom_pric');
-	my $cn_price_period=$cdata->{dom_pric}->{period} if Net::DRI::Util::has_key($cdata,'dom_pric');
-	my $cn_price_unit=$cdata->{dom_pric}->{period_unit} if Net::DRI::Util::has_key($cdata,'dom_pric');
-	my $cn_refdate=$cdata->{dom_refd}->{rdate} if Net::DRI::Util::has_key($cdata,'dom_refd');
-	my $cn_phrase=$cdata->{dom_phra}->{phrase} if Net::DRI::Util::has_key($cdata,'dom_phra');
-	my $cn_custom_phrase=$cdata->{dom_phra}->{custom_phrase} if Net::DRI::Util::has_key($cdata,'dom_phra');
+	my $cn_name=$cdata->{domain}->{name} if Net::DRI::Util::has_key($cdata,'domain');	
+	my $cn_price_type=$cdata->{price}->{type} if Net::DRI::Util::has_key($cdata,'price');
+	my $cn_duration=$cdata->{price}->{duration} if Net::DRI::Util::has_key($cdata,'price');
+	my $cn_refdate=$cdata->{ref_date}->{rdate} if Net::DRI::Util::has_key($cdata,'ref_date');
+	my $cn_phrase=$cdata->{lp}->{phrase} if Net::DRI::Util::has_key($cdata,'lp');
+	my $cn_custom_phrase=$cdata->{lp}->{sub_phase} if Net::DRI::Util::has_key($cdata,'lp');
 
 	# domain name element validation
-	&check_exist_key($cdata,$cn_name,'dom_name','name');	
-	&check_key_length($cn_name,'1','255','name');
+	&validate_key_exists($cdata,$cn_name,'domain','name');	
+	&validate_key_length($cn_name,'1','255','name');
 	
 	# promo pricing element validation
-	&check_exist_key($cdata,$cn_price_type,'dom_pric','type');
-	&check_exist_key($cdata,$cn_price_period,'dom_pric','period');
-	&check_exist_key($cdata,$cn_price_unit,'dom_pric','period_unit');
+	&validate_key_exists($cdata,$cn_price_type,'price','type');
 	
-		if (Net::DRI::Util::has_key($cdata,'dom_pric')) {
+		# promo pricing data  validation
+		if (Net::DRI::Util::has_key($cdata,'price')) {
 			# 'cn_price_type' validation
 			Net::DRI::Exception::usererr_invalid_parameters('the [type] attribute can only accept values: create | renew') 
 				unless ($cn_price_type =~ m/(^create$|^renew$)/);
-			# 'cn_price_period' validation
-			Net::DRI::Exception::usererr_invalid_parameters('the [period] attribute value must be between 1 and 99') 
-				if !($cn_price_period >= 1 && $cn_price_period <= 99 );
-			# 'cn_price_unit' validation
-			Net::DRI::Exception::usererr_invalid_parameters('the [period_unit] attribute can only accept values: y (year) | m (month)') 
-				unless ($cn_price_unit =~ m/(^y$|^m$)/);		
+			# 'cn_duration' validation
+			Net::DRI::Exception::usererr_invalid_parameters('the total duration in months must be between 1 and 99.') 
+				if !($cn_duration->in_units('months') >= 1 && $cn_duration->in_units('months') <= 99 );
 		}
 
 	# promo refdate element validation
-	&check_exist_key($cdata,$cn_refdate,'dom_refd','rdate');
-	Net::DRI::Util::check_isa($cn_refdate,'DateTime') if Net::DRI::Util::has_key($cdata,'dom_refd'); # must be DateTime object.
+	&validate_key_exists($cdata,$cn_refdate,'ref_date','rdate');
+	Net::DRI::Util::check_isa($cn_refdate,'DateTime') if Net::DRI::Util::has_key($cdata,'ref_date'); # must be DateTime object.
 	
 	# promo phrase element validation
-	&check_exist_key($cdata,$cn_phrase,'dom_phra','phrase');
+	&validate_key_exists($cdata,$cn_phrase,'lp','phrase');
 	
-		if (Net::DRI::Util::has_key($cdata,'dom_phra')) {
+		if (Net::DRI::Util::has_key($cdata,'lp')) {
 			# 'cn_phrase' validation
 			Net::DRI::Exception::usererr_invalid_parameters('the [phrase] attribute can only accept values: sunrise | landrush | claims | open | custom') 
 				unless ($cn_phrase =~ m/(^sunrise$|^landrush$|^claims$|^open$|^custom$)/);
-			&check_exist_key($cdata,$cn_custom_phrase,'dom_phra','custom_phrase') 
+			&validate_key_exists($cdata,$cn_custom_phrase,'lp','sub_phase') 
 			if ($cn_phrase =~ m/(^custom$)/); # key only required if 'cn_phrase' is 'custom'
 		}
 		
@@ -171,14 +166,14 @@ sub validate_promo_code {
 	return;
 }
 
-sub check_exist_key {
+sub validate_key_exists {
 	my ($cddata,$child,$parent,$name)=@_;
 	Net::DRI::Exception::usererr_insufficient_parameters("the [$name] attribute is missing while [$parent] parent element is present") 
 		if ( (Net::DRI::Util::has_key($cddata,$parent)) && ((!defined($child)) || ($child eq '')) ); # must be populated if parent key present.
 	return;
 }
 
-sub check_key_length {
+sub validate_key_length {
 	my ($value,$min,$max,$name)=@_;
 	return unless $value;
 	my $regexp = qr/^.{$min,$max}$/;
@@ -198,7 +193,7 @@ sub create {
 	$mes->command(['create','domain:create',sprintf('xmlns="%s"',$mes->nsattrs('domain'))]);
 	
 	# build promo extension
-	my @m = build_promo($rd->{'promo_code'});
+	my @m = build_promo_extension($rd->{'promo_code'});
 	return unless @m;
 	
 	# push extension element into command
@@ -217,7 +212,7 @@ sub renew {
 	$mes->command(['update','domain:renew',sprintf('xmlns="%s"',$mes->nsattrs('domain'))]);
 	
 	# build promo extension
-	my @p = build_promo($rd->{'promo_code'});
+	my @p = build_promo_extension($rd->{'promo_code'});
 	return unless @p;
 	
 	# push extension element into command
@@ -235,24 +230,28 @@ sub promo_info {
 	
 	# build mandatory xml elements
 	my $prom_info = $rd->{'promo_data'};
-	@g=promo_build_command($mes,['info'],$promo_c);
+	@g=build_promo_command($mes,['info'],$promo_c);
 	($mes->command_body(\@g) && return) unless $prom_info;
 
 	# validate 'promo_data'
 	&validate_promo_details($prom_info);
 
+	# get DateTime total time in 'months'
+	my $duration = $prom_info->{price}->{duration};
+	my $total_months = $duration->in_units('months');
+
 	# build optional xml elements
-	push @g,['promo:domain',['promo:name',$prom_info->{dom_name}->{name}]] if Net::DRI::Util::has_key($prom_info,'dom_name'); # domain element
-		if (($prom_info->{dom_pric}->{type} eq 'create') && (Net::DRI::Util::has_key($prom_info,'dom_pric'))) {
-			push @g,['promo:pricing',['promo:create',['promo:period',{unit=>$prom_info->{dom_pric}->{period_unit}},$prom_info->{dom_pric}->{period}]]];
-		} elsif (($prom_info->{dom_pric}->{type} eq 'renew') && (Net::DRI::Util::has_key($prom_info,'dom_pric'))) {
-			push @g,['promo:pricing',['promo:renew',['promo:period',{name=>$prom_info->{dom_pric}->{period_unit}},$prom_info->{dom_pric}->{period}]]];
+	push @g,['promo:domain',['promo:name',$prom_info->{domain}->{name}]] if Net::DRI::Util::has_key($prom_info,'domain'); # domain element
+		if (($prom_info->{price}->{type} eq 'create') && (Net::DRI::Util::has_key($prom_info,'price'))) {
+			push @g,['promo:pricing',['promo:create',['promo:period',{unit=>'m'},$total_months]]];
+		} elsif (($prom_info->{price}->{type} eq 'renew') && (Net::DRI::Util::has_key($prom_info,'price'))) {
+			push @g,['promo:pricing',['promo:renew',['promo:period',{unit=>'m'},$total_months]]];
 		} # period element
-	push @g,['promo:refdate',$prom_info->{dom_refd}->{rdate}->strftime('%FT%T.0Z')] if Net::DRI::Util::has_key($prom_info,'dom_refd'); # rdate element
-		if ($prom_info->{dom_phra}->{phrase} eq 'custom') {
-			push @g,['promo:phase',{name=>$prom_info->{dom_phra}->{custom_phrase}},$prom_info->{dom_phra}->{phrase}] if Net::DRI::Util::has_key($prom_info,'dom_phra'); # phrase element
+	push @g,['promo:refdate',$prom_info->{ref_date}->{rdate}->strftime('%FT%T.0Z')] if Net::DRI::Util::has_key($prom_info,'ref_date'); # rdate element
+		if ($prom_info->{lp}->{phrase} eq 'custom') {
+			push @g,['promo:phase',{name=>$prom_info->{lp}->{sub_phase}},$prom_info->{lp}->{phrase}] if Net::DRI::Util::has_key($prom_info,'lp'); # phrase element
 		} else {
-			push @g,['promo:phase',$prom_info->{dom_phra}->{phrase}] if Net::DRI::Util::has_key($prom_info,'dom_phra');
+			push @g,['promo:phase',$prom_info->{lp}->{phrase}] if Net::DRI::Util::has_key($prom_info,'lp');
 		} # phrase element
 	
 	# construct xml command
@@ -265,6 +264,7 @@ sub promo_info_parse {
 	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
 	my $mes=$po->message();
 	return unless $mes->is_success();
+	
 	my $msg = {};
 	my ($proData,$priData,$utiData,$c);
 	our $tmp_promo_c;
@@ -275,6 +275,12 @@ sub promo_info_parse {
     $otype='promo';
     $oaction='info';
     $oname = $tmp_promo_c; # normally this should be the id of the object you are looking up, but they don't seem to return it
+
+	# create time parser (to be used later)
+	my $time_parser = DateTime::Format::Strptime->new(
+	  pattern => '%FT%T%Z',
+	  on_error => 'croak',
+	);
 
  	# separate the promo,utilization and pricing section
  	foreach my $el (Net::DRI::Util::xml_list_children($infdata)) {
@@ -299,10 +305,11 @@ sub promo_info_parse {
 		my $name=$c->localname() || $c->nodeName();
 		next unless $name || $c->getFirstChild();
 		if ($name=~m/^(promotionName)$/) {
+			$name=Net::DRI::Util::remcam($name);
 			$msg->{$oname}->{$name}=$c->getFirstChild()->getData() if (defined $c);
 		} elsif($name=~m/^(validity)$/) {
-			$msg->{$oname}->{$name}->{validFrom} = $c->getAttribute('from') if $c->hasAttribute('from');
-			$msg->{$oname}->{$name}->{validUntil} = $c->getAttribute('to') if $c->hasAttribute('to');
+			$msg->{$oname}->{$name}->{valid_from} = $time_parser->parse_datetime($c->getAttribute('from')) if $c->hasAttribute('from');
+			$msg->{$oname}->{$name}->{valid_until} = $time_parser->parse_datetime($c->getAttribute('to')) if $c->hasAttribute('to');
 		} elsif($name=~m/^(utilization)$/) {
 			$msg->{$oname}->{$name}->{available} = $c->getAttribute('avail') if $c->hasAttribute('avail');
 		}
@@ -327,6 +334,7 @@ sub promo_info_parse {
 		my $name=$c->localname() || $c->nodeName();
 		next unless $name || $c->getFirstChild();
 		if ($name=~m/^(enabled|operations|codeUsable|inValidityPeriod|validDomainName)$/) {
+			$name=Net::DRI::Util::remcam($name);
 			$msg->{$oname}->{utilization}->{$name}=$c->getFirstChild()->getData() if (defined $c);
 		}
 	} continue { $c=$c->getNextSibling(); }
