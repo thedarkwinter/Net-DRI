@@ -247,7 +247,7 @@ sub promo_info {
 		} elsif (($prom_info->{price}->{type} eq 'renew') && (Net::DRI::Util::has_key($prom_info,'price'))) {
 			push @g,['promo:pricing',['promo:renew',['promo:period',{unit=>'m'},$total_months]]];
 		} # period element
-	push @g,['promo:refdate',$prom_info->{ref_date}->{rdate}->strftime('%FT%T%Z')] if Net::DRI::Util::has_key($prom_info,'ref_date'); # rdate element
+	push @g,['promo:refdate',$prom_info->{ref_date}->{rdate}->strftime('%FT%T.0Z')] if Net::DRI::Util::has_key($prom_info,'ref_date'); # rdate element
 		if ($prom_info->{lp}->{phrase} eq 'custom') {
 			push @g,['promo:phase',{name=>$prom_info->{lp}->{sub_phase}},$prom_info->{lp}->{phrase}] if Net::DRI::Util::has_key($prom_info,'lp'); # phrase element
 		} else {
