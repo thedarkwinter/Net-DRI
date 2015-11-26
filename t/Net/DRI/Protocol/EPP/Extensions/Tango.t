@@ -436,7 +436,7 @@ my $promo_hash = {
 	lp => {
 		phrase => 'custom',
 		sub_phase => 'special-phase'}
-};
+}; # for the duration you can use any date time units as long as your TOTAL time is less than 99 months..
 
 # domain promo info command
 $rc=$dri->promo_info('EXAMPLE-PROMO-1231',{promo_data=>$promo_hash});
