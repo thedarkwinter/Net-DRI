@@ -23,7 +23,6 @@ use base qw/Net::DRI::DRD/;
 use Net::DRI::Util;
 use DateTime::Duration;
 use Net::DRI::Exception;
-use Net::DRI::Data::Contact::AE;
 
 =pod
 
@@ -86,20 +85,6 @@ sub transport_protocol_default {
 	return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP',{}) if $type eq 'epp';
 	return;
 }
-
-sub set_factories {
-	my ($self,$po)=@_;
-	$po->factories('contact',sub { return Net::DRI::Data::Contact::AE->new(@_); });
-	return;
-}
-
-####################################################################################################
-
-#sub verify_name_domain
-#{
-# my ($self,$ndr,$domain,$op)=@_;
-# return $self->_verify_name_rules($domain,$op,{check_name => 0});
-#}
 
 ####################################################################################################
 1;

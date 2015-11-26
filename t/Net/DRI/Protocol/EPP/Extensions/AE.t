@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 7;
+use Test::More tests => 5;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -40,50 +40,6 @@ $R2='';
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build');
 is($rc->is_success(),1,'session noop is_success');
-
-#####################################################################################################
-######### Domain Commands ########
-
-###################### Question 2 ###########################
-## Creating a Contact Set...
-$cs=$dri->local_object('contactset');
-$cs->add($dri->local_object('contact')->srid('C00012‐UAE'),'registrant');
-$cs->add($dri->local_object('contact')->srid('C00014‐UAE'),'tech');
-
-## Creating a Host Object...
-$dh=$dri->local_object('hosts');
-$dh->add('ns1.hosting.ae');
-$dh->add('ns2.hosting.ae');
-$dh->add('ns3.hosting.ae');
-$dh->add('ns4.hosting.ae');
-$dh->add('ns5.hosting.ae');
-$dh->add('ns6.hosting.ae');
-$dh->add('ns7.hosting.ae');
-$dh->add('ns8.hosting.ae');
-$dh->add('ns9.hosting.ae');
-$dh->add('ns10.hosting.ae');
-$dh->add('ns11.hosting.ae');
-$dh->add('ns12.hosting.ae');
-$dh->add('ns13.hosting.ae');
-#
-## Registering Domain...
-$rc=$dri->domain_create('transportationlogistics.net.ae',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),contact=>$cs,ns=>$dh,auth=>{pw=>'FooBar21!@'}});
-is($rc->is_success(),1,'epp_test - question 2');
-
-###################### Question 4 ###########################
-## Creating a Contact Set...
-$cs=$dri->local_object('contactset');
-$cs->add($dri->local_object('contact')->srid('C00012‐UAE'),'registrant');
-$cs->add($dri->local_object('contact')->srid('C00014‐UAE'),'tech');
-
-## Creating a Host Object...
-$dh=$dri->local_object('hosts');
-$dh->add('ns1.hosting.ae');
-$dh->add('ns2.hosting.ae');
-#
-## Registering Domain...
-$rc=$dri->domain_create('in--valid.ae',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),contact=>$cs,ns=>$dh,auth=>{pw=>''}});
-is($rc->is_success(),1,'epp_test - question 4');
 
 #####################################################################################################
 ######### Closing Commands ########
