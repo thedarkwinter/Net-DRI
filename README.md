@@ -9,17 +9,17 @@ Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.
 Based on draft-ietf-eppext-launchphase-06
 
 ##### New gTLD backend providers (RO's)
-Afnic, Afilias, ARI, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media, GMO Registry, KNET, KSRegistry (Starting Dot), Minds And Machines, Neustar, Nic.BR, Nic.MX, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, SIDN, Tango from KNIPP, TCI, UniRegistry, Verisign, ZACR
+Afnic, Afilias, ARI, CoCCA, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media, GMO Registry, KNET, KSRegistry (Starting Dot), Minds And Machines, Neustar, Nic.BR, Nic.MX, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, SIDN, Tango from KNIPP, TCI, UniRegistry, Verisign, ZACR
 
 ##### Planned/Possible support for providers
-CoCCA 
+TeleInfo
 
 ##### Trademark services
 TMCH (Deloitte)
 TMDB (IBM): CNIS and SMDRL only
 
 ##### Added/Updated/Fixed support for ccTLDs
-UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH
+UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE
 
 
 * * *

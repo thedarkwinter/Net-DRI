@@ -432,7 +432,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility> : http://xmlns
 
  $dri->add_registry('NGTLD',{provider=>'cnnic'});
 
-=head3 Status: Not started
+=head3 Status: Working
 
 =head3 TLDs
 
@@ -457,7 +457,7 @@ Contended TLD's not included
 
  $dri->add_registry('NGTLD',{provider=>'cocca'});
 
-=head3 Status: Not started
+=head3 Status: Working
 
 =head3 TLDs
 
@@ -578,7 +578,7 @@ GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo')
  $dri->add_registry('NGTLD',{provider=>'gmogeo'}); # Geo: okinawa ryukyu
  $dri->add_registry('NGTLD',{provider=>'gmokyoto'}); # kyoto
 
-=head3 Status: Untested
+=head3 Status: Working
 
 =head3 TLDs
 
@@ -1177,7 +1177,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  $dri->add_registry('NGTLD',{provider=>'verisign'});
 
-=head3 Status: Not started
+=head3 Status: Working
 
 =head3 TLDs
 
