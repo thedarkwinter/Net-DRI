@@ -66,6 +66,7 @@ lib/Net/DRI/Data/RegistryObject.pm
 lib/Net/DRI/Data/StatusList.pm
 lib/Net/DRI/DRD.pm
 lib/Net/DRI/DRD/AdamsNames.pm
+lib/Net/DRI/DRD/AE.pm
 lib/Net/DRI/DRD/AERO.pm
 lib/Net/DRI/DRD/AfiliasGRS.pm
 lib/Net/DRI/DRD/AfiliasSRS.pm
@@ -666,6 +667,7 @@ t/Net/DRI/Protocol.t
 t/Net/DRI/Protocol/AFNIC/WS/Message.t
 t/Net/DRI/Protocol/EPP/Connection.t
 t/Net/DRI/Protocol/EPP/Core.t
+t/Net/DRI/Protocol/EPP/Extensions/AE.t
 t/Net/DRI/Protocol/EPP/Extensions/AERO.t
 t/Net/DRI/Protocol/EPP/Extensions/Afilias/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/Afilias/Message.t
