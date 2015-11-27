@@ -434,7 +434,7 @@ my $promo_hash = {
 	ref_date => {
 		rdate => DateTime->new(year=>2016,month=>07,day=>01,hour=>10,minute=>10,second=>0)},
 	lp => {
-		phrase => 'custom',
+		phase => 'custom',
 		sub_phase => 'special-phase'}
 }; # for the duration you can use any date time units as long as your TOTAL time is less than 99 months..
 

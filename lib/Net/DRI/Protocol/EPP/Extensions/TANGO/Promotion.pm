@@ -120,8 +120,8 @@ sub validate_promo_details {
 	my $cn_price_type=$cdata->{price}->{type} if Net::DRI::Util::has_key($cdata,'price');
 	my $cn_duration=$cdata->{price}->{duration} if Net::DRI::Util::has_key($cdata,'price');
 	my $cn_refdate=$cdata->{ref_date}->{rdate} if Net::DRI::Util::has_key($cdata,'ref_date');
-	my $cn_phrase=$cdata->{lp}->{phrase} if Net::DRI::Util::has_key($cdata,'lp');
-	my $cn_custom_phrase=$cdata->{lp}->{sub_phase} if Net::DRI::Util::has_key($cdata,'lp');
+	my $cn_phase=$cdata->{lp}->{phase} if Net::DRI::Util::has_key($cdata,'lp');
+	my $cn_custom_phase=$cdata->{lp}->{sub_phase} if Net::DRI::Util::has_key($cdata,'lp');
 
 	# domain name element validation
 	&validate_key_exists($cdata,$cn_name,'domain','name');	
@@ -144,15 +144,15 @@ sub validate_promo_details {
 	&validate_key_exists($cdata,$cn_refdate,'ref_date','rdate');
 	Net::DRI::Util::check_isa($cn_refdate,'DateTime') if Net::DRI::Util::has_key($cdata,'ref_date'); # must be DateTime object.
 	
-	# promo phrase element validation
-	&validate_key_exists($cdata,$cn_phrase,'lp','phrase');
+	# promo phase element validation
+	&validate_key_exists($cdata,$cn_phase,'lp','phase');
 	
 		if (Net::DRI::Util::has_key($cdata,'lp')) {
-			# 'cn_phrase' validation
-			Net::DRI::Exception::usererr_invalid_parameters('the [phrase] attribute can only accept values: sunrise | landrush | claims | open | custom') 
-				unless ($cn_phrase =~ m/(^sunrise$|^landrush$|^claims$|^open$|^custom$)/);
-			&validate_key_exists($cdata,$cn_custom_phrase,'lp','sub_phase') 
-			if ($cn_phrase =~ m/(^custom$)/); # key only required if 'cn_phrase' is 'custom'
+			# 'cn_phase' validation
+			Net::DRI::Exception::usererr_invalid_parameters('the [phase] attribute can only accept values: sunrise | landrush | claims | open | custom') 
+				unless ($cn_phase =~ m/(^sunrise$|^landrush$|^claims$|^open$|^custom$)/);
+			&validate_key_exists($cdata,$cn_custom_phase,'lp','sub_phase') 
+			if ($cn_phase =~ m/(^custom$)/); # key only required if 'cn_phase' is 'custom'
 		}
 		
 	return;
@@ -248,11 +248,11 @@ sub promo_info {
 			push @g,['promo:pricing',['promo:renew',['promo:period',{unit=>'m'},$total_months]]];
 		} # period element
 	push @g,['promo:refdate',$prom_info->{ref_date}->{rdate}->strftime('%FT%T.0Z')] if Net::DRI::Util::has_key($prom_info,'ref_date'); # rdate element
-		if ($prom_info->{lp}->{phrase} eq 'custom') {
-			push @g,['promo:phase',{name=>$prom_info->{lp}->{sub_phase}},$prom_info->{lp}->{phrase}] if Net::DRI::Util::has_key($prom_info,'lp'); # phrase element
+		if ($prom_info->{lp}->{phase} eq 'custom') {
+			push @g,['promo:phase',{name=>$prom_info->{lp}->{sub_phase}},$prom_info->{lp}->{phase}] if Net::DRI::Util::has_key($prom_info,'lp'); # phase element
 		} else {
-			push @g,['promo:phase',$prom_info->{lp}->{phrase}] if Net::DRI::Util::has_key($prom_info,'lp');
-		} # phrase element
+			push @g,['promo:phase',$prom_info->{lp}->{phase}] if Net::DRI::Util::has_key($prom_info,'lp');
+		} # phase element
 	
 	# construct xml command
 	$mes->command_body(\@g);
