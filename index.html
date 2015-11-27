@@ -32,91 +32,85 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h4>
-<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h4>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h4>
 
 <p>Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek <a href="http://www.dotandco.com/services/software/Net-DRI/">Home Page</a>, <a href="http://search.cpan.org/dist/Net-DRI/">CPAN</a> based on Net-DRI-0.96_05 that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.</p>
 
 <h5>
-<a name="launchphase-extension" class="anchor" href="#launchphase-extension"><span class="octicon octicon-link"></span></a>LaunchPhase extension</h5>
+<a id="launchphase-extension" class="anchor" href="#launchphase-extension" aria-hidden="true"><span class="octicon octicon-link"></span></a>LaunchPhase extension</h5>
 
-<p>Based on draft-ietf-eppext-launchphase-02</p>
-
-<h5>
-<a name="new-gtld-backend-providers-ros" class="anchor" href="#new-gtld-backend-providers-ros"><span class="octicon octicon-link"></span></a>New gTLD backend providers (RO's)</h5>
-
-<p>Afnic, Afilias, ARI, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media, GMO Registry, KNET, KSRegistry (Starting Dot), Minds And Machines, Neustar, Nic.br, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, Tango from KNIPP, UniRegistry, Verisign, ZACR</p>
+<p>Based on draft-ietf-eppext-launchphase-01</p>
 
 <h5>
-<a name="plannedpossible-support-for-providers" class="anchor" href="#plannedpossible-support-for-providers"><span class="octicon octicon-link"></span></a>Planned/Possible support for providers</h5>
+<a id="new-gtld-backend-providers-ros" class="anchor" href="#new-gtld-backend-providers-ros" aria-hidden="true"><span class="octicon octicon-link"></span></a>New gTLD backend providers (RO's)</h5>
 
-<p>CoCCA, SIDN, TCI</p>
+<p>Afnic, Afilias, ARI, CoCCA, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media, GMO Registry, KNET, KSRegistry (Starting Dot), Minds And Machines, Neustar, Nic.BR, Nic.MX, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, SIDN, Tango from KNIPP, TCI, UniRegistry, Verisign, ZACR</p>
 
 <h5>
-<a name="trademark-services" class="anchor" href="#trademark-services"><span class="octicon octicon-link"></span></a>Trademark services</h5>
+<a id="plannedpossible-support-for-providers" class="anchor" href="#plannedpossible-support-for-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Planned/Possible support for providers</h5>
+
+<p>CoCCA, Nic.br, SIDN, TCI</p>
+
+<h5>
+<a id="trademark-services" class="anchor" href="#trademark-services" aria-hidden="true"><span class="octicon octicon-link"></span></a>Trademark services</h5>
 
 <p>TMCH (Deloitte)
 TMDB (IBM): CNIS and SMDRL only</p>
 
 <h5>
-<a name="addedupdatedfixed-support-for-cctlds" class="anchor" href="#addedupdatedfixed-support-for-cctlds"><span class="octicon octicon-link"></span></a>Added/Updated/Fixed support for ccTLDs</h5>
+<a id="addedupdatedfixed-support-for-cctlds" class="anchor" href="#addedupdatedfixed-support-for-cctlds" aria-hidden="true"><span class="octicon octicon-link"></span></a>Added/Updated/Fixed support for ccTLDs</h5>
 
-<p>UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX</p>
+<p>UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE</p>
 
 <hr>
 
 <h4>
-<a name="ngtld-usage" class="anchor" href="#ngtld-usage"><span class="octicon octicon-link"></span></a>NGTLD Usage</h4>
+<a id="ngtld-usage" class="anchor" href="#ngtld-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>NGTLD Usage</h4>
 
 <p>The NGTLD "Super-DRD" is intended to work for all new gTLD providers with minimal fuss. In principle you can add the registry by selecting the provider and optionally customise the name and TLDs available. In some cases, traditional DRD's are in still availalble, but they are likely to be outdated.</p>
 
-<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'...'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'...'</span><span class="p">,</span><span class="n">name</span><span class="o">=&gt;</span><span class="s">'...'</span><span class="p">,</span> <span class="n">tlds</span><span class="o">=&gt;[]</span><span class="p">});</span>
-</pre></div>
+<div class="highlight highlight-source-perl"><pre><span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>add_registry(<span class="pl-s"><span class="pl-pds">'</span>NGTLD<span class="pl-pds">'</span></span>,{<span class="pl-c1">clid</span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>...<span class="pl-pds">'</span></span>,<span class="pl-c1">provider</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>...<span class="pl-pds">'</span></span>,<span class="pl-c1">name</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>...<span class="pl-pds">'</span></span>, <span class="pl-c1">tlds</span><span class="pl-k">=&gt;</span>[]});</pre></div>
 
 <h5>
-<a name="selecting-a-back-end-provider" class="anchor" href="#selecting-a-back-end-provider"><span class="octicon octicon-link"></span></a>Selecting a back end provider</h5>
+<a id="selecting-a-back-end-provider" class="anchor" href="#selecting-a-back-end-provider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Selecting a back end provider</h5>
 
-<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'Neustar'</span><span class="p">});</span>
-<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">target</span><span class="p">(</span><span class="s">'Neustar'</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">add_current_profile</span><span class="p">(</span><span class="o">....</span><span class="p">);</span>
-</pre></div>
+<div class="highlight highlight-source-perl"><pre><span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>add_registry(<span class="pl-s"><span class="pl-pds">'</span>NGTLD<span class="pl-pds">'</span></span>,{<span class="pl-c1">clid</span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>ClientX<span class="pl-pds">'</span></span>,<span class="pl-c1">provider</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>Neustar<span class="pl-pds">'</span></span>});
+<span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>target(<span class="pl-s"><span class="pl-pds">'</span>Neustar<span class="pl-pds">'</span></span>)<span class="pl-k">-&gt;</span>add_current_profile(....);</pre></div>
 
 <h5>
-<a name="backend-providers-with-shared-environments" class="anchor" href="#backend-providers-with-shared-environments"><span class="octicon octicon-link"></span></a>Backend providers with shared environments</h5>
+<a id="backend-providers-with-shared-environments" class="anchor" href="#backend-providers-with-shared-environments" aria-hidden="true"><span class="octicon octicon-link"></span></a>Backend providers with shared environments</h5>
 
 <p>Donuts is an example of a backend that provides a single platform for all their TLDs. Normally only specifying the provider will suite your needs</p>
 
-<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'donuts'</span><span class="p">});</span>
-<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">target</span><span class="p">(</span><span class="s">'donuts'</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">add_current_profile</span><span class="p">(</span><span class="o">....</span><span class="p">);</span>
-</pre></div>
+<div class="highlight highlight-source-perl"><pre><span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>add_registry(<span class="pl-s"><span class="pl-pds">'</span>NGTLD<span class="pl-pds">'</span></span>,{<span class="pl-c1">clid</span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>ClientX<span class="pl-pds">'</span></span>,<span class="pl-c1">provider</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>donuts<span class="pl-pds">'</span></span>});
+<span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>target(<span class="pl-s"><span class="pl-pds">'</span>donuts<span class="pl-pds">'</span></span>)<span class="pl-k">-&gt;</span>add_current_profile(....);</pre></div>
 
 <h5>
-<a name="backend-providers-with-dedicated-environments" class="anchor" href="#backend-providers-with-dedicated-environments"><span class="octicon octicon-link"></span></a>Backend providers with dedicated environments</h5>
+<a id="backend-providers-with-dedicated-environments" class="anchor" href="#backend-providers-with-dedicated-environments" aria-hidden="true"><span class="octicon octicon-link"></span></a>Backend providers with dedicated environments</h5>
 
 <p>Neustar is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
 e.g: add a custom target name, by default this is the back end provider name, but in this instance we select buzz
 Note, if the name you specified matches one of the TLD's and you have not manually specified the tld list, if will use only this TLD. If the name doesn't match a TLD, it will make all TLD's by the prover available in the DRD</p>
 
-<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'neustar'</span><span class="p">,</span><span class="n">name</span><span class="o">=&gt;</span><span class="s">'buzz'</span><span class="p">});</span>
-<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">target</span><span class="p">(</span><span class="s">'buzz'</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">add_current_profile</span><span class="p">(</span><span class="o">....</span><span class="p">);</span>
-</pre></div>
+<div class="highlight highlight-source-perl"><pre><span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>add_registry(<span class="pl-s"><span class="pl-pds">'</span>NGTLD<span class="pl-pds">'</span></span>,{<span class="pl-c1">clid</span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>ClientX<span class="pl-pds">'</span></span>,<span class="pl-c1">provider</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>neustar<span class="pl-pds">'</span></span>,<span class="pl-c1">name</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>buzz<span class="pl-pds">'</span></span>});
+<span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>target(<span class="pl-s"><span class="pl-pds">'</span>buzz<span class="pl-pds">'</span></span>)<span class="pl-k">-&gt;</span>add_current_profile(....);</pre></div>
 
 <p>Some TLDs have specific extensions that need to be loaded. In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension</p>
 
-<div class="highlight highlight-perl"><pre><span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'neustar'</span><span class="p">,</span><span class="n">name</span><span class="o">=&gt;</span><span class="s">'nyc'</span><span class="p">});</span> <span class="c1"># using name</span>
-<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">target</span><span class="p">(</span><span class="s">'nyc'</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">add_current_profile</span><span class="p">(</span><span class="o">....</span><span class="p">);</span>
-<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">add_registry</span><span class="p">(</span><span class="s">'NGTLD'</span><span class="p">,{</span><span class="n">clid</span> <span class="o">=&gt;</span> <span class="s">'ClientX'</span><span class="p">,</span><span class="n">provider</span><span class="o">=&gt;</span><span class="s">'neustar'</span><span class="p">,</span><span class="n">name</span><span class="o">=&gt;</span><span class="s">'whatever'</span><span class="p">,</span><span class="n">tlds</span><span class="o">=</span><span class="p">[</span><span class="s">'nyc'</span><span class="p">]});</span> <span class="c1"># using tld</span>
-</pre></div>
+<div class="highlight highlight-source-perl"><pre><span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>add_registry(<span class="pl-s"><span class="pl-pds">'</span>NGTLD<span class="pl-pds">'</span></span>,{<span class="pl-c1">clid</span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>ClientX<span class="pl-pds">'</span></span>,<span class="pl-c1">provider</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>neustar<span class="pl-pds">'</span></span>,<span class="pl-c1">name</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>nyc<span class="pl-pds">'</span></span>}); <span class="pl-c"># using name</span>
+<span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>target(<span class="pl-s"><span class="pl-pds">'</span>nyc<span class="pl-pds">'</span></span>)<span class="pl-k">-&gt;</span>add_current_profile(....);
+<span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>add_registry(<span class="pl-s"><span class="pl-pds">'</span>NGTLD<span class="pl-pds">'</span></span>,{<span class="pl-c1">clid</span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>ClientX<span class="pl-pds">'</span></span>,<span class="pl-c1">provider</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>neustar<span class="pl-pds">'</span></span>,<span class="pl-c1">name</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>whatever<span class="pl-pds">'</span></span>,tlds=[<span class="pl-s"><span class="pl-pds">'</span>nyc<span class="pl-pds">'</span></span>]}); <span class="pl-c"># using tld</span></pre></div>
 
 <h5>
-<a name="some-experimental-ngtld-functions" class="anchor" href="#some-experimental-ngtld-functions"><span class="octicon octicon-link"></span></a>Some experimental ngTLD functions</h5>
+<a id="some-experimental-ngtld-functions" class="anchor" href="#some-experimental-ngtld-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Some experimental ngTLD functions</h5>
 
-<div class="highlight highlight-perl"><pre><span class="nv">$rc</span> <span class="o">=</span> <span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">domain_check_claims</span><span class="p">(</span><span class="s">'test.tld'</span><span class="p">,{</span><span class="n">phase</span><span class="o">=&gt;</span><span class="s">'landrush'</span><span class="p">});</span>
-<span class="nv">$lp</span> <span class="o">=</span> <span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">get_info</span><span class="p">(</span><span class="s">'lp'</span><span class="p">);</span>
-<span class="nv">$claim_key</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$lp</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">'exist'</span><span class="p">})</span> <span class="p">?</span> <span class="nv">$lp</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">'claim_key'</span><span class="p">}</span> <span class="p">:</span> <span class="nb">undef</span><span class="p">;</span>
+<div class="highlight highlight-source-perl"><pre><span class="pl-smi">$rc</span> = <span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>domain_check_claims(<span class="pl-s"><span class="pl-pds">'</span>test.tld<span class="pl-pds">'</span></span>,{<span class="pl-c1">phase</span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">'</span>landrush<span class="pl-pds">'</span></span>});
+<span class="pl-smi">$lp</span> = <span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>get_info(<span class="pl-s"><span class="pl-pds">'</span>lp<span class="pl-pds">'</span></span>);
+<span class="pl-smi">$claim_key</span> = (<span class="pl-smi">$lp</span><span class="pl-k">-&gt;</span>{<span class="pl-s"><span class="pl-pds">'</span>exist<span class="pl-pds">'</span></span>}) ? <span class="pl-smi">$lp</span><span class="pl-k">-&gt;</span>{<span class="pl-s"><span class="pl-pds">'</span>claim_key<span class="pl-pds">'</span></span>} : <span class="pl-c1">undef</span>;
 
-<span class="nv">$rc</span> <span class="o">=</span> <span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">domain_check_price</span><span class="p">(</span><span class="s">'test.tld'</span><span class="p">);</span>
-<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">get_info</span><span class="p">(</span><span class="s">'is_premium'</span><span class="p">);</span>
-<span class="nv">$dri</span><span class="o">-&gt;</span><span class="n">get_info</span><span class="p">(</span><span class="s">'create_price'</span><span class="p">);</span>
-</pre></div>
+<span class="pl-smi">$rc</span> = <span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>domain_check_price(<span class="pl-s"><span class="pl-pds">'</span>test.tld<span class="pl-pds">'</span></span>);
+<span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>get_info(<span class="pl-s"><span class="pl-pds">'</span>is_premium<span class="pl-pds">'</span></span>);
+<span class="pl-smi">$dri</span><span class="pl-k">-&gt;</span>get_info(<span class="pl-s"><span class="pl-pds">'</span>create_price<span class="pl-pds">'</span></span>);</pre></div>
 
 <hr>
       </section>
@@ -126,7 +120,7 @@ Note, if the name you specified matches one of the TLD's and you have not manual
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">Net-DRI maintained by <a href="https://github.com/thedarkwinter">thedarkwinter</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
 
