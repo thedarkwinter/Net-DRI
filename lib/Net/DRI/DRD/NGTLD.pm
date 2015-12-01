@@ -404,6 +404,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 xn--80asehdb xn--80aswg xn--mgbab2bd art barcelona eurovision erni eurovision eus gal lacaixa madrid mango museum quebec radio scot sport swiss
 
+=head3 Custom extensions: (From Tango-RS but with CoreNIC namespaces)
 
 L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> : http://xmlns.corenic.net/epp/idn-1.0
 
@@ -413,14 +414,14 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.coreni
 
 L<Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
 
-
+L<Net::DRI::Protocol::EPP::Extensions::TANGO::Promotion> : http://xmlns.corenic.net/epp/promotion-1.0
 
 =cut
 
  return {
      bep_type => 1, # dedicated registy
      tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{custom => ('Tango::Promotion')}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'corenic';
 

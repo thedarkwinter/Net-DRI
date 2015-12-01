@@ -1,7 +1,7 @@
 ## Domain Registry Interface, CORENIC Driver
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2013,2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,9 +48,11 @@ CoreNIC utilises the following standard, and custom extensions. Please see the t
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> : http://xmlns.corenic.net/epp/auction-1.0
 
-=head2 Not implemented extensions:
+L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
-=head3 http://xmlns.corenic.net/epp/mark-ext-1.0 : This means thats we are not currently able submit "Custom Trademark"  and "Transliteration" applications.
+L<Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::TANGO::Promotion> : http://xmlns.corenic.net/epp/promotion-1.0
 
 =head1 SUPPORT
 
@@ -71,7 +73,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2013,2015 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -97,12 +99,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'CORENIC'; }
-
-# TLDs taken from website 19/06/2013 - should be checked at a later date
-# xn--80asehdb ( .онлайн = .online)
-# xn--80aswg ( сайт = .site )
-# xn--mgbab2bd (  بازار = .bazaar )
-sub tlds     { return ('xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','eus','gal','madrid','quebec','radio','scot','sport','swiss'); }
+sub tlds     { return ('xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
