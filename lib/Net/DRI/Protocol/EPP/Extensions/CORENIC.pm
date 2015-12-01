@@ -30,6 +30,9 @@ sub setup
  $self->ns({
   (map { $_ => ['http://xmlns.corenic.net/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/idn auction mark-ext/),
   'el' => ['http://xmlns.corenic.net/epp/contact-eligibility-1.0','contact-eligibility-1.0.xsd'],
+  'promo' => ['http://xmlns.corenic.net/epp/promotion-1.0','promotion-1.0.xsd'],
+  'promo_info' => ['http://xmlns.corenic.net/epp/promotion-info-1.0','promotion-info-1.0.xsd'],
+  'promo_info_r' => ['http://xmlns.domini.cat/epp/promo-1.0','promo-1.0.xsd'],
  });
  $self->capabilities('domain_update','idn',['add','del']);
  $self->capabilities('domain_update','auction',['set']);
@@ -38,7 +41,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/LaunchPhase GracePeriod SecDNS TANGO::IDN TANGO::Auction TANGO::LaunchPhase TANGO::ContactEligibility/; }
+sub default_extensions { return qw/LaunchPhase GracePeriod SecDNS TANGO::IDN TANGO::Auction TANGO::LaunchPhase TANGO::ContactEligibility TANGO::Promotion/; }
 
 ####################################################################################################
 1;

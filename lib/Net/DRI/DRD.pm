@@ -1396,6 +1396,14 @@ sub registrar_balance
  return $ndr->process('registrar','balance',[$rd]);
 }
 
+sub promo_info {
+ my ($self,$ndr,$promo_cde,$rd)=@_;
+ my $prod=$rd->{promo_data};
+ my $dom=$rd->{promo_data}->{dom_name}->{name} if Net::DRI::Util::has_key($prod,'dom_name');
+ $self->enforce_domain_name_constraints($ndr,$dom,'info') if defined($dom);
+ return $ndr->process('promo','info',[$promo_cde,$rd]);
+}
+
 ####################################################################################################
 ## Premium domains, these function attempt to standardise lookup by calling a single domain_check_price sub
 # $rc = $dri->domain_check_price('test.tld','test2.tld'); # defaults to USD / create / 1 year
