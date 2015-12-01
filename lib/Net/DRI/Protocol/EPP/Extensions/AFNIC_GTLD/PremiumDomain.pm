@@ -36,6 +36,7 @@ sub register_commands
 sub parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return unless ($otype && $oname);
  my $mes=$po->message();
  return unless $mes->is_success();
  $rinfo->{$otype}->{$oname}->{exist_reason} =~ m!^(.*)? - Reserve Auction Price: (\d+) Create: (\d+) Tranfer:(\d+) Renew:(\d+)$!;

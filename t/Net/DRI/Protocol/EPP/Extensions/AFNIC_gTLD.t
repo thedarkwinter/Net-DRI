@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 10;
+use Test::More tests => 15;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -41,6 +41,15 @@ $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),'123','message_retrieve get_info(last_id)');
 my  $lp = $dri->get_info('lp','message',123);
 is($lp->{'status'},'allocated','message_retrieve get_info lp->{status}');
+
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="3" id="124"><qDate>2015-10-05T10:03:13.0Z</qDate><msg>Application switches to "invalid" state</msg></msgQ><resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>foobar.paris</domain:name><domain:roid>DOM000000271999-PARIS</domain:roid><domain:status s="pendingCreate"/><domain:status s="serverRenewProhibited"/><domain:status s="serverTransferProhibited"/><domain:status s="serverUpdateProhibited"/><domain:registrant>TEST</domain:registrant><domain:contact type="admin">A101</domain:contact><domain:contact type="tech">T101</domain:contact><domain:contact type="billing">B101</domain:contact><domain:clID>IANAXXX</domain:clID><domain:crID>IANAXXX</domain:crID><domain:crDate>2015-10-02T17:44:25Z</domain:crDate><domain:exDate>2017-10-02T17:44:25Z</domain:exDate><domain:upID>IANAXXXX</domain:upID><domain:upDate>2015-10-02T17:44:25Z</domain:upDate><domain:authInfo>fooBAR2</domain:authInfo></domain:infData></resData><extension><launch:infData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>sunrise</launch:phase><launch:applicationID>PARISS20151002194424SITYPYCY92499435</launch:applicationID><launch:status s="invalid"/></launch:infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),'124','message_retrieve get_info(last_id)');
+$lp = $dri->get_info('lp','message',124);
+is($lp->{'status'},'invalid','message_retrieve get_info lp->{status}');
+is($dri->get_info('name','message',124),'foobar.paris','message_retrieve get info name');
+is($dri->get_info('object_type','message',124),'domain','message_retrieve get info object_type');
+is($dri->get_info('object_id','message',124),'foobar.paris','message_retrieve get info object_id');
 
 ##################### 
 ## PremiumDomain
