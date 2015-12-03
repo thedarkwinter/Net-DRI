@@ -1137,7 +1137,7 @@ $dri->add_registry('NGTLD',{provider=>'teleinfo'});
 
 =head3 TLDs
 
-xn--3ds443g xn--fiq228c5hs
+xn--3ds443g xn--fiq228c5hs xn--vuq861b
 
 =cut
 
