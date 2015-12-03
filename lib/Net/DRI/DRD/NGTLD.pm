@@ -1145,6 +1145,7 @@ xn--3ds443g xn--fiq228c5hs xn--vuq861b
      bep_type => 2, # shared registry
      tlds => ['xn--3ds443g', 'xn--fiq228c5hs', 'xn--vuq861b'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
+     whois_server => 'whois.teleinfo.cn',
    } if $bep eq 'teleinfo';
 
 =pod
