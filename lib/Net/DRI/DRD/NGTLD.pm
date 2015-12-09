@@ -290,13 +290,13 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-xxx xn--3ds443g xn--4gbrim xn--fiq228c5hs xn--kput3i adult bnpparibas creditunion ged global indians irish ltda onl porn rich sex srl storage vegas
+xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ltda onl porn rich sex srl storage vegas
 
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xxx','xn--3ds443g','xn--4gbrim','xn--fiq228c5hs','xn--kput3i','adult','bnpparibas','creditunion','ged','global','indians','irish','ltda','onl','porn','rich','sex','srl','storage','vegas'],
+     tlds => ['xxx','xn--4gbrim','xn--kput3i','adult','bnpparibas','creditunion','ged','global','indians','irish','ltda','onl','porn','rich','sex','srl','storage','vegas'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
@@ -419,7 +419,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::Promotion> : http://xmlns.corenic.
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -557,7 +557,7 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'trade', 'webcam', 'win', # uncontended
               'app', 'baby', 'cam', 'charity', 'forum', 'game', 'hotel', 'music', 'rugby', 'search', 'shop', 'sport', 'stream',# contended
              ],
@@ -609,8 +609,8 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      tlds => ['kyoto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
      whois_server => 'whois.centralnic.com',
-   } if $bep eq 'gmokyoto';   
-   
+   } if $bep eq 'gmokyoto';
+
 =pod
 
 
@@ -709,7 +709,7 @@ Contested: basketball group music
  return {
      bep_type => 1, # dedicated registry
      tlds => ['london', 'london-collisions', 'review', 'rugby',
-              'basketball', 'group', 'music', 
+              'basketball', 'group', 'music',
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
@@ -759,7 +759,7 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::NYCContact> urn:ietf:params:xml
 
 =head3 Notes
 
-Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD. 
+Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD.
 In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension for contacts and domains.
 See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact>
 
@@ -769,7 +769,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
 
 =cut
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['nyc'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::EXTContact'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::NYC->new(@_); } } ],
@@ -779,7 +779,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
 
  ## these use CentralNic::Fee
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['club','earth'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::NYC->new(@_); } } ],
@@ -789,7 +789,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
 
  ## these use NeuLevel::Fee or no Fee extension
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['xn--rhqv96g','xn--g2xx48c','xn--nyqy26a','best','hsbc', 'uno','safety','pharmacy','nyc','jetzt','taipei','qpon','moe','buzz','ceo','htc','whoswho','osaka'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -811,7 +811,7 @@ bom final rio
 =cut
 
  return {
-     bep_type => 2, # shared registy
+     bep_type => 2, # shared registry
      host_as_attr => 1,
      contact_i18n => 1, # LOC only
      tlds => ['bom','final','rio'],
@@ -836,7 +836,7 @@ cymru wales bbc
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['cymru','wales','bbc'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -858,7 +858,7 @@ gent boston
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['gent','boston'],
      host_as_attr => 1,
      contact_i18n => 2,
@@ -935,7 +935,7 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['bh','berlin','brussels','gmbh','hamburg','tirol','versicherung','vlaanderen','voting','wien','ikano'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::RegBox->new(@_); } } ],
@@ -1052,7 +1052,7 @@ L<NET::DRI::Protocol::EPP::Extensions::MX::IDN>
 
 =head3 TLDs
 
-archi bio ski 
+archi bio ski
 
 =cut
 
@@ -1092,7 +1092,7 @@ Fee extension is currently only used in .NRW and for domain_check command only.
 =cut
 
  return {
-     bep_type => 1, # dedicated registy
+     bep_type => 1, # dedicated registry
      tlds => ['ruhr','cologne','gmx','ifm','koeln','nrw'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TANGO',{enable_fee => ($tld eq 'nrw')}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -1120,12 +1120,34 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/ep
 =cut
 
  return {
-     bep_type => 2, # shared registy
+     bep_type => 2, # shared registry
      tlds => ['moscow', 'tatar', 'xn--d1acj3b', 'xn--1-7sbc5ceg', 'xn--2-7sbc5ceg', 'xn--80adxhks'],
      contact_i18n => 7, # and or ?
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::TCI_gTLD->new(@_); } } ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TCI_gTLD',{}],
    } if $bep eq 'tci';
+
+=pod
+
+
+=head2 Teleinfo
+
+$dri->add_registry('NGTLD',{provider=>'teleinfo'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+xn--3ds443g xn--fiq228c5hs xn--vuq861b
+
+=cut
+
+ return {
+     bep_type => 2, # shared registry
+     tlds => ['xn--3ds443g', 'xn--fiq228c5hs', 'xn--vuq861b'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
+     whois_server => 'whois.teleinfo.cn',
+   } if $bep eq 'teleinfo';
 
 =pod
 
@@ -1203,7 +1225,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain>
 =cut
 
  return {
-     bep_type => 2, 
+     bep_type => 2,
      contact_i18n => 2, # FIXME: they appear to only accept one address, might be they either is valid?
      tlds => ['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','azure','bank','bing','broker','career','cfd','crs','forex','hotmail','java','maif','markets','microsoft','ooo','oracle','pictet','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['VeriSign::Sync', 'VeriSign::PollLowBalance', 'VeriSign::PollRGP', 'VeriSign::IDNLanguage', 'VeriSign::WhoWas', 'VeriSign::Suggestion', 'VeriSign::ClientAttributes', 'VeriSign::TwoFactorAuth', 'VeriSign::ZoneManagement', 'VeriSign::Balance', 'VeriSign::NameStore', 'VeriSign::PremiumDomain']}],
@@ -1272,7 +1294,7 @@ All registries in the todo list here...
 
 This method wraps and normalises the claims check form. By default it will uses
 'claims' as the phase. You can specify another phase (e.g.) landrush, and this
-method will automatically fill in phase/sub_phase fields as required by the 
+method will automatically fill in phase/sub_phase fields as required by the
 backend operator. Its recommended you always use the current phase name in this
 command.
 
@@ -1281,16 +1303,16 @@ command.
 
 =head2 domain_check_price
 
-Some ngTLD backend operators have extensions that support checking domain prices 
-(including premium prices). Unfortunately, there is a bit of a mix of how it 
-works, so this method attempts to standadise it somewhat. Where available, 
-currency, and duration (as interger for years or a DateTime::Duration 
+Some ngTLD backend operators have extensions that support checking domain prices
+(including premium prices). Unfortunately, there is a bit of a mix of how it
+works, so this method attempts to standadise it somewhat. Where available,
+currency, and duration (as interger for years or a DateTime::Duration
 object) will be added to the lookup.
 
  $rc = $dri->domain_check_price('test.tld','test2.tld'); # defaults to USD / create / 1 year
  $rc = $dri->domain_check_price('test.tld','test2.tld',{'currency'=>'USD','duration'=>'1'}); # manually
  $rc = $dri->domain_check_price('test.tld','test2.tld',{'currency'=>'USD','idn'=>{...}}); # any other arguments can be specified alongside
- 
+
 =cut
 
 ####################################################################################################
