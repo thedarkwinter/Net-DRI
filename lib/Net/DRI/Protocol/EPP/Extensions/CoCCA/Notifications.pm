@@ -82,8 +82,8 @@ sub parse_poll {
 	return unless $mes->is_success();
 
 	# get poll message id and content
-	my $id=$mes->msg_id();
-	my $node=$rinfo->{message}->{$id}->{content};
+	return unless my $id=$mes->msg_id();
+	return unless my $node=$rinfo->{message}->{$id}->{content};
 
 	# parse the rest of the data in the message (CDATA)
 	if ( $node =~ /<offlineUpdate><domain><name>(.*)?<\/name><change>(.*)?<\/change><details>(.*)?<\/details><\/domain><\/offlineUpdate>/gi ) {
