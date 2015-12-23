@@ -305,6 +305,7 @@ sub open_connection
  my ($self,$ctx)=@_;
  $self->open_socket($ctx);
  my $rc=$self->send_login($ctx);
+ return $rc if !$rc->is_success(); # don't set state to 1 if login failed
  $self->current_state(1);
  $self->time_open(time());
  $self->time_used(time());
