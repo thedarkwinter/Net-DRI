@@ -20,6 +20,7 @@ use strict;
 use warnings;
 
 use base qw/Net::DRI::Data::Contact/;
+__PACKAGE__->register_attributes(qw(org street));
 
 =pod
 
@@ -81,8 +82,8 @@ sub validate
 
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
- push @errs, 'no <contact:org> supported' if $self->org();
- push @errs, 'only 2 <contact:street> elements allowed' if @{$self->street()} > 2;
+ push @errs, 'org not supported' if $self->org();
+ push @errs, 'only 2 street elements allowed' if @{$self->street()} > 2;
  Net::DRI::Exception::usererr_invalid_parameters('contact => '.join(' / ',@errs)) if @errs;
 
  return 1; ## everything ok
