@@ -80,7 +80,32 @@ sub new
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Nominet'; }
-sub tlds          { return qw/uk co.uk ltd.uk me.uk net.uk org.uk plc.uk sch.uk/; }
+sub tlds {
+  my @uk = ('uk', map { $_.'.uk'} qw/co tld me net org plc sch/);
+  # from Schools_Domain_Name_Rules.pdf
+  my @sch_england = (map { $_.'.sch.uk'} qw/
+      barking-dagenham barnet barnsley bathnes beds bexley bham blackburn blackpool bolton bournemouth bracknell-forest bradford brent brighton-hove bristol bromley bucks bury
+      calderdale cambs camden beds cheshire city-of-london cornwall coventry croydon cumbria darlington derby derbyshire devon doncaster dorset dudley durham
+      ealing e-riding e-sussex enfield essex gateshead gloucs greenwich hackney halton lbhf hants haringey harrow hartlepool havering hereford herts hillingdon hounslow
+      iow scilly islington kensington-chelsea kent hull kingston kirklees knowsley lambeth lancs leeds leicester leics lewisham lincs liverpool luton
+      manchester medway merton middlesbrough milton-keynes newcastle newham norfolk ne-lincs n-lincs n-sommerset n-tyneside n-yorks northants northumberland notthingham notts
+      oldham oxon peterborough plymouth poole portsmouth reading redbridge rac richmond rochdale rotherham rutland salford sandwell sefton sheffield shropshire slough solihull
+      somerset s-gloucs s-tyneside southampton southend southwark st-helens staffs stockport stockton stoke suffolk sunderland surrey sutton swindon
+      tameside wrekin thurrock torbay towerhamlets trafford
+      wakefield walsall waltham wandsworth warringhton warwickshire w-berks w-sussex westminster wigan wilts windsor-maidenhead wirral wokingham wolverhampton worcs
+      york
+    /);
+  my @sch_scotland = (map { $_.'.sch.uk'} qw /
+      aberdeen aberdeenshire angus argyll-bute clacks dumgal dundeecity e-ayr e-dunbarton e-lothian e-renfrew edin falkirk fife glasgow highland inverclyde
+      midlothian moray n-ayrshire n-lanark orkney pkc renfrewshire scotborders shetland sayr s-lanark stirling w-dunbarton westlothian eileanansiar
+    /);
+  my @sch_wales = (map { $_.'.sch.uk'} qw/
+      anglesey ynysmon blaenau-gwent bridgend caerphilly cardiff carms  sirgar ceredigion conwy denbighshire sirddinbych flintshire
+      siryfflint gwynedd merthyr monmouthshire neath-porttalbot newport casnewydd pembrokeshire sirbenfro powys rhondda-cynon-taff
+      swansea valeofglamorgan torfaen wrexham
+    /);
+  return (@uk,@sch_england,@sch_scotland,@sch_wales);
+}
 sub object_types  { return qw/domain contact ns/; }
 sub profile_types { return qw/epp/; }
 
