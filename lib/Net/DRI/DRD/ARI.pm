@@ -104,8 +104,8 @@ sub name     { return 'ARI'; }
 #sub tlds     { return ('example','xn--mgbh0fb','keyvalue','sunrise','landrush'); } # FIXME : these are OT&E tlds!
 # Note, some of these TLD's may be in contention
 sub tlds     { 
- my @uncontented = qw/xn--ngbc5azd xn--ngbrx abudhabi arab build dubai host krd luxury melbourne men menu physio press space sydney website/;
- my @contended = qw/xn--hxt814e xn--5tzm5g app baby band bank blog box chat city click cloud cpa deals design doctor eco film home hosting hotel inc insurance law love movie music news now online ping rip salon secure sex shop site soccer spa sport spot store studio style sucks tennis web world /;
+ my @uncontented = qw/xn--ngbc5azd xn--ngbrx abudhabi arab build cloud cancerresearch courses cuisinella dubai film krd luxury melbourne men menu monash one physio schmidt study sucks sydney wtc/;
+ my @contended = qw/xn--hxt814e xn--5tzm5g app baby band bank blog box chat city click cpa deals design doctor eco film home hosting hotel inc insurance law love movie music news now online ping rip salon secure sex shop site soccer spa sport spot store studio style sucks tennis web world /;
  return (@uncontented);
 }
 
