@@ -72,7 +72,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/MOBI::Domain Afilias::Trademark Afilias::Registrar Afilias::JSONMessage/; }
+sub default_extensions { return qw/GracePeriod MOBI::Domain Afilias::Trademark Afilias::Registrar Afilias::JSONMessage Afilias::IDNLanguage/; }
 
 ####################################################################################################
 1;
