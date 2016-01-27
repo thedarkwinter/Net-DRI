@@ -290,13 +290,13 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ltda onl porn rich sex srl storage vegas
+xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas
 
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xxx','xn--4gbrim','xn--kput3i','adult','bnpparibas','creditunion','ged','global','indians','irish','ltda','onl','porn','rich','sex','srl','storage','vegas'],
+     tlds => ['xxx','xn--4gbrim','xn--kput3i','adult','bnpparibas','creditunion','ged','global','indians','irish','ist','istanbul','ltda','onl','porn','rich','sex','srl','storage','vegas'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
@@ -357,7 +357,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
 =head3 TLDs
 
-bar college contact design fan fans feedback host ink love online pid press reit rent rest site space tech tickets website wiki wme xyz/;
+bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -376,7 +376,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/la pw com.de/;
-    my @ngtlds = qw/bar college contact design fan fans feedback host ink love online pid press reit rent rest site space tech tickets website wiki wme xyz/;
+    my @ngtlds = qw/bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
     my @ngtlds_pipeline = qw/art now hotel forum gay group blog app mail llc/; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
