@@ -290,13 +290,13 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ltda onl porn rich sex srl storage vegas
+xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas
 
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xxx','xn--4gbrim','xn--kput3i','adult','bnpparibas','creditunion','ged','global','indians','irish','ltda','onl','porn','rich','sex','srl','storage','vegas'],
+     tlds => ['xxx','xn--4gbrim','xn--kput3i','adult','bnpparibas','creditunion','ged','global','indians','irish','ist','istanbul','ltda','onl','porn','rich','sex','srl','storage','vegas'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
