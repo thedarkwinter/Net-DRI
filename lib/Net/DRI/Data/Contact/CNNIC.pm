@@ -37,7 +37,7 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 =head2 type()
 
-One of YYZZ,ZZJGDMZ,SFZ,JGZ,HZ,QT
+One of YYZZ,ZZJGDMZ,SFZ,JGZ,HZ,QT,ORG
 
 =head2 code()
 
@@ -81,7 +81,7 @@ sub validate
  $change||=0;
  $self->SUPER::validate($change); ## will trigger an Exception if problem
  if ($self->type() || $self->code()) {
-  Net::DRI::Exception::usererr_invalid_parameters('contact type should be one of YYZZ,ZZJGDMZ,SFZ,JGZ,HZ,QT') unless $self->type() =~ m/^(?:YYZZ|ZZJGDMZ|SFZ|JGZ|HZ|QT)$/;
+  Net::DRI::Exception::usererr_invalid_parameters('contact type should be one of YYZZ,ZZJGDMZ,SFZ,JGZ,HZ,QT,ORG') unless $self->type() =~ m/^(?:YYZZ|ZZJGDMZ|SFZ|JGZ|HZ|QT|ORG)$/;
   Net::DRI::Exception::usererr_invalid_parameters('contact code should be a string between 1 and 20 characters') unless Net::DRI::Util::xml_is_token($self->code(),1,20);
  }
  return 1;
