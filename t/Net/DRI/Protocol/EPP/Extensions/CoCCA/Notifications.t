@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 29;
+use Test::More tests => 43;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -90,5 +90,23 @@ is($dri->get_info('action'),'offline_update','message_poll get_info(action)');
 is($dri->get_info('name'),'domain4.ph','message_poll get_info(name)');
 is($dri->get_info('change'),'DELETION','message_poll get_info(change)');
 is($dri->get_info('details'),'Domain deleted','message_poll get_info(details)');
+
+### poll message id: 596
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="7" id="596"><qDate>2016-01-25T00:00:00.000Z</qDate><msg lang="en"><![CDATA[<offlineUpdate><domain><name>renewed.ph</name><change>RENEWAL</change><details>Domain renewed for 1y</details></domain></offlineUpdate>]]></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),596,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),596,'message get_info last_id 2');
+is($dri->get_info('id','message',596),596,'message get_info id');
+is(''.$dri->get_info('qdate','message',596),'2016-01-25T00:00:00','message get_info qdate');
+is($dri->get_info('content','message',596),'<offlineUpdate><domain><name>renewed.ph</name><change>RENEWAL</change><details>Domain renewed for 1y</details></domain></offlineUpdate>','message get_info msg');
+is($dri->get_info('lang','message',596),'en','message get_info lang');
+is($dri->get_info('name','message',596),'renewed.ph','message get_info name');
+is($dri->get_info('name'),'renewed.ph','message get_info name');
+is($dri->get_info('action','message',596),'offline_update','message get_info action');
+is($dri->get_info('action'),'offline_update','message get_info action');
+is($dri->get_info('change','message',596),'RENEWAL','message get_info change');
+is($dri->get_info('change'),'RENEWAL','message get_info change');
+is($dri->get_info('details','message',596),'Domain renewed for 1y','message get_info details');
+is($dri->get_info('details'),'Domain renewed for 1y','message get_info details');
 
 exit 0;

@@ -77,23 +77,25 @@ sub register_commands {
 ####################################################################################################
 
 sub parse_poll {
-	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-	my $mes=$po->message();
-	return unless $mes->is_success();
+  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+  my $mes=$po->message();
+  return unless $mes->is_success();
 
-	# get poll message id and content
-	return unless my $id=$mes->msg_id();
-	return unless my $node=$rinfo->{message}->{$id}->{content};
+  # get poll message id and content
+  return unless my $msgid=$mes->msg_id();
+  return unless my $node=$rinfo->{message}->{$msgid}->{content};
 
-	# parse the rest of the data in the message (CDATA)
-	if ( $node =~ /<offlineUpdate><domain><name>(.*)?<\/name><change>(.*)?<\/change><details>(.*)?<\/details><\/domain><\/offlineUpdate>/gi ) {
-		$oaction = $rinfo->{$otype}->{$oname}->{action} = 'offline_update';
-		$rinfo->{$otype}->{$oname}->{name} = $1 if defined($1);
-		$rinfo->{$otype}->{$oname}->{change} = $2 if defined($2);
-		$rinfo->{$otype}->{$oname}->{details} = $3 if defined($3);
-	}
+  # parse the rest of the data in the message (CDATA)
+  if ( $node =~ /<offlineUpdate><domain><name>(.*)?<\/name><change>(.*)?<\/change><details>(.*)?<\/details><\/domain><\/offlineUpdate>/gi ) {
+    foreach my $tmp ($oname, $msgid) {
+      $oaction = $rinfo->{$otype}->{$tmp}->{action} = 'offline_update';
+      $rinfo->{$otype}->{$tmp}->{name} = $1 if defined($1);
+      $rinfo->{$otype}->{$tmp}->{change} = $2 if defined($2);
+      $rinfo->{$otype}->{$tmp}->{details} = $3 if defined($3);
+    }
+  }
 
-	return;
+  return;
 }
 
 ####################################################################################################
