@@ -112,6 +112,7 @@ lib/Net/DRI/DRD/ID.pm
 lib/Net/DRI/DRD/IENUMAT.pm
 lib/Net/DRI/DRD/IIS.pm
 lib/Net/DRI/DRD/IM.pm
+lib/Net/DRI/DRD/IN.pm
 lib/Net/DRI/DRD/INFO.pm
 lib/Net/DRI/DRD/IRegistry.pm
 lib/Net/DRI/DRD/ISPAPI.pm
