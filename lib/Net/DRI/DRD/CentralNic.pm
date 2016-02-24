@@ -101,9 +101,9 @@ sub tlds {
   my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
   my @orgs = (map { $_.'.org' } qw/us ae/);
   my @others = qw/la pw com.de/;
-  my @ngtlds = qw/bar cafe college contact fans feedback host ink pid place press rest space website wiki xyz/;
-  my @ngtlds_contested = qw/cafe fans place reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
-  my @ngtlds_pipeline = qw/art auto design sucks pizza now hotel forum law golf school style chat gay group blog app mail love news llc/; # no expected dates given, probably contested strings
+  my @ngtlds = qw/bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
+  my @ngtlds_contested = qw/reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
+  my @ngtlds_pipeline = qw/art now hotel forum gay group blog app mail llc/; # no expected dates given, probably contested strings
   return (@coms,@nets,@orgs,@others,@ngtlds);
 }
 
