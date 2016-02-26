@@ -100,6 +100,7 @@ lib/Net/DRI/DRD/Deloitte.pm
 lib/Net/DRI/DRD/DENIC.pm
 lib/Net/DRI/DRD/DK.pm
 lib/Net/DRI/DRD/DONUTS.pm
+lib/Net/DRI/DRD/EC.pm
 lib/Net/DRI/DRD/ES.pm
 lib/Net/DRI/DRD/EURid.pm
 lib/Net/DRI/DRD/Gandi.pm
@@ -709,6 +710,7 @@ t/Net/DRI/Protocol/EPP/Extensions/DK.t
 t/Net/DRI/Protocol/EPP/Extensions/DNSBE.t
 t/Net/DRI/Protocol/EPP/Extensions/E164.t
 t/Net/DRI/Protocol/EPP/Extensions/E164Validation.t
+t/Net/DRI/Protocol/EPP/Extensions/EC.t
 t/Net/DRI/Protocol/EPP/Extensions/ES.pm
 t/Net/DRI/Protocol/EPP/Extensions/EURid.t
 t/Net/DRI/Protocol/EPP/Extensions/FCCN.t
