@@ -204,6 +204,14 @@ sub parse_poll {
     # Now the data tag
     @tags = $mesdata->getElementsByTagNameNS( $NS, 'data' );
     return unless @tags;
+    foreach (@tags) {
+      # get data if element entry found and send content to message
+      my @tags_data = $mesdata->getElementsByTagNameNS( $NS, 'entry' );
+      return unless @tags_data;
+      foreach (@tags_data) {
+        $rinfo->{message}->{$msgid}->{'nocontent'.$_->getAttribute('name')} = $_->textContent();
+      }
+    }
 
     my $data = $tags[0];
 
