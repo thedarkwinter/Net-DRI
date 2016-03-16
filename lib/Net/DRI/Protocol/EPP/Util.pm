@@ -289,19 +289,21 @@ sub parse_disclose
 
 sub build_disclose
 {
- my ($d,$ns,@items)=@_;
+ my ($d,$ns,$c,@items)=@_;
  $ns//='contact';
  return () unless $d && ref $d eq 'HASH';
  my %v=map { $_ => 1 } values %$d;
+ my $t = $c->has_loc() + $c->has_int();
  return () unless keys(%v)==1; ## 1 or 0 as values, not both at same time
  my @d;
-
  state $l1 = [ qw/name org addr/ ];
  foreach my $item (@$l1)
  {
   if (exists $d->{$item})
   {
-   push @d,[$ns.':'.$item,{type=>'int'}],[$ns.':name',{type=>'loc'}];
+   push @d,[$ns.':'.$item,{type=>'loc'}] if ($c->has_loc());
+   push @d,[$ns.':'.$item,{type=>'int'}] if ($c->has_int());
+   push @d,[$ns.':'.$item,{type=>'loc'}] if (!$t);
   } else
   {
    push @d,[$ns.':'.$item,{type=>'int'}] if exists $d->{$item.'_int'};
