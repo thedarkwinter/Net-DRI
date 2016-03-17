@@ -7,7 +7,7 @@ use DateTime::Duration;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 328;
+use Test::More tests => 336;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -779,6 +779,18 @@ is($t[0],'NORID-6828-1215085198022632','Correct parse of outer trID/clTRID block
 is($t[1],'2008070313395805604613-reg9091-NORID','Correct parse of outer trID/svTRID block');
 $rc=$rc->next();
 is($rc,undef,'Correct parse of trID, without touching any trID node inside response');
+
+# Registry Messages with .NO specific layout - contact delete
+is($dri->get_info('action', 'message', 375338309), 'domain-transferred-away','message get_info action');
+$R2 = $E1 . '<response><result code="1301"><msg>Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="375424693"><qDate>2016-03-10T02:35:16.69Z</qDate><msg>Domain [] has been deleted</msg></msgQ><resData><message xmlns="http://www.norid.no/xsd/no-ext-result-1.0" xsi:schemaLocation="http://www.norid.no/xsd/no-ext-result-1.0 no-ext-result-1.0.xsd" type="domain-deleted"><desc>Contact object TEST FOO BAR [TEST001] has been deleted</desc><data><entry name="objtype">Contact</entry><entry name="handle">TEST001</entry><entry name="name">TEST FOO BAR</entry></data></message></resData>'. $TRID . '</response>' . $E2;
+$rc = $dri->message_retrieve();
+is($rc->is_success(), 1, 'message polled successfully');
+is($dri->get_info('last_id'), 375424693, 'message get_info last_id 1');
+is($dri->get_info('object_type', 'message', 375424693), 'Contact','message get_info object_type');
+is($dri->get_info('object_id', 'message', 375424693), 'TEST001','message get_info object_id');
+is($dri->get_info('action', 'message', 375424693), 'domain-deleted','message get_info action');
+is($dri->get_info('content', 'message', 375424693), 'Domain [] has been deleted','message get_info content');
+is($dri->get_info('nocontent', 'message', 375424693), 'Contact object TEST FOO BAR [TEST001] has been deleted','message get_info nocontent');
 
 exit 0;
 
