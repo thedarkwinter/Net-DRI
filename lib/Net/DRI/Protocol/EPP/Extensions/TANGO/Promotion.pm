@@ -190,7 +190,7 @@ sub create {
 	return unless Net::DRI::Util::has_key($rd,'promo_code'); # make sure the key exists
 	
 	# modify command body namespace
-	$mes->command(['create','domain:create',sprintf('xmlns="%s"',$mes->nsattrs('domain'))]);
+	$mes->command(['create','domain:create',sprintf('xmlns:domain="%s"',$mes->nsattrs('domain'))]);
 	
 	# build promo extension
 	my @m = build_promo_extension($rd->{'promo_code'});
@@ -209,7 +209,7 @@ sub renew {
 	return unless $rd->{'promo_code'};
 	
 	# modify command body namespace
-	$mes->command(['update','domain:renew',sprintf('xmlns="%s"',$mes->nsattrs('domain'))]);
+	$mes->command(['update','domain:renew',sprintf('xmlns:domain="%s"',$mes->nsattrs('domain'))]);
 	
 	# build promo extension
 	my @p = build_promo_extension($rd->{'promo_code'});
