@@ -228,13 +228,13 @@ sub parse_poll {
     foreach my $entry (@tags) {
         next unless ( defined( $entry->getAttribute('name') ) );
 
-        if ( $entry->getAttribute('name') eq 'objecttype' ) {
+        if ( $entry->getAttribute('name') =~ m/^(objecttype|objtype)$/ ) {
             $rinfo->{message}->{$msgid}->{object_type}
                 = $entry->getFirstChild()->getData();
         } elsif ( $entry->getAttribute('name') eq 'command' ) {
             $rinfo->{message}->{$msgid}->{action}
                 = $entry->getFirstChild()->getData();
-        } elsif ( $entry->getAttribute('name') eq 'objectname' ) {
+        } elsif ( $entry->getAttribute('name') =~ m/^(objectname|handle)$/ ) {
             $rinfo->{message}->{$msgid}->{object_id}
                 = $entry->getFirstChild()->getData();
         } elsif (
