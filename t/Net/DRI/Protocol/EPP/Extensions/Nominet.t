@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 use Data::Dumper;
-use Test::More tests => 170;
+use Test::More tests => 174;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -133,12 +133,16 @@ is_string($R1,$E1.'<command><update><l:lock xmlns:l="http://www.nominet.org.uk/e
 ####################################################################################################
 ## Domain Commands
 # check
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="0">example.co.uk</domain:name></domain:cd><domain:cd><domain:name avail="1">example2.co.uk</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('example.co.uk','example2.co.uk');
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.co.uk</domain:name><domain:name>example2.co.uk</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build');
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="0">example.co.uk</domain:name></domain:cd><domain:cd><domain:name avail="1">example2.co.uk</domain:name></domain:cd><domain:cd><domain:name avail="1">example.ltd.uk</domain:name></domain:cd><domain:cd><domain:name avail="1">example.plc.uk</domain:name></domain:cd><domain:cd><domain:name avail="0">example.city-of-london.sch.uk</domain:name></domain:cd><domain:cd><domain:name avail="1">example.nhs.uk</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example.co.uk','example2.co.uk','example.ltd.uk','example.plc.uk','example.city-of-london.sch.uk','example.nhs.uk');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.co.uk</domain:name><domain:name>example2.co.uk</domain:name><domain:name>example.ltd.uk</domain:name><domain:name>example.plc.uk</domain:name><domain:name>example.city-of-london.sch.uk</domain:name><domain:name>example.nhs.uk</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build');
 is($rc->is_success(),1,'domain_check multi is_success');
-is($dri->get_info('exist','domain','example.co.uk'),1,'domain_check multi get_info(exist) 1/2');
-is($dri->get_info('exist','domain','example2.co.uk'),0,'domain_check multi get_info(exist) 2/2');
+is($dri->get_info('exist','domain','example.co.uk'),1,'domain_check multi get_info(exist) 1/6');
+is($dri->get_info('exist','domain','example2.co.uk'),0,'domain_check multi get_info(exist) 2/6');
+is($dri->get_info('exist','domain','example.ltd.uk'),0,'domain_check multi get_info(exist) 3/6');
+is($dri->get_info('exist','domain','example.plc.uk'),0,'domain_check multi get_info(exist) 4/6');
+is($dri->get_info('exist','domain','example.city-of-london.sch.uk'),1,'domain_check multi get_info(exist) 5/6');
+is($dri->get_info('exist','domain','example.nhs.uk'),0,'domain_check multi get_info(exist) 6/6');
 
 # info
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>testdom1.co.uk</domain:name><domain:roid>123453-UK</domain:roid><domain:registrant>CONT123</domain:registrant><domain:clID>ClientX</domain:clID><domain:crID>EPP-NOMINET-2000</domain:crID><domain:crDate>2013-02-21T13:48:58</domain:crDate><domain:exDate>2014-02-21T13:48:58</domain:exDate></domain:infData></resData><extension><domain-nom-ext:infData xmlns:domain-nom-ext="http://www.nominet.org.uk/epp/xml/domain-nom-ext-1.2" xsi:schemaLocation="http://www.nominet.org.uk/epp/xml/domain-nom-ext-1.2 domain-nom-ext-1.2.xsd"><domain-nom-ext:reg-status>Registered until expiry date.</domain-nom-ext:reg-status></domain-nom-ext:infData></extension>'.$TRID.'</response>'.$E2;
