@@ -81,7 +81,7 @@ sub new
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Nominet'; }
 sub tlds {
-  my @uk = ('uk', map { $_.'.uk'} qw/co tld me net org plc sch/);
+  my @uk = ('uk', map { $_.'.uk'} qw/co ltd me net org plc sch/);
   # from Schools_Domain_Name_Rules.pdf
   my @sch_england = (map { $_.'.sch.uk'} qw/
       barking-dagenham barnet barnsley bathnes beds bexley bham blackburn blackpool bolton bournemouth bracknell-forest bradford brent brighton-hove bristol bromley bucks bury
