@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 4;
+use Test::More tests => 6;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -46,5 +46,16 @@ $cs->set($dri->local_object('contact')->srid('tec1'),'tech');
 $rc=$dri->domain_create('example123.ua', { pure_create=>1, duration=>DateTime::Duration->new(years=>5), contact=>$cs, auth=>{pw=>'2fooBAR'}, license => 'abc123'});
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="http://hostmaster.ua/epp/domain-1.1" xsi:schemaLocation="http://hostmaster.ua/epp/domain-1.1 domain-1.1.xsd"><domain:name>example123.ua</domain:name><domain:period unit="y">5</domain:period><domain:registrant>reg1</domain:registrant><domain:contact type="admin">adm1</domain:contact><domain:contact type="billing">bil1</domain:contact><domain:contact type="tech">tec1</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><uaepp:create xmlns:uaepp="http://hostmaster.ua/epp/uaepp-1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hostmaster.ua/epp/uaepp-1.1 uaepp-1.1.xsd"><uaepp:license>abc123</uaepp:license></uaepp:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($rc->is_success(),1,'domain_create is_success');
+
+## Host delete with no confirm key
+$R2='';
+$rc=$dri->host_delete('ns1.example123.ua');
+is_string($R1,$E1.'<command><delete><host:delete xmlns:host="http://hostmaster.ua/epp/host-1.1" xsi:schemaLocation="http://hostmaster.ua/epp/host-1.1 host-1.1.xsd"><host:name>ns1.example123.ua</host:name></host:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+
+## Host delete with confirm key
+$R2='';
+$rc=$dri->host_delete('ns1.example123.ua', { confirm => 'yes'});
+is_string($R1,$E1.'<command><delete><host:delete xmlns:host="http://hostmaster.ua/epp/host-1.1" xsi:schemaLocation="http://hostmaster.ua/epp/host-1.1 host-1.1.xsd"><host:name>ns1.example123.ua</host:name></host:delete></delete><extension><uaepp:delete xmlns:uaepp="http://hostmaster.ua/epp/uaepp-1.1"><uaepp:deleteNS confirm="yes"/></uaepp:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+
 
 exit 0;
