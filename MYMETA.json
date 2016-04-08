@@ -4,7 +4,7 @@
       "Patrick Mevzek <netdri@dotandco.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.112621, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "ExtUtils::MakeMaker version 7.0401, CPAN::Meta::Converter version 2.150005",
    "keywords" : [
       "DNS",
       "EPP",
@@ -46,6 +46,16 @@
             }
          }
       },
+      "email" : {
+         "description" : "Support of transport by emails",
+         "prereqs" : {
+            "runtime" : {
+               "requires" : {
+                  "Net::SMTP" : "0"
+               }
+            }
+         }
+      },
       "http" : {
          "description" : "Support of HTTP(S) transport for OpenSRS, .IT and .PL",
          "prereqs" : {
@@ -58,7 +68,7 @@
          }
       },
       "iris" : {
-         "description" : "Support of IRIS inflation/deflation & DNS SRV records for .DE and .FR IRIS DCHK service",
+         "description" : "Support of IRIS inflation/deflation & DNS SRV records for .FR IRIS DCHK service",
          "prereqs" : {
             "runtime" : {
                "requires" : {
@@ -74,8 +84,11 @@
          "prereqs" : {
             "runtime" : {
                "requires" : {
+                  "Crypt::OpenSSL::RSA" : "0",
+                  "Crypt::OpenSSL::X509" : "0",
+                  "Digest::SHA" : "0",
                   "MIME::Base64" : "0",
-                  "Net::SAML2" : "0"
+                  "XML::LibXML::XPathContext" : "0"
                }
             }
          }
@@ -96,7 +109,9 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "0"
+            "ExtUtils::MakeMaker" : "0",
+            "Test::LongString" : "0",
+            "Test::More" : "0"
          }
       },
       "configure" : {
@@ -124,15 +139,9 @@
             "XML::LibXML" : "1.99",
             "perl" : "5.010000"
          }
-      },
-      "test" : {
-         "requires" : {
-            "Test::LongString" : "0",
-            "Test::More" : "0"
-         }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "web" : "nntp://news.dotandco.net/dotandco.discuss"
@@ -142,6 +151,6 @@
          "http://www.dotandco.com/services/software/Net-DRI/index.en#license"
       ]
    },
-   "version" : "0.96_05",
+   "version" : "0.9-tdw",
    "x_serialization_backend" : "JSON::PP version 2.27300"
 }
