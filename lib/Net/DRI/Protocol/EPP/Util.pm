@@ -301,7 +301,7 @@ sub build_disclose
  my @d;
  state $l1 = [ qw/name org addr/ ];
  foreach my $item (@$l1)
- { 
+ {
   if (exists $d->{$item})
   {
    push @d,[$ns.':'.$item,{type=>'loc'}] if ($c->has_loc());
