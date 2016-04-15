@@ -1,7 +1,7 @@
 ## Domain Registry Interface, nic.at domain transactions extension
 ## Contributed by Michael Braunoeder from NIC.AT <mib@nic.at>
 ##
-## Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,6 +17,7 @@ package Net::DRI::Protocol::EPP::Extensions::AT::Domain;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -24,58 +25,16 @@ use Net::DRI::Exception;
 our $NS = 'http://www.nic.at/xsd/at-ext-domain-1.0';
 our $ExtNS = 'http://www.nic.at/xsd/at-ext-epp-1.0';
 
-=pod
-
-=head1 NAME
-
-Net::DRI::Protocol::EPP::Extensions::AT::Domain - NIC.AT EPP Domain extension for Net::DRI
-
-=head1 DESCRIPTION
-
-Please see the README file for details.
-
-=head1 SUPPORT
-
-For now, support questions should be sent to:
-
-E<lt>netdri@dotandco.comE<gt>
-
-Please also see the SUPPORT file in the distribution.
-
-=head1 SEE ALSO
-
-E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
-
-=head1 AUTHOR
-
-Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
-
-=head1 COPYRIGHT
-
-Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>.
-All rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-See the LICENSE file that comes with this distribution for more details.
-
-=cut
-
 ####################################################################################################
 
 sub register_commands {
        my ( $class, $version ) = @_;
-       my %tmp = (
-               nocommand        => [ \&extonly,          \&extonly_parse_result ],
-               delete           => [ \&delete,           undef ],
-               transfer_request => [ \&transfer_request, \&extonly_parse_result ],
-
-       );
-
-       return { 'domain' => \%tmp };
+       state $rops = { domain => { nocommand        => [ \&extonly,          \&extonly_parse_result ],
+                                   delete           => [ \&delete,           undef ],
+                                   transfer_request => [ \&transfer_request, \&extonly_parse_result ],
+                                 },
+                     };
+       return $rops;
 }
 
 ####################################################################################################
@@ -165,20 +124,6 @@ sub extonly {
        return;
 }
 
-sub extonly_parse_result {
-    my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-    my $mes=$po->message();
-    return unless $mes->is_success();
-
-    my $keydatedata=$mes->get_extension($NS,'keydate');
-    return unless defined $keydatedata;
-    
-    my $keydate = $keydatedata->getFirstChild()->getData();
-    return unless defined $keydate;
-
-    $rinfo->{domain}->{$oname}->{keydate}=$keydate;
-}
-
 sub delete { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 
        my ( $epp, $domain, $rd ) = @_;
@@ -222,5 +167,65 @@ sub transfer_request {
        return;
 }
 
+sub extonly_parse_result {
+    my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+    my $mes=$po->message();
+    return unless $mes->is_success();
+
+    my $keydatedata=$mes->get_extension($NS,'keydate');
+    return unless defined $keydatedata;
+
+    my $keydate = $keydatedata->textContent();
+    return unless defined $keydate;
+
+    $rinfo->{domain}->{$oname}->{keydate}=$keydate;
+
+    return;
+}
+
+
+
 ####################################################################################################
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Net::DRI::Protocol::EPP::Extensions::AT::Domain - NIC.AT EPP Domain extension for Net::DRI
+
+=head1 DESCRIPTION
+
+Please see the README file for details.
+
+=head1 SUPPORT
+
+For now, support questions should be sent to:
+
+E<lt>netdri@dotandco.comE<gt>
+
+Please also see the SUPPORT file in the distribution.
+
+=head1 SEE ALSO
+
+E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
+
+=head1 AUTHOR
+
+Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2006-2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+All rights reserved.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+See the LICENSE file that comes with this distribution for more details.
+
+=cut
