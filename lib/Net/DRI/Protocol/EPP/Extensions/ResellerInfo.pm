@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Reseller Extension Mapping for EPP
 ##
-## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2015,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -41,7 +41,7 @@ sub setup
 
 sub capabilities_add { return ('domain_update','reseller',[qw/add del set/]); }
 
-sub implements { return 'https://tools.ietf.org/html/draft-zhou-eppext-reseller-00'; }
+sub implements { return 'https://tools.ietf.org/html/draft-zhou-eppext-reseller-03'; }
 
 ####################################################################################################
 
@@ -54,39 +54,23 @@ sub info_parse
  my $data=$mes->get_extension($mes->ns('resellerext'),'infData');
  return unless defined $data;
 
- my %r;
  foreach my $el (Net::DRI::Util::xml_list_children($data))
  {
   my ($name,$node)=@$el;
-  if ($name eq 'resID')
+  if ($name eq 'id')
   {
-   $r{id}=$node->textContent();
-  } elsif ($name eq 'resName')
-  {
-   $r{name}=$node->textContent();
+   $rinfo->{$otype}->{$oname}->{reseller}=$node->textContent();
   }
  }
-
- $rinfo->{$otype}->{$oname}->{reseller}=\%r;
 
  return;
 }
 
-sub _add_info
+sub _add_id
 {
- my ($rd)=@_;
- my @r;
- Net::DRI::Exception::usererr_insufficient_parameters('Missing reseller id') unless Net::DRI::Util::has_key($rd,'id');
- Net::DRI::Exception::usererr_invalid_parameters('Invalid syntax for reseller id: '.$rd->{id}) unless Net::DRI::Util::xml_is_token($rd->{id},3,16);
- push @r,['resellerext:resID',$rd->{id}];
-
- if (Net::DRI::Util::has_key($rd,'name'))
- {
-  Net::DRI::Exception::usererr_invalid_parameters('Invalid syntax for reseller name: '.$rd->{name}) unless length $rd->{name};
-  push @r,['resellerext:resName',$rd->{name}];
- }
-
- return @r;
+ my ($id)=@_;
+ Net::DRI::Exception::usererr_invalid_parameters('Invalid syntax for reseller id: '.$id) unless Net::DRI::Util::xml_is_token($id,3,16);
+ return (['resellerext:id',$id]);
 }
 
 sub create_build
@@ -95,7 +79,7 @@ sub create_build
  my $mes=$epp->message();
 
  return unless Net::DRI::Util::has_key($rd,'reseller');
- my @d=_add_info($rd->{reseller});
+ my @d=_add_id($rd->{reseller});
 
  my $eid=$mes->command_extension_register('resellerext','create');
  $mes->command_extension($eid,\@d);
@@ -106,7 +90,7 @@ sub create_build
 sub update_build
 {
  my ($epp,$domain,$todo,$rp)=@_;
- 
+
  my $add=$todo->add('reseller');
  my $del=$todo->del('reseller');
  my $set=$todo->set('reseller');
@@ -115,9 +99,9 @@ sub update_build
  Net::DRI::Exception::usererr_invalid_parameters('Incompatible changeset for reseller: only add or del or set') if 1 < grep { defined } ($add,$del,$set);
 
  my @n;
- push @n,['resellerext:add',_add_info($add)] if defined $add;
- push @n,['resellerext:rem',_add_info($del)] if defined $del;
- push @n,['resellerext:chg',_add_info($set)] if defined $set;
+ push @n,['resellerext:add',_add_id($add)] if defined $add;
+ push @n,['resellerext:rem',_add_id($del)] if defined $del;
+ push @n,['resellerext:chg',_add_id($set)] if defined $set;
 
  my $mes=$epp->message();
  my $eid=$mes->command_extension_register('resellerext','update');
@@ -135,7 +119,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ResellerInfo - EPP Reseller Extension mapping (draft-zhou-eppext-reseller-00) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ResellerInfo - EPP Reseller Extension mapping (draft-zhou-eppext-reseller-03) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -159,7 +143,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2015,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
