@@ -26,7 +26,7 @@ sub register_commands
 		delete => [ \&delete, undef ],
 	);
 
-	return { 'contact' => \%tmp };
+	return { 'host' => \%tmp };
 }
 
 sub build_command_extension
@@ -56,4 +56,3 @@ sub delete
 }
 
 1;
-

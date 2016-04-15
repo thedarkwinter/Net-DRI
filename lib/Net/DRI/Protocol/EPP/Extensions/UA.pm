@@ -33,4 +33,6 @@ sub core_modules
  return @c;
 }
 
-sub default_extensions { return qw(GracePeriod UA::Domain); }
+sub default_extensions { return qw(GracePeriod UA::Domain UA::HostDelete); }
+
+1;

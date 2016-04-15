@@ -153,6 +153,7 @@ lib/Net/DRI/DRD/TCI_gTLD.pm
 lib/Net/DRI/DRD/Telnic.pm
 lib/Net/DRI/DRD/TMDB.pm
 lib/Net/DRI/DRD/TRAVEL.pm
+lib/Net/DRI/DRD/UA.pm
 lib/Net/DRI/DRD/UNIREG.pm
 lib/Net/DRI/DRD/UNITEDTLD.pm
 lib/Net/DRI/DRD/UPU.pm
@@ -428,6 +429,9 @@ lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Telnic.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UA.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UA/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UA/HostDelete.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/Centric.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/Market.pm
@@ -753,6 +757,7 @@ t/Net/DRI/Protocol/EPP/Extensions/SWITCH.t
 t/Net/DRI/Protocol/EPP/Extensions/Tango.t
 t/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/Telnic.t
+t/Net/DRI/Protocol/EPP/Extensions/UA.t
 t/Net/DRI/Protocol/EPP/Extensions/UniReg.t
 t/Net/DRI/Protocol/EPP/Extensions/UNIREG/Market.t
 t/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.t

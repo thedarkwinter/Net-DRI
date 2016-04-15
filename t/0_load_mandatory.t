@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 505;
+use Test::More tests => 509;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -113,6 +113,7 @@ use_ok('Net::DRI::DRD::MX_GTLD');
 use_ok('Net::DRI::DRD::CN');
 use_ok('Net::DRI::DRD::AE');
 use_ok('Net::DRI::DRD::EC');
+use_ok('Net::DRI::DRD::UA');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
 use_ok('Net::DRI::Data::Changes');
@@ -430,6 +431,9 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CN::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CN::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CN::Host');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PH');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UA');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UA::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UA::HostDelete');
 use_ok('Net::DRI::Protocol::DAS');
 use_ok('Net::DRI::Protocol::DAS::Message');
 use_ok('Net::DRI::Protocol::DAS::Connection');
