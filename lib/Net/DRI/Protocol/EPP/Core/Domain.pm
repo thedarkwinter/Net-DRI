@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Domain commands (RFC5731)
 ##
-## Copyright (c) 2005-2010,2012-2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2010,2012-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2010,2012-2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2010,2012-2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -319,8 +319,8 @@ sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub renew
 {
  my ($epp,$domain,$rd)=@_;
- my $curexp=Net::DRI::Util::has_key($rd,'current_expiration')? $rd->{current_expiration} : undef;
- Net::DRI::Exception::usererr_insufficient_parameters('current expiration date') unless defined($curexp);
+ Net::DRI::Exception::usererr_insufficient_parameters('current expiration date') unless Net::DRI::Util::has_key($rd,'current_expiration');
+ my $curexp = $rd->{current_expiration};
  $curexp=$curexp->clone()->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($curexp) && Net::DRI::Util::check_isa($curexp,'DateTime'));
  Net::DRI::Exception::usererr_invalid_parameters('current expiration date must be YYYY-MM-DD') unless $curexp=~m/^\d{4}-\d{2}-\d{2}$/;
 
