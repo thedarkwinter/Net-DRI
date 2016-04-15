@@ -11,9 +11,7 @@
 ##
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
-## FIXME, there is a previous version of this extension written by Michael Holloway and
-## Michael Braunoeder in RegBox/ServiceMessage and implemented used by RegBox new gTLDs and 
-## distributed in their TMCH-Toolkit which is based on Net-DRI.
+
 package Net::DRI::Protocol::EPP::Extensions::ServiceMessage;
 
 use strict;
@@ -112,7 +110,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ServiceMessage - EPP Service Messages Extension mapping (draft-mayrhofer-eppext-servicemessage-00) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ServiceMessage - EPP Service Message Extension mapping (draft-mayrhofer-eppext-servicemessage-00) for Net::DRI
 
 =head1 DESCRIPTION
 
