@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Registry messages commands (RFC5730)
 ##
-## Copyright (c) 2006-2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2013,2015-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2013,2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2013,2015-2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -91,6 +91,15 @@ sub pollreq
  return;
 }
 
+## elements in @prio come out first, in the same order as given (but only those existing in %$rh), then other keys of %$rh are reordered
+sub _sort
+{
+ my ($rh, @prio) = @_;
+ @prio = grep { exists $rh->{$_} } @prio;
+ my %prio = map { $_ => 1 } @prio;
+ return (@prio, sort { $a cmp $b } grep { ! exists $prio{$_} } keys %$rh);
+}
+
 ## We take into account all parse functions, to be able to parse any result
 sub parse_poll
 {
@@ -111,34 +120,30 @@ sub parse_poll
  my %info;
  my $h=$po->commands();
 
- ## Because of new Perl hash keys randomization always process domain, contact, host before anything else
- ## - this will ensure that panData is hit for the object in time before e.g. notifications
- foreach my $htype ('domain','contact','host', (sort { $a cmp $b } grep { $_ !~ m/domain|contact|host/ } keys %$h)) {
-  foreach my $hv ($h->{$htype})
+ ## Because of Perl hash keys randomization, we must make sure to order types first, prefering core objects,
+ ## and then order actions, to make sure review_complete is done first (as it will setup $toname & such)
+ foreach my $htype (_sort($h, qw/domain contact host/))
+ {
+  my $hv=$h->{$htype};
+  foreach my $haction (_sort($hv, 'review_complete'))
   {
-   ## Because of new Perl hash keys randomization, we must make sure review_complete action is done first
-   ## as it will setup $toname & such
-   my @k=keys(%$hv);
-   foreach my $haction ((grep { $_ eq 'review_complete' } @k),(sort { $a cmp $b } grep { $_ ne 'review_complete' } @k))
+   next if $htype eq 'message' && $haction eq 'result';
+   foreach my $t (@{$hv->{$haction}})
    {
-    next if $htype eq 'message' && $haction eq 'result';
-    foreach my $t (@{$hv->{$haction}})
-    {
-     my $pf=$t->[1];
-     next unless (defined($pf) && (ref($pf) eq 'CODE'));
-     $info{_processing_parse_poll}=1;
-     $pf->($po,$totype,$toaction,$toname,\%info);
-     delete $info{_processing_parse_poll};
-     my @tmp=grep { $_ ne '_internal' } keys %info;
-     next unless @tmp;
-     next if defined($toname); ## this must be there and not optimised as a last call further below as there can be multiple information to parse for a given $toname
-     Net::DRI::Exception::err_assert('EPP::parse_poll can not handle multiple types !') unless @tmp==1;
-     $totype=$tmp[0];
-     @tmp=keys %{$info{$totype}};
-     Net::DRI::Exception::err_assert('EPP::parse_poll can not handle multiple names !') unless @tmp==1; ## this may happen for check_multi !
-     $toname=$tmp[0];
-     $info{$totype}->{$toname}->{name}=$toname;
-    }
+    my $pf=$t->[1];
+    next unless (defined($pf) && (ref($pf) eq 'CODE'));
+    $info{_processing_parse_poll}=1;
+    $pf->($po,$totype,$toaction,$toname,\%info);
+    delete $info{_processing_parse_poll};
+    my @tmp=grep { $_ ne '_internal' } keys %info;
+    next unless @tmp;
+    next if defined $toname; ## this must be there and not optimised as a last call further below as there can be multiple information to parse for a given $toname
+    Net::DRI::Exception::err_assert('EPP::parse_poll can not handle multiple types !') unless @tmp==1;
+    $totype=$tmp[0];
+    @tmp=keys %{$info{$totype}};
+    Net::DRI::Exception::err_assert('EPP::parse_poll can not handle multiple names !') unless @tmp==1; ## this may happen for check_multi !
+    $toname=$tmp[0];
+    $info{$totype}->{$toname}->{name}=$toname;
    }
   }
  }
