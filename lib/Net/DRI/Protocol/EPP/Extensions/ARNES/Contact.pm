@@ -1,6 +1,6 @@
 ## Domain Registry Interface, ARNES (.SI) Contact EPP extension commands
 ##
-## Copyright (c) 2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::ARNES::Contact;
 
 use strict;
 use warnings;
+use feature 'state';
 
 =pod
 
@@ -45,7 +46,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -62,12 +63,11 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
-          create => [ \&create, undef ],
-          info   => [ undef, \&info_parse ],
-         );
-
- return { 'contact' => \%tmp };
+ state $rcmds = { 'contact' => { 'create' => [ \&create, undef ],
+                                 'info'   => [ undef, \&info_parse ],
+                               },
+                };
+ return $rcmds;
 }
 
 ####################################################################################################
@@ -84,14 +84,12 @@ sub create
  my $mes=$epp->message();
 
 # validate() has been called
- return unless ($contact->maticna() || $contact->emso());
+ return unless $contact->ctype();
 
  my @n;
- push @n,['dnssi:contact',{type=>$contact->maticna()? 'org' : 'person'}];
- push @n,['dnssi:maticna',$contact->maticna()] if $contact->maticna();
- push @n,['dnssi:EMSO',$contact->emso()] if $contact->emso();
+ push @n,'dnssi:contact',{type=>$contact->ctype()};
  my $eid=build_command_extension($mes,$epp,'dnssi:ext');
- $mes->command_extension($eid,[['dnssi:create'],\@n]);
+ $mes->command_extension($eid,[['dnssi:create',\@n]]);
  return;
 }
 
@@ -110,21 +108,11 @@ sub info_parse
  return unless ($infdata && $infdata->size()==1);
 
  my $co=$rinfo->{contact}->{$oname}->{self};
- my $c=$infdata->shift()->getFirstChild();
- while($c)
- {
-  next unless ($c->nodeType() == 1); ## only for element nodes
-  my $name=$c->localname() || $c->nodeName();
-  next unless $name;
+ my $c=$infdata->pop();
+ if ( $c =~ /dnssi:contact type=\"(org|person)\"/ ) {
+   $co->ctype($1);
+ }
 
-  if ($name eq 'maticna')
-  {
-   $co->maticna($c->textContent());
-  } elsif ($name eq 'EMSO')
-  {
-   $co->emso($c->textContent());
-  }
- } continue { $c=$c->getNextSibling(); }
  return;
 }
 

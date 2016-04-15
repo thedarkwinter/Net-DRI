@@ -1,6 +1,6 @@
-## Domain Registry Interface, .SI policies
-#
-## Copyright (c) 2008-2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Domain Registry Interface, EPP Status for .SI
+##
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,22 +12,19 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::ARNES;
+package Net::DRI::Protocol::EPP::Extensions::ARNES::Status;
+
+use base qw!Net::DRI::Protocol::EPP::Core::Status!;
 
 use strict;
 use warnings;
-
-use base qw/Net::DRI::DRD/;
-
-use DateTime::Duration;
-
-__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_stop domain_transfer_accept domain_transfer_refuse/);
+use feature 'state';
 
 =pod
 
 =head1 NAME
 
-Net::DRI::DRD::ARNES - ARNES (.SI) policies for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ARNES::Status - EPP .SI Status for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -51,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2011,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -68,24 +65,21 @@ See the LICENSE file that comes with this distribution for more details.
 sub new
 {
  my $class=shift;
- my $self=$class->SUPER::new(@_);
- $self->{info}->{host_as_attr}=0;
+ my $self=$class->SUPER::new(shift);
+
+ state $rs={ 'active' => 'inactive' };
+ $self->_register_pno($rs); ## this will overwrite what has been done in SUPER::new
  return $self;
 }
 
-sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'ARNES'; }
-sub tlds     { return ('si'); }
-sub object_types { return ('domain','contact','ns'); }
-sub profile_types { return qw/epp/; }
-
-sub transport_protocol_default
+sub is_core_status
 {
- my ($self,$type)=@_;
-
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARNES',{}) if $type eq 'epp';
- return;
+ return (shift=~m/^(?:client(?:Hold|(?:Delete|Renew|Update|Transfer)Prohibited)|inactive)$/);
 }
+
+sub is_active    { return shift->has_not(qw/clientHold serverHold inactive pendingQuarantine pendingLegislativeReturnQuarantine pendingLegislativeReturn/); }
+sub is_published { return shift->has_not(qw/clientHold serverHold inactive pendingQuarantine pendingLegislativeReturnQuarantine pendingLegislativeReturn/); }
+sub is_pending   { return shift->has_any(qw/pendingCreate pendingDelete pendingRenew pendingTransfer pendingUpdate pendingLegislativeReturn pendingLegislativeReturnQuarantine pendingQuarantine/); }
 
 ####################################################################################################
 1;
