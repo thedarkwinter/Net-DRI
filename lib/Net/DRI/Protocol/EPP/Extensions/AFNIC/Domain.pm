@@ -1,6 +1,6 @@
 ## Domain Registry Interface, AFNIC EPP Domain extensions
 ##
-## Copyright (c) 2008-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::AFNIC::Domain;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -48,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -65,20 +66,21 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           create => [ \&create, undef ],
-           update => [ \&update, undef ],
-           transfer_request => [ \&transfer_request, undef ],
-           trade_request    => [ \&trade_request, \&trade_parse ],
-           trade_query      => [ \&trade_query,   \&trade_parse ],
-           trade_cancel     => [ \&trade_cancel,  undef ],
-           recover_request  => [ \&recover_request, \&recover_parse],
-           check => [ undef, \&check_parse],
-           info  => [ undef, \&info_parse],
-         );
+ state $rops = { domain => {
+                            create           => [ \&create, undef ],
+                            update           => [ \&update, undef ],
+                            transfer_request => [ \&transfer_request, undef ],
+                            trade_request    => [ \&trade_request, \&trade_parse ],
+                            trade_query      => [ \&trade_query,   \&trade_parse ],
+                            trade_cancel     => [ \&trade_cancel,  undef ],
+                            recover_request  => [ \&recover_request, \&recover_parse],
+                            check            => [ undef, \&check_parse],
+                            check_multi      => [ undef, \&check_parse],
+                            info             => [ undef, \&info_parse],
+                           }
+               };
 
- $tmp{check_multi}=$tmp{check};
- return { 'domain' => \%tmp };
+ return $rops;
 }
 
 ####################################################################################################
@@ -133,6 +135,13 @@ sub build_contacts
  push @n,['frnic:contact',{type => 'admin'},$cs->get('admin')->srid()]; ## only one admin allowed
  push @n,map { ['frnic:contact',{type => 'tech'},$_->srid()] } $cs->get('tech'); ## 1 to 3 allowed
  return @n;
+}
+
+sub build_authinfo
+{
+ my ($mes, $rd, $what)=@_;
+ Net::DRI::Exception::usererr_invalid_parameters('authInfo is mandatory for a "'.$what.'"') unless (Net::DRI::Util::has_auth($rd) && exists($rd->{auth}->{pw}) && $rd->{auth}->{pw});
+ return ['frnic:authInfo',['domain:pw',{'xmlns:domain'=>($mes->nsattrs('domain'))[0]},$rd->{auth}->{pw}]];
 }
 
 sub create
@@ -221,10 +230,9 @@ sub trade_request
  my $eid=build_command_extension($mes,$epp,'frnic:ext');
  my @n=build_domain($domain);
 
- verify_contacts($rd);
  push @n,build_registrant($rd);
- push @n,build_contacts($rd);
- $mes->command_extension($eid,['frnic:command',['frnic:trade',{op=>'request'},['frnic:domain',add_keepds('trade',$rd),@n]],build_cltrid($mes)]);
+ push @n,build_authinfo($mes, $rd, 'trade request');
+ $mes->command_extension($eid,['frnic:command',['frnic:trade',{op=>'request'},['frnic:domain',@n]],build_cltrid($mes)]);
  return;
 }
 
@@ -235,6 +243,7 @@ sub trade_query
 
  my $eid=build_command_extension($mes,$epp,'frnic:ext');
  my @n=build_domain($domain);
+ push @n,build_authinfo($mes, $rd, 'trade query');
  $mes->command_extension($eid,['frnic:command',['frnic:trade',{op=>'query'},['frnic:domain',@n]],build_cltrid($mes)]);
  return;
 }
@@ -246,6 +255,7 @@ sub trade_cancel
 
  my $eid=build_command_extension($mes,$epp,'frnic:ext');
  my @n=build_domain($domain);
+ push @n,build_authinfo($mes, $rd, 'trade cancel');
  $mes->command_extension($eid,['frnic:command',['frnic:trade',{op=>'cancel'},['frnic:domain',@n]],build_cltrid($mes)]);
  return;
 }
@@ -263,12 +273,11 @@ sub trade_parse
 sub recover_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message(); 
+ my $mes=$epp->message();
 
  my $eid=build_command_extension($mes,$epp,'frnic:ext');
  my @n=build_domain($domain);
- Net::DRI::Exception::usererr_invalid_parameters('authInfo is mandatory for a recover request') unless (Net::DRI::Util::has_auth($rd) && exists($rd->{auth}->{pw}) && $rd->{auth}->{pw});
- push @n,['frnic:authInfo',['domain:pw',{'xmlns:domain'=>($mes->nsattrs('domain'))[0]},$rd->{auth}->{pw}]];
+ push @n,build_authinfo($mes, $rd, 'recover request');
  push @n,build_registrant($rd);
  push @n,build_contacts($rd);
  $mes->command_extension($eid,['frnic:command',['frnic:recover',{op=>'request'},['frnic:domain',add_keepds('recover',$rd),@n]],build_cltrid($mes)]);
