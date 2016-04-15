@@ -48,7 +48,7 @@ sub setup
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-gould-allocation-token-01'; }
+sub implements { return 'https://tools.ietf.org/html/draft-gould-allocation-token-02'; }
 
 ####################################################################################################
 
@@ -97,7 +97,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::AllocationToken - EPP Allocation Token mapping (draft-gould-allocation-token-01) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::AllocationToken - EPP Allocation Token mapping (draft-gould-allocation-token-02) for Net::DRI
 
 =head1 DESCRIPTION
 
