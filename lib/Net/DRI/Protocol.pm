@@ -131,7 +131,7 @@ sub create_local_object
  my ($self,$what,@args)=@_;
  return unless defined $self && defined $what;
  my $fn=$self->factories();
- return unless (defined($fn) && ref($fn) && exists($fn->{$what}) && (ref($fn->{$what}) eq 'CODE'));
+ Net::DRI::Exception::err_assert('invalid factory name "'.$what.'"') unless defined $fn && ref $fn eq 'HASH' && exists $fn->{$what} && ref $fn->{$what} eq 'CODE';
  return $fn->{$what}->(@args);
 }
 
