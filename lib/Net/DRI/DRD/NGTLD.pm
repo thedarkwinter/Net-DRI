@@ -546,9 +546,9 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
 =head3 TLDs
 
-accountant bid cricket date download faith loan party racing review science trade webcam win
+accountant bid cricket date download faith loan party racing review science stream trade webcam win
 
-Contension: app baby cam charity forum game hotel music rugby search shop  sport stream
+Contension: app baby cam charity forum game hotel music rugby search shop  sport
 
 =head3 Custom extensions
 
@@ -558,8 +558,8 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'trade', 'webcam', 'win', # uncontended
-              'app', 'baby', 'cam', 'charity', 'forum', 'game', 'hotel', 'music', 'rugby', 'search', 'shop', 'sport', 'stream',# contended
+     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'stream', 'trade', 'webcam', 'win', # uncontended
+              'app', 'baby', 'cam', 'charity', 'forum', 'game', 'hotel', 'music', 'rugby', 'search', 'shop', 'sport',# contended
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
