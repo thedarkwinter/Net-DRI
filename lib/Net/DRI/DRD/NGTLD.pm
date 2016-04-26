@@ -546,9 +546,9 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
 =head3 TLDs
 
-accountant bid cricket date download faith loan party racing review science trade webcam win
+accountant bid cricket date download faith loan party racing review science stream trade webcam win
 
-Contension: app baby cam charity forum game hotel music rugby search shop  sport stream
+Contension: app baby cam charity forum game hotel music rugby search shop  sport
 
 =head3 Custom extensions
 
@@ -558,8 +558,8 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'trade', 'webcam', 'win', # uncontended
-              'app', 'baby', 'cam', 'charity', 'forum', 'game', 'hotel', 'music', 'rugby', 'search', 'shop', 'sport', 'stream',# contended
+     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'stream', 'trade', 'webcam', 'win', # uncontended
+              'app', 'baby', 'cam', 'charity', 'forum', 'game', 'hotel', 'music', 'rugby', 'search', 'shop', 'sport',# contended
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -729,14 +729,14 @@ Contested: basketball music
 
 Uncontested: gop kiwi
 
-Contested: broadway radio tube
+Contested: broadway radio
 
 =cut
 
  return {
      bep_type => 2, # shared registry
      tlds => ['gop', 'kiwi',
-              'broadway', 'radio', 'tube'
+              'broadway', 'radio'
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
@@ -753,7 +753,7 @@ Contested: broadway radio tube
 
 =head3 TLDs
 
-xn--rhqv96g xn--g2xx48c xn--nyqy26a best bible earth hoteles hsbc uno safety pharmacy nyc jetzt taipei qpon moe buzz ceo htc club whoswho osaka
+xn--rhqv96g xn--g2xx48c xn--nyqy26a best bible earth hoteles hsbc uno safety pharmacy nyc jetzt taipei tube qpon moe buzz ceo htc club whoswho osaka
 
 Contended TLD's not included
 
@@ -796,7 +796,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  ## these use NeuLevel::Fee or no Fee extension
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'best', 'buzz', 'ceo', 'hoteles', 'hsbc', 'htc', 'jetzt', 'moe', 'nyc', 'osaka', 'pharmacy', 'qpon', 'rocher', 'safety', 'taipei', 'uno', 'whoswho'],
+     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'best', 'buzz', 'ceo', 'hoteles', 'hsbc', 'htc', 'jetzt', 'moe', 'nyc', 'osaka', 'pharmacy', 'qpon', 'rocher', 'safety', 'taipei', 'tube', 'uno', 'whoswho'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
