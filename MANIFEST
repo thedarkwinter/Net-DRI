@@ -724,6 +724,7 @@ t/Net/DRI/Protocol/EPP/Extensions/ICMRegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/IT.pm
 t/Net/DRI/Protocol/EPP/Extensions/KeyRelay.t
+t/Net/DRI/Protocol/EPP/Extensions/KNET.t
 t/Net/DRI/Protocol/EPP/Extensions/LaunchPhase.t
 t/Net/DRI/Protocol/EPP/Extensions/LU.t
 t/Net/DRI/Protocol/EPP/Extensions/LV.t
