@@ -621,18 +621,16 @@ sub parse_encoded_signed_mark
 {
  my ($po,$start,$xmlsec)=@_;
  my $content;
-
  if (ref $start)
  {
   my $encoding=$start->hasAttribute('encoding') ? $start->getAttribute('encoding') : 'base64';
   Net::DRI::Exception::err_invalid_parameter('For encoded signed mark, only base64 encoding is supported') unless $encoding eq 'base64';
-  $content=$start->textContent();
- } else
+  my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start->textContent());
+  $content = (@a) ? $content=join("\n",@a[1..($#a-1)]) : $start->textContent(); } else
  {
   my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start);
   $content=join("\n",@a[1..($#a-1)]);
  }
-
  require MIME::Base64;
  my $xml=MIME::Base64::decode_base64($content);
  $xml=Encode::decode('UTF-8',$xml,Encode::FB_CROAK | Encode::LEAVE_SRC);
