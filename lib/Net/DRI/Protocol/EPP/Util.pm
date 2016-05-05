@@ -289,14 +289,20 @@ sub parse_disclose
 
 sub build_disclose
 {
- my ($d,$ns,$c,@items)=@_;
+ my ($d,$ns,@items)=@_;
+ my $c = $d; # assigns contact object for later use
+ $d = $d->disclose() if (((my $ref=eval{$d->can('disclose')}))); # extracts disclose if exists & deals with non-contact objects
  my $t;
- $ns//='contact';
- return () unless $d && ref $d eq 'HASH';
- my %v=map { $_ => 1 } values %$d;
- if (($c->can('has_loc')) || ($c->can('has_int'))) {
-  $t = $c->has_loc() + $c->has_int();
+ if ($ns eq 'contact') {
+  if (($c->can('has_loc')) || ($c->can('has_int'))) {
+   $t = $c->has_loc() + $c->has_int();
+  }
+ } else {
+  $t = 0;
  }
+ $ns//='contact';
+ return () unless ($d && ref $d eq 'HASH');
+ my %v=map { $_ => 1 } values %$d;
  return () unless keys(%v)==1; ## 1 or 0 as values, not both at same time
  my @d;
  state $l1 = [ qw/name org addr/ ];
