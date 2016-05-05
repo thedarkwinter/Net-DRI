@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP IDN (draft-ietf-eppext-idnmap-02)
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##

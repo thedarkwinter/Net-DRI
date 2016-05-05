@@ -1,6 +1,6 @@
 ## Domain Registry Interface, ICANN policy on reserved names
 ##
-## Copyright (c) 2005-2012,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2012,2015-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -20,10 +20,10 @@ use warnings;
 
 use Net::DRI::Util;
 
-## See http://www.icann.org/en/resources/registries/rsep for changes (done until 2014094)
+## See http://www.icann.org/en/resources/registries/rsep for changes (done until 2016011)
 ## + https://www.icann.org/resources/two-character-labels
 our %ALLOW1=map { $_ => 1 } qw/mobi coop biz pro cat info travel tel asia org/; ## Pending ICANN review: (none)
-our %ALLOW2=map { $_ => 1 } qw/mobi coop name jobs biz pro cat info travel tel asia org globo wiki ceo best kred ventures singles holdings guru clothing bike plumbing camera equipment lighting estate gallery graphics photography contractors land technology construction directory kitchen today voyage tips enterprises diamonds shoes careers photos recipes limo domains cab company computer systems academy management center solutions support email builders training camp glass education repair institute solar coffee florist house international holiday marketing viajes codes farm cheap zone agency bargains boutique cool watch works expert foundation exposed villas flights rentals cruises vacations condos properties maison tienda dating events partners productions community catering cards cleaning tools industries parts supplies supply report vision fish services capital engineering exchange gripe associates lease media pictures reisen toys university town wtf fail financial limited care clinic surgery dental tax cash fund investments furniture discount fitness schule gratis claims credit creditcard digital accountants finance insure place guide church life loans auction direct business network xn--czrs0t xn--unup4y xn--vhquv deals xn--fjq720a city xyz college gop trade webcam bid healthcare world band luxury wang xn--3bSt00M xn--6qQ986B3xL xn--czRu2D xn--45Q11C build ren pizza restaurant gifts sarl sohu xn--55qx5d xn--io0a7i abogado bayern beer budapest casa cooking country fashion fishing garden horse luxe miami nrw rodeo surf vodka wedding work yoga immo saarland club jetzt neustar global kiwi berlin whoswho hamburg delivery energy monash frl mini bmw google globo/; ## Pending ICANN review: (none)
+our %ALLOW2=map { $_ => 1 } qw/mobi coop name jobs biz pro cat info travel tel asia org globo wiki ceo best kred ventures singles holdings guru clothing bike plumbing camera equipment lighting estate gallery graphics photography contractors land technology construction directory kitchen today voyage tips enterprises diamonds shoes careers photos recipes limo domains cab company computer systems academy management center solutions support email builders training camp glass education repair institute solar coffee florist house international holiday marketing viajes codes farm cheap zone agency bargains boutique cool watch works expert foundation exposed villas flights rentals cruises vacations condos properties maison tienda dating events partners productions community catering cards cleaning tools industries parts supplies supply report vision fish services capital engineering exchange gripe associates lease media pictures reisen toys university town wtf fail financial limited care clinic surgery dental tax cash fund investments furniture discount fitness schule gratis claims credit creditcard digital accountants finance insure place guide church life loans auction direct business network xn--czrs0t xn--unup4y xn--vhquv deals xn--fjq720a city xyz college gop trade webcam bid healthcare world band luxury wang xn--3bSt00M xn--6qQ986B3xL xn--czRu2D xn--45Q11C build ren pizza restaurant gifts sarl sohu xn--55qx5d xn--io0a7i abogado bayern beer budapest casa cooking country fashion fishing garden horse luxe miami nrw rodeo surf vodka wedding work yoga immo saarland club jetzt neustar global kiwi berlin whoswho hamburg delivery energy monash frl mini bmw google globo xxx/; ## Pending ICANN review: (none)
 
 ## See http://www.icann.org/en/about/agreements/registries
 sub is_reserved_name
@@ -154,7 +154,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2005-2012,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2005-2012,2015-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Sync aka ConsoliDate (draft-hollenbeck-epp-sync-01)
 ##
-## Copyright (c) 2006,2007,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2007,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -19,7 +19,6 @@ use warnings;
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
-use Net::DRI::Protocol::EPP::Core::Domain;
 
 =pod
 
@@ -49,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2007,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2007,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

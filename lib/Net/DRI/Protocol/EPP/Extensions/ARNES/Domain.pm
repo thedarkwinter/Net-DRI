@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .SI Domain EPP extension commands
 ##
-## Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2007,2008,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,16 +16,13 @@ package Net::DRI::Protocol::EPP::Extensions::ARNES::Domain;
 
 use strict;
 use warnings;
-
-use Net::DRI::Exception;
-use Net::DRI::Util;
-use Net::DRI::Protocol::EPP::Util;
+use feature 'state';
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ARNES::Domain - ARNES (.SI) EPP Domain extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ARNES::Domain - .SI EPP Domain extension commands for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -49,7 +46,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2007,2008,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,56 +63,35 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
-          transfer_registrant_request => [ \&trade ],
-          transfer_request => [ \&transfer ],
-         );
-
- return { 'domain' => \%tmp };
+ state $rcmds = { 'domain' => { 'info' => [ undef, \&info_parse ] } };
+ return $rcmds;
 }
 
 ####################################################################################################
 
-sub transfer_registrant
+sub info_parse
 {
- my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
- my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
 
- my $cs=$rd->{contact};
- my $creg=$cs->get('registrant');
- Net::DRI::Exception::usererr_invalid_parameters('registrant must be a contact object') unless (Net::DRI::Util::isa_contact($creg,'Net::DRI::Data::Contact::ARNES'));
- push @d,['domain:registrant',$creg->srid()];
- push @d,Net::DRI::Protocol::EPP::Util::build_period($rd->{duration}) if Net::DRI::Util::has_duration($rd);
- push @d,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$rd->{auth}) if Net::DRI::Util::has_auth($rd);
+ my $infdata=$mes->get_extension('dnssi','ext');
+ return unless $infdata;
 
- $mes->command_body(\@d);
- return;
-}
+ $infdata=$infdata->getChildrenByTagName('dnssi:infData');
+ return unless ($infdata && $infdata->size()==1);
+ $infdata=$infdata->shift()->getChildrenByTagName('dnssi:domain');
+ return unless ($infdata && $infdata->size()==1);
+ $infdata=$infdata->pop();
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:dnssi="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnssi')));
-}
+ my $cs=$rinfo->{domain}->{$oname}->{status};
+ foreach my $s (qw/pendingLegislativeReturn pendingLegislativeReturnQuarantine pendingQuarantine serverTransferRegistrantProhibited/)
+ {
+  if ( $infdata =~ /\"$s\"/ ) {
+    $cs->add($s);
+  }
+ }
 
-sub transfer_request
-{
- my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
-
- my @d;
- push @d,Net::DRI::Protocol::EPP::Util::build_ns($epp,$rd->{ns},$domain) if Net::DRI::Util::has_ns($rd);
-
- Net::DRI::Exception::usererr_insufficient_parameters('Registrant, admin and tech contact are required for .SI domain name transfer') unless (Net::DRI::Util::has_contact($rd) && $rd->{contact}->has_type('registrant') && $rd->{contact}->has_type('admin') && $rd->{contact}->has_type('tech'));
-
- my $cs=$rd->{contact};
- my @o=$cs->get('registrant');
- push @d,['domain:registrant',$o[0]->srid()];
- push @d,Net::DRI::Protocol::EPP::Util::build_core_contacts($epp,$cs);
-
- my $eid=build_command_extension($mes,$epp,'dnssi:ext');
- $mes->command_extension($eid,['dnssi:transfer',['dnssi:domain',\@d]]);
  return;
 }
 

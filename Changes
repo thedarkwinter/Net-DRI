@@ -206,6 +206,41 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 + Added Protocol for TMDB which supports SMDRL and CNIS only
 + Added TMDB DRD using TMDB.pm
 
+0.96_08 2016-03-31 DEVELOPMENT RELEASE
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+
++ Data/LanguageTag : new module to implement RFC 5646 ("Tags for Identifying Languages") parsing (everything possible offline without access to the registry)
++ Protocol/EPP/Extensions/ChangePoll : new module to implement draft-gould-change-poll-04
++ Protocol/EPP/Extensions/CNNIC/Bundling : new module to implement draft-kong-eppext-bundling-registration-02
++ Protocol/EPP/Extensions/AusRegistry/Price : new module to implement https://ausregistry.github.io/doc/price-1.2/price-1.2.html
++ Protocol/EPP/Extensions/AusRegistry/Sync : new module to implement http://ausregistry.github.io/doc/Domain%20Expiry%20Synchronisation%20Extension%20Mapping%20for%20the%20Extensible%20Provisioning%20Protocol.docx
++ Protocol/EPP/Extensions/UnitedTLD/Charge : new module to implement http://rightside.co/fileadmin/downloads/policies/Rightside_Price_Categories.pdf
++ Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate : new module to implement draft-lozano-ietf-eppext-registrar-expiration-date-00
++ Protocol/EPP/Extensions/Reverse : new module to implement draft-brown-epp-reverse-00
++ Protocol/EPP/Extensions/ContactVerification : new module to implement draft-wang-eppext-contact-verification-01
++ Protocol/EPP/Extensions/DomainVerification : new module to implement draft-wang-eppext-domain-verification-01
++ Protocol/EPP/Extensions/VerificationCode : new module to implement draft-gould-eppext-verificationcode-02
+= Protocol/EPP/Extensions/ICANN/MarkSignedMark : flag to enable/disable local XML validation as needed, adapt tests
+= Protocol/EPP/Extensions/ICANN/MarkSignedMark : updated to draft-ietf-eppext-tmch-smd-06
+= Protocol/EPP/Extensions/KeyRelay : updated to draft-ietf-eppext-keyrelay-11
+= Protocol/EPP/Extensions/ResellerObject : updated to draft-zhou-eppext-reseller-mapping-03
+= Protocol/EPP/Extensions/ResellerInfo : updated to draft-zhou-eppext-reseller-03
+= Protocol/EPP/Extensions/AllocationToken : updated to draft-gould-allocation-token-02
+= Protocol/EPP/Extensions/VeriSign/Sync : internal simplification
+= DRD/ICANN : 2 characters are now allowed in .xxx
+= DRD/AFNIC : direct creation with nameservers is allowed
+= Protocol/EPP/Extensions/AFNIC : updated to frnic-1.4
+= Protocol/EPP/Extensions/AT/Domain : parsing keydate (patch by from Michael Braunoeder)
+= Protocol/EPP/Extensions/ARNES : various updates for .SI (patch by Benjamin Zwittnig)
+= Protocol/EPP/Core/Domain : slight reorganization inside renew() without functional changes
+- Protocol/EPP/Core/RegistryMessage : taking hash keys order better into account, in order to not trigger problems with newer Perl versions
+- Protocol : create_local_object() does not accept an unknown factory anymore
+- Util : be more strict on XML types validation, refusing Perl references
+- Transport/Socket : better handling of socket close to prevent message "Warning: unable to close filehandle properly: Bad file descriptor during global destruction"
+- Shell : correct parsing of options with a '=' sign inside the value
+
 0.96_07 2015-05-25 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,

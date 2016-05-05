@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Misc. useful functions
 ##
-## Copyright (c) 2005-2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -53,7 +53,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -454,6 +454,7 @@ sub xml_is_string
 {
  my ($what,$min,$max)=@_;
  return 0 unless defined $what;
+ return 0 if defined Scalar::Util::reftype($what);
  return 0 unless $what=~m/^[\x{0009}\x{000A}\x{000D}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}]*$/; ## XML Char definition (all Unicode excluding the surrogate blocks, FFFE, and FFFF)
  my $l=length $what;
  return 0 if (defined $min && $l < $min);
@@ -466,6 +467,7 @@ sub xml_is_token
  my ($what,$min,$max)=@_;
 
  return 0 unless defined $what;
+ return 0 if defined Scalar::Util::reftype($what);
  return 0 if $what=~m/[\r\n\t]/;
  return 0 if $what=~m/^\s/;
  return 0 if $what=~m/\s$/;
@@ -481,6 +483,7 @@ sub xml_is_ncname ## xml:id is of this type
 {
  my ($what)=@_;
  return 0 unless defined($what) && $what;
+ return 0 if defined Scalar::Util::reftype($what);
  return ($what=~m/^\p{ID_Start}\p{ID_Continue}*$/)
 }
 
@@ -612,9 +615,11 @@ sub xml_indent
 
 sub xml_list_children
 {
- my $node=shift;
+ my ($node, $name_filter)=@_;
  ## '*' catch all element nodes being direct children of given node
- return map { [ $_->localname() || $_->nodeName(),$_ ] } grep { $_->nodeType() == 1 } $node->getChildrenByTagName('*');
+ my @r = map { [ $_->localname() || $_->nodeName(),$_ ] } grep { $_->nodeType() == 1 } $node->getChildrenByTagName('*');
+ return @r unless defined $name_filter;
+ return map { $_->[1] } grep { $_->[0] eq $name_filter } @r;
 }
 
 sub xml_traverse

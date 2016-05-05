@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Shell interface
 ##
-## Copyright (c) 2008-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -468,7 +468,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -872,7 +872,7 @@ sub process
  $params='' unless defined($params);
  my @p=split(/\s+/,$params);
  my %p;
- my @g=($params=~m/\s*(\S+)=(\S[^=]*)(?:\s|$)/g);
+ my @g=($params=~m/\s*([^= ]+)=(\S.*?)(?:\s(?=\s*\S+=)|\s*$)/g);
  while (@g)
  {
   my $n=shift(@g);

@@ -32,8 +32,6 @@ $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<
 $rc=$dri->message_retrieve();
 $lastid=$dri->get_info('last_id');
 is($lastid,137526,'message get_info last_id');
-#is($rc->get_data('last_id'),137526,'message get_data last_id');
-## use Data::Dumper; warn Dumper $rc;
 $data=$rc->get_data('message',$lastid,'servicemessage');
 is($data->{type},'TransferApproved','example 1 type');
 is($data->{description},'Inbound transfer of test.example was APPROVED. Subordinate hosts ns1.test.example, ns2.test.example were also transferred.','example 1 description');

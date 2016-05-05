@@ -1,6 +1,6 @@
 ## Domain Registry Interface, AFNIC Registry Driver for .FR/.RE/.TF/.YT/.WF/.PM
 ##
-## Copyright (c) 2005-2006,2008-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2006,2008-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -52,7 +52,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2006,2008-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2006,2008-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -98,23 +98,6 @@ sub domain_operation_needs_is_mine
  my ($self,$ndr,$domain,$op)=@_;
  return $self->SUPER::domain_operation_needs_is_mine($ndr,$domain,$op) if ($ndr->protocol()->name() eq 'EPP');
  return;
-}
-
-sub domain_create
-{
- my ($self,$ndr,$domain,$rd)=@_;
- return $self->SUPER::domain_create($ndr,$domain,$rd) unless ($ndr->protocol()->name() eq 'EPP');
- return $self->SUPER::domain_create($ndr,$domain,$rd) unless (Net::DRI::Util::has_key($rd,'pure_create') && $rd->{pure_create}==1);
- my $ns;
- if (defined($rd) && (ref($rd) eq 'HASH'))
- {
-  $ns=$rd->{ns};
-  delete($rd->{ns});
- }
- my $rc=$self->SUPER::domain_create($ndr,$domain,$rd); ## create the domain without any nameserver
- return $rc unless $rc->is_success();
- return $rc unless (defined($ns) && Net::DRI::Util::isa_hosts($ns));
- return $self->domain_update_ns_add($ndr,$domain,$ns); ## Finally update domain to add nameservers
 }
 
 sub domain_recover_start

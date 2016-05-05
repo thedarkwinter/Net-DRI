@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Main entry point
 ##
-## Copyright (c) 2005-2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -144,7 +144,7 @@ and various contributors (see Changes file and web page above)
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 =head1 LICENSE
