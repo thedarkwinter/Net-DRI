@@ -82,8 +82,9 @@ sub validate
 
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
- push @errs, 'org not supported' if $self->org();
- push @errs, 'only 2 street elements allowed' if @{$self->street()} > 2;
+ push @errs, 'org not supported for .nz contacts' if $self->org();
+ push @errs, 'only 2 street elements allowed for .nz contacts' if @{$self->street()} > 2;
+ push @errs, 'whois opt-out is not allowed for .nz contacts' if $self->disclose();
  Net::DRI::Exception::usererr_invalid_parameters('contact => '.join(' / ',@errs)) if @errs;
 
  return 1; ## everything ok
