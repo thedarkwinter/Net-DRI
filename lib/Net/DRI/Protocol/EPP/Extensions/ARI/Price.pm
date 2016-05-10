@@ -77,7 +77,7 @@ sub register_commands
      check=> [ \&check, \&check_parse ],
      check_multi => [ \&check, \&check_parse],
      create => [ \&create, undef ],
-     transer => [ \&transfer, undef ],
+     transfer_request => [ \&transfer, undef ],
      renew => [ \&renew, undef ],
      update => [ \&update, undef ],
      );
