@@ -19,7 +19,11 @@ TMCH (Deloitte)
 TMDB (IBM): CNIS and SMDRL only
 
 ##### Added/Updated/Fixed support for ccTLDs
+<<<<<<< HEAD
 UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE, NZ, EC, UA
+=======
+UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE, NZ, IN
+>>>>>>> 38a88ddd7ebf66703b69b26d99aa611fb772bfb5
 
 
 * * *
