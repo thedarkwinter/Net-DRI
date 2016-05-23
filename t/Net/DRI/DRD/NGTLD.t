@@ -104,14 +104,14 @@ $rc = $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_re
 is($rc->is_success(),1,'neustar nyc: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::EXTContact/],'neustar nyc: loaded_modules (EXTContact)');
 
-# FFM (Neustar + Centrlanic:Fee )
+# FFM (Neustar + CentralNic::Fee )
 $rc = $dri->add_registry('NGTLD',{provider => 'ffm'});
 is($rc->{last_registry},'ffm','ffm: add_registry');
 $rc = $dri->target('ffm')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'neustar ffm: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken CentralNic::Fee/],'ffm: loaded_modules');
 
-# Amazon (Neustar + Centrlanic:Fee )
+# Amazon (Neustar + CentralNic::Fee )
 $rc = $dri->add_registry('NGTLD',{provider => 'amazon'});
 is($rc->{last_registry},'amazon','amazon: add_registry');
 $rc = $dri->target('amazon')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
