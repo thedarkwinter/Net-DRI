@@ -83,7 +83,7 @@ sub validate
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
  push @errs, 'org not supported for .nz' if $self->org();
- #push @errs, 'only 2 street elements allowed for .nz' if @{$self->street()} > 2; # appended in ddDRI
+ push @errs, 'only 2 street elements allowed for .nz' if @{$self->street()} > 2;
  Net::DRI::Exception::usererr_invalid_parameters('contact => '.join(' / ',@errs)) if @errs;
 
  return 1; ## everything ok
