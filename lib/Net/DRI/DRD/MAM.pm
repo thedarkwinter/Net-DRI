@@ -92,7 +92,7 @@ sub name     { return 'MAM'; }
 #sub tlds     { return ('example','example-sunrise','example-landrush'); } # OT&E tlds!
 sub tlds     { 
   my @uncontested = qw/abogado bayern beer bible bradesco budapest casa cooking country ecom fishing fit gop horse kiwi law london luxe miami nrw review rodeo surf vodka work xn--g2xx48c/;
-  my @contested = qw/app art baby beauty blog book cloud coupon cpa cricket data dds deals design dog eco fashion flowers garden gay green home hotel immo inc latino lawyer llc love pizza property realestate restaurant school site soccer store style tech video vip website wedding yoga/;
+  my @contested = qw/app art baby beauty blog cloud coupon cpa cricket data dds deals design dog eco fashion flowers garden gay green home hotel immo inc latino lawyer llc love pizza property realestate restaurant school site soccer store style tech video vip website wedding yoga/;
   return @uncontested;
 }
 sub object_types { return ('domain','contact','ns'); }

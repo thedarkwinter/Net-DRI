@@ -301,8 +301,35 @@ xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish 
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
 
+
 =pod
 
+=head2 Amazon Registry Services, Inc. (provider: Neustar)
+
+ $dri->add_registry('NGTLD',{provider=>'amazon'});
+
+=head3 Status: Untested
+
+=head3 TLDs
+
+author aws book bot buy call circle fast got jot joy like moi pin read room safe smile song spot talk tunes tushu wanggou xn--1ck2e1b xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--gckr3f0f yamaxun you zero
+
+=head3 Custom extensions
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.6
+
+=cut
+
+ return {
+     bep_type => 1, # dedicated registry
+     tlds => ['author','aws','book','bot','buy','call','circle','fast','got','jot','joy','like','moi','pin','read','room','safe','smile','song','spot','talk','tunes','tushu','wanggou','xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--gckr3f0f','yamaxun','you','zero'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+   } if $bep eq 'amazon';
+
+
+
+=pod
 
 =head2 ARI
 
@@ -390,6 +417,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      verify_check_name => 0,
     };
  }
+
 
 =pod
 
@@ -689,7 +717,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 Uncontested: abogado bayern beer budapest casa cooking country fashion fishing fit garden horse law luxe miami rodeo surf vip vodka wedding work yoga xn--g2xx48c
 
 
-Contested: app art baby beauty blog book coupon cpa data dds eco gay home hotel inc latino llc realestate
+Contested: app art baby beauty blog coupon cpa data dds eco gay home hotel inc latino llc realestate
 
 Collisions: cooking-collisions country-collisions fishing-collisions'horse-collisions rodeo-collisions vodka-collisions
 =cut
@@ -697,7 +725,7 @@ Collisions: cooking-collisions country-collisions fishing-collisions'horse-colli
  return {
      bep_type => 2, # shared registry
      tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fashion', 'fishing', 'fit', 'garden', 'horse', 'law',  'luxe', 'miami', 'rodeo', 'surf',  'vip', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'blog', 'book', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
+              'app', 'art', 'baby', 'beauty', 'blog', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
               'cooking-collisions', 'country-collisions', 'fishing-collisions', 'horse-collisions', 'rodeo-collisions', 'vodka-collisions',
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee','MAM::QualifiedLawyer']}],

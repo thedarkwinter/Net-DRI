@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 87;
+use Test::More tests => 90;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -104,16 +104,23 @@ $rc = $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_re
 is($rc->is_success(),1,'neustar nyc: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::EXTContact/],'neustar nyc: loaded_modules (EXTContact)');
 
-# FFM (Neustar + Centrlanic:Fee )
+# FFM (Neustar + CentralNic::Fee )
 $rc = $dri->add_registry('NGTLD',{provider => 'ffm'});
 is($rc->{last_registry},'ffm','ffm: add_registry');
 $rc = $dri->target('ffm')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'neustar ffm: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken CentralNic::Fee/],'ffm: loaded_modules');
 
+# Amazon (Neustar + CentralNic::Fee )
+$rc = $dri->add_registry('NGTLD',{provider => 'amazon'});
+is($rc->{last_registry},'amazon','amazon: add_registry');
+$rc = $dri->target('amazon')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'neustar amazon: add_current_profile');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken CentralNic::Fee/],'amazon: loaded_modules');
+
 # ZACR (Durban)
 $rc = $dri->add_registry('NGTLD',{provider => 'zacr','name'=>'joburg'});
-is($rc->{last_registry},'joburg','neustar: add_registry');
+is($rc->{last_registry},'joburg','zacr: add_registry');
 $rc = $dri->target('joburg')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'zacr: add_current_profile');
 is($dri->name(),'joburg','zacr: name');
