@@ -291,7 +291,7 @@ sub build_cdata
  push @d,Net::DRI::Protocol::EPP::Util::build_tel($ns.':fax',$contact->fax()) if defined($contact->fax());
  push @d,[$ns.':email',$contact->email()] if defined($contact->email());
  push @d,build_authinfo($contact,$ns);
- push @d,Net::DRI::Protocol::EPP::Util::build_disclose($contact->disclose(),$ns);
+ push @d,Net::DRI::Protocol::EPP::Util::build_disclose($contact,$ns);
 
  return @d;
 }
