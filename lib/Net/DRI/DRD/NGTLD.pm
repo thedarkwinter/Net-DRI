@@ -785,7 +785,7 @@ Contested: broadway radio
 
 =head3 TLDs
 
-xn--rhqv96g xn--g2xx48c xn--nyqy26a best bible earth hoteles hsbc uno safety pharmacy nyc jetzt taipei tube qpon moe buzz ceo htc club whoswho osaka
+xn--g2xx48c xn--nyqy26a xn--rhqv96g best bible buzz ceo club earth ferrero hoteles hsbc htc jetzt kinder moe nyc osaka pharmacy qpon rocher safety taipei tube uno whoswho
 
 Contended TLD's not included
 
@@ -828,7 +828,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  ## these use NeuLevel::Fee or no Fee extension
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'best', 'buzz', 'ceo', 'hoteles', 'hsbc', 'htc', 'jetzt', 'moe', 'nyc', 'osaka', 'pharmacy', 'qpon', 'rocher', 'safety', 'taipei', 'tube', 'uno', 'whoswho'],
+     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'best', 'buzz', 'ceo', 'ferrero', 'hoteles', 'hsbc', 'htc', 'jetzt', 'kinder', 'moe', 'nyc', 'osaka', 'pharmacy', 'qpon', 'rocher', 'safety', 'taipei', 'tube', 'uno', 'whoswho'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
