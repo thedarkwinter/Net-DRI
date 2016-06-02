@@ -276,12 +276,6 @@ sub promo_info_parse {
     $oaction='info';
     $oname = $tmp_promo_c; # normally this should be the id of the object you are looking up, but they don't seem to return it
 
-	# create time parser (to be used later)
-	my $time_parser = DateTime::Format::Strptime->new(
-	  pattern => '%FT%T%Z',
-	  on_error => 'croak',
-	);
-
  	# separate the promo,utilization and pricing section
  	foreach my $el (Net::DRI::Util::xml_list_children($infdata)) {
 		my ($name,$c)=@$el;		
@@ -308,8 +302,8 @@ sub promo_info_parse {
 			$name=Net::DRI::Util::remcam($name);
 			$msg->{$oname}->{$name}=$c->getFirstChild()->getData() if (defined $c);
 		} elsif($name=~m/^(validity)$/) {
-			$msg->{$oname}->{$name}->{valid_from} = $time_parser->parse_datetime($c->getAttribute('from')) if $c->hasAttribute('from');
-			$msg->{$oname}->{$name}->{valid_until} = $time_parser->parse_datetime($c->getAttribute('to')) if $c->hasAttribute('to');
+			$msg->{$oname}->{$name}->{valid_from} = $po->parse_iso8601($c->getAttribute('from')) if $c->hasAttribute('from');
+			$msg->{$oname}->{$name}->{valid_until} = $po->parse_iso8601($c->getAttribute('to')) if $c->hasAttribute('to');
 		} elsif($name=~m/^(utilization)$/) {
 			$msg->{$oname}->{$name}->{available} = $c->getAttribute('avail') if $c->hasAttribute('avail');
 		}
