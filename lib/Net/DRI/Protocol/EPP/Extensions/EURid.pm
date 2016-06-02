@@ -71,7 +71,7 @@ sub setup
  my ($self,$rp)=@_;
  my $version=$self->version();
 
-## NOT handled : dynUpdate
+## NOT handled : dynUpdate, dnsQuality, homoglyph
  $self->ns({ map { $_ => ['http://www.eurid.eu/xml/epp/'.$_.'-1.1',$_.'-1.1.xsd'] } qw/nsgroup/ });
  $self->capabilities('contact_update','status',undef); ## No changes in status possible for .EU domains/contacts
  $self->capabilities('domain_update','status',undef);
