@@ -612,30 +612,31 @@ GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo')
 
 Own: nagoya tokyo yokohama
 Geo: okinawa ryukyu
+Kyoto: kyoto
 
 =head3 Custom extensions:
 
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.4
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
 
 =cut
 
  return {
      bep_type => 2, # shared registry
      tlds => ['nagoya','tokyo','yokohama'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmo';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['okinawa','ryukyu'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmogeo';
  return {
      bep_type => 2, # shared registry
      tlds => ['kyoto'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.4' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmokyoto';
 
