@@ -3,6 +3,7 @@
 ## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##           (c) 2016 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,13 +50,15 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
+David Makuni E<lt>d.makuni@live.co.ukE<gt>;
 Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>;
 Michael Holloway E<lt>michael@thedarkwinter.comE<gt>;
 Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2016: Paulo Jorge <paullojorgge@gmail.com>;
+David Makuni <d.makuni@live.co.uk>
+Paulo Jorge <paullojorgge@gmail.com>;
 Michael Holloway <michael@thedarkwinter.com>;
 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
@@ -92,7 +95,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::IN',{}) if $type eq 'epp';
 
  return;
 }
