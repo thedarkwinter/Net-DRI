@@ -68,7 +68,9 @@ sub setup {
    my ( $self , $rp ) = @_;
    $self->ns(
       {
-          trademark => ['urn:afilias:params:xml:ns:trademark-1.0','trademark-1.0.xsd']
+          trademark   => ['urn:afilias:params:xml:ns:trademark-1.0','trademark-1.0.xsd'], # Trademark
+          idn         => ['urn:afilias:params:xml:ns:idn-1.0','idn-1.0.xsd'], # IDN
+          secdns      => ['urn:ietf:params:xml:ns:secDNS-1.1','secDNS-1.1.xsd'], # SecDNS
       }
    );
 
@@ -77,7 +79,7 @@ sub setup {
    return;
 }
 
-sub default_extensions { return qw/Afilias::Trademark IN::Domain/; }
+sub default_extensions { return qw/Afilias::Trademark IN::Domain SecDNS IDN/; }
 
 ####################################################################################################
 1;

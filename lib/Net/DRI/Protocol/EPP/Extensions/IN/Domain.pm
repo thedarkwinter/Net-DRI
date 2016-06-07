@@ -26,8 +26,6 @@ use Net::DRI::Protocol::EPP::Util;
 use Net::DRI::Data::Hosts;
 use utf8;
 
-use Data::Dumper;
-
 =pod
 
 =head1 NAME

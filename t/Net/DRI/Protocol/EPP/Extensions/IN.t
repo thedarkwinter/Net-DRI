@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 6;
+use Test::More tests => 20;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -40,6 +40,10 @@ $R2='';
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build');
 is($rc->is_success(),1,'session noop is_success');
+
+$R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($dri->protocol()->ns()->{secDNS}->[0],'urn:ietf:params:xml:ns:secDNS-1.1','secDNS 1.1 for server announcing 1.0 + 1.1');
 
 ####################################################################################################
 ######## Domain Commands ########
@@ -77,6 +81,59 @@ $rc=$dri->domain_create('example.in',{pure_create=>1,duration=>DateTime::Duratio
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.in</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.in</domain:hostObj><domain:hostObj>ns2.example.in</domain:hostObj></domain:ns><domain:registrant>test1106-27</domain:registrant><domain:contact type="admin">huma1106-28</domain:contact><domain:contact type="billing">pass1236-FA</domain:contact><domain:contact type="tech">pass1236-FA</domain:contact><domain:authInfo><domain:pw>opqrstuv</domain:pw></domain:authInfo></domain:create></create><extension><trademark:create xmlns:trademark="urn:afilias:params:xml:ns:trademark-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:trademark-1.0 trademark-1.0.xsd"><trademark:name>Test Trademark</trademark:name><trademark:country>CA</trademark:country><trademark:number>998877</trademark:number><trademark:date>2016-07-01</trademark:date><trademark:ownerCountry>CA</trademark:ownerCountry></trademark:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create trademark build_xml');
 is($rc->is_success(),1,'domain_create trademark is_success');
 
+# Domain Create /w 1 DS Record
+$cs=$dri->local_object('contactset');
+$cs->add($dri->local_object('contact')->srid('test1106-27'),'registrant');
+$cs->add($dri->local_object('contact')->srid('huma1106-28'),'admin');
+$cs->add($dri->local_object('contact')->srid('pass1236-FA'),'tech');
+$cs->add($dri->local_object('contact')->srid('pass1236-FA'),'billing');
+$rc = $dri->domain_create('dsdomain1.in',
+  {
+    pure_create=>1,
+    duration=>DateTime::Duration->new(years=>'1'),
+    contact=>$cs,
+    auth=>{pw=>'fooBar'},
+    description=>'testing domain description extension',
+    secdns=>
+    [{
+      keyTag=>12345,
+      alg=>3,
+      digestType=>1,
+      digest=>'49FD46E6C4B45C55D4AC49FD46E6C4B45C55D4AC',
+    }]
+  });
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>dsdomain1.in</domain:name><domain:period unit="y">1</domain:period><domain:registrant>test1106-27</domain:registrant><domain:contact type="admin">huma1106-28</domain:contact><domain:contact type="billing">pass1236-FA</domain:contact><domain:contact type="tech">pass1236-FA</domain:contact><domain:authInfo><domain:pw>fooBar</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FD46E6C4B45C55D4AC49FD46E6C4B45C55D4AC</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create secDNS build xml');
+is($rc->is_success(),1,'domain_create secDNS is_success');
+
+# Domain Create /w 2 DS Record
+$cs=$dri->local_object('contactset');
+$cs->add($dri->local_object('contact')->srid('test1106-27'),'registrant');
+$cs->add($dri->local_object('contact')->srid('huma1106-28'),'admin');
+$cs->add($dri->local_object('contact')->srid('pass1236-FA'),'tech');
+$cs->add($dri->local_object('contact')->srid('pass1236-FA'),'billing');
+$rc = $dri->domain_create('dsdomain1.in',
+  {
+    pure_create=>1,
+    duration=>DateTime::Duration->new(years=>'1'),
+    contact=>$cs,
+    auth=>{pw=>'fooBar'},
+    description=>'testing domain description extension',
+    secdns=>
+    [{
+      keyTag=>12345,
+      alg=>3,
+      digestType=>1,
+      digest=>'49FD46E6C4B45C55D4AC49FD46E6C4B45C55D4AD',
+    },{
+      keyTag=>12345,
+      alg=>3,
+      digestType=>1,
+      digest=>'49FC66E6C4B45C56D4AC49FD46E6C4B45C55D4AE',
+    }]
+  });
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>dsdomain1.in</domain:name><domain:period unit="y">1</domain:period><domain:registrant>test1106-27</domain:registrant><domain:contact type="admin">huma1106-28</domain:contact><domain:contact type="billing">pass1236-FA</domain:contact><domain:contact type="tech">pass1236-FA</domain:contact><domain:authInfo><domain:pw>fooBar</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FD46E6C4B45C55D4AC49FD46E6C4B45C55D4AD</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FC66E6C4B45C56D4AC49FD46E6C4B45C55D4AE</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create secDNS multiple_records build xml');
+is($rc->is_success(),1,'domain_create secDNS multiple_records is_success');
+
 # Domain Update ADD 'Trademark'
 my $changes = $dri->local_object('changes');
 $changes->set('trademark',{
@@ -87,7 +144,7 @@ $changes->set('trademark',{
   ownerCountry => 'CA'
 });
 $rc = $dri->domain_update('example.in', $changes);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.in</domain:name></domain:update></update><extension><trademark:update xmlns:trademark="urn:afilias:params:xml:ns:trademark-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:trademark-1.0 trademark-1.0.xsd"><trademark:name>Test Trademark</trademark:name><trademark:number>998877</trademark:number><trademark:country>CA</trademark:country><trademark:ownerCountry>CA</trademark:ownerCountry><trademark:date>2016-07-01</trademark:date></trademark:update></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update add_trademark build');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.in</domain:name></domain:update></update><extension><trademark:update xmlns:trademark="urn:afilias:params:xml:ns:trademark-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:trademark-1.0 trademark-1.0.xsd"><trademark:name>Test Trademark</trademark:name><trademark:number>998877</trademark:number><trademark:country>CA</trademark:country><trademark:ownerCountry>CA</trademark:ownerCountry><trademark:date>2016-07-01</trademark:date></trademark:update></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update add_trademark build_xml');
 is($rc->is_success(),1,'domain_update add_trademark is_success');
 
 # Domain Update REM 'Trademark'
@@ -100,8 +157,20 @@ $changes->del('trademark',{
   ownerCountry => 'CA'
 });
 $rc = $dri->domain_update('example.in', $changes);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.in</domain:name></domain:update></update><extension><trademark:update xmlns:trademark="urn:afilias:params:xml:ns:trademark-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:trademark-1.0 trademark-1.0.xsd"><trademark:rem><trademark:name>Test Trademark</trademark:name><trademark:number>998877</trademark:number><trademark:country>CA</trademark:country><trademark:ownerCountry>CA</trademark:ownerCountry><trademark:date>2016-07-01</trademark:date></trademark:rem></trademark:update></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update remove_trademark build');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.in</domain:name></domain:update></update><extension><trademark:update xmlns:trademark="urn:afilias:params:xml:ns:trademark-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:trademark-1.0 trademark-1.0.xsd"><trademark:rem><trademark:name>Test Trademark</trademark:name><trademark:number>998877</trademark:number><trademark:country>CA</trademark:country><trademark:ownerCountry>CA</trademark:ownerCountry><trademark:date>2016-07-01</trademark:date></trademark:rem></trademark:update></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update remove_trademark build_xml');
 is($rc->is_success(),1,'domain_update remove_trademark is_success');
+
+# Domain Update ADD 'secDNS'
+$changes = $dri->local_object('changes');
+$changes->add('secdns',[{
+	keyTag=>12348,
+	alg=>3,
+	digestType=>1,
+	digest=>'38EC35D5B3A34B44C39B38EC35D5B3A34B44C39B',
+}]);
+$rc = $dri->domain_update('example.in', $changes);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.in</domain:name></domain:update></update><extension><secDNS:update xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:add><secDNS:dsData><secDNS:keyTag>12348</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>38EC35D5B3A34B44C39B38EC35D5B3A34B44C39B</secDNS:digest></secDNS:dsData></secDNS:add></secDNS:update></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update add_DS_record build_xml');
+is($rc->is_success(),1,'domain_update add_DS_record is_success');
 
 #####################################################################################################
 ######### Closing Commands ########
