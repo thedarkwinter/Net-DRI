@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 6;
+use Test::More tests => 10;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -50,5 +50,19 @@ $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params
 $rc=$dri->domain_check('example3.info',{'idn' => $dri->local_object('idn')->autodetect('','zh-tw') });
 is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.info</domain:name></domain:check></check><extension><idn:check xmlns:idn="urn:afilias:params:xml:ns:idn-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:idn-1.0 idn-1.0.xsd"><idn:script>zh-tw</idn:script></idn:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check idn new with extlang build');
 is($rc->is_success(),1,'domain_check idn new with extlang is_success');
+
+# Check Multi - New method (with IDN Object and extlang)
+$dri->cache_clear();
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example4.info</domain:name></domain:cd><domain:cd><domain:name avail="1">example5.info</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example4.info','example5.info',{'idn' => $dri->local_object('idn')->autodetect('','zh-tw') });
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.info</domain:name><domain:name>example5.info</domain:name></domain:check></check><extension><idn:check xmlns:idn="urn:afilias:params:xml:ns:idn-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:idn-1.0 idn-1.0.xsd"><idn:script>zh-tw</idn:script></idn:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multi idn new with extlang build');
+is($rc->is_success(),1,'domain_check multi idn new with extlang is_success');
+
+# Check Multi - Old method
+$dri->cache_clear();
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example4.info</domain:name></domain:cd><domain:cd><domain:name avail="1">example5.info</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example4.info','example5.info',{'language'=>'zh-tw'});
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.info</domain:name><domain:name>example5.info</domain:name></domain:check></check><extension><idn:check xmlns:idn="urn:afilias:params:xml:ns:idn-1.0" xsi:schemaLocation="urn:afilias:params:xml:ns:idn-1.0 idn-1.0.xsd"><idn:script>zh-tw</idn:script></idn:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multi idn new with extlang build');
+is($rc->is_success(),1,'domain_check multi idn old is_success');
 
 exit 0;
