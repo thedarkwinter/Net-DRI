@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 20;
+use Test::More tests => 24;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -41,6 +41,7 @@ $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build');
 is($rc->is_success(),1,'session noop is_success');
 
+# Use SecDNS-1.1
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{secDNS}->[0],'urn:ietf:params:xml:ns:secDNS-1.1','secDNS 1.1 for server announcing 1.0 + 1.1');
@@ -171,6 +172,21 @@ $changes->add('secdns',[{
 $rc = $dri->domain_update('example.in', $changes);
 is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.in</domain:name></domain:update></update><extension><secDNS:update xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:add><secDNS:dsData><secDNS:keyTag>12348</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>38EC35D5B3A34B44C39B38EC35D5B3A34B44C39B</secDNS:digest></secDNS:dsData></secDNS:add></secDNS:update></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update add_DS_record build_xml');
 is($rc->is_success(),1,'domain_update add_DS_record is_success');
+
+# Domain Update Delete ALL 'secDNS'
+$changes = $dri->local_object('changes');
+$changes->del('secdns','all');
+$rc = $dri->domain_update('example.in', $changes);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.in</domain:name></domain:update></update><extension><secDNS:update xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:rem><secDNS:all>true</secDNS:all></secDNS:rem></secDNS:update></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update remove_all_DS_record build_xml');
+is($rc->is_success(),1,'domain_update remove_all_DS_record is_success');
+
+# Domain Update ADD/REM 2 NS
+$changes = $dri->local_object('changes');
+$changes->del('ns',$dri->local_object('hosts')->set(['ns1.example.in'],['ns2.example.in']));
+$changes->add('ns',$dri->local_object('hosts')->set(['ns1.example.com'],['ns2.example.com']));
+$rc = $dri->domain_update('domain.in', $changes);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domain.in</domain:name><domain:add><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj><domain:hostObj>ns2.example.com</domain:hostObj></domain:ns></domain:add><domain:rem><domain:ns><domain:hostObj>ns1.example.in</domain:hostObj><domain:hostObj>ns2.example.in</domain:hostObj></domain:ns></domain:rem></domain:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update add_rem_two_ns build_xml');
+is($rc->is_success(),1,'domain_update add_rem_two_ns is_success');
 
 #####################################################################################################
 ######### Closing Commands ########

@@ -1,4 +1,4 @@
-## Domain Registry Interface, .IN Domain EPP extension commands [https://registry.in/system/files/IN_EPP_OTE_Criteria_v3.0.pdf]
+## Domain Registry Interface, .IN EPP Extension Commands [https://registry.in/system/files/IN_EPP_OTE_Criteria_v3.0.pdf - 09/06/2016]
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -79,7 +79,7 @@ sub setup {
    return;
 }
 
-sub default_extensions { return qw/Afilias::Trademark IN::Domain SecDNS IDN/; }
+sub default_extensions { return qw/Afilias::Trademark Afilias::IDNLanguage IN::Domain SecDNS IDN/; }
 
 ####################################################################################################
 1;

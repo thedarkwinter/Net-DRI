@@ -74,14 +74,12 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub new
-{
+sub new {
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=0;
  $self->{info}->{contact_i18n}=1; ## LOC only
- $self->{info}->{force_native_idn}=1;
-
+ $self->{info}->{force_native_idn}=0;
  return $self;
 }
 
@@ -91,12 +89,9 @@ sub tlds     { return ('in', map { $_.'.in'} qw/co gen ind net org/ ); }
 sub object_types { return qw(domain contact ns); }
 sub profile_types { return qw/epp/; }
 
-sub transport_protocol_default
-{
+sub transport_protocol_default {
  my ($self,$type)=@_;
-
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::IN',{}) if $type eq 'epp';
-
  return;
 }
 

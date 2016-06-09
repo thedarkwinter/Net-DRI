@@ -1,4 +1,4 @@
-## Domain Registry Interface, .IN Domain EPP extension commands [https://registry.in/system/files/IN_EPP_OTE_Criteria_v3.0.pdf]
+## Domain Registry Interface, .IN Domain EPP Extension Commands
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -74,7 +74,6 @@ sub register_commands {
 	my %tmp=(
 		update => [ \&update, undef ],
 	);
-
 	return { 'domain' => \%tmp };
 }
 
