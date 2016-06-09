@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 522;
+use Test::More tests => 524;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -447,6 +447,8 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::Reverse');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ContactVerification');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DomainVerification');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NZ');
+use_ok('Net::DRI::Protocol::EPP::Extensions::IN');
+use_ok('Net::DRI::Protocol::EPP::Extensions::IN::Domain');
 use_ok('Net::DRI::Protocol::DAS');
 use_ok('Net::DRI::Protocol::DAS::Message');
 use_ok('Net::DRI::Protocol::DAS::Connection');
