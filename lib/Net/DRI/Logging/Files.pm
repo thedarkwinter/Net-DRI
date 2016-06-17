@@ -56,10 +56,15 @@ sub output
  my ($self,$level,$type,$data)=@_;
  if (! $self->should_log($level)) { return; }
  my $name=$self->generate_filename($type,$data);
- if (! exists $self->{fh}->{$name})
+
+ # check to see if the file handle exists and is valid - and attempt to set it up if not
+ $self->setup_channel(undef,$type,$data) if (! exists $self->{fh}->{$name} || tell($self->{fh}->{$name}) == -1);
+
+ # if its still not valid, then try core log
+ if (! exists $self->{fh}->{$name} || tell($self->{fh}->{$name}) == -1)
  {
   my $core=$self->generate_filename('core');
-  if (exists $self->{fh}->{$core})
+  if (exists $self->{fh}->{$core} && tell($self->{fh}->{$name}) > -1)
   {
    $self->output('critical','core',sprintf('File "%s" (type "%s") has not been setup (no previous call to setup_channel or invalid type?), switching to "core" logging file',$name,$type));
    $name=$core;
