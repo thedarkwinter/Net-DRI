@@ -206,7 +206,7 @@ sub fee_set_parse
     } elsif ($name eq 'class')
     {
       $set->{class} = $content->textContent();
-      $set->{'premium'} = 1 && $set->{class} =~ m/(premium|tier.)/i;
+      $set->{'premium'} = 1 && $set->{class} =~ m/(premium|tier.|non-standard)/i;
     }
   }
   chomp $set->{description} if $set->{description};

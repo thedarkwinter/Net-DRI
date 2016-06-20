@@ -975,7 +975,7 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
  return {
      bep_type => 1, # dedicated registry
      tlds => ['bh','berlin','brussels','hamburg','tirol','versicherung','vlaanderen','voting','wien','ikano'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{'brown_fee_version' => '0.9'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::RegBox->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::RegBox'],
      contact_i18n => 2,
