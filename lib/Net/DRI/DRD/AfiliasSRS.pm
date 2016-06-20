@@ -96,9 +96,10 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'AfiliasSRS'; }
 
 sub tlds     { 
- my @uncontented = qw/xn--fiq228c5hs xn--kput3i xn--4gbrim xn--6frz82g xn--3ds443g xn--i1b6b1a6a2e xn--tqq33ed31aqia xn--nqv7f орг hiv onl kim blue pink indians lotto lgbt shiksha global red ltda organic rich vegas meet black creditunion storage ong ngo voto vote adult ged porn/;
- my @contended = qw/xn--vuq861b app art bet blog casino city cloud design gifts golf green hair health home inc llc llp ltd memorial mls music now online pet poker radio sarl srl team tickets vip web wine eco kids corp hotel sex/;
- return (@uncontented);
+ my @pro = qw/pro law.pro jur.pro bar.pro med.pro cpa.pro aca.pro eng.pro/; # in afilias main complex
+ my @afilias = qw/info xn--6frz82g bet black blue green kim lgbt lotto meet organic pet pink poker red shiksha vote voto/; # info / main complex
+ my @afilias_clients = qw/xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas/; # xxx / clients complex
+ return (@pro, @afilias, @afilias_clients);
 }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
