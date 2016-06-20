@@ -484,6 +484,13 @@ sub process
 
  ## Current protocol/transport objects for current profile
  my ($po,$to)=$self->protocol_transport();
+
+ ## Check of the transport has hold down enabled, and if there are errors that it should be keeping down
+ if ($to->hold_down() && $to->last_error() && $to->last_error()+$to->hold_down() > time()) {
+  Net::DRI::Exception->die(0,'transport',1,sprintf('Due to previous error, registry has been temporarily disabled for another ' . (time()-$to->last_error()-$to->hold_down()) . ' seconds'));
+ }
+
+
  my $trid=$self->generate_trid();
  my $ctx={trid => $trid, otype => $otype, oaction => $oaction, phase => 'active', protocol => $po };
  my $tosend;
@@ -541,7 +548,13 @@ sub process
   $prevalarm-=Time::HiRes::time()-$start; ## try to take into account the time spent here
   alarm($prevalarm) if $prevalarm > 0;
  }
- Net::DRI::Exception->die(0,'transport',1,sprintf('Unable to communicate with registry after %d tries for a total delay of %.03f seconds',$to->retry(),Time::HiRes::time()-$start)) unless defined $r;
+
+ ## Store last error time if there is one (for hold down period if enabled) and raise an exception
+ unless (defined $r) {
+   $to->last_error(time());
+   Net::DRI::Exception->die(0,'transport',1,sprintf('Unable to communicate with registry after %d tries for a total delay of %.03f seconds',$to->retry(),Time::HiRes::time()-$start));
+ }
+
  return $r;
 }
 
