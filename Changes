@@ -1,8 +1,27 @@
 Net::DRI changelog from newest to oldest changes
 
-0.10-pre
-+ .LV Support (from David Makuni)
-+ .AMSTERDAM Support (Paulo Jorge)
+0.10-tdw 2016-06-20 DEVELOPMENT RELEASE
+!! Note, this is not an official release; it is based on Net-DRI-0.96_08. See http://search.cpan.org/dist/Net-DRI/ !!
++ Added gTLD Support for Amsterdam(SIDN), LAT (NicMX), Amazon(Neustar) (Paulo Jorge)
++ Added ccTLD DRDs and Support for AfiliasGRS AE DK EC LV PH UA (David Makuni)
++ Added ccTLD DRDs and Support for CN NZ (Paulo Jorge)
++ Added Unireg Market Extension (Paulo Jorge)
++ Added AFNIC gTLD PremiumDomain extension
++ Added MAM Qualified Lawyer extension
++ Added CentralNIC AuxContact, RegType
++ Added CoCCA offline update extension
++ Added Cornic/Tango promotion extension
+= Updated versions of draft-ietf-eppext-launchphase-07
+= Updated draft-ietf-eppext-tmch-smd-06, note this is now rfc7848 but we have not updated yet
+= Updated draft-brown-epp-fees-06 (fee-0.9) - note, fee-0.11 has been published but not yet implemented
+= Various gTLDs switched to draft-brown-fees, PIR/Afilias/Neustar/CoCCA/Unireg/KS/KNET/RegBox
+= Updated Eurid modules, poll-1.2, domain-2.0, and added tld .xn--e1a4c
+= domain_check_price updated for phase support
+= Small changes/fixes (.es, .no, .nl, 
+= Various TLD lists updated in NGTLD.DRD
+= Log files can change name without crashing now
++ hold_down option for registry transport to leave a connection disable for X seconds
+
 
 0.9-tdw 2015-06-02 DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_05 with updates from 0.96_06. See http://search.cpan.org/dist/Net-DRI/ !!

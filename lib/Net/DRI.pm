@@ -26,7 +26,7 @@ use base qw(Class::Accessor::Chained::Fast Net::DRI::BaseClass);
 __PACKAGE__->mk_ro_accessors(qw/trid_factory identify_client logging cache/);
 
 our $AUTOLOAD;
-our $VERSION='0.9-tdw';
+our $VERSION='0.10-tdw';
 
 =pod
 

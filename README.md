@@ -3,10 +3,10 @@
 * * *
 #### Overview
 
-Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.dotandco.com/services/software/Net-DRI/), [CPAN](http://search.cpan.org/dist/Net-DRI/) based on Net-DRI-0.96_05 that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.
+Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.dotandco.com/services/software/Net-DRI/), [CPAN](http://search.cpan.org/dist/Net-DRI/) based on Net-DRI-0.96_08 that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.
 
 ##### LaunchPhase extension
-Based on draft-ietf-eppext-launchphase-06
+Based on draft-ietf-eppext-launchphase-07
 
 ##### New gTLD backend providers (RO's)
 Afnic, Afilias, ARI, CoCCA, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media, GMO Registry, KNET, KSRegistry (Starting Dot), Minds And Machines, Neustar, Nic.BR, Nic.MX, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, SIDN, Tango from KNIPP, TCI, TeleInfo, UniRegistry, Verisign, ZACR
@@ -19,8 +19,7 @@ TMCH (Deloitte)
 TMDB (IBM): CNIS and SMDRL only
 
 ##### Added/Updated/Fixed support for ccTLDs
-UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE, NZ, EC, UA
-
+UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE, NZ, EC, UA, EC, AfiliasGRS (.AG/.BZ/.LC/.MN/.SC/.VC)
 
 * * *
 #### NGTLD Usage

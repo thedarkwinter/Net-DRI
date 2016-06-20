@@ -62,6 +62,7 @@ lib/Net/DRI/Data/Contact/US.pm
 lib/Net/DRI/Data/ContactSet.pm
 lib/Net/DRI/Data/Hosts.pm
 lib/Net/DRI/Data/IDN.pm
+lib/Net/DRI/Data/LanguageTag.pm
 lib/Net/DRI/Data/Raw.pm
 lib/Net/DRI/Data/RegistryObject.pm
 lib/Net/DRI/Data/StatusList.pm
@@ -239,6 +240,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/ARI/TMCHApplication.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARNES.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARNES/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARNES/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/ARNES/Status.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ASIA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ASIA/CED.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ASIA/Domain.pm
@@ -253,6 +255,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/AU.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AU/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/KeyValue.pm
+lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Price.pm
+lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Sync.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Variant.pm
 lib/Net/DRI/Protocol/EPP/Extensions/BIZ.pm
 lib/Net/DRI/Protocol/EPP/Extensions/BR.pm
@@ -266,6 +270,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/CentralNic.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/AuxContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.pm
+lib/Net/DRI/Protocol/EPP/Extensions/ChangePoll.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Agreement.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Contact.pm
@@ -279,12 +284,14 @@ lib/Net/DRI/Protocol/EPP/Extensions/CN/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CN/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CN/Host.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Bundling.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/CDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Registry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/Notifications.pm
+lib/Net/DRI/Protocol/EPP/Extensions/ContactVerification.pm
 lib/Net/DRI/Protocol/EPP/Extensions/COOP.pm
 lib/Net/DRI/Protocol/EPP/Extensions/COOP/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CORENIC.pm
@@ -303,6 +310,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/DNSBE/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DNSBE/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DNSBE/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DNSBE/Notifications.pm
+lib/Net/DRI/Protocol/EPP/Extensions/DomainVerification.pm
 lib/Net/DRI/Protocol/EPP/Extensions/E164.pm
 lib/Net/DRI/Protocol/EPP/Extensions/E164Validation.pm
 lib/Net/DRI/Protocol/EPP/Extensions/E164Validation/RFC5076.pm
@@ -327,6 +335,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/GL.pm
 lib/Net/DRI/Protocol/EPP/Extensions/GracePeriod.pm
 lib/Net/DRI/Protocol/EPP/Extensions/HTTP.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.pm
+lib/Net/DRI/Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ICMRegistry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IENUMAT.pm
@@ -404,6 +413,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/RegBox.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RegBox/ServiceMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ResellerInfo.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ResellerObject.pm
+lib/Net/DRI/Protocol/EPP/Extensions/Reverse.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SecDNS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ServiceMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN.pm
@@ -666,6 +676,7 @@ t/Net/DRI/Data/Changes.t
 t/Net/DRI/Data/Contact.t
 t/Net/DRI/Data/ContactSet.t
 t/Net/DRI/Data/Hosts.t
+t/Net/DRI/Data/LanguageTag.t
 t/Net/DRI/Data/RegistryObject.t
 t/Net/DRI/Data/StatusList.t
 t/Net/DRI/DRD/ICANN.t
@@ -690,6 +701,8 @@ t/Net/DRI/Protocol/EPP/Extensions/AllocationToken.t
 t/Net/DRI/Protocol/EPP/Extensions/ARI.t
 t/Net/DRI/Protocol/EPP/Extensions/ASIA.t
 t/Net/DRI/Protocol/EPP/Extensions/AT.t
+t/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Price.t
+t/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Sync.t
 t/Net/DRI/Protocol/EPP/Extensions/BR.t
 t/Net/DRI/Protocol/EPP/Extensions/CAT.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic.t
@@ -699,19 +712,24 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.5.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.6.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.7.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.8.t
+t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.9.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.t
+t/Net/DRI/Protocol/EPP/Extensions/ChangePoll.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/CN.t
+t/Net/DRI/Protocol/EPP/Extensions/CNNIC/Bundling.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.t
 t/Net/DRI/Protocol/EPP/Extensions/CoCCA/Notifications.t
+t/Net/DRI/Protocol/EPP/Extensions/ContactVerification.t
 t/Net/DRI/Protocol/EPP/Extensions/COOP.t
 t/Net/DRI/Protocol/EPP/Extensions/COZA.t
 t/Net/DRI/Protocol/EPP/Extensions/CRR.t
 t/Net/DRI/Protocol/EPP/Extensions/CZ.t
 t/Net/DRI/Protocol/EPP/Extensions/DK.t
 t/Net/DRI/Protocol/EPP/Extensions/DNSBE.t
+t/Net/DRI/Protocol/EPP/Extensions/DomainVerification.t
 t/Net/DRI/Protocol/EPP/Extensions/E164.t
 t/Net/DRI/Protocol/EPP/Extensions/E164Validation.t
 t/Net/DRI/Protocol/EPP/Extensions/EC.t
@@ -720,6 +738,7 @@ t/Net/DRI/Protocol/EPP/Extensions/EURid.t
 t/Net/DRI/Protocol/EPP/Extensions/FCCN.t
 t/Net/DRI/Protocol/EPP/Extensions/GracePeriod.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.t
+t/Net/DRI/Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate.t
 t/Net/DRI/Protocol/EPP/Extensions/ICMRegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/IT.pm
@@ -750,6 +769,7 @@ t/Net/DRI/Protocol/EPP/Extensions/PRO.t
 t/Net/DRI/Protocol/EPP/Extensions/RegBox.t
 t/Net/DRI/Protocol/EPP/Extensions/ResellerInfo.t
 t/Net/DRI/Protocol/EPP/Extensions/ResellerObject.t
+t/Net/DRI/Protocol/EPP/Extensions/Reverse.t
 t/Net/DRI/Protocol/EPP/Extensions/SecDNS.t
 t/Net/DRI/Protocol/EPP/Extensions/ServiceMessage.t
 t/Net/DRI/Protocol/EPP/Extensions/SIDN.t
