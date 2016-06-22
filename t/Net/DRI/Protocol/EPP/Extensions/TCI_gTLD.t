@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 12;
+use Test::More tests => 14;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -137,5 +137,22 @@ $rc = $dri->domain_create($dom_name,
   });
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>xn--j1aefbet.xn--80adxhks</domain:name><domain:period unit="y">1</domain:period><domain:registrant>CLDC2</domain:registrant><domain:contact type="admin">CLDC4</domain:contact><domain:contact type="tech">CLDC5</domain:contact><domain:authInfo><domain:pw>fooBar</domain:pw></domain:authInfo></domain:create></create><extension><domain:create xmlns:domain="http://www.tcinet.ru/epp/tci-domain-ext-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.tcinet.ru/epp/tci-domain-ext-1.0 tci-domain-ext-1.0.xsd"><domain:description>testing domain description extension</domain:description></domain:create><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:dsData><secDNS:keyTag>52143</secDNS:keyTag><secDNS:alg>5</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>53366012E847CD6136EED5C5BEF796E02B3B02829AC7810C5339EDC1A1912850</secDNS:digest><secDNS:keyData><secDNS:flags>256</secDNS:flags><secDNS:protocol>3</secDNS:protocol><secDNS:alg>5</secDNS:alg><secDNS:pubKey>AwEAAdROg/rGvUCdTNxcbZKamEHh6d/75eKn7tq1BrL5YTiWnTEdP/CX WxRImC+3XqhZpPfb82IMvIiZ/FXfo6x4S6wa6UPsF++dHNTm5dbvc9gw sPG1aX8WMLEQrvRHztQ8vyvqT2FEiXt61hTq37NFV+TS5rHRvwnCUo/a YpV7C2pr</secDNS:pubKey></secDNS:keyData></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create (DNSSEC)build');
 is($rc->is_success(),1,'domain_create (DNSSEC) is_success');
+
+## Domain update
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->add('ns',$dri->local_object('hosts')->set('ns2.example.com'));
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('foobar-admin'),'admin');
+$toc->add('contact',$cs);
+$toc->del('ns',$dri->local_object('hosts')->set('ns1.example.com'));
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('sh8013'),'admin');
+$toc->del('contact',$cs);
+$toc->set('registrant',$dri->local_object('contact')->srid('foobar-reg'));
+$toc->set('auth',{pw=>'2BARfoo'});
+$rc=$dri->domain_update('foobar.moscow',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.moscow</domain:name><domain:add><domain:ns><domain:hostObj>ns2.example.com</domain:hostObj></domain:ns><domain:contact type="admin">foobar-admin</domain:contact></domain:add><domain:rem><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj></domain:ns><domain:contact type="admin">sh8013</domain:contact></domain:rem><domain:chg><domain:registrant>foobar-reg</domain:registrant><domain:authInfo><domain:pw>2BARfoo</domain:pw></domain:authInfo></domain:chg></domain:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
+is($rc->is_success(),1,'domain_update is_success');
 
 exit 0;
