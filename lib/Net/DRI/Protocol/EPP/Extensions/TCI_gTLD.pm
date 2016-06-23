@@ -26,7 +26,7 @@ sub setup
  $self->factories('contact',sub { return Net::DRI::Data::Contact::TCI_gTLD->new(); });
  
  foreach my $o (qw/contact/) { $self->capabilities('contact_update',$o,['set']); }
-
+ foreach my $o (qw/description/) { $self->capabilities('domain_update',$o,['set']); }
  foreach my $o (qw/ns/) { $self->capabilities('domain_update',$o,['add', 'del']); }
  return;
 }
