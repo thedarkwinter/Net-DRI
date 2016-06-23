@@ -35,7 +35,9 @@ Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee - CentralNic EPP Fee extens
 
 Adds the Price Extension (urn:ietf:params:xml:ns:fee-0.4, -0.5, -0.6, -0.7, -0.8, -0.9) to domain commands. This extension supports both versions. The extension is built by adding a hash to any domains commands. This pricing information is returned in all commands when requested.
 
-CentralNic Fees extension is defined in http://tools.ietf.org/html/draft-brown-epp-fees-01
+CentralNic Fees extension is defined in http://tools.ietf.org/html/draft-brown-epp-fees-07
+
+NOTE: fee-0.4 is no longer in use anywhere as far as I am aware (GMO has upgraded) so theoretically support for it can be dropped now.
 
 =item currency* (3 letter currency code - option in 0.5+)
 
