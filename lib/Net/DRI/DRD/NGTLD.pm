@@ -297,7 +297,7 @@ xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish 
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xxx','xn--4gbrim','xn--kput3i','adult','bnpparibas','creditunion','ged','global','indians','irish','ist','istanbul','ltda','onl','porn','rich','sex','srl','storage','vegas'],
+     tlds => ['xxx','me','mobi','xn--4gbrim','xn--kput3i','adult','bnpparibas','creditunion','ged','global','indians','irish','ist','istanbul','ltda','onl','porn','rich','sex','srl','storage','vegas'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afiliassrs';
