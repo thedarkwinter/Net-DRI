@@ -144,6 +144,8 @@ sub parse_greeting
  eval { $po->switch_to_highest_namespace_version('fee'); }; # dont crash if server hasn't announced
 }
 
+## returns an integer for easier comparisons
+sub ver { my ($mes)= @_; my ($ver)=($mes->ns('fee')=~m/-0.(\d+)$/); return $ver; }
 
 ####################################################################################################
 ## Build / Parse helpers for 0.5 to 0.8
