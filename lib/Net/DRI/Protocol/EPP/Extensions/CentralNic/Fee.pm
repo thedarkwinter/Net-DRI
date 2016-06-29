@@ -148,6 +148,30 @@ sub parse_greeting
 sub ver { my ($mes)= @_; my ($ver)=($mes->ns('fee')=~m/-0.(\d+)$/); return $ver; }
 
 ####################################################################################################
+## 0.11 stuff
+
+sub fee_set_build_11
+{
+  my ($rp)=@_;
+  Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with key action, and optionally currency and duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'action');
+  Net::DRI::Exception::usererr_invalid_parameters('fee currency should be 3 letters ISO-4217 code') if exists $rp->{currency} && $rp->{currency} !~ m/^[A-Z]{3}$/; # No longer required field
+  Net::DRI::Exception::usererr_invalid_parameters('fee action should be: create, transfer, renew or restore') if exists $rp->{action} && $rp->{action} !~ m/^(?:create|transfer|renew|restore)$/;
+
+  my (@n,$name,$lp);
+
+  push @n,['fee:command',$rp->{action}];
+  push @n,['fee:currency',$rp->{currency}] if exists $rp->{currency};
+
+  if (exists $rp->{duration}) {
+    Net::DRI::Exception::usererr_invalid_parameters('duration should be a DateTime::Duration object') unless Net::DRI::Util::is_class($rp->{duration},'DateTime::Duration');
+    my $rj=Net::DRI::Protocol::EPP::Util::build_period($rp->{duration});
+    push @n,['fee:period',$rj->[1],$rj->[2]];
+  }
+  push @n,['fee:class', $rp->{class}] if exists $rp->{class};
+  return @n;
+}
+
+####################################################################################################
 ## Build / Parse helpers for 0.5 to 0.8
 
 ## MH: TODO: Fix this parser to ADD fees togother, but still make each fee an individual element in an array with its attributes
@@ -372,6 +396,11 @@ sub check
      my $eid=$mes->command_extension_register('fee','check');
      $mes->command_extension($eid,\@n);
    }
+  }
+  elsif (ver($mes) >= 11)
+  {
+   my $eid=$mes->command_extension_register('fee','check');
+   $mes->command_extension($eid, [fee_set_build_11($fees[0])]);
   }
   else # 0.5+
   {
