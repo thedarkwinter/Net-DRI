@@ -422,7 +422,7 @@ sub check_parse
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success;
-  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d)!)) ? "$1" : '0.4';
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d+)!)) ? "$1" : '0.4';
 
   my $chkdata=$mes->node_extension if ($version eq '0.4');
   $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($version eq '0.5' || $version eq '0.6' || $version eq '0.7' || $version eq '0.8' || $version eq '0.9');
