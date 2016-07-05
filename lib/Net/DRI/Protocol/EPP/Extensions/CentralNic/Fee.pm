@@ -191,7 +191,7 @@ sub fee_set_parse
     }
     elsif ($name eq 'objID') # in 0.9 we can have an objId with element
     {
-      my $element = $content->hasAttribute('element') ? $content->hasAttribute('element') : 'name';
+      my $element = $content->hasAttribute('element') ? $content->getAttribute('element') : 'name';
       $set->{'element'} = $element;
       $set->{'domain'} = $content->textContent(); # we don' support other types at the moment
       $set->{'premium'} = 0; # actually this was only in 0.6, but this sort of keeps things going in the same vain implementation wise
