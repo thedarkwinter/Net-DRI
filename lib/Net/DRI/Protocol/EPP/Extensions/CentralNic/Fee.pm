@@ -425,7 +425,7 @@ sub check_parse
   my $version = (($mes->ns('fee')=~m!fee-(\d\.\d+)!)) ? "$1" : '0.4';
 
   my $chkdata=$mes->node_extension if ($version eq '0.4');
-  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($version eq '0.5' || $version eq '0.6' || $version eq '0.7' || $version eq '0.8' || $version eq '0.9');
+  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($version eq '0.5' || $version eq '0.6' || $version eq '0.7' || $version eq '0.8' || $version eq '0.9' || $version eq '0.11');
   return unless defined $chkdata;
 
   foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
@@ -434,10 +434,15 @@ sub check_parse
     if ($name =~ m/^(chkData|cd)$/) # chkData for 0.4, cd for 0.5 & 0.6 & 0.7 & 0.8
     {
       my $dn = '';
-      foreach my $el2 (Net::DRI::Util::xml_list_children($content))
-      {
-        my ($name2,$content2)=@$el2;
-        $dn = $content2->textContent() if $name2 =~ m/^(domain|name|objID)$/; # domain for 0.4, name for 0.5 & 0.6 & 0.7 & 0.8, and objID for 0.9
+      if ($version eq '0.11') {
+       $dn = Net::DRI::Util::xml_traverse($content, $mes->ns('fee'), qw/object name/);
+       $dn = $dn->textContent() if defined $dn;
+      } else {
+       foreach my $el2 (Net::DRI::Util::xml_list_children($content))
+       {
+         my ($name2,$content2)=@$el2;
+         $dn = $content2->textContent() if $name2 =~ m/^(domain|name|objID)$/; # domain for 0.4, name for 0.5 & 0.6 & 0.7 & 0.8, and objID for 0.9
+       }
       }
       next unless $dn;
       my $fee_set = ($version eq '0.4') ? fee_set_parse_legacy($content) : fee_set_parse($version, $content);
