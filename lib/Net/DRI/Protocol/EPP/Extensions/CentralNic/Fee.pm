@@ -440,8 +440,7 @@ sub check_parse
         $dn = $content2->textContent() if $name2 =~ m/^(domain|name|objID)$/; # domain for 0.4, name for 0.5 & 0.6 & 0.7 & 0.8, and objID for 0.9
       }
       next unless $dn;
-      my $fee_set = fee_set_parse_legacy($content) if ($version eq '0.4');
-      $fee_set = fee_set_parse($version, $content) if ($version ne '0.4');
+      my $fee_set = ($version eq '0.4') ? fee_set_parse_legacy($content) : fee_set_parse($version, $content);
       if ($fee_set)
       {
         push @{$rinfo->{domain}->{$dn}->{fee}},$fee_set;
