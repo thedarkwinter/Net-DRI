@@ -577,7 +577,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
 accountant bid cricket date download faith loan party racing review science stream trade webcam win
 
-Contension: app baby cam charity forum hotel music rugby search shop  sport
+Contension: app baby cam charity forum hotel music rugby search sport
 
 =head3 Custom extensions
 
@@ -588,7 +588,7 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
  return {
      bep_type => 1, # dedicated registry
      tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'stream', 'trade', 'webcam', 'win', # uncontended
-              'app', 'baby', 'cam', 'charity', 'forum', 'hotel', 'music', 'rugby', 'search', 'shop', 'sport',# contended
+              'app', 'baby', 'cam', 'charity', 'forum', 'hotel', 'music', 'rugby', 'search', 'sport',# contended
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -606,6 +606,7 @@ GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo')
  $dri->add_registry('NGTLD',{provider=>'gmo'}); # Own: nagoya tokyo yokohama
  $dri->add_registry('NGTLD',{provider=>'gmogeo'}); # Geo: okinawa ryukyu
  $dri->add_registry('NGTLD',{provider=>'gmokyoto'}); # kyoto
+ $dri->add_registry('NGTLD',{provider=>'gmoshop'}); # shop
 
 =head3 Status: Working
 
@@ -614,6 +615,7 @@ GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo')
 Own: nagoya tokyo yokohama
 Geo: okinawa ryukyu
 Kyoto: kyoto
+Shop: shop
 
 =head3 Custom extensions:
 
@@ -634,12 +636,20 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmogeo';
+
  return {
      bep_type => 2, # shared registry
      tlds => ['kyoto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmokyoto';
+
+ return {
+     bep_type => 2, # shared registry
+     tlds => ['shop'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
+     whois_server => 'whois.centralnic.com',
+   } if $bep eq 'gmoshop';
 
 =pod
 
