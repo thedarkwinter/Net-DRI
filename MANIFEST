@@ -336,6 +336,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/IIS/Extensions.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IRegistry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ISPAPI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ISPAPI/KeyValue.pm
+lib/Net/DRI/Protocol/EPP/Extensions/IN.pm
+lib/Net/DRI/Protocol/EPP/Extensions/IN/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/Domain.pm
