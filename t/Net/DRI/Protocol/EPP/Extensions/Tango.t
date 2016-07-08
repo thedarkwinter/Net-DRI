@@ -51,7 +51,7 @@ $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee},undef,'Fee extension not loaded');
 
 
-##################### 
+#####################
 ## IDN Extension
 
 # check with idn language (iso639-1)
@@ -111,7 +111,7 @@ $rc=$dri->domain_update('example3.ruhr',$toc);
 is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.ruhr</domain:name></domain:update></update><extension><idn:update xmlns:idn="http://xmlns.tango-rs.net/epp/idn-1.0" xsi:schemaLocation="http://xmlns.tango-rs.net/epp/idn-1.0 idn-1.0.xsd"><idn:add><idn:nameVariant>ggg.ruhr</idn:nameVariant></idn:add><idn:rem><idn:nameVariant>abc.ruhr</idn:nameVariant><idn:nameVariant>xyz.ruhr</idn:nameVariant></idn:rem></idn:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build_xml');
 
 
-##################### 
+#####################
 ## Auction Extension
 
 # create with bid
@@ -156,7 +156,7 @@ is($dri->get_info('restore_price'),20,'domain_check_price get_info (restore_pric
 
 
 
-##################### 
+#####################
 ## Augmented Mark (LaunchPhase) Extension (based on dotSCOT-TechDoc-20140710.pdf)
 
 $dri->add_registry('NGTLD',{provider => 'corenic',name=>'scot'});
@@ -414,12 +414,12 @@ $dh->add('ns2.example.net');
 my $promo_c='EXAMPLE-PROMO-1231';
 $rc=$dri->domain_create('example.eus',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,auth=>{pw=>'secret42'},promo_code=>$promo_c} );
 is($rc->is_success(),1,'domain_create is_success adding promotion extension');
-is_string($R1,$E1.'<command><create><domain:create xmlns="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.net</domain:hostObj><domain:hostObj>ns2.example.net</domain:hostObj></domain:ns><domain:registrant>abc123</domain:registrant><domain:contact type="admin">def456</domain:contact><domain:contact type="tech">ghi789</domain:contact><domain:authInfo><domain:pw>secret42</domain:pw></domain:authInfo></domain:create></create><extension><promo:create xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml adding promotion extension');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.net</domain:hostObj><domain:hostObj>ns2.example.net</domain:hostObj></domain:ns><domain:registrant>abc123</domain:registrant><domain:contact type="admin">def456</domain:contact><domain:contact type="tech">ghi789</domain:contact><domain:authInfo><domain:pw>secret42</domain:pw></domain:authInfo></domain:create></create><extension><promo:create xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml adding promotion extension');
 
 # domain renew: with promotional code
 $R2='';
 $rc=$dri->domain_renew('example.eus',{current_expiration => DateTime->new(year=>2015,month=>04,day=>03),duration=>DateTime::Duration->new(years=>1),promo_code=>$promo_c});
-is_string($R1,$E1.'<command><update><domain:renew xmlns="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:curExpDate>2015-04-03</domain:curExpDate><domain:period unit="y">1</domain:period></domain:renew></update><extension><promo:renew xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:renew></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build adding promotion extension');
+is_string($R1,$E1.'<command><update><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:curExpDate>2015-04-03</domain:curExpDate><domain:period unit="y">1</domain:period></domain:renew></update><extension><promo:renew xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:renew></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build adding promotion extension');
 is($rc->is_success(),1,'domain_renew is_success adding promotion extension');
 
 # domain promo info response: testing promotional codes info commands
