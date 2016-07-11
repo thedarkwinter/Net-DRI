@@ -292,10 +292,10 @@ sub build_disclose
 {
  my ($d,$ns,@items)=@_;
  my $c = $d; # assigns contact object for later use
- my $locality = $c->{'disclose_locality'}->{'contacti18n'} if ($c->{'disclose_locality'}->{'contacti18n'});
  $d = $d->disclose() if (((my $ref=eval{$d->can('disclose')}))); # extracts disclose if exists & deals with non-contact objects
  $ns//='contact';
  return () unless ($d && ref $d eq 'HASH');
+ my $locality = $c->{'disclose_locality'}->{'contacti18n'} if (defined $c->{'disclose_locality'});
  my %v=map { $_ => 1 } values %$d;
  return () unless keys(%v)==1; ## 1 or 0 as values, not both at same time
  my @d;
