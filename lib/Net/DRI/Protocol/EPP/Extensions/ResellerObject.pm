@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Reseller Extension Mapping for EPP
 ##
-## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2015,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -56,7 +56,7 @@ sub capabilities_add
  return $c;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-zhou-eppext-reseller-mapping-00'; }
+sub implements { return 'https://tools.ietf.org/html/draft-zhou-eppext-reseller-mapping-03'; }
 
 ####################################################################################################
 
@@ -360,7 +360,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ResellerObject - EPP Reseller Object Extension mapping (draft-zhou-eppext-reseller-mapping-00) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ResellerObject - EPP Reseller Object Extension mapping (draft-zhou-eppext-reseller-mapping-03) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -384,7 +384,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2015,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

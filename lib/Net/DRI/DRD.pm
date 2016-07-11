@@ -1003,6 +1003,7 @@ sub contact_delete
 {
  my ($self,$ndr,$contact,$ep)=@_;
  $self->err_invalid_contact($contact) unless (Net::DRI::Util::isa_contact($contact) && $contact->srid());
+ $contact->init('delete',$ndr) if $contact->can('init');
  $ep=Net::DRI::Util::create_params('contact_delete',$ep);
  my $rc=$ndr->process('contact','delete',[$contact,$ep]);
  return $rc;
@@ -1013,6 +1014,7 @@ sub contact_info
  my ($self,$ndr,$contact,$ep)=@_;
  $self->err_invalid_contact($contact) unless (Net::DRI::Util::isa_contact($contact) && $contact->srid());
  $ep=Net::DRI::Util::create_params('contact_info',$ep);
+ $contact->init('info',$ndr) if $contact->can('init');
  my $rc=$ndr->try_restore_from_cache('contact',$contact->srid(),'info');
  if (! defined $rc) { $rc=$ndr->process('contact','info',[$contact,$ep]); }
  return $rc;
@@ -1487,12 +1489,12 @@ sub domain_check_claims
  my $lp = { 'phase' => 'claims', 'type'=>'claims' };
  if (defined $rd && exists $rd->{phase} && lc($rd->{phase}) ne 'claims')
  {
-  # By default, most registries do NOT use a sub_phase is claims lookups. Therefore if you specifiy a phase it will be ignored
+  # By default, most registries do NOT use a sub_phase is claims lookups. Therefore if you specify a phase it will be ignored
   # Afilias/ARI/CentralNIC/CoreNic/CRR/Donuts/GMO/KS/PIR/RegBox/Rightside/StartingDot/Tango/UniRegistry
 
   # These registres use claims as phase + phase_name us sub_phase. domain_check_claims('test-validate.buzz',{phase=>'landrush'});
-  # Neustar/MAM/FFM/KNet   (Knet seems to work either way - but rather put it here)
-  $lp->{sub_phase} = $rd->{phase} if ($bep =~ m/^(?:neustar|mam|ffm|knet)/);
+  # Neustar/MAM/FFM/KNet/Amazon   (Knet seems to work either way - but rather put it here)
+  $lp->{sub_phase} = $rd->{phase} if ($bep =~ m/^(?:neustar|mam|ffm|knet|amazon)/);
   # i think there is much more to do here
  }
  $rd->{lp} = $lp;

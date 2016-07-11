@@ -104,5 +104,13 @@ sub validate
  return 1; ## everything ok.
 }
 
+sub init
+{
+ my ($self,$what,$ndr)=@_;
+ my $a=$self->auth();
+ $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); ## Mandatory but can be empty for create and info commands
+ return;
+}
+
 ####################################################################################################
 1;

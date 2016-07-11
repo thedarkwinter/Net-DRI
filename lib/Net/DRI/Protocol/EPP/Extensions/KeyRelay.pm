@@ -1,6 +1,6 @@
-## Domain Registry Interface, Key Relay Mapping for EPP (draft-ietf-eppext-keyrelay-02)
+## Domain Registry Interface, Key Relay Mapping for EPP
 ##
-## Copyright (c) 2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2015,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -29,7 +29,7 @@ sub register_commands
  my ($class,$version)=@_;
  my %d=(
         keyrelay     => [ \&command, undef ],
-        notification => [ undef, \&notification_parse ], 
+        notification => [ undef, \&notification_parse ],
        );
 
  return { 'domain' => \%d };
@@ -45,13 +45,16 @@ sub setup
  return;
 }
 
-sub implements { return 'http://tools.ietf.org/html/draft-ietf-eppext-keyrelay-02'; }
+sub implements { return 'http://tools.ietf.org/html/draft-ietf-eppext-keyrelay-11'; }
 
 ####################################################################################################
 
 sub format_duration
 {
  my ($d)=@_;
+
+ return 'P0D' if $d->is_zero();
+
  my $duration='P';
  my $tmp='';
 
@@ -72,6 +75,7 @@ sub format_duration
   $tmp.=$d[$wi].uc(substr($ru->[4+$wi],0,1));
  }
  $duration.='T'.$tmp if length $tmp;
+ $duration='-'.$duration if $d->is_negative();
  return $duration;
 }
 
@@ -86,29 +90,36 @@ sub command
  my @d;
  push @d,['keyrelay:name',$domain];
 
- my @dd;
- Net::DRI::Exception::usererr_insufficient_parameters('secdns is mandatory') unless Net::DRI::Util::has_key($rd,'secdns');
- Net::DRI::Exception::usererr_invalid_parameters('secdns value must be an array reference with key data') unless ref $rd->{secdns} eq 'ARRAY' && @{$rd->{secdns}};
- push @dd,map { ['keyrelay:keyData',Net::DRI::Protocol::EPP::Extensions::SecDNS::format_keydata($_)] } @{$rd->{secdns}};
-
  Net::DRI::Exception::usererr_insufficient_parameters('authInfo is mandatory') unless Net::DRI::Util::has_auth($rd);
- push @dd,['keyrelay:authInfo',['domain:pw',$rd->{auth}->{pw},exists $rd->{auth}->{roid} ? { 'roid' => $rd->{auth}->{roid} } : undef]];
+ push @d,['keyrelay:authInfo',['domain:pw',$rd->{auth}->{pw},exists $rd->{auth}->{roid} ? { 'roid' => $rd->{auth}->{roid} } : undef]];
 
- ## Now optional parameters
- if (Net::DRI::Util::has_key($rd,'expiry'))
+ Net::DRI::Exception::usererr_insufficient_parameters('key is mandatory') unless Net::DRI::Util::has_key($rd,'key');
+ Net::DRI::Exception::usererr_invalid_parameters('key must be a single ref hash or a ref array of ref hashes') unless ref $rd->{key} eq 'ARRAY' || ref $rd->{key} eq 'HASH';
+ my @keys = ref $rd->{key} eq 'ARRAY' ? @{$rd->{key}} : ($rd->{key});
+ Net::DRI::Exception::usererr_invalid_parameters('key must be a single ref hash or a ref array of ref hashes') if grep { ref $_ ne 'HASH' } @keys;
+ foreach my $kd (@keys)
  {
-  my $exp=$rd->{expiry};
-  if (Net::DRI::Util::is_class($exp,'DateTime'))
+  my @dd;
+  Net::DRI::Exception::usererr_insufficient_parameters('secdns is mandatory') unless Net::DRI::Util::has_key($kd,'secdns');
+  Net::DRI::Exception::usererr_invalid_parameters('secdns value must be a single ref hash') unless ref $kd->{secdns} eq 'HASH';
+  push @dd,['keyrelay:keyData',Net::DRI::Protocol::EPP::Extensions::SecDNS::format_keydata($kd->{secdns})];
+
+  ## Now optional parameters
+  if (Net::DRI::Util::has_key($kd,'expiry'))
   {
-   push @dd,['keyrelay:expiry',['keyrelay:absolute',$exp->strftime('%FT%T.%6N%z')]];
-  } elsif (Net::DRI::Util::is_class($exp,'DateTime::Duration'))
-  {
-   push @dd,['keyrelay:expiry',['keyrelay:relative',format_duration($exp)]];
-  } else {
-   Net::DRI::Exception::usererr_invalid_parameters('expiry value must be a DateTime or a DateTime::Duration object');
+   my $exp=$kd->{expiry};
+   if (Net::DRI::Util::is_class($exp,'DateTime'))
+   {
+    push @dd,['keyrelay:expiry',['keyrelay:absolute',$exp->strftime('%FT%T.%6N%z')]];
+   } elsif (Net::DRI::Util::is_class($exp,'DateTime::Duration'))
+   {
+    push @dd,['keyrelay:expiry',['keyrelay:relative',format_duration($exp)]];
+   } else {
+    Net::DRI::Exception::usererr_invalid_parameters('expiry value must be a DateTime or a DateTime::Duration object');
+   }
   }
+  push @d,['keyrelay:keyRelayData',@dd];
  }
- push @d,['keyrelay:keyRelayData',@dd];
 
  $mes->command(['create','keyrelay:create',sprintf('xmlns:keyrelay="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('keyrelay'))]);
  $mes->command_body(\@d);
@@ -155,10 +166,13 @@ sub notification_parse
   my ($name,$node)=@$el;
   if ($name eq 'name')
   {
-   $oname=$node->textContent();
+   $r{name} = $oname = $node->textContent();
+  } elsif ($name eq 'authInfo')
+  {
+   $r{auth}={pw => Net::DRI::Util::xml_child_content($node,$mes->ns('domain'),'pw')};
   } elsif ($name eq 'keyRelayData')
   {
-   _parse_keyrelay($po,$node,\%r);
+   push @{$r{key}}, _parse_keyrelay($po,$node);
   } elsif ($name eq 'crDate')
   {
    $r{date}=$po->parse_iso8601($node->textContent());
@@ -168,50 +182,41 @@ sub notification_parse
   }
  }
 
- $r{name}=$oname;
  $rinfo->{domain}->{$oname}->{relay}=\%r;
 
  return;
 }
- 
+
 sub _parse_keyrelay
 {
- my ($po, $data, $rd)=@_;
+ my ($po, $data)=@_;
 
  my $mes=$po->message();
  my $ns=$mes->ns('keyrelay');
 
- my @secdns;
+ my %r;
  foreach my $el (Net::DRI::Util::xml_list_children($data))
  {
   my ($name,$node)=@$el;
-  if ($name eq 'name')
-  {
-   $rd->{name}=lc $node->textContent();
-  } elsif ($name eq 'keyData')
+  if ($name eq 'keyData')
   {
    my %n;
    Net::DRI::Protocol::EPP::Extensions::SecDNS::parse_keydata($node,\%n);
-   push @secdns,\%n;
-  } elsif ($name eq 'authInfo')
-  {
-   $rd->{auth}={pw => Net::DRI::Util::xml_child_content($node,$mes->ns('domain'),'pw')};
+   $r{secdns}=\%n;
   } elsif ($name eq 'expiry')
   {
    my $exp;
    if (defined($exp=Net::DRI::Util::xml_child_content($node,$ns,'absolute')))
    {
-    $rd->{expiry}=$po->parse_iso8601($exp);
+    $r{expiry}=$po->parse_iso8601($exp);
    } elsif (defined($exp=Net::DRI::Util::xml_child_content($node,$ns,'relative')))
    {
-    $rd->{expiry}=parse_duration($po,$exp);
+    $r{expiry}=parse_duration($po,$exp);
    }
   }
  }
 
- $rd->{secdns}=\@secdns;
-
- return;
+ return \%r;
 }
 
 ####################################################################################################
@@ -223,7 +228,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::KeyRelay - EPP Key Relay mapping (draft-ietf-eppext-keyrelay-02) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::KeyRelay - EPP Key Relay mapping (draft-ietf-eppext-keyrelay-11) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -247,7 +252,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013,2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2013,2015,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

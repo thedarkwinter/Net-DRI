@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 87;
+use Test::More tests => 90;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -43,7 +43,7 @@ is($rc->{last_registry},'mamclient','mamclient: add_registry');
 $rc = $dri->target('mamclient')->add_current_profile('p1-mamclient','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'mamclient: add_current_profile');
 is($dri->name(),'mamclient','mamclient: name');
-is_deeply([$dri->tlds()],['gop','kiwi','broadway','radio','tube'],'mamclient: tlds');
+is_deeply([$dri->tlds()],['gop','kiwi','broadway','radio'],'mamclient: tlds');
 @periods = $dri->periods();
 is($#periods,9,'mamclient: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'mamclient: object_types');
@@ -104,16 +104,23 @@ $rc = $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_re
 is($rc->is_success(),1,'neustar nyc: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::EXTContact/],'neustar nyc: loaded_modules (EXTContact)');
 
-# FFM (Neustar + Centrlanic:Fee )
+# FFM (Neustar + CentralNic::Fee )
 $rc = $dri->add_registry('NGTLD',{provider => 'ffm'});
 is($rc->{last_registry},'ffm','ffm: add_registry');
 $rc = $dri->target('ffm')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'neustar ffm: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken CentralNic::Fee/],'ffm: loaded_modules');
 
+# Amazon (Neustar + CentralNic::Fee )
+$rc = $dri->add_registry('NGTLD',{provider => 'amazon'});
+is($rc->{last_registry},'amazon','amazon: add_registry');
+$rc = $dri->target('amazon')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'neustar amazon: add_current_profile');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken CentralNic::Fee/],'amazon: loaded_modules');
+
 # ZACR (Durban)
 $rc = $dri->add_registry('NGTLD',{provider => 'zacr','name'=>'joburg'});
-is($rc->{last_registry},'joburg','neustar: add_registry');
+is($rc->{last_registry},'joburg','zacr: add_registry');
 $rc = $dri->target('joburg')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'zacr: add_current_profile');
 is($dri->name(),'joburg','zacr: name');
@@ -160,15 +167,15 @@ is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Sock
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::ClientAttributes VeriSign::TwoFactorAuth VeriSign::ZoneManagement VeriSign::Balance VeriSign::NameStore VeriSign::PremiumDomain/],'verisign: loaded_modules');
 is($drd->{bep}->{bep_type},2,'verisign: bep_type');
 is($drd->{info}->{check_limit},13,'verisign: check_limit');
-is_deeply([$dri->tlds()],['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','azure','bank','bing','broker','career','cfd','crs','forex','hotmail','java','maif','markets','microsoft','ooo','oracle','pictet','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],'verisign: tlds');
+is_deeply([$dri->tlds()],['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','azure','bank','bing','broker','career','cfd','crs','forex','hotmail','insurance','java','maif','markets','microsoft','ooo','oracle','pictet','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],'verisign: tlds');
 
 # CoCCA
 $rc = $dri->add_registry('NGTLD',{provider => 'cocca'});
 is($rc->{last_registry},'cocca','cocca: add_registry');
 $rc = $dri->target('cocca')->add_current_profile('p1-cocca','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{cocca}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CoCCA::Notifications')}],'cocca: epp transport_protocol_default');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CoCCA::Notifications/],'cocca: loaded_modules');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CoCCA::Notifications','CentralNic::Fee'],'brown_fee_version' => '0.8'}],'cocca: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CoCCA::Notifications CentralNic::Fee/],'cocca: loaded_modules');
 is($drd->{info}->{check_limit},13,'cocca: check_limit');
 is($drd->{info}->{host_check_limit},13,'cocca: host_check_limit');
 is($dri->info('contact_check_limit'),13,'cocca: contact_check_limit');

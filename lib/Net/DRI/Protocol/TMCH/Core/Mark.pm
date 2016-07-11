@@ -390,7 +390,7 @@ sub info_parse
      $rinfo->{mark}->{$oname}->{mark} = shift @{Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_mark($po,$c)};
   } elsif ($n eq 'signedMark')
   {
-   my $mk = Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_signed_mark($po,$c);
+   my $mk = Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_signed_mark($po,$c,0);
    $rinfo->{mark}->{$oname}->{signed_mark} = $mk;
    $rinfo->{mark}->{$oname}->{mark} = $rinfo->{mark}->{$oname}->{signed_mark}->{mark} = shift @{$mk->{'mark'}};
    $rinfo->{mark}->{$oname}->{signature} = $mk->{'signature'};

@@ -145,7 +145,7 @@ sub add_namestore_ext
  if ($domain =~ m/\.(com|net|cc|tv|bz|jobs|name)$/)
  {
   $ext = 'dot' . uc $1;
- } elsif ($domain =~ m/\.(xn--pssy2u|xn--c1yn36f|xn--11b4c3d|xn--t60b56a|xn--c2br7g|xn--42c2d9a|xn--j1aef|xn--3pxu8k|xn--hdb9cza1b|xn--mk1bu44c|xn--fhbei|xn--tckwe|azure|bank|bing|broker|career|cfd|crs|forex|hotmail|java|maif|markets|microsoft|ooo|oracle|pictet|realtor|sca|shell|sky|spreadbetting|trading|xbox|windows)$/)
+ } elsif ($domain =~ m/\.(xn--pssy2u|xn--c1yn36f|xn--11b4c3d|xn--t60b56a|xn--c2br7g|xn--42c2d9a|xn--j1aef|xn--3pxu8k|xn--hdb9cza1b|xn--mk1bu44c|xn--fhbei|xn--tckwe|azure|bank|bing|broker|career|cfd|crs|forex|hotmail|insurance|java|maif|markets|microsoft|ooo|oracle|pictet|realtor|sca|shell|sky|spreadbetting|trading|xbox|windows)$/)
  {
   $ext = uc $1;
  }

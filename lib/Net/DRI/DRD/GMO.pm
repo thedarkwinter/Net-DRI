@@ -44,6 +44,10 @@ GMO Registry utilises the following standard extensions. Please see the test fil
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
 
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
@@ -89,7 +93,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'GMO'; }
 
-sub tlds     {  return qw/nagoya tokyo yokohama gmo ggee/; }
+sub tlds     {  return qw/nagoya tokyo yokohama okinawa ryukyu kyoto gmo ggee/; } # not all on same platform!
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
@@ -97,7 +101,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }) if $type eq 'epp';
  return;
 }
 

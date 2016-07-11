@@ -40,12 +40,15 @@ sub parse
  my $mes=$po->message();
  return unless $mes->is_success();
  $rinfo->{$otype}->{$oname}->{exist_reason} =~ m!^(.*)? - Reserve Auction Price: (\d+) Create: (\d+) Tranfer:(\d+) Renew:(\d+)$!;
+ # the latest manual hasa new format, not 100% if the old one might still be used
+ # Note, the empty bracket between Create and Transfer offsets it to match the old ones indexes
+ $rinfo->{$otype}->{$oname}->{exist_reason} =~ m!^(.*)? - Annual Fee - Create:(\d+)( )Tranfer:(\d+) Renew:(\d+)$! unless $1;
  if ($1) {
   $rinfo->{domain}->{$oname}->{is_premium} = 1;
   $rinfo->{domain}->{$oname}->{price_currency} = 'EUR';
   $rinfo->{domain}->{$oname}->{price_category} = $1;
   $rinfo->{domain}->{$oname}->{price_duration} = DateTime::Duration->new(years=>1);
-  $rinfo->{domain}->{$oname}->{create_price} = 0+$2; # hmm, this should probably be $2 + $3
+  $rinfo->{domain}->{$oname}->{create_price} = 0+$2; # hmm, this should probably be $2 + $3 for the old
   $rinfo->{domain}->{$oname}->{renew_price} = 0+$5;
   #$rinfo->{domain}->{$oname}->{restore_price} = undef; # not implemented in this extension
   $rinfo->{domain}->{$oname}->{transfer_price} = 0+$4;

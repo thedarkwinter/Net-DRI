@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 15;
+use Test::More tests => 23;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -54,6 +54,7 @@ is($dri->get_info('object_id','message',124),'foobar.paris','message_retrieve ge
 ##################### 
 ## PremiumDomain
 
+## Old format (?)
 my $price = { duration=>DateTime::Duration->new(years=>5) };
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="0">hotel.paris</domain:name><domain:reason>PremiumParis1 - Reserve Auction Price: 2500 Create: 29 Tranfer:2500 Renew:2500</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
 # domain_check has the same result since you don't need to trigger price_check
@@ -67,5 +68,18 @@ is($dri->get_info('renew_price'),2500,'domain_check get_info (renew_price)');
 is($dri->get_info('transfer_price'),2500,'domain_check get_info (transfer_price)');
 is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
 
+## New format (?)
+$price = { duration=>DateTime::Duration->new(years=>5) };
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="0">shop.paris</domain:name><domain:reason>PremiumParis1 - Annual Fee - Create:2500 Tranfer:2500 Renew:2500</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+# domain_check has the same result since you don't need to trigger price_check
+$rc=$dri->domain_check_price('shop.paris');
+is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium)');
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'EUR','domain_check get_info (price_currency)');
+is($dri->get_info('price_category'),'PremiumParis1','domain_check get_info (price_category)');
+is($dri->get_info('create_price'),'2500','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),2500,'domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price'),2500,'domain_check get_info (transfer_price)');
+is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
 
 exit 0;

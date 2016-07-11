@@ -101,7 +101,7 @@ my $smd=<<'EOF';
    <smd:issuerInfo issuerID="65535">
      <smd:org>ICANN TMCH TESTING TMV</smd:org>
      <smd:email>notavailable@example.com</smd:email>
-     <smd:url>http://www.example.com</smd:url>
+     <smd:url>https://www.example.com</smd:url>
      <smd:voice>+32.000000</smd:voice>
    </smd:issuerInfo>
    <smd:notBefore>2013-08-09T13:55:03.931Z</smd:notBefore>
@@ -212,11 +212,11 @@ my $parser=XML::LibXML->new();
 my $doc=$parser->parse_string($smd);
 my $root=$doc->getDocumentElement();
 
-my $rh=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_signed_mark($po,$root);
+my $rh=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_signed_mark($po,$root,0);
 
 ## header
 is($rh->{id},'0000001751376056503931-65535','parse_signed_mark id');
-is_deeply($rh->{issuer},{id=>65535,org=>'ICANN TMCH TESTING TMV',email=>'notavailable@example.com',url=>'http://www.example.com',voice=>'+32.000000'},'parse_signed_mark issuer');
+is_deeply($rh->{issuer},{id=>65535,org=>'ICANN TMCH TESTING TMV',email=>'notavailable@example.com',url=>'https://www.example.com',voice=>'+32.000000'},'parse_signed_mark issuer');
 is(''.$rh->{creation_date},'2013-08-09T13:55:03','parse_signed_mark creation_date');
 is(''.$rh->{expiration_date},'2017-07-23T22:00:00','parse_signed_mark expiration_date');
 
@@ -382,7 +382,7 @@ EOF
 $doc=$parser->parse_string($smd);
 $root=$doc->getDocumentElement();
 
-$rh=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_encoded_signed_mark($po,$root);
+$rh=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_encoded_signed_mark($po,$root,0);
 
 is($rh->{id},'0000001751376056503931-65535','parse_encoded_signed_mark (xml) id');
 my $rs=$rh->{signature};
@@ -496,7 +496,7 @@ dXJlPgo8L3NtZDpzaWduZWRNYXJrPgo=
 -----END ENCODED SMD-----
 EOF
 
-$rh=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_encoded_signed_mark($po,$smd);
+$rh=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_encoded_signed_mark($po,$smd,0);
 
 is($rh->{id},'1-2','parse_encoded_signed_mark (string) id');
 $rs=$rh->{signature};
@@ -610,7 +610,7 @@ EOF
 $doc=$parser->parse_string($smd);
 $root=$doc->getDocumentElement();
 
-$rh=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_encoded_signed_mark($po,$root);
+$rh=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_encoded_signed_mark($po,$root,1);
 
 ## signature
 my $rs=$rh->{signature};
