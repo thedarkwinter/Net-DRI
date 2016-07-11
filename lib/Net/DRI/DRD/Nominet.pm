@@ -113,7 +113,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
  Net::DRI::Exception->die(0,'DRD',6,"Nominet EPP no longer supported, please use Standard EPP interface") if $type eq 'epp_nominet';
- return ('Net::DRI::Transport::Socket',{remote_host => 'epp.nominet.org.uk'},'Net::DRI::Protocol::EPP::Extensions::Nominet',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host => 'epp.nominet.org.uk', ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::Nominet',{}) if $type eq 'epp';
  return;
 }
 
