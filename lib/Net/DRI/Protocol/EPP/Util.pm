@@ -154,7 +154,7 @@ sub build_ns
 {
  my ($epp,$ns,$domain,$xmlns,$noip)=@_;
  # hostasns = <domain:ns>ns1.test.com</domain:ns>
- return map { ['domain:ns',$_] } $ns->get_names() if ($epp->{hostasns} == 1);  
+ return map { ['domain:ns',$_] } $ns->get_names() if ($epp->{hostasns} == 1);
 
  my @d;
  my $asattr=$epp->{hostasattr};
@@ -292,15 +292,8 @@ sub build_disclose
 {
  my ($d,$ns,@items)=@_;
  my $c = $d; # assigns contact object for later use
+ my $locality = $c->{'disclose_locality'}->{'contacti18n'} if ($c->{'disclose_locality'}->{'contacti18n'});
  $d = $d->disclose() if (((my $ref=eval{$d->can('disclose')}))); # extracts disclose if exists & deals with non-contact objects
- my $t;
- if ($ns eq 'contact') {
-  if (($c->can('has_loc')) || ($c->can('has_int'))) {
-   $t = $c->has_loc() + $c->has_int();
-  }
- } else {
-  $t = 0;
- }
  $ns//='contact';
  return () unless ($d && ref $d eq 'HASH');
  my %v=map { $_ => 1 } values %$d;
@@ -311,9 +304,9 @@ sub build_disclose
  {
   if (exists $d->{$item})
   {
-   push @d,[$ns.':'.$item,{type=>'loc'}] if ($c->has_loc());
-   push @d,[$ns.':'.$item,{type=>'int'}] if ($c->has_int());
-   push @d,[$ns.':'.$item,{type=>'loc'}] if (!$t);
+   # depends on contacti18n variable
+   push @d,[$ns.':'.$item,{type=>'loc'}] if (($locality =~ m/1|4/) || (($c->has_int()) && ($locality == 6)));
+   push @d,[$ns.':'.$item,{type=>'int'}] if ($locality =~ m/2|4|6/);
   } else
   {
    push @d,[$ns.':'.$item,{type=>'int'}] if exists $d->{$item.'_int'};

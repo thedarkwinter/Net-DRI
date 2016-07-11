@@ -67,7 +67,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
            check  => [ \&check, \&check_parse ],
            info   => [ \&info, \&info_parse ],
            transfer_query  => [ \&transfer_query, \&transfer_parse ],
@@ -285,6 +285,7 @@ sub build_cdata
  my ($contact,$v,$ns)=@_;
  $ns//='contact';
 
+ $contact->{'disclose_locality'}->{'contacti18n'} = $v; # add reg addr locality
  my @d=Net::DRI::Protocol::EPP::Util::build_postalinfo($contact,$v,$ns);
 
  push @d,Net::DRI::Protocol::EPP::Util::build_tel($ns.':voice',$contact->voice()) if defined($contact->voice());
