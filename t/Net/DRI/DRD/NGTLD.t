@@ -81,18 +81,18 @@ is($dri->info('contact_check_limit'),13,'afilias: contact_check_limit');
 is($drd->{info}->{domain_check_limit},13,'afilias: domain_check_limit');
 
 #### Dedicated Registry
-# Neustar (Buzz)
-$rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'buzz'});
-is($rc->{last_registry},'buzz','neustar: add_registry');
-$rc = $dri->target('buzz')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+# Neustar (best)
+$rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'best'});
+is($rc->{last_registry},'best','neustar: add_registry');
+$rc = $dri->target('best')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'neustar: add_current_profile');
-is($dri->name(),'buzz','neustar: name');
-is_deeply([$dri->tlds()],['buzz'],'neustar: tlds');
+is($dri->name(),'best','neustar: name');
+is_deeply([$dri->tlds()],['best'],'neustar: tlds');
 @periods = $dri->periods();
 is($#periods,9,'neustar: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
 is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
-$drd = $dri->{registries}->{buzz}->{driver};
+$drd = $dri->{registries}->{best}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],'neustar: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::Fee/],'neustar: loaded_modules');
 is($drd->{bep}->{bep_type},1,'neustar: bep_type');
@@ -198,10 +198,10 @@ is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
 
 # neustar subphase = landrush (required)
-$rc = $dri->target('buzz');
-$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="landrush">claims</launch:phase><launch:cd><launch:name exists="1">test.buzz</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc = $dri->domain_check_claims('test.buzz',{phase=>'landrush'});
-is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.buzz</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="landrush">claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check_claims build_xml');
+$rc = $dri->target('best');
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="landrush">claims</launch:phase><launch:cd><launch:name exists="1">test.best</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc = $dri->domain_check_claims('test.best',{phase=>'landrush'});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.best</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="landrush">claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check_claims build_xml');
 $lpres = $dri->get_info('lp');
 is($lpres->{'exist'},1,'domain_check_claims get_info(exist)');
 is($lpres->{'phase'},'claims','domain_check_claims get_info(phase)');
