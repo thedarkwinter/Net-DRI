@@ -97,7 +97,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'UNIREG'; }
 
-sub tlds     { return ('art','auction','audio','auto','blackfriday','cars','christmas','click','country','deal','design','diet','family','fashion','ﬂowers','free','furniture','game','games','garden','gift','gratis','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','marketing','media','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','store','style','tattoo','team','tech','video','yoga'); } # This might be all of them?
+sub tlds     { return ('art','auction','audio','auto','blackfriday','cars','christmas','click','country','deal','design','diet','family','fashion','ﬂowers','free','furniture','game','garden','gift','gratis','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','marketing','media','mom','news','photo','pics','pizza','property','racing','realestate','restaurant','sale','save','school','sexy','store','style','tattoo','team','tech','video','yoga'); } # This might be all of them?
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
