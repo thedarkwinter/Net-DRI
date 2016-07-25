@@ -403,7 +403,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @coms = (map { $_.'.com' } qw/africa ar br cn de eu gb gr hu jpn kr mex no qc ru sa se uk us uy za/);
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
-    my @others = qw/la pw com.de/;
+    my @others = qw/pw com.de/;
     my @ngtlds = qw/bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
     my @ngtlds_pipeline = qw/art now hotel forum gay blog app mail llc/; # no expected dates given, probably contested strings
@@ -419,6 +419,15 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     };
  }
 
+  # TODO: check if extensions (ex.: CentralNic::AuxContact) and whois_server is correct when live!
+  return {
+      bep_type => 2, # shared registry
+      tlds => ['am','cx','fm','la','radio.fm','radio.am'],
+      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','CentralNic::RegType','CentralNic::AuxContact'], 'brown_fee_version' => '0.5' }],
+      whois_server => 'whois.centralnic.com',
+      verify_icann_reserved => 0,
+      verify_check_name => 0,
+    } if $bep eq 'centralnicgw';
 
 =pod
 
