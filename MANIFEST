@@ -88,6 +88,7 @@ lib/Net/DRI/DRD/BR.pm
 lib/Net/DRI/DRD/BZ.pm
 lib/Net/DRI/DRD/CAT.pm
 lib/Net/DRI/DRD/CentralNic.pm
+lib/Net/DRI/DRD/CentralNicGW.pm
 lib/Net/DRI/DRD/CIRA.pm
 lib/Net/DRI/DRD/CN.pm
 lib/Net/DRI/DRD/CO.pm
@@ -706,8 +707,8 @@ t/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Sync.t
 t/Net/DRI/Protocol/EPP/Extensions/BR.t
 t/Net/DRI/Protocol/EPP/Extensions/CAT.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic.t
+t/Net/DRI/Protocol/EPP/Extensions/CentralNicGW.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/AuxContact.t
-t/Net/DRI/Protocol/EPP/Extensions/CentralNic/CentralNicGW.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.4.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.5.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.6.t

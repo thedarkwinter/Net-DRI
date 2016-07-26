@@ -419,16 +419,6 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     };
  }
 
-  # TODO: check if extensions (ex.: CentralNic::AuxContact) and whois_server is correct when live!
-  return {
-      bep_type => 2, # shared registry
-      tlds => ['am','cx','fm','la','radio.fm','radio.am'],
-      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','CentralNic::RegType','CentralNic::AuxContact'], 'brown_fee_version' => '0.5' }],
-      whois_server => 'whois.centralnic.com',
-      verify_icann_reserved => 0,
-      verify_check_name => 0,
-    } if $bep eq 'centralnicgw';
-
 =pod
 
 
