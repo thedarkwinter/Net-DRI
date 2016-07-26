@@ -100,7 +100,7 @@ sub tlds {
   my @coms = (map { $_.'.com' } qw/africa ar br cn de eu gb gr hu jpn kr mex no qc ru sa se uk us uy za/);
   my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
   my @orgs = (map { $_.'.org' } qw/us ae/);
-  my @others = qw/la pw com.de/;
+  my @others = qw/pw com.de/;
   my @ngtlds = qw/bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
   my @ngtlds_contested = qw/reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
   my @ngtlds_pipeline = qw/art now hotel forum gay group blog app mail llc/; # no expected dates given, probably contested strings
