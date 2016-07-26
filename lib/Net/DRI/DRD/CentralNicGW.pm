@@ -1,7 +1,8 @@
-## Domain Registry Interface, Afilias SRS Driver
+## Domain Registry Interface, CentralNicGW Driver
 ##
-## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2016 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -26,29 +27,11 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::AfiliasSRS - Afilias SRS Driver for Net::DRI
+Net::DRI::DRD::CentralNicGW - CentralNicGW Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension AfiliasSRS New Generic TLDs
-
-AfiliasSRS utilises the following standard extensions. Please see the test files for more examples.
-
-=head2 Standard extensions:
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
-
-=head2 Custom extensions:
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage> urn:afilias:params:xml:ns:idn-1.0
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:ipr-1.1
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0
+CentralNicGW ccTLDs: am, cx, fm, la, radio.fm, radio.am
 
 =head1 SUPPORT
 
@@ -64,12 +47,13 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2014 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2016 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2016 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
