@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 518;
+use Test::More tests => 521;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -114,6 +114,7 @@ use_ok('Net::DRI::DRD::CN');
 use_ok('Net::DRI::DRD::AE');
 use_ok('Net::DRI::DRD::EC');
 use_ok('Net::DRI::DRD::UA');
+use_ok('Net::DRI::DRD::IN');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
 use_ok('Net::DRI::Data::Changes');
@@ -443,6 +444,8 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Bundling');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Reverse');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ContactVerification');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DomainVerification');
+use_ok('Net::DRI::Protocol::EPP::Extensions::IN');
+use_ok('Net::DRI::Protocol::EPP::Extensions::IN::Domain');
 use_ok('Net::DRI::Protocol::DAS');
 use_ok('Net::DRI::Protocol::DAS::Message');
 use_ok('Net::DRI::Protocol::DAS::Connection');
