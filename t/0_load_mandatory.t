@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 518;
+use Test::More tests => 519;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -114,6 +114,7 @@ use_ok('Net::DRI::DRD::CN');
 use_ok('Net::DRI::DRD::AE');
 use_ok('Net::DRI::DRD::EC');
 use_ok('Net::DRI::DRD::UA');
+use_ok('Net::DRI::DRD::CentralNicGW');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
 use_ok('Net::DRI::Data::Changes');
