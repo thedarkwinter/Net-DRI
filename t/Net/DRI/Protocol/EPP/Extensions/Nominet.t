@@ -108,11 +108,11 @@ $c3->voice('+1.7035555555');
 $c3->fax('+1.7035555556');
 $c3->email('jdoe@example.com');
 $c3->auth({pw => '2fooBAR'});
-$c3->disclose({org=>0, addr=>0});
+$c3->disclose({name=>0, org=>0, addr=>0});
 $R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><trID><clTRID>ABC-12345</clTRID><svTRID>54321-XYZ</svTRID></trID></response>' . $E2;
 $rc = $dri->contact_create($c3);
 is($rc->is_success(), 1, 'contact create disclose_enabled is_success');
-is($R1,$E1 . '<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>CONT2</contact:id><contact:postalInfo type="loc"><contact:name>John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.com</contact:email><contact:authInfo><contact:pw/></contact:authInfo><contact:disclose flag="0"><contact:org type="loc"/><contact:addr type="loc"/></contact:disclose></contact:create></create><clTRID>ABC-12345</clTRID></command></epp>','contact create disclose_enabled build_xml');
+is($R1,$E1 . '<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>CONT2</contact:id><contact:postalInfo type="loc"><contact:name>John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.com</contact:email><contact:authInfo><contact:pw/></contact:authInfo><contact:disclose flag="0"><contact:name type="loc"/><contact:org type="loc"/><contact:addr type="loc"/></contact:disclose></contact:create></create><clTRID>ABC-12345</clTRID></command></epp>','contact create disclose_enabled build_xml');
 
 # create /w disclose disabled
 my $c4 = $dri->local_object('contact')->srid('CONT2');
@@ -154,6 +154,7 @@ $toc->set('info',$c2);
 $rc=$dri->contact_update($c,$toc);
 is($rc->is_success(), 1, 'contact update is_success');
 is($R1,$E1 . '<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>CONT1</contact:id><contact:chg><contact:postalInfo type="loc"><contact:name>Testname</contact:name><contact:org>Testorg</contact:org><contact:addr><contact:street>1 London Road</contact:street><contact:city>London</contact:city><contact:pc>SW9 9WS</contact:pc><contact:cc>GB</contact:cc></contact:addr></contact:postalInfo><contact:voice>+44.20701020203</contact:voice><contact:fax>+44.20701020206</contact:fax><contact:email>testadmin@testdomain.co.uk</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:chg></contact:update></update><extension><contact-nom-ext:update xmlns:contact-nom-ext="http://www.nominet.org.uk/epp/xml/contact-nom-ext-1.0" xsi:schemaLocation="http://www.nominet.org.uk/epp/xml/contact-nom-ext-1.0 contact-nom-ext-1.0.xsd"><contact-nom-ext:trad-name>Still Awestome</contact-nom-ext:trad-name><contact-nom-ext:type>LTD</contact-nom-ext:type><contact-nom-ext:co-no>12344321</contact-nom-ext:co-no><contact-nom-ext:opt-out>N</contact-nom-ext:opt-out></contact-nom-ext:update></extension>'.'<clTRID>ABC-12345</clTRID></command></epp>','contact update build_xml');
+
 
 # update /w disclose enabled
 my $c5 = $dri->local_object('contact')->srid('CONT4');

@@ -234,7 +234,7 @@ sub create_build
  if (defined $d)
  {
   Net::DRI::Exception::usererr_invalid_parameters('Invalid reseller disclose item: '.$d) unless ref $d eq 'HASH';
-  my @dd=Net::DRI::Protocol::EPP::Util::build_disclose($d,'reseller',qw/url contact/);
+  my @dd=Net::DRI::Protocol::EPP::Util::build_disclose($co,$d,'reseller',qw/url contact/);
   Net::DRI::Exception::usererr_invalid_parameters('Invalid reseller disclose item: '.$d) unless @dd;
   push @d,@dd;
  }
@@ -334,7 +334,7 @@ sub update_build
  if (defined $co && defined($d=$co->disclose()))
  {
   Net::DRI::Exception::usererr_invalid_parameters('Invalid reseller disclose item: '.$d) unless ref $d eq 'HASH';
-  my @dd=Net::DRI::Protocol::EPP::Util::build_disclose($d,'reseller',qw/url contact/);
+  my @dd=Net::DRI::Protocol::EPP::Util::build_disclose($co,$d,'reseller',qw/url contact/);
   Net::DRI::Exception::usererr_invalid_parameters('Invalid reseller disclose item: '.$d) unless @dd;
   push @set,@dd;
  }

@@ -285,14 +285,14 @@ sub build_cdata
  my ($contact,$v,$ns)=@_;
  $ns//='contact';
 
- $contact->{'disclose_locality'}->{'contacti18n'} = $v; # add reg addr locality
  my @d=Net::DRI::Protocol::EPP::Util::build_postalinfo($contact,$v,$ns);
 
  push @d,Net::DRI::Protocol::EPP::Util::build_tel($ns.':voice',$contact->voice()) if defined($contact->voice());
  push @d,Net::DRI::Protocol::EPP::Util::build_tel($ns.':fax',$contact->fax()) if defined($contact->fax());
  push @d,[$ns.':email',$contact->email()] if defined($contact->email());
  push @d,build_authinfo($contact,$ns);
- push @d,Net::DRI::Protocol::EPP::Util::build_disclose($contact,$ns);
+ $contact->{'contacti18n'} = $v;
+ push @d,Net::DRI::Protocol::EPP::Util::build_disclose($contact,$contact->disclose(),$ns);
 
  return @d;
 }

@@ -290,12 +290,9 @@ sub parse_disclose
 
 sub build_disclose
 {
- my ($d,$ns,@items)=@_;
- my $c = $d; # assigns contact object for later use
- $d = $d->disclose() if (((my $ref=eval{$d->can('disclose')}))); # extracts disclose if exists & deals with non-contact objects
+ my ($contact,$d,$ns,@items)=@_;
  $ns//='contact';
- return () unless ($d && ref $d eq 'HASH');
- my $locality = $c->{'disclose_locality'}->{'contacti18n'} if (defined $c->{'disclose_locality'});
+ return () unless $d && ref $d eq 'HASH';
  my %v=map { $_ => 1 } values %$d;
  return () unless keys(%v)==1; ## 1 or 0 as values, not both at same time
  my @d;
@@ -304,9 +301,8 @@ sub build_disclose
  {
   if (exists $d->{$item})
   {
-   # depends on contacti18n variable
-   push @d,[$ns.':'.$item,{type=>'loc'}] if (($locality =~ m/1|4/) || (($c->has_int()) && ($locality == 6)));
-   push @d,[$ns.':'.$item,{type=>'int'}] if ($locality =~ m/2|4|6/);
+    push @d,[$ns.':'.$item,{type=>'int'}] if $contact->has_int() || (!exists $contact->{name} && ($contact->{contacti18n} =~ m/2|4|6/));
+    push @d,[$ns.':'.$item,{type=>'loc'}] if $contact->has_loc() || (!exists $contact->{name} && ($contact->{contacti18n} =~ m/1|4/));
   } else
   {
    push @d,[$ns.':'.$item,{type=>'int'}] if exists $d->{$item.'_int'};
