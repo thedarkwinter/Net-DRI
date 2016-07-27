@@ -1,7 +1,7 @@
 ## Domain Registry Interface, United TLD Driver
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -69,7 +69,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -96,7 +96,7 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'UNITEDTLD'; }
 
 #sub tlds     { return ('tld','claimsga','claimslandrush'); } # OT&E tlds
-sub tlds     { return qw/dpml.pub actor airforce consulting dance democrat futbol haus immobilien kaufen moda ninja pub republican reviews rocks social/; } # http://rightside.co/rightside-registry/tld-portfolio/
+sub tlds     { return qw/dpml.pub actor airforce army attorney auction band consulting dance degree democrat dentist engineer family forsale futbol games gives haus immobilien kaufen lawyer live market moda mortgage navy news ninja pub rehab republican reviews rip rocks sale social software studio vet video/; } # http://rightside.co/rightside-registry/tld-portfolio/
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
