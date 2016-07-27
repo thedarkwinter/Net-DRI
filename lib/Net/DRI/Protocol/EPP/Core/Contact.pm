@@ -67,7 +67,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
            check  => [ \&check, \&check_parse ],
            info   => [ \&info, \&info_parse ],
            transfer_query  => [ \&transfer_query, \&transfer_parse ],
@@ -291,7 +291,8 @@ sub build_cdata
  push @d,Net::DRI::Protocol::EPP::Util::build_tel($ns.':fax',$contact->fax()) if defined($contact->fax());
  push @d,[$ns.':email',$contact->email()] if defined($contact->email());
  push @d,build_authinfo($contact,$ns);
- push @d,Net::DRI::Protocol::EPP::Util::build_disclose($contact->disclose(),$ns);
+ $contact->{'contacti18n'} = $v;
+ push @d,Net::DRI::Protocol::EPP::Util::build_disclose($contact,$contact->disclose(),$ns);
 
  return @d;
 }
