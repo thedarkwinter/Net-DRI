@@ -302,7 +302,7 @@ sub build_disclose
  {
   if (exists $d->{$item})
   {
-   push @d,[$ns.':'.$item,{type=>'int'}],[$ns.':name',{type=>'loc'}];
+   push @d,[$ns.':'.$item,{type=>'int'}],[$ns.':'.$item,{type=>'loc'}];
   } else
   {
    push @d,[$ns.':'.$item,{type=>'int'}] if exists $d->{$item.'_int'};
