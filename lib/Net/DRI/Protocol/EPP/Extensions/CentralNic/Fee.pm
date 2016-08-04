@@ -158,8 +158,9 @@ sub fee_set_build_11
   Net::DRI::Exception::usererr_invalid_parameters('fee action should be: create, transfer, renew or restore') if exists $rp->{action} && $rp->{action} !~ m/^(?:create|transfer|renew|restore)$/;
 
   my (@n,$name,$lp);
-
-  push @n,['fee:command',$rp->{action}];
+  $lp->{phase} = $rp->{phase} if exists $rp->{phase};
+  $lp->{subphase} = $rp->{sub_phase} if exists $rp->{sub_phase};
+  push @n,['fee:command',$lp,$rp->{action}];
   push @n,['fee:currency',$rp->{currency}] if exists $rp->{currency};
 
   if (exists $rp->{duration}) {
@@ -182,6 +183,8 @@ sub fee_set_parse
   my ($version,$start) = @_;
   return unless $start;
   my $set = {};
+
+  $set->{price_avail} = $start->getAttribute('avail') if $start->hasAttribute('avail'); # since 0.11
   foreach my $el (Net::DRI::Util::xml_list_children($start))
   {
     my ($name,$content)=@$el;
@@ -195,6 +198,16 @@ sub fee_set_parse
       $set->{'element'} = $element;
       $set->{'domain'} = $content->textContent(); # we don' support other types at the moment
       $set->{'premium'} = 0; # actually this was only in 0.6, but this sort of keeps things going in the same vain implementation wise
+    }
+    elsif ($name eq 'object') # in 0.11 we can have an object with element for domain:name
+    {
+      # TODO. This could theoretically not be a domain...
+      foreach my $el2 (Net::DRI::Util::xml_list_children($content))
+      {
+        my ($name2,$content2)=@$el2;
+        $set->{'domain'} = $content2->textContent() if $name2 eq 'name';
+      }
+      $set->{'premium'} = 0;
     }
     elsif ($name eq 'command')
     {
@@ -223,18 +236,24 @@ sub fee_set_parse
         $set->{"fee_$d"} = 0 + $content->textContent();
       }
       if ($content->hasAttribute('refundable') && $content->getAttribute('refundable') eq '1') {
-        $set->{description} .= "Refundable";
+        $set->{description} .= "Refundable"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+        $set->{refundable} = 1;
       }
       if ($content->hasAttribute('grace-period')) {
-        $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")";
+        $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+        $set->{grace_period} = $content->getAttribute('grace-period');
       }
       if ($content->hasAttribute('applied') && $content->getAttribute('applied')=~m/^(?:immediate|delayed)$/) {
-        $set->{description} .= "(Applied=>" . $content->getAttribute('applied') . ")";
+        $set->{description} .= "(Applied=>" . $content->getAttribute('applied') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+        $set->{applied} = $content->getAttribute('applied');
       }
     } elsif ($name eq 'class')
     {
       $set->{class} = $content->textContent();
       $set->{'premium'} = 1 && $set->{class} =~ m/(premium|tier.|non-standard)/i;
+    } elsif ($name eq 'reason')
+    {
+      $set->{reason} = $content->textContent();
     }
   }
   chomp $set->{description} if $set->{description};
