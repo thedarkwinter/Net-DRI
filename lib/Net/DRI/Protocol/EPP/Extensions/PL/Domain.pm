@@ -50,6 +50,7 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>
+Marcus Fauré <netdri@faure.de>
 
 =head1 COPYRIGHT
 
@@ -73,6 +74,7 @@ sub register_commands
  my ($class,$version)=@_;
  my %tmp=( 
           create => [ \&create ],
+          renew  => [ \&renew  ],
          );
  return { 'domain' => \%tmp };
 }
@@ -90,6 +92,24 @@ sub create
  push @e,['extdom:book']                 if (exists($rd->{book}) && $rd->{book});
 
  my $eid=$mes->command_extension_register('extdom:create',sprintf('xmlns:extdom="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('pl_domain')));
+ $mes->command_extension($eid,\@e);
+ return;
+}
+
+# domain:renew with extdom:reactivate equals domain:restore
+## TODO: <extdom:renewToDate>
+sub renew
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+
+ return unless exists $rd->{reactivate};
+ my @e;
+
+ # NASK expects an empty extdom:reactivate tag
+ push @e,['extdom:reactivate',''];
+
+ my $eid=$mes->command_extension_register('extdom:renew',sprintf('xmlns:extdom="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('pl_domain')));
  $mes->command_extension($eid,\@e);
  return;
 }
