@@ -884,7 +884,15 @@ cymru wales bbc blog
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['cymru','wales','bbc','blog'],
+     tlds => ['blog'], ## TODO this will be all MMX Tlds
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+   } if $bep eq 'nominet' && $tld eq 'blog';
+
+
+ return {
+     bep_type => 1, # dedicated registry
+     tlds => ['cymru','wales','bbc'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet';
@@ -948,7 +956,6 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Validation> urn:ietf:params:xml:
  return {
      bep_type => 2, # shared registry
      tlds => ['org','xn--c1avg','xn--i1b6b1a6a2e','xn--nqv7f','xn--tqq33ed31aqia','ngo','ong'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::PIR',{}],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::PIR',{'brown_fee_version' => '0.7'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'pir';
