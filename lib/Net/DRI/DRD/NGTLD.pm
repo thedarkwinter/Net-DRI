@@ -406,7 +406,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @others = qw/pw com.de/;
     my @ngtlds = qw/bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
-    my @ngtlds_pipeline = qw/art now hotel forum gay blog app mail llc/; # no expected dates given, probably contested strings
+    my @ngtlds_pipeline = qw/art now hotel forum gay app mail llc/; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
     return {
@@ -728,7 +728,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 Uncontested: abogado bayern beer budapest casa cooking country fashion fishing fit garden horse law luxe miami rodeo surf vip vodka wedding work yoga xn--g2xx48c
 
 
-Contested: app art baby beauty blog coupon cpa data dds eco gay home hotel inc latino llc realestate
+Contested: app art baby beauty coupon cpa data dds eco gay home hotel inc latino llc realestate
 
 Collisions: cooking-collisions country-collisions fishing-collisions'horse-collisions rodeo-collisions vodka-collisions
 =cut
@@ -736,7 +736,7 @@ Collisions: cooking-collisions country-collisions fishing-collisions'horse-colli
  return {
      bep_type => 2, # shared registry
      tlds => ['abogado', 'bayern', 'beer', 'budapest', 'casa', 'cooking', 'country', 'fashion', 'fishing', 'fit', 'garden', 'horse', 'law',  'luxe', 'miami', 'rodeo', 'surf',  'vip', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'blog', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
+              'app', 'art', 'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
               'cooking-collisions', 'country-collisions', 'fishing-collisions', 'horse-collisions', 'rodeo-collisions', 'vodka-collisions',
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee','MAM::QualifiedLawyer']}],
@@ -878,13 +878,13 @@ bom final rio
 
 =head3 TLDs
 
-cymru wales bbc
+cymru wales bbc blog
 
 =cut
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['cymru','wales','bbc'],
+     tlds => ['cymru','wales','bbc','blog'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet';
