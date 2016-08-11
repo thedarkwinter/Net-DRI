@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 458;
+use Test::More tests => 468;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -841,4 +841,24 @@ is($rc->is_success(),1,'domain_check multi is_success');
 
 
 ####################################################################################################
+## domain renew
+$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example123.pl</domain:name><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_renew('example123.pl',{duration => DateTime::Duration->new(years=>5), current_expiration => DateTime->new(year=>2000,month=>4,day=>3)});
+is($R1,$E1.'<command><renew><domain:renew xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example123.pl</domain:name><domain:curExpDate>2000-04-03</domain:curExpDate><domain:period unit="y">5</domain:period></domain:renew></renew><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build');
+is($dri->get_info('action'),'renew','domain_renew get_info(action)');
+is($dri->get_info('exist'),1,'domain_renew get_info(exist)');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_renew get_info(exDate)');
+is("".$d,'2005-04-03T22:00:00','domain_renew get_info(exDate) value');
+
+## domain restore / reactivate
+$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example456.pl</domain:name><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_renew('example456.pl',{reactivate => 1, duration => DateTime::Duration->new(years=>5), current_expiration => DateTime->new(year=>2000,month=>4,day=>3)});
+is($R1,$E1.'<command><renew><domain:renew xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example456.pl</domain:name><domain:curExpDate>2000-04-03</domain:curExpDate><domain:period unit="y">5</domain:period></domain:renew></renew><extension><extdom:renew xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:reactivate/></extdom:renew></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build');
+is($dri->get_info('action'),'renew','domain_renew get_info(action)');
+is($dri->get_info('exist'),1,'domain_renew get_info(exist)');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_renew get_info(exDate)');
+is("".$d,'2005-04-03T22:00:00','domain_renew get_info(exDate) value');
+
 exit 0;
