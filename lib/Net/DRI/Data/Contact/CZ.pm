@@ -1,0 +1,114 @@
+## Domain Registry Interface, Handling of contact data for .CZ [https://www.nic.cz/files/nic/doc/constraints.pdf]
+##
+## Copyright (c) 2008-2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+##
+## This file is part of Net::DRI
+##
+## Net::DRI is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## See the LICENSE file that comes with this distribution for more details.
+####################################################################################################
+
+package Net::DRI::Data::Contact::CZ;
+
+use strict;
+use warnings;
+
+use base qw(Net::DRI::Data::Contact);
+
+use Net::DRI::Exception;
+
+use Data::Dumper;
+
+__PACKAGE__->register_attributes(qw(vat identity notifyemail));
+
+=pod
+
+=head1 NAME
+
+Net::DRI::Data::Contact::LV - Handle LV contact data for Net::DRI
+
+=head1 DESCRIPTION
+
+This subclass of Net::DRI::Data::Contact adds accessors and validation for
+LV specific data.
+
+=head1 METHODS
+
+The following accessors/mutators can be called in chain, as they all return the object itself.
+
+=head1 SUPPORT
+
+For now, support questions should be sent to:
+
+E<lt>d.makuni@live.co.uk<gt>
+
+Please also see the SUPPORT file in the distribution.
+
+=head1 SEE ALSO
+
+http://www.dotandco.com/services/software/Net-DRI/
+
+=head1 AUTHOR
+
+David Makuni <d.makuni@live.co.uk>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2008-2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+See the LICENSE file that comes with this distribution for more details.
+
+=cut
+
+####################################################################################################
+
+sub validate {
+	my ($self,$change)=@_;
+	$change||=0;
+	my @errs;
+
+	$self->SUPER::validate($change); ## This will trigger exception if a problem is found.
+
+	# the voice 'x' attribute is not allowed
+	if ((defined $self->voice()) && ($self->voice() =~ m/(.+)(x)(.*)/)) {
+			push @errs,'The attribute "x" is not allowed for contact voice element' if (defined $self->voice());
+	}
+
+	# 'identity' element data validation
+  if (defined $self->identity()) {
+		# missing / undefined fields
+		push @errs,'The "type" attribute is required for the contact identity element' if (!(defined $self->identity()->{type}));
+		push @errs,'The "type" attribute is present but undefined for the contact identity element' if ($self->identity()->{type} eq '');
+		push @errs,'The "value" attribute is required for the contact identity element' if (!(defined $self->identity()->{value}));
+		push @errs,'The "value" attribute is present but undefined for the contact identity element' if ($self->identity()->{value} eq '');
+		# field content validation
+		push @errs,'Wrong value for contact identity "type" element. Accepted: op,passport,mpsv,ico,birthday'
+			if ($self->identity()->{type} !~ m/^(op|passport|mpsv|ico|birthday)$/);
+	}
+
+	Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
+
+	return 1; ## everything is good!
+}
+
+sub init {
+	my ($self,$what,$ndr)=@_;
+
+	return;
+}
+
+####################################################################################################
+1;
