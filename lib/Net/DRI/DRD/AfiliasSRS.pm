@@ -97,7 +97,7 @@ sub name     { return 'AfiliasSRS'; }
 
 sub tlds     { 
  my @pro = qw/pro law.pro jur.pro bar.pro med.pro cpa.pro aca.pro eng.pro/; # in afilias main complex
- my @afilias = qw/info xn--6frz82g bet black blue green kim lgbt lotto meet organic pet pink poker red shiksha vote voto/; # info / main complex
+ my @afilias = qw/info mobi xn--6frz82g bet black blue green kim lgbt lotto meet organic pet pink poker red shiksha vote voto/; # info / main complex
  my @afilias_clients = qw/xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas/; # xxx / clients complex
  return (@pro, @afilias, @afilias_clients);
 }
