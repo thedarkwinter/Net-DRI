@@ -181,7 +181,7 @@ sub login
  my ($po,$login,$password,$rdata)=@_;
  Net::DRI::Exception::usererr_insufficient_parameters('login')    unless defined $login && length $login;
  Net::DRI::Exception::usererr_insufficient_parameters('password') unless defined $password && length $password;
- Net::DRI::Exception::usererr_invalid_parameters('login')         unless Net::DRI::Util::xml_is_token($login,3,24);
+ Net::DRI::Exception::usererr_invalid_parameters('login')         unless Net::DRI::Util::xml_is_token($login,3,16);
  Net::DRI::Exception::usererr_invalid_parameters('password')      unless Net::DRI::Util::xml_is_token($password,6,16);
 
  my $mes=$po->message();

@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 60;
+use Test::More tests => 74;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -124,10 +124,36 @@ is($dri->get_info('tid'),'106','domain_trade_query get_info(tid)');
 is($dri->get_info('close_date'),undef,'domain_trade_query get_info(close_date)'); # Value is undef on purpose according to spec
 
 ### 1.6 Domain Transfer
-$R2=$E1.'<response>'.r().''.$TRID.'</response>'.$E2;
+$R2='<?xml version="1.0" encoding="UTF-8"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><response><result code="1000"><msg>Command completed successfully</msg></result><resData><domain:trnData xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-5btc8khh-1.ro</domain:name><domain:trStatus>1</domain:trStatus><domain:reID>CL1</domain:reID><domain:reDate>2012-08-07T00:00:00Z</domain:reDate><domain:acID>CL2</domain:acID><domain:acDate>2012-08-07T00:00:00Z</domain:acDate><domain:exDate>2012-08-07T00:00:00Z</domain:exDate></domain:trnData></resData><trID><clTRID>50238caf16c71</clTRID><svTRID>rotld-70195d9d5ca2fbd04e7d61cf6a0cf0dc-0-479-0</svTRID></trID></response></epp>';
 $rc=$dri->domain_transfer_start('test-5btc8khh-1.ro',{authorization_key=>'fFjMmUZJQyzvXB53'});
 is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-5btc8khh-1.ro</domain:name></domain:transfer></transfer><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:transfer><rotld:domain><rotld:authorization_key>fFjMmUZJQyzvXB53</rotld:authorization_key></rotld:domain></rotld:transfer></rotld:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_start build_xml');
 is($rc->is_success(),1,'domain_transfer_start is_success');
+
+### 1.6.1 Domain Transfer Approve
+$rc=$dri->domain_transfer_accept('test-5btc8khh-1.ro',{authorization_key=>'fFjMmUZJQyzvXB53'});
+is_string($R1,$E1.'<command><transfer op="approve"><domain:transfer xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-5btc8khh-1.ro</domain:name></domain:transfer></transfer><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:transfer><rotld:domain><rotld:authorization_key>fFjMmUZJQyzvXB53</rotld:authorization_key></rotld:domain></rotld:transfer></rotld:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_accept build_xml');
+is($rc->is_success(),1,'domain_transfer_accept is_success');
+is($dri->get_info('trStatus'),1,'domain_transfer_start get_info(trStatus)');
+is($dri->get_info('reID'),'CL1','domain_transfer_start get_info(reID)');
+is($dri->get_info('acID'),'CL2','domain_transfer_start get_info(acID)');
+is($dri->get_info('reDate'),'2012-08-07T00:00:00','domain_transfer_start get_info(reDate)');
+is($dri->get_info('acDate'),'2012-08-07T00:00:00','domain_transfer_start get_info(acDate)');
+is($dri->get_info('exDate'),'2012-08-07T00:00:00','domain_transfer_start get_info(exDate)');
+
+### 1.6.2 Domain Transfer Reject
+$rc=$dri->domain_transfer_refuse('test-5btc8khh-1.ro',{authorization_key=>'fFjMmUZJQyzvXB53'});
+is_string($R1,$E1.'<command><transfer op="reject"><domain:transfer xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-5btc8khh-1.ro</domain:name></domain:transfer></transfer><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:transfer><rotld:domain><rotld:authorization_key>fFjMmUZJQyzvXB53</rotld:authorization_key></rotld:domain></rotld:transfer></rotld:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_reject build_xml');
+is($rc->is_success(),1,'domain_transfer_reject is_success');
+
+### 1.6.3 Domain Transfer Query
+$rc=$dri->domain_transfer_query('test-5btc8khh-1.ro',{authorization_key=>'fFjMmUZJQyzvXB53'});
+is_string($R1,$E1.'<command><transfer op="query"><domain:transfer xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-5btc8khh-1.ro</domain:name></domain:transfer></transfer><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:transfer><rotld:domain><rotld:authorization_key>fFjMmUZJQyzvXB53</rotld:authorization_key></rotld:domain></rotld:transfer></rotld:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_query build_xml');
+is($rc->is_success(),1,'domain_transfer_query is_success');
+
+### 1.6.4 Domain Transfer Cancel
+$rc=$dri->domain_transfer_stop('test-5btc8khh-1.ro',{authorization_key=>'fFjMmUZJQyzvXB53'});
+is_string($R1,$E1.'<command><transfer op="cancel"><domain:transfer xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-5btc8khh-1.ro</domain:name></domain:transfer></transfer><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:transfer><rotld:domain><rotld:authorization_key>fFjMmUZJQyzvXB53</rotld:authorization_key></rotld:domain></rotld:transfer></rotld:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_stop build_xml');
+is($rc->is_success(),1,'domain_transfer_stop is_success');
 
 ### 1.7 Domain Update (With Activation)
 $R2='';
@@ -145,7 +171,7 @@ is_string($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.rotl
 #is_string($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-6lijl3yd.ro</domain:name><domain:add><domain:ns><domain:hostObj>a.ns.1.test-4oakyw-3.ro</domain:hostObj><domain:hostObj>ns1.update-example.net</domain:hostObj><domain:hostObj>a.ns.1.test-6lijl3yd.ro</domain:hostObj><domain:hostObj>a.ns.1.update.test-6lijl3yd.ro</domain:hostObj></domain:ns></domain:add></domain:update></update><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:update><rotld:domain><rotld:activate/></rotld:domain></rotld:update></rotld:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update add_hosts + activation object_method build_xml');
 is($rc->is_success(), 1, 'domain_update add_hosts + activation is_success');
 
-### 1.8 Domain Renew
+### 1.8 Domain Renew (only for yearly registrars)
 $R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-5btc8khh-6.ro</domain:name><domain:exDate>2014-08-11T15:43:26Z</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
 my $du = DateTime::Duration->new(years => 1);
 my $exp = DateTime->new(year => 2015,month => 05,day => 01);

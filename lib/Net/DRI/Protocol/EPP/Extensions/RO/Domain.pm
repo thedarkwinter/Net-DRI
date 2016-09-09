@@ -76,7 +76,10 @@ sub register_commands {
 		trade_request =>        [ \&trade_request, \&trade_request_parse ],
 		trade_approve =>        [ \&trade_approve, undef ],
 		trade_query =>          [ \&trade_query, \&trade_query_parse],
-		transfer_request =>     [ \&transfer_request, undef],
+		transfer_request =>     [ \&transfer_request, \&transfer_parse ],
+		transfer_cancel  =>     [ \&transfer_cancel, \&transfer_parse ],
+		transfer_answer  =>     [ \&transfer_answer, \&transfer_parse ],
+		transfer_query  =>      [ \&transfer_query, \&transfer_parse ],
 		update =>               [ \&update, undef],
 		renew =>                [ \&renew, \&renew_parse],
 		info =>                 [ \&info, \&info_parse],
@@ -265,6 +268,92 @@ sub transfer_request {
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
 	$mes->command_extension($eid,\@e);
 	return;
+}
+
+sub transfer_answer {
+	my ($epp,$domain,$rd)=@_;
+	my $mes=$epp->message();
+	my (@e,@f,$op);
+
+  if (Net::DRI::Util::has_key($rd,'approve') && ($rd->{approve})) {
+		$op = 'approve';
+	} else {
+		$op = 'reject';
+	}
+
+	my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>$op}],$domain);
+	$mes->command_body(\@d);
+	$mes->command([['transfer',{'op'=>$op}],'domain:transfer',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ro_domain'))]);
+
+	return unless ((defined $rd->{'authorization_key'}));
+
+	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
+	push @e,['rotld:transfer',['rotld:domain',@f]];
+
+	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	$mes->command_extension($eid,\@e);
+	return;
+}
+
+sub transfer_cancel {
+	my ($epp,$domain,$rd)=@_;
+	my $mes=$epp->message();
+	my (@e,@f);
+
+	my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'cancel'}],$domain);
+	$mes->command_body(\@d);
+	$mes->command([['transfer',{'op'=>'cancel'}],'domain:transfer',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ro_domain'))]);
+
+	return unless ((defined $rd->{'authorization_key'}));
+
+	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
+	push @e,['rotld:transfer',['rotld:domain',@f]];
+
+	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	$mes->command_extension($eid,\@e);
+	return;
+}
+
+sub transfer_query {
+	my ($epp,$domain,$rd)=@_;
+	my $mes=$epp->message();
+	my (@e,@f);
+
+	my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'query'}],$domain);
+	$mes->command_body(\@d);
+	$mes->command([['transfer',{'op'=>'query'}],'domain:transfer',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ro_domain'))]);
+
+	return unless ((defined $rd->{'authorization_key'}));
+
+	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
+	push @e,['rotld:transfer',['rotld:domain',@f]];
+
+	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	$mes->command_extension($eid,\@e);
+	return;
+}
+
+sub transfer_parse {
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
+
+ my $trndata=$mes->get_response('ro_domain','trnData');
+ return unless defined $trndata;
+
+ foreach my $el (Net::DRI::Util::xml_list_children($trndata)) {
+  my ($name,$c)=@$el;
+  if ($name eq 'name') {
+   $oname=lc($c->textContent());
+   $rinfo->{domain}->{$oname}->{action}='transfer';
+   $rinfo->{domain}->{$oname}->{exist}=1;
+  } elsif ($name=~m/^(trStatus|reID|acID)$/) {
+   $rinfo->{domain}->{$oname}->{$1}=$c->textContent() if ($c->textContent());
+  } elsif ($name=~m/^(reDate|acDate|exDate)$/) {
+   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if ($c->textContent());
+  }
+ }
+ return;
 }
 
 sub update {
