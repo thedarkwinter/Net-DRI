@@ -78,8 +78,8 @@ sub register_commands {
 		trade_query =>          [ \&trade_query, \&trade_query_parse],
 		transfer_request =>     [ \&transfer_request, undef],
 		update =>               [ \&update, undef],
-		renew =>                [ \&renew, undef],
-		info =>                 [ \&info, undef],
+		renew =>                [ \&renew, \&renew_parse],
+		info =>                 [ \&info, \&info_parse],
 		check =>                [ \&check, \&check_parse]
 	);
 
@@ -101,9 +101,6 @@ sub create {
 		unless ((defined $rd->{auth}->{pw}) && ($rd->{auth}->{pw} ne ''));
 	Net::DRI::Exception::usererr_invalid_parameters('auth-pw supplied must have no spaces; one capital, small & special character with length between 6-40')
 		unless ($rd->{auth}->{pw}=~ m/^[a-z0-9\-\.\,\:\;\[\]\{\}\_\+\=\@\#\$\^\*\?\!\|\~]{6,40}$/i);
-
-	# Domain Contact Validation
-	#validate_contacts($rd);
 
 	push @f,['rotld:agreement',{legal_use => $rd->{'domain_terms'}->{'legal_use'}, registration_rules => $rd->{'domain_terms'}->{'reg_rules'}}];
 	if ($rd->{'reserve_domain'}->{'reserve'} == 1) {push @f,['rotld:reserve'];}
@@ -147,9 +144,9 @@ sub trade_request {
 	$mes->command_body(\@d);
 	$mes->command([['trade',{'op'=>'request'}],'domain:trade',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ro_domain'))]);
 
-	push @f, [ 'rotld:authorization_key', $rd->{'trade_auth_info'}->{'authorization_key'} ] if (defined $rd->{'trade_auth_info'}->{'authorization_key'});
-	push @f, [ 'rotld:c_registrant', $rd->{'trade_auth_info'}->{'c_registrant'} ] if (defined $rd->{'trade_auth_info'}->{'c_registrant'});
-	push @f, [ 'rotld:domain_password', $rd->{'trade_auth_info'}->{'domain_password'} ] if (defined $rd->{'trade_auth_info'}->{'domain_password'});
+	push @f,['rotld:authorization_key', $rd->{'trade_auth_info'}->{'authorization_key'} ] if (defined $rd->{'trade_auth_info'}->{'authorization_key'});
+	push @f,['rotld:c_registrant', $rd->{'trade_auth_info'}->{'c_registrant'} ] if (defined $rd->{'trade_auth_info'}->{'c_registrant'});
+	push @f,['rotld:domain_password', $rd->{'trade_auth_info'}->{'domain_password'} ] if (defined $rd->{'trade_auth_info'}->{'domain_password'});
 	push @e,['rotld:trade',['rotld:domain',['rotld:request',@f]]];
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
@@ -196,7 +193,7 @@ sub trade_approve {
 
 	return unless ((defined $rd->{'tid'}));
 
-	push @f, [ 'rotld:tid', $rd->{'tid'} ] if (defined $rd->{'tid'});
+	push @f,['rotld:tid', $rd->{'tid'} ] if (defined $rd->{'tid'});
 	push @e,['rotld:trade',['rotld:domain',['rotld:approve',@f]]];
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
@@ -292,11 +289,104 @@ sub renew {
 	return;
 }
 
+sub renew_parse {
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
+
+ my $rendata=$mes->get_response('ro_domain','renData');
+ return unless defined $rendata;
+
+ foreach my $el (Net::DRI::Util::xml_list_children($rendata)) {
+  my ($name,$c)=@$el;
+  if ($name eq 'name') {
+   $oname=lc($c->textContent());
+   $rinfo->{domain}->{$oname}->{action}='renew';
+   $rinfo->{domain}->{$oname}->{exist}=1;
+  } elsif ($name=~m/^(exDate)$/) {
+   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if ($c->textContent());
+  }
+ }
+ return;
+}
+
 sub info {
 	my ($epp,$domain,$rd)=@_;
 	my $mes=$epp->message();
 	$mes->command(['info','domain:info',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ro_domain'))]);
 	return;
+}
+
+sub info_parse {
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
+
+ my $infdata=$mes->get_response('ro_domain','infData');
+ return unless defined $infdata;
+
+ my (@s,@host);
+ my $cs=$po->create_local_object('contactset');
+ my %ccache;
+
+ foreach my $el (Net::DRI::Util::xml_list_children($infdata)) {
+  my ($name,$c)=@$el;
+  if ($name eq 'name') {
+   $oname=lc($c->textContent());
+   $rinfo->{domain}->{$oname}->{action}='info';
+   $rinfo->{domain}->{$oname}->{exist}=1;
+  } elsif ($name eq 'roid') {
+   $rinfo->{domain}->{$oname}->{roid}=$c->textContent();
+  } elsif ($name eq 'status') {
+   push @s,Net::DRI::Protocol::EPP::Util::parse_node_status($c);
+  } elsif ($name eq 'registrant') {
+   my $id=$c->textContent();
+   $ccache{$id}=$po->create_local_object('contact')->srid($id) unless exists $ccache{$id};
+   $cs->set($ccache{$id},'registrant');
+  } elsif ($name eq 'contact') {
+   my $id=$c->textContent();
+   $ccache{$id}=$po->create_local_object('contact')->srid($id) unless exists $ccache{$id};
+   $cs->add($ccache{$id},$c->getAttribute('type'));
+  } elsif ($name eq 'ns') {
+   if ($po->{hostasns} == 1) {
+    $rinfo->{domain}->{$oname}->{ns} = $po->create_local_object('hosts') unless defined ($rinfo->{domain}->{$oname}->{ns});
+    $rinfo->{domain}->{$oname}->{ns}->add($c->textContent());
+   } else {
+    $rinfo->{domain}->{$oname}->{ns}=Net::DRI::Protocol::EPP::Util::parse_ns($po,$c);
+   }
+  } elsif ($name eq 'host') {
+   push @host,$c->textContent();
+  } elsif ($name=~m/^(clID|crID|upID)$/) {
+   $rinfo->{domain}->{$oname}->{$1}=$c->textContent();
+  } elsif ($name=~m/^(crDate|upDate|trDate|exDate)$/) {
+   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if ($c->textContent());
+  } elsif ($name eq 'authInfo') {
+   $rinfo->{domain}->{$oname}->{auth}={pw => Net::DRI::Util::xml_child_content($c,$mes->ns('domain'),'pw')};
+  }
+ }
+
+ $rinfo->{domain}->{$oname}->{contact}=$cs;
+ $rinfo->{domain}->{$oname}->{status}=$po->create_local_object('status')->add(@s);
+ $rinfo->{domain}->{$oname}->{subordinate_hosts}=$po->create_local_object('hosts')->set(@host) if @host;
+
+ my $idndata=$mes->get_extension('ro_idn_ext','mapping');
+ return unless defined $idndata;
+
+ my $ns=$mes->ns('ro_idn_ext');
+ $idndata=$idndata->getChildrenByTagNameNS($ns,'name');
+ return unless $idndata->size();
+
+ my $c=$idndata->shift->getFirstChild();
+ while($c) {
+	 next unless ($c->nodeType() == 1); # element nodes ONLY
+	 my $name=$c->localname() || $c->nodeName();
+	 next unless $name && $c->getFirstChild();
+	 if ($name=~m/^(ace|unicode)$/) {
+		 $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData() if (defined $c);
+	 }
+ } continue { $c=$c->getNextSibling(); }
+
+ return;
 }
 
 sub check {
@@ -354,17 +444,6 @@ sub check_parse {
 			} continue { $c=$c->getNextSibling(); }
 			$rinfo->{domain}->{$oname}->{renew_availability} = $msg;
 		}
-	}
-	return;
-}
-
-sub validate_contacts {
-	my $rd=shift;
-	my $cont=$rd->{contact}->types();
-	foreach my $t (qw/registrant/) {
-		my $cont=$rd->{contact}->get($t);
-		Net::DRI::Exception::usererr_invalid_parameters('"srid" for registrant is set to "AUTO". Contact must be created before domain is registered.') if ($cont->{'srid'} =~ m/^(AUTO)/i);
-		Net::DRI::Exception::usererr_invalid_parameters('invalid registrant contact "srid". Must begin with "C" then 1-12 numbers.') unless ($cont->{'srid'} =~ m/^(C)([0-9]){1,12}/i);
 	}
 	return;
 }

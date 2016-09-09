@@ -94,6 +94,7 @@ sub validate {
 	my ($self,$change)=@_;
 	$change||=0;
 	my @errs;
+	my @type_values= qw(p ap nc c gi pi o);
 
 	$self->SUPER::validate($change); ## This will trigger exception if a problem is found.
 
@@ -103,26 +104,35 @@ sub validate {
 	# registry specified 'mandatory' fields for create commands
 	if (!$change) {
 		if ($self->cc() eq 'RO') {
-			Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: vat field is mandatory for romanian contacts') unless ($self->vat());
-			Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: VAT number given must be in the correct format for romanian contacts') unless ($self->vat()=~ m/(RO)?[0-9]{2,10}/i);
+			Net::DRI::Exception::usererr_insufficient_parameters('Insufficient contact information: VAT number is mandatory for romanian contacts') unless ($self->vat());
+			# contact type specific data validation
+			if ($self->type()) {
+				if ($self->type() eq 'p') {
+					Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: VAT number for "invidivual/person" contact type must match Romanian "Personal Numeric Code" (CNP) format')
+						unless ($self->vat()=~ m/[1-8][0-9]{2}[0,1][0-9][0-9]{2}[0-9]{6}/i);
+				} elsif ($self->type() eq 'c') {
+					Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: VAT number for "Limited Company (LTD) / Public Limited Company (PLC) / Partnership" must be in the correct format. Example: RO[2-10 digits]') unless ($self->vat()=~ m/(RO)?[0-9]{2,10}/i);
+					Net::DRI::Exception::usererr_insufficient_parameters('Insufficient contact information: Organization number for "Limited Company (LTD) / Public Limited Company (PLC) / Partnership" contact type is mandatory') unless ($self->orgno());
+				}
+			}
 		}
 		# 'srid' field validation
 		push @errs,'"srid" is specified by the registry and MUST be set to "auto"' if ((defined $self->srid()) && ($self->srid()!~m/^(AUTO)$/i));
 		# 'type' field validation
-		Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: type field is mandatory') unless ($self->type());
+		Net::DRI::Exception::usererr_insufficient_parameters('Insufficient contact information: type field is mandatory') unless ($self->type());
 	}
 
 	# other registry specified 'mandatory' fields
-	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: sp field is mandatory') unless ($self->sp());
-	Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: email field is mandatory') unless ($self->email());
+	Net::DRI::Exception::usererr_insufficient_parameters('Insufficient contact information: sp field is mandatory') unless ($self->sp());
+	Net::DRI::Exception::usererr_insufficient_parameters('Insufficient contact information: email field is mandatory') unless ($self->email());
 
 	# 'vat' and 'orgno' field length validation
-	push @errs,'"vat" field must be 5 to 40 characters long' if ((defined $self->vat()) && ($self->vat()!~m/^.{5,40}$/));
-	push @errs,'"orgno" field must be 1 to 40 characters long' if ((defined $self->orgno()) && ($self->orgno()!~m/^.{1,40}$/));
+	push @errs,'"VAT Number" field must be 5 to 40 characters long' if ((defined $self->vat()) && ($self->vat()!~m/^.{5,40}$/));
+	push @errs,'"Organisation Number" field must be 1 to 40 characters long' if ((defined $self->orgno()) && ($self->orgno()!~m/^.{1,40}$/));
 
 	# 'type' valid values - p / ap / nc / c / gi / pi / o
-	my @type_values= qw(p ap nc c gi pi o);
 	if (defined $self->type()) {
+		# check contact type is an accepted value
 		push @errs,'"type" field can only accept the values: p / ap / nc / c / gi / pi / o' unless (grep {$_ eq $self->type()} @type_values);
 	}
 

@@ -83,9 +83,9 @@ sub create {
 
 	return unless defined $c->vat() || $c->orgno() || $c->type();
 
-	push @f, [ 'rotld:cnp_fiscal_code', $c->vat() ];
-	push @f, [ 'rotld:registration_number', $c->orgno() ];
-	push @f, [ 'rotld:person_type', $c->type() ];
+	push @f,['rotld:cnp_fiscal_code', $c->vat() ];
+	push @f,['rotld:registration_number', $c->orgno() ];
+	push @f,['rotld:person_type', $c->type() ];
 
 	push @e,['rotld:create',['rotld:contact',@f]];
 
