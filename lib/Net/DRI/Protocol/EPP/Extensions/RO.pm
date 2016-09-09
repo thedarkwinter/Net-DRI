@@ -67,11 +67,11 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup {
 	my ( $self, $rp ) = @_;
 	$self->ns(
-		{
+		{	
+		    domain      => 		['http://www.rotld.ro/xml/epp/domain-1.0','domain-1.0.xsd'],
 			ro_idn_ext =>       ['http://www.rotld.ro/xml/epp/idn-1.0','idn-1.0.xsd'],
 			ro_contact_ext =>   ['http://www.rotld.ro/xml/epp/rotld-1.0','rotld-1.0.xsd'],
 			ro_domain_ext =>    ['http://www.rotld.ro/xml/epp/rotld-1.0','rotld-1.0.xsd'],
-			ro_domain =>        ['http://www.rotld.ro/xml/epp/domain-1.0','domain-1.0.xsd'],
 		}
 	);
 	$self->capabilities( 'domain_update', 'activate_domain', ['set'] );
