@@ -25,6 +25,8 @@ use DateTime::Duration;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
+#__PACKAGE__->make_exception_for_unavailable_operations(qw/host_update host_current_status host_check host_exist host_delete host_create host_info/);
+
 =pod
 
 =head1 NAME
@@ -79,7 +81,7 @@ sub new {
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return 'CZ'; }
 sub tlds          { return ('cz'); }
-sub object_types  { return ('domain','contact','ns','keyset'); }
+sub object_types  { return ('domain','contact','ns','nsset','keyset'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default {
@@ -97,6 +99,54 @@ sub set_factories {
 ####################################################################################################
 
 ####################################################################################################
+
+sub nsset_check {
+  my ($self,$ndr,$keyset,$rd)=@_;
+  return $ndr->process('nsset','check',[$keyset,$rd]);
+}
+
+sub nsset_create {
+  my ($self,$ndr,$keyset,$rd)=@_;
+  return $ndr->process('nsset','create',[$keyset,$rd]);
+}
+
+sub nsset_info {
+  my ($self,$ndr,$keyset,$rd)=@_;
+  return $ndr->process('nsset','info',[$keyset,$rd]);
+}
+
+sub nsset_delete {
+  my ($self,$ndr,$keyset,$rd)=@_;
+  return $ndr->process('nsset','delete',[$keyset,$rd]);
+}
+
+sub nsset_update {
+   my ($self,$ndr,$domain,$tochange,$rd)=@_;
+   $rd=Net::DRI::Util::create_params('nsset_update',$rd);
+   Net::DRI::Util::check_isa($tochange,'Net::DRI::Data::Changes');
+   Net::DRI::Exception->new(0,'DRD',4,'Registry does not handle contacts')
+     if ($tochange->all_defined('contact') && ! $self->has_object('contact'));
+
+   my $fp=$ndr->protocol->nameversion();
+     foreach my $t ($tochange->types()) {
+      Net::DRI::Exception->die(0,'DRD',5,'Protocol '.$fp.' is not capable of nsset_update/'.$t)
+        unless $ndr->protocol_capable('nsset_update',$t);
+      my $add=$tochange->add($t);
+      my $del=$tochange->del($t);
+      my $set=$tochange->set($t);
+      Net::DRI::Exception->die(0,'DRD',5,'Protocol '.$fp.' is not capable of nsset_update/'.$t.' (add)')
+        if (defined($add) && ! $ndr->protocol_capable('nsset_update',$t,'add'));
+      Net::DRI::Exception->die(0,'DRD',5,'Protocol '.$fp.' is not capable of nsset_update/'.$t.' (del)')
+        if (defined($del) && ! $ndr->protocol_capable('nsset_update',$t,'del'));
+      Net::DRI::Exception->die(0,'DRD',5,'Protocol '.$fp.' is not capable of nsset_update/'.$t.' (set)')
+        if (defined($set) && ! $ndr->protocol_capable('nsset_update',$t,'set'));
+     }
+
+   foreach ($tochange->all_defined('contact')) { Net::DRI::Util::check_isa($_,'Net::DRI::Data::ContactSet'); }
+
+   my $rc=$ndr->process('nsset','update',[$domain,$tochange,$rd]);
+   return $rc;
+}
 
 sub keyset_create {
   my ($self,$ndr,$keyset,$rd)=@_;

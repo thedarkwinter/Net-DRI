@@ -123,7 +123,7 @@ if (! $ok) {
 }
 
 is($rc->is_success(), 1, 'contact create is_success');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>TL1-CZ</contact:id><contact:postalInfo><contact:name>Tonnerre Lombard</contact:name><contact:org>SyGroup GmbH</contact:org><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp><contact:pc>4053</contact:pc><contact:cc>CH</contact:cc></contact:addr></contact:postalInfo><contact:voice>+41.61338033</contact:voice><contact:fax>+41.613831467</contact:fax><contact:email>tonnerre.lombard@sygroup.ch</contact:email><contact:authInfo>blablabla</contact:authInfo></contact:create></create><clTRID>ABC-12345</clTRID></command>' . $E2, 'contact create build xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>TL1-CZ</contact:id><contact:postalInfo><contact:name>Tonnerre Lombard</contact:name><contact:org>SyGroup GmbH</contact:org><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp><contact:pc>4053</contact:pc><contact:cc>CH</contact:cc></contact:addr></contact:postalInfo><contact:voice>+41.61338033</contact:voice><contact:fax>+41.613831467</contact:fax><contact:email>tonnerre.lombard@sygroup.ch</contact:email></contact:create></create><clTRID>ABC-12345</clTRID></command>' . $E2, 'contact create build xml');
 is($dri->get_info('crDate', 'contact', 'TL1-CZ'), '2008-04-25T18:20:51', 'contact create crdate');
 
 ## Contact create disclose + (vat + ident)
@@ -161,7 +161,7 @@ if (! $ok) {
 }
 
 is($rc->is_success(), 1, 'contact create disclose + (vat + ident) is_success');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>ID064561</contact:id><contact:postalInfo><contact:name>Jan Novak</contact:name><contact:org>Firma s.r.o.</contact:org><contact:addr><contact:street>Narodni trida 1230/12</contact:street><contact:city>Praha</contact:city><contact:pc>12000</contact:pc><contact:cc>CZ</contact:cc></contact:addr></contact:postalInfo><contact:voice>+420.222745111</contact:voice><contact:fax>+420.222745111</contact:fax><contact:email>info@mymail.cz</contact:email><contact:vat>7035555556</contact:vat><contact:ident type="op">8888888856</contact:ident><contact:notifyEmail>info@mymail.cz</contact:notifyEmail><contact:authInfo>mypassword</contact:authInfo><contact:disclose flag="0"><contact:voice/><contact:vat/><contact:ident/><contact:notifyEmail/></contact:disclose></contact:create></create><clTRID>ABC-12345</clTRID></command>' . $E2, 'contact create disclose + (vat + ident) build xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>ID064561</contact:id><contact:postalInfo><contact:name>Jan Novak</contact:name><contact:org>Firma s.r.o.</contact:org><contact:addr><contact:street>Narodni trida 1230/12</contact:street><contact:city>Praha</contact:city><contact:pc>12000</contact:pc><contact:cc>CZ</contact:cc></contact:addr></contact:postalInfo><contact:voice>+420.222745111</contact:voice><contact:fax>+420.222745111</contact:fax><contact:email>info@mymail.cz</contact:email><contact:vat>7035555556</contact:vat><contact:ident type="op">8888888856</contact:ident><contact:notifyEmail>info@mymail.cz</contact:notifyEmail><contact:disclose flag="0"><contact:voice/><contact:vat/><contact:ident/><contact:notifyEmail/></contact:disclose></contact:create></create><clTRID>ABC-12345</clTRID></command>' . $E2, 'contact create disclose + (vat + ident) build xml');
 is($dri->get_info('crDate', 'contact', 'ID0561'), '2016-07-25T11:47:47', 'contact create disclose + (vat + ident) crdate');
 
 ## Contact info
@@ -265,7 +265,7 @@ if (! $ok) {
 }
 
 is($rc->is_success(), 1, 'contact update is_success');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><contact:update xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>TL2-CZ</contact:id><contact:chg><contact:postalInfo><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp></contact:addr></contact:postalInfo><contact:authInfo>bliblablu</contact:authInfo></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'contact update build xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><contact:update xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>TL2-CZ</contact:id><contact:chg><contact:postalInfo><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp></contact:addr></contact:postalInfo></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'contact update build xml');
 
 ## Contact update vat + ident
 $R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result>' . $TRID . '</response>' . $E2;
@@ -298,7 +298,7 @@ if (! $ok) {
 }
 
 is($rc->is_success(), 1, 'contact update (vat + ident) is_success');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><contact:update xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>TL2-CZ</contact:id><contact:chg><contact:postalInfo><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp></contact:addr></contact:postalInfo><contact:vat>7035555556</contact:vat><contact:ident type="op">8888888856</contact:ident><contact:notifyEmail>info@mymail.cz</contact:notifyEmail><contact:authInfo>bliblablu</contact:authInfo></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'contact update (vat + ident) build xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><contact:update xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>TL2-CZ</contact:id><contact:chg><contact:postalInfo><contact:addr><contact:street>Gueterstrasse 86</contact:street><contact:city>Basel</contact:city><contact:sp>BS</contact:sp></contact:addr></contact:postalInfo><contact:vat>7035555556</contact:vat><contact:ident type="op">8888888856</contact:ident><contact:notifyEmail>info@mymail.cz</contact:notifyEmail></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'contact update (vat + ident) build xml');
 
 ####################################################################################################
 ######### Domain operations
@@ -309,10 +309,11 @@ $R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</
 my $cs = $dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('SG1-CZ'), 'registrant');
 $cs->add($dri->local_object('contact')->srid('SK1-CZ'), 'admin');
+$cs->add($dri->local_object('contact')->srid('SL1-CZ'), 'tech');
 
 $ok=eval {
   $rc = $dri->domain_create('sygroup.cz', {
-                pure_create =>  1,
+    pure_create =>  1,
     contact =>  $cs,
     nsset =>  'nameservers',
     duration =>  DateTime::Duration->new(years => 2),
@@ -573,6 +574,7 @@ is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:i
 is($dri->get_info('name', 'nsset', 'prodservers'), 'prodservers','nsset info name');
 is($dri->get_info('roid', 'nsset', 'prodservers'), 'N0000164015-CZ','nsset info roid');
 is($dri->get_info('crID', 'nsset', 'prodservers'), 'REG-FRED_A','nsset info crID');
+is($dri->get_info('contact', 'nsset', 'prodservers')->get('tech')->srid(), 'TL1-CZ','nsset info tech');
 is($dri->get_info('crDate', 'nsset', 'prodservers'), '2008-05-26T17:41:29','nsset info crDate');
 is($dri->get_info('auth', 'nsset', 'prodservers')->{pw}, 'blablabla','nsset info auth');
 is(join(',', $dri->get_info('status', 'nsset', 'prodservers')->list_status()),'ok', 'nsset info status');

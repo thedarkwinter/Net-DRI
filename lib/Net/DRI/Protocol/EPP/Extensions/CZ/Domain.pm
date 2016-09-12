@@ -113,7 +113,8 @@ sub info {
   my ($epp, $domain, $rd) = @_;
   my $mes = $epp->message();
   my @d = build_command($mes, 'info', $domain);
-  push(@d, build_authinfo($rd->{auth})) if Net::DRI::Util::has_auth($rd);
+  # auth is not supported for domain_info
+  # push(@d, build_authinfo($rd->{auth})) if Net::DRI::Util::has_auth($rd);
   $mes->command_body(\@d);
   return;
 }
@@ -213,6 +214,7 @@ sub build_contacts {
 
   foreach my $t (sort { $b cmp $a } $cs->types()) {
     my @o = $cs->get($t);
+    next if (grep($_ eq $t, ('tech','billing'))); # technical/billing not allowed
     push(@d, map { ['domain:' . $t, $_->srid()] } @o);
   }
 

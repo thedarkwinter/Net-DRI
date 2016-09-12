@@ -150,7 +150,8 @@ sub build_authinfo {
   my $contact = shift;
   my $az = $contact->auth();
   return () unless ($az && ref($az) && exists($az->{pw}));
-  return ['contact:authInfo', $az->{pw}];
+  #return ['contact:authInfo', $az->{pw}]; # not supported as of contact-1.6.xsd
+  return;
 }
 
 sub build_disclose {
