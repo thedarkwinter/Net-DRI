@@ -1,7 +1,7 @@
 ## Domain Registry Interface, DONUTS Driver
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -76,7 +76,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -101,25 +101,10 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'DONUTS'; }
-
-#sub tlds     { return ('dpml.zone','energy','xn‐‐hx814e','ote','earlyaccess','sunrise'); } # FIXME : these are OT&E tlds!
-sub tlds  { 
+sub tlds  {
  my @dp = qw/dpml.zone/; # DPML
- my @ga = qw/bike clothing guru holdings plumbing singles ventures camera equipment estate gallery graphics lighting photography contractors construction directory kitchen land today technology diamonds enterprises tips voyage careers photos recipes shoes/; # GA
- my @s6 = qw/limo domains cab company/; #SR 31-12-13
- my @s7 = qw/computer systems academy management center/; #SR 07-01-14
- my @s8 = qw/builders email solutions support training/; #SR 14-01-14
- my @s9 = qw/education institute repair camp glass/; #SR 21-01-14
- my @s10 = qw/solar coffee international house florist/; #SR 28-01-14
- my @s11 = qw/holiday marketing/; #SR 04-02-14
- my @s12 = qw/viajes farm codes/; #SR 11-02-14
- my @s13 = qw/cheap zone agency bargains boutique/; # SR 18-02-14
- my @s14 = qw/cool watch/; # SR 25-02-14
- my @s15 = qw/expert works/; # SR 04-03-14
- my @s16 = qw/foundation exposed/; # SR 11-03-13 - TBC
- my @s17 = qw/villas flights rentals cruises vacations/; # SR 18-03-14 - TBC
- my @s18 = qw/condos properties maison tienda/; # SR 25-03-14 - TBC
-return (@dp,@ga,@s6,@s7,@s8,@s9,@s10,@s11,@s12,@s13,@s14,@s15,@s16,@s17,@s18);
+ my @all = qw/academy accountants agency apartments architect associates bargains bike bingo boutique builders business cab cafe camera camp capital cards care careers cash casino catering center chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction contractors cool coupons credit creditcard cruises dating deals delivery dental diamonds digital direct directory discount doctor dog domains education email energy engineering enterprises equipment estate events exchange expert exposed express fail farm finance financial fish fitness flights florist football foundation fund furniture fyi gallery gifts gold golf glass gmbh graphics gratis gripe group guide guru healthcare hockey holdings holiday hospital house immo industries institute insure international investments jetzt jewelry kitchen land lease legal life lighting limited limo loans ltd maison management mba marketing media medical memorial money movie network partners parts pets photography photos pictures pizza place plumbing plus productions properties recipes reise reisen rentals repair report restaurant run salon sarl school schule services shoes shopping show singles soccer solar solutions sports style supplies supply support surgery systems tax taxi team technology tennis theater tienda tips tires today tools tours town toys training university vacations ventures viajes villas vin vision voyage watch wine world works wtf xn--czrs0t xn--unup4y xn--vhquv zone/;
+ return (@dp,@all);
 }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }

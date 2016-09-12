@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 90;
+use Test::More tests => 97;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -72,7 +72,7 @@ $rc = $dri->add_registry('NGTLD',{provider => 'afilias'});
 is($rc->{last_registry},'afilias','afilias add_registry');
 $rc = $dri->target('afilias')->add_current_profile('p1-afilias','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{afilias}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],'afilias: epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.8'}],'afilias: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase Afilias::IPR Afilias::IDNLanguage Afilias::Message Afilias::Registrar Afilias::JSONMessage CentralNic::Fee/],'afilias: loaded_modules');
 is($drd->{bep}->{bep_type},2,'aflias: bep_type');
 is($drd->{info}->{check_limit},13,'afilias: check_limit');
@@ -181,6 +181,23 @@ is($drd->{info}->{host_check_limit},13,'cocca: host_check_limit');
 is($dri->info('contact_check_limit'),13,'cocca: contact_check_limit');
 is($drd->{info}->{domain_check_limit},13,'cocca: domain_check_limit');
 
+# Nominet regional
+$rc = $dri->add_registry('NGTLD',{provider => 'nominet',name=>'wales'});
+is($rc->{last_registry},'wales','nominet regional: add_registry');
+$rc = $dri->target('wales')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'nominet regional: add_current_profile');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase/],'nominet regional: loaded_modules');
+
+# Nominet mmx (blog, and soon to be mmx)
+$rc = $dri->add_registry('NGTLD',{provider => 'nominet',name=>'blog'});
+is($rc->{last_registry},'blog','nominet mmx: add_registry');
+$rc = $dri->target('blog')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{blog}->{driver};
+is($rc->is_success(),1,'nominet mmx: add_current_profile');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],'nominet mmx: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee AllocationToken/],'nominet mmx: loaded_modules');
+
+
 ####################################################################################################
 #### ngTLD Methods
 my ($lpres,$ch1);
@@ -209,3 +226,4 @@ is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
 
 exit 0;
+

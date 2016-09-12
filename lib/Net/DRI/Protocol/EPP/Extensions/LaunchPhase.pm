@@ -251,7 +251,7 @@ sub check
  my $eid = (exists $lp->{type}) ? $mes->command_extension_register('launch','check',{type => $lp->{type}}) : undef;
  $eid=$mes->command_extension_register('launch','check') unless defined $eid;
 
- my @n = _build_idContainerType($lp) unless $lp->{type} eq 'trademark'; # draft-ietf-eppext-launchphase-03
+ my @n = _build_idContainerType($lp) unless exists $lp->{type} && $lp->{type} eq 'trademark'; # draft-ietf-eppext-launchphase-03
  $mes->command_extension($eid,\@n);
 
  return;
