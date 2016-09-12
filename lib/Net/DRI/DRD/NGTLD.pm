@@ -876,15 +876,19 @@ bom final rio
 
 =head3 Status: Working
 
-=head3 TLDs
+=head3 Nominet TLDs
 
 cymru wales bbc blog
+
+=head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
+
+casa
 
 =cut
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['blog'], ## TODO this will be all MMX Tlds
+     tlds => ['blog'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet' && $tld eq 'blog';
@@ -896,6 +900,13 @@ cymru wales bbc blog
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet';
+
+ return {
+     bep_type => 1, # dedicated registry
+     tlds => ['casa'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+   } if $bep eq 'nominet-mmx';
 
 =pod
 

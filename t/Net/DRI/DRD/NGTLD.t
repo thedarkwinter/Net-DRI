@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 97;
+use Test::More tests => 101;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -188,11 +188,20 @@ $rc = $dri->target('wales')->add_current_profile('p1','epp',{f_send=>\&mysend,f_
 is($rc->is_success(),1,'nominet regional: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase/],'nominet regional: loaded_modules');
 
-# Nominet mmx (blog, and soon to be mmx)
+# Nominet blog
 $rc = $dri->add_registry('NGTLD',{provider => 'nominet',name=>'blog'});
-is($rc->{last_registry},'blog','nominet mmx: add_registry');
+is($rc->{last_registry},'blog','nominet blog: add_registry');
 $rc = $dri->target('blog')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{blog}->{driver};
+is($rc->is_success(),1,'nominet blog: add_current_profile');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],'nominet blog: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee AllocationToken/],'nominet blog: loaded_modules');
+
+# Nominet-MMX
+$rc = $dri->add_registry('NGTLD',{provider => 'nominet-mmx',name=>'casa'});
+is($rc->{last_registry},'casa','nominet mmx: add_registry');
+$rc = $dri->target('casa')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{casa}->{driver};
 is($rc->is_success(),1,'nominet mmx: add_current_profile');
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],'nominet mmx: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee AllocationToken/],'nominet mmx: loaded_modules');
@@ -226,4 +235,3 @@ is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
 
 exit 0;
-
