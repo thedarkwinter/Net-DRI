@@ -171,7 +171,7 @@ sub info_parse
    $rinfo->{host}->{$oname}->{$1}=$c->textContent();
   } elsif ($name=~m/^(crDate|upDate|trDate)$/)
   {
-   $rinfo->{host}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+   $rinfo->{host}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   } elsif ($name eq 'roid')
   {
    $rinfo->{host}->{$oname}->{roid}=$c->textContent();
@@ -224,7 +224,7 @@ sub create_parse
    $rinfo->{host}->{$oname}->{exist}=1;
   } elsif ($name=~m/^(crDate)$/)
   {
-   $rinfo->{host}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+   $rinfo->{host}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if $c->textContent()
   }
  }
  return;
@@ -315,7 +315,7 @@ sub pandata_parse
    $rinfo->{host}->{$oname}->{svtrid}=Net::DRI::Util::xml_child_content($c,$ns,'svTRID');
   } elsif ($name eq 'paDate')
   {
-   $rinfo->{host}->{$oname}->{date}=$po->parse_iso8601($c->textContent());
+   $rinfo->{host}->{$oname}->{date}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   }
  }
  return;
