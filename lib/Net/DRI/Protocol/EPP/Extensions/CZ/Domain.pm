@@ -248,12 +248,10 @@ sub update {
   my $cdel = $todo->del('contact');
   my (@add, @del);
 
-  push(@add, Net::DRI::Protocol::EPP::Util::build_ns($epp, $nsadd, $domain))
-    if ($nsadd && !$nsadd->is_empty());
+  #push(@add, Net::DRI::Protocol::EPP::Util::build_ns($epp, $nsadd, $domain)) if ($nsadd && !$nsadd->is_empty()); # ns update not supported via domain_update
   push(@add, build_contacts($cadd)) if ($cadd);
   push(@add, $sadd->build_xml('domain:status', 'core')) if ($sadd);
-  push(@del, Net::DRI::Protocol::EPP::Util::build_ns($epp, $nsdel, $domain))
-    if ($nsdel && !$nsdel->is_empty());
+  #push(@del, Net::DRI::Protocol::EPP::Util::build_ns($epp, $nsdel, $domain)) if ($nsdel && !$nsdel->is_empty()); # ns update not supported via domain_update
   push(@del, build_contacts($cdel)) if ($cdel);
   push(@del, $sdel->build_xml('domain:status', 'core')) if ($sdel);
   push(@d, ['domain:add', @add]) if (@add);
@@ -262,7 +260,7 @@ sub update {
   my @chg;
   my $chg = $todo->set('nsset');
 
-  push(@chg, ['domain:nsset', $chg]) if (defined($chg) && length($chg));
+  push(@chg, ['domain:nsset', $chg]) if (defined($chg));
   $chg = $todo->set('registrant');
   push(@chg, ['domain:registrant', $chg->srid()]) if Net::DRI::Util::isa_contact($chg);
   $chg = $todo->set('auth');

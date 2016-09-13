@@ -98,13 +98,13 @@ sub build_command {
 
   foreach my $h (grep { defined } (ref($hosts) eq 'ARRAY') ? @$hosts : ($hosts)) {
     my $gn = Net::DRI::Util::isa_nsgroup($h) ? $h->name() : $h;
-    Net::DRI::Exception->die(1, 'protocol/EPP', 10, 'Invalid NSgroup name: ' . $gn)
+    Net::DRI::Exception->die(1, 'protocol/EPP', 10, 'Invalid NSSET name: ' . $gn)
       unless (defined($gn) && $gn && !ref($gn)
 			  && Net::DRI::Util::xml_is_normalizedstring($gn, 1, 100));
     push(@gn, $gn);
   }
 
-  Net::DRI::Exception->die(1, 'protocol/EPP', 2, 'NSgroup name needed') unless @gn;
+  Net::DRI::Exception->die(1, 'protocol/EPP', 2, 'NSSET name needed') unless @gn;
 
   my @ns=$msg->nsattrs('nsset');
   @ns=qw(http://www.nic.cz/xml/epp/nsset-1.2 http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.xsd) unless @ns;
