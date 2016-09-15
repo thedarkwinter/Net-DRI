@@ -878,11 +878,11 @@ bom final rio
 
 =head3 Nominet TLDs
 
-cymru wales bbc blog
+cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-casa
+blog casa
 
 =cut
 
@@ -903,7 +903,7 @@ casa
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['casa'],
+     tlds => ['blog','casa'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
