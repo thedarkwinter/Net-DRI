@@ -41,7 +41,11 @@ sub parse
           Net::DRI::Exception::usererr_invalid_parameters('msgTypeID can only take values from ' . $min_type_id . ' to ' . $max_type_id) unless ($c->textContent() >= $min_type_id && $c->textContent() <= $max_type_id);
           $rinfo->{message}->{$msgid}->{msg_type_id}=$c->textContent();
         }
-        $rinfo->{message}->{$msgid}->{object}=$c->textContent() if $n eq 'object';
+        if ($n eq 'object') {
+          $rinfo->{message}->{$msgid}->{object}=$c->textContent();
+          $rinfo->{message}->{$msgid}->{name}=$c->textContent();
+          $rinfo->{message}->{$msgid}->{object_id}=$c->textContent();
+        }
         $rinfo->{message}->{$msgid}->{msDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/msDate$/);
         $rinfo->{message}->{$msgid}->{exDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/exDate$/ && $rinfo->{message}->{$msgid}->{msg_type_id} eq $ex_date_renew); # only used in the notice of renewal (Type 6 for MX and Type 5 for LAT)
       }

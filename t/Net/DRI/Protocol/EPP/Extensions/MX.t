@@ -271,8 +271,9 @@ is($dri->get_info('content','message',31),'Domain creation pending, waiting for 
 is($dri->get_info('lang','message',31),'en','message get_info lang');
 is($dri->get_info('msg_type_id','message',31),4,'message get_info msgTypeID');
 is($dri->get_info('object','message',31),'transfer-01.edu.mx','message get_info object');
+is($dri->get_info('name','message',31),'transfer-01.edu.mx','message get_info name');
+is($dri->get_info('object_id','message',31),'transfer-01.edu.mx','message get_info object_id');
 is(''.$dri->get_info('msDate','message',31),'2008-02-18T17:15:54','message get_info msDate');
-
 
 ####################################################################################################
 exit 0;
