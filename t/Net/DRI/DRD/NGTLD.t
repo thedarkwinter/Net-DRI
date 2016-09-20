@@ -188,8 +188,8 @@ $rc = $dri->target('wales')->add_current_profile('p1','epp',{f_send=>\&mysend,f_
 is($rc->is_success(),1,'nominet regional: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase/],'nominet regional: loaded_modules');
 
-# Nominet mmx (blog, and soon to be mmx)
-$rc = $dri->add_registry('NGTLD',{provider => 'nominet',name=>'blog'});
+# Nominet-MMX
+$rc = $dri->add_registry('NGTLD',{provider => 'nominet-mmx',name=>'blog'});
 is($rc->{last_registry},'blog','nominet mmx: add_registry');
 $rc = $dri->target('blog')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{blog}->{driver};
@@ -226,4 +226,3 @@ is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
 
 exit 0;
-

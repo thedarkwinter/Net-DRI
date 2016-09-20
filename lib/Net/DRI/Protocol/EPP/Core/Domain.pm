@@ -190,7 +190,7 @@ sub info_parse
    $rinfo->{domain}->{$oname}->{$1}=$c->textContent();
   } elsif ($name=~m/^(crDate|upDate|trDate|exDate)$/)
   {
-   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   } elsif ($name eq 'authInfo') ## we only try to parse the authInfo version defined in the RFC, other cases are to be handled by extensions
   {
    $rinfo->{domain}->{$oname}->{auth}={pw => Net::DRI::Util::xml_child_content($c,$mes->ns('domain'),'pw')};
@@ -235,7 +235,7 @@ sub transfer_parse
    $rinfo->{domain}->{$oname}->{$1}=$c->textContent();
   } elsif ($name=~m/^(reDate|acDate|exDate)$/)
   {
-   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   }
  }
  return;
@@ -301,7 +301,7 @@ sub create_parse
    $rinfo->{domain}->{$oname}->{exist}=1;
   } elsif ($name=~m/^(crDate|exDate)$/)
   {
-   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   }
  }
  return;
@@ -352,7 +352,7 @@ sub renew_parse
    $rinfo->{domain}->{$oname}->{exist}=1;
   } elsif ($name=~m/^(exDate)$/)
   {
-   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+   $rinfo->{domain}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   }
  }
  return;
@@ -453,7 +453,7 @@ sub pandata_parse
    $rinfo->{domain}->{$oname}->{svtrid}=Net::DRI::Util::xml_child_content($c,$ns,'svTRID');
   } elsif ($name eq 'paDate')
   {
-   $rinfo->{domain}->{$oname}->{date}=$po->parse_iso8601($c->textContent());
+   $rinfo->{domain}->{$oname}->{date}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   }
  }
  return;

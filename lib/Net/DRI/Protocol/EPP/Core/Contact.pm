@@ -263,7 +263,7 @@ sub transfer_parse
    $rinfo->{contact}->{$oname}->{$1}=$c->textContent();
   } elsif ($name=~m/^(reDate|acDate)$/)
   {
-   $rinfo->{contact}->{$oname}->{$1}=$po->parse_iso8601($c->textContent());
+   $rinfo->{contact}->{$oname}->{$1}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   }
  }
  return;
@@ -427,7 +427,7 @@ sub pandata_parse
    $rinfo->{contact}->{$oname}->{svtrid}=Net::DRI::Util::xml_child_content($c,$ns,'svTRID');
   } elsif ($name eq 'paDate')
   {
-   $rinfo->{contact}->{$oname}->{date}=$po->parse_iso8601($c->textContent());
+   $rinfo->{contact}->{$oname}->{date}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   }
  }
  return;

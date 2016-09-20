@@ -100,7 +100,7 @@ sub parse_greeting
    $tmp{server_id}=$c->textContent();
   } elsif ($n eq 'svDate')
   {
-   $tmp{date}=$po->parse_iso8601($c->textContent());
+   $tmp{date}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   } elsif ($n eq 'svcMenu')
   {
    foreach my $sel (Net::DRI::Util::xml_list_children($c))
