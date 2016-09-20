@@ -101,7 +101,7 @@ sub create
  }
  foreach my $d (qw/auto_renew/)
  {
-  Net::DRI::Exception::usererr_invalid_parameters($d.' must be either 0 or 1 for .PT domain name creation') unless ($rd->{$d}==0 || $rd->{$d}==1);
+  $rd->{$d} = xml_parse_auto_renew($rd->{$d});
  }
 
  my @n;
@@ -146,7 +146,7 @@ sub info
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name info') unless (Net::DRI::Util::has_key($rd,'roid'));
+ $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:info');
  my @n=add_roid($rd->{roid});
@@ -173,9 +173,12 @@ sub info_parse
   if ($name=~m/^(?:legitimacy|registration_basis)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$c->getAttribute('type');
-  } elsif ($name=~m/^(?:autoRenew|notRenew|nextPossibleRegistration|addPeriod|waitingRemoval)$/)
+  } elsif ($name=~m/^(?:nextPossibleRegistration|addPeriod|waitingRemoval)$/) # most are not used anymore but let's keep it :)
   {
    $rinfo->{domain}->{$oname}->{Net::DRI::Util::remcam($name)}=Net::DRI::Util::xml_parse_boolean($c->getFirstChild()->getData());
+  } elsif  ($name=~m/^(?:autoRenew|notRenew)$/)
+  {
+   $rinfo->{domain}->{$oname}->{Net::DRI::Util::remcam($name)}=$c->textContent();
   } elsif ($name eq 'renew')
   {
    $rinfo->{domain}->{$oname}->{renew_period}=DateTime::Duration->new(years => $c->getAttribute('period'));
@@ -189,7 +192,7 @@ sub update
  my ($epp,$domain,$toc,$rd)=@_;
  my $mes=$epp->message();
 
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name update') unless (Net::DRI::Util::has_key($rd,'roid'));
+ $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:update');
  my @n=add_roid($rd->{roid});
@@ -202,16 +205,14 @@ sub renew
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name renew') unless (Net::DRI::Util::has_key($rd,'roid'));
+ $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
  my $c=Net::DRI::Util::has_key($rd,'duration');
  foreach my $d (qw/auto_renew not_renew/)
  {
   next unless Net::DRI::Util::has_key($rd,$d);
-  Net::DRI::Exception::usererr_invalid_parameters($d.' must be either 0 or 1 for .PT domain name creation') unless ($rd->{$d}==0 || $rd->{$d}==1);
-  $c+=$rd->{$d};
+  $rd->{$d} = xml_parse_auto_renew($rd->{$d});
  }
- Net::DRI::Exception::usererr_invalid_parameters('only one of duration, auto_renew and not_renew attributes can be set for .PT domain name renew') if $c > 1;
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:renew');
  my @n=add_roid($rd->{roid});
@@ -226,12 +227,15 @@ sub renounce
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name renounce') unless (Net::DRI::Util::has_key($rd,'roid'));
+ $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
- my $eid=build_command_extension($mes,$epp,'ptdomain:renounce');
- my @n=(['ptdomain:name',$domain]);
+ my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
+ $mes->command_body(\@d);
+
+ my $eid=build_command_extension($mes,$epp,'ptdomain:transfer');
+ my @n;
  push @n,add_roid($rd->{roid});
- push @n,['ptdomain:clTRID',$mes->cltrid()];
+ push @n,['ptdomain:renounce','true']; # Forcing always to true. By the manual: "When a registrar wants to renounce the sponsorship of a domain he sends a transfer request without authorization code and with the <ptdomain:renounce> field set to true."
  $mes->command_extension($eid,\@n);
  return;
 }
@@ -241,7 +245,7 @@ sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- Net::DRI::Exception::usererr_insufficient_parameters('roid attribute required for .PT domain name delete') unless (Net::DRI::Util::has_key($rd,'roid'));
+ $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:delete');
  my @n=add_roid($rd->{roid});
@@ -259,6 +263,18 @@ sub transfer_request
  my $eid=build_command_extension($mes,$epp,'ptdomain:transfer');
  $mes->command_extension($eid,['ptdomain:transferKey',$rd->{"auth"}->{"pw"}]);
  return;
+}
+
+sub xml_parse_auto_renew
+{
+ my $in=shift;
+ if ($in=~m/^(0|false|no)$/) {
+  return 'false';
+ } elsif ($in=~m/^(1|true|yes)$/) {
+  return 'true';
+ } else {
+  return Net::DRI::Exception::usererr_invalid_parameters('auto_renew or not_renew must be either false or true for .PT domain name creation');
+ }
 }
 
 ####################################################################################################

@@ -102,13 +102,7 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'ARI'; }
 
 #sub tlds     { return ('example','xn--mgbh0fb','keyvalue','sunrise','landrush'); } # FIXME : these are OT&E tlds!
-# Note, some of these TLD's may be in contention
-sub tlds     { 
- my @uncontented = qw/xn--ngbc5azd xn--ngbrx abudhabi arab build cloud cancerresearch courses cuisinella dubai film krd luxury melbourne men menu monash one physio schmidt study sucks sydney wtc/;
- my @contended = qw/xn--hxt814e xn--5tzm5g app baby band bank blog box chat city click cpa deals design doctor eco film home hosting hotel inc insurance law love movie music news now online ping rip salon secure sex shop site soccer spa sport spot store studio style sucks tennis web world /;
- return (@uncontented);
-}
-
+sub tlds     { return qw/xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build cancerresearch cba cloud commbank compare courses cuisinella doha film firestone giving ibm icu iinet iselect krd latrobe luxury melbourne men menu monash mtn netbank olayan olayangroup one philips physio playstation quest sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab trust virgin vista vistaprint walter woodside wtc/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 

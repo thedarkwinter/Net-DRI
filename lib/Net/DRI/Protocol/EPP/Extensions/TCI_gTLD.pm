@@ -26,19 +26,11 @@ sub setup
  $self->factories('contact',sub { return Net::DRI::Data::Contact::TCI_gTLD->new(); });
  
  foreach my $o (qw/contact/) { $self->capabilities('contact_update',$o,['set']); }
-
- foreach my $o (qw/contact description/) { $self->capabilities('domain_update',$o,['set']); }
+ foreach my $o (qw/description/) { $self->capabilities('domain_update',$o,['set']); }
  foreach my $o (qw/ns/) { $self->capabilities('domain_update',$o,['add', 'del']); }
  return;
 }
 
-#sub core_modules
-#{
-# my ($self,$rp)=@_;
-# my @c=map { 'Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::'.$_ } qw/Contact Domain/;
-# push @c, map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Host/;
-# return @c;
-#}
 
 sub default_extensions { return qw(TCI_gTLD::Contact TCI_gTLD::Domain GracePeriod SecDNS LaunchPhase IDN); }
 

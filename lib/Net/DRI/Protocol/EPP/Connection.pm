@@ -85,10 +85,12 @@ sub read_data
 {
  my ($class,$to,$sock)=@_;
  my $header=read_fragments($sock,4); ## first 4 bytes are the packed length
+ die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR','Unable to read frame length','en')) unless length $header;
  my $length=unpack('N',$header)-4; ## Length of the XML frame
- die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR','Unable to determine frame length','en')) unless ($length>0);
+ die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR','Unable to decode frame length','en')) unless $length > 0;
  my $frame=Net::DRI::Util::decode_utf8(read_fragments($sock,$length));
- die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR',$frame? 'Got unexpected EPP message: '.$frame : '<empty message from server>','en')) unless ($frame=~m!epp>\s*$!s);
+ die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR','<empty message from server>','en')) unless length $frame;
+ die(Net::DRI::Protocol::ResultStatus->new_error('COMMAND_SYNTAX_ERROR','Got unexpected EPP message: '.$frame,'en')) unless $frame=~m!epp>\s*$!s;
  return Net::DRI::Data::Raw->new_from_xmlstring($frame);
 }
 

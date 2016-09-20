@@ -1,7 +1,7 @@
 ## Domain Registry Interface, AFNIC (.FR/.RE/.TF/.WF/.PM/.YT) EPP extensions
 ## From http://www.afnic.fr/medias/documents/afnic-guide-integration-technique.pdf (v1.55 2011-03-03)
 ##
-## Copyright (c) 2008,2009,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2009,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2009,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2009,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({frnic=>['http://www.afnic.fr/xml/epp/frnic-1.2','frnic-1.2.xsd']});
+ $self->ns({frnic=>['http://www.afnic.fr/xml/epp/frnic-1.4','frnic-1.4.xsd']});
  $self->capabilities('domain_update','registrant',undef); ## a trade is required
  $self->capabilities('contact_update','status',undef); ## No changes in status possible for .FR contacts
  $self->capabilities('contact_update','disclose',['add','del']);
@@ -77,7 +77,6 @@ sub setup
  $self->capabilities('domain_update','secdns_urgent',undef); ## no urgent attribute allowed
  $self->factories('contact',sub { return Net::DRI::Data::Contact::AFNIC->new(); });
  $self->factories('status',sub { return Net::DRI::Protocol::EPP::Extensions::AFNIC::Status->new(); });
- $self->default_parameters({domain_create => { ns => undef } }); ## No nameservers allowed during domain create
  return;
 }
 

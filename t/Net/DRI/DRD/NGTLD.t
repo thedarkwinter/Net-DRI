@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 87;
+use Test::More tests => 97;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -43,7 +43,7 @@ is($rc->{last_registry},'mamclient','mamclient: add_registry');
 $rc = $dri->target('mamclient')->add_current_profile('p1-mamclient','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'mamclient: add_current_profile');
 is($dri->name(),'mamclient','mamclient: name');
-is_deeply([$dri->tlds()],['gop','kiwi','broadway','radio','tube'],'mamclient: tlds');
+is_deeply([$dri->tlds()],['gop','kiwi','broadway','radio'],'mamclient: tlds');
 @periods = $dri->periods();
 is($#periods,9,'mamclient: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'mamclient: object_types');
@@ -72,7 +72,7 @@ $rc = $dri->add_registry('NGTLD',{provider => 'afilias'});
 is($rc->{last_registry},'afilias','afilias add_registry');
 $rc = $dri->target('afilias')->add_current_profile('p1-afilias','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{afilias}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}],'afilias: epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.8'}],'afilias: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase Afilias::IPR Afilias::IDNLanguage Afilias::Message Afilias::Registrar Afilias::JSONMessage CentralNic::Fee/],'afilias: loaded_modules');
 is($drd->{bep}->{bep_type},2,'aflias: bep_type');
 is($drd->{info}->{check_limit},13,'afilias: check_limit');
@@ -81,18 +81,18 @@ is($dri->info('contact_check_limit'),13,'afilias: contact_check_limit');
 is($drd->{info}->{domain_check_limit},13,'afilias: domain_check_limit');
 
 #### Dedicated Registry
-# Neustar (Buzz)
-$rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'buzz'});
-is($rc->{last_registry},'buzz','neustar: add_registry');
-$rc = $dri->target('buzz')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+# Neustar (best)
+$rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'best'});
+is($rc->{last_registry},'best','neustar: add_registry');
+$rc = $dri->target('best')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'neustar: add_current_profile');
-is($dri->name(),'buzz','neustar: name');
-is_deeply([$dri->tlds()],['buzz'],'neustar: tlds');
+is($dri->name(),'best','neustar: name');
+is_deeply([$dri->tlds()],['best'],'neustar: tlds');
 @periods = $dri->periods();
 is($#periods,9,'neustar: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
 is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
-$drd = $dri->{registries}->{buzz}->{driver};
+$drd = $dri->{registries}->{best}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],'neustar: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::Fee/],'neustar: loaded_modules');
 is($drd->{bep}->{bep_type},1,'neustar: bep_type');
@@ -104,16 +104,23 @@ $rc = $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_re
 is($rc->is_success(),1,'neustar nyc: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::EXTContact/],'neustar nyc: loaded_modules (EXTContact)');
 
-# FFM (Neustar + Centrlanic:Fee )
+# FFM (Neustar + CentralNic::Fee )
 $rc = $dri->add_registry('NGTLD',{provider => 'ffm'});
 is($rc->{last_registry},'ffm','ffm: add_registry');
 $rc = $dri->target('ffm')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'neustar ffm: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken CentralNic::Fee/],'ffm: loaded_modules');
 
+# Amazon (Neustar + CentralNic::Fee )
+$rc = $dri->add_registry('NGTLD',{provider => 'amazon'});
+is($rc->{last_registry},'amazon','amazon: add_registry');
+$rc = $dri->target('amazon')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'neustar amazon: add_current_profile');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken CentralNic::Fee/],'amazon: loaded_modules');
+
 # ZACR (Durban)
 $rc = $dri->add_registry('NGTLD',{provider => 'zacr','name'=>'joburg'});
-is($rc->{last_registry},'joburg','neustar: add_registry');
+is($rc->{last_registry},'joburg','zacr: add_registry');
 $rc = $dri->target('joburg')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'zacr: add_current_profile');
 is($dri->name(),'joburg','zacr: name');
@@ -160,19 +167,36 @@ is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Sock
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::ClientAttributes VeriSign::TwoFactorAuth VeriSign::ZoneManagement VeriSign::Balance VeriSign::NameStore VeriSign::PremiumDomain/],'verisign: loaded_modules');
 is($drd->{bep}->{bep_type},2,'verisign: bep_type');
 is($drd->{info}->{check_limit},13,'verisign: check_limit');
-is_deeply([$dri->tlds()],['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','azure','bank','bing','broker','career','cfd','crs','forex','hotmail','java','maif','markets','microsoft','ooo','oracle','pictet','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],'verisign: tlds');
+is_deeply([$dri->tlds()],['com','net','cc','tv','bz','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','azure','bank','bing','broker','career','cfd','crs','forex','hotmail','insurance','java','maif','markets','microsoft','ooo','oracle','pictet','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],'verisign: tlds');
 
 # CoCCA
 $rc = $dri->add_registry('NGTLD',{provider => 'cocca'});
 is($rc->{last_registry},'cocca','cocca: add_registry');
 $rc = $dri->target('cocca')->add_current_profile('p1-cocca','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{cocca}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CoCCA::Notifications')}],'cocca: epp transport_protocol_default');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CoCCA::Notifications/],'cocca: loaded_modules');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CoCCA::Notifications','CentralNic::Fee'],'brown_fee_version' => '0.8'}],'cocca: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CoCCA::Notifications CentralNic::Fee/],'cocca: loaded_modules');
 is($drd->{info}->{check_limit},13,'cocca: check_limit');
 is($drd->{info}->{host_check_limit},13,'cocca: host_check_limit');
 is($dri->info('contact_check_limit'),13,'cocca: contact_check_limit');
 is($drd->{info}->{domain_check_limit},13,'cocca: domain_check_limit');
+
+# Nominet regional
+$rc = $dri->add_registry('NGTLD',{provider => 'nominet',name=>'wales'});
+is($rc->{last_registry},'wales','nominet regional: add_registry');
+$rc = $dri->target('wales')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'nominet regional: add_current_profile');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase/],'nominet regional: loaded_modules');
+
+# Nominet-MMX
+$rc = $dri->add_registry('NGTLD',{provider => 'nominet-mmx',name=>'blog'});
+is($rc->{last_registry},'blog','nominet mmx: add_registry');
+$rc = $dri->target('blog')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{blog}->{driver};
+is($rc->is_success(),1,'nominet mmx: add_current_profile');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],'nominet mmx: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee AllocationToken/],'nominet mmx: loaded_modules');
+
 
 ####################################################################################################
 #### ngTLD Methods
@@ -191,10 +215,10 @@ is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
 
 # neustar subphase = landrush (required)
-$rc = $dri->target('buzz');
-$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="landrush">claims</launch:phase><launch:cd><launch:name exists="1">test.buzz</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc = $dri->domain_check_claims('test.buzz',{phase=>'landrush'});
-is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.buzz</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="landrush">claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check_claims build_xml');
+$rc = $dri->target('best');
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="landrush">claims</launch:phase><launch:cd><launch:name exists="1">test.best</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc = $dri->domain_check_claims('test.best',{phase=>'landrush'});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.best</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="landrush">claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check_claims build_xml');
 $lpres = $dri->get_info('lp');
 is($lpres->{'exist'},1,'domain_check_claims get_info(exist)');
 is($lpres->{'phase'},'claims','domain_check_claims get_info(phase)');

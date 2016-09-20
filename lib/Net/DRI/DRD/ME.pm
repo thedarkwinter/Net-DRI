@@ -85,7 +85,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
  
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Afilias',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.7'}) if $type eq 'epp';
  return;
 }
 

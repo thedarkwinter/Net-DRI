@@ -130,7 +130,8 @@ sub parse_tel
 
 sub build_period
 {
- my $dtd=shift; ## DateTime::Duration
+ my ($dtd,$ns)=@_;
+ $ns//='domain';
  my ($y,$m)=$dtd->in_units('years','months'); ## all values are integral, but may be negative
  ($y,$m)=(0,$m+12*$y) if ($y && $m);
  my ($v,$u);
@@ -146,7 +147,7 @@ sub build_period
   $u='m';
  }
 
- return ['domain:period',$v,{'unit' => $u}];
+ return [$ns.':period',$v,{'unit' => $u}];
 }
 
 sub build_ns
@@ -301,7 +302,7 @@ sub build_disclose
  {
   if (exists $d->{$item})
   {
-   push @d,[$ns.':'.$item,{type=>'int'}],[$ns.':name',{type=>'loc'}];
+   push @d,[$ns.':'.$item,{type=>'int'}],[$ns.':'.$item,{type=>'loc'}];
   } else
   {
    push @d,[$ns.':'.$item,{type=>'int'}] if exists $d->{$item.'_int'};

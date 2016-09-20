@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 96;
+use Test::More tests => 102;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -183,6 +183,22 @@ $toc->set('price', {price => 100});
 $rc=$dri->domain_update('example11.menu',$toc);
 is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example11.menu</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="request"/></rgp:update><price:update xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack><price:price>100</price:price></price:ack></price:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_request +charge');
 is($rc->is_success(),1,'domain_update is_success');
+
+# transfer request - simple acknowledgement (based on: http://ausregistry.github.io/doc/price-1.2/price-1.2.html#anchor14)
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example12.menu</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>RegistrarY</domain:reID><domain:reDate>2013-09-15T10:59:06.0Z</domain:reDate><domain:acID>RegistrarX</domain:acID><domain:acDate>2013-09-20T10:59:06.0Z</domain:acDate><domain:exDate>2017-07-15T10:59:06.0Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$price = { 'premium' => 1 };
+$rc=$dri->domain_transfer_start('example12.menu',{pure_create=>1,auth=>{pw=>'2fooBAR'},price => $price });
+is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example12.menu</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:transfer></transfer><extension><price:transfer xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack/></price:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_start simple ack build_xml');
+is($rc->is_success(),1,'domain_transfer_start simple ack is_success');
+is($dri->get_info('action'),'transfer','domain_transfer_start simple ack get_info(action)');
+
+# transfer request - including price information (based on: http://ausregistry.github.io/doc/price-1.2/price-1.2.html#anchor14)
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example13.menu</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>RegistrarY</domain:reID><domain:reDate>2013-09-15T10:59:06.0Z</domain:reDate><domain:acID>RegistrarX</domain:acID><domain:acDate>2013-09-20T10:59:06.0Z</domain:acDate><domain:exDate>2017-07-15T10:59:06.0Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$price = { 'premium' => 1, 'price' => 20 };
+$rc=$dri->domain_transfer_start('example13.menu',{pure_create=>1,auth=>{pw=>'2fooBAR'},price => $price });
+is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example13.menu</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:transfer></transfer><extension><price:transfer xmlns:price="urn:ar:params:xml:ns:price-1.2" xsi:schemaLocation="urn:ar:params:xml:ns:price-1.2 price-1.2.xsd"><price:ack><price:price>20</price:price></price:ack></price:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_start price build_xml');
+is($rc->is_success(),1,'domain_transfer_start price is_success');
+is($dri->get_info('action'),'transfer','domain_transfer_start price get_info(action)');
 
 ##################### 
 ## TMCHApplication Extension (TMCH + Application = LaunchPhase type system)

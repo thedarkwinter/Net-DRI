@@ -1,0 +1,151 @@
+{
+   "abstract" : "Interface to Domain Name Registries/Registrars/Resellers",
+   "author" : [
+      "Patrick Mevzek <netdri@dotandco.com>"
+   ],
+   "dynamic_config" : 1,
+   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142690",
+   "keywords" : [
+      "DNS",
+      "EPP",
+      "RRP",
+      "DAS",
+      "ENUM",
+      "IRIS",
+      "DCHK",
+      "Whois",
+      "gTLD",
+      "ccTLD",
+      "domain",
+      "ICANN",
+      "TMCH",
+      "SMD"
+   ],
+   "license" : [
+      "open_source"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Net-DRI",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "inc"
+      ]
+   },
+   "optional_features" : {
+      "digest" : {
+         "description" : "Support of MD5 digest for OpenSRS",
+         "prereqs" : {
+            "runtime" : {
+               "requires" : {
+                  "Digest::MD5" : "0"
+               }
+            }
+         }
+      },
+      "email" : {
+         "description" : "Support of transport by emails",
+         "prereqs" : {
+            "runtime" : {
+               "requires" : {
+                  "Net::SMTP" : "0"
+               }
+            }
+         }
+      },
+      "http" : {
+         "description" : "Support of HTTP(S) transport for OpenSRS, .IT and .PL",
+         "prereqs" : {
+            "runtime" : {
+               "requires" : {
+                  "HTTP::Request" : "0",
+                  "LWP::UserAgent" : "6.02"
+               }
+            }
+         }
+      },
+      "iris" : {
+         "description" : "Support of IRIS inflation/deflation & DNS SRV records for .FR IRIS DCHK service",
+         "prereqs" : {
+            "runtime" : {
+               "requires" : {
+                  "IO::Compress::RawDeflate" : "0",
+                  "IO::Uncompress::RawInflate" : "0",
+                  "Net::DNS" : "0"
+               }
+            }
+         }
+      },
+      "smd" : {
+         "description" : "Support for ICANN TMCH signed mark content (new gTLDs)",
+         "prereqs" : {
+            "runtime" : {
+               "requires" : {
+                  "Crypt::OpenSSL::RSA" : "0",
+                  "Crypt::OpenSSL::X509" : "0",
+                  "Digest::SHA" : "0",
+                  "MIME::Base64" : "0",
+                  "XML::LibXML::XPathContext" : "0"
+               }
+            }
+         }
+      },
+      "webservices" : {
+         "description" : "Support of webservices for the following registry drivers: Gandi, BookMyName, OVH",
+         "prereqs" : {
+            "runtime" : {
+               "requires" : {
+                  "SOAP::Lite" : "0",
+                  "SOAP::WSDL" : "0",
+                  "XMLRPC::Lite" : "0"
+               }
+            }
+         }
+      }
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0",
+            "Test::LongString" : "0",
+            "Test::More" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Class::Accessor" : "0",
+            "Class::Accessor::Chained" : "0",
+            "DateTime" : "0",
+            "DateTime::Duration" : "0",
+            "DateTime::Format::ISO8601" : "0.06",
+            "DateTime::Format::Strptime" : "0",
+            "DateTime::TimeZone" : "0",
+            "Email::Valid" : "0",
+            "IO::Socket::SSL" : "1.31",
+            "Module::Load" : "0",
+            "Scalar::Util" : "0",
+            "XML::LibXML" : "1.61",
+            "perl" : "5.010000"
+         }
+      }
+   },
+   "release_status" : "testing",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "nntp://news.dotandco.net/dotandco.discuss"
+      },
+      "homepage" : "http://www.dotandco.com/services/software/Net-DRI/index.en",
+      "license" : [
+         "http://www.dotandco.com/services/software/Net-DRI/index.en#license"
+      ]
+   },
+   "version" : "0.96_08"
+}

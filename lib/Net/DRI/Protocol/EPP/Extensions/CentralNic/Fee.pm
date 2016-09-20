@@ -1,7 +1,7 @@
 ## Domain Registry Interface, CentralNic EPP Fee extension
 ##
 ## Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ## Copyright (c) 2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -29,13 +29,15 @@ use DateTime::Format::ISO8601;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee - CentralNic EPP Fee extension commands for Net::DRI (draft-brown-epp-fees-01, 02, 03, 04, and 05)
+Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee - CentralNic EPP Fee extension commands for Net::DRI (draft-brown-epp-fees-01, 02, 03, 04, 05, and 06)
 
 =head1 DESCRIPTION
 
-Adds the Price Extension (urn:ietf:params:xml:ns:fee-0.4, -0.5, -0.6, -0.7, -0.8) to domain commands. This extension supports both versions. The extension is built by adding a hash to any domains commands. This pricing information is returned in all commands when requested.
+Adds the Price Extension (urn:ietf:params:xml:ns:fee-0.4, -0.5, -0.6, -0.7, -0.8, -0.9) to domain commands. This extension supports both versions. The extension is built by adding a hash to any domains commands. This pricing information is returned in all commands when requested.
 
-CentralNic Fees extension is defined in http://tools.ietf.org/html/draft-brown-epp-fees-01
+CentralNic Fees extension is defined in http://tools.ietf.org/html/draft-brown-epp-fees-07
+
+NOTE: fee-0.4 is no longer in use anywhere as far as I am aware (GMO has upgraded) so theoretically support for it can be dropped now.
 
 =item currency* (3 letter currency code - option in 0.5+)
 
@@ -142,6 +144,33 @@ sub parse_greeting
  eval { $po->switch_to_highest_namespace_version('fee'); }; # dont crash if server hasn't announced
 }
 
+## returns an integer for easier comparisons
+sub ver { my ($mes)= @_; my ($ver)=($mes->ns('fee')=~m/-0.(\d+)$/); return $ver; }
+
+####################################################################################################
+## 0.11 stuff
+
+sub fee_set_build_11
+{
+  my ($rp)=@_;
+  Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with key action, and optionally currency and duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'action');
+  Net::DRI::Exception::usererr_invalid_parameters('fee currency should be 3 letters ISO-4217 code') if exists $rp->{currency} && $rp->{currency} !~ m/^[A-Z]{3}$/; # No longer required field
+  Net::DRI::Exception::usererr_invalid_parameters('fee action should be: create, transfer, renew or restore') if exists $rp->{action} && $rp->{action} !~ m/^(?:create|transfer|renew|restore)$/;
+
+  my (@n,$name,$lp);
+  $lp->{phase} = $rp->{phase} if exists $rp->{phase};
+  $lp->{subphase} = $rp->{sub_phase} if exists $rp->{sub_phase};
+  push @n,['fee:command',$lp,$rp->{action}];
+  push @n,['fee:currency',$rp->{currency}] if exists $rp->{currency};
+
+  if (exists $rp->{duration}) {
+    Net::DRI::Exception::usererr_invalid_parameters('duration should be a DateTime::Duration object') unless Net::DRI::Util::is_class($rp->{duration},'DateTime::Duration');
+    my $rj=Net::DRI::Protocol::EPP::Util::build_period($rp->{duration});
+    push @n,['fee:period',$rj->[1],$rj->[2]];
+  }
+  push @n,['fee:class', $rp->{class}] if exists $rp->{class};
+  return @n;
+}
 
 ####################################################################################################
 ## Build / Parse helpers for 0.5 to 0.8
@@ -149,18 +178,38 @@ sub parse_greeting
 ## MH: TODO: Fix this parser to ADD fees togother, but still make each fee an individual element in an array with its attributes
 ##           This upgrade from 0.5-0.6-0.8 works, but the extension needs to be reviewed now that we have a few different active implementations
 
-sub fee_set_parse_08
+sub fee_set_parse
 {
-  my $start = shift;
+  my ($version,$start) = @_;
   return unless $start;
   my $set = {};
+
+  $set->{price_avail} = $start->getAttribute('avail') if $start->hasAttribute('avail'); # since 0.11
   foreach my $el (Net::DRI::Util::xml_list_children($start))
   {
     my ($name,$content)=@$el;
-    if ($name eq 'name') {
+    if ($name eq 'name') { # 0.5 - 0.8 use <fee:name>
       $set->{'domain'} = $content->textContent();
       $set->{'premium'} = ($content->hasAttribute('premium') && Net::DRI::Util::xml_parse_boolean($content->getAttribute('premium'))) ? 1 : 0;
-    } elsif ($name eq 'command')
+    }
+    elsif ($name eq 'objID') # in 0.9 we can have an objId with element
+    {
+      my $element = $content->hasAttribute('element') ? $content->getAttribute('element') : 'name';
+      $set->{'element'} = $element;
+      $set->{'domain'} = $content->textContent(); # we don' support other types at the moment
+      $set->{'premium'} = 0; # actually this was only in 0.6, but this sort of keeps things going in the same vain implementation wise
+    }
+    elsif ($name eq 'object') # in 0.11 we can have an object with element for domain:name
+    {
+      # TODO. This could theoretically not be a domain...
+      foreach my $el2 (Net::DRI::Util::xml_list_children($content))
+      {
+        my ($name2,$content2)=@$el2;
+        $set->{'domain'} = $content2->textContent() if $name2 eq 'name';
+      }
+      $set->{'premium'} = 0;
+    }
+    elsif ($name eq 'command')
     {
       $set->{'action'} = $content->textContent();
       $set->{'phase'} = $content->getAttribute('phase') if $content->hasAttribute('phase');
@@ -187,27 +236,33 @@ sub fee_set_parse_08
         $set->{"fee_$d"} = 0 + $content->textContent();
       }
       if ($content->hasAttribute('refundable') && $content->getAttribute('refundable') eq '1') {
-        $set->{description} .= "Refundable";
+        $set->{description} .= "Refundable"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+        $set->{refundable} = 1;
       }
       if ($content->hasAttribute('grace-period')) {
-        $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")";
+        $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+        $set->{grace_period} = $content->getAttribute('grace-period');
       }
       if ($content->hasAttribute('applied') && $content->getAttribute('applied')=~m/^(?:immediate|delayed)$/) {
-        $set->{description} .= "(Applied=>" . $content->getAttribute('applied') . ")";
+        $set->{description} .= "(Applied=>" . $content->getAttribute('applied') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+        $set->{applied} = $content->getAttribute('applied');
       }
     } elsif ($name eq 'class')
     {
       $set->{class} = $content->textContent();
-      $set->{'premium'} = 1 && $set->{class} =~ m/(premium|tier.)/i;
+      $set->{'premium'} = 1 && $set->{class} =~ m/(premium|tier.|non-standard)/i;
+    } elsif ($name eq 'reason')
+    {
+      $set->{reason} = $content->textContent();
     }
   }
   chomp $set->{description} if $set->{description};
   return $set;
 }
 
-sub fee_set_build_08
+sub fee_set_build
 {
-  my ($rp,$cmd,$domain)=@_;
+  my ($version,$rp,$cmd,$domain)=@_;
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with key action, and optionally currency and duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'action');
   Net::DRI::Exception::usererr_invalid_parameters('fee currency should be 3 letters ISO-4217 code') if exists $rp->{currency} && $rp->{currency} !~ m/^[A-Z]{3}$/; # No longer required field
   Net::DRI::Exception::usererr_invalid_parameters('fee action should be: create, transfer, renew or restore') if exists $rp->{action} && $rp->{action} !~ m/^(?:create|transfer|renew|restore)$/;
@@ -218,8 +273,16 @@ sub fee_set_build_08
   $name = $rp->{domain} if exists $rp->{domain};
   $name = $domain if !$name && $domain && ref $domain ne 'ARRAY';
   $name = $domain->[0] if !$name && $domain && ref $domain eq 'ARRAY';
+  if ($version eq '0.9') # 0.9 uses fee:objID
+  {
+    push @n,['fee:objID',$name] if $name && !$rp->{element};
+    push @n,['fee:objID',{'element' => $rp->{element}}, $name] if $name && $rp->{element};
+  }
+  else
+  {
+    push @n,['fee:name',$name] if $name;
+  }
 
-  push @n,['fee:name',$name] if $name;
   push @n,['fee:currency',$rp->{currency}] if exists $rp->{currency};
   
   $lp->{phase} = $rp->{phase} if exists $rp->{phase};
@@ -233,14 +296,18 @@ sub fee_set_build_08
   }
   
   return @n unless $cmd && $cmd eq 'check';
-  return ['fee:domain',@n];
+  # in 0.9, the default objURI is domain,but you can selct other objects but we dont support this.
+  # for the purpose of proof of principle and passing the test, we will use domain objURI when the element object is also provided (which is also optional
+  return ['fee:object', {'objURI' => 'urn:ietf:params:xml:ns:domain-1.0'}, @n] if $version eq '0.9' && exists $rp->{element};
+  return ['fee:object', @n] if $version eq '0.9'; # 0.9
+  return ['fee:domain',@n]; # for 0.5 through 0.8 if was <fee:domain>
 }
 
 ####################################################################################################
-## Build / Parse helpers for 0.4
+## LEGACY Build / Parse helpers for 0.4
 
 
-sub fee_set_parse
+sub fee_set_parse_legacy
 {
   my $start = shift;
   return unless $start;
@@ -266,7 +333,7 @@ sub fee_set_parse
   return $set;
 }
 
-sub fee_set_build
+sub fee_set_build_legacy
 {
   my ($rp,$domain)=@_;
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, action, duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'currency') && Net::DRI::Util::has_key($rp,'action') && Net::DRI::Util::has_key($rp,'duration');
@@ -335,26 +402,30 @@ sub check
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d)!)) ? "$1" : '0.4';
   my (@n,@fees,@fee_set);
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
 
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
-  if ($ver eq '0.4')
+  if ($version eq '0.4')
   {
    foreach my $fee_set (@fees)
    {
-     @n = fee_set_build($fee_set,$domain);
+     @n = fee_set_build_legacy($fee_set,$domain);
      my $eid=$mes->command_extension_register('fee','check');
      $mes->command_extension($eid,\@n);
    }
   }
-
-  if ($ver eq ('0.5' || '0.6' || '0.7' || '0.8'))
+  elsif (ver($mes) >= 11)
+  {
+   my $eid=$mes->command_extension_register('fee','check');
+   $mes->command_extension($eid, [fee_set_build_11($fees[0])]);
+  }
+  else # 0.5+
   {
    foreach my $fee_set (@fees)
    {
-     @n = fee_set_build_08($fee_set,'check',$domain);
+     @n = fee_set_build($version, $fee_set,'check',$domain);
      push @fee_set,@n if @n;
    }
    return unless @fee_set;
@@ -370,11 +441,10 @@ sub check_parse
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success;
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d+)!)) ? "$1" : '0.4';
 
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
-
-  my $chkdata=$mes->node_extension if ($ver eq '0.4');
-  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($ver eq '0.5' || $ver eq '0.6' || $ver eq '0.7' || $ver eq '0.8');
+  my $chkdata=$mes->node_extension if ($version eq '0.4');
+  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($version eq '0.5' || $version eq '0.6' || $version eq '0.7' || $version eq '0.8' || $version eq '0.9' || $version eq '0.11');
   return unless defined $chkdata;
 
   foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
@@ -383,14 +453,18 @@ sub check_parse
     if ($name =~ m/^(chkData|cd)$/) # chkData for 0.4, cd for 0.5 & 0.6 & 0.7 & 0.8
     {
       my $dn = '';
-      foreach my $el2 (Net::DRI::Util::xml_list_children($content))
-      {
-        my ($name2,$content2)=@$el2;
-        $dn = $content2->textContent() if $name2 =~ m/^(domain|name)$/; # domain for 0.4, name for 0.5 & 0.6 & 0.7 & 0.8
+      if ($version eq '0.11') {
+       $dn = Net::DRI::Util::xml_traverse($content, $mes->ns('fee'), qw/object name/);
+       $dn = $dn->textContent() if defined $dn;
+      } else {
+       foreach my $el2 (Net::DRI::Util::xml_list_children($content))
+       {
+         my ($name2,$content2)=@$el2;
+         $dn = $content2->textContent() if $name2 =~ m/^(domain|name|objID)$/; # domain for 0.4, name for 0.5 & 0.6 & 0.7 & 0.8, and objID for 0.9
+       }
       }
       next unless $dn;
-      my $fee_set = fee_set_parse($content) if ($ver eq '0.4');
-      $fee_set = fee_set_parse_08($content) if ($ver eq ('0.5' || '0.6' || '0.7' || '0.8'));
+      my $fee_set = ($version eq '0.4') ? fee_set_parse_legacy($content) : fee_set_parse($version, $content);
       if ($fee_set)
       {
         push @{$rinfo->{domain}->{$dn}->{fee}},$fee_set;
@@ -406,16 +480,16 @@ sub info
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
-  return if $ver eq '0.8'; # as of 0.6 (draft -05) info is no longer supported. Returning an exception will do more harm then good, so just ignore
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d)!)) ? "$1" : '0.4';
+  return unless $version+0 < 0.9; # as of 0.6 (draft -05) info is no longer supported. Returning an exception will do more harm then good, so just ignore
   
   my (@n,@fees);
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
   foreach my $fee_set (@fees)
   {
-    @n = fee_set_build($fee_set) if ($ver eq '0.4');
-    @n = fee_set_build_08($fee_set) if ($ver eq ('0.5' || '0.6' || '0.7' || '0.8'));
+    @n = fee_set_build_legacy($fee_set) if ($version eq '0.4');
+    @n = fee_set_build($version, $fee_set) if ($version ne '0.4');
     my $eid=$mes->command_extension_register('fee','info');
     $mes->command_extension($eid,\@n);
   }
@@ -427,13 +501,13 @@ sub info_parse
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success();
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d)!)) ? "$1" : '0.4';
 
   my $infdata=$mes->get_extension($mes->ns('fee'),'infData');
   return unless defined $infdata;
 
-  my $fee_set = fee_set_parse($infdata) if ($ver eq '0.4');
-  $fee_set = fee_set_parse_08($infdata) if ($ver eq ('0.5' || '0.6' || '0.7' || '0.8'));
+  my $fee_set = fee_set_parse_legacy($infdata) if ($version eq '0.4');
+  $fee_set = fee_set_parse($version, $infdata) if ($version ne '0.4');
   if ($fee_set)
   {
     @{$rinfo->{domain}->{$oname}->{fee}} = $fee_set;
@@ -476,7 +550,7 @@ sub transform_build
   my ($epp,$domain,$rd,$cmd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my $ver=(grep { /-0\.4$/ } $mes->ns('fee'))? '0.4' : ('0.5' || '0.6' || '0.7' || '0.8');
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d)!)) ? "$1" : '0.4';
 
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, fee') unless Net::DRI::Util::has_key($rd->{fee},'currency') && Net::DRI::Util::has_key($rd->{fee},'fee');
   my $rp=$rd->{fee};

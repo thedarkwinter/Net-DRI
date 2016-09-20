@@ -83,7 +83,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'EURid'; }
-sub tlds     { return ('eu'); }
+sub tlds     { return ('eu', 'xn--e1a4c'); }
 sub object_types { return (qw/domain contact nsgroup keygroup/); }
 sub profile_types { return qw/epp das whois das-registrar whois-registrar/; }
 

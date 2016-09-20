@@ -1,4 +1,4 @@
-Net::DRI is Copyright (C) 2005-2015, Patrick Mevzek <netdri@dotandco.com>
+Net::DRI is Copyright (C) 2005-2016, Patrick Mevzek <netdri@dotandco.com>
 Official website for Net::DRI information and download:
 http://www.dotandco.com/services/software/Net-DRI/index.en
 
@@ -45,34 +45,42 @@ Currently Net::DRI ships with:
   * NSgroup and Keygroup (used by .BE and .EU)
   * VeriSign extensions: Sync, WhoisInfo, WhoWas, PremiumDomain, Suggestion, ClientAttributes, Balance
   * IDN extension (draft-ietf-eppext-idnmap-02)
-  * KeyRelay extension (draft-ietf-eppext-keyrelay-02)
-  * AllocationToken extension (draft-gould-allocation-token-01)
-  * AusRegistry extensions: KeyValue, IDN, Variant
+  * KeyRelay extension (draft-ietf-eppext-keyrelay-11)
+  * AllocationToken extension (draft-gould-allocation-token-02)
+  * AusRegistry extensions: KeyValue, IDN, Variant, Sync
   * CentralNic extensions: Release, TTL, WebForwarding, Pricing
   * CloudRegistry extension: LaunchPhase
   * CoCCA extension: IPVerification
-  * ICANN extension: MarkSignedMark (SMD for TMCH in new gTLDs, with local XML signature validation)
+  * ICANN extensions: MarkSignedMark (SMD for TMCH in new gTLDs, with local XML signature validation), RegistrarExpirationDate
   * Domain/Contact/Host and other extensions needed for extra services in various TLD:
     .EU .COM .NET .MOBI .AERO .CAT .US .PL .SE .BE .AT .COOP .LU .ASIA .AU .NAME .ORG .UK
     .DE .CH .LI .HN .SC .VC .AG .BZ .LC .MN .ME .CZ .TRAVEL .NO .BR .JOBS .PRO .FR .PT
     .CX .GS .TL .KI .MS .MU .NF .HT .IM .SI .NG .NA .IT .NL .CA .CO.ZA
     .RU .SU .РФ .XXX .TEL .NU
-  * and various extensions from IETF internet-drafts:
-    * https://tools.ietf.org/html/draft-zhou-eppext-reseller-00
-    * https://tools.ietf.org/html/draft-zhou-eppext-reseller-mapping-00
+  * and various extensions from IETF internet-drafts or other documents:
+    * https://tools.ietf.org/html/draft-zhou-eppext-reseller-03
+    * https://tools.ietf.org/html/draft-zhou-eppext-reseller-mapping-03
     * https://tools.ietf.org/html/draft-mayrhofer-eppext-servicemessage-00
     * https://tools.ietf.org/html/draft-wilcox-cira-idn-eppext-00
+    * https://tools.ietf.org/html/draft-gould-change-poll-03
+    * https://tools.ietf.org/id/draft-kong-eppext-bundling-registration-02
+    * https://ausregistry.github.io/doc/price-1.2/price-1.2.html
+    * http://rightside.co/fileadmin/downloads/policies/Rightside_Price_Categories.pdf
+    * https://tools.ietf.org/html/draft-brown-epp-reverse-00
+    * https://tools.ietf.org/html/draft-wang-eppext-contact-verification-01
+    * https://tools.ietf.org/html/draft-wang-eppext-domain-verification-01
 - a full DAS (Domain Availability Service) implementation for .BE .EU .NL .AU
 - a full Whois implementation (RFC 3912) for thin and thick registries :
      support included for domain names in .COM .NET .ORG .BIZ .INFO .AERO
      .EU .MOBI .NAME .LU .WS .SE .CAT .AT .TRAVEL .US .PT
 - an IRIS (RFC3981) implementation with LWZ transport (RFC4993) for DCHK (RFC5144):
   currently only .FR provides this service.
-  (XCP transport (RFC4992) is also available)
+  (XCP transport (RFC 4992) is also available)
 - an UDP/TCP/TLS socket transport, handling SNI
 - an HTTP/HTTPS transport
 - various SOAP transports over HTTP/HTTPS
 - an SMTP transport
+- Language Tag parsing (RFC 5646)
 - a shell (Net::DRI::Shell) providing autocompletion, logging and batch operations to be able
   to leverage all Net::DRI power without writing any line of code
   (see Net::DRI::Shell module documentation for all details)
@@ -140,7 +148,7 @@ Digest::MD5 (needed only for OpenSRS)
 Net::DNS (needed only for .FR IRIS DCHK queries)
 IO::Uncompress::RawInflate (needed only for .FR IRIS DCHK queries) (*)
 MIME::Base64 + Crypt::OpenSSL::X509 + Crypt::OpenSSL::RSA + Digest::SHA (needed only to parse & validate XML signature of SMD files for new gTLDs TMCH operations)
-
+Scalar::Util (*)
 
 Modules marked (*) are core Perl modules.
 

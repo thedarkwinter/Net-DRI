@@ -69,6 +69,7 @@ sub register_commands
  my %tmp=(
            create => [ \&create, undef ],
            check =>  [ \&check, undef ],
+           check_multi =>  [ \&check, undef ],
          );
 
  return { 'domain' => \%tmp };

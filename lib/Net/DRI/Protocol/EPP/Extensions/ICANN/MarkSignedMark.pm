@@ -1,6 +1,6 @@
-## Domain Registry Interface, Mark & Signed Mark for EPP (draft-ietf-eppext-tmch-smd-03)
+## Domain Registry Interface, Mark & Signed Mark for EPP (draft-ietf-eppext-tmch-smd-06)
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -24,6 +24,8 @@ use Net::DRI::Protocol::EPP::Util;
 use XML::LibXML ();
 use Encode;
 
+my $NS_XMLDSIG = 'http://www.w3.org/2000/09/xmldsig#';
+
 ####################################################################################################
 
 sub setup
@@ -34,7 +36,7 @@ sub setup
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-ietf-eppext-tmch-smd-03'; }
+sub implements { return 'https://tools.ietf.org/html/draft-ietf-eppext-tmch-smd-06'; }
 
 my %xml2perl = ( trademark       => 'trademark',
                  treatyOrStatute => 'treaty_statute',
@@ -84,7 +86,7 @@ sub build_mark
  } elsif ($type eq 'court' || exists $rd->{court_name})
  {
   return _build_court($rd);
- } else 
+ } else
  {
   Net::DRI::Exception::usererr_invalid_parameters(qq{Unrecognized type "$type" of mark, and no "jurisdiction", "protection" or "court_name" element});
  }
@@ -151,6 +153,8 @@ sub _build_contact
   Net::DRI::Exception::usererr_invalid_parameters('Org of contact must be an XML token string, not: '.$v) unless Net::DRI::Util::xml_is_token($v);
   push @r,['mark:org',$v];
  }
+
+ Net::DRI::Exception::usererr_insufficient_parameters('holder must have a name or org') if $type eq 'holder' && ! @r;
 
  push @r,['mark:addr',_build_addr($contact)];
 
@@ -286,7 +290,7 @@ sub _build_trademark
  my @r;
 
  push @r,_build_common1($rd); ## id/markName/holder/contact
- 
+
  push @r,_add_token($rd,'jurisdiction');
  Net::DRI::Exception::usererr_invalid_parameters(qq{Value for "jurisdiction" key must be an XML token string of 2 characters}) unless Net::DRI::Util::xml_is_token($rd->{jurisdiction},2,2);
 
@@ -513,7 +517,7 @@ sub lined_content
 
 sub parse_signed_mark
 {
- my ($po,$start)=@_;
+ my ($po,$start,$xmlsec)=@_;
  my %smark;
 
  foreach my $el (Net::DRI::Util::xml_list_children($start))
@@ -548,14 +552,13 @@ sub parse_signed_mark
    $smark{mark}=parse_mark($po,$node);
   } elsif ($name eq 'Signature')
   {
-   my $signs='http://www.w3.org/2000/09/xmldsig#';
    my %s=(id => $start->getAttribute('id'));
-   $s{'value'}=lined_content($node,$signs,qw/SignatureValue/);
+   $s{'value'}=lined_content($node,$NS_XMLDSIG,qw/SignatureValue/);
    ## TODO: handle other algorithms
-   $s{'key'}={ algorithm => 'rsa', 
-               x509_certificate => lined_content($node,$signs,qw/KeyInfo X509Data X509Certificate/),
+   $s{'key'}={ algorithm => 'rsa',
+               x509_certificate => lined_content($node,$NS_XMLDSIG,qw/KeyInfo X509Data X509Certificate/),
              };
-   $s{'validated'}=_validate_xmldsig($start);
+   $s{'validated'}=(defined $xmlsec && $xmlsec) ? _validate_xmldsig($start) : undef;
    $smark{'signature'}=\%s;
   }
  }
@@ -573,7 +576,7 @@ sub _validate_xmldsig
  require MIME::Base64;
 
  my $xpc=XML::LibXML::XPathContext->new();
- $xpc->registerNs('ds','http://www.w3.org/2000/09/xmldsig#');
+ $xpc->registerNs('ds', $NS_XMLDSIG);
 
  foreach my $node ($xpc->findnodes('//ds:Reference',$xml))
  {
@@ -587,7 +590,7 @@ sub _validate_xmldsig
   my %algos=map { $_->getAttribute('Algorithm') => 1 } $xpc->findnodes('ds:Transforms/ds:Transform',$node);
   return 0 unless exists $algos{'http://www.w3.org/2001/10/xml-exc-c14n#'};
 
-  my $xmlstring=$cnode->toStringEC14N(0,exists $algos{'http://www.w3.org/2000/09/xmldsig#enveloped-signature'} ? q{(. | .//node() | .//@* | .//namespace::*)[not(self::comment() or ancestor-or-self::ds:Signature)]} : undef,$xpc);
+  my $xmlstring=$cnode->toStringEC14N(0,exists $algos{$NS_XMLDSIG.'enveloped-signature'} ? q{(. | .//node() | .//@* | .//namespace::*)[not(self::comment() or ancestor-or-self::ds:Signature)]} : undef,$xpc);
 
   return 0 unless defined $xmlstring && $xpc->findnodes('ds:DigestValue',$node)->get_node(1)->textContent() eq _sha256b64padded($xmlstring);
  }
@@ -599,7 +602,7 @@ sub _validate_xmldsig
  $key->use_sha256_hash();
 
  my $xmlsi=$xpc->find('//ds:SignedInfo',$xml)->get_node(1);
- $xmlsi->setNamespace('http://www.w3.org/2000/09/xmldsig#','ds',0);
+ $xmlsi->setNamespace($NS_XMLDSIG,'ds',0);
  my $sigval=$xpc->findnodes('//ds:SignatureValue',$xmlsi)->get_node(1)->textContent();
  $sigval=~s!\s+!!g;
  my $verify=$key->verify($xmlsi->toStringEC14N(0), MIME::Base64::decode_base64($sigval));
@@ -616,28 +619,25 @@ sub _sha256b64padded
 
 sub parse_encoded_signed_mark
 {
- my ($po,$start)=@_;
+ my ($po,$start,$xmlsec)=@_;
  my $content;
-
  if (ref $start)
  {
   my $encoding=$start->hasAttribute('encoding') ? $start->getAttribute('encoding') : 'base64';
   Net::DRI::Exception::err_invalid_parameter('For encoded signed mark, only base64 encoding is supported') unless $encoding eq 'base64';
   my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start->textContent());
-  $content = (@a) ? $content=join("\n",@a[1..($#a-1)]) : $start->textContent();
- } else
+  $content = (@a) ? $content=join("\n",@a[1..($#a-1)]) : $start->textContent(); } else
  {
   my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start);
   $content=join("\n",@a[1..($#a-1)]);
  }
-
  require MIME::Base64;
  my $xml=MIME::Base64::decode_base64($content);
  $xml=Encode::decode('UTF-8',$xml,Encode::FB_CROAK | Encode::LEAVE_SRC);
  my $root=XML::LibXML->load_xml(no_cdata => 1, no_blanks => 1, no_network => 1, string => $xml)->documentElement();
  Net::DRI::Exception::err_invalid_parameter('Decoding should give a signedMark root element') unless $root->localname() eq 'signedMark';
 
- return parse_signed_mark($po,$root);
+ return parse_signed_mark($po,$root,$xmlsec);
 }
 
 ####################################################################################################
@@ -649,7 +649,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark - ICANN TMCH Mark/Signed Mark EPP Extension (draft-ietf-eppext-tmch-smd-03) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark - ICANN TMCH Mark/Signed Mark EPP Extension (draft-ietf-eppext-tmch-smd-06) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -673,7 +673,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013-2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2013-2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
