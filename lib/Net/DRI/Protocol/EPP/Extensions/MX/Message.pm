@@ -33,21 +33,23 @@ sub parse
     foreach my $res($mes->get_extension($mes->ns('ext_msg'),$_))
     {
       next unless $res;
-      foreach my $el(Net::DRI::Util::xml_list_children($res))
+      my @res_children = Net::DRI::Util::xml_list_children($res);
+      foreach my $el(@res_children) {
+        my ($n,$c)=@$el;
+        $oname = $c->textContent() if ($n eq 'object'); # get oname
+      }
+      foreach my $el(@res_children)
       {
         my ($n,$c)=@$el;
+        $otype = $otype ? $otype : 'domain'; # set to domain if undef (which it appears to be)
         if ($n eq 'msgTypeID')
         {
           Net::DRI::Exception::usererr_invalid_parameters('msgTypeID can only take values from ' . $min_type_id . ' to ' . $max_type_id) unless ($c->textContent() >= $min_type_id && $c->textContent() <= $max_type_id);
-          $rinfo->{message}->{$msgid}->{msg_type_id}=$c->textContent();
+          $rinfo->{$otype}->{$oname}->{msg_type_id}=$c->textContent();
         }
-        if ($n eq 'object') {
-          $rinfo->{message}->{$msgid}->{object}=$c->textContent();
-          $rinfo->{message}->{$msgid}->{name}=$c->textContent();
-          $rinfo->{message}->{$msgid}->{object_id}=$c->textContent();
-        }
-        $rinfo->{message}->{$msgid}->{msDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/msDate$/);
-        $rinfo->{message}->{$msgid}->{exDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/exDate$/ && $rinfo->{message}->{$msgid}->{msg_type_id} eq $ex_date_renew); # only used in the notice of renewal (Type 6 for MX and Type 5 for LAT)
+        $rinfo->{$otype}->{$oname}->{$n}=$c->textContent();
+        $rinfo->{$otype}->{$oname}->{msDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/msDate$/);
+        $rinfo->{$otype}->{$oname}->{exDate}=$po->parse_iso8601($c->textContent) if ($n =~ m/exDate$/ && $rinfo->{$otype}->{$oname}->{msg_type_id} eq $ex_date_renew); # only used in the notice of renewal (Type 6 for MX and Type 5 for LAT)
       }
     }
   }
