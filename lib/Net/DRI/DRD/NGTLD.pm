@@ -787,6 +787,25 @@ Contested: broadway radio
 
 =pod
 
+=head3 Fury Client TLDs
+
+ $dri->add_registry('NGTLD',{provider=>'fury'}); # Fury registry
+
+ Uncontested:
+
+ Contested:
+
+=cut
+
+ return {
+     bep_type => 1, # dedicated registry
+     tlds => ['kiwi'],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
+   } if $bep eq 'fury';
+
+=pod
+
 
 =head2 Neustar
 
