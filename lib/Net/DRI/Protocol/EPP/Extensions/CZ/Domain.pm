@@ -113,8 +113,6 @@ sub info {
   my ($epp, $domain, $rd) = @_;
   my $mes = $epp->message();
   my @d = build_command($mes, 'info', $domain);
-  # auth is not supported for domain_info
-  # push(@d, build_authinfo($rd->{auth})) if Net::DRI::Util::has_auth($rd);
   $mes->command_body(\@d);
   return;
 }
@@ -248,10 +246,8 @@ sub update {
   my $cdel = $todo->del('contact');
   my (@add, @del);
 
-  #push(@add, Net::DRI::Protocol::EPP::Util::build_ns($epp, $nsadd, $domain)) if ($nsadd && !$nsadd->is_empty()); # ns update not supported via domain_update
   push(@add, build_contacts($cadd)) if ($cadd);
   push(@add, $sadd->build_xml('domain:status', 'core')) if ($sadd);
-  #push(@del, Net::DRI::Protocol::EPP::Util::build_ns($epp, $nsdel, $domain)) if ($nsdel && !$nsdel->is_empty()); # ns update not supported via domain_update
   push(@del, build_contacts($cdel)) if ($cdel);
   push(@del, $sdel->build_xml('domain:status', 'core')) if ($sdel);
   push(@d, ['domain:add', @add]) if (@add);

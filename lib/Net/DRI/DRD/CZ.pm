@@ -25,8 +25,6 @@ use DateTime::Duration;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
-#__PACKAGE__->make_exception_for_unavailable_operations(qw/host_update host_current_status host_check host_exist host_delete host_create host_info/);
-
 =pod
 
 =head1 NAME
@@ -35,7 +33,15 @@ Net::DRI::DRD::CZ - .CZ policies for Net::DRI
 
 =head1 DESCRIPTION
 
-Please see the README file for details.
+Additional domain extension to manage nameservers & technical contact NSSET, see CZ.t for examples.
+
+Additional contact extension with 'vat', 'notifyemail' and 'identity' fields, see L<Net::DRI::Data::Contact::LV>
+
+=head2 Standard extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CZ:NSSET>
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CZ:KeySET>
 
 =head1 SUPPORT
 

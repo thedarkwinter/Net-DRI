@@ -150,7 +150,6 @@ sub build_authinfo {
   my $contact = shift;
   my $az = $contact->auth();
   return () unless ($az && ref($az) && exists($az->{pw}));
-  #return ['contact:authInfo', $az->{pw}]; # not supported as of contact-1.6.xsd
   return;
 }
 
@@ -258,12 +257,14 @@ sub update {
 
   my $sadd = $todo->add('status');
   my $sdel = $todo->del('status');
+
   push(@d, ['contact:add', $sadd->build_xml('contact:status')])
     if ($sadd);
   push(@d, ['contact:rem', $sdel->build_xml('contact:status')])
     if ($sdel);
 
   my $newc = $todo->set('info');
+
   if ($newc) {
     Net::DRI::Exception->die(1, 'protocol/EPP', 10, 'Invalid contact ' . $newc)
       unless Net::DRI::Util::isa_contact($newc);

@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2008-2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+## Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -31,16 +31,36 @@ __PACKAGE__->register_attributes(qw(vat identity notifyemail));
 
 =head1 NAME
 
-Net::DRI::Data::Contact::LV - Handle LV contact data for Net::DRI
+Net::DRI::Data::Contact::CZ - Handle CZ contact data for Net::DRI
 
 =head1 DESCRIPTION
 
 This subclass of Net::DRI::Data::Contact adds accessors and validation for
-LV specific data.
+CZ specific data.
 
 =head1 METHODS
 
 The following accessors/mutators can be called in chain, as they all return the object itself.
+
+=head2 vat()
+
+  The VAT number of a legal entity.
+
+=head2 identity({type=>'', value=>''})
+
+  The identity of a contact. 'type' can be the following values:
+
+  op - other
+	passport - passport number
+	mpsv - personal tax identification number
+	ico - company registration number
+	birthday - date of birth
+
+	The 'value' attribute depends on what type is defined to be valid.
+
+=head2 notifyemail()
+
+  The alternate notification email where registry messages will be sent to also.
 
 =head1 SUPPORT
 
