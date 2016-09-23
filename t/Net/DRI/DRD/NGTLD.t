@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 97;
+use Test::More tests => 102;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -43,7 +43,7 @@ is($rc->{last_registry},'mamclient','mamclient: add_registry');
 $rc = $dri->target('mamclient')->add_current_profile('p1-mamclient','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'mamclient: add_current_profile');
 is($dri->name(),'mamclient','mamclient: name');
-is_deeply([$dri->tlds()],['gop','kiwi','broadway','radio'],'mamclient: tlds');
+is_deeply([$dri->tlds()],['gop','broadway','radio'],'mamclient: tlds');
 @periods = $dri->periods();
 is($#periods,9,'mamclient: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'mamclient: object_types');
@@ -110,6 +110,16 @@ is($rc->{last_registry},'ffm','ffm: add_registry');
 $rc = $dri->target('ffm')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'neustar ffm: add_current_profile');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken CentralNic::Fee/],'ffm: loaded_modules');
+
+# Fury
+$rc = $dri->add_registry('NGTLD',{provider => 'fury', 'name' => 'kiwi'});
+is($rc->{last_registry},'kiwi','fury: add_registry');
+$rc = $dri->target('kiwi')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'fury: add_current_profile');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee/],'fury: loaded_modules');
+$drd = $dri->{registries}->{kiwi}->{driver};
+is($drd->{bep}->{bep_type},1,'fury: bep_type');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],'brown_fee_version' => '0.11'}],'crr: epp transport_protocol_default');
 
 # Amazon (Neustar + CentralNic::Fee )
 $rc = $dri->add_registry('NGTLD',{provider => 'amazon'});
