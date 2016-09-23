@@ -598,6 +598,38 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 =pod
 
 
+=head2 Fury Regisrty (CIRA)
+
+=head3 Fury Client TLDs
+
+ $dri->add_registry('NGTLD',{provider=>'fury'});
+
+=head3 Status: Untested
+
+=head3 TLDs
+
+kiwi
+
+=head3 Custom extensions
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.11
+
+=head3 Notes
+
+They will be adding a fury.xsd extension
+
+=cut
+
+ return {
+     bep_type => 1, # dedicated registry
+     tlds => ['kiwi'],
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{ custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.11' }],
+   } if $bep eq 'fury';
+
+=pod
+
+
 =head2 GMO Registry
 
 GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo') and a separate shared account for geoTLDs (set provider to 'gmogeo'), and possibly more.
@@ -770,7 +802,7 @@ Contested: basketball music
 
  $dri->add_registry('NGTLD',{provider=>'mamclient'}); # M+M Clients 'mamclient'
 
-Uncontested: gop kiwi
+Uncontested: gop broadway radio
 
 Contested: broadway radio
 
@@ -778,9 +810,7 @@ Contested: broadway radio
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['gop', 'kiwi',
-              'broadway', 'radio'
-             ],
+     tlds => ['gop', 'broadway', 'radio' ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
    } if $bep eq 'mamclient';
