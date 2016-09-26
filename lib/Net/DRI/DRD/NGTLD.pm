@@ -725,19 +725,19 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: abogado bayern beer budapest country fishing garden law luxe surf vip vodka wedding work yoga xn--g2xx48c
+Uncontested: abogado bayern beer budapest country law luxe surf vip xn--g2xx48c
 
 
 Contested: app art baby beauty coupon cpa data dds eco gay home hotel inc latino llc realestate
 
-Collisions: country-collisions fishing-collisions vodka-collisions
+Collisions: country-collisions
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['abogado', 'bayern', 'beer', 'budapest', 'country', 'fishing', 'garden', 'law',  'luxe', 'surf',  'vip', 'vodka', 'wedding', 'work', 'yoga', 'xn--g2xx48c',
+     tlds => ['abogado', 'bayern', 'beer', 'budapest', 'country', 'law',  'luxe', 'surf',  'vip', 'xn--g2xx48c',
               'app', 'art', 'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
-              'country-collisions', 'fishing-collisions', 'vodka-collisions',
+              'country-collisions',
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee','MAM::QualifiedLawyer']}],
      whois_server => 'whois-dub.mm-registry.com',
@@ -882,7 +882,7 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-blog casa cooking fashion fit horse miami rodeo
+blog casa cooking fashion fishing fit garden horse miami rodeo vodka wedding work yoga
 
 =cut
 
@@ -895,7 +895,7 @@ blog casa cooking fashion fit horse miami rodeo
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['blog','casa','cooking','fashion','fit','horse','miami','rodeo'],
+     tlds => ['blog','casa','cooking','fashion','fishing','fit','garden','horse','miami','rodeo','vodka','wedding','work','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
@@ -1223,7 +1223,7 @@ xn--3ds443g xn--fiq228c5hs xn--vuq861b
 
 =head3 TLDs
 
-art audio auto blackfriday car cars christmas click deal diet flowers free game garden gift guitars help hiphop hiv home hosting inc juegos link lol mom photo pics property realestate save sexy tattoo yoga
+art audio auto blackfriday car cars christmas click deal diet flowers free game gift guitars help hiphop hiv home hosting inc juegos link lol mom photo pics property realestate save sexy tattoo
 
 Contended TLD's not included
 
@@ -1248,7 +1248,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','audio','auto','blackfriday','car','cars','christmas','click','deal','diet','flowers','free','game','garden','gift','guitars','help','hiphop','hiv','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','realestate','save','sexy','tattoo','yoga'],
+     tlds => ['art','audio','auto','blackfriday','car','cars','christmas','click','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','realestate','save','sexy','tattoo'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
