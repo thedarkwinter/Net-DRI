@@ -310,11 +310,15 @@ sub transfer_query {
 }
 
 sub update {
-	my ($epp,$domain,$rd)=@_;
+	my ($epp,$domain,$todo)=@_;
 	my $mes=$epp->message();
 	my (@e,@f);
 
-	return unless ( (defined $rd->set('activate_domain')) && ($rd->set('activate_domain')=~m/^(1)$/));
+	if (!$todo->add('ns') || ($todo->add('ns') && $todo->add('ns')->is_empty()) ) {
+		Net::DRI::Exception::usererr_insufficient_parameters('force_empty_ns flag required to update nameservers for .RO') unless Net::DRI::Util::xml_parse_boolean($todo->add('force_empty_ns'));
+	}
+
+	return unless ( (defined $todo->set('activate_domain')) && ($todo->set('activate_domain')=~m/^(1)$/));
 	push @e,['rotld:update',['rotld:domain',['rotld:activate']]];
 
 	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));

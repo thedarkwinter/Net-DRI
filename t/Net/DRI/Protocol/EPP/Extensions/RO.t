@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 74;
+use Test::More tests => 76;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -171,7 +171,19 @@ is_string($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.rotl
 #is_string($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-6lijl3yd.ro</domain:name><domain:add><domain:ns><domain:hostObj>a.ns.1.test-4oakyw-3.ro</domain:hostObj><domain:hostObj>ns1.update-example.net</domain:hostObj><domain:hostObj>a.ns.1.test-6lijl3yd.ro</domain:hostObj><domain:hostObj>a.ns.1.update.test-6lijl3yd.ro</domain:hostObj></domain:ns></domain:add></domain:update></update><extension><rotld:ext xmlns:rotld="http://www.rotld.ro/xml/epp/rotld-1.0"><rotld:update><rotld:domain><rotld:activate/></rotld:domain></rotld:update></rotld:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update add_hosts + activation object_method build_xml');
 is($rc->is_success(), 1, 'domain_update add_hosts + activation is_success');
 
+### 1.7 (custom) Domain Update and remove NS
+$R2='';
+$toc=$dri->local_object('changes');
+my $empty_hosts=$dri->local_object('hosts');
+$toc->add('ns',$empty_hosts);
+$toc->add('force_empty_ns',1); # 'true/false' = 1/0
+$rc=$dri->domain_update('test-6lijl3yd.ro',$toc);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-6lijl3yd.ro</domain:name></domain:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update add_hosts (empty) + activation build_xml');
+is($rc->is_success(), 1, 'domain_update add_hosts (empty) is_success');
+
+
 ### 1.8 Domain Renew (only for yearly registrars)
+# To remove NS, you need to send an update command with no nameservers. This means you could easily do it by accident. So as a failsafe, you need to add the force_empty_ns flag.
 $R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="http://www.rotld.ro/xml/epp/domain-1.0" xsi:schemaLocation="http://www.rotld.ro/xml/epp/domain-1.0 domain-1.0.xsd"><domain:name>test-5btc8khh-6.ro</domain:name><domain:exDate>2014-08-11T15:43:26Z</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
 my $du = DateTime::Duration->new(years => 1);
 my $exp = DateTime->new(year => 2015,month => 05,day => 01);

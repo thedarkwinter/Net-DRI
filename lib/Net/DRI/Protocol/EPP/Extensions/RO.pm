@@ -75,6 +75,7 @@ sub setup {
 		}
 	);
 	$self->capabilities( 'domain_update', 'activate_domain', ['set'] );
+	$self->capabilities( 'domain_update', 'force_empty_ns', ['add'] );
 	return;
 }
 
