@@ -89,7 +89,7 @@ sub create {
 
 	push @e,['rotld:create',['rotld:contact',@f]];
 
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_contact_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }

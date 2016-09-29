@@ -107,7 +107,7 @@ sub create {
 	if ($rd->{'reserve_domain'}->{'reserve'} == 1) {push @f,['rotld:reserve'];}
 
 	push @e,['rotld:create',['rotld:domain',@f]];
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }
@@ -117,10 +117,10 @@ sub create_parse {
 	my $mes=$po->message();
 	return unless $mes->is_success();
 
-	my $idndata=$mes->get_extension('ro_idn_ext','mapping');
+	my $idndata=$mes->get_extension('idn','mapping');
 	return unless defined $idndata;
 
-	my $ns=$mes->ns('ro_idn_ext');
+	my $ns=$mes->ns('idn');
 	$idndata=$idndata->getChildrenByTagNameNS($ns,'name');
 	return unless $idndata->size();
 
@@ -150,7 +150,7 @@ sub trade_request {
 	push @f,['rotld:domain_password', $rd->{'trade_auth_info'}->{'domain_password'} ] if (defined $rd->{'trade_auth_info'}->{'domain_password'});
 	push @e,['rotld:trade',['rotld:domain',['rotld:request',@f]]];
 
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"', $mes->nsattrs('ro_domain_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }
@@ -160,10 +160,10 @@ sub trade_request_parse {
 	my $mes=$po->message();
 	return unless $mes->is_success();
 
-	my $trddata=$mes->get_extension('ro_domain_ext','ext');
+	my $trddata=$mes->get_extension('rotld','ext');
 	return unless defined $trddata;
 
-	my $ns=$mes->ns('ro_domain_ext');
+	my $ns=$mes->ns('rotld');
 	$trddata=$trddata->getChildrenByTagNameNS($ns,'trdData');
 	return unless $trddata->size();
 	$trddata=$trddata->shift()->getChildrenByTagNameNS($ns,'domain');
@@ -197,7 +197,7 @@ sub trade_approve {
 	push @f,['rotld:tid', $rd->{'tid'} ] if (defined $rd->{'tid'});
 	push @e,['rotld:trade',['rotld:domain',['rotld:approve',@f]]];
 
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }
@@ -216,7 +216,7 @@ sub trade_query {
 	push @f,['rotld:tid', $rd->{'tid'} ] if (defined $rd->{'tid'});
 	push @e,['rotld:trade',['rotld:domain',['rotld:query',@f]]];
 
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }
@@ -226,10 +226,10 @@ sub trade_query_parse {
 	my $mes=$po->message();
 	return unless $mes->is_success();
 
-	my $trddata=$mes->get_extension('ro_domain_ext','ext');
+	my $trddata=$mes->get_extension('rotld','ext');
 	return unless defined $trddata;
 
-	my $ns=$mes->ns('ro_domain_ext');
+	my $ns=$mes->ns('rotld');
 	$trddata=$trddata->getChildrenByTagNameNS($ns,'trdData');
 	return unless $trddata->size();
 	$trddata=$trddata->shift()->getChildrenByTagNameNS($ns,'domain');
@@ -259,7 +259,7 @@ sub transfer_request {
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
 
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }
@@ -274,7 +274,7 @@ sub transfer_answer {
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
 
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }
@@ -289,7 +289,7 @@ sub transfer_cancel {
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
 
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }
@@ -304,7 +304,7 @@ sub transfer_query {
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
 
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }
@@ -321,7 +321,7 @@ sub update {
 	return unless ( (defined $todo->set('activate_domain')) && ($todo->set('activate_domain')=~m/^(1)$/));
 	push @e,['rotld:update',['rotld:domain',['rotld:activate']]];
 
-	my $eid=$mes->command_extension_register('rotld:ext',sprintf('xmlns:rotld="%s"',$mes->nsattrs('ro_domain_ext')));
+	my $eid = $mes->command_extension_register('rotld','ext');
 	$mes->command_extension($eid,\@e);
 	return;
 }
@@ -331,10 +331,10 @@ sub info_parse {
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $idndata=$mes->get_extension('ro_idn_ext','mapping');
+ my $idndata=$mes->get_extension('idn','mapping');
  return unless defined $idndata;
 
- my $ns=$mes->ns('ro_idn_ext');
+ my $ns=$mes->ns('idn');
  $idndata=$idndata->getChildrenByTagNameNS($ns,'name');
  return unless $idndata->size();
 
@@ -343,12 +343,10 @@ sub info_parse {
 	 next unless ($c->nodeType() == 1); # element nodes ONLY
 	 my $name=$c->localname() || $c->nodeName();
 	 next unless $name && $c->getFirstChild();
- 	print "123:$oname:$name" . $c->getFirstChild()->getData() . "\n";
 	 if ($name=~m/^(ace|unicode)$/) {
 		 $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData() if (defined $c);
 	 }
  } continue { $c=$c->getNextSibling(); }
-#use Data::Dumper; print Dumper $rinfo;
  return;
 }
 
@@ -359,12 +357,12 @@ sub check_parse {
 	my $msg = {};
 
 	# IDN & Domain Renew Availability Extension(s)
-	my $idndata=$mes->get_extension('ro_idn_ext','mapping');
-	my $trddata=$mes->get_extension('ro_domain_ext','ext');
+	my $idndata=$mes->get_extension('idn','mapping');
+	my $trddata=$mes->get_extension('rotld','ext');
 	return unless ((defined $idndata) || (defined $trddata));
 
 	if (defined $idndata) {
-		my $ns=$mes->ns('ro_idn_ext');
+		my $ns=$mes->ns('idn');
 		$idndata=$idndata->getChildrenByTagNameNS($ns,'name');
 		if ($idndata->size()) {
 			my $c=$idndata->shift->getFirstChild();
@@ -386,7 +384,7 @@ sub check_parse {
 					$msg->{renewable} = $c->getAttribute('renewable') if $c->hasAttribute('renewable');
 				}
 		}
-		my $ns=$mes->ns('ro_domain_ext');
+		my $ns=$mes->ns('rotld');
 		$trddata=$trddata->getChildrenByTagNameNS($ns,'check_renew_availability');
 		if ($trddata->size()) {
 			my $c=$trddata->shift->getFirstChild();
