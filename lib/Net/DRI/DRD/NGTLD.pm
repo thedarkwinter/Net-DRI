@@ -700,13 +700,13 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 =head3 TLDs
 
-desi saarland
+cam desi saarland
 
 =cut
 
  return {
      bep_type => 1, # dedicated
-     tlds => ['desi', 'saarland'],
+     tlds => ['cam', 'desi', 'saarland'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','VeriSign::PollLowBalance'], 'brown_fee_version' => '0.7' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'ks';
