@@ -770,16 +770,16 @@ Contested: basketball music
 
  $dri->add_registry('NGTLD',{provider=>'mamclient'}); # M+M Clients 'mamclient'
 
-Uncontested: gop kiwi
+Uncontested: kiwi
 
-Contested: broadway radio
+Contested: radio
 
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['gop', 'kiwi',
-              'broadway', 'radio'
+     tlds => ['kiwi',
+              'radio'
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
@@ -882,7 +882,7 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-blog casa cooking fashion fishing fit garden horse miami rodeo vodka wedding work yoga
+blog broadway casa cooking fashion fishing fit garden gop horse miami rodeo vodka wedding work yoga
 
 =cut
 
@@ -895,7 +895,7 @@ blog casa cooking fashion fishing fit garden horse miami rodeo vodka wedding wor
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['blog','casa','cooking','fashion','fishing','fit','garden','horse','miami','rodeo','vodka','wedding','work','yoga'],
+     tlds => ['blog','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','miami','rodeo','vodka','wedding','work','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
