@@ -324,7 +324,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
  return {
      bep_type => 1, # dedicated registry
      tlds => ['author','aws','book','bot','buy','call','circle','fast','got','jot','joy','like','moi','pin','read','room','safe','smile','song','spot','talk','tunes','tushu','wanggou','xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--gckr3f0f','yamaxun','you','zero'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'amazon';
 
@@ -589,7 +589,7 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
      tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'stream', 'trade', 'webcam', 'win', # uncontended
               'app', 'baby', 'cam', 'charity', 'forum', 'hotel', 'music', 'rugby', 'search', 'sport',# contended
              ],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'ffm';
 
@@ -625,28 +625,28 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
  return {
      bep_type => 2, # shared registry
      tlds => ['nagoya','tokyo','yokohama'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmo';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['okinawa','ryukyu'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmogeo';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['kyoto'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmokyoto';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['shop'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmoshop';
 
@@ -820,7 +820,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  return {
      bep_type => 1, # dedicated registry
      tlds => ['nyc'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::EXTContact'}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['NeuLevel::EXTContact', 'CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::NYC->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::NYC'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -830,7 +830,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  return {
      bep_type => 1, # dedicated registry
      tlds => ['best', 'ceo', 'earth', 'pharmay'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => 'NeuLevel::Fee'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar' && $tld =~ m/(?:best|ceo|earth|pharmacy)/;
 
@@ -838,7 +838,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  return {
      bep_type => 1, # dedicated registry
      tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'bible', 'buzz', 'club', 'ferrero', 'hoteles', 'hsbc', 'htc', 'kinder', 'moe', 'osaka', 'qpon', 'rocher', 'safety', 'taipei', 'teva', 'tube', 'uno', 'whoswho'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.6' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
 

@@ -102,7 +102,7 @@ $rc = $dri->add_registry('NGTLD',{provider => 'neustar',name=>'nyc'});
 is($rc->{last_registry},'nyc','neustar nyc: add_registry');
 $rc = $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'neustar nyc: add_current_profile');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::EXTContact/],'neustar nyc: loaded_modules (EXTContact)');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::EXTContact CentralNic::Fee/],'neustar nyc: loaded_modules (EXTContact)');
 
 # FFM (Neustar + CentralNic::Fee )
 $rc = $dri->add_registry('NGTLD',{provider => 'ffm'});
