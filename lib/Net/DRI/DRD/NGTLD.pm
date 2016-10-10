@@ -725,7 +725,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: abogado bayern beer budapest country law luxe surf vip xn--g2xx48c
+Uncontested: abogado budapest country law luxe vip xn--g2xx48c
 
 
 Contested: app art baby beauty coupon cpa data dds eco gay home hotel inc latino llc realestate
@@ -735,7 +735,7 @@ Collisions: country-collisions
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['abogado', 'bayern', 'beer', 'budapest', 'country', 'law',  'luxe', 'surf',  'vip', 'xn--g2xx48c',
+     tlds => ['abogado', 'budapest', 'country', 'law',  'luxe', 'vip', 'xn--g2xx48c',
               'app', 'art', 'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
               'country-collisions',
              ],
@@ -882,7 +882,7 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-blog broadway casa cooking fashion fishing fit garden gop horse miami rodeo vodka wedding work yoga
+bayern beer blog broadway casa cooking fashion fishing fit garden gop horse miami rodeo surf vodka wedding work yoga
 
 =cut
 
@@ -895,7 +895,7 @@ blog broadway casa cooking fashion fishing fit garden gop horse miami rodeo vodk
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['blog','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','miami','rodeo','vodka','wedding','work','yoga'],
+     tlds => ['bayern','beer','blog','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','miami','rodeo','surf','vodka','wedding','work','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
