@@ -35,9 +35,9 @@ Net::DRI::DRD::CZ - .CZ policies for Net::DRI
 
 Additional domain extension to manage nameservers & technical contact NSSET, see CZ.t for examples.
 
-Additional contact extension with 'vat', 'notifyemail' and 'identity' fields, see L<Net::DRI::Data::Contact::LV>
+Additional contact extension with 'vat', 'alt_email' and 'identity' fields, see L<Net::DRI::Data::Contact::CZ>
 
-=head2 Standard extensions:
+=head2 Custom extensions:
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::CZ:NSSET>
 

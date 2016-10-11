@@ -25,7 +25,7 @@ use Net::DRI::Exception;
 
 use Data::Dumper;
 
-__PACKAGE__->register_attributes(qw(vat identity notifyemail));
+__PACKAGE__->register_attributes(qw(vat identity alt_email));
 
 =pod
 
@@ -58,7 +58,7 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 	The 'value' attribute depends on what type is defined to be valid.
 
-=head2 notifyemail()
+=head2 alt_email()
 
   The alternate notification email where registry messages will be sent to also.
 
@@ -82,7 +82,7 @@ David Makuni <d.makuni@live.co.uk>
 
 Copyright (c) 2008-2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
 Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -104,16 +104,14 @@ sub validate {
 
 	# the voice 'x' attribute is not allowed
 	if ((defined $self->voice()) && ($self->voice() =~ m/(.+)(x)(.*)/)) {
-			push @errs,'The attribute "x" is not allowed for contact voice element' if (defined $self->voice());
+			push @errs,'The registry does not support voice extensions.' if (defined $self->voice());
 	}
 
 	# 'identity' element data validation
   if (defined $self->identity()) {
 		# missing / undefined fields
-		push @errs,'The "type" attribute is required for the contact identity element' if (!(defined $self->identity()->{type}));
-		push @errs,'The "type" attribute is present but undefined for the contact identity element' if ($self->identity()->{type} eq '');
-		push @errs,'The "value" attribute is required for the contact identity element' if (!(defined $self->identity()->{value}));
-		push @errs,'The "value" attribute is present but undefined for the contact identity element' if ($self->identity()->{value} eq '');
+		foreach (("type", "value")) { push @errs,"The '$_' attribute is required for the contact identity element"
+			  if ((!(defined $self->identity()->{$_})) || ($self->identity()->{$_} eq '')); }
 		# field content validation
 		push @errs,'Wrong value for contact identity "type" element. Accepted: op,passport,mpsv,ico,birthday'
 			if ($self->identity()->{type} !~ m/^(op|passport|mpsv|ico|birthday)$/);
@@ -122,12 +120,6 @@ sub validate {
 	Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
 
 	return 1; ## everything is good!
-}
-
-sub init {
-	my ($self,$what,$ndr)=@_;
-
-	return;
 }
 
 ####################################################################################################
