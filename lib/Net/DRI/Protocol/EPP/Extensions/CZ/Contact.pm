@@ -129,7 +129,7 @@ sub info_parse {
     $s->vat($c->textContent()) if $name eq 'vat';
     $s->identity({ 'value' => $c->textContent(),
 		  'type' => $c->getAttribute('type') }) if $name eq 'ident';
-    $s->notifyemail($c->textContent()) if $name eq 'notifyEmail';
+    $s->alt_email($c->textContent()) if $name eq 'notifyEmail';
    }
   }
 
@@ -145,13 +145,6 @@ sub info_parse {
 }
 
 ############ Transform commands
-
-sub build_authinfo {
-  my $contact = shift;
-  my $az = $contact->auth();
-  return () unless ($az && ref($az) && exists($az->{pw}));
-  return;
-}
 
 sub build_disclose {
   my $contact = shift;
@@ -169,7 +162,7 @@ sub build_disclose {
   push(@d, ['contact:email']) if (exists($d->{email}));
   push(@d, ['contact:vat']) if (exists($d->{vat}));
   push(@d, ['contact:ident']) if (exists($d->{identity}));
-  push(@d, ['contact:notifyEmail']) if (exists($d->{notifyemail}));
+  push(@d, ['contact:notifyEmail']) if (exists($d->{alt_email}));
 
   return ['contact:disclose',@d,{flag=>(keys(%v))[0]}];
 }
@@ -216,10 +209,9 @@ sub build_cdata {
   push(@d, ['contact:ident', { type => $contact->identity()->{type} },
 	  $contact->identity()->{value}])
       if (defined($contact->identity()));
-  push(@d, ['contact:notifyEmail', $contact->notifyemail()])
-    if (defined($contact->notifyemail()));
+  push(@d, ['contact:notifyEmail', $contact->alt_email()])
+    if (defined($contact->alt_email()));
 
-  push(@d, build_authinfo($contact));
   push(@d, build_disclose($contact));
 
   return @d;

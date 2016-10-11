@@ -140,10 +140,10 @@ $c->cc('CZ');
 $c->voice('+420.222745111');
 $c->fax('+420.222745111');
 $c->email('info@mymail.cz');
-$c->disclose({voice=>0,vat=>0,identity=>0,notifyemail=>0});
+$c->disclose({voice=>0,vat=>0,identity=>0,alt_email=>0});
 $c->vat('7035555556'); # VAT Number of the legal entity
 $c->identity({type=>'op', value=>'8888888856'}); # the identity of the legal entity
-$c->notifyemail('info@mymail.cz'); # the alternate notification email of the legal entity
+$c->alt_email('info@mymail.cz'); # the alternate notification email of the legal entity
 $c->auth({pw => 'mypassword'});
 
 $ok=eval {
@@ -280,7 +280,7 @@ $c->fax(undef);
 $c->auth({pw => 'bliblablu'});
 $c->vat('7035555556'); # VAT Number of the legal entity
 $c->identity({type=>'op', value=>'8888888856'}); # the identity of the legal entity
-$c->notifyemail('info@mymail.cz'); # the alternate notification email of the legal entity
+$c->alt_email('info@mymail.cz'); # the alternate notification email of the legal entity
 $todo->set('info', $c);
 
 $ok=eval {

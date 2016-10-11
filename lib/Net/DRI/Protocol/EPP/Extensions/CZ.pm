@@ -77,7 +77,7 @@ sub setup {
   $self->capabilities('nsset_update','reportlevel',['set']);
   $self->capabilities('keyset_update','auth',['set']);
 
-  foreach my $o (qw/vat identity notifyemail/) {
+  foreach my $o (qw/vat identity alt_email/) {
    $self->capabilities( 'contact_update', $o, ['set'] );
   }
 
