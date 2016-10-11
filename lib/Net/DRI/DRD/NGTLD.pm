@@ -826,7 +826,7 @@ Contested: radio
 
 =head3 TLDs
 
-xn--g2xx48c xn--nyqy26a xn--rhqv96g best bible buzz ceo club earth ferrero hoteles hsbc htc kinder moe nyc osaka pharmacy qpon rocher safety taipei teva tube uno whoswho
+xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible buzz ceo club earth ferrero gucci hoteles hsbc htc kinder moe nyc osaka pharmacy qpon rocher safety taipei teva tube uno whoswho
 
 Contended TLD's not included
 
@@ -867,7 +867,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  ## these use CentralNic::Fee for "Tier 2 pricing model" or no premium extension (CentralNic::Fee is ignored by server)
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'bible', 'buzz', 'club', 'ferrero', 'hoteles', 'hsbc', 'htc', 'kinder', 'moe', 'osaka', 'qpon', 'rocher', 'safety', 'taipei', 'teva', 'tube', 'uno', 'whoswho'],
+     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'baby', 'bible', 'buzz', 'club', 'ferrero', 'gucci', 'hoteles', 'hsbc', 'htc', 'kinder', 'moe', 'osaka', 'qpon', 'rocher', 'safety', 'taipei', 'teva', 'tube', 'uno', 'whoswho'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
