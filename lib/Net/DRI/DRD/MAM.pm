@@ -91,7 +91,7 @@ sub name     { return 'MAM'; }
 
 #sub tlds     { return ('example','example-sunrise','example-landrush'); } # OT&E tlds!
 sub tlds     {
-  my @uncontested = qw/abogado bible bradesco budapest country ecom kiwi law london luxe nrw review xn--g2xx48c/;
+  my @uncontested = qw/abogado bible bradesco budapest country ecom law london luxe nrw review xn--g2xx48c/;
   my @contested = qw/app art baby beauty blog cloud coupon cpa cricket data dds deals design dog eco flowers gay green home hotel immo inc latino lawyer llc love pizza property realestate restaurant school site soccer store style tech video vip website/;
   return @uncontested;
 }
