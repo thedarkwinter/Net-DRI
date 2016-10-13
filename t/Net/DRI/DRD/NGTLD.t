@@ -207,6 +207,14 @@ is($rc->is_success(),1,'nominet mmx: add_current_profile');
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],'nominet mmx: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee AllocationToken/],'nominet mmx: loaded_modules');
 
+# Teleinfo (CentralNic::Fee)
+$rc = $dri->add_registry('NGTLD',{provider => 'teleinfo'});
+is($rc->{last_registry},'teleinfo','teleinfo: add_registry');
+$rc = $dri->target('teleinfo')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{teleinfo}->{driver};
+is($rc->is_success(),1,'teleinfo: add_current_profile');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'disable_idn' => 1, 'brown_fee_version' => '0.9'}],'teleinfo: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase CentralNic::Fee/],'teleinfo: loaded_modules');
 
 ####################################################################################################
 #### ngTLD Methods
