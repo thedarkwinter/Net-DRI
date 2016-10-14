@@ -129,7 +129,7 @@ sub info_parse {
     $s->vat($c->textContent()) if $name eq 'vat';
     $s->identity({ 'value' => $c->textContent(),
 		  'type' => $c->getAttribute('type') }) if $name eq 'ident';
-    $s->alt_email($c->textContent()) if $name eq 'notifyEmail';
+    $s->notify_email($c->textContent()) if $name eq 'notifyEmail';
    }
   }
 
@@ -162,7 +162,7 @@ sub build_disclose {
   push(@d, ['contact:email']) if (exists($d->{email}));
   push(@d, ['contact:vat']) if (exists($d->{vat}));
   push(@d, ['contact:ident']) if (exists($d->{identity}));
-  push(@d, ['contact:notifyEmail']) if (exists($d->{alt_email}));
+  push(@d, ['contact:notifyEmail']) if (exists($d->{notify_email}));
 
   return ['contact:disclose',@d,{flag=>(keys(%v))[0]}];
 }
@@ -209,8 +209,8 @@ sub build_cdata {
   push(@d, ['contact:ident', { type => $contact->identity()->{type} },
 	  $contact->identity()->{value}])
       if (defined($contact->identity()));
-  push(@d, ['contact:notifyEmail', $contact->alt_email()])
-    if (defined($contact->alt_email()));
+  push(@d, ['contact:notifyEmail', $contact->notify_email()])
+    if (defined($contact->notify_email()));
 
   push(@d, build_disclose($contact));
 

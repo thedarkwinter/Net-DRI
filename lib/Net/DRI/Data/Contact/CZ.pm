@@ -25,7 +25,7 @@ use Net::DRI::Exception;
 
 use Data::Dumper;
 
-__PACKAGE__->register_attributes(qw(vat identity alt_email));
+__PACKAGE__->register_attributes(qw(vat identity notify_email));
 
 =pod
 
@@ -58,7 +58,7 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 	The 'value' attribute depends on what type is defined to be valid.
 
-=head2 alt_email()
+=head2 notify_email()
 
   The alternate notification email where registry messages will be sent to also.
 
