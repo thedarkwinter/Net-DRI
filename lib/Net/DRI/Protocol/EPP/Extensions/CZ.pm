@@ -63,24 +63,37 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub setup
-{
- my ($self,$rp)=@_;
- $self->{defaulti18ntype}='loc'; # The registry does not provide contact postalinfo i18n type, although it is mandatory by EPP
- $self->ns({ domain  => ['http://www.nic.cz/xml/epp/domain-1.4','domain-1.4.xsd'],
-             contact => ['http://www.nic.cz/xml/epp/contact-1.5','contact-1.5.xsd'],
-          });
- $self->capabilities('domain_update','status',undef);
- $self->capabilities('domain_update','nsset',['set']);
- $self->capabilities('nsset_update','ns',['add','del']);
- $self->capabilities('nsset_update','contact',['add','del']);
- $self->capabilities('nsset_update','auth',['set']);
- $self->capabilities('nsset_update','reportlevel',['set']);
- return;
+sub setup {
+  my ($self,$rp)=@_;
+  $self->{defaulti18ntype}='loc'; # The registry does not provide contact postalinfo i18n type, although it is mandatory by EPP
+  $self->ns({ domain  => ['http://www.nic.cz/xml/epp/domain-1.4','domain-1.4.xsd'],
+              contact => ['http://www.nic.cz/xml/epp/contact-1.6','contact-1.6.1.xsd'],
+              keyset => ['http://www.nic.cz/xml/epp/keyset-1.3','keyset-1.3.xsd'],
+           });
+
+  $self->capabilities('domain_update','status',undef);
+  $self->capabilities('domain_update','nsset',['set']);
+  $self->capabilities('nsset_update','auth',['set']);
+  $self->capabilities('nsset_update','reportlevel',['set']);
+  $self->capabilities('keyset_update','auth',['set']);
+
+  foreach my $o (qw/vat identity alt_email/) {
+   $self->capabilities( 'contact_update', $o, ['set'] );
+  }
+
+  foreach my $o (qw/contact dnskey tech/) {
+    $self->capabilities('keyset_update',$o,['add','del']);
+  }
+
+  foreach my $o (qw/ns contact/) {
+    $self->capabilities('nsset_update',$o,['add','del']);
+  }
+
+  return;
 }
 
 sub core_contact_types { return ('admin','tech','billing','onsite'); }
-sub default_extensions { return qw/CZ::NSSET CZ::Contact CZ::Domain NSgroup/; }
+sub default_extensions { return qw/CZ::NSSET CZ::Contact CZ::Domain NSgroup CZ::KeySET/; }
 
 ####################################################################################################
 1;

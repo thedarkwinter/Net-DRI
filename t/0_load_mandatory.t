@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 519;
+use Test::More tests => 521;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -127,6 +127,7 @@ use_ok('Net::DRI::Data::Contact::EURid');
 use_ok('Net::DRI::Data::Contact::IIS');
 use_ok('Net::DRI::Data::Contact::SE');
 use_ok('Net::DRI::Data::Contact::PL');
+use_ok('Net::DRI::Data::Contact::CZ');
 use_ok('Net::DRI::Data::Contact::AFNIC');
 use_ok('Net::DRI::Data::Contact::US');
 use_ok('Net::DRI::Data::Contact::CAT');
@@ -295,6 +296,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CZ');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CZ::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CZ::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CZ::NSSET');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CZ::KeySET');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NEUSTAR');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::UIN');
