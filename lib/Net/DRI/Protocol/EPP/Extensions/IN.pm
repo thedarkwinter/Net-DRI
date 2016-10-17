@@ -71,6 +71,7 @@ sub setup {
           trademark   => ['urn:afilias:params:xml:ns:trademark-1.0','trademark-1.0.xsd'], # Trademark
           idn         => ['urn:afilias:params:xml:ns:idn-1.0','idn-1.0.xsd'], # IDN
           secdns      => ['urn:ietf:params:xml:ns:secDNS-1.1','secDNS-1.1.xsd'], # SecDNS
+          fee         => [ 'urn:ietf:params:xml:ns:fee-0.8','fee-0.8.xsd' ], # Fee
       }
    );
 
@@ -79,7 +80,7 @@ sub setup {
    return;
 }
 
-sub default_extensions { return qw/Afilias::Trademark Afilias::IDNLanguage IN::Domain SecDNS IDN/; }
+sub default_extensions { return qw/Afilias::Trademark Afilias::IDNLanguage IN::Domain SecDNS IDN CentralNic::Fee/; }
 
 ####################################################################################################
 1;
