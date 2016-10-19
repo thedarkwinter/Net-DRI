@@ -740,6 +740,7 @@ cam desi saarland
      bep_type => 1, # dedicated
      tlds => ['cam', 'desi', 'saarland'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','VeriSign::PollLowBalance'], 'brown_fee_version' => '0.7' }],
+     contact_i18n => 1,
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'ks';
 
@@ -1151,6 +1152,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      bep_type => 2, # shared registry
      tlds => ['archi', 'bio', 'ski'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.7' }],
+     contact_i18n => 1,
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'startingdot';
 
