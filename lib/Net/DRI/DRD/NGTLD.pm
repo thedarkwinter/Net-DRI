@@ -758,8 +758,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: abogado budapest country law luxe vip xn--g2xx48c
-
+Uncontested: budapest country luxe vip xn--g2xx48c
 
 Contested: app art baby beauty coupon cpa data dds eco gay home hotel inc latino llc realestate
 
@@ -768,11 +767,11 @@ Collisions: country-collisions
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['abogado', 'budapest', 'country', 'law',  'luxe', 'vip', 'xn--g2xx48c',
+     tlds => ['budapest', 'country', 'luxe', 'vip', 'xn--g2xx48c',
               'app', 'art', 'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
               'country-collisions',
              ],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee','MAM::QualifiedLawyer']}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
      whois_server => 'whois-dub.mm-registry.com',
    } if $bep eq 'mam' || $bep eq 'mamown';
 
@@ -913,7 +912,7 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-bayern beer blog broadway casa cooking fashion fishing fit garden gop horse miami rodeo surf vodka wedding work yoga
+abogado bayern beer blog broadway casa cooking fashion fishing fit garden gop horse law miami rodeo surf vodka wedding work yoga
 
 =cut
 
@@ -926,8 +925,8 @@ bayern beer blog broadway casa cooking fashion fishing fit garden gop horse miam
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['bayern','beer','blog','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','miami','rodeo','surf','vodka','wedding','work','yoga'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
+     tlds => ['abogado','bayern','beer','blog','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','law','miami','rodeo','surf','vodka','wedding','work','yoga'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','MAM::QualifiedLawyer'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
 
