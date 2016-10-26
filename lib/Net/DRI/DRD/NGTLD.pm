@@ -313,7 +313,7 @@ xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish 
 
 =head3 TLDs
 
-author aws book bot buy call circle fast got jot joy like moi pin read room safe smile song spot talk tunes tushu wanggou xn--1ck2e1b xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--gckr3f0f yamaxun you zero
+author aws book bot buy call circle fast got jot joy like moi pin read room safe smile song spot talk tunes tushu wanggou xn--1ck2e1b xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--gckr3f0f xn--jvr189m xn--rovu88b yamaxun you zero
 
 =head3 Custom extensions
 
@@ -323,7 +323,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['author','aws','book','bot','buy','call','circle','fast','got','jot','joy','like','moi','pin','read','room','safe','smile','song','spot','talk','tunes','tushu','wanggou','xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--gckr3f0f','yamaxun','you','zero'],
+     tlds => ['author','aws','book','bot','buy','call','circle','fast','got','jot','joy','like','moi','pin','read','room','safe','smile','song','spot','talk','tunes','tushu','wanggou','xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--gckr3f0f','xn--jvr189m','xn--rovu88b','yamaxun','you','zero'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'amazon';
