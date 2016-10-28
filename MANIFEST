@@ -115,6 +115,7 @@ lib/Net/DRI/DRD/ID.pm
 lib/Net/DRI/DRD/IENUMAT.pm
 lib/Net/DRI/DRD/IIS.pm
 lib/Net/DRI/DRD/IM.pm
+lib/Net/DRI/DRD/IN.pm
 lib/Net/DRI/DRD/INFO.pm
 lib/Net/DRI/DRD/IRegistry.pm
 lib/Net/DRI/DRD/ISPAPI.pm
@@ -342,6 +343,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IENUMAT.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IIS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IIS/Extensions.pm
+lib/Net/DRI/Protocol/EPP/Extensions/IN.pm
+lib/Net/DRI/Protocol/EPP/Extensions/IN/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IRegistry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ISPAPI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ISPAPI/KeyValue.pm
@@ -707,8 +710,8 @@ t/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Sync.t
 t/Net/DRI/Protocol/EPP/Extensions/BR.t
 t/Net/DRI/Protocol/EPP/Extensions/CAT.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic.t
-t/Net/DRI/Protocol/EPP/Extensions/CentralNicGW.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/AuxContact.t
+t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.11.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.4.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.5.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.6.t
@@ -716,6 +719,7 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.7.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.8.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.9.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.t
+t/Net/DRI/Protocol/EPP/Extensions/CentralNicGW.t
 t/Net/DRI/Protocol/EPP/Extensions/ChangePoll.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
@@ -743,6 +747,7 @@ t/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate.t
 t/Net/DRI/Protocol/EPP/Extensions/ICMRegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/IDN.t
+t/Net/DRI/Protocol/EPP/Extensions/IN.t
 t/Net/DRI/Protocol/EPP/Extensions/IT.pm
 t/Net/DRI/Protocol/EPP/Extensions/KeyRelay.t
 t/Net/DRI/Protocol/EPP/Extensions/KNET.t

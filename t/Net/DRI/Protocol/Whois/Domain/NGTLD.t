@@ -1319,7 +1319,7 @@ is($r->org(),'Desi Networks LLC','domain_info get_info (contact) registrant org'
 ####################################################################################################
 # Minds And Machines
 $R2='Domain ID: 4702-Minds
-Domain Name: nic.bayern
+Domain Name: nic.vip
 WHOIS Server: whois-dub.mm-registry.com
 Updated Date: 2014-06-17T12:56:22Z
 Creation Date: 2014-04-23T03:05:36Z
@@ -1370,8 +1370,8 @@ Tech Fax:
 Tech Fax Ext: 
 Tech Email: support@mm-registry.com
 
-Name Server: a.ns.nic.bayern
-Name Server: b.ns.nic.bayern
+Name Server: a.ns.nic.vip
+Name Server: b.ns.nic.vip
 
 DNSSEC: signedDelegation
 
@@ -1381,10 +1381,10 @@ TERMS OF USE: The whois information provided on this site is intended to provide
 
 $dri->add_registry('NGTLD',{provider=>'mam'});
 $dri->target('mam')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.bayern');
+$rc = $dri->domain_info('nic.vip');
 is($rc->is_success(),1,'Minds And Machines domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.bayern','domain_info get_info (name)');
+is($dri->get_info('name'),'nic.vip','domain_info get_info (name)');
 is($dri->get_info('id'),'4702-Minds','domain_info get_info (id)');
 is($dri->get_info('clName'),'M+M Registry Admin','domain_info get_info (clName)');
 is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
@@ -1400,7 +1400,7 @@ is($dri->get_info('wuDate'),'2014-06-19T01:20:15','domain_info get_info (wuDate)
 $h=$dri->get_info('ns');
 isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
 @hs=$h->get_names();
-is_deeply(\@hs,['a.ns.nic.bayern','b.ns.nic.bayern'],'domain_info get_info (ns) get_names');
+is_deeply(\@hs,['a.ns.nic.vip','b.ns.nic.vip'],'domain_info get_info (ns) get_names');
 $c=$dri->get_info('contact');
 isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
 is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
