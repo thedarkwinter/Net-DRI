@@ -147,7 +147,7 @@ sub parse_ssl_options
 
  $s{SSL_cipher_list}=exists $ropts->{ssl_cipher_list} ? $ropts->{ssl_cipher_list} : 'SSLv3:TLSv1:!aNULL:!eNULL';
  $s{SSL_hostname}=$ropts->{ssl_hostname} if exists $ropts->{ssl_hostname}; # defaults to servers hostname, set blank to disable SNI
-
+ $s{verify_hostname}=$ropts->{verify_hostname} if exists $ropts->{verify_hostname};
  return \%s;
 }
 
