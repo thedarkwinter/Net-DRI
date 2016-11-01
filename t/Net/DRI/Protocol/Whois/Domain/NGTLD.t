@@ -114,9 +114,9 @@ Registrant State/Province:
 Registrant Postal Code:1
 Registrant Country:IE
 Registrant Phone:+353.18541100
-Registrant Phone Ext: 
+Registrant Phone Ext:
 Registrant Fax: +1.2157065701
-Registrant Fax Ext: 
+Registrant Fax Ext:
 Registrant Email:support@afilias.info
 Admin ID:800218-Reserved
 Admin Name:Afilias Ltd.
@@ -127,9 +127,9 @@ Admin State/Province:
 Admin Postal Code:1
 Admin Country:IE
 Admin Phone:+353.18541100
-Admin Phone Ext: 
+Admin Phone Ext:
 Admin Fax: +1.2157065701
-Admin Fax Ext: 
+Admin Fax Ext:
 Admin Email:support@afilias.info
 Tech ID:800218-Reserved
 Tech Name:Afilias Ltd.
@@ -140,23 +140,23 @@ Tech State/Province:
 Tech Postal Code:1
 Tech Country:IE
 Tech Phone:+353.18541100
-Tech Phone Ext: 
+Tech Phone Ext:
 Tech Fax: +1.2157065701
-Tech Fax Ext: 
+Tech Fax Ext:
 Tech Email:support@afilias.info
 Name Server:A0.NIC.PINK
 Name Server:A2.NIC.PINK
 Name Server:B0.NIC.PINK
 Name Server:C0.NIC.PINK
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
 DNSSEC:Unsigned
 
 Access to AFILIAS WHOIS information is provided to assist persons in determining the contents of a domain name registration record in the Afilias registry database. The data in this record is provided by Afilias Limited for informational purposes only, and Afilias does not guarantee its accuracy.  This service is intended only for query-based access. You agree that you will use this data only for lawful purposes and that, under no circumstances will you use this data to(a) allow, enable, or otherwise support the transmission by e-mail, telephone, or facsimile of mass unsolicited, commercial advertising or solicitations to entities other than the data recipient\'s own existing customers; or (b) enable high volume, automated, electronic processes that send queries or data to the systems of Registry Operator, a Registrar, or Afilias except as reasonably necessary to register domain names or modify existing registrations. All rights reserved. Afilias reserves the right to modify these terms at any time. By submitting this query, you agree to abide by this policy.';
@@ -210,48 +210,48 @@ Sponsoring Registrar IANA ID: 9999
 Domain Status: ok
 Registrant ID: C5BB57F68FC594A56A7ABB5573DF2FE1C-ARI
 Registrant Name: Plan Bee LLC
-Registrant Organization: 
+Registrant Organization:
 Registrant Street: 2800 28th St. Suite 170
-Registrant Street: 
-Registrant Street: 
+Registrant Street:
+Registrant Street:
 Registrant City: Santa Monica
-Registrant State/Province: 
-Registrant Postal Code: 
+Registrant State/Province:
+Registrant Postal Code:
 Registrant Country: us
-Registrant Phone: 
-Registrant Phone Ext: 
-Registrant Fax: 
-Registrant Fax Ext: 
+Registrant Phone:
+Registrant Phone Ext:
+Registrant Fax:
+Registrant Fax Ext:
 Registrant Email: George@dotbuild.co
 Admin ID: C5BB57F68FC594A56A7ABB5573DF2FE1C-ARI
 Admin Name: Plan Bee LLC
-Admin Organization: 
+Admin Organization:
 Admin Street: 2800 28th St. Suite 170
-Admin Street: 
-Admin Street: 
+Admin Street:
+Admin Street:
 Admin City: Santa Monica
-Admin State/Province: 
-Admin Postal Code: 
+Admin State/Province:
+Admin Postal Code:
 Admin Country: us
-Admin Phone: 
-Admin Phone Ext: 
-Admin Fax: 
-Admin Fax Ext: 
+Admin Phone:
+Admin Phone Ext:
+Admin Fax:
+Admin Fax Ext:
 Admin Email: George@dotbuild.co
 Tech ID: C5BB57F68FC594A56A7ABB5573DF2FE1C-ARI
 Tech Name: Plan Bee LLC
-Tech Organization: 
+Tech Organization:
 Tech Street: 2800 28th St. Suite 170
-Tech Street: 
-Tech Street: 
+Tech Street:
+Tech Street:
 Tech City: Santa Monica
-Tech State/Province: 
-Tech Postal Code: 
+Tech State/Province:
+Tech Postal Code:
 Tech Country: us
-Tech Phone: 
-Tech Phone Ext: 
-Tech Fax: 
-Tech Fax Ext: 
+Tech Phone:
+Tech Phone Ext:
+Tech Fax:
+Tech Fax Ext:
 Tech Email: George@dotbuild.co
 Name Server: a.nic.build
 Name Server: b.nic.build
@@ -267,14 +267,14 @@ Use of the Service is subject to our policies, in particular you should familiar
 The information provided by this Service is \'as is\' and we make no guarantee of it its accuracy.
 
 You agree that by your use of the Service you will not use the information provided by us in a way which is:
-* inconsistent with any applicable laws, 
-* inconsistent with any policy issued by us, 
-* to generate, distribute, or facilitate unsolicited mass email, promotions, advertisings or other solicitations, or 
+* inconsistent with any applicable laws,
+* inconsistent with any policy issued by us,
+* to generate, distribute, or facilitate unsolicited mass email, promotions, advertisings or other solicitations, or
 * to enable high volume, automated, electronic processes that apply to the Service.
 
 You acknowledge that:
-* a response from the Service that a domain name is \'available\', does not guarantee that is able to be registered, 
-* we may restrict, suspend or terminate your access to the Service at any time, and 
+* a response from the Service that a domain name is \'available\', does not guarantee that is able to be registered,
+* we may restrict, suspend or terminate your access to the Service at any time, and
 * the copying, compilation, repackaging, dissemination or other use of the information provided by the Service is not permitted, without our express written consent.
 
 This information has been prepared and published in order to represent administrative and technical management of the TLD.
@@ -391,7 +391,7 @@ This whois service is provided by CentralNic Ltd and only contains
 information pertaining to Internet domain names we have registered for
 our customers. By using this service you are agreeing (1) not to use any
 information presented here for any purpose other than determining
-ownership of domain names, (2) not to store or reproduce this data in 
+ownership of domain names, (2) not to store or reproduce this data in
 any way, (3) not to use any high-volume, automated, electronic processes
 to obtain data from this service. Abuse of this service is monitored and
 actions in contravention of these terms will result in being permanently
@@ -442,7 +442,7 @@ is($r->org(),'CentralNic Ltd','domain_info get_info (contact) registrant org');
 ####################################################################################################
 # CoreNIC / Tango-RS
 $R2='% Copyright (c) 2014 by CORE Association
-% 
+%
 % Restricted rights.
 %
 Domain ID: 8-D
@@ -503,12 +503,12 @@ Last update of Whois database: 2014-05-27T12:38:38.659Z
 % capable of encoding more characters, such as UTF-8.
 %
 % Terms and Conditions of Use
-% 
+%
 % The data in this record is provided by CORE for informational purposes
 % only. CORE does not guarantee its accuracy and cannot, under any
 % circumstances, be held liable in case the stored information would prove
 % to be wrong, incomplete or not accurate in any sense.
-% 
+%
 % All the domain data that is visible in the Whois service is protected by
 % law. It is not permitted to use it for any purpose other than technical or
 % administrative requirements associated with the operation of the Internet.
@@ -519,7 +519,7 @@ Last update of Whois database: 2014-05-27T12:38:38.659Z
 % It is prohibited, in particular, to use it for transmission of unsolicited
 % and/or commercial and/or advertising by phone, fax, e-mail or for any
 % similar purposes.
-% 
+%
 % By maintaining the connection you assure that you have a legitimate
 % interest in the data and that you will only use it for the stated
 % purposes. You are aware that CORE maintains the right to initiate legal
@@ -617,12 +617,12 @@ Name Server: te.ngtld.cn
 DNSSEC: unsigned
 >>> Last update of WHOIS database: 2014-09-08T13:13:12Z <<<
 
-Disclaimer: The data contained in China Internet Network Information Center\'s("CNNIC") WhoIs database is 
-provided for the sole purpose of assisting you in obtaining information about or related to a domain name registration record. 
-CNNIC provides the data in accordance with the registration record, but does not guarantee its accuracy. 
-By submitting a WHOIS query, you agree that you will use this Data only for lawful purposes and that, under no circumstances will you: 
-(1) use electronic processes that are automated and high-volume to access or query the Whois database; 
-(2)support the transmission of mass unsolicited, commercial advertising or solicitations via facsimile, e-mail and telephone. 
+Disclaimer: The data contained in China Internet Network Information Center\'s("CNNIC") WhoIs database is
+provided for the sole purpose of assisting you in obtaining information about or related to a domain name registration record.
+CNNIC provides the data in accordance with the registration record, but does not guarantee its accuracy.
+By submitting a WHOIS query, you agree that you will use this Data only for lawful purposes and that, under no circumstances will you:
+(1) use electronic processes that are automated and high-volume to access or query the Whois database;
+(2)support the transmission of mass unsolicited, commercial advertising or solicitations via facsimile, e-mail and telephone.
 Without the prior written consent of CNNIC, the compilation, repackaging and dissemination of this Data is expressly prohibited.
 CNNIC reserves the right to modify these terms at any time. By submitting this query, you agree to abide by this policy.';
 
@@ -793,41 +793,41 @@ Domain Status: ok https://www.icann.org/epp#ok
 Registrant ID: id01
 Registrant Name: Chris Cowherd
 Registrant Organization: Donuts Inc.
-Registrant Street: 10500 NE 8th St Suite 350  
+Registrant Street: 10500 NE 8th St Suite 350
 Registrant City: Bellevue
 Registrant State/Province: WA
 Registrant Postal Code: 98004
 Registrant Country: US
-Registrant Phone: 
-Registrant Phone Ext: 
-Registrant Fax: 
-Registrant Fax Ext: 
+Registrant Phone:
+Registrant Phone Ext:
+Registrant Fax:
+Registrant Fax Ext:
 Registrant Email: it@donuts.co
 Admin ID: id01
 Admin Name: Chris Cowherd
 Admin Organization: Donuts Inc.
-Admin Street: 10500 NE 8th St Suite 350  
+Admin Street: 10500 NE 8th St Suite 350
 Admin City: Bellevue
 Admin State/Province: WA
 Admin Postal Code: 98004
 Admin Country: US
-Admin Phone: 
-Admin Phone Ext: 
-Admin Fax: 
-Admin Fax Ext: 
+Admin Phone:
+Admin Phone Ext:
+Admin Fax:
+Admin Fax Ext:
 Admin Email: it@donuts.co
 Tech ID: id01
 Tech Name: Chris Cowherd
 Tech Organization: Donuts Inc.
-Tech Street: 10500 NE 8th St Suite 350  
+Tech Street: 10500 NE 8th St Suite 350
 Tech City: Bellevue
 Tech State/Province: WA
 Tech Postal Code: 98004
 Tech Country: US
-Tech Phone: 
-Tech Phone Ext: 
-Tech Fax: 
-Tech Fax Ext: 
+Tech Phone:
+Tech Phone Ext:
+Tech Fax:
+Tech Fax Ext:
 Tech Email: it@donuts.co
 Name Server: pdns86.ultradns.com
 Name Server: pdns86.ultradns.biz
@@ -945,7 +945,7 @@ Name Value Pair:                             Variant=NIC.TRADE
 
 
 The WHOIS service offered by the Registry Operator, and the access to the records in the Registry Operator WHOIS database, are provided for information purposes only and is designed (i)to assist persons in determining whether a specific domain name registration record is available or not in the Registry Operator database and (ii)to obtain information related to the registration records of existing domain names.  The Registry Operator cannot, under any circumstances, be held liable in such instances where the stored information would prove to be wrong, incomplete, or not accurate in any sense. By submitting a WHOIS query, you, the user, agree that you will not use this data: (i)to allow, enable or otherwise support in any way the transmission of unsolicited, commercial advertising or other solicitations whether via direct mail, email, telephone or otherwise; (ii)to enable high volume, automated, electronic processes that apply to the registry (or its systems); (iii)for target advertising in any possible way; (iv)to cause nuisance in any possible way to the registrants by sending (whether by automated, electronic processes capable of enabling high volumes or other possible means) messages to them; (v)to violate any law, rule, regulation or statute; and/or (vi)in contravention of any applicable data and privacy protection acts. Without prejudice to the above, it is explicitly forbidden to extract, copy and/or use or re-utilize in any form and by any means (electronically or not) the whole or a quantitatively or qualitatively substantial part of the contents of the WHOIS database without prior and explicit permission by Registry Operator, nor in any attempt hereof, or to apply automated, electronic processes to Registry Operator (or its systems or their designated third party Registry Service Provider\'s systems). You agree that any reproduction and/or transmission of data for commercial purposes will always be considered as the extraction of a substantial part of the c
-ontent of the WHOIS database. By utilizing this website and/or submitting a query you agree to abide by this policy and accept that Registry Operator can take measures to limit the use of its WHOIS services in order to protect the privacy of its registrants or the integrity of the database. We reserve the right to make changes to these Terms and Conditions at any time without prior notice to you. It is your responsibility to review these Terms and Conditions each time you access or use the WHOIS service and to familiarise yourself with any changes. If you do not agree to the changes implemented by Registry Operator, your sole and exclusive remedy is to terminate your use of the WHOIS service. 
+ontent of the WHOIS database. By utilizing this website and/or submitting a query you agree to abide by this policy and accept that Registry Operator can take measures to limit the use of its WHOIS services in order to protect the privacy of its registrants or the integrity of the database. We reserve the right to make changes to these Terms and Conditions at any time without prior notice to you. It is your responsibility to review these Terms and Conditions each time you access or use the WHOIS service and to familiarise yourself with any changes. If you do not agree to the changes implemented by Registry Operator, your sole and exclusive remedy is to terminate your use of the WHOIS service.
 
 By executing a query, in any manner whatsoever, you agree to abide by these Terms and Conditions. NOTE: FAILURE TO LOCATE A RECORD IN THE WHOIS DATABASE IS NOT INDICATIVE OF THE AVAILABILITY OF A DOMAIN NAME.
 
@@ -1049,7 +1049,7 @@ This whois service is provided by GMO Registry and only contains
 information pertaining to Internet domain names we have registered for
 our customers. By using this service you are agreeing (1) not to use any
 information presented here for any purpose other than determining
-ownership of domain names, (2) not to store or reproduce this data in 
+ownership of domain names, (2) not to store or reproduce this data in
 any way, (3) not to use any high-volume, automated, electronic processes
 to obtain data from this service. Abuse of this service is monitored and
 actions in contravention of these terms will result in being permanently
@@ -1114,12 +1114,12 @@ Registrant Organization: Zodiac
 Registrant Street: Block B Unit 403Horizon International Tower No. 6 Zhichun Road
 Registrant City: Haidian
 Registrant State/Province: Beijing
-Registrant Postal Code: 
+Registrant Postal Code:
 Registrant Country: CN
 Registrant Phone: +86.01082961269
-Registrant Phone Ext: 
+Registrant Phone Ext:
 Registrant Fax: +86.01082961219
-Registrant Fax Ext: 
+Registrant Fax Ext:
 Registrant Email: eugene.li@zodiac-corp.com
 Admin ID: registry-wang
 Admin Name: Eugene Li
@@ -1127,12 +1127,12 @@ Admin Organization: Zodiac
 Admin Street: Block B Unit 403Horizon International Tower No. 6 Zhichun Road
 Admin City: Haidian
 Admin State/Province: Beijing
-Admin Postal Code: 
+Admin Postal Code:
 Admin Country: CN
 Admin Phone: +86.01082961269
-Admin Phone Ext: 
+Admin Phone Ext:
 Admin Fax: +86.01082961219
-Admin Fax Ext: 
+Admin Fax Ext:
 Admin Email: eugene.li@zodiac-corp.com
 Tech ID: registry-wang
 Tech Name: Eugene Li
@@ -1140,12 +1140,12 @@ Tech Organization: Zodiac
 Tech Street: Block B Unit 403Horizon International Tower No. 6 Zhichun Road
 Tech City: Haidian
 Tech State/Province: Beijing
-Tech Postal Code: 
+Tech Postal Code:
 Tech Country: CN
 Tech Phone: +86.01082961269
-Tech Phone Ext: 
+Tech Phone Ext:
 Tech Fax: +86.01082961219
-Tech Fax Ext: 
+Tech Fax Ext:
 Tech Email: eugene.li@zodiac-corp.com
 Name Server: gns2.zdnscloud.net.cn
 Name Server: lns1.zdnscloud.info
@@ -1259,7 +1259,7 @@ Name Server: ns1.key-systems.net
 Name Server: ns2.key-systems.net
 Name Server: ns3.key-systems.net
 DNSSEC: signedDelegation
->>> Last update of WHOIS database: 2014-06-19T12:26:09Z <<< 
+>>> Last update of WHOIS database: 2014-06-19T12:26:09Z <<<
 
 ; This data is provided by DESI REGISTRY for information purposes only in
 ; accordance with the DESI REGISTRY TLD Privacy Policy. It is intended to
@@ -1319,7 +1319,7 @@ is($r->org(),'Desi Networks LLC','domain_info get_info (contact) registrant org'
 ####################################################################################################
 # Minds And Machines
 $R2='Domain ID: 4702-Minds
-Domain Name: nic.vip
+Domain Name: nic.budapest
 WHOIS Server: whois-dub.mm-registry.com
 Updated Date: 2014-06-17T12:56:22Z
 Creation Date: 2014-04-23T03:05:36Z
@@ -1333,13 +1333,13 @@ Registrant Name: Caspar Veltheim
 Registrant Organization: Bayern Connect GmbH
 Registrant Street: Antonienstrasse 3
 Registrant City: Munich
-Registrant State/Province: 
+Registrant State/Province:
 Registrant Postal Code: 80802
 Registrant Country: DE
 Registrant Phone: +49.8936035104
-Registrant Phone Ext: 
-Registrant Fax: 
-Registrant Fax Ext: 
+Registrant Phone Ext:
+Registrant Fax:
+Registrant Fax Ext:
 Registrant Email: info@bayernconnect.de
 
 Admin ID: 26416-Minds
@@ -1347,13 +1347,13 @@ Admin Name: Caspar Veltheim
 Admin Organization: Bayern Connect GmbH
 Admin Street: Antonienstrasse 3
 Admin City: Munich
-Admin State/Province: 
+Admin State/Province:
 Admin Postal Code: 80802
 Admin Country: DE
 Admin Phone: +49.8936035104
-Admin Phone Ext: 
-Admin Fax: 
-Admin Fax Ext: 
+Admin Phone Ext:
+Admin Fax:
+Admin Fax Ext:
 Admin Email: info@bayernconnect.de
 
 Tech ID: 102-Minds
@@ -1361,17 +1361,17 @@ Tech Name: Support
 Tech Organization: Minds + Machines Ltd
 Tech Street: 32 Nassau
 Tech City: Dublin 2
-Tech State/Province: 
-Tech Postal Code: 
+Tech State/Province:
+Tech Postal Code:
 Tech Country: IE
-Tech Phone: 
-Tech Phone Ext: 
-Tech Fax: 
-Tech Fax Ext: 
+Tech Phone:
+Tech Phone Ext:
+Tech Fax:
+Tech Fax Ext:
 Tech Email: support@mm-registry.com
 
-Name Server: a.ns.nic.vip
-Name Server: b.ns.nic.vip
+Name Server: a.ns.nic.budapest
+Name Server: b.ns.nic.budapest
 
 DNSSEC: signedDelegation
 
@@ -1381,10 +1381,10 @@ TERMS OF USE: The whois information provided on this site is intended to provide
 
 $dri->add_registry('NGTLD',{provider=>'mam'});
 $dri->target('mam')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.vip');
+$rc = $dri->domain_info('nic.budapest');
 is($rc->is_success(),1,'Minds And Machines domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.vip','domain_info get_info (name)');
+is($dri->get_info('name'),'nic.budapest','domain_info get_info (name)');
 is($dri->get_info('id'),'4702-Minds','domain_info get_info (id)');
 is($dri->get_info('clName'),'M+M Registry Admin','domain_info get_info (clName)');
 is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
@@ -1400,7 +1400,7 @@ is($dri->get_info('wuDate'),'2014-06-19T01:20:15','domain_info get_info (wuDate)
 $h=$dri->get_info('ns');
 isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
 @hs=$h->get_names();
-is_deeply(\@hs,['a.ns.nic.vip','b.ns.nic.vip'],'domain_info get_info (ns) get_names');
+is_deeply(\@hs,['a.ns.nic.budapest','b.ns.nic.budapest'],'domain_info get_info (ns) get_names');
 $c=$dri->get_info('contact');
 isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
 is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
@@ -1433,9 +1433,9 @@ Registrant State/Province: RJ
 Registrant Postal Code: 20210-030
 Registrant Country: BR
 Registrant Phone: +55.2139711818
-Registrant Phone Ext: 
-Registrant Fax: 
-Registrant Fax Ext: 
+Registrant Phone Ext:
+Registrant Fax:
+Registrant Fax Ext:
 Registrant Email: gtlds-rio@registro.br
 Admin ID: C4-R3
 Admin Name: Empresa Municipal de Informatica SA - IPLANRIO
@@ -1446,9 +1446,9 @@ Admin State/Province: RJ
 Admin Postal Code: 20210-030
 Admin Country: BR
 Admin Phone: +55.2139711818
-Admin Phone Ext: 
-Admin Fax: 
-Admin Fax Ext: 
+Admin Phone Ext:
+Admin Fax:
+Admin Fax Ext:
 Admin Email: gtlds-rio@registro.br
 Tech ID: C4-R3
 Tech Name: Empresa Municipal de Informatica SA - IPLANRIO
@@ -1459,9 +1459,9 @@ Tech State/Province: RJ
 Tech Postal Code: 20210-030
 Tech Country: BR
 Tech Phone: +55.2139711818
-Tech Phone Ext: 
-Tech Fax: 
-Tech Fax Ext: 
+Tech Phone Ext:
+Tech Fax:
+Tech Fax Ext:
 Tech Email: gtlds-rio@registro.br
 Name Server: ns.dns.br
 Name Server: ns2.dns.br
@@ -1477,12 +1477,12 @@ DS Check Status: 2014-12-01T11:05:42Z DSOK
 % repackaging, modification, comercialization or
 % reproduction, in particular, to use it for advertising or
 % any similar purpose;
-% 
+%
 % Any prohibited use or harvesting, may cause, without
 % previous warning, access restriction, without prejudice
 % of future legal action.
 %
-% For more information on Whois status codes, please visit 
+% For more information on Whois status codes, please visit
 % https://www.icann.org/resources/pages/epp-status-codes-2014-06-16-en
 ';
 
@@ -1769,9 +1769,9 @@ Registrant State/Province:VA
 Registrant Postal Code:20190
 Registrant Country:US
 Registrant Phone:+1.7038895778
-Registrant Phone Ext: 
+Registrant Phone Ext:
 Registrant Fax: +1.7038895779
-Registrant Fax Ext: 
+Registrant Fax Ext:
 Registrant Email:support@pir.org
 Admin ID:PC5001-PR
 Admin Name:100-RO Names
@@ -1782,9 +1782,9 @@ Admin State/Province:VA
 Admin Postal Code:20190
 Admin Country:US
 Admin Phone:+1.7038895778
-Admin Phone Ext: 
+Admin Phone Ext:
 Admin Fax: +1.7038895779
-Admin Fax Ext: 
+Admin Fax Ext:
 Admin Email:support@pir.org
 Tech ID:PC5001-PR
 Tech Name:100-RO Names
@@ -1795,23 +1795,23 @@ Tech State/Province:VA
 Tech Postal Code:20190
 Tech Country:US
 Tech Phone:+1.7038895778
-Tech Phone Ext: 
+Tech Phone Ext:
 Tech Fax: +1.7038895779
-Tech Fax Ext: 
+Tech Fax Ext:
 Tech Email:support@pir.org
 Name Server:A0.NIC.XN--NQV7F
 Name Server:A2.NIC.XN--NQV7F
 Name Server:B0.NIC.XN--NQV7F
 Name Server:C0.NIC.XN--NQV7F
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
-Name Server: 
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
+Name Server:
 DNSSEC:Unsigned
 
 Access to Public Interest Registry WHOIS information is provided to assist persons in determining the contents of a domain name registration record in the Public Interest Registry registry database. The data in this record is provided by Public Interest Registry for informational purposes only, and Public Interest Registry does not guarantee its accuracy. This service is intended only for query-based access. You agree that you will use this data only for lawful purposes and that, under no circumstances will you use this data to(a) allow, enable, or otherwise support the transmission by e-mail, telephone, or facsimile of mass unsolicited, commercial advertising or solicitations to entities other than the data recipient\'s own existing customers; or (b) enable high volume, automated, electronic processes that send queries or data to the systems of Registry Operator, a Registrar, or Afilias except as reasonably necessary to register domain names or modify existing registrations. All rights reserved. Public Interest Registry reserves the right to modify these terms at any time. By submitting this query, you agree to abide by this policy.';
@@ -1904,31 +1904,31 @@ Name Server:                  sec2.rcode0.net
 DNSSEC:                       Unsigned
 
 % Copyright (c) 2014 by Dotberlin GmbH & Co. KG (1)
-% 
-% Except for agreed Internet operational purposes, 
-% no part of this information may be reproduced, 
-% stored in a retrieval system, or transmitted, 
-% in any form or by any means, electronic, mechanical, 
-% recording, or otherwise, without prior permission 
-% of Dotberlin GmbH & Co. KG 
-% on behalf of itself and/or the copyright holders. 
-% Any use of this material to target advertising or 
-% similar activities is explicitly forbidden and 
+%
+% Except for agreed Internet operational purposes,
+% no part of this information may be reproduced,
+% stored in a retrieval system, or transmitted,
+% in any form or by any means, electronic, mechanical,
+% recording, or otherwise, without prior permission
+% of Dotberlin GmbH & Co. KG
+% on behalf of itself and/or the copyright holders.
+% Any use of this material to target advertising or
+% similar activities is explicitly forbidden and
 % can be prosecuted.
-% 
-% Furthermore, it is strictly forbidden to use the 
-% Whois database in such a way that jeopardizes or 
-% could jeopardize the stability of the technical systems 
-% of Dotberlin GmbH & Co. KG 
-% under any circumstances. In particular, this includes 
-% any misuse of the Whois database and any use of 
+%
+% Furthermore, it is strictly forbidden to use the
+% Whois database in such a way that jeopardizes or
+% could jeopardize the stability of the technical systems
+% of Dotberlin GmbH & Co. KG
+% under any circumstances. In particular, this includes
+% any misuse of the Whois database and any use of
 % the Whois database which disturbs its operation.
-% 
-% Should the user violate these points, 
-% Dotberlin GmbH & Co. KG reserves the right 
-% to deactivate the Whois database entirely or 
-% partly for the user. Moreover, the user shall 
-% be held liable for any and all damage arising 
+%
+% Should the user violate these points,
+% Dotberlin GmbH & Co. KG reserves the right
+% to deactivate the Whois database entirely or
+% partly for the user. Moreover, the user shall
+% be held liable for any and all damage arising
 % from a violation of these points.
 ';
 
@@ -2048,14 +2048,14 @@ DNSSEC: signedDelegation
 The  WHOIS information provided on this page is intended to provide you
 with relevant contact information for a domain name registrant and the
 identity of certain administrative and technical contacts associated
-with the domain name. 
+with the domain name.
 
 The data in this record is provided by Uniregistry for informational
 purposes only, and it does not guarantee its accuracy. Uniregistry is
 authoritative for whois information in top-level domains it operates
 under contract with the Internet Corporation for Assigned Names and
 Numbers. Whois information from other top-level domains is provided by
-a third-party under license to Uniregistry. 
+a third-party under license to Uniregistry.
 
 This service is intended only for query-based access. By using this
 service, you agree that you will use any data presented only for lawful
@@ -2067,7 +2067,7 @@ or solicitations to entities other than your existing  customers; or
 (b) this service to enable high volume, automated, electronic processes
 that send queries or data to the systems of any Registrar or any
 Registry except as reasonably necessary to register domain names or
-modify existing domain name registrations. 
+modify existing domain name registrations.
 
 Uniregistry reserves the right to modify these terms at any time. By
 submitting this query, you agree to abide by this policy. All rights
@@ -2111,7 +2111,7 @@ is($r->org(),'Uniregistry, Corp','domain_info get_info (contact) registrant org'
 # Verisign
 $R2='Whois Server Version 2.0
 
-Domain names can now be registered with many different competing registrars. 
+Domain names can now be registered with many different competing registrars.
 Go to http://registrar.verisign-grs.com/whois/ for detailed information.
 
    Domain Name: NIC.CAREER
@@ -2167,39 +2167,39 @@ Go to http://registrar.verisign-grs.com/whois/ for detailed information.
 
 >>> Last update of whois database: 2014-07-31T11:02:24Z <<<
 
-NOTICE: The expiration date displayed in this record is the date the 
-registrar\'s sponsorship of the domain name registration in the registry is 
-currently set to expire. This date does not necessarily reflect the 
-expiration date of the domain name registrant\'s agreement with the 
-sponsoring registrar.  Users may consult the sponsoring registrar\'s 
-Whois database to view the registrar\'s reported date of expiration 
+NOTICE: The expiration date displayed in this record is the date the
+registrar\'s sponsorship of the domain name registration in the registry is
+currently set to expire. This date does not necessarily reflect the
+expiration date of the domain name registrant\'s agreement with the
+sponsoring registrar.  Users may consult the sponsoring registrar\'s
+Whois database to view the registrar\'s reported date of expiration
 for this registration.
 
-TERMS OF USE: You are not authorized to access or query our Whois 
-database through the use of electronic processes that are high-volume and 
-automated except as reasonably necessary to register domain names or 
-modify existing registrations; the Data in VeriSign\'s ("VeriSign") Whois 
-database is provided by VeriSign for information purposes only, and to 
-assist persons in obtaining information about or related to a domain name 
-registration record. VeriSign does not guarantee its accuracy. 
-By submitting a Whois query, you agree to abide by the following terms of 
-use: You agree that you may use this Data only for lawful purposes and that 
-under no circumstances will you use this Data to: (1) allow, enable, or 
-otherwise support the transmission of mass unsolicited, commercial 
-advertising or solicitations via e-mail, telephone, or facsimile; or 
-(2) enable high volume, automated, electronic processes that apply to 
-VeriSign (or its computer systems). The compilation, repackaging, 
-dissemination or other use of this Data is expressly prohibited without 
-the prior written consent of VeriSign. You agree not to use electronic 
-processes that are automated and high-volume to access or query the 
-Whois database except as reasonably necessary to register domain names 
-or modify existing registrations. VeriSign reserves the right to restrict 
-your access to the Whois database in its sole discretion to ensure 
-operational stability.  VeriSign may restrict or terminate your access to the 
-Whois database for failure to abide by these terms of use. VeriSign 
-reserves the right to modify these terms at any time. 
+TERMS OF USE: You are not authorized to access or query our Whois
+database through the use of electronic processes that are high-volume and
+automated except as reasonably necessary to register domain names or
+modify existing registrations; the Data in VeriSign\'s ("VeriSign") Whois
+database is provided by VeriSign for information purposes only, and to
+assist persons in obtaining information about or related to a domain name
+registration record. VeriSign does not guarantee its accuracy.
+By submitting a Whois query, you agree to abide by the following terms of
+use: You agree that you may use this Data only for lawful purposes and that
+under no circumstances will you use this Data to: (1) allow, enable, or
+otherwise support the transmission of mass unsolicited, commercial
+advertising or solicitations via e-mail, telephone, or facsimile; or
+(2) enable high volume, automated, electronic processes that apply to
+VeriSign (or its computer systems). The compilation, repackaging,
+dissemination or other use of this Data is expressly prohibited without
+the prior written consent of VeriSign. You agree not to use electronic
+processes that are automated and high-volume to access or query the
+Whois database except as reasonably necessary to register domain names
+or modify existing registrations. VeriSign reserves the right to restrict
+your access to the Whois database in its sole discretion to ensure
+operational stability.  VeriSign may restrict or terminate your access to the
+Whois database for failure to abide by these terms of use. VeriSign
+reserves the right to modify these terms at any time.
 
-The Registry database contains ONLY .cc, .tv, and .jobs domains 
+The Registry database contains ONLY .cc, .tv, and .jobs domains
 and Registrars.
 ';
 
@@ -2247,63 +2247,63 @@ Updated Date: 2014-09-29T11:32:01Z
 Creation Date: 2014-06-09T08:18:44Z
 Registry Expiry Date: 2998-12-31T22:00:00Z
 Sponsoring Registrar: DNServices
-Sponsoring Registrar IANA ID: 9999 
+Sponsoring Registrar IANA ID: 9999
 Domain Status: Registered until renewal date
 
 Registrant ID: dnservices
 Registrant Name: DNServices
-Registrant Organization: 
-Registrant Street: COZA House Gazelle Close Corporate Park South 
+Registrant Organization:
+Registrant Street: COZA House Gazelle Close Corporate Park South
 Registrant City: Midrand
 Registrant State/Province: Gauteng
 Registrant Postal Code: 1685
 Registrant Country: ZA
 Registrant Phone: Tel: +27.113140077
-Registrant Phone Ext: 
+Registrant Phone Ext:
 Registrant Fax: Fax: None
-Registrant Fax Ext: 
+Registrant Fax Ext:
 Registrant Email: Email: support@dnservices.co.za
 
 Admin ID: dnservices
 Admin Name: DNServices
-Admin Organization: 
-Admin Street: COZA House Gazelle Close Corporate Park South 
+Admin Organization:
+Admin Street: COZA House Gazelle Close Corporate Park South
 Admin City: Midrand
 Admin State/Province: Gauteng
 Admin Postal Code: 1685
 Admin Country: ZA
 Admin Phone: +27.113140077
-Admin Phone Ext: 
-Admin Fax: 
-Admin Fax Ext: 
+Admin Phone Ext:
+Admin Fax:
+Admin Fax Ext:
 Admin Email: support@dnservices.co.za
 
 Billing ID: dnservices
 Billing Name: DNServices
-Billing Organization: 
-Billing Street: COZA House Gazelle Close Corporate Park South 
+Billing Organization:
+Billing Street: COZA House Gazelle Close Corporate Park South
 Billing City: Midrand
 Billing State/Province: Gauteng
 Billing Postal Code: 1685
 Billing Country: ZA
 Billing Phone: +27.113140077
-Billing Phone Ext: 
-Billing Fax: 
-Billing Fax Ext: 
+Billing Phone Ext:
+Billing Fax:
+Billing Fax Ext:
 Billing Email: support@dnservices.co.za
 
 Tech ID: dnservices
 Tech Name: DNServices
-Tech Organization: 
-Tech Street: COZA House Gazelle Close Corporate Park South 
+Tech Organization:
+Tech Street: COZA House Gazelle Close Corporate Park South
 Tech City: Midrand
 Tech State/Province: Gauteng
 Tech Postal Code: 1685
 Tech Country: ZA
 Tech Phone: +27.113140077
-Tech Phone Ext: 
-Tech Fax: 
-Tech Fax Ext: 
+Tech Phone Ext:
+Tech Fax:
+Tech Fax Ext:
 Tech Email: support@dnservices.co.za
 
 
@@ -2327,7 +2327,7 @@ is($dri->get_info('action'),'info','domain_info get_info (action)');
 is($dri->get_info('name'),'nic.joburg','domain_info get_info (name)');
 is($dri->get_info('id'),'dom_C-9999','domain_info get_info (id)');
 is($dri->get_info('clName'),'DNServices','domain_info get_info (clName)');
-is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); 
+is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)');
 is($dri->get_info('clWhois'),'joburg-whois1.registry.net.za','domain_info get_info (clWhois)');
 is($dri->get_info('clWebsite'),undef,'domain_info get_info (clWebsite)');
 $s=$dri->get_info('status');
