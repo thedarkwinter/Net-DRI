@@ -1447,8 +1447,9 @@ sub _build_price_query
  } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::ARI::Price', @{$ndr->protocol()->{loaded_modules}})
  {
    $rd->{price} = exists $rd->{duration} ? {duration => $rd->{duration}} :1;
- } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain', @{$ndr->protocol()->{loaded_modules}})
- {
+ } elsif ( (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain', @{$ndr->protocol()->{loaded_modules}})
+    && ($ndr->protocol()->{current_product} !~ /xn--tckwe|xn--t60b56a|xn--mk1bu44c/i)
+ ) {
    $rd->{premium_domain} = 1;
  } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}})
  {
