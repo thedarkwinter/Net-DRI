@@ -38,7 +38,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'TCI_gTLD'; }
-sub tlds     { return ('xn--d1acj3b', 'tatar', 'xn--1-7sbc5ceg', 'xn--2-7sbc5ceg', 'moscow', 'xn--80adxhks'); }
+sub tlds     { return ('xn--80adxhks', 'xn--d1acj3b', 'tatar', 'moscow'); } # testing : 'xn--1-7sbc5ceg', 'xn--2-7sbc5ceg',
 sub object_types { return ('domain','contact','host'); }
 sub profile_types { return qw/epp/; }
 

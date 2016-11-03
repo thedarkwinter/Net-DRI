@@ -1215,7 +1215,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/ep
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['moscow', 'tatar', 'xn--d1acj3b', 'xn--1-7sbc5ceg', 'xn--2-7sbc5ceg', 'xn--80adxhks'],
+     tlds => ['xn--80adxhks', 'xn--d1acj3b', 'tatar', 'moscow'], # testing : 'xn--1-7sbc5ceg', 'xn--2-7sbc5ceg',
      contact_i18n => 7, # and or ?
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::TCI_gTLD->new(@_); } } ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TCI_gTLD',{}],
