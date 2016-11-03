@@ -31,6 +31,9 @@ sub register_commands
  					create           => [ \&create, undef], 
 					update           => [ \&update, ],
           transfer_request => [ \&transfer_request ],
+          transfer_cancel  => [ \&transfer_cancel,],
+          transfer_answer  => [ \&transfer_answer,],
+          transfer_query   => [ \&transfer_query,],
 					info             => [ undef, \&info_parse ],
          );
 
@@ -38,15 +41,73 @@ sub register_commands
 }
 
 ####################################################################################################
+sub _need_fix_ns
+{
+	my $domain = shift;
+	my @parts = split(/\./, $domain, -1);
+	if (scalar @parts == 2 && ((uc($parts[-1]) eq 'RU') || (uc($parts[-1]) eq 'XN--P1AI')))
+	{
+		return 1;	
+	}
+	return 0;
+}
+
+sub transfer_query
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'query'}],$domain);
+ if (_need_fix_ns($domain))
+ {
+ 	 $mes->{command}->[2] =~ s/1\.0/1.1/g;
+ }
+ push @d,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$rd->{auth}) if Net::DRI::Util::has_auth($rd);
+ $mes->command_body(\@d);
+}
+
+sub transfer_answer
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>(Net::DRI::Util::has_key($rd,'approve') && $rd->{approve})? 'approve' : 'reject'}],$domain);
+ if (_need_fix_ns($domain))
+ {
+ 	 $mes->{command}->[2] =~ s/1\.0/1.1/g;
+ }
+ push @d,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$rd->{auth}) if Net::DRI::Util::has_auth($rd);
+ $mes->command_body(\@d);
+}
+
+sub transfer_cancel
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'cancel'}],$domain);
+ if (_need_fix_ns($domain))
+ {
+ 	 $mes->{command}->[2] =~ s/1\.0/1.1/g;
+ }
+ push @d,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$rd->{auth}) if Net::DRI::Util::has_auth($rd);
+ $mes->command_body(\@d);
+}
 
 sub transfer_request
 {
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
+ if (_need_fix_ns($domain))
+ {
+ 	 $mes->{command}->[2] =~ s/1\.0/1.1/g;
+	 push @d,Net::DRI::Protocol::EPP::Util::build_period($rd->{duration}) if Net::DRI::Util::has_duration($rd);
+	 push @d,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$rd->{auth}) if Net::DRI::Util::has_auth($rd);
+	 $mes->command_body(\@d);
+ }
+ else 
+ {
  push @d,["domain:acID", $rd->{acID}];
  $mes->command_body(\@d);
- return;
+ }
 }
 
 sub create
@@ -93,6 +154,10 @@ sub create
 	}
  }
 
+ if (_need_fix_ns($domain))
+ {
+  push @d,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$rd->{auth}) if Net::DRI::Util::has_auth($rd);
+ }
  $mes->command_body(\@d);
  return;
 }
@@ -125,7 +190,9 @@ sub update
  my $chg=$todo->set('registrant');
  my @chg;
  push @chg,['domain:registrant',$chg->srid()] if Net::DRI::Util::isa_contact($chg);
+ push @d,['domain:chg',@chg] if @chg;
 
+ @chg = ();
  $chg = $todo->set('description');
  if ($chg)
  {
@@ -136,6 +203,13 @@ sub update
  }
 
  push @d,['domain:chg',@chg] if @chg;
+
+ @chg = ();
+ $chg=$todo->set('auth');
+ push @chg,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$chg,1) if ($chg && (ref $chg eq 'HASH') && exists $chg->{pw});
+
+ push @d,['domain:chg',@chg] if @chg;
+ 
  $mes->command_body(\@d);
  return;
 }
@@ -192,7 +266,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
+Copyright (c) 2010-2011,2016 Dmitry Belyavsky <beldmit@gmail.com>
 Copyright (c) 2011-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 

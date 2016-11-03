@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .RU/.SU/.XN--P1AI EPP Extension for Net::DRI
 ##
-## Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
+## Copyright (c) 2010-2011,2016 Dmitry Belyavsky <beldmit@gmail.com>
 ##               2011-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -27,20 +27,30 @@ use Net::DRI::Data::Contact::TCI;
 sub setup
 {
  my ($self,$rp)=@_;
+ $self->set_epp_version($rp);
  $self->ns({ domain    => ['http://www.ripn.net/epp/ripn-domain-1.0', 'ripn-domain-1.0.xsd'],
              _main     => ['http://www.ripn.net/epp/ripn-epp-1.0',    'ripn-epp-1.0.xsd'],
              contact   => ['http://www.ripn.net/epp/ripn-contact-1.0','ripn-contact-1.0.xsd'],
              host      => ['http://www.ripn.net/epp/ripn-host-1.0',   'ripn-host-1.0.xsd'],
              registrar => ['http://www.ripn.net/epp/ripn-registrar-1.0', 'ripn-registrar-1.0.xsd'],
+						 billing   => ['http://www.tcinet.ru/epp/tci-billing-1.0', 'tci-billing-1.0.xsd'],
              secDNS    => ['urn:ietf:params:xml:ns:secDNS-1.1', 'secDNS-1.1.xsd'],
           });
  $self->factories('message',sub { my $m= Net::DRI::Protocol::EPP::Extensions::TCI::Message->new(@_); $m->ns($self->ns()); $m->version($self->version() ); return $m; });
  $self->factories('contact',sub { return Net::DRI::Data::Contact::TCI->new(); });
 
  foreach my $o (qw/contact/) { $self->capabilities('contact_update',$o,['set']); }
+
  foreach my $o (qw/contact description/) { $self->capabilities('domain_update',$o,['set']); }
  foreach my $o (qw/ns/) { $self->capabilities('domain_update',$o,['add', 'del']); }
  return;
+}
+
+sub set_epp_version
+{
+ my ($self,$rp)=@_;
+ my $version=Net::DRI::Util::check_equal($rp->{version},['1.1'],'1.1');
+ $self->version($version);
 }
 
 sub core_modules
@@ -51,7 +61,7 @@ sub core_modules
  return @c;
 }
 
-sub default_extensions { return qw(TCI::Contact TCI::Domain TCI::Registrar SecDNS); }
+sub default_extensions { return qw(TCI::Contact TCI::Domain TCI::Registrar TCI::Billing SecDNS); }
 
 ####################################################################################################
 1;

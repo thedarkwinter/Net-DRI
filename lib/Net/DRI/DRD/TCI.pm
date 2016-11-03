@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .XN--P1AI (РФ)/SU/RU policies
 ##
-## Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
+## Copyright (c) 2010-2011,2016 Dmitry Belyavsky <beldmit@gmail.com>
 ##               2011,2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -36,7 +36,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
 sub name     { return 'TCI'; }
-sub tlds     { return ('xn--p1ai', 'su', 'ru'); }
+sub tlds     { return ('xn--p1ai', 'su', 'ru', 'org.ru', 'net.ru', 'pp.ru'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
@@ -89,6 +89,13 @@ sub registrar_update
 {
  my ($self,$ndr,$reg_id, $toc)=@_;
  my $rc=$ndr->process('registrar','update', [$reg_id, $toc]);
+ return $rc;
+}
+
+sub billing_info
+{
+ my ($self,$ndr,$billing,$rd)=@_;
+ my $rc=$ndr->process('billing','info', [$billing, $rd]);
  return $rc;
 }
 
