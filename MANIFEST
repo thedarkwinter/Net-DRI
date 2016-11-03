@@ -127,6 +127,7 @@ lib/Net/DRI/DRD/MAM.pm
 lib/Net/DRI/DRD/ME.pm
 lib/Net/DRI/DRD/MN.pm
 lib/Net/DRI/DRD/MOBI.pm
+lib/Net/DRI/DRD/MSKIX.pm
 lib/Net/DRI/DRD/MX.pm
 lib/Net/DRI/DRD/MX_GTLD.pm
 lib/Net/DRI/DRD/NAME.pm
@@ -144,11 +145,14 @@ lib/Net/DRI/DRD/PL.pm
 lib/Net/DRI/DRD/PRO.pm
 lib/Net/DRI/DRD/PT.pm
 lib/Net/DRI/DRD/RegBox.pm
+lib/Net/DRI/DRD/RF.pm
+lib/Net/DRI/DRD/RU.pm
 lib/Net/DRI/DRD/SC.pm
 lib/Net/DRI/DRD/SE.pm
 lib/Net/DRI/DRD/SIDN.pm
 lib/Net/DRI/DRD/SIDN_GLTD.pm
 lib/Net/DRI/DRD/SO.pm
+lib/Net/DRI/DRD/SU.pm
 lib/Net/DRI/DRD/SWITCH.pm
 lib/Net/DRI/DRD/TANGO.pm
 lib/Net/DRI/DRD/TCI.pm
@@ -368,6 +372,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/MAM/QualifiedLawyer.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/MSKIX.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/AdmStatus.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/Domain.pm
@@ -418,6 +423,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/RegBox/ServiceMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ResellerInfo.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ResellerObject.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Reverse.pm
+lib/Net/DRI/Protocol/EPP/Extensions/RF.pm
+lib/Net/DRI/Protocol/EPP/Extensions/RU.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SecDNS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ServiceMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN.pm
@@ -427,6 +434,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Host.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN_GTLD.pm
+lib/Net/DRI/Protocol/EPP/Extensions/SU.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SWITCH.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO/Auction.pm
@@ -435,6 +443,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/TANGO/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO/LaunchPhase.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TANGO/Promotion.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI.pm
+lib/Net/DRI/Protocol/EPP/Extensions/TCI/Billing.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI/Message.pm
@@ -442,6 +451,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/TCI/Registrar.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Telnic.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UA/Domain.pm
