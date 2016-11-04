@@ -33,6 +33,7 @@ lib/Net/DRI/Data/Contact/CN.pm
 lib/Net/DRI/Data/Contact/CNNIC.pm
 lib/Net/DRI/Data/Contact/COOP.pm
 lib/Net/DRI/Data/Contact/COZA.pm
+lib/Net/DRI/Data/Contact/CZ.pm
 lib/Net/DRI/Data/Contact/DENIC.pm
 lib/Net/DRI/Data/Contact/DK.pm
 lib/Net/DRI/Data/Contact/ES.pm
@@ -128,6 +129,7 @@ lib/Net/DRI/DRD/ME.pm
 lib/Net/DRI/DRD/MN.pm
 lib/Net/DRI/DRD/MOBI.pm
 lib/Net/DRI/DRD/MSKIX.pm
+lib/Net/DRI/DRD/MW.pm
 lib/Net/DRI/DRD/MX.pm
 lib/Net/DRI/DRD/MX_GTLD.pm
 lib/Net/DRI/DRD/NAME.pm
@@ -307,6 +309,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/COZA/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CZ.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CZ/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CZ/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CZ/KeySET.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CZ/NSSET.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DK.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DK/Contact.pm
@@ -767,6 +770,7 @@ t/Net/DRI/Protocol/EPP/Extensions/LV.t
 t/Net/DRI/Protocol/EPP/Extensions/MAM.t
 t/Net/DRI/Protocol/EPP/Extensions/MAM/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/MOBI/Domain.t
+t/Net/DRI/Protocol/EPP/Extensions/MW.t
 t/Net/DRI/Protocol/EPP/Extensions/MX.t
 t/Net/DRI/Protocol/EPP/Extensions/MX_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/CO.t
