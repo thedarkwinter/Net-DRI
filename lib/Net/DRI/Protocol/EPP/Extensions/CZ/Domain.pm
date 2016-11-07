@@ -87,6 +87,7 @@ sub register_commands {
 sub build_command_transfer {
   my ($mes,$domain,$command)=@_;
   my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>$command}],$domain);
+  push @d,['domain:authInfo', ''];
   return @d;
 }
 
