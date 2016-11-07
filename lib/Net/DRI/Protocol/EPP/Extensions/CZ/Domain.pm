@@ -74,11 +74,21 @@ sub register_commands {
     info    =>   [ \&info, \&info_parse ],
     create    => [ \&create, undef ],
     update    => [ \&update, undef ],
+    transfer_query =>   [ \&transfer_query, undef ],
+    transfer_request => [ \&transfer_request, undef ],
+    transfer_cancel =>  [ \&transfer_cancel, undef ],
+    transfer_answer =>  [ \&transfer_answer, undef ],
   );
   return { 'domain' => \%tmp };
 }
 
 ##################################################################################################
+
+sub build_command_transfer {
+  my ($mes,$domain,$command)=@_;
+  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>$command}],$domain);
+  return @d;
+}
 
 sub build_command {
   my ($msg, $command, $domain, $domainattr) = @_;
@@ -107,6 +117,7 @@ sub build_authinfo {
 }
 
 ####################################################################################################
+
 ########### Query commands
 
 sub info {
@@ -265,6 +276,39 @@ sub update {
 
   $mes->command_body(\@d);
 
+  return;
+}
+
+sub transfer_query {
+  my ($epp, $name, $rd) = @_;
+  my $mes = $epp->message();
+  my @d = build_command_transfer($mes,$name,'query');
+  $mes->command_body(\@d);
+  return;
+}
+
+sub transfer_request {
+  my ($epp, $name, $rd) = @_;
+  my $mes = $epp->message();
+  my @d = build_command_transfer($mes,$name,'request');
+	$mes->command_body(\@d);
+  return;
+}
+
+sub transfer_answer {
+  my ($epp, $name, $rd) = @_;
+  my $mes = $epp->message();
+  my $result = Net::DRI::Util::has_key($rd, 'approve') && $rd->{approve} ? 'approve' : 'reject';
+  my @d = build_command_transfer($mes,$name,$result);
+  $mes->command_body(\@d);
+	return;
+}
+
+sub transfer_cancel {
+  my ($epp, $name, $rd) = @_;
+  my $mes = $epp->message();
+  my @d = build_command_transfer($mes,$name,'cancel');
+	$mes->command_body(\@d);
   return;
 }
 
