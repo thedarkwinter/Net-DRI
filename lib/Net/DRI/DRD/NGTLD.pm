@@ -781,7 +781,7 @@ Collisions: country-collisions
 
  $dri->add_registry('NGTLD',{provider=>'mamsrs'}); # M+M In Partnership 'mamsrs' or 'mampartner'
 
-Uncontested: london review rugby
+Uncontested: review rugby
 
 Contested: basketball music
 
@@ -789,7 +789,7 @@ Contested: basketball music
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['london', 'london-collisions', 'review', 'rugby',
+     tlds => ['london-collisions', 'review', 'rugby',
               'basketball', 'music',
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -925,7 +925,7 @@ abogado bayern beer blog broadway casa cooking fashion fishing fit garden gop ho
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['abogado','bayern','beer','blog','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','law','miami','rodeo','surf','vip','vodka','wedding','work','yoga'],
+     tlds => ['abogado','bayern','beer','blog','bradesco','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','law','london','miami','rodeo','surf','vip','vodka','wedding','work','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','MAM::QualifiedLawyer'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
