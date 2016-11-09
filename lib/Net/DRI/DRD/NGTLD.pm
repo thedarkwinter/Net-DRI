@@ -364,8 +364,6 @@ L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message> urn:ietf:params:xml:ns
 
 L<Net::DRI::Protocol::EPP::Extensions::AllocationToken> urn:ietf:params:xml:ns:allocationToken-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::CentralNIC::Fee> urn:ietf:params:xml:ns:fee-0.6
-
 =head3 Notes
 
 1. ARI's implementation of LaunchPhase (TMCH) differers from the standard, however the units are built to mimic the standard extension's usage
@@ -375,7 +373,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNIC::Fee> urn:ietf:params:xml:ns:f
  return {
      bep_type => 2, # shared registry
      tlds => ['xn--kcrx77d1x4a', 'xn--mgba7c0bbn0a', 'xn--ngbc5azd', 'afl', 'anz', 'barclaycard', 'barclays', 'bond', 'boots', 'bridgestone', 'build', 'cancerresearch', 'cba', 'cloud', 'commbank', 'compare', 'courses', 'cuisinella', 'doha', 'film', 'firestone', 'giving', 'ibm', 'icu', 'iinet', 'iselect', 'krd', 'latrobe', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'mtn', 'netbank', 'olayan', 'olayangroup', 'one', 'philips', 'physio', 'playstation', 'quest', 'sandvik', 'sandvikcoromant', 'saxo', 'schmidt', 'scor', 'seek', 'select', 'seven', 'sony', 'starhub', 'study', 'sucks', 'sydney', 'tab', 'trust', 'virgin', 'vista', 'vistaprint', 'walter', 'woodside', 'wtc'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{custom => ['NeuLevel::Message','CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.6' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{custom => ['NeuLevel::Message','AllocationToken']}],
      whois_server => 'whois.aridnrs.net.au',
    } if $bep eq 'ari';
 
