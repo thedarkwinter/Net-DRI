@@ -92,12 +92,12 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'NEUSTAR'; }
 #sub tlds { return qw/fcfs multi lrclaims gaclaims ga/; } # OT&E
-sub tlds     { 
+sub tlds     {
  my @ro1 = qw/neustar/; # Neustar - is this a single registrant registry?
- my @ro2 = qw/xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible buzz ceo club earth ferrero gucci hoteles hsbc htc kinder moe nyc osaka pharmacy qpon rocher safety taipei teva tube uno whoswho/; # various
+ my @ro2 = qw/xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible ceo club earth ferrero gucci hoteles hsbc htc kinder moe nyc osaka pharmacy qpon rocher safety taipei teva tube uno whoswho/; # various
  my @ro3p1 = qw/accountant bid date download faith loan men review science trade webcam win/; # Famous Four Media - Phase 1
  #my @ro3p1 = qw/music movie/; # Famous Four Media - Phase 2, copy and paste another day! Not sure if these are contended etc...
- return (@ro1,@ro2,@ro3p1); 
+ return (@ro1,@ro2,@ro3p1);
 }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/whois/; }

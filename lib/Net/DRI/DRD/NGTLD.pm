@@ -87,11 +87,11 @@ Donuts is an example of a backend that provides a single platform for all their 
 =head3 Backend providers with dedicated environments
 
 Neustar is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
-e.g: add a custom target name, by default this is the back end provider name, but in this instance we select buzz
+e.g: add a custom target name, by default this is the back end provider name, but in this instance we select tube
 Note, if the name you specified matches one of the TLD's and you have not manually specified the tld list, if will use only this TLD. If the name doesn't match a TLD, it will make all TLD's by the prover available in the DRD
 
- $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'buzz'});
- $dri->target('buzz')->add_current_profile(....);
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'tube'});
+ $dri->target('tube')->add_current_profile(....);
 
 =cut
 
@@ -340,7 +340,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 =head3 TLDs
 
-xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build cancerresearch cba cloud commbank compare courses cuisinella doha film firestone giving ibm icu iinet iselect krd latrobe luxury melbourne men menu monash mtn netbank olayan olayangroup one philips physio playstation quest sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab trust virgin vista vistaprint walter woodside wtc
+xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build buzz cancerresearch cba cloud commbank compare courses cuisinella doha film firestone giving ibm icu iinet iselect krd latrobe luxury melbourne men menu monash mtn netbank olayan olayangroup one philips physio playstation quest sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab trust virgin vista vistaprint walter woodside wtc
 
 Contended TLD's not included
 
@@ -354,11 +354,17 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::IDN> urn:ar:params:xml:ns:idn-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::ARI::Variant> urn:ar:params:xml:ns:variant-1.1
 
-L<Net::DRI::Protocol::EPP::Extensions::ARI::Price> urn:ar:params:xml:ns:price-1.0
+L<Net::DRI::Protocol::EPP::Extensions::ARI::Price> urn:ar:params:xml:ns:price-1.2
 
 L<Net::DRI::Protocol::EPP::Extensions::ARI::KeyValue> urn:X-ar:params:xml:ns:kv-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvail-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message> urn:ietf:params:xml:ns:neulevel-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::AllocationToken> urn:ietf:params:xml:ns:allocationToken-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0 && urn:ietf:params:xml:ns:signedMark-1.0
 
 =head3 Notes
 
@@ -368,7 +374,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xn--kcrx77d1x4a', 'xn--mgba7c0bbn0a', 'xn--ngbc5azd', 'afl', 'anz', 'barclaycard', 'barclays', 'bond', 'boots', 'bridgestone', 'build', 'cancerresearch', 'cba', 'cloud', 'commbank', 'compare', 'courses', 'cuisinella', 'doha', 'film', 'firestone', 'giving', 'ibm', 'icu', 'iinet', 'iselect', 'krd', 'latrobe', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'mtn', 'netbank', 'olayan', 'olayangroup', 'one', 'philips', 'physio', 'playstation', 'quest', 'sandvik', 'sandvikcoromant', 'saxo', 'schmidt', 'scor', 'seek', 'select', 'seven', 'sony', 'starhub', 'study', 'sucks', 'sydney', 'tab', 'trust', 'virgin', 'vista', 'vistaprint', 'walter', 'woodside', 'wtc'],
+     tlds => ['xn--kcrx77d1x4a', 'xn--mgba7c0bbn0a', 'xn--ngbc5azd', 'afl', 'anz', 'barclaycard', 'barclays', 'bond', 'boots', 'bridgestone', 'build', 'buzz', 'cancerresearch', 'cba', 'cloud', 'commbank', 'compare', 'courses', 'cuisinella', 'doha', 'film', 'firestone', 'giving', 'ibm', 'icu', 'iinet', 'iselect', 'krd', 'latrobe', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'mtn', 'netbank', 'olayan', 'olayangroup', 'one', 'philips', 'physio', 'playstation', 'quest', 'sandvik', 'sandvikcoromant', 'saxo', 'schmidt', 'scor', 'seek', 'select', 'seven', 'sony', 'starhub', 'study', 'sucks', 'sydney', 'tab', 'trust', 'virgin', 'vista', 'vistaprint', 'walter', 'woodside', 'wtc'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
      whois_server => 'whois.aridnrs.net.au',
    } if $bep eq 'ari';
@@ -826,7 +832,7 @@ Contested: radio
 
 =head3 TLDs
 
-xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible buzz ceo club earth ferrero gucci hoteles hsbc htc kinder moe nyc osaka pharmacy qpon rocher safety taipei teva tube uno whoswho
+xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible ceo club earth ferrero gucci hoteles hsbc htc kinder moe nyc osaka pharmacy qpon rocher safety taipei teva tube uno whoswho
 
 Contended TLD's not included
 
@@ -867,7 +873,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  ## these use CentralNic::Fee for "Tier 2 pricing model" or no premium extension (CentralNic::Fee is ignored by server)
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'baby', 'bible', 'buzz', 'club', 'ferrero', 'gucci', 'hoteles', 'hsbc', 'htc', 'kinder', 'moe', 'osaka', 'qpon', 'rocher', 'safety', 'taipei', 'teva', 'tube', 'uno', 'whoswho'],
+     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'baby', 'bible', 'club', 'ferrero', 'gucci', 'hoteles', 'hsbc', 'htc', 'kinder', 'moe', 'osaka', 'qpon', 'rocher', 'safety', 'taipei', 'teva', 'tube', 'uno', 'whoswho'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
