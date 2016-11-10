@@ -108,7 +108,7 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'ARI'; }
 
 #sub tlds     { return ('example','xn--mgbh0fb','keyvalue','sunrise','landrush'); } # FIXME : these are OT&E tlds!
-sub tlds     { return qw/xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build cancerresearch cba cloud commbank compare courses cuisinella doha film firestone giving ibm icu iinet iselect krd latrobe luxury melbourne men menu monash mtn netbank olayan olayangroup one philips physio playstation quest sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab trust virgin vista vistaprint walter woodside wtc/; }
+sub tlds     { return qw/xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build buzz cancerresearch cba cloud commbank compare courses cuisinella doha film firestone giving ibm icu iinet iselect krd latrobe luxury melbourne men menu monash mtn netbank olayan olayangroup one philips physio playstation quest sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab trust virgin vista vistaprint walter woodside wtc/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
