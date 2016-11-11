@@ -93,7 +93,7 @@ sub setup {
 }
 
 sub core_contact_types { return ('admin','tech','billing','onsite'); }
-sub default_extensions { return qw/CZ::NSSET CZ::Contact CZ::Domain NSgroup CZ::KeySET/; }
+sub default_extensions { return qw/CZ::NSSET CZ::Contact CZ::Domain NSgroup CZ::KeySET CZ::Message/; }
 
 ####################################################################################################
 1;

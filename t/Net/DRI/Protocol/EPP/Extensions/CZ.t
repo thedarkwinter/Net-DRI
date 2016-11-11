@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 131;
+use Test::More tests => 134;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -440,27 +440,9 @@ is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:i
 
 # NOTE : domain auth elements for transfers are sent as undefined
 
-# domain transfer query
-$ok=eval {
-  $rc = $dri->domain_transfer_query('example201.cz');
-  1;
-};
-
-if (! $ok) {
-  my $err=$@;
-  if (ref $err eq 'Net::DRI::Exception') {
-    die $err->as_string();
-  } else {
-    die $err;
-  }
-}
-
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer op="query"><domain:transfer xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>example201.cz</domain:name><domain:authInfo/></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>','domain_transfer_query build xml');
-is($rc->is_success(), 1, 'domain_transfer_query is_success');
-
 # domain transfer start
 $ok=eval {
-  $rc = $dri->domain_transfer_start('example201.cz');
+  $rc = $dri->domain_transfer_start('example201.cz',{auth => {pw => 'my secret'}});
   1;
 };
 
@@ -473,62 +455,8 @@ if (! $ok) {
   }
 }
 
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer op="request"><domain:transfer xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>example201.cz</domain:name><domain:authInfo/></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>','domain_transfer_start build xml');
+is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer op="request"><domain:transfer xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>example201.cz</domain:name><domain:authInfo>my secret</domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>','domain_transfer_start build xml');
 is($rc->is_success(), 1, 'domain_transfer_start is_success');
-
-# domain transfer stop
-$ok=eval {
-  $rc = $dri->domain_transfer_stop('example201.cz');
-  1;
-};
-
-if (! $ok) {
-  my $err=$@;
-  if (ref $err eq 'Net::DRI::Exception') {
-    die $err->as_string();
-  } else {
-    die $err;
-  }
-}
-
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer op="cancel"><domain:transfer xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>example201.cz</domain:name><domain:authInfo/></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>','domain_transfer_cancel build xml');
-is($rc->is_success(), 1, 'domain_transfer_cancel is_success');
-
-# domain transfer accept
-$ok=eval {
-  $rc = $dri->domain_transfer_accept('example201.cz');
-  1;
-};
-
-if (! $ok) {
-  my $err=$@;
-  if (ref $err eq 'Net::DRI::Exception') {
-    die $err->as_string();
-  } else {
-    die $err;
-  }
-}
-
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer op="approve"><domain:transfer xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>example201.cz</domain:name><domain:authInfo/></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>','domain_transfer_accept build xml');
-is($rc->is_success(), 1, 'domain_transfer_accept is_success');
-
-# domain transfer reject
-$ok=eval {
-  $rc = $dri->domain_transfer_refuse('example201.cz');
-  1;
-};
-
-if (! $ok) {
-  my $err=$@;
-  if (ref $err eq 'Net::DRI::Exception') {
-    die $err->as_string();
-  } else {
-    die $err;
-  }
-}
-
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer op="reject"><domain:transfer xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>example201.cz</domain:name><domain:authInfo/></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>','domain_transfer_refuse build xml');
-is($rc->is_success(), 1, 'domain_transfer_refuse is_success');
 
 ###############################################################################
 ########## NSSET object
@@ -880,5 +808,39 @@ if (! $ok) {
 
 is($rc->is_success(), 1, 'keyset transfer is_success');
 is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer><keyset:transfer xmlns:keyset="http://www.nic.cz/xml/epp/keyset-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/keyset-1.3 keyset-1.3.xsd"><keyset:id>342301</keyset:id><keyset:authInfo>gnagnagna</keyset:authInfo></keyset:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>', 'keyset transfer build xml');
+
+####################################################################################################
+###### Poll operations
+
+# poll: domain transfer in successfully
+$R2 = $E1 . '<response><result code="1301"><msg>Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="456"><qDate>2016-11-08T12:20:33+01:00</qDate><msg><domain:trnData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.1.xsd"><domain:name>david-domain-transfer.cz</domain:name><domain:trDate>2016-11-08</domain:trDate><domain:clID>REG-FRED_B</domain:clID></domain:trnData></msg></msgQ><trID><clTRID>CZ-17802-1478622533737755</clTRID><svTRID>ReqID-0016874197</svTRID></trID></response>' . $E2;
+
+$ok=eval {
+  $rc = $dri->message_retrieve();
+  1;
+};
+
+if (! $ok) {
+  my $err=$@;
+  if (ref $err eq 'Net::DRI::Exception') {
+    die $err->as_string();
+  } else {
+    die $err;
+  }
+}
+
+is($dri->get_info('last_id'),456,'poll: domain transfer message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),456,'poll: domain transfer message get_info last_id 2');
+is($dri->get_info('id','message',456),456,'poll: domain transfer message get_info id');
+is($dri->get_info('qdate','message',456),'2016-11-08T12:20:33','poll: domain transfer message get_info qdate');
+is($dri->get_info('name','message',456),'david-domain-transfer.cz','poll: domain transfer message get_info name');
+is($dri->get_info('trDate','message',456),'2016-11-08','poll: domain transfer message get_info trDate');
+is($dri->get_info('acID','message',456),'REG-FRED_B','poll: domain transfer message get_info clID');
+is($dri->get_info('content','message',456),'<msg><domain:trnData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.1.xsd"><domain:name>david-domain-transfer.cz</domain:name><domain:trDate>2016-11-08</domain:trDate><domain:clID>REG-FRED_B</domain:clID></domain:trnData></msg>','poll: domain transfer message get_info content');
+is($dri->get_info('action','message',456),'transfer','poll: domain transfer message get_info action');
+is($dri->get_info('object_type','message',456),'domain','poll: domain transfer message get_info object_type');
+is($dri->get_info('object_id','message',456),'david-domain-transfer.cz','poll: domain transfer message get_info object_id');
+
+# poll: fred status polls
 
 exit 0;
