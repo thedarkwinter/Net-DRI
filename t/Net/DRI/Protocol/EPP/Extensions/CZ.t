@@ -813,7 +813,7 @@ is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:i
 ###### Poll operations
 
 # poll: domain transfer in successfully
-$R2 = $E1 . '<response><result code="1301"><msg>Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="456"><qDate>2016-11-08T12:20:33+01:00</qDate><msg><domain:trnData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.1.xsd"><domain:name>david-domain-transfer.cz</domain:name><domain:trDate>2016-11-08</domain:trDate><domain:clID>REG-FRED_B</domain:clID></domain:trnData></msg></msgQ><trID><clTRID>CZ-17802-1478622533737755</clTRID><svTRID>ReqID-0016874197</svTRID></trID></response>' . $E2;
+$R2 = $E1 . '<response><result code="1301"><msg>Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="459"><qDate>2016-11-14T13:20:37+01:00</qDate><msg><domain:trnData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.1.xsd"><domain:name>test-transfer-dm2.cz</domain:name><domain:trDate>2016-11-14</domain:trDate><domain:clID>REG-FRED_A</domain:clID></domain:trnData></msg></msgQ><trID><clTRID>CZ-10342-1479126344353681</clTRID><svTRID>ReqID-0016914507</svTRID></trID></response>' . $E2;
 
 $ok=eval {
   $rc = $dri->message_retrieve();
@@ -829,17 +829,17 @@ if (! $ok) {
   }
 }
 
-is($dri->get_info('last_id'),456,'poll: domain transfer message get_info last_id 1');
-is($dri->get_info('last_id','message','session'),456,'poll: domain transfer message get_info last_id 2');
-is($dri->get_info('id','message',456),456,'poll: domain transfer message get_info id');
-is($dri->get_info('qdate','message',456),'2016-11-08T12:20:33','poll: domain transfer message get_info qdate');
-is($dri->get_info('name','message',456),'david-domain-transfer.cz','poll: domain transfer message get_info name');
-is($dri->get_info('trDate','message',456),'2016-11-08','poll: domain transfer message get_info trDate');
-is($dri->get_info('acID','message',456),'REG-FRED_B','poll: domain transfer message get_info clID');
-is($dri->get_info('content','message',456),'<msg><domain:trnData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.1.xsd"><domain:name>david-domain-transfer.cz</domain:name><domain:trDate>2016-11-08</domain:trDate><domain:clID>REG-FRED_B</domain:clID></domain:trnData></msg>','poll: domain transfer message get_info content');
-is($dri->get_info('action','message',456),'transfer','poll: domain transfer message get_info action');
-is($dri->get_info('object_type','message',456),'domain','poll: domain transfer message get_info object_type');
-is($dri->get_info('object_id','message',456),'david-domain-transfer.cz','poll: domain transfer message get_info object_id');
+is($dri->get_info('last_id'),459,'poll: domain transfer message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),459,'poll: domain transfer message get_info last_id 2');
+is($dri->get_info('id','message',459),459,'poll: domain transfer message get_info id');
+is($dri->get_info('qdate','message',459),'2016-11-14T13:20:37','poll: domain transfer message get_info qdate');
+is($dri->get_info('name','message',459),'test-transfer-dm2.cz','poll: domain transfer message get_info name');
+is($dri->get_info('trDate','message',459),'2016-11-14','poll: domain transfer message get_info trDate');
+is($dri->get_info('reID','message',459),'REG-FRED_A','poll: domain transfer message get_info reID');
+is($dri->get_info('content','message',459),'<msg><domain:trnData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.1.xsd"><domain:name>test-transfer-dm2.cz</domain:name><domain:trDate>2016-11-14</domain:trDate><domain:clID>REG-FRED_A</domain:clID></domain:trnData></msg>','poll: domain transfer message get_info content');
+is($dri->get_info('action','message',459),'transfer','poll: domain transfer message get_info action');
+is($dri->get_info('object_type','message',459),'domain','poll: domain transfer message get_info object_type');
+is($dri->get_info('object_id','message',459),'test-transfer-dm2.cz','poll: domain transfer message get_info object_id');
 
 # poll: fred status polls
 

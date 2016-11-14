@@ -90,7 +90,7 @@ sub parse_poll {
             if ($rinfo->{$otype}->{$oname}->{name});
         }
         if ($n eq 'clID') {
-          $rinfo->{$otype}->{$oname}->{acID} = $c->textContent() ? $c->textContent() : '' if ($n);
+          $rinfo->{$otype}->{$oname}->{reID} = $c->textContent() ? $c->textContent() : '' if ($n);
         }
         $rinfo->{$otype}->{$oname}->{$n} = $c->textContent() ? $c->textContent() : '' if ($n);
       }
