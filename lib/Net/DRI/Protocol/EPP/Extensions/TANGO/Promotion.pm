@@ -281,68 +281,68 @@ sub promo_info_parse {
   $oaction='info';
   $oname = $tmp_promo_c; # normally this should be the id of the object you are looking up, but they don't seem to return it
 
-	# separate the promo,utilization and pricing section
-	foreach my $el (Net::DRI::Util::xml_list_children($infdata)) {
-	my ($name,$c)=@$el;
-	  if ($name eq 'promo') {
-	    $proData=$c;
-	  } elsif ($name eq 'pricing') {
-	    $priData=$c;
-	  }
-	foreach my $el (Net::DRI::Util::xml_list_children($proData)) {
-	  my ($name,$c)=@$el;
-	    if ($name eq 'utilization') {
-	      $utiData=$c;
-	    }
-	 }
-	}
+  # separate the promo,utilization and pricing section
+  foreach my $el (Net::DRI::Util::xml_list_children($infdata)) {
+  my ($name,$c)=@$el;
+    if ($name eq 'promo') {
+      $proData=$c;
+    } elsif ($name eq 'pricing') {
+      $priData=$c;
+    }
+  foreach my $el (Net::DRI::Util::xml_list_children($proData)) {
+    my ($name,$c)=@$el;
+      if ($name eq 'utilization') {
+        $utiData=$c;
+      }
+   }
+  }
 
-	# parse promo section ($proData)
-	if ($proData) {
-		$c=$proData->getFirstChild();
-		while($c) {
-			next unless ($c->nodeType() == 1); # element nodes ONLY
-			my $name=$c->localname() || $c->nodeName();
-			next unless $name || $c->getFirstChild();
-			if ($name=~m/^(promotionName)$/) {
-				$name=Net::DRI::Util::remcam($name);
-				$msg->{$oname}->{$name}=$c->getFirstChild()->getData() if (defined $c);
-			} elsif($name=~m/^(validity)$/) {
-				$msg->{$oname}->{$name}->{valid_from} = $po->parse_iso8601($c->getAttribute('from')) if $c->hasAttribute('from');
-				$msg->{$oname}->{$name}->{valid_until} = $po->parse_iso8601($c->getAttribute('to')) if $c->hasAttribute('to');
-			} elsif($name=~m/^(utilization)$/) {
-				$msg->{$oname}->{$name}->{available} = $c->getAttribute('avail') if $c->hasAttribute('avail');
-			}
-		} continue { $c=$c->getNextSibling(); }
-	}
+  # parse promo section ($proData)
+  if ($proData) {
+    $c=$proData->getFirstChild();
+    while($c) {
+      next unless ($c->nodeType() == 1); # element nodes ONLY
+      my $name=$c->localname() || $c->nodeName();
+      next unless $name || $c->getFirstChild();
+      if ($name=~m/^(promotionName)$/) {
+        $name=Net::DRI::Util::remcam($name);
+        $msg->{$oname}->{$name}=$c->getFirstChild()->getData() if (defined $c);
+      } elsif($name=~m/^(validity)$/) {
+        $msg->{$oname}->{$name}->{valid_from} = $po->parse_iso8601($c->getAttribute('from')) if $c->hasAttribute('from');
+        $msg->{$oname}->{$name}->{valid_until} = $po->parse_iso8601($c->getAttribute('to')) if $c->hasAttribute('to');
+      } elsif($name=~m/^(utilization)$/) {
+        $msg->{$oname}->{$name}->{available} = $c->getAttribute('avail') if $c->hasAttribute('avail');
+      }
+    } continue { $c=$c->getNextSibling(); }
+  }
 
-	# parse price section ($priData)
-	if ($priData) {
-	 $c=$priData->getFirstChild();
-	 while($c) {
-	  next unless ($c->nodeType() == 1); # element nodes ONLY
-	  my $name=$c->localname() || $c->nodeName();
-	  next unless $name || $c->getFirstChild();
-	  if ($name=~m/^(total)$/) {
-	    $msg->{$oname}->{$name}->{price} = $c->getAttribute('value') if $c->hasAttribute('value');
-	    $msg->{$oname}->{$name}->{currency} = $c->getAttribute('mu') if $c->hasAttribute('mu');
-	  }
-	 } continue { $c=$c->getNextSibling(); }
-	}
+  # parse price section ($priData)
+  if ($priData) {
+   $c=$priData->getFirstChild();
+   while($c) {
+    next unless ($c->nodeType() == 1); # element nodes ONLY
+    my $name=$c->localname() || $c->nodeName();
+    next unless $name || $c->getFirstChild();
+    if ($name=~m/^(total)$/) {
+      $msg->{$oname}->{$name}->{price} = $c->getAttribute('value') if $c->hasAttribute('value');
+      $msg->{$oname}->{$name}->{currency} = $c->getAttribute('mu') if $c->hasAttribute('mu');
+    }
+   } continue { $c=$c->getNextSibling(); }
+  }
 
-	# parse utilization section ($utiData)
-	if ($utiData) {
-	 $c=$utiData->getFirstChild();
-	 while($c) {
-		next unless ($c->nodeType() == 1); # element nodes ONLY
-		my $name=$c->localname() || $c->nodeName();
-		next unless $name || $c->getFirstChild();
-		if ($name=~m/^(enabled|operations|codeUsable|inValidityPeriod|validDomainName)$/) {
-			$name=Net::DRI::Util::remcam($name);
-			$msg->{$oname}->{utilization}->{$name}=$c->getFirstChild()->getData() if (defined $c);
-		}
-	 } continue { $c=$c->getNextSibling(); }
-	}
+  # parse utilization section ($utiData)
+  if ($utiData) {
+   $c=$utiData->getFirstChild();
+   while($c) {
+    next unless ($c->nodeType() == 1); # element nodes ONLY
+    my $name=$c->localname() || $c->nodeName();
+    next unless $name || $c->getFirstChild();
+    if ($name=~m/^(enabled|operations|codeUsable|inValidityPeriod|validDomainName)$/) {
+      $name=Net::DRI::Util::remcam($name);
+      $msg->{$oname}->{utilization}->{$name}=$c->getFirstChild()->getData() if (defined $c);
+    }
+   } continue { $c=$c->getNextSibling(); }
+  }
 
   $rinfo->{$otype}=$msg;
 

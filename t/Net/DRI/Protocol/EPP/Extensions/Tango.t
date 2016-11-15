@@ -427,15 +427,15 @@ $R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</
 
 # domain promo info details
 my $promo_hash = {
-	domain => {name => 'example.eus'},
-	price => {
-		type => 'create',
-		duration => DateTime::Duration->new(years=>4,months=>6)},
-	ref_date => {
-		rdate => DateTime->new(year=>2016,month=>07,day=>01,hour=>10,minute=>10,second=>0)},
-	lp => {
-		phase => 'custom',
-		sub_phase => 'special-phase'}
+  domain => {name => 'example.eus'},
+  price => {
+    type => 'create',
+    duration => DateTime::Duration->new(years=>4,months=>6)},
+  ref_date => {
+    rdate => DateTime->new(year=>2016,month=>07,day=>01,hour=>10,minute=>10,second=>0)},
+  lp => {
+    phase => 'custom',
+    sub_phase => 'special-phase'}
 }; # for the duration you can use any date time units as long as your TOTAL time is less than 99 months..
 
 $R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><infData xmlns="http://xmlns.tango-rs.net/epp/promotion-info-1.0"><promo><promotionName>Unlimited Creation codes</promotionName><validity from="2016-09-20T13:40:00.000Z" /><utilization avail="true"><enabled>true</enabled><operations>create</operations><codeUsable>true</codeUsable><inValidityPeriod>true</inValidityPeriod><validDomainName>true</validDomainName></utilization></promo><pricing><total mu="EUR" value="25" /></pricing></infData></resData>' . $TRID . '</response>' . $E2;
