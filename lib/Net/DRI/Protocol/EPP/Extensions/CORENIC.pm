@@ -32,7 +32,7 @@ sub setup
   'el' => ['http://xmlns.corenic.net/epp/contact-eligibility-1.0','contact-eligibility-1.0.xsd'],
   'promo' => ['http://xmlns.corenic.net/epp/promotion-1.0','promotion-1.0.xsd'],
   'promo_info' => ['http://xmlns.corenic.net/epp/promotion-info-1.0','promotion-info-1.0.xsd'],
-  'promo_info_r' => ['http://xmlns.domini.cat/epp/promo-1.0','promo-1.0.xsd'],
+  'promo_info_r' => ['http://xmlns.tango-rs.net/epp/promotion-info-1.0','promotion-info-1.0.xsd'],
  });
  $self->capabilities('domain_update','idn',['add','del']);
  $self->capabilities('domain_update','auction',['set']);

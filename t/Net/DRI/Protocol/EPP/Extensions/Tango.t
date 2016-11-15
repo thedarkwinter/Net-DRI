@@ -438,7 +438,7 @@ my $promo_hash = {
 		sub_phase => 'special-phase'}
 }; # for the duration you can use any date time units as long as your TOTAL time is less than 99 months..
 
-# domain promo info command
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><infData xmlns="http://xmlns.tango-rs.net/epp/promotion-info-1.0"><promo><promotionName>Unlimited Creation codes</promotionName><validity from="2016-09-20T13:40:00.000Z" /><utilization avail="true"><enabled>true</enabled><operations>create</operations><codeUsable>true</codeUsable><inValidityPeriod>true</inValidityPeriod><validDomainName>true</validDomainName></utilization></promo><pricing><total mu="EUR" value="25" /></pricing></infData></resData>' . $TRID . '</response>' . $E2;
 $rc=$dri->promo_info('EXAMPLE-PROMO-1231',{promo_data=>$promo_hash});
 is_string($R1,$E1.'<command><info ><promo:info xmlns:promo="http://xmlns.corenic.net/epp/promotion-info-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code><promo:domain><promo:name>example.eus</promo:name></promo:domain><promo:pricing><promo:create><promo:period unit="m">54</promo:period></promo:create></promo:pricing><promo:refdate>2016-07-01T10:10:00.0Z</promo:refdate><promo:phase name="special-phase">custom</promo:phase></promo:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_promo_info build quering promotion details');
 is($rc->is_success(),1,'domain_promo_info is_success quering promotion details');
@@ -451,25 +451,25 @@ my $promo_promotionName = $dri->get_info('promotion_name');
 
 # validity
 is(defined($promo_validity), 1 ,'promo_info get_info(validity) defined');
-is($promo_validity->{'valid_until'},'2015-04-01T00:00:00','promo_info parse (validUntil)');
-is($promo_validity->{'valid_from'},'2015-01-01T00:00:00','promo_info parse (validFrom)');
+is($promo_validity->{'valid_until'},undef,'promo_info parse (validUntil)');
+is($promo_validity->{'valid_from'},'2016-09-20T13:40:00','promo_info parse (validFrom)');
 
 # utilization
 is(defined($promo_utilization), 1 ,'promo_info get_info(utilization) defined');
 is($promo_utilization->{'valid_domain_name'},'true','promo_info parse (validDomainName)');
 is($promo_utilization->{'code_usable'},'true','promo_info parse (codeUsable)');
 is($promo_utilization->{'available'},'true','promo_info parse (available)');
-is($promo_utilization->{'operations'},'create renew','promo_info parse (operations)');
+is($promo_utilization->{'operations'},'create','promo_info parse (operations)');
 is($promo_utilization->{'in_validity_period'},'true','promo_info parse (inValidityPeriod)');
 is($promo_utilization->{'enabled'},'true','promo_info parse (enabled)');
 
 # total
 is(defined($promo_total), 1 ,'promo_info get_info(total) defined');
-is($promo_total->{'price'},'20.00','promo_info parse (price)');
+is($promo_total->{'price'},'25','promo_info parse (price)');
 is($promo_total->{'currency'},'EUR','promo_info parse (currency)');
 
 # promotion name
 is(defined($promo_promotionName), 1 ,'promo_info get_info(promotionName) defined');
-is($promo_promotionName,'Promotion 2015','promo_info parse (promotionName)');
+is($promo_promotionName,'Unlimited Creation codes','promo_info parse (promotionName)');
 
 exit 0;
