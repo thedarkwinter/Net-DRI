@@ -340,7 +340,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 =head3 TLDs
 
-xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build buzz cancerresearch cba cloud commbank compare courses cuisinella doha film firestone giving ibm icu iinet iselect krd latrobe luxury melbourne men menu monash mtn netbank olayan olayangroup one philips physio playstation quest sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab trust virgin vista vistaprint walter woodside wtc
+xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build buzz cancerresearch cartier cba chloe cloud commbank compare courses cuisinella doha ferrero film firestone flickr fox giving gucci hsbc ibm icu iinet iselect iwc jlc kinder kpmg krd latrobe luxury melbourne men menu monash montblanc mtn netbank olayan olayangroup one panerai philips physio piaget playstation quest rocher sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab teva trust virgin vista vistaprint walter watches woodside wtc xn--kpu716f xn--pbt977c yahoo
 
 Contended TLD's not included
 
@@ -374,7 +374,7 @@ L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launc
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xn--kcrx77d1x4a', 'xn--mgba7c0bbn0a', 'xn--ngbc5azd', 'afl', 'anz', 'barclaycard', 'barclays', 'bond', 'boots', 'bridgestone', 'build', 'buzz', 'cancerresearch', 'cba', 'cloud', 'commbank', 'compare', 'courses', 'cuisinella', 'doha', 'film', 'firestone', 'giving', 'ibm', 'icu', 'iinet', 'iselect', 'krd', 'latrobe', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'mtn', 'netbank', 'olayan', 'olayangroup', 'one', 'philips', 'physio', 'playstation', 'quest', 'sandvik', 'sandvikcoromant', 'saxo', 'schmidt', 'scor', 'seek', 'select', 'seven', 'sony', 'starhub', 'study', 'sucks', 'sydney', 'tab', 'trust', 'virgin', 'vista', 'vistaprint', 'walter', 'woodside', 'wtc'],
+     tlds => ['xn--kcrx77d1x4a', 'xn--mgba7c0bbn0a', 'xn--ngbc5azd', 'afl', 'anz', 'barclaycard', 'barclays', 'bond', 'boots', 'bridgestone', 'build', 'buzz', 'cancerresearch', 'cartier', 'cba', 'chloe', 'cloud', 'commbank', 'compare', 'courses', 'cuisinella', 'doha', 'ferrero', 'film', 'firestone', 'flickr', 'fox', 'giving', 'gucci', 'hsbc', 'ibm', 'icu', 'iinet', 'iselect', 'iwc', 'jlc', 'kinder', 'kpmg', 'krd', 'latrobe', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'montblanc', 'mtn', 'netbank', 'olayan', 'olayangroup', 'one', 'panerai', 'philips', 'physio', 'piaget', 'playstation', 'quest', 'rocher', 'sandvik', 'sandvikcoromant', 'saxo', 'schmidt', 'scor', 'seek', 'select', 'seven', 'sony', 'starhub', 'study', 'sucks', 'sydney', 'teva', 'tab', 'trust', 'virgin', 'vista', 'vistaprint', 'walter', 'watches', 'woodside', 'wtc', 'xn--kpu716f', 'xn--pbt977c', 'yahoo'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
      whois_server => 'whois.aridnrs.net.au',
    } if $bep eq 'ari';
@@ -832,7 +832,7 @@ Contested: radio
 
 =head3 TLDs
 
-xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible ceo club earth ferrero gucci hoteles hsbc htc kinder moe nyc osaka pharmacy qpon rocher safety taipei teva tube uno whoswho
+xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible ceo club earth hoteles htc moe nyc osaka pharmacy qpon safety taipei tube uno whoswho
 
 Contended TLD's not included
 
@@ -873,7 +873,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  ## these use CentralNic::Fee for "Tier 2 pricing model" or no premium extension (CentralNic::Fee is ignored by server)
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'baby', 'bible', 'club', 'ferrero', 'gucci', 'hoteles', 'hsbc', 'htc', 'kinder', 'moe', 'osaka', 'qpon', 'rocher', 'safety', 'taipei', 'teva', 'tube', 'uno', 'whoswho'],
+     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'baby', 'bible', 'club', 'hoteles', 'htc', 'moe', 'osaka', 'qpon', 'safety', 'taipei', 'tube', 'uno', 'whoswho'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
