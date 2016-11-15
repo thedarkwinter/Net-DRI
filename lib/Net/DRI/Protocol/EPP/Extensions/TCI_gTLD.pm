@@ -4,6 +4,7 @@ use strict;
 
 use base qw(Net::DRI::Protocol::EPP);
 use Net::DRI::Data::Contact::TCI_gTLD;
+use Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Message;
 
 our $VERSION=do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf("%d".".%02d" x $#r, @r); };
 
@@ -24,9 +25,11 @@ sub setup
  
 
  $self->factories('contact',sub { return Net::DRI::Data::Contact::TCI_gTLD->new(); });
- 
+ $self->factories('message',sub { my $m= Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Message->new(@_); $m->ns($self->ns()); $m->version($self->version() ); return $m; });
+
  foreach my $o (qw/contact/) { $self->capabilities('contact_update',$o,['set']); }
  foreach my $o (qw/description/) { $self->capabilities('domain_update',$o,['set']); }
+ foreach my $o (qw/contact/) { $self->capabilities('domain_update',$o,['set', 'add', 'del']); }
  foreach my $o (qw/ns/) { $self->capabilities('domain_update',$o,['add', 'del']); }
  return;
 }

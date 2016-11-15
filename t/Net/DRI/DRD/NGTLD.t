@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 106;
+use Test::More tests => 108;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -215,6 +215,13 @@ $drd = $dri->{registries}->{teleinfo}->{driver};
 is($rc->is_success(),1,'teleinfo: add_current_profile');
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'disable_idn' => 1, 'brown_fee_version' => '0.9'}],'teleinfo: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase CentralNic::Fee/],'teleinfo: loaded_modules');
+
+# ARI
+$rc = $dri->add_registry('NGTLD',{provider => 'ari'});
+is($rc->{last_registry},'ari','ari: add_registry');
+$rc = $dri->target('ari')->add_current_profile('ari','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{ari}->{driver};
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block/],'ari: loaded_modules');
 
 ####################################################################################################
 #### ngTLD Methods

@@ -68,7 +68,7 @@ sub build_command
 		my $az = $contact[0]->auth();
 		if ($az && ref($az) && exists($az->{pw}))
 		{
-			push(@d, ['contact:authInfo', $az->{pw}]);
+			push(@d, ['contact:authInfo',['contact:pw', $az->{pw}]]);
 		}
 	}
 
@@ -113,7 +113,7 @@ sub info_parse
 			$rinfo->{contact}->{$oname}->{roid}=$contact->roid();
 		} elsif ($name eq 'status')
 		{
-			push @s,Net::DRI::Protocol::EPP::Util::parse_status($c);
+			push @s,Net::DRI::Protocol::EPP::Util::parse_node_status($c);
 		} elsif ($name=~m/^(clID|crID|upID)$/)
 		{
 			$rinfo->{contact}->{$oname}->{$1}=$c->textContent();

@@ -1,4 +1,4 @@
-## Domain Registry Interface, .CZ policies
+## Domain Registry Interface, .MW policies
 ##
 ## Copyright (c) 2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ##           (c) 2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::CZ;
+package Net::DRI::DRD::MW;
 
 use strict;
 use warnings;
@@ -29,7 +29,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::DRD::CZ - .CZ policies for Net::DRI
+Net::DRI::DRD::MW - .MW policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -85,8 +85,8 @@ sub new {
 }
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name          { return 'CZ'; }
-sub tlds          { return ('cz'); }
+sub name          { return 'MW'; }
+sub tlds          { return ('mw',map { $_.'.mw'} qw/com co/); }
 sub object_types  { return ('domain','contact','ns','nsset','keyset'); }
 sub profile_types { return qw/epp/; }
 

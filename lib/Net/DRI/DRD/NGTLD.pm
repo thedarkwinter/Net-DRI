@@ -87,11 +87,11 @@ Donuts is an example of a backend that provides a single platform for all their 
 =head3 Backend providers with dedicated environments
 
 Neustar is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
-e.g: add a custom target name, by default this is the back end provider name, but in this instance we select buzz
+e.g: add a custom target name, by default this is the back end provider name, but in this instance we select tube
 Note, if the name you specified matches one of the TLD's and you have not manually specified the tld list, if will use only this TLD. If the name doesn't match a TLD, it will make all TLD's by the prover available in the DRD
 
- $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'buzz'});
- $dri->target('buzz')->add_current_profile(....);
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'tube'});
+ $dri->target('tube')->add_current_profile(....);
 
 =cut
 
@@ -313,7 +313,7 @@ xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish 
 
 =head3 TLDs
 
-author aws book bot buy call circle fast got jot joy like moi pin read room safe smile song spot talk tunes tushu wanggou xn--1ck2e1b xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--gckr3f0f xn--jvr189m xn--rovu88b yamaxun you zero
+xn--1ck2e1b xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--gckr3f0f xn--jvr189m xn--rovu88b author aws book bot buy call circle fast got imdb jot joy like moi pin prime read room safe smile song spot talk tunes tushu wanggou yamaxun you zappos zero
 
 =head3 Custom extensions
 
@@ -323,7 +323,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['author','aws','book','bot','buy','call','circle','fast','got','jot','joy','like','moi','pin','read','room','safe','smile','song','spot','talk','tunes','tushu','wanggou','xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--gckr3f0f','xn--jvr189m','xn--rovu88b','yamaxun','you','zero'],
+     tlds => ['xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--gckr3f0f','xn--jvr189m','xn--rovu88b','author','aws','book','bot','buy','call','circle','fast','got','imdb','jot','joy','like','moi','pin','prime','read','room','safe','smile','song','spot','talk','tunes','tushu','wanggou','yamaxun','you','zappos','zero'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'amazon';
@@ -340,7 +340,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 =head3 TLDs
 
-xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build cancerresearch cba cloud commbank compare courses cuisinella doha film firestone giving ibm icu iinet iselect krd latrobe luxury melbourne men menu monash mtn netbank olayan olayangroup one philips physio playstation quest sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab trust virgin vista vistaprint walter woodside wtc
+xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build buzz cancerresearch cartier cba chloe cloud commbank compare courses cuisinella doha ferrero film firestone flickr fox giving gucci hsbc ibm icu iinet iselect iwc jlc kinder kpmg krd latrobe luxury melbourne men menu monash montblanc mtn netbank olayan olayangroup one panerai philips physio piaget playstation quest rocher sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab teva trust virgin vista vistaprint walter watches woodside wtc xn--kpu716f xn--pbt977c yahoo
 
 Contended TLD's not included
 
@@ -354,11 +354,17 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::IDN> urn:ar:params:xml:ns:idn-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::ARI::Variant> urn:ar:params:xml:ns:variant-1.1
 
-L<Net::DRI::Protocol::EPP::Extensions::ARI::Price> urn:ar:params:xml:ns:price-1.0
+L<Net::DRI::Protocol::EPP::Extensions::ARI::Price> urn:ar:params:xml:ns:price-1.2
 
 L<Net::DRI::Protocol::EPP::Extensions::ARI::KeyValue> urn:X-ar:params:xml:ns:kv-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvail-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message> urn:ietf:params:xml:ns:neulevel-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::AllocationToken> urn:ietf:params:xml:ns:allocationToken-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0 && urn:ietf:params:xml:ns:signedMark-1.0
 
 =head3 Notes
 
@@ -368,7 +374,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvai
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xn--kcrx77d1x4a', 'xn--mgba7c0bbn0a', 'xn--ngbc5azd', 'afl', 'anz', 'barclaycard', 'barclays', 'bond', 'boots', 'bridgestone', 'build', 'cancerresearch', 'cba', 'cloud', 'commbank', 'compare', 'courses', 'cuisinella', 'doha', 'film', 'firestone', 'giving', 'ibm', 'icu', 'iinet', 'iselect', 'krd', 'latrobe', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'mtn', 'netbank', 'olayan', 'olayangroup', 'one', 'philips', 'physio', 'playstation', 'quest', 'sandvik', 'sandvikcoromant', 'saxo', 'schmidt', 'scor', 'seek', 'select', 'seven', 'sony', 'starhub', 'study', 'sucks', 'sydney', 'tab', 'trust', 'virgin', 'vista', 'vistaprint', 'walter', 'woodside', 'wtc'],
+     tlds => ['xn--kcrx77d1x4a', 'xn--mgba7c0bbn0a', 'xn--ngbc5azd', 'afl', 'anz', 'barclaycard', 'barclays', 'bond', 'boots', 'bridgestone', 'build', 'buzz', 'cancerresearch', 'cartier', 'cba', 'chloe', 'cloud', 'commbank', 'compare', 'courses', 'cuisinella', 'doha', 'ferrero', 'film', 'firestone', 'flickr', 'fox', 'giving', 'gucci', 'hsbc', 'ibm', 'icu', 'iinet', 'iselect', 'iwc', 'jlc', 'kinder', 'kpmg', 'krd', 'latrobe', 'luxury', 'melbourne', 'men', 'menu', 'monash', 'montblanc', 'mtn', 'netbank', 'olayan', 'olayangroup', 'one', 'panerai', 'philips', 'physio', 'piaget', 'playstation', 'quest', 'rocher', 'sandvik', 'sandvikcoromant', 'saxo', 'schmidt', 'scor', 'seek', 'select', 'seven', 'sony', 'starhub', 'study', 'sucks', 'sydney', 'teva', 'tab', 'trust', 'virgin', 'vista', 'vistaprint', 'walter', 'watches', 'woodside', 'wtc', 'xn--kpu716f', 'xn--pbt977c', 'yahoo'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
      whois_server => 'whois.aridnrs.net.au',
    } if $bep eq 'ari';
@@ -537,7 +543,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android boo cal channel chrome dad day 
 
 =head3 TLDs
 
-academy accountants agency apartments architect associates bargains bike bingo boutique builders business cab cafe camera camp capital cards care careers cash casino catering center chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction contractors cool coupons credit creditcard cruises dating deals delivery dental diamonds digital direct directory discount doctor dog domains education email energy engineering enterprises equipment estate events exchange expert exposed express fail farm finance financial fish fitness flights florist football foundation fund furniture fyi gallery gifts gold golf glass gmbh graphics gratis gripe group guide guru healthcare hockey holdings holiday hospital house immo industries institute insure international investments jetzt jewelry kitchen land lease legal life lighting limited limo loans ltd maison management mba marketing media medical memorial money movie network partners parts pets photography photos pictures pizza place plumbing plus productions properties recipes reise reisen rentals repair report restaurant run salon sarl school schule services shoes shopping show singles soccer solar solutions sports style supplies supply support surgery systems tax taxi team technology tennis theater tienda tips tires today tools tours town toys training university vacations ventures viajes villas vin vision voyage watch wine world works wtf xn--czrs0t xn--unup4y xn--vhquv zone
+academy accountants agency apartments architect associates bargains bike bingo boutique builders business cab cafe camera camp capital cards care careers cash casino catering center chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction contractors cool coupons credit creditcard cruises dating deals delivery dental diamonds digital direct directory discount doctor dog domains education email energy engineering enterprises equipment estate events exchange expert exposed express fail farm finance financial fish fitness flights florist football foundation fund furniture fyi gallery gifts gold golf glass gmbh graphics gratis gripe group guide guru healthcare hockey holdings holiday hospital house immo industries institute insure international investments jetzt jewelry kitchen land lease legal life lighting limited limo loans ltd maison management mba marketing media medical memorial money movie network partners parts pets photography photos pictures pizza place plumbing plus productions properties recipes reise reisen rentals repair report restaurant run salon sarl school schule services shoes shopping show singles soccer solar solutions sports style supplies supply support surgery systems tax taxi team technology tennis theater tienda tips tires today tools tours town toys training university vacations ventures viajes villas vin vision voyage watch wine world works wtf xn--czrs0t xn--fjq720a xn--unup4y xn--vhquv zone
 
 =head3 Custom extensions
 
@@ -556,7 +562,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.zone','academy','accountants','agency','apartments','architect','associates','bargains','bike','bingo','boutique','builders','business','cab','cafe','camera','camp','capital','cards','care','careers','cash','casino','catering','center','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','contractors','cool','coupons','credit','creditcard','cruises','dating','deals','delivery','dental','diamonds','digital','direct','directory','discount','doctor','dog','domains','education','email','energy','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','express','fail','farm','finance','financial','fish','fitness','flights','florist','football','foundation','fund','furniture','fyi','gallery','gifts','gold','golf','glass','gmbh','graphics','gratis','gripe','group','guide','guru','healthcare','hockey','holdings','holiday','hospital','house','immo','industries','institute','insure','international','investments','jetzt','jewelry','kitchen','land','lease','legal','life','lighting','limited','limo','loans','ltd','maison','management','mba','marketing','media','medical','memorial','money','movie','network','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','plus','productions','properties','recipes','reise','reisen','rentals','repair','report','restaurant','run','salon','sarl','school','schule','services','shoes','shopping','show','singles','soccer','solar','solutions','sports','style','supplies','supply','support','surgery','systems','tax','taxi','team','technology','tennis','theater','tienda','tips','tires','today','tools','tours','town','toys','training','university','vacations','ventures','viajes','villas','vin','vision','voyage','watch','wine','world','works','wtf','xn--czrs0t','xn--unup4y','xn--vhquv','zone'],
+     tlds => ['dpml.zone','academy','accountants','agency','apartments','architect','associates','bargains','bike','bingo','boutique','builders','business','cab','cafe','camera','camp','capital','cards','care','careers','cash','casino','catering','center','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','contractors','cool','coupons','credit','creditcard','cruises','dating','deals','delivery','dental','diamonds','digital','direct','directory','discount','doctor','dog','domains','education','email','energy','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','express','fail','farm','finance','financial','fish','fitness','flights','florist','football','foundation','fund','furniture','fyi','gallery','gifts','gold','golf','glass','gmbh','graphics','gratis','gripe','group','guide','guru','healthcare','hockey','holdings','holiday','hospital','house','immo','industries','institute','insure','international','investments','jetzt','jewelry','kitchen','land','lease','legal','life','lighting','limited','limo','loans','ltd','maison','management','mba','marketing','media','medical','memorial','money','movie','network','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','plus','productions','properties','recipes','reise','reisen','rentals','repair','report','restaurant','run','salon','sarl','school','schule','services','shoes','shopping','show','singles','soccer','solar','solutions','sports','style','supplies','supply','support','surgery','systems','tax','taxi','team','technology','tennis','theater','tienda','tips','tires','today','tools','tours','town','toys','training','university','vacations','ventures','viajes','villas','vin','vision','voyage','watch','wine','world','works','wtf','xn--czrs0t','xn--fjq720a','xn--unup4y','xn--vhquv','zone'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
      whois_server => 'whois.donuts.co',
      check_limit => 5,
@@ -758,7 +764,7 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: budapest country luxe vip xn--g2xx48c
+Uncontested: budapest country luxe xn--g2xx48c
 
 Contested: app art baby beauty coupon cpa data dds eco gay home hotel inc latino llc realestate
 
@@ -767,7 +773,7 @@ Collisions: country-collisions
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['budapest', 'country', 'luxe', 'vip', 'xn--g2xx48c',
+     tlds => ['budapest', 'country', 'luxe', 'xn--g2xx48c',
               'app', 'art', 'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
               'country-collisions',
              ],
@@ -781,7 +787,7 @@ Collisions: country-collisions
 
  $dri->add_registry('NGTLD',{provider=>'mamsrs'}); # M+M In Partnership 'mamsrs' or 'mampartner'
 
-Uncontested: london review rugby
+Uncontested: review rugby
 
 Contested: basketball music
 
@@ -789,7 +795,7 @@ Contested: basketball music
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['london', 'london-collisions', 'review', 'rugby',
+     tlds => ['london-collisions', 'review', 'rugby',
               'basketball', 'music',
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -826,7 +832,7 @@ Contested: radio
 
 =head3 TLDs
 
-xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible buzz ceo club earth ferrero gucci hoteles hsbc htc kinder moe nyc osaka pharmacy qpon rocher safety taipei teva tube uno whoswho
+xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible ceo club earth hoteles htc moe nyc osaka pharmacy qpon safety taipei tube uno whoswho
 
 Contended TLD's not included
 
@@ -867,7 +873,7 @@ See: L<Net::DRI::Data::Contact::NYC> and L<Net::DRI::Protocol::EPP::Extensions::
  ## these use CentralNic::Fee for "Tier 2 pricing model" or no premium extension (CentralNic::Fee is ignored by server)
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'baby', 'bible', 'buzz', 'club', 'ferrero', 'gucci', 'hoteles', 'hsbc', 'htc', 'kinder', 'moe', 'osaka', 'qpon', 'rocher', 'safety', 'taipei', 'teva', 'tube', 'uno', 'whoswho'],
+     tlds => ['xn--rhqv96g', 'xn--g2xx48c', 'xn--nyqy26a', 'baby', 'bible', 'club', 'hoteles', 'htc', 'moe', 'osaka', 'qpon', 'safety', 'taipei', 'tube', 'uno', 'whoswho'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
@@ -912,7 +918,7 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-abogado bayern beer blog broadway casa cooking fashion fishing fit garden gop horse law miami rodeo surf vodka wedding work yoga
+abogado bayern beer blog broadway casa cooking fashion fishing fit garden gop horse law miami rodeo surf vip vodka wedding work yoga
 
 =cut
 
@@ -925,7 +931,7 @@ abogado bayern beer blog broadway casa cooking fashion fishing fit garden gop ho
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['abogado','bayern','beer','blog','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','law','miami','rodeo','surf','vodka','wedding','work','yoga'],
+     tlds => ['abogado','bayern','beer','blog','bradesco','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','law','london','miami','rodeo','surf','vip','vodka','wedding','work','yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','MAM::QualifiedLawyer'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
@@ -1215,7 +1221,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/ep
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['moscow', 'tatar', 'xn--d1acj3b', 'xn--1-7sbc5ceg', 'xn--2-7sbc5ceg', 'xn--80adxhks'],
+     tlds => ['xn--80adxhks', 'xn--d1acj3b', 'tatar', 'moscow'], # testing : 'xn--1-7sbc5ceg', 'xn--2-7sbc5ceg',
      contact_i18n => 7, # and or ?
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::TCI_gTLD->new(@_); } } ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TCI_gTLD',{}],

@@ -69,7 +69,7 @@ sub update
 	{
 		foreach my $ip (@$ip_add)
 		{
-			push @add, ['registrar:addr', $ip, {'ip' => 'v4'}];
+			push @add, ['registrar:addr', $ip, {"ip" => calc_iptype_attr($ip)}];
 		}
 	}
 
@@ -90,7 +90,7 @@ sub update
 	{
 		foreach my $ip (@$ip_del)
 		{
-			push @del, ['registrar:addr', $ip, {'ip' => 'v4'}];
+			push @del, ['registrar:addr', $ip, {"ip" => calc_iptype_attr($ip)}];
 		}
 	}
 
@@ -220,6 +220,14 @@ sub info_parse
  return;
 }
 
+sub calc_iptype_attr
+{
+  my $ip = shift;
+  if (Net::DRI::Util::is_ipv4($ip)) {return 'v4';}
+  if (Net::DRI::Util::is_ipv6($ip)) {return 'v6';}
+
+  Net::DRI::Exception::usererr_invalid_parameters("IP-address '$ip' is neither IPv4 nor IPv6 adderss");
+}
 ####################################################################################################
 1;
 
@@ -252,7 +260,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
+Copyright (c) 2010-2011,2016 Dmitry Belyavsky <beldmit@gmail.com>
 Copyright (c) 2011-2014 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 

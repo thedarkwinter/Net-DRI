@@ -22,8 +22,8 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_registry('NGTLD',{provider => 'NEUSTAR',name=>'buzz'}); # for testing Fee
-$dri->target('buzz')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('NGTLD',{provider => 'NEUSTAR',name=>'tube'}); # for testing Fee
+$dri->target('tube')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $dri->add_registry('NGTLD',{provider => 'NEUSTAR',name=>'nyc'}); # for testing EXTContact
 $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
@@ -34,7 +34,7 @@ my ($fee,$c,$c2,$toc);
 ## Contact Extensions
 
 # First check it doesn't mess up other Neustar registries
-$dri->target('buzz');
+$dri->target('tube');
 $c = $dri->local_object('contact');
 $c->srid('abcde')->name('abc')->org('abc.org')->street(['123 d street'])->city('reston')->pc(20194)->sp('NY')->cc('US')->fax('+1.2345678901x1234')->email('xxx@yyy.com')->auth({pw => 123456});
 $c->nexus_category('ORG');

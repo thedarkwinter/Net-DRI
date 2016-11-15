@@ -48,13 +48,19 @@ ARI utilises the following standard extensions. Please see the test files for mo
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::ARI::IDN> urn:ar:params:xml:ns:idn-1.0
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::ARI::Variant> urn:ar:params:xml:ns:variant-1.1 
+=head3 L<Net::DRI::Protocol::EPP::Extensions::ARI::Variant> urn:ar:params:xml:ns:variant-1.1
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::ARI::Price> urn:ar:params:xml:ns:price-1.0 
+=head3 L<Net::DRI::Protocol::EPP::Extensions::ARI::Price> urn:ar:params:xml:ns:price-1.2
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::ARI::KeyValue> urn:X-ar:params:xml:ns:kv-1.0
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvail-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::ARI::Block> urn:ar:params:xml:ns:block-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message> urn:ietf:params:xml:ns:neulevel-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::AllocationToken> urn:ietf:params:xml:ns:allocationToken-1.0
 
 =head1 SUPPORT
 
@@ -102,7 +108,7 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'ARI'; }
 
 #sub tlds     { return ('example','xn--mgbh0fb','keyvalue','sunrise','landrush'); } # FIXME : these are OT&E tlds!
-sub tlds     { return qw/xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build cancerresearch cba cloud commbank compare courses cuisinella doha film firestone giving ibm icu iinet iselect krd latrobe luxury melbourne men menu monash mtn netbank olayan olayangroup one philips physio playstation quest sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab trust virgin vista vistaprint walter woodside wtc/; }
+sub tlds     { return qw/xn--kcrx77d1x4a xn--mgba7c0bbn0a xn--ngbc5azd afl anz barclaycard barclays bond boots bridgestone build buzz cancerresearch cartier cba chloe cloud commbank compare courses cuisinella doha ferrero film firestone flickr fox giving gucci hsbc ibm icu iinet iselect iwc jlc kinder kpmg krd latrobe luxury melbourne men menu monash montblanc mtn netbank olayan olayangroup one panerai philips physio piaget playstation quest rocher sandvik sandvikcoromant saxo schmidt scor seek select seven sony starhub study sucks sydney tab teva trust virgin vista vistaprint walter watches woodside wtc xn--kpu716f xn--pbt977c yahoo/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
