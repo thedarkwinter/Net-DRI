@@ -1298,7 +1298,7 @@ sub domain_transfer_quarantine
 sub domain_transfer_quarantine_start { my ($self,$ndr,$domain,$rd)=@_; return $self->domain_transfer_quarantine($ndr,$domain,'start',$rd); }
 sub domain_transfer_quarantine_stop  { my ($self,$ndr,$domain,$rd)=@_; return $self->domain_transfer_quarantine($ndr,$domain,'stop',$rd); }
 
-## nsgroup_* + keygroup_* 
+## nsgroup_* + keygroup_*
 ## For BE EUrid
 sub nsgroup_create
 {
@@ -1492,7 +1492,7 @@ sub domain_check_claims
   # By default, most registries do NOT use a sub_phase is claims lookups. Therefore if you specify a phase it will be ignored
   # Afilias/ARI/CentralNIC/CoreNic/CRR/Donuts/GMO/KS/PIR/RegBox/Rightside/StartingDot/Tango/UniRegistry
 
-  # These registres use claims as phase + phase_name us sub_phase. domain_check_claims('test-validate.buzz',{phase=>'landrush'});
+  # These registres use claims as phase + phase_name us sub_phase. domain_check_claims('test-validate.tube',{phase=>'landrush'});
   # Neustar/MAM/FFM/KNet/Amazon   (Knet seems to work either way - but rather put it here)
   $lp->{sub_phase} = $rd->{phase} if ($bep =~ m/^(?:neustar|mam|ffm|knet|amazon)/);
   # i think there is much more to do here
