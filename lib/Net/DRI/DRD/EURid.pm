@@ -120,7 +120,7 @@ sub verify_name_domain
 # {
 #  my ($self,$ndr,$domain,$rd)=@_;
 #  $self->enforce_domain_name_constraints($ndr,$domain,'check_contact_for_transfer');
-# 
+#
 #  my $rc=$ndr->process('domain','check_contact_for_transfer',[$domain,$rd]);
 #  return $rc;
 # }
@@ -136,7 +136,7 @@ sub registrar_info
 # {
 #  my ($self,$ndr,$domain,$rd)=@_;
 #  $self->enforce_domain_name_constraints($ndr,$domain,'remind');
-# 
+#
 #  my $rc=$ndr->process('domain','remind',[$domain,$rd]);
 #  return $rc;
 # }

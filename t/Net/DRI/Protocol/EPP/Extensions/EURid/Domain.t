@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 123;
+use Test::More tests => 130;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -58,20 +58,14 @@ is($dri->get_info('exist_reason','domain','some-domain-info-1349951245.eu'),'in 
 is($dri->get_info('exist','domain','some-domain-info-1349951246.eu'),1,'domain_check get_info(exist)');
 is($dri->get_info('exist_reason','domain','some-domain-info-1349951246.eu'),'quarantine','domain_check get_info(exist_reason)');
 $d=$dri->get_info('availableDate','domain','some-domain-info-1349951246.eu');
-SKIP: { ## TODO
-  skip 'TODO: availableDate (domain-ext) not yet parsed on domain_check',2;
-  isa_ok($d,'DateTime','domain_check get_info(availableDate)');
-  is(''.$d,'2014-10-23T16:11:55','domain_check get_info(availableDate) value');
-};
+isa_ok($d,'DateTime','domain_check get_info(availableDate)');
+is(''.$d,'2014-10-23T13:52:13','domain_check get_info(availableDate) value');
 is($dri->get_info('exist','domain','andalucia.eu'),1,'domain_check get_info(exist)');
 is($dri->get_info('exist_reason','domain','andalucia.eu'),'reserved','domain_check get_info(exist_reason)');
 is($dri->get_info('exist','domain','andalucía.eu'),1,'domain_check get_info(exist)');
 is($dri->get_info('exist_reason','domain','andalucía.eu'),'reserved','domain_check get_info(exist_reason)');
 is($dri->get_info('name_ace','domain','andalucía.eu'),'xn--andaluca-i2a.eu','domain_check get_info(name_ace)');
-SKIP: { ## TODO
-  skip 'TODO: ace (idn) not yet parsed on domain_check',1;
-  is($dri->get_info('ace','domain','andalucía.eu'),'xn--andaluca-i2a.eu','domain_check get_info(ace)');
-};
+is($dri->get_info('ace','domain','andalucía.eu'),'xn--andaluca-i2a.eu','domain_check get_info(ace)');
 is($dri->get_info('exist','domain','agias.eu'),1,'domain_check get_info(exist)');
 is($dri->get_info('exist_reason','domain','agias.eu'),'blocked','domain_check get_info(exist_reason)');
 is($dri->get_info('exist','domain','rey-españa.eu'),1,'domain_check get_info(exist)');
@@ -92,12 +86,21 @@ $rc=$dri->domain_check('europa.eu');
 is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>europa.eu</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command></epp>','domain_check build');
 is($rc->is_success(),1,'domain_check is_success');
 $s=$dri->get_info('status');
-SKIP: { ## TODO
-  skip 'TODO: status (domain-ext) not yet parsed on domain_check',2;
-  isa_ok($s,'Net::DRI::Data::StatusList','domain_check get_info(status)');
-  is_deeply([$s->list_status()],['serverTransferProhibited'],'domain_check get_info(status) list');
-};
+isa_ok($s,'Net::DRI::Data::StatusList','domain_check get_info(status)');
+is_deeply([$s->list_status()],['serverTransferProhibited'],'domain_check get_info(status) list');
 
+## 2.2.1/domains/domain-check/domain-check03-resp.xml
+# homoglyphs!
+$dri->cache_clear();
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="false">123.ею</domain:name><domain:reason lang="en">homoglyph blocked</domain:reason></domain:cd><domain:cd><domain:name avail="false">xn--80aicaztaaflfnmi8azba8ddf.xn--e1a4c</domain:name><domain:reason lang="en">suspended on hold</domain:reason></domain:cd></domain:chkData></resData><extension xmlns:homoglyph="http://www.eurid.eu/xml/epp/homoglyph-1.0" xmlns:idn="http://www.eurid.eu/xml/epp/idn-1.0"><idn:mapping><idn:name><idn:ace>123.xn--e1a4c</idn:ace><idn:unicode>123.ею</idn:unicode></idn:name><idn:name><idn:ace>xn--80aicaztaaflfnmi8azba8ddf.xn--e1a4c</idn:ace><idn:unicode>аырхеытсеччыкодпннтн.ею</idn:unicode></idn:name></idn:mapping><homoglyph:chkData><homoglyph:domain><homoglyph:name>123.ею</homoglyph:name><homoglyph:blockedBy>123.eu</homoglyph:blockedBy></homoglyph:domain></homoglyph:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('123.xn--e1a4c','xn--80aicaztaaflfnmi8azba8ddf.xn--e1a4c');
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>123.xn--e1a4c</domain:name><domain:name>xn--80aicaztaaflfnmi8azba8ddf.xn--e1a4c</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command></epp>','domain_check build');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('exist', 'domain', 'xn--80aicaztaaflfnmi8azba8ddf.xn--e1a4c'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','xn--80aicaztaaflfnmi8azba8ddf.xn--e1a4c'),'suspended on hold','domain_check get_info(exist_reason)');
+is($dri->get_info('exist', 'domain', '123.ею'),1,'domain_check get_info(exist)');
+is($dri->get_info('exist_reason','domain','123.ею'),'homoglyph blocked','domain_check get_info(exist_reason)');
+is($dri->get_info('blocked_by','domain','123.ею'),'123.eu','domain_check get_info(blocked by)'); # homoglyph
 
 ########################################################################################################
 ### DOMAIN_INFO
@@ -377,6 +380,8 @@ is($dri->get_info('unicode'),'some-domain-nãme.eu','domain_transfer_start  get_
 ## 2.1.09/domains/domain-transfer/domain-transfer04-cmd.xml
 # Transfer of domain, transfer with pending action
 ## Note, transfer_from_quarantine was removed a long time ago, its just a transfer now
+
+
 
 ########################################################################################################
 ### FINISHED?

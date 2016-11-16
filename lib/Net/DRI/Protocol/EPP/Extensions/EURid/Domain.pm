@@ -78,6 +78,8 @@ sub register_commands
           transfer_request  => [ \&transfer_request, undef ],
           #transfer_query   => [ undef, \&transfer_parse ], # TODO domain-ext 1.1 also adds trnData element
           renew             => [ undef, \&renew_parse ],
+          check             => [ undef, \&check_parse ],
+          check_multi             => [ undef, \&check_parse ],
          );
 
  return { 'domain' => \%tmp };
@@ -90,7 +92,7 @@ sub setup
  {
   $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.1',$ns.'-2.1.xsd' ] });
  }
- foreach my $ns (qw/authInfo/)
+ foreach my $ns (qw/authInfo homoglyph/)
  {
   $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.0',$ns.'-1.0.xsd' ] });
  }
@@ -252,28 +254,51 @@ sub check_parse
  return unless $mes->is_success();
 
  my $chkdata=$mes->get_extension('domain-ext','chkData');
- return unless defined $chkdata;
-
- my $ns=$mes->ns('domain-ext');
- foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'domain'))
+ if (defined $chkdata)
  {
-  my $domain;
-  foreach my $el (Net::DRI::Util::xml_list_children($cd))
-  {
-   my ($n,$c)=@$el;
-   if ($n eq 'name')
+   my $ns=$mes->ns('domain-ext');
+   foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'domain'))
    {
-    $domain=lc $c->textContent();
-    $rinfo->{domain}->{$domain}->{action}='check';
-   } elsif ($n eq 'availableDate')
-   {
-    $rinfo->{domain}->{$domain}->{availableDate}=$po->parse_iso8601($c->textContent());
-   } elsif ($n eq 'status')
-   {
-    $rinfo->{domain}->{$domain}->{status}=$po->create_local_object('status')->add(Net::DRI::Protocol::EPP::Util::parse_node_status($c));
+    my $domain;
+    foreach my $el (Net::DRI::Util::xml_list_children($cd))
+    {
+     my ($n,$c)=@$el;
+     if ($n eq 'name')
+     {
+      $domain=lc $c->textContent();
+      $rinfo->{domain}->{$domain}->{action}='check';
+     } elsif ($n eq 'availableDate')
+     {
+      $rinfo->{domain}->{$domain}->{availableDate}=$po->parse_iso8601($c->textContent());
+     } elsif ($n eq 'status')
+     {
+      $rinfo->{domain}->{$domain}->{status}=$po->create_local_object('status')->add(Net::DRI::Protocol::EPP::Util::parse_node_status($c));
+     }
+    }
    }
-  }
  }
+
+ $chkdata=$mes->get_extension('homoglyph','chkData');
+ if (defined $chkdata)
+ {
+   my $ns=$mes->ns('homoglyph');
+   foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'domain'))
+   {
+     my $domain;
+     foreach my $el (Net::DRI::Util::xml_list_children($cd))
+     {
+      my ($n,$c)=@$el;
+      if ($n eq 'name')
+      {
+       $domain=lc $c->textContent();
+      } elsif ($n eq 'blockedBy')
+      {
+       $rinfo->{domain}->{$domain}->{blocked_by} = $c->textContent();
+      }
+     }
+   }
+ }
+
  return;
 }
 
