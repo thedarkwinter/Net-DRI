@@ -88,7 +88,7 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/domain-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.0',$ns.'-2.0.xsd' ] });
+  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.1',$ns.'-2.1.xsd' ] });
  }
  foreach my $ns (qw/authInfo/)
  {
@@ -201,6 +201,9 @@ sub info_parse
   } elsif ($name=~m/^(availableDate|deletionDate)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$po->parse_iso8601($c->textContent());
+  } elsif ($name eq 'delayed')
+  {
+   $rinfo->{domain}->{$oname}->{$name} = Net::DRI::Util::xml_parse_boolean($c->textContent());
   } elsif ($name eq 'contact')
   {
    $contact->add($po->create_local_object('contact')->srid($c->textContent()),$c->getAttribute('type'));
