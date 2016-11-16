@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2005,2007-2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>.
-##               2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##               2015-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -27,7 +27,7 @@ use Net::DRI::Data::Contact::EURid;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::EURid - EURid (.EU) EPP extensions (documentation 2.1.09) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::EURid - EURid (.EU) EPP extensions (documentation 2.1.1) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -53,6 +53,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 Copyright (c) 2005,2007-2012 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
+              2015-2106 Michael Holloway <michael@@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

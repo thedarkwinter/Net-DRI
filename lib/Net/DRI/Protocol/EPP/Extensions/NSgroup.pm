@@ -74,7 +74,7 @@ sub register_commands
           );
 
  $tmp1{check_multi}=$tmp1{check};
- 
+
  return { 'nsgroup' => \%tmp1 };
 }
 
@@ -162,7 +162,10 @@ sub check_parse
     $nsgroup=$c->textContent();
     $rinfo->{nsgroup}->{$nsgroup}->{exist}=1-Net::DRI::Util::xml_parse_boolean($c->getAttribute('avail'));
     $rinfo->{nsgroup}->{$nsgroup}->{action}='check';
-   }
+  } elsif ($n eq 'reason')
+  {
+    $rinfo->{nsgroup}->{$nsgroup}->{exist_reason}=$c->textContent();
+  }
   }
  }
  return;
@@ -170,9 +173,10 @@ sub check_parse
 
 sub info
 {
- my ($epp,$hosts)=@_;
+ my ($epp,$hosts,$rd)=@_;
  my $mes=$epp->message();
  my @d=build_command($epp,$mes,'info',$hosts);
+ push @d, ['nsgroup:authInfo', ['nsgroup:pw', $rd->{auth}->{pw}, exists($rd->{auth}->{roid})? { 'roid' => $rd->{auth}->{roid} } : undef]] if (exists $rd->{auth} && exists $rd->{auth}->{pw});
  $mes->command_body(\@d);
  return;
 }

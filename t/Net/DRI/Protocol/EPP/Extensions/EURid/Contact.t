@@ -10,7 +10,6 @@ use DateTime;
 use DateTime::Duration;
 use Encode;
 
-use Test::More skip_all => 'EURid/Contact tests need reviewing!';
 use Test::More tests => 48;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
