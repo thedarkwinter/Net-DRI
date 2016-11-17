@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 536;
+use Test::More tests => 541;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -121,6 +121,7 @@ use_ok('Net::DRI::DRD::MSKIX');
 use_ok('Net::DRI::DRD::RU');
 use_ok('Net::DRI::DRD::RF');
 use_ok('Net::DRI::DRD::SU');
+use_ok('Net::DRI::DRD::RO');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
 use_ok('Net::DRI::Data::Changes');
@@ -169,6 +170,7 @@ use_ok('Net::DRI::Data::Contact::TANGO');
 use_ok('Net::DRI::Data::Contact::MAM');
 use_ok('Net::DRI::Data::Contact::CN');
 use_ok('Net::DRI::Data::Contact::CZ');
+use_ok('Net::DRI::Data::Contact::RO');
 use_ok('Net::DRI::Data::LanguageTag');
 use_ok('Net::DRI::Transport::Socket');
 use_ok('Net::DRI::Transport::Dummy');
@@ -461,6 +463,9 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::ContactVerification');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DomainVerification');
 use_ok('Net::DRI::Protocol::EPP::Extensions::IN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::IN::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::RO');
+use_ok('Net::DRI::Protocol::EPP::Extensions::RO::Contact');
+use_ok('Net::DRI::Protocol::EPP::Extensions::RO::Domain');
 use_ok('Net::DRI::Protocol::DAS');
 use_ok('Net::DRI::Protocol::DAS::Message');
 use_ok('Net::DRI::Protocol::DAS::Connection');

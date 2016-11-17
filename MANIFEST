@@ -52,6 +52,7 @@ lib/Net/DRI/Data/Contact/NZ.pm
 lib/Net/DRI/Data/Contact/OpenSRS.pm
 lib/Net/DRI/Data/Contact/PL.pm
 lib/Net/DRI/Data/Contact/RegBox.pm
+lib/Net/DRI/Data/Contact/RO.pm
 lib/Net/DRI/Data/Contact/SE.pm
 lib/Net/DRI/Data/Contact/SIDN.pm
 lib/Net/DRI/Data/Contact/SWITCH.pm
@@ -148,6 +149,7 @@ lib/Net/DRI/DRD/PRO.pm
 lib/Net/DRI/DRD/PT.pm
 lib/Net/DRI/DRD/RegBox.pm
 lib/Net/DRI/DRD/RF.pm
+lib/Net/DRI/DRD/RO.pm
 lib/Net/DRI/DRD/RU.pm
 lib/Net/DRI/DRD/SC.pm
 lib/Net/DRI/DRD/SE.pm
@@ -427,6 +429,9 @@ lib/Net/DRI/Protocol/EPP/Extensions/ResellerInfo.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ResellerObject.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Reverse.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RF.pm
+lib/Net/DRI/Protocol/EPP/Extensions/RO.pm
+lib/Net/DRI/Protocol/EPP/Extensions/RO/Contact.pm
+lib/Net/DRI/Protocol/EPP/Extensions/RO/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RU.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SecDNS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ServiceMessage.pm
@@ -791,6 +796,7 @@ t/Net/DRI/Protocol/EPP/Extensions/RegBox.t
 t/Net/DRI/Protocol/EPP/Extensions/ResellerInfo.t
 t/Net/DRI/Protocol/EPP/Extensions/ResellerObject.t
 t/Net/DRI/Protocol/EPP/Extensions/Reverse.t
+t/Net/DRI/Protocol/EPP/Extensions/RO.t
 t/Net/DRI/Protocol/EPP/Extensions/SecDNS.t
 t/Net/DRI/Protocol/EPP/Extensions/ServiceMessage.t
 t/Net/DRI/Protocol/EPP/Extensions/SIDN.t

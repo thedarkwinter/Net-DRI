@@ -1232,7 +1232,7 @@ sub message_count
 ##       this whole part would need to be redefined, see TODO file
 ####################################################################################################
 
-## For AFNIC ARNES (subclassed) BE EURid LU
+## For AFNIC ARNES (subclassed) BE EURid LU RO
 sub domain_trade_start
 {
  my ($self,$ndr,$domain,$rd)=@_;
