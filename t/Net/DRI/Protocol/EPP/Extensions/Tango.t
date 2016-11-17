@@ -51,7 +51,7 @@ $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee},undef,'Fee extension not loaded');
 
 
-##################### 
+#####################
 ## IDN Extension
 
 # check with idn language (iso639-1)
@@ -111,7 +111,7 @@ $rc=$dri->domain_update('example3.ruhr',$toc);
 is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.ruhr</domain:name></domain:update></update><extension><idn:update xmlns:idn="http://xmlns.tango-rs.net/epp/idn-1.0" xsi:schemaLocation="http://xmlns.tango-rs.net/epp/idn-1.0 idn-1.0.xsd"><idn:add><idn:nameVariant>ggg.ruhr</idn:nameVariant></idn:add><idn:rem><idn:nameVariant>abc.ruhr</idn:nameVariant><idn:nameVariant>xyz.ruhr</idn:nameVariant></idn:rem></idn:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build_xml');
 
 
-##################### 
+#####################
 ## Auction Extension
 
 # create with bid
@@ -156,7 +156,7 @@ is($dri->get_info('restore_price'),20,'domain_check_price get_info (restore_pric
 
 
 
-##################### 
+#####################
 ## Augmented Mark (LaunchPhase) Extension (based on dotSCOT-TechDoc-20140710.pdf)
 
 $dri->add_registry('NGTLD',{provider => 'corenic',name=>'scot'});
@@ -414,12 +414,12 @@ $dh->add('ns2.example.net');
 my $promo_c='EXAMPLE-PROMO-1231';
 $rc=$dri->domain_create('example.eus',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,auth=>{pw=>'secret42'},promo_code=>$promo_c} );
 is($rc->is_success(),1,'domain_create is_success adding promotion extension');
-is_string($R1,$E1.'<command><create><domain:create xmlns="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.net</domain:hostObj><domain:hostObj>ns2.example.net</domain:hostObj></domain:ns><domain:registrant>abc123</domain:registrant><domain:contact type="admin">def456</domain:contact><domain:contact type="tech">ghi789</domain:contact><domain:authInfo><domain:pw>secret42</domain:pw></domain:authInfo></domain:create></create><extension><promo:create xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml adding promotion extension');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.net</domain:hostObj><domain:hostObj>ns2.example.net</domain:hostObj></domain:ns><domain:registrant>abc123</domain:registrant><domain:contact type="admin">def456</domain:contact><domain:contact type="tech">ghi789</domain:contact><domain:authInfo><domain:pw>secret42</domain:pw></domain:authInfo></domain:create></create><extension><promo:create xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml adding promotion extension');
 
 # domain renew: with promotional code
 $R2='';
 $rc=$dri->domain_renew('example.eus',{current_expiration => DateTime->new(year=>2015,month=>04,day=>03),duration=>DateTime::Duration->new(years=>1),promo_code=>$promo_c});
-is_string($R1,$E1.'<command><update><domain:renew xmlns="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:curExpDate>2015-04-03</domain:curExpDate><domain:period unit="y">1</domain:period></domain:renew></update><extension><promo:renew xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:renew></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build adding promotion extension');
+is_string($R1,$E1.'<command><update><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.eus</domain:name><domain:curExpDate>2015-04-03</domain:curExpDate><domain:period unit="y">1</domain:period></domain:renew></update><extension><promo:renew xmlns:promo="http://xmlns.corenic.net/epp/promotion-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code></promo:renew></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build adding promotion extension');
 is($rc->is_success(),1,'domain_renew is_success adding promotion extension');
 
 # domain promo info response: testing promotional codes info commands
@@ -427,18 +427,18 @@ $R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</
 
 # domain promo info details
 my $promo_hash = {
-	domain => {name => 'example.eus'},
-	price => {
-		type => 'create',
-		duration => DateTime::Duration->new(years=>4,months=>6)},
-	ref_date => {
-		rdate => DateTime->new(year=>2016,month=>07,day=>01,hour=>10,minute=>10,second=>0)},
-	lp => {
-		phase => 'custom',
-		sub_phase => 'special-phase'}
+  domain => {name => 'example.eus'},
+  price => {
+    type => 'create',
+    duration => DateTime::Duration->new(years=>4,months=>6)},
+  ref_date => {
+    rdate => DateTime->new(year=>2016,month=>07,day=>01,hour=>10,minute=>10,second=>0)},
+  lp => {
+    phase => 'custom',
+    sub_phase => 'special-phase'}
 }; # for the duration you can use any date time units as long as your TOTAL time is less than 99 months..
 
-# domain promo info command
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><infData xmlns="http://xmlns.tango-rs.net/epp/promotion-info-1.0"><promo><promotionName>Unlimited Creation codes</promotionName><validity from="2016-09-20T13:40:00.000Z" /><utilization avail="true"><enabled>true</enabled><operations>create</operations><codeUsable>true</codeUsable><inValidityPeriod>true</inValidityPeriod><validDomainName>true</validDomainName></utilization></promo><pricing><total mu="EUR" value="25" /></pricing></infData></resData>' . $TRID . '</response>' . $E2;
 $rc=$dri->promo_info('EXAMPLE-PROMO-1231',{promo_data=>$promo_hash});
 is_string($R1,$E1.'<command><info ><promo:info xmlns:promo="http://xmlns.corenic.net/epp/promotion-info-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code><promo:domain><promo:name>example.eus</promo:name></promo:domain><promo:pricing><promo:create><promo:period unit="m">54</promo:period></promo:create></promo:pricing><promo:refdate>2016-07-01T10:10:00.0Z</promo:refdate><promo:phase name="special-phase">custom</promo:phase></promo:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_promo_info build quering promotion details');
 is($rc->is_success(),1,'domain_promo_info is_success quering promotion details');
@@ -451,25 +451,25 @@ my $promo_promotionName = $dri->get_info('promotion_name');
 
 # validity
 is(defined($promo_validity), 1 ,'promo_info get_info(validity) defined');
-is($promo_validity->{'valid_until'},'2015-04-01T00:00:00','promo_info parse (validUntil)');
-is($promo_validity->{'valid_from'},'2015-01-01T00:00:00','promo_info parse (validFrom)');
+is($promo_validity->{'valid_until'},undef,'promo_info parse (validUntil)');
+is($promo_validity->{'valid_from'},'2016-09-20T13:40:00','promo_info parse (validFrom)');
 
 # utilization
 is(defined($promo_utilization), 1 ,'promo_info get_info(utilization) defined');
 is($promo_utilization->{'valid_domain_name'},'true','promo_info parse (validDomainName)');
 is($promo_utilization->{'code_usable'},'true','promo_info parse (codeUsable)');
 is($promo_utilization->{'available'},'true','promo_info parse (available)');
-is($promo_utilization->{'operations'},'create renew','promo_info parse (operations)');
+is($promo_utilization->{'operations'},'create','promo_info parse (operations)');
 is($promo_utilization->{'in_validity_period'},'true','promo_info parse (inValidityPeriod)');
 is($promo_utilization->{'enabled'},'true','promo_info parse (enabled)');
 
 # total
 is(defined($promo_total), 1 ,'promo_info get_info(total) defined');
-is($promo_total->{'price'},'20.00','promo_info parse (price)');
+is($promo_total->{'price'},'25','promo_info parse (price)');
 is($promo_total->{'currency'},'EUR','promo_info parse (currency)');
 
 # promotion name
 is(defined($promo_promotionName), 1 ,'promo_info get_info(promotionName) defined');
-is($promo_promotionName,'Promotion 2015','promo_info parse (promotionName)');
+is($promo_promotionName,'Unlimited Creation codes','promo_info parse (promotionName)');
 
 exit 0;
