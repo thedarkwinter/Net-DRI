@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Encode;
 
-use Test::More tests => 6;
+use Test::More tests => 9;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -31,18 +31,21 @@ $dri->target('EURid')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>
 my ($rc,$s,$d,$co,$toc,$cs,$h,$dh,@c);
 
 ########################################################################################################
-## Examples taken from EPP_Guidelines_2_1_09
+## Examples taken from EPP_Guidelines 2_2_1
 
 ## Process greetings to select namespace versions
-$R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2016-06-02T08:27:10.390Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrar-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/nsgroup-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/keygroup-1.1</objURI><svcExtension><extURI>http://www.eurid.eu/xml/epp/contact-ext-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/idn-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dynUpdate-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dnsQuality-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/authInfo-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.2</extURI><extURI>http://www.eurid.eu/xml/epp/homoglyph-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2016-05-17T09:42:03.310Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrar-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/nsgroup-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/keygroup-1.1</objURI><svcExtension><extURI>http://www.eurid.eu/xml/epp/contact-ext-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.1</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/idn-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dynUpdate-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dnsQuality-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/authInfo-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.2</extURI><extURI>http://www.eurid.eu/xml/epp/homoglyph-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{'secDNS'}->[0],'urn:ietf:params:xml:ns:secDNS-1.1','secDNS 1.1 for server announcing 1.0 + 1.1');
 is($dri->protocol()->ns()->{'idn'}->[0],'http://www.eurid.eu/xml/epp/idn-1.0','idn 1.0 for server announcing 1.0');
-is($dri->protocol()->ns()->{'domain-ext'}->[0],'http://www.eurid.eu/xml/epp/domain-ext-2.0','domain-ext 2.0 for server announcing 2.0');
+is($dri->protocol()->ns()->{'domain-ext'}->[0],'http://www.eurid.eu/xml/epp/domain-ext-2.1','domain-ext 2.1 for server announcing 2.1');
 is($dri->protocol()->ns()->{'contact-ext'}->[0],'http://www.eurid.eu/xml/epp/contact-ext-1.1','contact-ext 1.1 for server announcing 1.1');
 is($dri->protocol()->ns()->{'poll'}->[0],'http://www.eurid.eu/xml/epp/poll-1.2','poll 1.2 for server announcing 1.1 + 1.2');
 is($dri->protocol()->ns()->{'authInfo'}->[0],'http://www.eurid.eu/xml/epp/authInfo-1.0','authInfo 1.0 for server announcing 1.0');
-#is($dri->protocol()->ns()->{'dynUpdate'}->[0],'http://www.eurid.eu/xml/epp/dynUpdate-1.0','dynUpdate1.0 for server announcing 1.0'); # FIXME this extension is missing?
+is($dri->protocol()->ns()->{'nsgroup'}->[0],'http://www.eurid.eu/xml/epp/nsgroup-1.1','nsgroup-1.1 for server announcing 1.1');
+is($dri->protocol()->ns()->{'keygroup'}->[0],'http://www.eurid.eu/xml/epp/keygroup-1.1','keygroup 1.1 for server announcing 1.1');
+is($dri->protocol()->ns()->{'homoglyph'}->[0],'http://www.eurid.eu/xml/epp/homoglyph-1.0','homoglyph-1.0 for server announcing 1.0');
+#is($dri->protocol()->ns()->{'dnsQuality'}->[0],'http://www.eurid.eu/xml/epp/dnsQuality-1.0','dnsQuality-1.0 for server announcing 1.0'); # TODO not yet implemented by registry -
 
 
 exit 0;
