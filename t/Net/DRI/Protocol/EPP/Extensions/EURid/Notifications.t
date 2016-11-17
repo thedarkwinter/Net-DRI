@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 54;
+use Test::More tests => 66;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -118,5 +118,21 @@ is($dri->get_info('detail','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),und
 is($dri->get_info('object_type','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),'DOMAIN','message_retrieve get_info object_type');
 is($dri->get_info('object_unicode','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),'secure-domain.eu','message_retrieve get_info object_unicode');
 is($dri->get_info('exist','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),'1','message_retrieve get_info exist');
+
+# 8. Poll request command. Watermark payment rejected
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="7" id="456"><qDate>2016-12-01T11:25:38.671Z</qDate><msg>Watermark payment rejected</msg></msgQ><resData><poll:pollData xmlns:poll="http://www.eurid.eu/xml/epp/poll-1.2"><poll:context>WATERMARK</poll:context><poll:objectType>PAYMENT</poll:objectType><poll:object>567</poll:object><poll:objectUnicode>567</poll:objectUnicode><poll:action>REJECTED</poll:action><poll:code>2610</poll:code></poll:pollData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($R1,$E1.'<command><poll op="req"/><clTRID>ABC-12345</clTRID></command>'.$E2,'message_restrieve build_xml');
+is($rc->is_success(), 1, 'message_retrieve is_success');
+is($dri->get_info('last_id'),'456','message_retrieve get_info(last_id)');
+is($dri->get_info('context','message','456'),'WATERMARK','message_retrieve get_info context');
+is($dri->get_info('notification_code','message','456'),undef,'message_retrieve get_info notification_code');
+is($dri->get_info('action','message','456'),'REJECTED','message_retrieve get_info action');
+is($dri->get_info('detail','message','456'),undef,'message_retrieve get_info detail');
+is($dri->get_info('object_type','message','456'),'session','message_retrieve get_info object_type');
+is($dri->get_info('object_unicode','message','456'),undef,'message_retrieve get_info object_unicode');
+is($dri->get_info('exist','message','456'),undef,'message_retrieve get_info exist');
+is($dri->get_info('level','message','456'),567,'message_retrieve get_info level');
+is($rc->get_data('message','456','level'),567,'notification !domain get_data(level)');
 
 exit 0;
