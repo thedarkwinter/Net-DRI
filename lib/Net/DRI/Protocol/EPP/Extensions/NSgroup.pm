@@ -2,6 +2,7 @@
 ## (based on .BE Registration_guidelines_v4_7_1)
 ##
 ## Copyright (c) 2005-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2016 Michael Holloway <michael@thedarkwinter.com>.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,6 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2005-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2016 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,7 +76,7 @@ sub register_commands
           );
 
  $tmp1{check_multi}=$tmp1{check};
- 
+
  return { 'nsgroup' => \%tmp1 };
 }
 
@@ -162,7 +164,10 @@ sub check_parse
     $nsgroup=$c->textContent();
     $rinfo->{nsgroup}->{$nsgroup}->{exist}=1-Net::DRI::Util::xml_parse_boolean($c->getAttribute('avail'));
     $rinfo->{nsgroup}->{$nsgroup}->{action}='check';
-   }
+  } elsif ($n eq 'reason')
+  {
+    $rinfo->{nsgroup}->{$nsgroup}->{exist_reason}=$c->textContent();
+  }
   }
  }
  return;
@@ -170,9 +175,11 @@ sub check_parse
 
 sub info
 {
- my ($epp,$hosts)=@_;
+ my ($epp,$hosts,$rd)=@_;
  my $mes=$epp->message();
+ my ($ver)=($mes->ns('nsgroup')=~m/-(1.\d)$/);
  my @d=build_command($epp,$mes,'info',$hosts);
+ push @d, ['nsgroup:authInfo', ['nsgroup:pw', $rd->{auth}->{pw}, exists($rd->{auth}->{roid})? { 'roid' => $rd->{auth}->{roid} } : undef]] if ($ver eq '1.1' && exists $rd->{auth} && exists $rd->{auth}->{pw});
  $mes->command_body(\@d);
  return;
 }
