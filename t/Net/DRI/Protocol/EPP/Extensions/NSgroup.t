@@ -17,17 +17,18 @@ sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
-my $dri=Net::DRI::TrapExceptions->new({cache_ttl=>10,trid_factory => sub { return 'clientref-123007'}});
-$dri->add_registry('BE');
-$dri->target('BE')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 my ($rc,$toc);
+
+#########################################################################################################
+
+## Extension: NSGroup
 
 ########################################################################################################
 ## DNSBE uses version 1.0, while Eurid uses 1.1 (with their own namespace declarations)
 ## So we test both versions here. 1.1 is at the bottom!
-
-#########################################################################################################
-## Extension: NSgroup
+my $dri=Net::DRI::TrapExceptions->new({cache_ttl=>10,trid_factory => sub { return 'clientref-123007'}});
+$dri->add_registry('BE');
+$dri->target('BE')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 $R2='<?xml version="1.0" encoding="UTF-8"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:dnsbe="http://www.dns.be/xml/epp/dnsbe-1.0" xmlns:nsgroup="http://www.dns.be/xml/epp/nsgroup-1.0" xmlns:agent="http://www.dns.be/xml/epp/agent-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd http://www.dns.be/xml/epp/dnsbe-1.0 dnsbe-1.0.xsd http://www.dns.be/xml/epp/nsgroup-1.0 nsgroup-1.0.xsd http://www.dns.be/xml/epp/agent-1.0 agent-1.0.xsd"><response><result code="1000"><msg>Command completed successfully</msg><value><nsgroup:name>mynsgroup1</nsgroup:name></value></result><extension><dnsbe:ext><dnsbe:result><dnsbe:msg>Content check ok</dnsbe:msg></dnsbe:result></dnsbe:ext></extension><trID><clTRID>clientref-123007</clTRID><svTRID>dnsbe-1543</svTRID></trID></response></epp>';
 my $c1=$dri->local_object('hosts');
@@ -105,7 +106,6 @@ $R2='<?xml version="1.0" encoding="UTF-8"?><epp xmlns="urn:ietf:params:xml:ns:ep
 $rc=$dri->nsgroup_check('nsg-a-1349684934','my-ns-group');
 is($R1,$E1.'<command><check><nsgroup:check xmlns:nsgroup="http://www.eurid.eu/xml/epp/nsgroup-1.1" xsi:schemaLocation="http://www.eurid.eu/xml/epp/nsgroup-1.1 nsgroup-1.1.xsd"><nsgroup:name>nsg-a-1349684934</nsgroup:name><nsgroup:name>my-ns-group</nsgroup:name></nsgroup:check></check><clTRID>clientref-123007</clTRID></command>'.$E2,'nsgroup-1.1 check_multi build_xml');
 is($rc->is_success(),1,'nsgroup-1.1 check_multi is_success');
-#use Data::Dumper; print Dumper $dri->get_info_all();
 is($dri->get_info('exist','nsgroup','nsg-a-1349684934'),0,'nsgroup-1.1 check_multi get_info(exist) 1/2');
 is($dri->get_info('exist','nsgroup','my-ns-group'),1,'nsgroup-1.1 check_multi get_info(exist) 2/2');
 is($dri->get_info('exist_reason','nsgroup','my-ns-group'),'in use','nsgroup-1.1 check_multi get_info(exist_reason) 2/2');
