@@ -31,6 +31,8 @@ sub register_commands
           info   => [ undef, \&_parse ],
           check  => [ undef, \&check_parse ],
           renew  => [ undef, \&_parse ],
+          transfer_request  => [ undef, \&_parse ],
+          transfer_query  => [ undef, \&_parse ],
           check  => [ undef, \&check_parse ],
           check_multi  => [ undef, \&check_parse ],
          );

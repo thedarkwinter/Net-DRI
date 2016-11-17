@@ -299,10 +299,7 @@ $R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params
 $rc=$dri->domain_renew('extend-term2y-idn-café-1349786342.eu',{duration => $dri->local_object('duration',years=>8), current_expiration => $dri->local_object('datetime',year=>2015,month=>9,day=>13)});
 is($rc->is_success(),1,'domain_renew is_success');
 is($dri->get_info('exDate'),'2023-09-13T21:59:59','domain_renew get_info(exDate)');
-SKIP: {
-  skip "TODO: Domain_renew is failing to parse empty removedDeletionDate as true",1;
-is($dri->get_info('removedDeletionDate'),0,'domain_renew get_info(removedDeletionDate)');
-};
+is($dri->get_info('removedDeletionDate'),1,'domain_renew get_info(removedDeletionDate)');
 is($dri->get_info('name'),'extend-term2y-idn-café-1349786342.eu','domain_renew get_info(name)');
 is($dri->get_info('ace'),'xn--extend-term2y-idn-caf-1349786342-v3c.eu','domain_renew get_info(ace)');
 is($dri->get_info('unicode'),'extend-term2y-idn-café-1349786342.eu','domain_renew get_info(unicde)');
@@ -364,26 +361,36 @@ is($rc->is_success(),1,'domain_transfer_start is_success');
 
 ## 2.1.09/domains/domain-transfer/domain-transfer02-resp.xml
 # Transfer of IDN domain
-# FIXME: when transferring and IDN with subordinate hosts, the IP addresses are lost - I imagine due to maching up host hostname and domain name
 $R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>some-domain-nãme.eu</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>a987654</domain:reID><domain:reDate>2014-09-13T20:18:21.846Z</domain:reDate><domain:acID>t000021</domain:acID><domain:acDate>2014-09-13T20:18:21.846Z</domain:acDate><domain:exDate>2016-09-13T21:59:59.999Z</domain:exDate></domain:trnData></resData><extension><idn:mapping xmlns:idn="http://www.eurid.eu/xml/epp/idn-1.0"><idn:name><idn:ace>xn--some-domain-nme-wkb.eu</idn:ace><idn:unicode>some-domain-nãme.eu</idn:unicode></idn:name></idn:mapping></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_transfer_start('some-domain-nãme.eu',\%rd);
 is($rc->is_success(),1,'domain_transfer_start is_success');
 is($dri->get_info('name'),'some-domain-nãme.eu','domain_transfer_start get_info(name)');
 is($dri->get_info('name_ace'),'xn--some-domain-nme-wkb.eu','domain_transfer_start get_info(name_ace)');
-is($dri->get_info('name_idn'),'some-domain-nãme.eu','domain_transfer_start  get_info(name_idn)');
-SKIP: { ## TODO
-  skip 'TODO: ace & unicode (idn) not yet parsed on domain_transfer',2;
-is($dri->get_info('ace'),'xn--some-domain-nme-wkb.eu','domain_transfer_start  get_info(ace)');
-is($dri->get_info('unicode'),'some-domain-nãme.eu','domain_transfer_start  get_info(unicode)');
-};
+is($dri->get_info('name_idn'),'some-domain-nãme.eu','domain_transfer_start get_info(name_idn)');
+is($dri->get_info('ace'),'xn--some-domain-nme-wkb.eu','domain_transfer_start get_info(ace)');
+is($dri->get_info('unicode'),'some-domain-nãme.eu','domain_transfer_start get_info(unicode)');
 
-## 2.1.09/domains/domain-transfer/domain-transfer04-cmd.xml
-# Transfer of domain, transfer with pending action
+## 2.2.1/domains/domain-transfer/domain-transfer05-cmd.xml
+# Transfer query
 ## Note, transfer_from_quarantine was removed a long time ago, its just a transfer now
+$R2=$E1.'<response>'.r().'<resData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:trnData><domain:name>вмкйршаудхыийведйкгг.ею</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>t000002</domain:reID><domain:reDate>2016-05-23T11:50:13.129Z</domain:reDate><domain:acID>eurid.eu</domain:acID><domain:acDate>2016-05-28T11:50:13.129Z</domain:acDate><domain:exDate>2018-05-23T21:59:59.999Z</domain:exDate></domain:trnData></resData><extension xmlns:domain-ext-2.1="http://www.eurid.eu/xml/epp/domain-ext-2.1" xmlns:idn="http://www.eurid.eu/xml/epp/idn-1.0"><domain-ext-2.1:trnData><domain-ext-2.1:onHold>false</domain-ext-2.1:onHold><domain-ext-2.1:quarantined>false</domain-ext-2.1:quarantined><domain-ext-2.1:suspended>false</domain-ext-2.1:suspended><domain-ext-2.1:registrant>c15</domain-ext-2.1:registrant><domain-ext-2.1:contact type="billing">c14</domain-ext-2.1:contact><domain-ext-2.1:contact type="tech">c17</domain-ext-2.1:contact><domain-ext-2.1:delayed>true</domain-ext-2.1:delayed></domain-ext-2.1:trnData><idn:mapping><idn:name><idn:ace>xn--80adbeadbhzhddejt0e9bxb3cwd.xn--e1a4c</idn:ace><idn:unicode>вмкйршаудхыийведйкгг.ею</idn:unicode></idn:name></idn:mapping></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_query('xn--80adbeadbhzhddejt0e9bxb3cwd.xn--e1a4c');
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer op="query"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>вмкйршаудхыийведйкгг.ею</domain:name></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>','domain_transfer_query build');
+is($rc->is_success(),1,'domain_transfer_query is_success');
+is($dri->get_info('trStatus'),'pending','domain_transfer_query get_info(trStatus)');
+is($dri->get_info('reID'),'t000002','domain_transfer_query get_info(reID)');
+is($dri->get_info('delayed'),1,'domain_transfer_query get_info(delayed)');
+$s=$dri->get_info('contact');
+isa_ok($s,'Net::DRI::Data::ContactSet','domain_transfer_query get_info(contact)');
+is_deeply([$s->types()],['billing','registrant','tech'],'domain_info get_info(contact) types');
+is($s->get('registrant')->srid(),'c15','domain_info get_info(contact) registrant srid');
+is($s->get('billing')->srid(),'c14','domain_info get_info(contact) billing srid');
+is($s->get('tech')->srid(),'c17','domain_info get_info(contact) tech srid');
+is($dri->get_info('name'),'вмкйршаудхыийведйкгг.ею','domain_transfer_query get_info(name)');
+is($dri->get_info('name_ace'),'xn--80adbeadbhzhddejt0e9bxb3cwd.xn--e1a4c','domain_transfer_query get_info(name_ace)');
+is($dri->get_info('name_idn'),'вмкйршаудхыийведйкгг.ею','domain_transfer_query get_info(name_idn)');
+is($dri->get_info('ace'),'xn--80adbeadbhzhddejt0e9bxb3cwd.xn--e1a4c','domain_transfer_query get_info(ace)');
+is($dri->get_info('unicode'),'вмкйршаудхыийведйкгг.ею','domain_transfer_query get_info(unicode)');
 
-
-
-########################################################################################################
-### FINISHED?
 
 exit 0;

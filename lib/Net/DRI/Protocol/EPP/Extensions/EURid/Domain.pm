@@ -3,7 +3,7 @@
 ##
 ## Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
-##               2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##               2015-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -54,6 +54,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
+              2015-2016 Michael Holloway <michael@thedarkwinter.com>.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,8 +77,8 @@ sub register_commands
           update            => [ \&update, undef ],
           info              => [ \&info, \&info_parse ],
           delete            => [ \&delete, undef ],
-          transfer_request  => [ \&transfer_request, undef ],
-          #transfer_query   => [ undef, \&transfer_parse ], # TODO domain-ext 1.1 also adds trnData element
+          transfer_request  => [ \&transfer_request, \&info_parse ],
+          transfer_query   => [ undef, \&info_parse ],
           renew             => [ undef, \&renew_parse ],
           check             => [ undef, \&check_parse ],
           check_multi             => [ undef, \&check_parse ],
@@ -189,11 +191,15 @@ sub info_parse
  return unless $mes->is_success();
 
  my $infdata=$mes->get_extension('domain-ext','infData');
+ $infdata=$mes->get_extension('domain-ext','trnData') unless $infdata;
  return unless defined $infdata;
 
  my @nsg;
+ $rinfo->{domain}->{$oname}->{status} = $po->create_local_object('status') unless $rinfo->{domain}->{$oname}->{status};
  my $status=$rinfo->{domain}->{$oname}->{status};
+ $rinfo->{domain}->{$oname}->{contact} = $po->create_local_object('contactset') unless $rinfo->{domain}->{$oname}->{contact};
  my $contact=$rinfo->{domain}->{$oname}->{contact};
+
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
@@ -209,6 +215,9 @@ sub info_parse
   } elsif ($name eq 'contact')
   {
    $contact->add($po->create_local_object('contact')->srid($c->textContent()),$c->getAttribute('type'));
+  } elsif ($name eq 'registrant')
+  {
+   $contact->add($po->create_local_object('contact')->srid($c->textContent()),'registrant');
   } elsif ($name eq 'nsgroup')
   {
    push @nsg,$po->create_local_object('hosts')->name($c->textContent());
@@ -394,7 +403,7 @@ sub renew_parse
   my ($name,$c)=@$el;
   if ($name=~m/^(removedDeletionDate)$/)
   {
-   $rinfo->{domain}->{$oname}->{$1}=Net::DRI::Util::xml_parse_boolean($c->textContent());
+   $rinfo->{domain}->{$oname}->{removedDeletionDate} = 1;
   }
  }
  return;

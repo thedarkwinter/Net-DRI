@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2005-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
-##
+##               2016 Michael Holloway <michael@thedarkwinter.com>.
 ## This file is part of Net::DRI
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
@@ -56,6 +56,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 Copyright (c) 2005-2011 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
+              2016 Michael Holloway <michael@thedarkwinter.com>.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
