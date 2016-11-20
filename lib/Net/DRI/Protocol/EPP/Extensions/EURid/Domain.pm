@@ -203,7 +203,7 @@ sub info_parse
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
-  if ($name=~m/^(onHold|quarantined)$/) ## onHold here has nothing to do with EPP client|serverHold, unfortunately
+  if ($name=~m/^(onHold|quarantined|suspended)$/) ## onHold here has nothing to do with EPP client|serverHold, unfortunately
   {
    $status->add($name) if Net::DRI::Util::xml_parse_boolean($c->textContent()); ## TODO : correct status name?
   } elsif ($name=~m/^(availableDate|deletionDate)$/)
