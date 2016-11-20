@@ -47,15 +47,75 @@ sub setup
 
 sub parse_info
 {
-  print "parse - info \n\n";
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
+ our $request_registrar;
  return unless $mes->is_success();
 
- my $data=$mes->get_extension('registrar_finance','infData');
- return unless defined $data;
+ my ($infdata, $registrar);
+ if ($infdata=$mes->get_response('registrar_finance','infData'))
+ {
+   foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+   {
+    my ($n,$c)=@$el;
+    #print "Got finfance $name\n\n\n";
+    if ($n eq 'paymentMode')
+    {
+      $registrar->{Net::DRI::Util::xml2perl($n)}=$c->textContent();
+    } elsif ($n =~ m/(?:availableAmount|accountBalance|dueAmount|overdueAmount)/)
+    {
+      $registrar->{Net::DRI::Util::xml2perl($n)}=0+$c->textContent();
+      $registrar->{amount_available} = 0+$c->textContent() if $n eq 'availableAmount'; # backwards compat
+    }
+   }
+ }
 
- #($rinfo->{domain}->{$oname}->{ace},$rinfo->{domain}->{$oname}->{unicode})=@{(get_names($mes,$data))[0]};
+ if ($infdata=$mes->get_response('registrar_hit_points','hitPoints'))
+ {
+   $registrar->{hitpoints}={};
+   foreach my $sel (Net::DRI::Util::xml_list_children($infdata))
+   {
+    my ($n,$c)=@$sel;
+    if ($n eq 'nbrHitPoints')
+    {
+     $registrar->{hitpoints}->{current_number}=0+$c->textContent();
+    } elsif ($n eq 'maxNbrHitPoints')
+    {
+     $registrar->{hitpoints}->{maximum_number}=0+$c->textContent();
+    } elsif ($n eq 'blockedUntil')
+    {
+     $registrar->{hitpoints}->{blocked_until}=$po->parse_iso8601($c->textContent());
+    }
+   }
+ }
+
+ if ($infdata=$mes->get_response('registration_limit','registrationLimit'))
+ {
+   $registrar->{registration_limit}={};
+   foreach my $sel (Net::DRI::Util::xml_list_children($infdata))
+   {
+    my ($n,$c)=@$sel;
+    if ($n eq 'monthlyRegistrations')
+    {
+     $registrar->{registration_limit}->{monthly_registrations}=0+$c->textContent();
+    } elsif ($n eq 'maxMonthlyRegistrations')
+    {
+     $registrar->{registration_limit}->{max_monthly_registrations}=0+$c->textContent();
+    } elsif ($n eq 'limitedUntil')
+    {
+     $registrar->{registration_limit}->{limited_until}=$po->parse_iso8601($c->textContent());
+    }
+   }
+ }
+ #use Data::Dumper; print Dumper $rinfo->{registrar}->{info};
+
+ $otype = 'message';
+ $registrar->{object_type} = 'registrar';
+ $oname = $registrar->{object_id} = $registrar->{name} = 'registrar';
+ $oaction = $registrar->{action} = 'info';
+ $rinfo->{message}->{registrar} = $registrar;
+ $rinfo->{registrar}->{registrar} = $rinfo->{message}->{registrar};
+
  return;
 }
 
@@ -103,11 +163,10 @@ sub info_parse_old
 
 sub info
 {
- my ($epp,$rd)=@_;
+ my ($epp,$registrar,$rd)=@_;
  my $mes=$epp->message();
  if ($rd && exists $rd->{type} && $rd->{type} eq 'hit_points')
  {
-   print "hit points\n\n";
    $mes->command('info','registrar:hitPoints',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar_hit_points')));
  } elsif ($rd && exists $rd->{type} && $rd->{type} eq 'registration_limit')
  {

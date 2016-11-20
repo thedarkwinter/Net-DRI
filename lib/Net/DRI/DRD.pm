@@ -1386,16 +1386,17 @@ sub account_list_domains
 # Afilias (and maybe others) starting to to have registrar as an object
 sub registrar_info
 {
- my ($self,$ndr,$rd)=@_;
- $rd= $self->info('clid') unless defined $rd;
- return $ndr->process('registrar','info',[$rd]);
+ my ($self,$ndr,$clid,$rd)=@_;
+ $clid = $self->info('clid') unless defined $clid;
+ $clid = 'registrar' if $ndr->name() eq 'EURid'; # hardcode so it parses correctly
+ return $ndr->process('registrar','info',[$clid,$rd]);
  }
 
 sub registrar_balance
 {
- my ($self,$ndr,$rd)=@_;
- $rd= $self->info('clid') unless defined $rd;
- return $ndr->process('registrar','balance',[$rd]);
+ my ($self,$ndr,$clid,$rd)=@_;
+ $clid = $self->info('clid') unless defined $clid;
+ return $ndr->process('registrar','balance',[$clid,$rd]);
 }
 
 sub promo_info {
