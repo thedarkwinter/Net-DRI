@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2005-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
-##
+##               2016 Michael Holloway <michael@thedarkwinter.com>.
 ## This file is part of Net::DRI
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
@@ -56,6 +56,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 Copyright (c) 2005-2011 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
+              2016 Michael Holloway <michael@thedarkwinter.com>.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,6 +80,8 @@ sub new
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=1;
  $self->{info}->{contact_i18n}=1; ## LOC only
+ $self->{info}->{force_native_idn}=1; # use native IDN in domain:name
+ $self->{info}->{check_limit}=12; # TBC - example has 12
  return $self;
 }
 
@@ -118,7 +122,7 @@ sub verify_name_domain
 # {
 #  my ($self,$ndr,$domain,$rd)=@_;
 #  $self->enforce_domain_name_constraints($ndr,$domain,'check_contact_for_transfer');
-# 
+#
 #  my $rc=$ndr->process('domain','check_contact_for_transfer',[$domain,$rd]);
 #  return $rc;
 # }
@@ -134,7 +138,7 @@ sub registrar_info
 # {
 #  my ($self,$ndr,$domain,$rd)=@_;
 #  $self->enforce_domain_name_constraints($ndr,$domain,'remind');
-# 
+#
 #  my $rc=$ndr->process('domain','remind',[$domain,$rd]);
 #  return $rc;
 # }

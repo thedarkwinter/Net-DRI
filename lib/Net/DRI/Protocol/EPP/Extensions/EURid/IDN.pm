@@ -31,6 +31,10 @@ sub register_commands
           info   => [ undef, \&_parse ],
           check  => [ undef, \&check_parse ],
           renew  => [ undef, \&_parse ],
+          transfer_request  => [ undef, \&_parse ],
+          transfer_query  => [ undef, \&_parse ],
+          check  => [ undef, \&check_parse ],
+          check_multi  => [ undef, \&check_parse ],
          );
 
  return { 'domain' => \%tmp };
@@ -135,4 +139,3 @@ the Free Software Foundation; either version 2 of the License, or
 See the LICENSE file that comes with this distribution for more details.
 
 =cut
-

@@ -1,6 +1,7 @@
 ## Domain Registry Interface, EURid/DNSBE Keygroup EPP Extension
 ##
 ## Copyright (c) 2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2016 Michael Holloway <michael@thedarkwinter.com>.
 ##
 ## This file is part of Net::DRI
 ##
@@ -38,13 +39,6 @@ sub register_commands
 
 sub capabilities_add { return ('keygroup_update','keys',['set']); }
 
-sub setup
-{
- my ($class,$po,$version)=@_;
- $po->ns({ 'keygroup' => [ 'http://www.eurid.eu/xml/epp/keygroup-1.0','keygroup-1.0.xsd' ] });
- return;
-}
-
 sub build_command
 {
  my ($epp,$msg,$command,$names)=@_;
@@ -65,23 +59,25 @@ sub build_command
 ## The hash keys names are modeled on those used for the secDNS extension.
 sub format_key
 {
- my $e=shift;
-
- my @mk=grep { ! Net::DRI::Util::has_key($e,$_) } qw/keyTag flags protocol alg pubKey/;
+ my ($e,$ver) = @_;
+ my @required = qw/flags protocol alg pubKey/;
+ push @required, 'keyTag' if $ver eq '1.0';
+ my @mk=grep { ! Net::DRI::Util::has_key($e,$_) } @required;
  Net::DRI::Exception::usererr_insufficient_parameters('Attributes missing: '.join(@mk)) if @mk;
- Net::DRI::Exception::usererr_invalid_parameters('keyTag must be 16-bit unsigned integer: '.$e->{keyTag}) unless Net::DRI::Util::verify_ushort($e->{keyTag});
+
+ Net::DRI::Exception::usererr_invalid_parameters('keyTag must be 16-bit unsigned integer: '.$e->{keyTag}) if exists $e->{keyTag} && !Net::DRI::Util::verify_ushort($e->{keyTag});
  Net::DRI::Exception::usererr_invalid_parameters('flags mut be a 16-bit unsigned integer: '.$e->{flags}) unless Net::DRI::Util::verify_ushort($e->{flags});
  Net::DRI::Exception::usererr_invalid_parameters('protocol must be an unsigned byte: '.$e->{protocol}) unless Net::DRI::Util::verify_ubyte($e->{protocol});
  Net::DRI::Exception::usererr_invalid_parameters('alg must be an unsigned byte: '.$e->{alg}) unless Net::DRI::Util::verify_ubyte($e->{alg});
  Net::DRI::Exception::usererr_invalid_parameters('pubKey must be a non empty base64 string: '.$e->{pubKey}) unless Net::DRI::Util::verify_base64($e->{pubKey},1);
 
  my @c;
- push @c,['keygroup:keyTag',$e->{keyTag}];
+ push @c,['keygroup:keyTag',$e->{keyTag}] if $ver eq '1.0';
  push @c,['keygroup:flags',$e->{flags}];
  push @c,['keygroup:protocol',$e->{protocol}];
- push @c,['keygroup:algorithm',$e->{alg}];
+ push @c,['keygroup:algorithm',$e->{alg}] if $ver eq '1.0';
+ push @c,['keygroup:alg',$e->{alg}] if $ver eq '1.1';
  push @c,['keygroup:pubKey',$e->{pubKey}];
-
  return @c;
 }
 
@@ -109,14 +105,18 @@ sub check_parse
 
  foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'cd'))
  {
+  my $kg;
   foreach my $el (Net::DRI::Util::xml_list_children($cd))
   {
    my ($n,$c)=@$el;
    if ($n eq 'name')
    {
-    my $kg=$c->textContent();
+    $kg=$c->textContent();
     $rinfo->{keygroup}->{$kg}->{exist}=1-Net::DRI::Util::xml_parse_boolean($c->getAttribute('avail'));
     $rinfo->{keygroup}->{$kg}->{action}='check';
+   } elsif ($n eq 'reason')
+   {
+    $rinfo->{keygroup}->{$kg}->{exist_reason}=$c->textContent();
    }
   }
  }
@@ -125,9 +125,11 @@ sub check_parse
 
 sub info
 {
- my ($epp,$name)=@_;
+ my ($epp,$name,$rd)=@_;
  my $mes=$epp->message();
+ my ($ver)=($mes->ns('keygroup')=~m/-(1.\d)$/);
  my @d=build_command($epp,$mes,'info',$name);
+ push @d, ['keygroup:authInfo', ['keygroup:pw', $rd->{auth}->{pw}, exists($rd->{auth}->{roid})? { 'roid' => $rd->{auth}->{roid} } : undef]] if ($ver eq '1.1' && exists $rd->{auth} && exists $rd->{auth}->{pw});
  $mes->command_body(\@d);
  return;
 }
@@ -151,7 +153,7 @@ sub info_parse
    $oname=$c->textContent();
    $rinfo->{keygroup}->{$oname}->{exist}=1;
    $rinfo->{keygroup}->{$oname}->{action}='info';
-  } elsif ($name eq 'key')
+ } elsif ($name eq 'key') ## 1.0
   {
    push @k,{ keyTag => Net::DRI::Util::xml_child_content($c,$ns,'keyTag'),
              flags => Net::DRI::Util::xml_child_content($c,$ns,'flags'),
@@ -159,6 +161,17 @@ sub info_parse
              alg => Net::DRI::Util::xml_child_content($c,$ns,'algorithm'),
              pubKey => Net::DRI::Util::xml_child_content($c,$ns,'pubKey'),
            };
+  } elsif ($name eq 'infData') ## 1.1
+  {
+   foreach my $el2 (Net::DRI::Util::xml_list_children($c))
+   {
+    my ($n2,$c2)=@$el2;
+    push @k,{ flags => Net::DRI::Util::xml_child_content($c2,$ns,'flags'),
+              protocol =>Net::DRI::Util::xml_child_content($c2,$ns,'protocol') ,
+              alg => Net::DRI::Util::xml_child_content($c2,$ns,'alg'),
+              pubKey => Net::DRI::Util::xml_child_content($c2,$ns,'pubKey'),
+            } if Net::DRI::Util::xml_child_content($c2,$ns,'flags');
+   }
   }
  }
 
@@ -172,13 +185,16 @@ sub create
 {
  my ($epp,$name,$rd)=@_;
  my $mes=$epp->message();
+ my ($ver)=($mes->ns('keygroup')=~m/-(1.\d)$/);
+
  my @d=build_command($epp,$mes,'create',$name);
  if (Net::DRI::Util::has_key($rd,'keys'))
  {
   Net::DRI::Exception::usererr_invalid_parameters('secdns key must be a ref array') unless ref $rd->{'keys'} eq 'ARRAY';
   foreach my $k (@{$rd->{'keys'}})
   {
-   push @d,['keygroup:key',format_key($k)];
+   push @d,['keygroup:key',format_key($k,$ver)] if $ver eq '1.0';
+   push @d,['keygroup:keyData',format_key($k,$ver)] if $ver eq '1.1';
   }
  }
  $mes->command_body(\@d);
@@ -197,6 +213,9 @@ sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub update
 {
  my ($epp,$name,$todo,$rd)=@_;
+ my $mes=$epp->message();
+ my ($ver)=($mes->ns('keygroup')=~m/-(1.\d)$/);
+
  Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
 
  if ((grep { ! /^(?:keys)$/ } $todo->types()) || (grep { ! /^(?:set)$/ } $todo->types('keys') ))
@@ -204,11 +223,11 @@ sub update
   Net::DRI::Exception->die(0,'protocol/EPP',11,'Only keys set available for keygroup');
  }
 
- my $mes=$epp->message();
  my @d=build_command($epp,$mes,'update',$name);
  foreach my $k (@{$todo->set('keys')})
  {
-  push @d,['keygroup:key',format_key($k)];
+  push @d,['keygroup:key',format_key($k,$ver)] if $ver eq '1.0';
+  push @d,['keygroup:keyData',format_key($k,$ver)] if $ver eq '1.1';
  }
  $mes->command_body(\@d);
  return;
@@ -248,6 +267,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2016 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -258,4 +278,3 @@ the Free Software Foundation; either version 2 of the License, or
 See the LICENSE file that comes with this distribution for more details.
 
 =cut
-

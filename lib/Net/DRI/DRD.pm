@@ -1323,9 +1323,9 @@ sub nsgroup_check
 
 sub nsgroup_info
 {
- my ($self,$ndr,$nsg)=@_;
+ my ($self,$ndr,$nsg,$rd)=@_;
  Net::DRI::Exception::usererr_insufficient_parameters('nsgroup_info needs an hosts object') unless defined Net::DRI::Util::isa_nsgroup($nsg);
- return $ndr->process('nsgroup','info',[$nsg]);
+ return $ndr->process('nsgroup','info',[$nsg,$rd]);
 }
 
 sub nsgroup_update

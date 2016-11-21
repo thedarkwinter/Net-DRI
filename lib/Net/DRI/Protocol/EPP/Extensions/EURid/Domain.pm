@@ -1,8 +1,9 @@
 ## Domain Registry Interface, EURid Domain EPP extension commands
-## (based on EURid registration_guidelines_v1_0E-epp.pdf)
+## (based on EURid EPP_Guidelines_2_1_09)
 ##
 ## Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
+##               2015-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -53,6 +54,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
+              2015-2016 Michael Holloway <michael@thedarkwinter.com>.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,9 +77,11 @@ sub register_commands
           update            => [ \&update, undef ],
           info              => [ \&info, \&info_parse ],
           delete            => [ \&delete, undef ],
-          transfer_request  => [ \&transfer_request, undef ],
-          #transfer_query   => [ undef, \&transfer_parse ], # TODO domain-ext 1.1 also adds trnData element
+          transfer_request  => [ \&transfer_request, \&info_parse ],
+          transfer_query   => [ undef, \&info_parse ],
           renew             => [ undef, \&renew_parse ],
+          check             => [ undef, \&check_parse ],
+          check_multi             => [ undef, \&check_parse ],
          );
 
  return { 'domain' => \%tmp };
@@ -87,9 +92,9 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/domain-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.2',$ns.'-1.2.xsd' ] });
+  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.1',$ns.'-2.1.xsd' ] });
  }
- foreach my $ns (qw/authInfo/)
+ foreach my $ns (qw/authInfo homoglyph/)
  {
   $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.0',$ns.'-1.0.xsd' ] });
  }
@@ -112,6 +117,7 @@ sub create
 
  my @n;
  push @n,map { ['domain-ext:contact',$_->srid(),{'type'=>'onsite'}] } $cs->get('onsite');
+ push @n,map { ['domain-ext:contact',$_->srid(),{'type'=>'reseller'}] } $cs->get('reseller');
  push @n,add_nsgroup($rd->{nsgroup})             if Net::DRI::Util::has_key($rd,'nsgroup');
  push @n,['domain-ext:keygroup',$rd->{keygroup}] if Net::DRI::Util::has_key($rd,'keygroup') && Net::DRI::Util::xml_is_token($rd->{keygroup},1,100);
  ## TODO domain-ext-voucher
@@ -145,6 +151,7 @@ sub update
   my @todo;
   push @todo,add_nsgroup($nsgadd) if $nsgadd;
   push @todo,map { ['domain-ext:contact',$_->srid(),{'type'=>'onsite'}] } $cadd->get('onsite') if $cadd;
+  push @todo,map { ['domain-ext:contact',$_->srid(),{'type'=>'reseller'}] } $cadd->get('reseller') if $cadd;
   push @n,['domain-ext:add',@todo] if @todo;
  }
  if ($nsgdel || $cdel)
@@ -152,6 +159,7 @@ sub update
   my @todo;
   push @todo,add_nsgroup($nsgdel) if $nsgdel;
   push @todo,map { ['domain-ext:contact',$_->srid(),{'type'=>'onsite'}] } $cdel->get('onsite') if $cdel;
+  push @todo,map { ['domain-ext:contact',$_->srid(),{'type'=>'reseller'}] } $cdel->get('reseller') if $cdel;
   push @n,['domain-ext:rem',@todo] if @todo;
  }
 ## TODO : handle domain-ext:keygroup
@@ -183,11 +191,15 @@ sub info_parse
  return unless $mes->is_success();
 
  my $infdata=$mes->get_extension('domain-ext','infData');
+ $infdata=$mes->get_extension('domain-ext','trnData') unless $infdata;
  return unless defined $infdata;
 
  my @nsg;
+ $rinfo->{domain}->{$oname}->{status} = $po->create_local_object('status') unless $rinfo->{domain}->{$oname}->{status};
  my $status=$rinfo->{domain}->{$oname}->{status};
+ $rinfo->{domain}->{$oname}->{contact} = $po->create_local_object('contactset') unless $rinfo->{domain}->{$oname}->{contact};
  my $contact=$rinfo->{domain}->{$oname}->{contact};
+
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
@@ -197,9 +209,15 @@ sub info_parse
   } elsif ($name=~m/^(availableDate|deletionDate)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$po->parse_iso8601($c->textContent());
+  } elsif ($name eq 'delayed')
+  {
+   $rinfo->{domain}->{$oname}->{$name} = Net::DRI::Util::xml_parse_boolean($c->textContent());
   } elsif ($name eq 'contact')
   {
    $contact->add($po->create_local_object('contact')->srid($c->textContent()),$c->getAttribute('type'));
+  } elsif ($name eq 'registrant')
+  {
+   $contact->add($po->create_local_object('contact')->srid($c->textContent()),'registrant');
   } elsif ($name eq 'nsgroup')
   {
    push @nsg,$po->create_local_object('hosts')->name($c->textContent());
@@ -245,28 +263,51 @@ sub check_parse
  return unless $mes->is_success();
 
  my $chkdata=$mes->get_extension('domain-ext','chkData');
- return unless defined $chkdata;
-
- my $ns=$mes->ns('domain-ext');
- foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'domain'))
+ if (defined $chkdata)
  {
-  my $domain;
-  foreach my $el (Net::DRI::Util::xml_list_children($cd))
-  {
-   my ($n,$c)=@$el;
-   if ($n eq 'name')
+   my $ns=$mes->ns('domain-ext');
+   foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'domain'))
    {
-    $domain=lc $c->textContent();
-    $rinfo->{domain}->{$domain}->{action}='check';
-   } elsif ($n eq 'availableDate')
-   {
-    $rinfo->{domain}->{$domain}->{availableDate}=$po->parse_iso8601($c->textContent());
-   } elsif ($n eq 'status')
-   {
-    $rinfo->{domain}->{$domain}->{status}=$po->create_local_object('status')->add(Net::DRI::Protocol::EPP::Util::parse_node_status($c));
+    my $domain;
+    foreach my $el (Net::DRI::Util::xml_list_children($cd))
+    {
+     my ($n,$c)=@$el;
+     if ($n eq 'name')
+     {
+      $domain=lc $c->textContent();
+      $rinfo->{domain}->{$domain}->{action}='check';
+     } elsif ($n eq 'availableDate')
+     {
+      $rinfo->{domain}->{$domain}->{availableDate}=$po->parse_iso8601($c->textContent());
+     } elsif ($n eq 'status')
+     {
+      $rinfo->{domain}->{$domain}->{status}=$po->create_local_object('status')->add(Net::DRI::Protocol::EPP::Util::parse_node_status($c));
+     }
+    }
    }
-  }
  }
+
+ $chkdata=$mes->get_extension('homoglyph','chkData');
+ if (defined $chkdata)
+ {
+   my $ns=$mes->ns('homoglyph');
+   foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'domain'))
+   {
+     my $domain;
+     foreach my $el (Net::DRI::Util::xml_list_children($cd))
+     {
+      my ($n,$c)=@$el;
+      if ($n eq 'name')
+      {
+       $domain=lc $c->textContent();
+      } elsif ($n eq 'blockedBy')
+      {
+       $rinfo->{domain}->{$domain}->{blocked_by} = $c->textContent();
+      }
+     }
+   }
+ }
+
  return;
 }
 
@@ -315,6 +356,7 @@ sub transfer_request
   push @d,['domain-ext:contact',$cbill->srid(),{type => 'billing'}] if Net::DRI::Util::isa_contact($cbill,'Net::DRI::Data::Contact::EURid');
   push @d,add_contact('tech',$cs,9) if $cs->has_type('tech');
   push @d,add_contact('onsite',$cs,5) if $cs->has_type('onsite');
+  push @d,add_contact('reseller',$cs,5) if $cs->has_type('reseller');
  }
 
  push @d,Net::DRI::Protocol::EPP::Util::build_ns($epp,$rd->{ns},$domain,'domain-ext') if Net::DRI::Util::has_ns($rd);
@@ -361,7 +403,7 @@ sub renew_parse
   my ($name,$c)=@$el;
   if ($name=~m/^(removedDeletionDate)$/)
   {
-   $rinfo->{domain}->{$oname}->{$1}=Net::DRI::Util::xml_parse_boolean($c->textContent());
+   $rinfo->{domain}->{$oname}->{removedDeletionDate} = 1;
   }
  }
  return;

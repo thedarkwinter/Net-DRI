@@ -98,7 +98,7 @@ sub validate
  push @errs,'org'  if ($self->org()  && grep { length($_) > 100 } ($self->org()));
 
 
- push @errs,'type' if ($self->type() && $self->type()!~m/^(?:billing|tech|registrant|onsite)$/);
+ push @errs,'type' if ($self->type() && $self->type()!~m/^(?:billing|tech|registrant|onsite|reseller)$/);
  push @errs,'vat'  if ($self->vat()  && !Net::DRI::Util::xml_is_token($self->vat(),1,20));
  push @errs,'lang' if ($self->lang() && !exists($Net::DRI::DRD::EURid::LANGA2_EU{lc($self->lang())}));
 
