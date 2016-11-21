@@ -82,6 +82,7 @@ sub _parse_info_hitpoints
     {
       $registrar->{hitpoints}->{blocked_until}=$po->parse_iso8601($c->textContent());
     }
+    $registrar->{hit_points} = $registrar->{hitpoints};
   }
   return;
 }
@@ -123,12 +124,12 @@ sub parse_info
    _parse_info_finance($po, $registrar, $infdata);
  }
 
- elsif ($infdata=$mes->get_response('registrar_hit_points','hitPoints'))
+ elsif ($infdata=$mes->get_response('registrar_hit_points','infData'))
  {
     _parse_info_hitpoints($po, $registrar, $infdata);
  }
 
- elsif ($infdata=$mes->get_response('registration_limit','registrationLimit'))
+ elsif ($infdata=$mes->get_response('registration_limit','infData'))
  {
     _parse_info_registration_limit($po, $registrar, $infdata);
  }
@@ -147,15 +148,15 @@ sub info
 {
  my ($epp,$registrar,$rd)=@_;
  my $mes=$epp->message();
- if ($rd && exists $rd->{type} && $rd->{type} eq 'hit_points')
+ if ($rd && exists $rd->{type} && ($rd->{type} eq 'hit_points' || $rd->{type} eq 'hitpoints'))
  {
-   $mes->command('info','registrar:hitPoints',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar_hit_points')));
+   $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar_hit_points')));
  } elsif ($rd && exists $rd->{type} && $rd->{type} eq 'registration_limit')
  {
-   $mes->command('info','registrar:registrationLimit',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registration_limit')));
+   $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registration_limit')));
  } else # default to finance
  {
-   $mes->command('info','registrar:finance',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar_finance')));
+   $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar_finance')));
  }
  return;
 }

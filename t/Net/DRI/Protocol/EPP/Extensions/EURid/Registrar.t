@@ -47,19 +47,18 @@ is($dri->protocol()->ns()->{'registration_limit'}->[0],'http://www.eurid.eu/xml/
 # Response for prepayment registrar
 $R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><registrarFinance:infData xmlns:registrarFinance="http://www.eurid.eu/xml/epp/registrarFinance-1.0"><registrarFinance:paymentMode>PRE_PAYMENT</registrarFinance:paymentMode><registrarFinance:availableAmount>10000.00</registrarFinance:availableAmount><registrarFinance:accountBalance>0.00</registrarFinance:accountBalance></registrarFinance:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->registrar_info('registrar', {type=>''});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><registrar:finance xmlns:registrar="http://www.eurid.eu/xml/epp/registrarFinance-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/registrarFinance-1.0 registrarFinance-1.0"/></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info finance (default) build');
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><registrar:info xmlns:registrar="http://www.eurid.eu/xml/epp/registrarFinance-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/registrarFinance-1.0 registrarFinance-1.0"/></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info finance (default) build');
 is($dri->get_info('action'),'info','registrar_info get_info(action)');
 is($dri->get_info('action','message','registrar'),'info','registrar_info get_info(action)');
 is($dri->get_info('action','registrar','registrar'),'info','registrar_info get_info(action)');
 is($dri->get_info('payment_mode'),'PRE_PAYMENT','registrar_info get_info(payment_mode)');
 is($dri->get_info('amount_available'),10000.00,'registrar_info get_info(amount_available)');
 is($dri->get_info('account_balance'),0.00,'registrar_info get_info(account_balance)');
-#print Dumper $dri->get_info_all('registrar');
 
 # Response for post-payment registrar
 $R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><registrarFinance:infData xmlns:registrarFinance="http://www.eurid.eu/xml/epp/registrarFinance-1.0"><registrarFinance:paymentMode>POST_PAYMENT</registrarFinance:paymentMode><registrarFinance:accountBalance>0.00</registrarFinance:accountBalance><registrarFinance:dueAmount>0.00</registrarFinance:dueAmount><registrarFinance:overdueAmount>0.00</registrarFinance:overdueAmount></registrarFinance:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->registrar_info(undef,{type => 'finance'});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><registrar:finance xmlns:registrar="http://www.eurid.eu/xml/epp/registrarFinance-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/registrarFinance-1.0 registrarFinance-1.0"/></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info finance build');
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><registrar:info xmlns:registrar="http://www.eurid.eu/xml/epp/registrarFinance-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/registrarFinance-1.0 registrarFinance-1.0"/></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info finance build');
 is($dri->get_info('action'),'info','registrar_info get_info(action)');
 is($dri->get_info('payment_mode'),'POST_PAYMENT','registrar_info get_info(payment_mode)');
 is($dri->get_info('amount_available'),undef,'registrar_info get_info(amount_available - undef)');
@@ -68,22 +67,22 @@ is($dri->get_info('due_amount'),0.00,'registrar_info get_info(due_amount)');
 is($dri->get_info('overdue_amount'),0.00,'registrar_info get_info(overdue_amount)');
 
 ### Registrar Hit Points Info
-$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><registrar:hitPoints xmlns:registrar="http://www.eurid.eu/xml/epp/registrarHitPoints-1.0"><registrar:nbrHitPoints>8</registrar:nbrHitPoints><registrar:maxNbrHitPoints>5000</registrar:maxNbrHitPoints><registrar:blockedUntil>2016-10-31T22:59:59.999Z</registrar:blockedUntil></registrar:hitPoints></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><registrarHitPoints:infData xmlns:registrarHitPoints="http://www.eurid.eu/xml/epp/registrarHitPoints-1.0"><registrarHitPoints:nbrHitPoints>8</registrarHitPoints:nbrHitPoints><registrarHitPoints:maxNbrHitPoints>5000</registrarHitPoints:maxNbrHitPoints><registrarHitPoints:blockedUntil>2016-10-31T22:59:59.999Z</registrarHitPoints:blockedUntil></registrarHitPoints:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->registrar_info(undef, {type => 'hit_points'});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><registrar:hitPoints xmlns:registrar="http://www.eurid.eu/xml/epp/registrarHitPoints-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/registrarHitPoints-1.0 registrarHitPoints-1.0"/></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info hit_points build');
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><registrar:info xmlns:registrar="http://www.eurid.eu/xml/epp/registrarHitPoints-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/registrarHitPoints-1.0 registrarHitPoints-1.0"/></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info hit_points build');
 is($dri->get_info('action'),'info','registrar_info hit_points get_info(action)');
-$s=$rc->get_data('hitpoints');
-isa_ok($s,'HASH','registrar_info get_data(hitpoints)');
-is($s->{current_number},8,'registrar_info get_data(hitpoints) current_number');
-is($s->{maximum_number},5000,'registrar_info get_data(hitpoints) maximum_number');
-isa_ok($s->{blocked_until},'DateTime','registrar_info get_data(hitpoints) blocked_until isa DateTime');
-is(''.$s->{blocked_until},'2016-10-31T22:59:59','registrar_info get_data(hitpoints) blocked_until value');
+$s=$rc->get_data('hit_points');
+isa_ok($s,'HASH','registrar_info get_data(hit_points)');
+is($s->{current_number},8,'registrar_info get_data(hit_points) current_number');
+is($s->{maximum_number},5000,'registrar_info get_data(hit_points) maximum_number');
+isa_ok($s->{blocked_until},'DateTime','registrar_info get_data(hit_points) blocked_until isa DateTime');
+is(''.$s->{blocked_until},'2016-10-31T22:59:59','registrar_info get_data(hit_points) blocked_until value');
 
 ### Registrar Registration Limit Info
-$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><registrar:registrationLimit xmlns:registrar="http://www.eurid.eu/xml/epp/registrationLimit-1.0"><registrar:monthlyRegistrations>58</registrar:monthlyRegistrations><registrar:maxMonthlyRegistrations>69</registrar:maxMonthlyRegistrations><registrar:limitedUntil>2017-11-30T21:59:59.999Z</registrar:limitedUntil></registrar:registrationLimit></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><registrationLimit:infData xmlns:registrationLimit="http://www.eurid.eu/xml/epp/registrationLimit-1.0"><registrationLimit:monthlyRegistrations>58</registrationLimit:monthlyRegistrations><registrationLimit:maxMonthlyRegistrations>69</registrationLimit:maxMonthlyRegistrations><registrationLimit:limitedUntil>2017-11-30T21:59:59.999Z</registrationLimit:limitedUntil></registrationLimit:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->registrar_info(undef, {type => 'registration_limit'});
-is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><registrar:registrationLimit xmlns:registrar="http://www.eurid.eu/xml/epp/registrationLimit-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/registrationLimit-1.0 registrationLimit-1.0"/></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info registration_limit build');
-$s=$rc->get_data('registration_limit');
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><registrar:info xmlns:registrar="http://www.eurid.eu/xml/epp/registrationLimit-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/registrationLimit-1.0 registrationLimit-1.0"/></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info registration_limit build');
+$s=$dri->get_info('registration_limit');
 isa_ok($s,'HASH','registrar_info get_data(registration_limit)');
 is($s->{monthly_registrations},58,'registrar_info get_data(registration_limit) monthly_registrations');
 is($s->{max_monthly_registrations},69,'registrar_info get_data(registration_limit) max_monthly_registrations');
