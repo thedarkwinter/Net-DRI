@@ -8,7 +8,6 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
-use Data::Dumper;
 
 use Test::More tests => 31;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
