@@ -25,6 +25,8 @@ use DateTime::Duration;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
+__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_accept domains_transfer_reject domains_transfer_cancel domains_transfer_query host_create host_check host_update host_delete host_info/);
+
 =pod
 
 =head1 NAME

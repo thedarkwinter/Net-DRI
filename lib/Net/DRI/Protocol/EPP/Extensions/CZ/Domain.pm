@@ -74,11 +74,19 @@ sub register_commands {
     info    =>   [ \&info, \&info_parse ],
     create    => [ \&create, undef ],
     update    => [ \&update, undef ],
+    transfer_request => [ \&transfer_request, undef ],
   );
   return { 'domain' => \%tmp };
 }
 
 ##################################################################################################
+
+sub build_command_transfer {
+  my ($mes,$domain,$command,$rd)=@_;
+  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>$command}],$domain);
+  push @d,['domain:authInfo', $rd->{auth}->{pw} ? $rd->{auth}->{pw} : '' ];
+  return @d;
+}
 
 sub build_command {
   my ($msg, $command, $domain, $domainattr) = @_;
@@ -107,6 +115,7 @@ sub build_authinfo {
 }
 
 ####################################################################################################
+
 ########### Query commands
 
 sub info {
@@ -265,6 +274,14 @@ sub update {
 
   $mes->command_body(\@d);
 
+  return;
+}
+
+sub transfer_request {
+  my ($epp, $name, $rd) = @_;
+  my $mes = $epp->message();
+  my @d = build_command_transfer($mes,$name,'request',$rd);
+  $mes->command_body(\@d);
   return;
 }
 

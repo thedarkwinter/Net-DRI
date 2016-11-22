@@ -71,7 +71,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands {
   my ($class, $version) = @_;
   my %tmp = (
-    info =>   [ undef, \&info_parse ],
+    info =>   [ \&info, \&info_parse ],
     create => [ \&create, undef ],
     update => [ \&update, undef ]
   );
@@ -99,7 +99,7 @@ sub build_command {
     sprintf('xmlns:contact="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('contact'))]);
 
   my @d = map { ['contact:id', $_] } @c;
-  if (($tcommand =~ m/^(?:info|transfer)$/) && ref($contact[0]) &&
+  if (($tcommand =~ m/^(?:transfer)$/) && ref($contact[0]) &&
     Net::DRI::Util::isa_contact($contact[0])) {
     my $az = $contact[0]->auth();
     if ($az && ref($az) && exists($az->{pw})) {
@@ -111,6 +111,14 @@ sub build_command {
 }
 
 ############ Query commands
+
+sub info {
+  my ($epp, $contact) = @_;
+  my $mes=$epp->message();
+  my @d=build_command($mes,'info',$contact);
+  $mes->command_body(\@d);
+  return;
+}
 
 sub info_parse {
   my ($po, $otype, $oaction, $oname, $rinfo) = @_;
