@@ -1,7 +1,8 @@
-## Domain Registry Interface, EURid Registrar EPP extension commands
-## (introduced in release 5.6 october 2008)
+## Domain Registry Interface, EURid RegistrarFinance EPP extension commands
 ##
-## Copyright (c) 2009,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+##               2016 Michael Holloway <michael.holloway@comlaude.com>.
+##               All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -19,12 +20,157 @@ use strict;
 use warnings;
 
 use Net::DRI::Util;
+use Net::DRI::Exception;
+use Net::DRI::Protocol::EPP::Util;
+
+####################################################################################################
+
+sub register_commands
+{
+  my ($class,$version)=@_;
+  my %tmp=(
+          info   => [ \&info, \&parse_info ],
+         );
+  return { 'registrar' => \%tmp };
+}
+
+sub setup
+{
+  my ($class,$po,$version)=@_;
+  $po->ns({ 'registrar_finance'    => [ 'http://www.eurid.eu/xml/epp/registrarFinance-1.0','registrarFinance-1.0' ] });
+  $po->ns({ 'registrar_hit_points' => [ 'http://www.eurid.eu/xml/epp/registrarHitPoints-1.0','registrarHitPoints-1.0' ] });
+  $po->ns({ 'registration_limit'   => [ 'http://www.eurid.eu/xml/epp/registrationLimit-1.0','registrationLimit-1.0' ] });
+  return;
+}
+
+####################################################################################################
+## Helpers
+
+sub _parse_info_finance
+{
+  my ($po, $registrar, $infdata) = @_;
+  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+  {
+    my ($n,$c)=@$el;
+    #print "Got finfance $name\n\n\n";
+    if ($n eq 'paymentMode')
+    {
+      $registrar->{Net::DRI::Util::xml2perl($n)}=$c->textContent();
+    } elsif ($n =~ m/(?:availableAmount|accountBalance|dueAmount|overdueAmount)/)
+    {
+      $registrar->{Net::DRI::Util::xml2perl($n)}=0+$c->textContent();
+      $registrar->{amount_available} = 0+$c->textContent() if $n eq 'availableAmount'; # backwards compatible
+    }
+  }
+  return;
+}
+
+sub _parse_info_hitpoints
+{
+  my ($po, $registrar, $infdata) = @_;
+  $registrar->{hitpoints}={}; # backwards compatible
+  foreach my $sel (Net::DRI::Util::xml_list_children($infdata))
+  {
+    my ($n,$c)=@$sel;
+    if ($n eq 'nbrHitPoints')
+    {
+      $registrar->{hitpoints}->{current_number}=0+$c->textContent();
+    } elsif ($n eq 'maxNbrHitPoints')
+    {
+      $registrar->{hitpoints}->{maximum_number}=0+$c->textContent();
+    } elsif ($n eq 'blockedUntil')
+    {
+      $registrar->{hitpoints}->{blocked_until}=$po->parse_iso8601($c->textContent());
+    }
+    $registrar->{hit_points} = $registrar->{hitpoints};
+  }
+  return;
+}
+
+sub _parse_info_registration_limit
+{
+  my ($po, $registrar, $infdata) = @_;
+  $registrar->{registration_limit}={};
+  foreach my $sel (Net::DRI::Util::xml_list_children($infdata))
+  {
+    my ($n,$c)=@$sel;
+    if ($n eq 'monthlyRegistrations')
+    {
+      $registrar->{registration_limit}->{monthly_registrations}=0+$c->textContent();
+    } elsif ($n eq 'maxMonthlyRegistrations')
+    {
+      $registrar->{registration_limit}->{max_monthly_registrations}=0+$c->textContent();
+    } elsif ($n eq 'limitedUntil')
+    {
+      $registrar->{registration_limit}->{limited_until}=$po->parse_iso8601($c->textContent());
+    }
+  }
+  return;
+}
+
+####################################################################################################
+# Query commands
+sub parse_info
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
+
+ my $registrar = {};
+ my ($infdata);
+
+ if ($infdata=$mes->get_response('registrar_finance','infData'))
+ {
+   _parse_info_finance($po, $registrar, $infdata);
+ }
+
+ elsif ($infdata=$mes->get_response('registrar_hit_points','infData'))
+ {
+    _parse_info_hitpoints($po, $registrar, $infdata);
+ }
+
+ elsif ($infdata=$mes->get_response('registration_limit','infData'))
+ {
+    _parse_info_registration_limit($po, $registrar, $infdata);
+ }
+
+ $otype = 'message';
+ $registrar->{object_type} = 'registrar';
+ $oname = $registrar->{object_id} = $registrar->{name} = 'registrar';
+ $oaction = $registrar->{action} = 'info';
+ $rinfo->{message}->{registrar} = $registrar;
+ $rinfo->{registrar}->{registrar} = $rinfo->{message}->{registrar};
+
+ return;
+}
+
+sub info
+{
+ my ($epp,$registrar,$rd)=@_;
+ my $mes=$epp->message();
+ if ($rd && exists $rd->{type} && ($rd->{type} eq 'hit_points' || $rd->{type} eq 'hitpoints'))
+ {
+   $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar_hit_points')));
+ } elsif ($rd && exists $rd->{type} && $rd->{type} eq 'registration_limit')
+ {
+   $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registration_limit')));
+ } else # default to finance
+ {
+   $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar_finance')));
+ }
+ return;
+}
+
+####################################################################################################
+1;
+
+__END__
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::EURid::Registrar - EURid EPP Registrar extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::EURid::IDN - EURid IDN EPP Extension for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -48,7 +194,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+ Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+               2016 Michael Holloway <michael.holloway@comlaude.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -59,75 +206,3 @@ the Free Software Foundation; either version 2 of the License, or
 See the LICENSE file that comes with this distribution for more details.
 
 =cut
-
-####################################################################################################
-
-sub register_commands
-{
- my ($class,$version)=@_;
- my %tmp=(
-          info => [ \&info, \&info_parse ],
-         );
-
- return { 'registrar' => \%tmp };
-}
-
-sub setup
-{
- my ($class,$po,$version)=@_;
- $po->ns({ 'registrar' => [ 'http://www.eurid.eu/xml/epp/registrar-1.0','registrar-1.0.xsd' ] });
- return;
-}
-
-####################################################################################################
-
-sub info
-{
- my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
- $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar')));
- return;
-}
-
-sub info_parse
-{
- my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
-
- my $infdata=$mes->get_response('registrar','infData');
- return unless defined $infdata;
-
- foreach my $el (Net::DRI::Util::xml_list_children($infdata))
- {
-  my ($name,$c)=@$el;
-  if ($name eq 'amountAvailable')
-  {
-   $rinfo->{registrar}->{info}->{amount_available}=0+$c->textContent();
-  } elsif ($name eq 'hitPoints')
-  {
-   $rinfo->{registrar}->{info}->{hitpoints}={};
-   foreach my $sel (Net::DRI::Util::xml_list_children($c))
-   {
-    my ($n,$cc)=@$sel;
-    if ($n eq 'nbrHitPoints')
-    {
-     $rinfo->{registrar}->{info}->{hitpoints}->{current_number}=0+$cc->textContent();
-    } elsif ($n eq 'maxNbrHitPoints')
-    {
-     $rinfo->{registrar}->{info}->{hitpoints}->{maximum_number}=0+$cc->textContent();
-    } elsif ($n eq 'blockedUntil')
-    {
-     $rinfo->{registrar}->{info}->{hitpoints}->{blocked_until}=$po->parse_iso8601($cc->textContent());
-    }
-   }
-  } elsif ($name eq 'credits')
-  {
-   $rinfo->{registrar}->{info}->{credits}->{$c->getAttribute('type')}=($c->textContent() eq '')? undef : 0+$c->textContent();
-  }
- }
- return;
-}
-
-####################################################################################################
-1;

@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 54;
+use Test::More tests => 66;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -30,7 +30,7 @@ my ($rc,$s,$d,$co,$toc,$cs,$h,$dh,@c);
 ########################################################################################################
 
 ## Process greetings to select namespace versions
-$R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2014-09-13T09:31:14.123Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrar-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/nsgroup-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/keygroup-1.1</objURI><svcExtension><extURI>http://www.eurid.eu/xml/epp/contact-ext-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-1.1</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/idn-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dynUpdate-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/authInfo-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.2</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2016-11-17T14:30:12.230Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarFinance-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarHitPoints-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrationLimit-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/nsgroup-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/keygroup-1.1</objURI><svcExtension><extURI>http://www.eurid.eu/xml/epp/contact-ext-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.0</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.1</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/idn-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dnsQuality-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/authInfo-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.2</extURI><extURI>http://www.eurid.eu/xml/epp/homoglyph-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{'poll'}->[0],'http://www.eurid.eu/xml/epp/poll-1.2','poll 1.2 for server announcing 1.1 + 1.2');
 
@@ -118,5 +118,21 @@ is($dri->get_info('detail','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),und
 is($dri->get_info('object_type','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),'DOMAIN','message_retrieve get_info object_type');
 is($dri->get_info('object_unicode','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),'secure-domain.eu','message_retrieve get_info object_unicode');
 is($dri->get_info('exist','message','e535d011-baa1-42d8-b0e6-5aec5edaa49e'),'1','message_retrieve get_info exist');
+
+# 8. Poll request command. Watermark payment rejected
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="7" id="456"><qDate>2016-12-01T11:25:38.671Z</qDate><msg>Watermark payment rejected</msg></msgQ><resData><poll:pollData xmlns:poll="http://www.eurid.eu/xml/epp/poll-1.2"><poll:context>WATERMARK</poll:context><poll:objectType>PAYMENT</poll:objectType><poll:object>567</poll:object><poll:objectUnicode>567</poll:objectUnicode><poll:action>REJECTED</poll:action><poll:code>2610</poll:code></poll:pollData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($R1,$E1.'<command><poll op="req"/><clTRID>ABC-12345</clTRID></command>'.$E2,'message_restrieve build_xml');
+is($rc->is_success(), 1, 'message_retrieve is_success');
+is($dri->get_info('last_id'),'456','message_retrieve get_info(last_id)');
+is($dri->get_info('context','message','456'),'WATERMARK','message_retrieve get_info context');
+is($dri->get_info('notification_code','message','456'),undef,'message_retrieve get_info notification_code');
+is($dri->get_info('action','message','456'),'REJECTED','message_retrieve get_info action');
+is($dri->get_info('detail','message','456'),undef,'message_retrieve get_info detail');
+is($dri->get_info('object_type','message','456'),'session','message_retrieve get_info object_type');
+is($dri->get_info('object_unicode','message','456'),undef,'message_retrieve get_info object_unicode');
+is($dri->get_info('exist','message','456'),undef,'message_retrieve get_info exist');
+is($dri->get_info('level','message','456'),567,'message_retrieve get_info level');
+is($rc->get_data('message','456','level'),567,'notification !domain get_data(level)');
 
 exit 0;
