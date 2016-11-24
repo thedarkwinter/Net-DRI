@@ -82,7 +82,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'NAME'; }
 sub tlds     { return ('name'); }
-sub object_types { return ('domain','contact','ns'); }
+sub object_types { return ('domain','contact','ns','defReg'); }
 sub profile_types { return qw/epp whois/; }
 
 sub transport_protocol_default
@@ -102,8 +102,10 @@ sub verify_name_domain
  return $self->_verify_name_rules($domain,$op,{check_name => 1, check_name_dots => [1,2],
                                                my_tld_not_strict => 1, ## we need less strict checks because in X.Y.name domain names both X and Y are variables
                                                icann_reserved => 1,
-                                              });                                              
+                                              });
 }
+
+####################################################################################################
 
 sub emailfwd_check
 {
@@ -174,6 +176,128 @@ sub emailfwd_renew
  Net::DRI::Util::check_isa($rd->{current_expiration},'DateTime') if defined($rd->{current_expiration});
  return $ndr->process('emailfwd','renew',[$email,$rd->{duration},$rd->{current_expiration}]);
 }
+
+####################################################################################################
+
+
+# based on domain_check
+sub defreg_check
+{
+ my ($self,$ndr,@p)=@_;
+ my (@names,$rd);
+ foreach my $p (@p)
+ {
+  if (defined $p && ref $p eq 'HASH')
+  {
+   Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in defreg_check') if defined $rd;
+   $rd = $p;
+   next;
+  }
+  push @names,$p;
+ }
+ Net::DRI::Exception::usererr_insufficient_parameters('defreg_check needs at least one name to check') unless @names;
+ $rd={} unless defined $rd;
+
+ my (@rs,@todo);
+ my (%seendom,%seenrc);
+ foreach my $domain (@names)
+ {
+  next if exists $seendom{$domain};
+  $seendom{$domain}=1;
+  my $rs=$ndr->try_restore_from_cache('defreg',$domain,'check');
+  if (! defined $rs)
+  {
+   push @todo,$domain;
+  } else
+  {
+   push @rs,$rs unless exists $seenrc{''.$rs}; ## Some ResultStatus may relate to multiple domain names (this is why we are doing this anyway !), so make sure not to use the same ResultStatus multiple times
+   $seenrc{''.$rs}=1;
+  }
+ }
+
+ return Net::DRI::Util::link_rs(@rs) unless @todo;
+
+ if (@todo > 1 && $ndr->protocol()->has_action('defreg','check_multi'))
+ {
+  my $l = $self->info('defreg_check_limit') ? $self->info('defReg_check_limit') : $self->info('check_limit');
+  if (! defined $l)
+  {
+   $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for defreg_check action. Please report if you know the correct value');
+   $l=10;
+  }
+  while (@todo)
+  {
+   my @lt=splice(@todo,0,$l);
+   push @rs,$ndr->process('defreg','check_multi',[\@lt,$rd]);
+  }
+ } else ## either one domain only, or more than one but no check_multi available at protocol level
+ {
+  push @rs,map { $ndr->process('defreg','check',[$_,$rd]); } @todo;
+ }
+
+ return Net::DRI::Util::link_rs(@rs);
+}
+
+sub defreg_exist ## 1/0/undef
+{
+ my ($self,$ndr,$roid)=@_;
+ my $rc=$ndr->defreg_check($roid);
+ return unless $rc->is_success();
+ return $ndr->get_info('exist');
+}
+
+sub defreg_info
+{
+ my ($self,$ndr,$roid,$rd)=@_;
+ my $rc=$ndr->try_restore_from_cache('defreg',$roid,'info');
+ if (! defined $rc) { $rc=$ndr->process('defreg','info',[$roid,$rd]); }
+ return $rc;
+}
+
+sub defreg_create
+{
+ my ($self,$ndr,$email,$rd)=@_;
+ ## Technical syntax check of email object needed here
+ my $rc=$ndr->process('defreg','create',[$email,$rd]);
+ return $rc;
+}
+
+sub defreg_delete
+{
+ my ($self,$ndr,$email)=@_;
+ ## Technical syntax check of email object needed here
+ my $rc=$ndr->process('defreg','delete',[$email]);
+ return $rc;
+}
+
+sub defreg_update
+{
+ my ($self,$ndr,$email,$tochange)=@_;
+ my $fp=$ndr->protocol->nameversion();
+
+ ## Technical syntax check of email object needed here
+ Net::DRI::Util::check_isa($tochange,'Net::DRI::Data::Changes');
+
+ foreach my $t ($tochange->types())
+ {
+  next if $ndr->protocol_capable('defreg_update',$t);
+  Net::DRI::Exception->die(0,'DRD',5,'Protocol '.$fp.' is not capable of defreg_update/'.$t);
+ }
+
+ my $rc=$ndr->process('defreg','update',[$email,$tochange]);
+ return $rc;
+}
+
+sub defreg_renew
+{
+ my ($self,$ndr,$email,$rd)=@_;
+ ## Technical syntax check of email object needed here
+ Net::DRI::Util::check_isa($rd->{duration},'DateTime::Duration') if defined($rd->{duration});
+ Net::DRI::Util::check_isa($rd->{current_expiration},'DateTime') if defined($rd->{current_expiration});
+ return $ndr->process('defreg','renew',[$email,$rd->{duration},$rd->{current_expiration}]);
+}
+
+####################################################################################################
 
 ####################################################################################################
 1;
