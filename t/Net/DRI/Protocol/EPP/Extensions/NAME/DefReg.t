@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 63;
+use Test::More tests => 66;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -126,7 +126,7 @@ is_string($R1,$E1.'<command><transfer op="reject"><defReg:transfer xmlns:defReg=
 
 # defreg create (with IDN - required language tag)
 $R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:creData xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE7-REP</defReg:roid><defReg:name level="premium">xn--gya</defReg:name><defReg:crDate>1999-04-03T22:00:00.0Z</defReg:crDate><defReg:exDate>2000-04-03T22:00:00.0Z</defReg:exDate></defReg:creData></resData>'.$TRID.'</response>'.$E2;
-$rc=$dri->defreg_create('xn--gya', {level => 'premium', contact => $cs, 'tm' => 'XYZ-123', 'tmCountry' => 'US', 'tmDate' => '1990-04-03', auth => { pw => '2fooBAR' }, language => 'GRE'} );
+$rc=$dri->defreg_create('xn--gya', {level => 'premium', contact => $cs, 'tm' => 'XYZ-123', 'tmCountry' => 'US', 'tmDate' => DateTime->new(year=>1990,month=>4,day=>3), auth => { pw => '2fooBAR' }, language => 'GRE'} );
 is_string($R1,$E1.'<command><create><defReg:create xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:name level="premium">xn--gya</defReg:name><defReg:registrant>jd1234</defReg:registrant><defReg:tm>XYZ-123</defReg:tm><defReg:tmCountry>US</defReg:tmCountry><defReg:tmDate>1990-04-03</defReg:tmDate><defReg:adminContact>sh8013</defReg:adminContact><defReg:authInfo><defReg:pw>2fooBAR</defReg:pw></defReg:authInfo></defReg:create></create><extension><idnLang:tag xmlns:idnLang="http://www.verisign.com/epp/idnLang-1.0" xsi:schemaLocation="http://www.verisign.com/epp/idnLang-1.0 idnLang-1.0.xsd">GRE</idnLang:tag></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_create build_xml');
 is($dri->get_info('action'), 'create', 'defreg_create get_info(action)');
 is($dri->get_info('name'), 'xn--gya', 'defreg_create get_info(name)');
@@ -144,6 +144,22 @@ is_string($R1,$E1.'<command><delete><defReg:delete xmlns:defReg="http://www.nic.
 $R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:renData xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE9-REP</defReg:roid><defReg:exDate>2001-04-03T22:00:00.0Z</defReg:exDate></defReg:renData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->defreg_renew('EXAMPLE9-REP', {duration => DateTime::Duration->new(years=>1), current_expiration => DateTime->new(year=>2000,month=>4,day=>3)});
 is_string($R1,$E1.'<command><renew><defReg:renew xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE9-REP</defReg:roid><defReg:curExpDate>2000-04-03</defReg:curExpDate><defReg:period unit="y">1</defReg:period></defReg:renew></renew><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_renew build_xml');
+
+# defreg update
+$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result>'.$TRID.'</response>'.$E2;
+my $toc=$dri->local_object('changes');
+$toc->add('status',$dri->local_object('status')->no('delete','Deletions not desired.'));
+$toc->del('status',$dri->local_object('status')->no('update'));
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('sh8013'),'registrant');
+$cs->set($dri->local_object('contact')->srid('sh8013'),'admin');
+$toc->set('contact',$cs);
+$toc->set('tm', 'XYZ-123');
+$toc->set('tmCountry', 'US');
+$toc->set('tmDate', DateTime->new(year=>1990,month=>4,day=>3));
+$toc->set('auth', { pw => '2BARfoo' });
+$rc=$dri->defreg_update('EXAMPLE10-REP',$toc);
+is_string($R1,$E1.'<command><update><defReg:update xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE10-REP</defReg:roid><defReg:add><defReg:status lang="en" s="clientDeleteProhibited">Deletions not desired.</defReg:status></defReg:add><defReg:rem><defReg:status s="clientUpdateProhibited"/></defReg:rem><defReg:chg><defReg:registrant>sh8013</defReg:registrant><defReg:tm>XYZ-123</defReg:tm><defReg:tmCountry>US</defReg:tmCountry><defReg:tmDate>1990-04-03</defReg:tmDate><defReg:adminContact>sh8013</defReg:adminContact><defReg:authInfo><defReg:pw>2BARfoo</defReg:pw></defReg:authInfo></defReg:chg></defReg:update></update><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_renew build_xml');
 
 
 exit 0;

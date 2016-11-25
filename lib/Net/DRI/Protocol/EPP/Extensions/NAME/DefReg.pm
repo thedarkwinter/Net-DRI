@@ -91,6 +91,15 @@ sub register_commands
  return { 'defreg' => \%tmp1 };
 }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ defReg => ['http://www.nic.name/epp/defReg-1.0','defReg-1.0.xsd'] });
+ $po->capabilities('defreg_update', 'status', ['add', 'rem']);
+ foreach (qw/auth contact tm tmCountry tmDate/) { $po->capabilities('defreg_update', $_ ,['chg']); }
+ return;
+}
+
 ####################################################################################################
 ########### Helpers
 
@@ -273,7 +282,10 @@ sub create
  push(@d, ['defReg:registrant', $cs->get('registrant')->srid()]) if $cs->has_type('registrant');
  push(@d, ['defReg:tm', $rd->{tm}]) if defined $rd->{tm};
  push(@d, ['defReg:tmCountry', $rd->{tmCountry}]) if defined $rd->{tmCountry};
- push(@d, ['defReg:tmDate', $rd->{tmDate}]) if defined $rd->{tmDate};
+ if (defined $rd->{tmDate}) {
+  Net::DRI::Exception::usererr_invalid_parameters('defReg tmDate is invalid') unless Net::DRI::Util::check_isa($rd->{tmDate},'DateTime');
+  push(@d, ['defReg:tmDate', $rd->{tmDate}->ymd()]);
+ }
  push(@d, ['defReg:adminContact', $cs->get('admin')->srid()]) if $cs->has_type('admin');
  push(@d, ['defReg:period', { unit => 'y' },$rd->{period}->in_units('years')]) if (defined($rd->{period}));
 
@@ -327,23 +339,42 @@ sub renew
 
 sub transfer_request { return _build_transfer(@_,'request'); }
 sub transfer_cancel { return _build_transfer(@_,'cancel'); }
-sub transfer_answer { return _build_transfer(@_, @_[2]->{approve} ? 'approve' : 'reject'); }
+sub transfer_answer { return _build_transfer(@_, $_[2]->{approve} ? 'approve' : 'reject'); }
 
 sub update
 {
- my ($epp,$hosts,$todo)=@_;
+ my ($epp,$roid,$todo)=@_;
  my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
 
- if ((grep { ! /^(?:ns)$/ } $todo->types()) || (grep { ! /^(?:set)$/ } $todo->types('ns') ))
- {
-  Net::DRI::Exception->die(0,'protocol/EPP',11,'Only ns set available for nsgroup');
- }
+ $mes->command('update','defReg:update',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+ my (@d,@add,@del,@set);
+ push @d, ['defReg:roid', $roid ];
 
- my $ns=$todo->set('ns');
- my @d=build_command($epp,$mes,'update',$hosts);
- push @d,add_nsname($ns);
+ my $sadd=$todo->add('status');
+ push @add,$sadd->build_xml('defReg:status','core') if Net::DRI::Util::isa_statuslist($sadd);
+ push @d,['defReg:add',@add] if @add;
+
+ my $sdel=$todo->del('status');
+ push @del,$sdel->build_xml('defReg:status','core') if Net::DRI::Util::isa_statuslist($sdel);
+ push @d,['defReg:rem',@del] if @del;
+
+ my $cs=$todo->set('contact');
+ my $auth = $todo->set('auth');
+ push(@set, ['defReg:registrant', $cs->get('registrant')->srid()]) if defined $cs && $cs->has_type('registrant');
+ push(@set, ['defReg:tm', $todo->set('tm')]) if defined $todo->set('tm');
+ push(@set, ['defReg:tmCountry', $todo->set('tmCountry')]) if defined $todo->set('tmCountry');
+ if (defined $todo->set('tmDate')) {
+  Net::DRI::Exception::usererr_invalid_parameters('defReg tmDate is invalid') unless Net::DRI::Util::check_isa($todo->set('tmDate'),'DateTime');
+  push(@set, ['defReg:tmDate', $todo->set('tmDate')->ymd()]);
+ }
+ push(@set, ['defReg:adminContact', $cs->get('admin')->srid()]) if defined $cs && $cs->has_type('admin');
+ push @set, ['defReg:authInfo', ['defReg:pw', $auth->{pw}]] if defined $auth;
+
+ push @d,['defReg:chg',@set] if @set;
+
+
  $mes->command_body(\@d);
  return;
 }
