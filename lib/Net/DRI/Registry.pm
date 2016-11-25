@@ -186,7 +186,7 @@ sub set_info
  my $regname=$self->name();
 
  my $c=$self->{cache}->set($regname.'.'.$p,$type,$key,$data,$ttl);
- $self->{last_data}=$c; ## the hash exists, since we called clear_info somewhere before 
+ $self->{last_data}=$c; ## the hash exists, since we called clear_info somewhere before
  $self->{last_data}->{result_from_cache}=0;
 
  return $c;
@@ -680,7 +680,7 @@ sub protocol_capable
  my $po=$ndr->protocol();
  my $cap=$po->capabilities(); ## hashref
 
- return 0 unless ($cap && (ref($cap) eq 'HASH') && exists($cap->{$op}) 
+ return 0 unless ($cap && (ref($cap) eq 'HASH') && exists($cap->{$op})
                        && (ref($cap->{$op}) eq 'HASH') && exists($cap->{$op}->{$subop})
                        && (ref($cap->{$op}->{$subop}) eq 'ARRAY'));
 

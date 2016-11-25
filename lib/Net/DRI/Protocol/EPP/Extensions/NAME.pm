@@ -70,11 +70,12 @@ sub setup
 {
  my ($self,$rp)=@_;
  $self->ns({ emailFwd => ['http://www.nic.name/epp/emailFwd-1.0','emailFwd-1.0.xsd'] });
+ $self->ns({ defReg => ['http://www.nic.name/epp/defReg-1.0','defReg-1.0.xsd'] });
  $self->capabilities('emailfwd_update','info',['set']);
  return;
 }
 
-sub default_extensions { return qw/NAME::EmailFwd VeriSign::IDNLanguage GracePeriod SecDNS/; }
+sub default_extensions { return qw/NAME::EmailFwd NAME::DefReg VeriSign::IDNLanguage GracePeriod SecDNS/; }
 
 ####################################################################################################
 1;

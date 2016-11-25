@@ -69,7 +69,7 @@ sub register_commands
            create => [ \&create, undef ],
          );
 
- return { 'domain' => \%tmp };
+ return { 'domain' => \%tmp, 'defreg' => \%tmp };
 }
 
 ####################################################################################################
