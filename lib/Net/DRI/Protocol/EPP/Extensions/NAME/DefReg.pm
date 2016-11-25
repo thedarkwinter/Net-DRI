@@ -274,9 +274,6 @@ sub create
  push(@d, ['defReg:tm', $rd->{tm}]) if defined $rd->{tm};
  push(@d, ['defReg:tmCountry', $rd->{tmCountry}]) if defined $rd->{tmCountry};
  push(@d, ['defReg:tmDate', $rd->{tmDate}]) if defined $rd->{tmDate};
-
- push(@d, ['defReg:curExpDate', $rd->{curExpDate}]) if (defined($rd->{curExpDate}));
-
  push(@d, ['defReg:adminContact', $cs->get('admin')->srid()]) if $cs->has_type('admin');
  push(@d, ['defReg:period', { unit => 'y' },$rd->{period}->in_units('years')]) if (defined($rd->{period}));
 
@@ -299,6 +296,13 @@ sub create_parse
 sub delete
 {
  my ($epp,$roid,$rd)=@_;
+ my $mes = $epp->message();
+ Net::DRI::Exception->die(1,'protocol/EPP',2,'defReg roid needed') unless (defined($roid));
+ $mes->command('delete','defReg:delete',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+ my @d;
+ push @d, ['defReg:roid', $roid ];
+ $mes->command_body(\@d);
+ return;
 }
 
 sub renew
@@ -306,16 +310,17 @@ sub renew
   my ($epp,$roid,$period,$curexp)=@_;
   my $mes = $epp->message();
 
-  Net::DRI::Util::check_isa($curexp,'DateTime');
-  Net::DRI::Util::check_isa($period,'DateTime::Duration');
+  Net::DRI::Exception->die(1,'protocol/EPP',2,'defReg roid needed') unless (defined($roid));#
+  Net::DRI::Exception::usererr_insufficient_parameters('current_expiration') unless $curexp;
+  Net::DRI::Exception::usererr_invalid_parameters('defReg current_expiration required') unless Net::DRI::Util::check_isa($curexp,'DateTime');
+  Net::DRI::Exception::usererr_invalid_parameters('defReg invalid period') if defined $period && !Net::DRI::Util::check_isa($period,'DateTime::Duration');
 
-  my $info = {
-   name => $roid,
-   curExpDate => $curexp->ymd,
-   period => $period
-  };
+  $mes->command('renew','defReg:renew',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+  my @d;
+  push @d, ['defReg:roid', $roid ];
+  push(@d, ['defReg:curExpDate', $curexp->ymd]) if defined $curexp;
+  push(@d, ['defReg:period', { unit => 'y' }, $period->in_units('years')]) if defined $period;
 
-  my @d = build_command($epp,$mes,'renew',$info);
   $mes->command_body(\@d);
   return;
 }

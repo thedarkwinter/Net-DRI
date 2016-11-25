@@ -135,5 +135,15 @@ is($dri->get_info('level'), 'premium', 'defreg_create get_info(level)');
 is($dri->get_info('crDate'), '1999-04-03T22:00:00', 'defreg_create get_info(crDate)');
 is($dri->get_info('exDate'), '2000-04-03T22:00:00', 'defreg_create get_info(exDate)');
 
+# defreg delete
+$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result>'.$TRID.'</response>'.$E2;
+$rc=$dri->defreg_delete('EXAMPLE8-REP');
+is_string($R1,$E1.'<command><delete><defReg:delete xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE8-REP</defReg:roid></defReg:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_delete build_xml');
+
+# defreg renew
+$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:renData xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE9-REP</defReg:roid><defReg:exDate>2001-04-03T22:00:00.0Z</defReg:exDate></defReg:renData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->defreg_renew('EXAMPLE9-REP', {duration => DateTime::Duration->new(years=>1), current_expiration => DateTime->new(year=>2000,month=>4,day=>3)});
+is_string($R1,$E1.'<command><renew><defReg:renew xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE9-REP</defReg:roid><defReg:curExpDate>2000-04-03</defReg:curExpDate><defReg:period unit="y">1</defReg:period></defReg:renew></renew><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_renew build_xml');
+
 
 exit 0;
