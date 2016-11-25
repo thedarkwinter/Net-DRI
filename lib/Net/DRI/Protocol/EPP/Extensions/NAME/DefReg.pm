@@ -274,11 +274,17 @@ sub create
  $mes->command('create','defReg:create',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
 
  my $cs = $rd->{contact};
+ Net::DRI::Exception::usererr_insufficient_parameters('contact') unless $cs && Net::DRI::Util::check_isa($cs, 'Net::DRI::Data::ContactSet');
+ Net::DRI::Exception::usererr_insufficient_parameters('registrant') unless $cs->has_type('registrant');
+ Net::DRI::Exception::usererr_insufficient_parameters('admin') unless $cs->has_type('admin');
+ my $auth = $rd->{auth};
+ Net::DRI::Exception::usererr_insufficient_parameters('auth') unless defined $auth and exists $auth->{pw};
+
  my @d;
- my @auth;
 
  my $level = exists($rd->{"level_$name"}) ? $rd->{"level_$name"} : exists($rd->{level}) ? $rd->{level} : 'standard' ;
  push(@d, ['defReg:name', { level => $level }, $name]);
+
  push(@d, ['defReg:registrant', $cs->get('registrant')->srid()]) if $cs->has_type('registrant');
  push(@d, ['defReg:tm', $rd->{tm}]) if defined $rd->{tm};
  push(@d, ['defReg:tmCountry', $rd->{tmCountry}]) if defined $rd->{tmCountry};
@@ -288,12 +294,7 @@ sub create
  }
  push(@d, ['defReg:adminContact', $cs->get('admin')->srid()]) if $cs->has_type('admin');
  push(@d, ['defReg:period', { unit => 'y' },$rd->{period}->in_units('years')]) if (defined($rd->{period}));
-
- foreach my $auth (sort { $a cmp $b } keys %{$rd->{auth}})
- {
-  push(@auth, ['defReg:' . $auth, $rd->{auth}->{$auth}]);
- }
- push(@d, ['defReg:authInfo', @auth]) if (@auth);
+ push @d, ['defReg:authInfo', ['defReg:pw', $auth->{pw}]];
 
  $mes->command_body(\@d);
  return @d;
