@@ -76,15 +76,23 @@ sub register_commands
  my %tmp1=( create => [ \&create ],
             check  => [ \&check, \&check_parse ],
             info   => [ \&info, \&info_parse ],
+            info   => [ \&info, \&info_parse ],
             delete => [ \&delete ],
 	          update => [ \&update ],
-	          renew  => [ \&renew ]
+	          renew  => [ \&renew ],
+            transfer_query => [ \&transfer_query, \&transfer_parse ],
+            transfer_request => [ \&transfer_request, \&transfer_parse ],
+            transfer_cancel => [ \&transfer_cancel, \&transfer_parse ],
+            transfer_answer => [ \&transfer_answer, \&transfer_parse ],
           );
 
  $tmp1{check_multi}=$tmp1{check};
 
  return { 'defreg' => \%tmp1 };
 }
+
+####################################################################################################
+########### Helpers
 
 sub build_command
 {
@@ -120,6 +128,86 @@ sub build_command
  push(@ret, ['defReg:authInfo', @auth]) if (@auth);
 
  return @ret;
+}
+
+sub _build_transfer
+{
+ my ($epp,$roid,$rd,$op)=@_;
+ my $mes = $epp->message();
+ Net::DRI::Exception->die(1,'protocol/EPP',2,'defReg roid needed') unless (defined($roid));
+ $mes->command(['transfer',{'op'=>$op}],'defReg:transfer',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+ my @d;
+ push @d, ['defReg:roid', $roid ];
+ push @d,Net::DRI::Protocol::EPP::Util::build_period($rd->{duration},'defReg') if Net::DRI::Util::has_duration($rd);
+ push @d, ['defReg:authInfo', ['defReg:pw', $rd->{auth}->{pw}, exists($rd->{auth}->{roid})? { 'roid' => $rd->{auth}->{roid} } : undef]] if exists $rd->{auth};
+ $mes->command_body(\@d);
+ return;
+}
+
+sub _parse_defref
+{
+  my ($po,$otype,$oaction,$oname,$rinfo,$section)=@_;
+
+  my $mes=$po->message();
+  return unless $mes->is_success();
+
+  my $ns = $mes->ns('defReg');
+  my $data=$mes->get_response($ns, $section);
+  return unless $data;
+
+  my $cs = $po->create_local_object('contactset');
+  my @s;
+  my $info = {};
+
+  my $c=$data->getFirstChild();
+  while ($c)
+  {
+   next unless ($c->nodeType() == 1); ## only for element nodes
+   my $name=$c->localname() || $c->nodeName();
+   next unless $name;
+
+   if ($name eq 'roid')
+   {
+     $oname = $info->{object_id} = $info->{roid} = $c->getFirstChild()->getData();
+   }
+   elsif ($name eq 'name')
+   {
+    $info->{name} = $c->getFirstChild()->getData();
+    $info->{level} = $c->getAttribute('level') if $c->hasAttribute('level');
+   }
+   elsif ($name eq 'status')
+   {
+    push @s,Net::DRI::Protocol::EPP::Util::parse_node_status($c);
+   }
+   elsif (grep { $_ eq $name } qw/clID crID upID reID acID tm tmCountry trStatus/)
+   {
+    $info->{$name} = $c->getFirstChild()->getData();
+   }
+   elsif (grep { $_ eq $name } qw/crDate upDate trDate exDate tmDate acDate reDate/)
+   {
+    $info->{$name} = $po->parse_iso8601($c->getFirstChild()->getData());
+   }
+   elsif (grep { $_ eq $name } qw/registrant adminContact/)
+   {
+    my $type = $name eq 'adminContact' ? 'admin' : 'registrant';
+    $cs->add($po->create_local_object('contact')->srid($c->getFirstChild()->getData()), $type);
+   }
+   elsif ($name eq 'authInfo')
+   {
+    my $pw = ($c->getElementsByTagNameNS($mes->ns('defReg'),'pw'))[0];
+    $info->{auth} = { pw => (defined($pw) && $pw->hasChildNodes() ? $pw->getFirstChild->getData() : undef) };
+   }
+  } continue { $c=$c->getNextSibling(); }
+
+  $info->{contact} = $cs;
+  $info->{status} = $po->create_local_object('status')->add(@s);
+  $info->{exist} = 1;
+  $otype = $info->{object_type} = 'defreg';
+  $info->{action} = $oaction;
+  $otype = 'defreg';
+  $rinfo->{defreg}->{$oname} = $info;
+
+  return;
 }
 
 ####################################################################################################
@@ -180,77 +268,37 @@ sub info
  $mes->command('info','defReg:info',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
  my @d;
  push @d, ['defReg:roid', $roid ];
- push @d, ['defReg:authInfo', ['defReg:pw', $rd->{auth}->{pw}, exists($rd->{auth}->{roid})? { 'roid' => $rd->{auth}->{roid} } : undef]];
+ push @d, ['defReg:authInfo', ['defReg:pw', $rd->{auth}->{pw}, exists($rd->{auth}->{roid})? { 'roid' => $rd->{auth}->{roid} } : undef]] if exists $rd->{auth};
  $mes->command_body(\@d);
  return;
 }
 
+
+
 sub info_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message();
- return unless $mes->is_success();
-
- my $ns = $mes->ns('defReg');
- my $infdata=$mes->get_response($ns, 'infData');
- return unless $infdata;
-
- my $cs = $po->create_local_object('contactset');
- my @s;
- my $info = {};
-
- my $c=$infdata->getFirstChild();
- while ($c)
- {
-  next unless ($c->nodeType() == 1); ## only for element nodes
-  my $name=$c->localname() || $c->nodeName();
-  next unless $name;
-
-  if ($name eq 'roid')
-  {
-    $oname = $info->{object_id} = $info->{roid} = $c->getFirstChild()->getData();
-  }
-  if ($name eq 'name')
-  {
-   $info->{name} = $c->getFirstChild()->getData();
-   $info->{level} = $c->getAttribute('level') if $c->hasAttribute('level');
-  }
-  elsif ($name eq 'status')
-  {
-   push @s,Net::DRI::Protocol::EPP::Util::parse_node_status($c);
-  }
-  elsif (grep { $_ eq $name } qw/clID crID upID tm tmCountry /)
-  {
-   $info->{$name} = $c->getFirstChild()->getData();
-  }
-  elsif (grep { $_ eq $name } qw/crDate upDate trDate exDate tmDate/)
-  {
-   $info->{$name} = $po->parse_iso8601($c->getFirstChild()->getData());
-  }
-  elsif (grep { $_ eq $name } qw/registrant adminContact/)
-  {
-   my $type = $name eq 'adminContact' ? 'admin' : 'registrant';
-   $cs->add($po->create_local_object('contact')->srid($c->getFirstChild()->getData()), $type);
-  }
-  elsif ($name eq 'authInfo')
-  {
-   my $pw = ($c->getElementsByTagNameNS($mes->ns('defReg'),'pw'))[0];
-   $info->{auth} = { pw => (defined($pw) && $pw->hasChildNodes() ? $pw->getFirstChild->getData() : undef) };
-  }
- } continue { $c=$c->getNextSibling(); }
-
- $info->{contact} = $cs;
- $info->{status} = $po->create_local_object('status')->add(@s);
- $info->{exist} = 1;
- $otype = $info->{object_type} = 'defreg';
- $oaction = $info->{action} = 'info';
- $otype = 'defreg';
- $rinfo->{defreg}->{$oname} = $info;
-
- return;
+ $oaction = 'info';
+ return _parse_defref(@_,'infData');
 }
 
-############ Transform commands
+sub transfer_query { return _build_transfer(@_,'query'); }
+
+sub transfer_parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return _parse_defref(@_,'trnData');
+}
+
+####################################################################################################
+########### Transform commands
+
+sub transfer_request { return _build_transfer(@_,'request'); }
+sub transfer_cancel { return _build_transfer(@_,'cancel'); }
+sub transfer_answer { return _build_transfer(@_, @_[2]->{approve} ? 'approve' : 'reject'); }
+
+
+
 
 sub create
 {

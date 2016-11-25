@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 31;
+use Test::More tests => 56;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -39,13 +39,13 @@ $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{'defReg'}->[0],'http://www.nic.name/epp/defReg-1.0','defReg-1.0 for server announcing 1.0');
 
 ##############
-# defReg Check
+# defreg Check
 # set all levels to premium
 $R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:chkData xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:cd><defReg:name level="premium" avail="1">fred</defReg:name></defReg:cd><defReg:cd><defReg:name level="standard" avail="0">def.fred</defReg:name><defReg:reason>Conflicting object exists</defReg:reason></defReg:cd></defReg:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->defreg_check('fred', 'jed.fred', { level => 'premium' });
 is_string($R1,$E1.'<command><check><defReg:check xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:name level="premium">fred</defReg:name><defReg:name level="premium">jed.fred</defReg:name></defReg:check></check><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_check all premium build_xml');
 
-# defReg Check
+# defreg Check
 # # set only specific name to premium
 $R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:chkData xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:cd><defReg:name level="premium" avail="1">doe</defReg:name></defReg:cd><defReg:cd><defReg:name level="standard" avail="0">john.doe</defReg:name><defReg:reason>Conflicting object exists</defReg:reason></defReg:cd></defReg:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->defreg_check('doe', 'john.doe', { level_doe => 'premium' });
@@ -60,7 +60,7 @@ is($dri->get_info('exist_reason','defreg','john.doe'),'Conflicting object exists
 # # set only specific name to premium
 $R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:infData xmlns:defReg="http://www.nic.name/epp/defReg-1.0"><defReg:roid>EXAMPLE1-REP</defReg:roid><defReg:name level="premium">doe</defReg:name><defReg:registrant>jd1234</defReg:registrant><defReg:tm>XYZ-123</defReg:tm><defReg:tmCountry>US</defReg:tmCountry><defReg:tmDate>1990-04-03</defReg:tmDate><defReg:adminContact>sh8013</defReg:adminContact><defReg:status s="ok" /><defReg:clID>ClientX</defReg:clID><defReg:crID>ClientY</defReg:crID><defReg:crDate>1999-04-03T22:00:00.0Z</defReg:crDate><defReg:upID>ClientX</defReg:upID><defReg:upDate>1999-12-03T09:00:00.0Z</defReg:upDate><defReg:exDate>2000-04-03T22:00:00.0Z</defReg:exDate><defReg:trDate>2000-01-08T09:00:00.0Z</defReg:trDate><defReg:authInfo><defReg:pw>2fooBAR</defReg:pw></defReg:authInfo></defReg:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->defreg_info('EXAMPLE1-REP', { auth => { pw => 'ABC555' } } );
-is_string($R1,$E1.'<command><info><defReg:info xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE1-REP</defReg:roid><defReg:authInfo><defReg:pw>ABC555</defReg:pw></defReg:authInfo></defReg:info></info><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_info specific premium build_xml');
+is_string($R1,$E1.'<command><info><defReg:info xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE1-REP</defReg:roid><defReg:authInfo><defReg:pw>ABC555</defReg:pw></defReg:authInfo></defReg:info></info><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_info build_xml');
 is($rc->is_success(),1,'defreg_check is_success');
 is($dri->get_info('action','defreg','EXAMPLE1-REP'), 'info', 'defreg_info get_info(action)');
 is($dri->get_info('action'), 'info', 'defreg_info get_info(action)');
@@ -85,5 +85,46 @@ is($dri->get_info('upDate'), '1999-12-03T09:00:00', 'defreg_info get_info(upDate
 is($dri->get_info('exDate'), '2000-04-03T22:00:00', 'defreg_info get_info(exDate)');
 is($dri->get_info('trDate'), '2000-01-08T09:00:00', 'defreg_info get_info(trDate)');
 is_deeply($dri->get_info('auth'), {pw => '2fooBAR'}, 'defreg_info get_info(authInfo)');
+
+# defreg transfer_query
+$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:trnData xmlns:defReg="http://www.nic.name/epp/defReg-1.0"><defReg:roid>EXAMPLE2-REP</defReg:roid><defReg:trStatus>pending</defReg:trStatus><defReg:reID>ClientX</defReg:reID><defReg:reDate>2000-06-06T22:00:00.0Z</defReg:reDate><defReg:acID>ClientY</defReg:acID><defReg:acDate>2000-06-11T22:00:00.0Z</defReg:acDate><defReg:exDate>2002-09-08T22:00:00.0Z</defReg:exDate></defReg:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->defreg_transfer_query('EXAMPLE2-REP', { auth => { roid => 'JD1234-REP', pw => '2fooBAR' } } );
+is_string($R1,$E1.'<command><transfer op="query"><defReg:transfer xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE2-REP</defReg:roid><defReg:authInfo><defReg:pw roid="JD1234-REP">2fooBAR</defReg:pw></defReg:authInfo></defReg:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_transfer_query build_xml');
+is($rc->is_success(),1,'defreg_transfer_query is_success');
+is($dri->get_info('action','defreg','EXAMPLE2-REP'), 'transfer_query', 'defreg_transfer_query get_info(action)');
+is($dri->get_info('action'), 'transfer_query', 'defreg_transfer_query get_info(action)');
+is($dri->get_info('roid'), 'EXAMPLE2-REP', 'defreg_transfer_query get_info(roid)');
+is($dri->get_info('trStatus'), 'pending', 'defreg_transfer_query get_info(trStatus)');
+is($dri->get_info('reID'), 'ClientX', 'defreg_transfer_query get_info(reID)');
+is($dri->get_info('acID'), 'ClientY', 'defreg_transfer_query get_info(acID)');
+is($dri->get_info('reDate'), '2000-06-06T22:00:00', 'defreg_transfer_query get_info(reDate)');
+is($dri->get_info('acDate'), '2000-06-11T22:00:00', 'defreg_transfer_query get_info(acDate)');
+is($dri->get_info('exDate'), '2002-09-08T22:00:00', 'defreg_transfer_query get_info(exDate)');
+
+# defreg transfer_start
+$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:trnData xmlns:defReg="http://www.nic.name/epp/defReg-1.0"><defReg:roid>EXAMPLE3-REP</defReg:roid><defReg:trStatus>pending</defReg:trStatus><defReg:reID>ClientX</defReg:reID><defReg:reDate>2000-06-06T22:00:00.0Z</defReg:reDate><defReg:acID>ClientY</defReg:acID><defReg:acDate>2000-06-11T22:00:00.0Z</defReg:acDate><defReg:exDate>2002-09-08T22:00:00.0Z</defReg:exDate></defReg:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->defreg_transfer_start('EXAMPLE3-REP', { duration=>DateTime::Duration->new(years=>1), auth => { roid => 'JD1234-REP', pw => '2fooBAR' } } );
+is_string($R1,$E1.'<command><transfer op="request"><defReg:transfer xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE3-REP</defReg:roid><defReg:period unit="y">1</defReg:period><defReg:authInfo><defReg:pw roid="JD1234-REP">2fooBAR</defReg:pw></defReg:authInfo></defReg:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_transfer_start build_xml');
+is($rc->is_success(),1,'defreg_transfer_start is_success');
+is($dri->get_info('action','defreg','EXAMPLE3-REP'), 'transfer_request', 'defreg_transfer_start get_info(action)');
+is($dri->get_info('action'), 'transfer_request', 'defreg_transfer_start get_info(action)');
+is($dri->get_info('roid'), 'EXAMPLE3-REP', 'defreg_transfer_start get_info(roid)');
+is($dri->get_info('trStatus'), 'pending', 'defreg_transfer_start get_info(trStatus)');
+is($dri->get_info('reID'), 'ClientX', 'defreg_transfer_start get_info(reID)');
+is($dri->get_info('acID'), 'ClientY', 'defreg_transfer_start get_info(acID)');
+is($dri->get_info('reDate'), '2000-06-06T22:00:00', 'defreg_transfer_start get_info(reDate)');
+is($dri->get_info('acDate'), '2000-06-11T22:00:00', 'defreg_transfer_start get_info(acDate)');
+is($dri->get_info('exDate'), '2002-09-08T22:00:00', 'defreg_transfer_start get_info(exDate)');
+
+# defreg transfer_stop
+$rc=$dri->defreg_transfer_stop('EXAMPLE4-REP');
+is_string($R1,$E1.'<command><transfer op="cancel"><defReg:transfer xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE4-REP</defReg:roid></defReg:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_transfer_stop build_xml');
+$rc=$dri->defreg_transfer_accept('EXAMPLE5-REP');
+is_string($R1,$E1.'<command><transfer op="approve"><defReg:transfer xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE5-REP</defReg:roid></defReg:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_transfer_accept build_xml');
+$rc=$dri->defreg_transfer_refuse('EXAMPLE6-REP');
+is_string($R1,$E1.'<command><transfer op="reject"><defReg:transfer xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE6-REP</defReg:roid></defReg:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_transfer_refuse build_xml');
+
+# defreg transfer_
+
 
 exit 0;

@@ -254,6 +254,40 @@ sub defreg_info
  return $rc;
 }
 
+sub defreg_transfer
+{
+ my ($self,$ndr,$roid,$op,$rd)=@_;
+
+ $rd = {} unless $rd;
+ $rd=Net::DRI::Util::create_params('domain_transfer',$rd); # same as domain, really
+ Net::DRI::Exception::usererr_invalid_parameters('Transfer operation must be start,stop,accept,refuse or query') unless ($op=~m/^(?:start|stop|query|accept|refuse)$/);
+ Net::DRI::Exception->die(0,'DRD',3,'Invalid duration') if Net::DRI::Util::has_key($rd,'duration') && $self->verify_duration_transfer($ndr,$rd->{duration},$roid,$op);
+
+ my $rc;
+ if ($op eq 'start')
+ {
+  $rc=$ndr->process('defreg','transfer_request',[$roid,$rd]);
+ } elsif ($op eq 'stop')
+ {
+  $rc=$ndr->process('defreg','transfer_cancel',[$roid,$rd]);
+ } elsif ($op eq 'query')
+ {
+  $rc=$ndr->process('defreg','transfer_query',[$roid,$rd]);
+ } else ## accept/refuse
+ {
+  $rd->{approve}=($op eq 'accept')? 1 : 0;
+  $rc=$ndr->process('defreg','transfer_answer',[$roid,$rd]);
+ }
+
+ return $rc;
+}
+
+sub defreg_transfer_start   { my ($self,$ndr,$roid,$rd)=@_; return $self->defreg_transfer($ndr,$roid,'start',$rd); }
+sub defreg_transfer_stop    { my ($self,$ndr,$roid,$rd)=@_; return $self->defreg_transfer($ndr,$roid,'stop',$rd); }
+sub defreg_transfer_query   { my ($self,$ndr,$roid,$rd)=@_; return $self->defreg_transfer($ndr,$roid,'query',$rd); }
+sub defreg_transfer_accept  { my ($self,$ndr,$roid,$rd)=@_; return $self->defreg_transfer($ndr,$roid,'accept',$rd); }
+sub defreg_transfer_refuse  { my ($self,$ndr,$roid,$rd)=@_; return $self->defreg_transfer($ndr,$roid,'refuse',$rd); }
+
 sub defreg_create
 {
  my ($self,$ndr,$email,$rd)=@_;
