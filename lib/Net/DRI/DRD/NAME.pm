@@ -290,23 +290,22 @@ sub defreg_transfer_refuse  { my ($self,$ndr,$roid,$rd)=@_; return $self->defreg
 
 sub defreg_create
 {
- my ($self,$ndr,$email,$rd)=@_;
- ## Technical syntax check of email object needed here
- my $rc=$ndr->process('defreg','create',[$email,$rd]);
+ my ($self,$ndr,$name,$rd)=@_;
+ my $rc=$ndr->process('defreg','create',[$name, $rd]);
  return $rc;
 }
 
 sub defreg_delete
 {
- my ($self,$ndr,$email)=@_;
+ my ($self,$ndr,$roid)=@_;
  ## Technical syntax check of email object needed here
- my $rc=$ndr->process('defreg','delete',[$email]);
+ my $rc=$ndr->process('defreg','delete',[$roid]);
  return $rc;
 }
 
 sub defreg_update
 {
- my ($self,$ndr,$email,$tochange)=@_;
+ my ($self,$ndr,$roid,$tochange)=@_;
  my $fp=$ndr->protocol->nameversion();
 
  ## Technical syntax check of email object needed here
@@ -318,17 +317,17 @@ sub defreg_update
   Net::DRI::Exception->die(0,'DRD',5,'Protocol '.$fp.' is not capable of defreg_update/'.$t);
  }
 
- my $rc=$ndr->process('defreg','update',[$email,$tochange]);
+ my $rc=$ndr->process('defreg','update',[$roid,$tochange]);
  return $rc;
 }
 
 sub defreg_renew
 {
- my ($self,$ndr,$email,$rd)=@_;
+ my ($self,$ndr,$roid,$rd)=@_;
  ## Technical syntax check of email object needed here
  Net::DRI::Util::check_isa($rd->{duration},'DateTime::Duration') if defined($rd->{duration});
  Net::DRI::Util::check_isa($rd->{current_expiration},'DateTime') if defined($rd->{current_expiration});
- return $ndr->process('defreg','renew',[$email,$rd->{duration},$rd->{current_expiration}]);
+ return $ndr->process('defreg','renew',[$roid,$rd->{duration},$rd->{current_expiration}]);
 }
 
 ####################################################################################################

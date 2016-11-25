@@ -73,7 +73,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp1=( create => [ \&create ],
+ my %tmp1=( create => [ \&create, \&create_parse ],
             check  => [ \&check, \&check_parse ],
             info   => [ \&info, \&info_parse ],
             info   => [ \&info, \&info_parse ],
@@ -93,42 +93,6 @@ sub register_commands
 
 ####################################################################################################
 ########### Helpers
-
-sub build_command
-{
- my ($epp,$msg,$command,$info)=@_;
- my $contacts = $info->{contact};
- my $authid = $info->{auth};
- my @ret;
- my @auth;
-
- delete $info->{contact};
- delete $info->{auth};
-
- Net::DRI::Exception->die(1,'protocol/EPP',2,'defReg name needed') unless (defined($info->{name}));
- $msg->command([$command,'defReg:'.$command,sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('defReg'))]);
-
- # @ret = map { ['defReg:' . $_, $info->{$_}] } keys(%{$info});
- push(@ret, ['defReg:name', {level => ($info->{level} ? 'premium' : 'standard') }, $info->{name}]) if (defined($info->{name}));
- push(@ret, ['defReg:fwdTo', $info->{fwdTo}]) if (defined($info->{fwdTo}));
- push(@ret, ['defReg:curExpDate', $info->{curExpDate}])
- 	if (defined($info->{curExpDate}));
- push(@ret, ['defReg:period', { unit => 'y' },
-  	$info->{period}->in_units('years')]) if (defined($info->{period}));
- push(@ret, ['defReg:registrant', $info->{registrant}]) if (defined($info->{registrant}));
- foreach my $type (sort { $a cmp $b } keys %$contacts)
- {
-  push(@ret, ['defReg:contact', {type => $type}, $contacts->{$type}]);
- }
-
- foreach my $auth (sort { $a cmp $b } keys %$authid)
- {
-  push(@auth, ['defReg:' . $auth, $authid->{$auth}]);
- }
- push(@ret, ['defReg:authInfo', @auth]) if (@auth);
-
- return @ret;
-}
 
 sub _build_transfer
 {
@@ -168,7 +132,7 @@ sub _parse_defref
 
    if ($name eq 'roid')
    {
-     $oname = $info->{object_id} = $info->{roid} = $c->getFirstChild()->getData();
+     $info->{object_id} = $info->{roid} = $c->getFirstChild()->getData();
    }
    elsif ($name eq 'name')
    {
@@ -199,6 +163,7 @@ sub _parse_defref
    }
   } continue { $c=$c->getNextSibling(); }
 
+  $oname = $section eq 'creData' ? $info->{name} : $info->{roid};
   $info->{contact} = $cs;
   $info->{status} = $po->create_local_object('status')->add(@s);
   $info->{exist} = 1;
@@ -273,8 +238,6 @@ sub info
  return;
 }
 
-
-
 sub info_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
@@ -293,32 +256,73 @@ sub transfer_parse
 ####################################################################################################
 ########### Transform commands
 
+sub create
+{
+ my ($epp,$name,$rd)=@_;
+
+ my $mes = $epp->message();
+ Net::DRI::Exception->die(1,'protocol/EPP',2,'defReg name needed') unless (defined($name));
+ $mes->command('create','defReg:create',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+
+ my $cs = $rd->{contact};
+ my @d;
+ my @auth;
+
+ my $level = exists($rd->{"level_$name"}) ? $rd->{"level_$name"} : exists($rd->{level}) ? $rd->{level} : 'standard' ;
+ push(@d, ['defReg:name', { level => $level }, $name]);
+ push(@d, ['defReg:registrant', $cs->get('registrant')->srid()]) if $cs->has_type('registrant');
+ push(@d, ['defReg:tm', $rd->{tm}]) if defined $rd->{tm};
+ push(@d, ['defReg:tmCountry', $rd->{tmCountry}]) if defined $rd->{tmCountry};
+ push(@d, ['defReg:tmDate', $rd->{tmDate}]) if defined $rd->{tmDate};
+
+ push(@d, ['defReg:curExpDate', $rd->{curExpDate}]) if (defined($rd->{curExpDate}));
+
+ push(@d, ['defReg:adminContact', $cs->get('admin')->srid()]) if $cs->has_type('admin');
+ push(@d, ['defReg:period', { unit => 'y' },$rd->{period}->in_units('years')]) if (defined($rd->{period}));
+
+ foreach my $auth (sort { $a cmp $b } keys %{$rd->{auth}})
+ {
+  push(@auth, ['defReg:' . $auth, $rd->{auth}->{$auth}]);
+ }
+ push(@d, ['defReg:authInfo', @auth]) if (@auth);
+
+ $mes->command_body(\@d);
+ return @d;
+}
+
+sub create_parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ return _parse_defref(@_,'creData');
+}
+
+sub delete
+{
+ my ($epp,$roid,$rd)=@_;
+}
+
+sub renew
+{
+  my ($epp,$roid,$period,$curexp)=@_;
+  my $mes = $epp->message();
+
+  Net::DRI::Util::check_isa($curexp,'DateTime');
+  Net::DRI::Util::check_isa($period,'DateTime::Duration');
+
+  my $info = {
+   name => $roid,
+   curExpDate => $curexp->ymd,
+   period => $period
+  };
+
+  my @d = build_command($epp,$mes,'renew',$info);
+  $mes->command_body(\@d);
+  return;
+}
+
 sub transfer_request { return _build_transfer(@_,'request'); }
 sub transfer_cancel { return _build_transfer(@_,'cancel'); }
 sub transfer_answer { return _build_transfer(@_, @_[2]->{approve} ? 'approve' : 'reject'); }
-
-
-
-
-sub create
-{
- my ($epp,$mail,$info)=@_;
- my $mes = $epp->message();
- my @d;
- $info->{name} = $mail;
- @d = build_command($epp,$mes,'create',$info);
- $mes->command_body(\@d);
- return;
-}
-
-sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
-{
- my ($epp,$mail)=@_;
- my $mes=$epp->message();
- my @d=build_command($epp,$mes,'delete',{ name => $mail });
- $mes->command_body(\@d);
- return;
-}
 
 sub update
 {
@@ -335,25 +339,6 @@ sub update
  my $ns=$todo->set('ns');
  my @d=build_command($epp,$mes,'update',$hosts);
  push @d,add_nsname($ns);
- $mes->command_body(\@d);
- return;
-}
-
-sub renew
-{
- my ($epp,$mail,$period,$curexp)=@_;
- my $mes = $epp->message();
-
- Net::DRI::Util::check_isa($curexp,'DateTime');
- Net::DRI::Util::check_isa($period,'DateTime::Duration');
-
- my $info = {
-  name => $mail,
-  curExpDate => $curexp->ymd,
-  period => $period
- };
-
- my @d = build_command($epp,$mes,'renew',$info);
  $mes->command_body(\@d);
  return;
 }

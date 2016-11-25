@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 56;
+use Test::More tests => 63;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -116,7 +116,7 @@ is($dri->get_info('reDate'), '2000-06-06T22:00:00', 'defreg_transfer_start get_i
 is($dri->get_info('acDate'), '2000-06-11T22:00:00', 'defreg_transfer_start get_info(acDate)');
 is($dri->get_info('exDate'), '2002-09-08T22:00:00', 'defreg_transfer_start get_info(exDate)');
 
-# defreg transfer_stop
+# defreg transfer_stop / accept / refuse
 $rc=$dri->defreg_transfer_stop('EXAMPLE4-REP');
 is_string($R1,$E1.'<command><transfer op="cancel"><defReg:transfer xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE4-REP</defReg:roid></defReg:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_transfer_stop build_xml');
 $rc=$dri->defreg_transfer_accept('EXAMPLE5-REP');
@@ -124,7 +124,16 @@ is_string($R1,$E1.'<command><transfer op="approve"><defReg:transfer xmlns:defReg
 $rc=$dri->defreg_transfer_refuse('EXAMPLE6-REP');
 is_string($R1,$E1.'<command><transfer op="reject"><defReg:transfer xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE6-REP</defReg:roid></defReg:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_transfer_refuse build_xml');
 
-# defreg transfer_
+# defreg create (with IDN - required language tag)
+$R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:creData xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE7-REP</defReg:roid><defReg:name level="premium">xn--gya</defReg:name><defReg:crDate>1999-04-03T22:00:00.0Z</defReg:crDate><defReg:exDate>2000-04-03T22:00:00.0Z</defReg:exDate></defReg:creData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->defreg_create('xn--gya', {level => 'premium', contact => $cs, 'tm' => 'XYZ-123', 'tmCountry' => 'US', 'tmDate' => '1990-04-03', auth => { pw => '2fooBAR' }, language => 'GRE'} );
+is_string($R1,$E1.'<command><create><defReg:create xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:name level="premium">xn--gya</defReg:name><defReg:registrant>jd1234</defReg:registrant><defReg:tm>XYZ-123</defReg:tm><defReg:tmCountry>US</defReg:tmCountry><defReg:tmDate>1990-04-03</defReg:tmDate><defReg:adminContact>sh8013</defReg:adminContact><defReg:authInfo><defReg:pw>2fooBAR</defReg:pw></defReg:authInfo></defReg:create></create><extension><idnLang:tag xmlns:idnLang="http://www.verisign.com/epp/idnLang-1.0" xsi:schemaLocation="http://www.verisign.com/epp/idnLang-1.0 idnLang-1.0.xsd">GRE</idnLang:tag></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_create build_xml');
+is($dri->get_info('action'), 'create', 'defreg_create get_info(action)');
+is($dri->get_info('name'), 'xn--gya', 'defreg_create get_info(name)');
+is($dri->get_info('roid'), 'EXAMPLE7-REP', 'defreg_create get_info(roid)');
+is($dri->get_info('level'), 'premium', 'defreg_create get_info(level)');
+is($dri->get_info('crDate'), '1999-04-03T22:00:00', 'defreg_create get_info(crDate)');
+is($dri->get_info('exDate'), '2000-04-03T22:00:00', 'defreg_create get_info(exDate)');
 
 
 exit 0;
