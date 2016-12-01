@@ -72,7 +72,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
           notification => [ undef, \&parse ],
          );
 
@@ -89,6 +89,7 @@ sub parse
   return unless $mes->is_success();
   return unless my $msgid=$mes->msg_id();
   my @tmp; # used to parse at the end of this function the dom names if extdom-2.0
+
   # pl_domain => extdom-2.0
   foreach my $tmp_pl_domain (qw/pollAuthInfo pollDomainAutoRenewed pollDomainAutoRenewFailed dlgData expData pollDomainBlocked pollDomainUnblocked pollFutureRemoved pollTasteRemoved pollDomainJudicialRemoved trnData/)
   {
@@ -146,6 +147,7 @@ sub parse
       }
      }
   }
+
   # extepp => extepp-2.0
   foreach my $tmp_extepp (qw/accountBalanceCrossed accountBalanceInsufficient passwdReminder/)
   {
@@ -168,6 +170,7 @@ sub parse
       }
     }
   }
+
   # Multiple domain names for the extdom...
   foreach (qw/dlgData expData/)
   {
@@ -177,6 +180,22 @@ sub parse
       $rinfo->{$otype}->{$oname}->{action}= $_;
     }
   }
+
+  # 4.7 extreportData
+  if (my $data=$mes->get_response('extreport','extreportData'))
+  {
+    my $report;
+    foreach my $el (Net::DRI::Util::xml_list_children($data))
+    {
+      my ($n,$c)=@$el;
+      $oname = $report->{object_id} = $report->{report_id} = $c->textContent() if $n eq 'extreportId';
+      $report->{processing_state} = $c->textContent() if $n eq 'reportProcessingState';
+    }
+    $otype = 'extreport';
+    $oaction = $report->{action}= 'poll_report';
+    $rinfo->{$otype}->{$oname} = $report;
+  }
+
 
  return;
 }
