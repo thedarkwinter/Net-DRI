@@ -165,9 +165,9 @@ sub check_parse
    if ($n eq 'name')
    {
     $fwd = $c->getFirstChild()->getData();
-    $rinfo->{emailFwd}->{$fwd}->{exist} = 1 -
+    $rinfo->{emailfwd}->{$fwd}->{exist} = 1 -
     	Net::DRI::Util::xml_parse_boolean($c->getAttribute('avail'));
-    $rinfo->{emailFwd}->{$fwd}->{action} = 'check';
+    $rinfo->{emailfwd}->{$fwd}->{action} = 'check';
    }
   } continue { $c = $c->getNextSibling(); }
  }
@@ -176,9 +176,11 @@ sub check_parse
 
 sub info
 {
- my ($epp,$mail)=@_;
+ my ($epp,$mail,$rd)=@_;
  my $mes = $epp->message();
+ Net::DRI::Exception->die(1,'protocol/EPP',2,'emailFwd mail name needed') unless (defined($mail));
  my @d = build_command($epp,$mes,'info',{ name => $mail });
+ push @d, ['emailFwd:authInfo', ['emailFwd:pw', $rd->{auth}->{pw}, exists($rd->{auth}->{roid})? { 'roid' => $rd->{auth}->{roid} } : undef]] if exists $rd->{auth};
  $mes->command_body(\@d);
  return;
 }
@@ -194,7 +196,8 @@ sub info_parse
  return unless $infdata;
 
  my $nm;
- my $cs = Net::DRI::Data::ContactSet->new();
+ my $cs = $po->create_local_object('contactset');
+ my @s;
  my $info = {};
  my $ginfo = {};
 
@@ -207,11 +210,19 @@ sub info_parse
 
   if ($name eq 'name')
   {
-   $info->{name} = $nm = $c->getFirstChild()->getData();
+   $ginfo->{$name} = $nm = $c->getFirstChild()->getData();
+  }
+  elsif ($name eq 'roid')
+  {
+   $ginfo->{$name} = $c->getFirstChild()->getData();
+  }
+  elsif ($name eq 'status')
+  {
+   push @s,Net::DRI::Protocol::EPP::Util::parse_node_status($c);
   }
   elsif ($name eq 'fwdTo')
   {
-   $info->{$name} = $c->getFirstChild()->getData();
+   $ginfo->{$name} = $c->getFirstChild()->getData();
   }
   elsif (grep { $_ eq $name } qw/clID crID upID/)
   {
@@ -219,13 +230,13 @@ sub info_parse
   }
   elsif (grep { $_ eq $name } qw/crDate upDate trDate exDate/)
   {
-   $ginfo->{$name} = DateTime::Format::ISO8601()->new()->
+   $ginfo->{$name} = DateTime::Format::ISO8601->new()->
    	parse_datetime($c->getFirstChild()->getData());
   }
   elsif (grep { $_ eq $name } qw/registrant contact/)
   {
    my $type = $c->getAttribute('type') || 'registrant';
-   $cs->add(Net::DRI::Data::Contact()->new()->
+   $cs->add(Net::DRI::Data::Contact->new()->
    	srid($c->getFirstChild()->getData()), $type);
   }
   elsif ($name eq 'authInfo')
@@ -236,12 +247,12 @@ sub info_parse
   }
  } continue { $c=$c->getNextSibling(); }
 
- $info->{contact} = $cs;
-
+ $ginfo->{contact} = $cs;
  $ginfo->{exist} = defined($nm);
  $ginfo->{action} = 'info';
  $ginfo->{self} = $info;
- $rinfo->{emailFwd}->{$nm} = $ginfo;
+ $ginfo->{status} = $po->create_local_object('status')->add(@s);
+ $rinfo->{emailfwd}->{$nm} = $ginfo;
  return;
 }
 

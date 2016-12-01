@@ -25,6 +25,7 @@ use base qw/Net::DRI::DRD/;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 use DateTime::Duration;
+use Data::Dumper;
 
 =pod
 
@@ -127,10 +128,10 @@ sub emailfwd_exist ## 1/0/undef
 
 sub emailfwd_info
 {
- my ($self,$ndr,$email)=@_;
+ my ($self,$ndr,$email,$rd)=@_;
  ## Technical syntax check of email object needed here
  my $rc=$ndr->try_restore_from_cache('emailfwd',$email,'info');
- if (! defined $rc) { $rc=$ndr->process('emailfwd','info',[$email]); }
+ if (! defined $rc) { $rc=$ndr->process('emailfwd','info',[$email,$rd]); }
  return $rc;
 }
 
