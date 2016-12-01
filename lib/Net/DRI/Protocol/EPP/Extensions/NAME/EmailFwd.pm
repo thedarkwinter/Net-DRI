@@ -23,6 +23,7 @@ use Net::DRI::Exception;
 use Net::DRI::Data::Contact;
 use Net::DRI::Data::ContactSet;
 use DateTime::Format::ISO8601;
+use Data::Dumper;
 
 =pod
 
@@ -79,15 +80,16 @@ sub register_commands
           );
 
  $tmp1{check_multi}=$tmp1{check};
- 
+
  return { 'emailfwd' => \%tmp1 };
 }
 
-sub ns
+sub setup
 {
- my ($mes)=@_;
- my $ns=$mes->ns('emailFwd');
- return defined($ns)? $ns : 'http://www.nic.name/epp/emailFwd-1.0';
+ my ($class,$po,$version)=@_;
+ $po->ns({ emailFwd => ['http://www.nic.name/epp/emailFwd-1.0','emailFwd-1.0'] });
+ $po->capabilities('emailfwd_update','info',['set']);
+ return;
 }
 
 sub build_command
@@ -148,7 +150,7 @@ sub check_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $ns=ns('emailFwd');
+ my $ns=$mes->ns('emailFwd');
  my $chkdata=$mes->get_response($ns,'chkData');
  return unless $chkdata;
  foreach my $cd ($chkdata->getElementsByTagNameNS($ns,'cd'))
@@ -187,7 +189,8 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_response(ns($mes),'infData');
+ my $ns=$mes->ns('emailFwd');
+ my $infdata=$mes->get_response($ns,'infData');
  return unless $infdata;
 
  my $nm;
