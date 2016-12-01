@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 468;
+use Test::More tests => 474;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -559,8 +559,8 @@ is($dri->verify_name_domain('sygroup.com.pl', 'info'), '',
   'third.com.pl registrability');
 is($dri->verify_name_domain('sygroup.net.pl', 'info'), '',
   'third.net.pl registrability');
-  
-  
+
+
 ## Parsing contact:info
 $R2=$E1.'<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><resData><contact:infData xmlns:contact="http://www.dns.pl/nask-epp-schema/contact-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><contact:id>A0001</contact:id><contact:roid>478522-NASK</contact:roid><contact:status s="ok" lang="en" /><contact:postalInfo type="loc"><contact:name>B G</contact:name><contact:org>B G</contact:org><contact:addr><contact:street>RN 20</contact:street><contact:street /><contact:street /><contact:city>THECITY</contact:city><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.12345678</contact:voice><contact:email>here@there.com</contact:email><contact:clID>A2</contact:clID><contact:crID>A2</contact:crID><contact:crDate>2011-08-23T14:08:27.0Z</contact:crDate><contact:authInfo><contact:pw>pass</contact:pw></contact:authInfo></contact:infData></resData><extension><extcon:infData xmlns:extcon="http://www.dns.pl/nask-epp-schema/extcon-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extcon-2.0 extcon-2.0.xsd"><extcon:individual>false</extcon:individual><extcon:consentForPublishing>true</extcon:consentForPublishing></extcon:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->contact_info($dri->local_object('contact')->srid('A0001'));
@@ -671,6 +671,16 @@ $report=$rc->get_data('results');
 isa_ok($report,'HASH','report funds get_data(results)');
 is_deeply($report,{current_balance=>803.86},'report funds get_data(results) current_balance');
 
+## Draft 4.7, extreport poll notifications
+$R2 = $E1 . '<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="85386"><qDate>2016-03-07T12:48:17.826Z</qDate><msg lang="en">extreport processing failed</msg></msgQ><resData><extreport:extreportData xmlns:extreport="http://www.dns.pl/nask-epp-schema/extreport-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extreport-2.0  extreport-2.0.xsd"><extreport:extreportId>20fa0641-567a-403f-be6ea111457c3be2</extreport:extreportId><extreport:reportProcessingState>FAILED</extreport:reportProcessingState></extreport:extreportData></resData>' . $TRID . '</response>' . $E2;
+$rc = $dri->message_retrieve();
+is($rc->is_success(), 1, 'message_retrieve');
+is($dri->get_info('last_id'), 85386, 'message get_info last_id 85386');
+is($dri->get_info('action','message',85386),'poll_report','message_retrieve get_info(action)');
+is($dri->get_info('report_id','message',85386),'20fa0641-567a-403f-be6ea111457c3be2','message_retrieve get_info(report_id)');
+is($dri->get_info('object_id','message',85386),'20fa0641-567a-403f-be6ea111457c3be2','message_retrieve get_info(object_id)');
+is($dri->get_info('processing_state','message','85386'),'FAILED','message_retrieve get_info(processing_state)');
+
 
 ####################################################################################################
 ## Future - info
@@ -730,7 +740,7 @@ $R2=$E1.'<response>'.r().'<resData><future:chkData xmlns:future="http://www.dns.
   </future:cd>
   </future:chkData>
   </resData>'.$TRID.'</response>'.$E2;
-$rc = $dri->future_check('ala.pl'); 
+$rc = $dri->future_check('ala.pl');
 is($R1,$E1.'<command><check><future:check xmlns:future="http://www.dns.pl/nask-epp-schema/future-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/future-2.0 future-2.0.xsd"><future:name>ala.pl</future:name></future:check></check><clTRID>ABC-12345</clTRID></command></epp>','future_check({name => "ala.pl"})');
 is($rc->is_success(),1,'future_check is_success');
 is($dri->get_info('action','domain','ala.pl'),'check','future_check get_info(action)');
