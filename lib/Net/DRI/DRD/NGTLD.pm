@@ -764,18 +764,15 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: budapest country luxe xn--g2xx48c
+Uncontested: budapest luxe xn--g2xx48c
 
 Contested: app art baby beauty coupon cpa data dds eco gay home hotel inc latino llc realestate
-
-Collisions: country-collisions
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['budapest', 'country', 'luxe', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
-              'country-collisions',
+     tlds => ['budapest', 'luxe', 'xn--g2xx48c',
+              'app', 'art', 'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate'
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
      whois_server => 'whois-dub.mm-registry.com',
@@ -1260,7 +1257,7 @@ xn--3ds443g xn--fiq228c5hs xn--vuq861b
 
 =head3 TLDs
 
-art audio auto blackfriday car cars christmas click deal diet flowers free game gift guitars help hiphop hiv home hosting inc juegos link lol mom photo pics property realestate save sexy tattoo
+art audio auto blackfriday car cars christmas click country deal diet flowers free game gift guitars help hiphop hiv home hosting inc juegos link lol mom photo pics property realestate save sexy tattoo
 
 Contended TLD's not included
 
@@ -1285,7 +1282,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','audio','auto','blackfriday','car','cars','christmas','click','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','realestate','save','sexy','tattoo'],
+     tlds => ['art','audio','auto','blackfriday','car','cars','christmas','click','country','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','realestate','save','sexy','tattoo'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],
