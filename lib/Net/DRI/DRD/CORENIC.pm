@@ -93,13 +93,13 @@ sub new
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=0;
  $self->{info}->{contact_i18n}=4; ## LOC+INT
- 
+
  return $self;
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'CORENIC'; }
-sub tlds     { return ('xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'); }
+sub tlds     { return ('xn--80asehdb','xn--80aswg','xn--mgbab2bd','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
