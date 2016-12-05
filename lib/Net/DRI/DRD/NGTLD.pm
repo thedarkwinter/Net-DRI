@@ -391,7 +391,7 @@ L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launc
 
 =head3 TLDs
 
-bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space tech theatre tickets website wiki wme xyz
+art bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -410,9 +410,9 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de/;
-    my @ngtlds = qw/bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
-    my @ngtlds_contested = qw/reality/; # some of these might go to other registries, tbc later as these are expected in Q4 2014
-    my @ngtlds_pipeline = qw/art now hotel forum gay app mail llc/; # no expected dates given, probably contested strings
+    my @ngtlds = qw/art bar college contact design fan fans feedback host ink love online pid press protection reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds_contested = qw/reality now hotel forum gay mail llc/; # some of these might go to other registries
+    my @ngtlds_pipeline = qw//; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
     return {
@@ -436,7 +436,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 =head3 TLDs
 
-xn--80asehdb xn--80aswg xn--mgbab2bd art barcelona eurovision erni eurovision eus gal lacaixa madrid mango museum quebec radio scot sport swiss
+xn--80asehdb xn--80aswg xn--mgbab2bd barcelona eurovision erni eurovision eus gal lacaixa madrid mango museum quebec radio scot sport swiss
 
 =head3 Custom extensions: (From Tango-RS but with CoreNIC namespaces)
 
@@ -454,7 +454,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TANGO::Promotion> : http://xmlns.corenic.
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','art','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'],
+     tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'corenic';
@@ -516,7 +516,7 @@ xn--p1acf xn--mgbt3dhd pars islam wed nowruz persiangulf tci shia halal
 
 =head3 TLDs
 
-xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android boo cal channel chrome dad day eat esq fly foo gbiz gle gmail google here how ing kid meme mov new nexus prod prof rsvp soy tour youtube zip
+xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android app boo cal channel chrome dad day eat esq fly foo gbiz gle gmail google here how ing kid meme mov new nexus prod prof rsvp soy tour youtube zip
 
 =head3 Notes
 
@@ -526,7 +526,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android boo cal channel chrome dad day 
 
  return {
      bep_type => 2, # shared
-     tlds => ['xn--flw351e','xn--q9jyb4c','xn--qcka1pmc','ads','android','boo','cal','channel','chrome','dad','day','eat','esq','fly','foo','gbiz','gle','gmail','google','here','how','ing','kid','meme','mov','new','nexus','prod','prof','rsvp','soy','tour','youtube','zip'],
+     tlds => ['xn--flw351e','xn--q9jyb4c','xn--qcka1pmc','ads','android','app','boo','cal','channel','chrome','dad','day','eat','esq','fly','foo','gbiz','gle','gmail','google','here','how','ing','kid','meme','mov','new','nexus','prod','prof','rsvp','soy','tour','youtube','zip'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'], 'disable_idn'=>1, 'brown_fee_version' => '0.6'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'crr';
@@ -582,7 +582,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
 accountant bid cricket date download faith loan party racing review science stream trade webcam win
 
-Contension: app baby cam charity forum hotel music rugby search sport
+Contension: baby cam charity forum hotel music rugby search sport
 
 =head3 Custom extensions
 
@@ -593,7 +593,7 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
  return {
      bep_type => 1, # dedicated registry
      tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'stream', 'trade', 'webcam', 'win', # uncontended
-              'app', 'baby', 'cam', 'charity', 'forum', 'hotel', 'music', 'rugby', 'search', 'sport',# contended
+              'baby', 'cam', 'charity', 'forum', 'hotel', 'music', 'rugby', 'search', 'sport',# contended
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -764,18 +764,15 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
  $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
 
-Uncontested: budapest country luxe xn--g2xx48c
+Uncontested: budapest luxe xn--g2xx48c
 
-Contested: app art baby beauty coupon cpa data dds eco gay home hotel inc latino llc realestate
-
-Collisions: country-collisions
+Contested: aby beauty coupon cpa data dds eco gay home hotel inc latino llc realestate
 =cut
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['budapest', 'country', 'luxe', 'xn--g2xx48c',
-              'app', 'art', 'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate',
-              'country-collisions',
+     tlds => ['budapest', 'luxe', 'xn--g2xx48c',
+              'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate'
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
      whois_server => 'whois-dub.mm-registry.com',
@@ -1217,6 +1214,8 @@ L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Contact> http://www.tcinet.ru/e
 
 L<Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain> http://www.tcinet.ru/epp/tci-domain-ext-1.0
 
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.11
+
 =cut
 
  return {
@@ -1260,7 +1259,7 @@ xn--3ds443g xn--fiq228c5hs xn--vuq861b
 
 =head3 TLDs
 
-art audio auto blackfriday car cars christmas click deal diet flowers free game gift guitars help hiphop hiv home hosting inc juegos link lol mom photo pics property realestate save sexy tattoo
+audio auto blackfriday car cars christmas click country deal diet flowers free game gift guitars help hiphop hiv home hosting inc juegos link lol mom photo pics property realestate save sexy tattoo
 
 Contended TLD's not included
 
@@ -1285,7 +1284,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['art','audio','auto','blackfriday','car','cars','christmas','click','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','realestate','save','sexy','tattoo'],
+     tlds => ['audio','auto','blackfriday','car','cars','christmas','click','country','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','realestate','save','sexy','tattoo'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UNIREG'],

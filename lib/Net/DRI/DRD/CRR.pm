@@ -88,7 +88,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'CRR'; }
-sub tlds     { return qw/xn--q9jyb4c ads android boo car dad day eat esq fly foo here how ing kid meme mov new prof rsvp soy tour zip/; }
+sub tlds     { return qw/xn--q9jyb4c ads android app boo car dad day eat esq fly foo here how ing kid meme mov new prof rsvp soy tour zip/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }
 

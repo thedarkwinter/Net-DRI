@@ -13,7 +13,7 @@ our $VERSION=do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf("%d".".%02d" x $#r,
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({ 
+ $self->ns({
 						 secdns  => ['urn:ietf:params:xml:ns:secDNS-1.1', 'secDNS-1.1.xsd'],
 						 rgp     => ['urn:ietf:params:xml:ns:rgp-1.0', 'rgp-1.0.xsd'],
 
@@ -22,7 +22,7 @@ sub setup
 
 						 launch  => ['urn:ietf:params:xml:ns:launch-1.0', 'launch-1.0.xsd']
           });
- 
+
 
  $self->factories('contact',sub { return Net::DRI::Data::Contact::TCI_gTLD->new(); });
  $self->factories('message',sub { my $m= Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Message->new(@_); $m->ns($self->ns()); $m->version($self->version() ); return $m; });
@@ -34,8 +34,11 @@ sub setup
  return;
 }
 
-
-sub default_extensions { return qw(TCI_gTLD::Contact TCI_gTLD::Domain GracePeriod SecDNS LaunchPhase IDN); }
+sub default_extensions {
+ my ($self,$pp) = @_;
+ $self->{brown_fee_version} = '0.11';
+ return qw(TCI_gTLD::Contact TCI_gTLD::Domain GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee);
+}
 
 ####################################################################################################
 1;

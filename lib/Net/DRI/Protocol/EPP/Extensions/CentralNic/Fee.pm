@@ -122,9 +122,9 @@ sub register_commands
 sub setup
 {
   my ($class,$po,$version)=@_;
-  # update from 0.4 - 0.5 has big changes, so lets default to 0.5 unless specified. 
+  # update from 0.4 - 0.5 has big changes, so lets default to 0.5 unless specified.
   # This means any commands called before greeting will use that version until its bumped to highest version
-  my $v = (exists $po->{brown_fee_version} && $po->{brown_fee_version} =~ m/^\d\.\d$/) ? $po->{brown_fee_version} : '0.5';
+  my $v = (exists $po->{brown_fee_version} && $po->{brown_fee_version} =~ m/^\d.(\d+)$/) ? $po->{brown_fee_version} : '0.5';
   $po->ns({ 'fee' => [ 'urn:ietf:params:xml:ns:fee-'.$v,'fee-'.$v.'.xsd' ] });
   $po->capabilities('domain_update','fee',['set']);
   return;
@@ -145,7 +145,7 @@ sub parse_greeting
 }
 
 ## returns an integer for easier comparisons
-sub ver { my ($mes)= @_; my ($ver)=($mes->ns('fee')=~m/-0.(\d+)$/); return $ver; }
+sub ver { my ($mes)= @_; my ($ver)=($mes->ns('fee')=~m/-\d.(\d+)$/); return $ver; }
 
 ####################################################################################################
 ## 0.11 stuff
@@ -284,7 +284,7 @@ sub fee_set_build
   }
 
   push @n,['fee:currency',$rp->{currency}] if exists $rp->{currency};
-  
+
   $lp->{phase} = $rp->{phase} if exists $rp->{phase};
   $lp->{subphase} = $rp->{sub_phase} if exists $rp->{sub_phase};
   push @n, ['fee:command',$lp,$rp->{action}];
@@ -294,7 +294,7 @@ sub fee_set_build
     my $rj=Net::DRI::Protocol::EPP::Util::build_period($rp->{duration});
     push @n,['fee:period',$rj->[1],$rj->[2]];
   }
-  
+
   return @n unless $cmd && $cmd eq 'check';
   # in 0.9, the default objURI is domain,but you can selct other objects but we dont support this.
   # for the purpose of proof of principle and passing the test, we will use domain objURI when the element object is also provided (which is also optional
@@ -329,7 +329,7 @@ sub fee_set_parse_legacy
       $set->{'duration'} = DateTime::Duration->new($unit => 0+$content->textContent());
     }
   }
- 
+
   return $set;
 }
 
@@ -374,7 +374,7 @@ sub fee_set_build_legacy
   push @n,['fee:period',$rj->[1],$rj->[2]];
 
   return @n;
-  
+
 }
 
 ####################################################################################################
@@ -402,7 +402,7 @@ sub check
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d)!)) ? "$1" : '0.4';
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d+)!)) ? "$1" : '0.4';
   my (@n,@fees,@fee_set);
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
@@ -480,9 +480,9 @@ sub info
   my ($epp,$domain,$rd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d)!)) ? "$1" : '0.4';
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d+)!)) ? "$1" : '0.4';
   return unless $version+0 < 0.9; # as of 0.6 (draft -05) info is no longer supported. Returning an exception will do more harm then good, so just ignore
-  
+
   my (@n,@fees);
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
@@ -501,7 +501,7 @@ sub info_parse
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success();
-  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d)!)) ? "$1" : '0.4';
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d+)!)) ? "$1" : '0.4';
 
   my $infdata=$mes->get_extension($mes->ns('fee'),'infData');
   return unless defined $infdata;
@@ -550,7 +550,7 @@ sub transform_build
   my ($epp,$domain,$rd,$cmd)=@_;
   my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
-  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d)!)) ? "$1" : '0.4';
+  my $version = (($mes->ns('fee')=~m!fee-(\d\.\d+)!)) ? "$1" : '0.4';
 
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, fee') unless Net::DRI::Util::has_key($rd->{fee},'currency') && Net::DRI::Util::has_key($rd->{fee},'fee');
   my $rp=$rd->{fee};
