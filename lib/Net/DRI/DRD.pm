@@ -1451,7 +1451,9 @@ sub _build_price_query
  } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain', @{$ndr->protocol()->{loaded_modules}})
  {
    $rd->{premium_domain} = 1;
- } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}})
+ }
+ # this extension is used in addition to premium_domain above, hense to elsif
+ if (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}})
  {
    my ($fee,@fees);
    foreach my $k (qw/currency action duration phase sub_phase/)
