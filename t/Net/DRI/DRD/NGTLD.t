@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 108;
+use Test::More tests => 124;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -249,5 +249,34 @@ is($lpres->{'exist'},1,'domain_check_claims get_info(exist)');
 is($lpres->{'phase'},'claims','domain_check_claims get_info(phase)');
 is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check_claims get_info(claim_key)');
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
+
+#### afiliassrs migration tests
+$rc = $dri->add_registry('NGTLD',{provider => 'afiliassrs'});
+is($rc->{last_registry},'afiliassrs','afiliassrs add_registry');
+$rc = $dri->target('afiliassrs')->add_current_profile('p1-afiliassrs','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+# afiliassrs - @ngtlds
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">foobar.global</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('foobar.global');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.global</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build afiliassrs - ngtld');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info(action)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+is($dri->get_info('exist','domain','foobar.global'),0,'domain_check get_info(exist) from cache');
+# afiliassrs - @gtlds
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">foobar.xxx</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('foobar.xxx');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.xxx</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build afiliassrs - gtld');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info(action)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+is($dri->get_info('exist','domain','foobar.xxx'),0,'domain_check get_info(exist) from cache');
+# afiliassrs - @cctlds
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">foobar.com.vc</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('foobar.com.vc');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.com.vc</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build afiliassrs - cctld');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info(action)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+is($dri->get_info('exist','domain','foobar.com.vc'),0,'domain_check get_info(exist) from cache');
 
 exit 0;
