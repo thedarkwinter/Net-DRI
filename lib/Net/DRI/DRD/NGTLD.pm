@@ -291,17 +291,33 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas
+ngtlds: xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas
+gtlds: xxx mobi
+cctlds: ag bz gi lc mn sc vc
 
 =cut
 
- return {
+ if ($bep eq 'afiliassrs') {
+   my @ngtlds = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas/;
+   my @gtlds = qw/xxx mobi/;
+   my @cctlds = (
+       'ag',(map { $_.'.ag'} qw/co com net nom org/),
+       'bz',(map { $_.'.bz'} qw/co com net/),
+       'gi',
+       'lc',(map { $_.'.lc'} qw/co com l net org p/),
+       'me',
+       'mn',
+       'sc',(map { $_.'.sc'} qw/com net org/),
+       'vc',(map { $_.'.vc'} qw/com net org/));
+   my @tlds = (@ngtlds,@gtlds,@cctlds);
+
+   return {
      bep_type => 2, # shared registry
-     tlds => ['xxx','me','mobi','xn--4gbrim','xn--kput3i','adult','bnpparibas','creditunion','ged','global','indians','irish','ist','istanbul','ltda','onl','porn','rich','sex','srl','storage','vegas'],
+     tlds => \@tlds,
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.8'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'afiliassrs';
-
+   };
+ }
 
 =pod
 
