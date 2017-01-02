@@ -75,7 +75,8 @@ sub register_commands
 {
  my %tmp=(
     info  => [ undef, \&info_parse ],
-    create => [ \&create, undef ], 
+    check  => [ \&check, undef ],
+    create => [ \&create, undef ],
     update => [ \&update, undef ],
     );
  return { 'domain' => \%tmp };
@@ -84,8 +85,23 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'regType' => [ 'urn:ietf:params:xml:ns:regtype-0.1','regtype-0.1.xsd' ] });
+ $po->ns({ 'regtype' => [ 'urn:ietf:params:xml:ns:regtype-0.2','regtype-0.2.xsd' ] });
  $po->capabilities('domain_update','reg_type',['set']);
+ return;
+}
+
+sub check
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ return unless Net::DRI::Util::has_key($rd,'reg_type');
+
+ my @n;
+ push @n,['regtype:type',$rd->{reg_type}];
+
+ my $eid=$mes->command_extension_register('regtype','check');
+ $mes->command_extension($eid,\@n);
+
  return;
 }
 
@@ -94,7 +110,7 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $infdata=$mes->get_extension($mes->ns('regType'),'infData');
+ my $infdata=$mes->get_extension($mes->ns('regtype'),'infData');
  return unless defined $infdata;
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
@@ -115,11 +131,11 @@ sub create
  return unless Net::DRI::Util::has_key($rd,'reg_type');
 
  my @n;
- push @n,['regType:type',$rd->{reg_type}];
+ push @n,['regtype:type',$rd->{reg_type}];
 
- my $eid=$mes->command_extension_register('regType','create');
+ my $eid=$mes->command_extension_register('regtype','create');
  $mes->command_extension($eid,\@n);
- 
+
  return;
 }
 
@@ -130,11 +146,11 @@ sub update
  return unless $todo->set('reg_type');
 
  my @n;
- push @n,['regType:chg',['regType:type',$todo->set('reg_type')]];
+ push @n,['regtype:chg',['regtype:type',$todo->set('reg_type')]];
 
- my $eid=$mes->command_extension_register('regType','update');
+ my $eid=$mes->command_extension_register('regtype','update');
  $mes->command_extension($eid,\@n);
- 
+
  return;
 }
 
