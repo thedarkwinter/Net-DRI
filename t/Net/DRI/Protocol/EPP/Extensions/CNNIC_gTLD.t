@@ -25,7 +25,7 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('NGTLD',{provider=>'cnnic',tlds=>['xn--fiqs8s']}); # This TLD is used for testing only as it was used in the documentation
+$dri->add_registry('NGTLD',{provider=>'cnnic'});
 $dri->target('cnnic')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
