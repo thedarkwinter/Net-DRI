@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime;
-use Test::More tests => 63;
+use Test::More tests => 68;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -194,6 +194,14 @@ $rc=$dri->domain_update('example.cn',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.cn</domain:name><domain:add><domain:ns><domain:hostObj>a.test.cn</domain:hostObj></domain:ns><domain:contact type="admin">cnnic2</domain:contact><domain:status s="clientDeleteProhibited"/></domain:add><domain:rem><domain:ns><domain:hostObj>ns.m.cn</domain:hostObj></domain:ns><domain:contact type="admin">cnnic1</domain:contact></domain:rem><domain:chg><domain:registrant>registrant1</domain:registrant><domain:authInfo><domain:pw>2BARfoo</domain:pw></domain:authInfo></domain:chg></domain:update></update><extension><cnnic-domain:update xmlns:cnnic-domain="urn:ietf:params:xml:ns:cnnic-domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-domain-1.0 cnnic-domain-1.0.xsd"><cnnic-domain:chg><cnnic-domain:type>I</cnnic-domain:type><cnnic-domain:purveyor>mynewpurveyor</cnnic-domain:purveyor></cnnic-domain:chg></cnnic-domain:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
 is($rc->is_success(),1,'domain_update is_success');
 
+# test .xn--fiqs8s TLD
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example3.xn--fiqs8s</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example3.xn--fiqs8s');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.xn--fiqs8s</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info(action)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+is($dri->get_info('exist','domain','example3.xn--fiqs8s'),0,'domain_check get_info(exist) from cache');
 
 ### Host commands ###
 
