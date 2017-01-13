@@ -301,7 +301,7 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
 ngtlds: xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas
 gtlds: xxx mobi
-cctlds: ag bz gi lc mn sc vc
+cctlds: ag bz gi lc mn me sc vc
 
 =cut
 
@@ -687,28 +687,28 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
  return {
      bep_type => 2, # shared registry
      tlds => ['nagoya','tokyo','yokohama'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmo';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['okinawa','ryukyu'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmogeo';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['kyoto'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmokyoto';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['shop'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
    } if $bep eq 'gmoshop';
 
