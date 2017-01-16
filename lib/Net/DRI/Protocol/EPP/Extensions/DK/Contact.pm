@@ -73,14 +73,14 @@ sub register_commands {
   my %tmp = (
     create => [ \&create, undef ],
     update => [ \&update, undef ],
-    info => [ undef, \&info_parse ],
+    info => [ undef, \&_parse_dkhm_contact ],
   );
 
   return { 'contact' => \%tmp };
 }
 
 ####################################################################################################
-## HELPER
+## HELPERS
 sub _build_dkhm_contact {
   my ( $epp, $c ) = @_;
   my $mes = $epp->message;
@@ -119,23 +119,7 @@ sub _build_dkhm_contact {
   return;
 }
 
-####################################################################################################
-
-sub create {
-  my ( $epp, $c ) = @_;
-  return _build_dkhm_contact(@_);
-}
-
-sub update
-{
- my ($epp,$contact,$todo)=@_;
- my $mes=$epp->message();
- my $newc=$todo->set('info');
- return defined $newc ? _build_dkhm_contact($epp, $newc) : undef;
-}
-
-sub info_parse
-{
+sub _parse_dkhm_contact {
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success();
@@ -144,7 +128,6 @@ sub info_parse
   my $data;
 
 	if ($data = $mes->get_extension('dkhm','contact_validated')) {
-    print "hello\n\n";
   	$c->contact_validated($data->getFirstChild()->textContent());
 	}
 	if ($data = $mes->get_extension('dkhm','mobilephone')) {
@@ -164,6 +147,21 @@ sub info_parse
 	}
 
   return;
+}
+
+####################################################################################################
+
+sub create {
+  my ( $epp, $c ) = @_;
+  return _build_dkhm_contact(@_);
+}
+
+sub update
+{
+  my ($epp,$contact,$todo)=@_;
+  my $mes=$epp->message();
+  my $newc=$todo->set('info');
+  return defined $newc ? _build_dkhm_contact($epp, $newc) : undef;
 }
 
 ####################################################################################################

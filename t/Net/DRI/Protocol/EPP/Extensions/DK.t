@@ -84,6 +84,10 @@ is($co->name(), 'DK Hostmaster A/S', 'contact_info get_info name');
 is($co->contact_validated(), 1, 'contact_info get_info contact_validated');
 
 ####################################################################################################
+####### Host Commands ########
+
+
+####################################################################################################
 ####### Domains Commands ########
 
 ### 2.1 Domain Create

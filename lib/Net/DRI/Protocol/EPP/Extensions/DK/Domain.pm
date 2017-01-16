@@ -73,12 +73,43 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub register_commands {
 	my ( $class, $version)=@_;
-	my %tmp=(
-		create => [ \&create, \&create_parse ],
-		check  => [ undef, \&check_parse ],
+	my %domain=(
+	  check  => [ undef, \&check_parse ],
+	  info   => [ undef, \&_parse_dkhm_domain ],
+	  create => [ \&create, \&_parse_dkhm_domain ],
+	  renew  => [ undef, \&_parse_dkhm_domain ],
+	  update =>	[ undef, \&_parse_dkhm_domain ]
 	);
 
-	return { 'domain' => \%tmp };
+	my %host=(
+	  create => [ \&create_host, undef],
+		update => [ \&update_host, undef],
+	);
+
+	return { 'domain' => \%domain };
+}
+
+####################################################################################################
+## HELPERS
+sub _parse_dkhm_domain
+{
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+
+	my $mes=$po->message();
+	return unless $mes->is_success();
+	my $data;
+
+	if ($data = $mes->get_extension('dkhm','trackingNo')) {
+		$rinfo->{domain}->{$oname}->{tracking_no} = $data->getFirstChild()->textContent();
+	}
+	if ($data = $mes->get_extension('dkhm','domain_confirmed')) {
+		$rinfo->{domain}->{$oname}->{domain_confirmed} = $data->getFirstChild()->textContent();
+	}
+	if ($data = $mes->get_extension('dkhm','registrant_validated')) {
+		$rinfo->{domain}->{$oname}->{registrant_validated} = $data->getFirstChild()->textContent();
+	}
+
+	return;
 }
 
 ####################################################################################################
@@ -90,26 +121,8 @@ sub create {
 
 	return unless Net::DRI::Util::has_key($rd,'confirmation_token');
 
-	my $eid1=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="'.$ns.'"');
-	$mes->command_extension($eid1,$rd->{confirmation_token});
-}
-
-sub create_parse {
-	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-
-	my $mes=$po->message();
-	return unless $mes->is_success();
-	my $data;
-
-	if ($data = $mes->get_extension('dkhm','trackingNo')) {
-  	$rinfo->{domain}->{$oname}->{tracking_no} = $data->getFirstChild()->textContent();
-	}
-	if ($data = $mes->get_extension('dkhm','domain_confirmed')) {
-  	$rinfo->{domain}->{$oname}->{domain_confirmed} = $data->getFirstChild()->textContent();
-	}
-	if ($data = $mes->get_extension('dkhm','registrant_validated')) {
-  	$rinfo->{domain}->{$oname}->{registrant_validated} = $data->getFirstChild()->textContent();
-	}
+	my $eid=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="'.$ns.'"');
+	$mes->command_extension($eid,$rd->{confirmation_token});
 
 	return;
 }
@@ -126,8 +139,38 @@ sub check_parse {
   {
    $rinfo->{domain}->{$adata->getAttribute('domain')}->{advisory} = $adata->getAttribute('advisory');
 	}
+
   return;
 }
 
 ####################################################################################################
+sub create_host {
+	my ($epp,$domain,$rd)=@_;
+	my $mes=$epp->message();
+	my $ns = $mes->ns('dkhm');
+
+	return unless Net::DRI::Util::has_key($rd,'requested_ns_admin');
+
+	my $eid=$mes->command_extension_register('dkhm:requestedNsAdmin','xmlns:dkhm="'.$ns.'"');
+	$mes->command_extension($eid,$rd->{requested_ns_admin});
+
+	return;
+}
+
+sub update_host {
+	my ($epp,$host,$todo)=@_;
+  my $mes=$epp->message();
+	my $ns = $mes->ns('dkhm');
+	
+  my $ns_admin = $todo->set('requested_ns_admin');
+	return unless $ns_admin;
+
+  my $eid=$mes->command_extension_register('dkhm:requestedNsAdmin','xmlns:dkhm="'.$ns.'"');
+	$mes->command_extension($eid,$ns_admin);
+
+	return;
+}
+
+####################################################################################################
+
 1;
