@@ -46,9 +46,9 @@ AfiliasSRS utilises the following standard extensions. Please see the test files
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage> urn:afilias:params:xml:ns:idn-1.0
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:ipr-1.1 
+=head3 L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:ipr-1.1
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0 
+=head3 L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0
 
 =head1 SUPPORT
 
@@ -95,11 +95,20 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'AfiliasSRS'; }
 
-sub tlds     { 
+sub tlds     {
  my @pro = qw/pro law.pro jur.pro bar.pro med.pro cpa.pro aca.pro eng.pro/; # in afilias main complex
  my @afilias = qw/info mobi xn--5tzm5g xn--6frz82g bet black blue green kim lgbt lotto meet organic pet pink poker red shiksha vote voto/; # info / main complex
- my @afilias_clients = qw/xxx xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas/; # xxx / clients complex
- return (@pro, @afilias, @afilias_clients);
+ my @afilias_clients = qw/xxx mobi xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas/; # xxx / clients complex
+ my @cctlds = (
+     'ag',(map { $_.'.ag'} qw/co com net nom org/),
+     'bz',(map { $_.'.bz'} qw/co com net/),
+     'gi',
+     'lc',(map { $_.'.lc'} qw/co com l net org p/),
+     'me',
+     'mn',
+     'sc',(map { $_.'.sc'} qw/com net org/),
+     'vc',(map { $_.'.vc'} qw/com net org/));
+ return (@pro, @afilias, @afilias_clients,@cctlds);
 }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
