@@ -299,14 +299,14 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-ngtlds: xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas
+ngtlds: xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas
 gtlds: xxx mobi
 cctlds: ag bz gi lc mn me sc vc
 
 =cut
 
  if ($bep eq 'afiliassrs') {
-   my @ngtlds = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas/;
+   my @ngtlds = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas/;
    my @gtlds = qw/xxx mobi/;
    my @cctlds = (
        'ag',(map { $_.'.ag'} qw/co com net nom org/),
@@ -790,13 +790,13 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
 Uncontested: budapest luxe xn--g2xx48c
 
-Contested: aby beauty coupon cpa data dds eco gay home hotel inc latino llc realestate
+Contested: aby beauty coupon cpa data dds gay home hotel inc latino llc realestate
 =cut
 
  return {
      bep_type => 2, # shared registry
      tlds => ['budapest', 'luxe', 'xn--g2xx48c',
-              'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'eco', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate'
+              'baby', 'beauty', 'coupon', 'cpa', 'data', 'dds', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate'
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
      whois_server => 'whois-dub.mm-registry.com',
