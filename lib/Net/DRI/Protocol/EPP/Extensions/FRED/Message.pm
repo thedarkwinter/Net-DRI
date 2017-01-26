@@ -1,4 +1,4 @@
-## Domain Registry Interface, CZ.NIC Poll EPP extension commands
+## Domain Registry Interface, FRED Poll EPP extension commands
 ##
 ## Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CZ::Message;
+package Net::DRI::Protocol::EPP::Extensions::FRED::Message;
 
 use strict;
 use warnings;
@@ -22,7 +22,7 @@ use POSIX qw(strftime);
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CZ::Message - .CZ Message extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::FRED::Message - FRED Message extension commands for Net::DRI
 
 =head1 DESCRIPTION
 

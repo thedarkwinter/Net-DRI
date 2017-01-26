@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 135;
+use Test::More tests => 136;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -26,8 +26,8 @@ sub r { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Co
 my $ok=eval {
   $dri = Net::DRI->new({cache_ttl => 10});
   $dri->{trid_factory} = sub { return 'ABC-12345'; };
-  $dri->add_registry('CZ');
-  $dri->target('CZ')->add_current_profile('p1', 'epp', {f_send => \&mysend, f_recv => \&myrecv});
+  $dri->add_registry('FRED');
+  $dri->target('FRED')->add_current_profile('p1', 'epp', {f_send => \&mysend, f_recv => \&myrecv});
   1;
 };
 
@@ -39,6 +39,11 @@ if (! $ok) {
     die $err;
   }
 }
+
+####################################################################################################
+###### Check TLD Loading (as of 26/01/2017)
+
+is_deeply([$dri->tlds()],['mw','ac.mw','co.mw','com.mw','coop.mw','edu.mw','gov.mw','int.mw','museum.mw','net.mw','org.mw','cz','ao','tz','co.tz','ac.tz','go.tz','or.tz','mil.tz','sc.tz','ne.tz','hotel.tz','mobi.tz','tv.tz','info.tz','me.tz','cr','ac.cr','co.cr','ed.cr','fi.cr','go.cr','or.cr','sa.cr','al','com.al','net.al','org.al','edu.al','mk','com.mk','org.mk','net.mk','edu.mk','gov.mk','inf.mk','ar','com.ar','edu.ar','gob.ar','int.ar','mil.ar','net.ar','org.ar','tur.ar'],'fred interface: load_all_tlds');
 
 ####################################################################################################
 ###### Contact operations
@@ -189,7 +194,7 @@ is($rc->is_success(), 1, 'contact info is_success');
 is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><contact:info xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>TL2-CZ</contact:id></contact:info></info><clTRID>ABC-12345</clTRID></command>' . $E2, 'contact info build xml');
 
 $c = $dri->get_info('self', 'contact', 'TL2-CZ');
-is(ref($c), 'Net::DRI::Data::Contact::CZ', 'contact info type');
+is(ref($c), 'Net::DRI::Data::Contact::FRED', 'contact info type');
 is($c->srid(), 'TL2-CZ', 'contact info srid');
 is($c->roid(), 'C0000146169-CZ', 'contact info roid');
 is($c->name(), 'Tonnerre Lombard', 'contact info name');
@@ -225,7 +230,7 @@ if (! $ok) {
 
 is($rc->is_success(), 1, 'contact info (vat + ident) is_success');
 $c = $dri->get_info('self', 'contact', 'ID064561');
-is(ref($c), 'Net::DRI::Data::Contact::CZ', 'contact info (vat + ident) type');
+is(ref($c), 'Net::DRI::Data::Contact::FRED', 'contact info (vat + ident) type');
 is($c->srid(), 'ID064561', 'contact info (vat + ident) srid');
 is($c->roid(), 'C0000842892-CZ', 'contact info (vat + ident) roid');
 is($c->name(), 'Jan Novak', 'contact info (vat + ident) name');

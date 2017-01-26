@@ -1,8 +1,8 @@
-## Domain Registry Interface, Handling of contact data for .CZ [https://www.nic.cz/files/nic/doc/constraints.pdf]
+## Domain Registry Interface, Handling of contact data for .FRED [https://www.nic.cz/files/nic/doc/constraints.pdf]
 ##
 ## Copyright (c) 2008-2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+## Copyright (c) 2014-2017 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Data::Contact::CZ;
+package Net::DRI::Data::Contact::FRED;
 
 use strict;
 use warnings;
@@ -31,12 +31,12 @@ __PACKAGE__->register_attributes(qw(vat identity notify_email));
 
 =head1 NAME
 
-Net::DRI::Data::Contact::CZ - Handle CZ contact data for Net::DRI
+Net::DRI::Data::Contact::FRED - Handle FRED contact data for Net::DRI
 
 =head1 DESCRIPTION
 
 This subclass of Net::DRI::Data::Contact adds accessors and validation for
-CZ specific data.
+FRED specific data.
 
 =head1 METHODS
 
@@ -82,7 +82,7 @@ David Makuni <d.makuni@live.co.uk>
 
 Copyright (c) 2008-2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
 Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+Copyright (c) 2014-2017 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ sub validate {
 
 	# the voice 'x' attribute is not allowed
 	if ((defined $self->voice()) && ($self->voice() =~ m/(.+)(x)(.*)/)) {
-			push @errs,'The registry does not support voice extensions.' if (defined $self->voice());
+			push @errs,'The FRED system does not support voice extensions.' if (defined $self->voice());
 	}
 
 	# 'identity' element data validation

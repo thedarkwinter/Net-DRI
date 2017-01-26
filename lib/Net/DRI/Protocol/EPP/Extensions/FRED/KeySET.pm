@@ -1,4 +1,4 @@
-## Domain Registry Interface, CZ.NIC KeySET EPP commands
+## Domain Registry Interface, FRED KeySET EPP commands
 ##
 ## Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CZ::KeySET;
+package Net::DRI::Protocol::EPP::Extensions::FRED::KeySET;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ use Net::DRI::Protocol::EPP::Util;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CZ::KeySET - KeySET Extension for CZ
+Net::DRI::Protocol::EPP::Extensions::FRED::KeySET - KeySET Extension for FRED
 
 =head1 DESCRIPTION
 

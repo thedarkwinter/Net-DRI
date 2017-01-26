@@ -1,4 +1,4 @@
-## Domain Registry Interface, CZ.NIC NSSET EPP commands
+## Domain Registry Interface, FRED NSSET EPP commands
 ##
 ## Copyright (c) 2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ## Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CZ::NSSET;
+package Net::DRI::Protocol::EPP::Extensions::FRED::NSSET;
 
 use strict;
 use warnings;
@@ -29,7 +29,7 @@ use Net::DRI::Protocol::EPP::Util;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CZ::NSSET - .CZ NSSET extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::FRED::NSSET - FRED NSSET extension commands for Net::DRI
 
 =head1 DESCRIPTION
 

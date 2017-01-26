@@ -1,4 +1,4 @@
-## Domain Registry Interface, CZ.NIC Contact EPP extension commands
+## Domain Registry Interface, FRED Contact EPP extension commands
 ##
 ## Copyright (c) 2008,2010,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ## Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CZ::Contact;
+package Net::DRI::Protocol::EPP::Extensions::FRED::Contact;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use Net::DRI::Protocol::EPP::Util;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CZ::Contact - .CZ EPP Contact extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::FRED::Contact - FRED EPP Contact extension commands for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -48,7 +48,7 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 =head1 AUTHOR
 
 Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
-David Makuni, E<lt>d.makuni@live.co.uk<gt>
+David Makuni, E<lt>d.makuni@live.co.ukE<gt>
 
 =head1 COPYRIGHT
 
