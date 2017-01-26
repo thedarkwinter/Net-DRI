@@ -72,7 +72,7 @@ sub setup {
     return;
 }
 
-sub default_extensions { return qw/DK::Domain DK::Contact/; }
+sub default_extensions { return qw/SecDNS DK::Domain DK::Contact/; }
 
 ####################################################################################################
 1;

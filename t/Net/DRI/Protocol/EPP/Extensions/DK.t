@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 13;
+use Test::More tests => 19;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=30; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -33,10 +33,13 @@ my ($rc,$s,$d,$co,$co_old,$dh,$cs,$ns,$toc);
 
 my $drd = $dri->{registries}->{DK}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::DK',{}],'DK - epp transport_protocol_default');
-$R2='';
+$R2=$E1.'<greeting><svID>DK Hostmaster EPP Service (production): 2.2.3</svID><svDate>2017-01-26T09:53:33.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:dkhm:params:xml:ns:dkhm-2.0</extURI></svcExtension></svcMenu><dcp><access><personalAndOther /></access><statement><purpose><admin /><prov /></purpose><recipient><other /><unrelated /></recipient><retention><legal /></retention></statement></dcp></greeting></epp>';
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build');
 is($rc->is_success(),1,'session noop is_success');
+is($dri->protocol()->ns()->{'secDNS'}->[0],'urn:ietf:params:xml:ns:secDNS-1.1','secDNS 1.1 for server announcing 1.1');
+is($dri->protocol()->ns()->{'dkhm'}->[0],'urn:dkhm:params:xml:ns:dkhm-2.0','dkhm-2.0 for server announcing 2.0');
+
 $R2=$E1.'<response>'.r(1500).$TRID.'</response>'.$E2;
 $rc=$dri->process('session','logout',[]);
 is($R1,$E1.'<command><logout/><clTRID>ABC-12345</clTRID></command>'.$E2,'session logout build');
