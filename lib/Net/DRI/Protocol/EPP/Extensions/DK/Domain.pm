@@ -73,24 +73,33 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub register_commands {
 	my ( $class, $version)=@_;
-	my %domain=(
-	  check  => [ undef, \&check_parse ],
-	  info   => [ undef, \&_parse_dkhm_domain ],
-	  create => [ \&create, \&_parse_dkhm_domain ],
-	  renew  => [ undef, \&_parse_dkhm_domain ],
-	  update =>	[ undef, \&_parse_dkhm_domain ]
+	my %tmp=(
+	  'check'  => [ undef, \&check_parse ],
+	  'info'   => [ undef, \&_parse_dkhm_domain ],
+	  'create' => [ \&create, \&_parse_dkhm_domain ],
+	  'renew'  => [ undef, \&_parse_dkhm_domain ],
+	  'update' =>	[ undef, \&_parse_dkhm_domain ]
 	);
 
-	my %host=(
-	  create => [ \&create_host, undef],
-		update => [ \&update_host, undef],
-	);
-
-	return { 'domain' => \%domain };
+	return { 'domain' => \%tmp };
 }
 
 ####################################################################################################
 ## HELPERS
+sub _build_dkhm_domain
+{
+	my ($epp,$domain,$rd)=@_;
+	my $mes=$epp->message();
+	my $ns = $mes->ns('dkhm');
+
+	return unless Net::DRI::Util::has_key($rd,'confirmation_token');
+
+	my $eid=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="'.$ns.'"');
+	$mes->command_extension($eid,$rd->{confirmation_token});
+
+	return;
+}
+
 sub _parse_dkhm_domain
 {
 	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
@@ -115,16 +124,7 @@ sub _parse_dkhm_domain
 ####################################################################################################
 
 sub create {
-	my ($epp,$domain,$rd)=@_;
-	my $mes=$epp->message();
-	my $ns = $mes->ns('dkhm');
-
-	return unless Net::DRI::Util::has_key($rd,'confirmation_token');
-
-	my $eid=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="'.$ns.'"');
-	$mes->command_extension($eid,$rd->{confirmation_token});
-
-	return;
+  return _build_dkhm_domain(@_);
 }
 
 sub check_parse {
@@ -142,35 +142,5 @@ sub check_parse {
 
   return;
 }
-
-####################################################################################################
-sub create_host {
-	my ($epp,$domain,$rd)=@_;
-	my $mes=$epp->message();
-	my $ns = $mes->ns('dkhm');
-
-	return unless Net::DRI::Util::has_key($rd,'requested_ns_admin');
-
-	my $eid=$mes->command_extension_register('dkhm:requestedNsAdmin','xmlns:dkhm="'.$ns.'"');
-	$mes->command_extension($eid,$rd->{requested_ns_admin});
-
-	return;
-}
-
-sub update_host {
-	my ($epp,$host,$todo)=@_;
-  my $mes=$epp->message();
-	my $ns = $mes->ns('dkhm');
-	
-  my $ns_admin = $todo->set('requested_ns_admin');
-	return unless $ns_admin;
-
-  my $eid=$mes->command_extension_register('dkhm:requestedNsAdmin','xmlns:dkhm="'.$ns.'"');
-	$mes->command_extension($eid,$ns_admin);
-
-	return;
-}
-
-####################################################################################################
 
 1;

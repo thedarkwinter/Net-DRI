@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 19;
+use Test::More tests => 25;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=30; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -32,7 +32,7 @@ my ($rc,$s,$d,$co,$co_old,$dh,$cs,$ns,$toc);
 ######## Initial Commands ########
 
 my $drd = $dri->{registries}->{DK}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::DK',{}],'DK - epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{'ssl_version' => 'TLSv12', 'ssl_cipher_list' => undef},'Net::DRI::Protocol::EPP::Extensions::DK',{}],'DK - epp transport_protocol_default');
 $R2=$E1.'<greeting><svID>DK Hostmaster EPP Service (production): 2.2.3</svID><svDate>2017-01-26T09:53:33.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:dkhm:params:xml:ns:dkhm-2.0</extURI></svcExtension></svcMenu><dcp><access><personalAndOther /></access><statement><purpose><admin /><prov /></purpose><recipient><other /><unrelated /></recipient><retention><legal /></retention></statement></dcp></greeting></epp>';
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build');
@@ -89,6 +89,26 @@ is($co->contact_validated(), 1, 'contact_info get_info contact_validated');
 ####################################################################################################
 ####### Host Commands ########
 
+# Host create
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><host:creData xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:name>ns1.eksempel.dk</host:name><host:crDate>1999-04-03T22:00:00.0Z</host:crDate></host:creData></resData>' . $TRID .'</response>'. $E2;
+$ns = $dri->local_object('hosts')->add('ns1.eksempel.dk',['162.0.2.2','162.0.2.29'],['2000:0:0:0:8:800:200C:417A']);
+$dri->host_create($ns);
+is_string($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.eksempel.dk</host:name><host:addr ip="v4">162.0.2.2</host:addr><host:addr ip="v4">162.0.2.29</host:addr><host:addr ip="v6">2000:0:0:0:8:800:200C:417A</host:addr></host:create></create><clTRID>ABC-12345</clTRID></command></epp>','host_create(1) build');
+is($rc->is_success(), 1, 'contact_info is_success');
+is($dri->get_info('crDate'),'1999-04-03T22:00:00','host_create get_info crdate');
+
+# Host create with requested_ns_admin
+$dri->host_create($ns, {'requested_ns_admin' => 'ADMIN2-DK'});
+is_string($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.eksempel.dk</host:name><host:addr ip="v4">162.0.2.2</host:addr><host:addr ip="v4">162.0.2.29</host:addr><host:addr ip="v6">2000:0:0:0:8:800:200C:417A</host:addr></host:create></create><extension><dkhm:requestedNsAdmin xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-2.0">ADMIN2-DK</dkhm:requestedNsAdmin></extension><clTRID>ABC-12345</clTRID></command></epp>','host_create(2) build');
+
+# host update with requested_ns_admin
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$toc=$dri->local_object('changes');
+#$toc->set('ip',$dri->local_object('hosts')->add('ns1.eksempel.dk',['193.0.2.22'],[]));
+$toc->set('requested_ns_admin','DKHM1-DK');
+$rc=$dri->host_update('ns1.eksempel.dk',$toc);
+is($R1,$E1.'<command><update><host:update xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.eksempel.dk</host:name></host:update></update><extension><dkhm:requestedNsAdmin xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-2.0">DKHM1-DK</dkhm:requestedNsAdmin></extension><clTRID>ABC-12345</clTRID></command></epp>','host_update build');
+is($rc->is_success(),1,'host_update is_success');
 
 ####################################################################################################
 ####### Domains Commands ########

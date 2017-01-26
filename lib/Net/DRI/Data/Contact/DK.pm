@@ -152,30 +152,31 @@ sub validate {
 	}
 
 	# 'type' field validation on other field(s) dependant on this field value.
-	if ( $self->type() eq 'company' ) {
+	if ($self->type()) {
+		if ( $self->type() eq 'company' ) {
 
-		# 'vat' is mandatory for this contact type.
-		push @errs,'"vat" field is mandatory for this contact type (company)' unless ($self->vat());
+			# 'vat' is mandatory for this contact type.
+			push @errs,'"vat" field is mandatory for this contact type (company)' unless ($self->vat());
 
-	} elsif ( $self->type() eq 'public_organization' ) {
+		} elsif ( $self->type() eq 'public_organization' ) {
 
-		# 'vat' is mandatory for this contact type.
-		push @errs,'"vat" field is mandatory for this contact type (public_organization)' unless ($self->vat());
+			# 'vat' is mandatory for this contact type.
+			push @errs,'"vat" field is mandatory for this contact type (public_organization)' unless ($self->vat());
 
-	} elsif ( $self->type() eq 'association' ) {
+		} elsif ( $self->type() eq 'association' ) {
 
-		# 'ean' is mandatory for this contact type. Validation Specified within the EPP spec but field is currently unimplemented.
-		# push @errs,'"ean" field is mandatory for this contact type (association)' unless ($self->ean());
+			# 'ean' is mandatory for this contact type. Validation Specified within the EPP spec but field is currently unimplemented.
+			# push @errs,'"ean" field is mandatory for this contact type (association)' unless ($self->ean());
 
-	} elsif ( $self->type() eq 'individual' ) {
+		} elsif ( $self->type() eq 'individual' ) {
 
-		# "ean" field is not supported for this contact type
-		push @errs,'"ean" field is not supported by this contact type (individual)' if (defined $self->ean());
+			# "ean" field is not supported for this contact type
+			push @errs,'"ean" field is not supported by this contact type (individual)' if (defined $self->ean());
 
-		# "vat" field is not supported for this contact type
-		push @errs,'"vat" field is not supported by this contact type (individual)' if (defined $self->vat());
-	}
-
+			# "vat" field is not supported for this contact type
+			push @errs,'"vat" field is not supported by this contact type (individual)' if (defined $self->vat());
+		}
+  }
 	Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
 
 	return 1; # everything is as it should be!
