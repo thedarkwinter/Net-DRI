@@ -1,8 +1,5 @@
-## Domain Registry Interface, .DK EPP extensions
+## Host Registry Interface, .DK Host EPP extension commands
 ##
-## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -15,18 +12,22 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::DK;
+package Net::DRI::Protocol::EPP::Extensions::DK::Host;
 
 use strict;
 use warnings;
 
-use base qw/Net::DRI::Protocol::EPP/;
+use Net::DRI::Exception;
+use Net::DRI::Util;
+use DateTime::Format::ISO8601;
+use Net::DRI::Protocol::EPP::Util;
+use utf8;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::DK - .DK EPP Contact extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::DK::Host - .DK EPP Host extension commands for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -66,15 +67,43 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub setup {
-    my ( $self, $rp ) = @_;
-    $self->ns({dkhm => ['urn:dkhm:params:xml:ns:dkhm-2.0','dkhm-2.0.xsd']});
-    $self->capabilities('host_update','status',undef);
-    $self->capabilities('host_update','requested_ns_admin',['set']);
-    return;
+sub register_commands {
+	my ( $class, $version)=@_;
+
+	my %tmp=(
+	  'create' => [ \&create, undef],
+		'update' => [ \&update, undef],
+	);
+
+	return { 'host' => \%tmp };
 }
 
-sub default_extensions { return qw/SecDNS DK::Domain DK::Host DK::Contact/; }
+####################################################################################################
+## HELPERS
+sub _build_dkhm_host
+{
+	my ($epp,$host,$rd)=@_;
+	my $mes=$epp->message();
+	my $ns = $mes->ns('dkhm');
+	return unless Net::DRI::Util::has_key($rd,'requested_ns_admin');
+
+	my $eid=$mes->command_extension_register('dkhm:requestedNsAdmin','xmlns:dkhm="'.$ns.'"');
+	$mes->command_extension($eid,$rd->{requested_ns_admin});
+
+	return;
+}
 
 ####################################################################################################
+
+sub create {
+  return _build_dkhm_host(@_);
+}
+
+sub update {
+	my ($epp,$host,$todo)=@_;
+	my $requested_ns_admin = $todo->set('requested_ns_admin');
+	return unless $requested_ns_admin;
+  return _build_dkhm_host($epp,$host, {'requested_ns_admin' => $requested_ns_admin});
+}
+
 1;
