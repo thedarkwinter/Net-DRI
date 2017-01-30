@@ -39,6 +39,17 @@ Additional domain extension to manage nameservers & technical contact NSSET, see
 
 Additional contact extension with 'vat', 'notify_email' and 'identity' fields, see L<Net::DRI::Data::Contact::FRED>
 
+The FRED system powers the following TLD's:
+
+.MW - Malawi
+.CZ - Czech Republic
+.AO - Angola
+.TZ - Tanzania
+.CR - Costa Rica
+.AL - Albania
+.MK - Macedonia
+.AR - Argentina
+
 =head2 Custom extensions:
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::FRED:NSSET>
@@ -103,7 +114,7 @@ sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default {
   my ($self,$type)=@_;
-  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::FRED',{}) if $type eq 'epp';
+  return ('Net::DRI::Transport::Socket',{'ssl_version' => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::FRED',{}) if $type eq 'epp';
   return;
 }
 
