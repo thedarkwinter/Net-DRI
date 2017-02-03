@@ -277,7 +277,7 @@ Afilias has extended the .INFO plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afilias'}); # own tlds
 
-info mobi pro xn--5tzm5g xn--6frz82g bet black blue green kim lgbt lotto meet organic pet pink poker promo red shiksha vote voto
+info mobi pro xn--5tzm5g xn--6frz82g archi bet bio black blue green kim lgbt lotto meet organic pet pink poker promo red shiksha ski vote voto
 
 Contended TLD's not included
 
@@ -286,7 +286,7 @@ Contended TLD's not included
  return {
      bep_type => 2, # shared registry
      tlds => ['info','mobi','pro','law.pro','jur.pro','bar.pro','med.pro','cpa.pro','aca.pro','eng.pro',
-              'xn--5tzm5g', 'xn--6frz82g','bet','black','blue','green','kim','lgbt','lotto','meet','organic','pet','pink','poker','promo','red','shiksha','vote','voto'],
+              'xn--5tzm5g', 'xn--6frz82g','archi','bet','bio','black','blue','green','kim','lgbt','lotto','meet','organic','pet','pink','poker','promo','red','shiksha','ski','vote','voto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.8'}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
@@ -1154,34 +1154,6 @@ L<NET::DRI::Protocol::EPP::Extensions::MX::IDN>
      contact_i18n => 1,
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nicmx';
-
-=pod
-
-
-=head2 StartingDot (Provided by Key Sytems)
-
- $dri->add_registry('NGTLD',{provider=>'startingdot'});
-
-=head3 Status: Working
-
-=head3 TLDs
-
-archi bio ski
-
-=head3 Custom extensions
-
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
-
-=cut
-
- return {
-     bep_type => 2, # shared registry
-     tlds => ['archi', 'bio', 'ski'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.7' }],
-     contact_i18n => 1,
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'startingdot';
-
 
 =pod
 

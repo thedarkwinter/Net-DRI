@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 124;
+use Test::More tests => 129;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -79,6 +79,14 @@ is($drd->{info}->{check_limit},13,'afilias: check_limit');
 is($drd->{info}->{host_check_limit},13,'afilias: host_check_limit');
 is($dri->info('contact_check_limit'),13,'afilias: contact_check_limit');
 is($drd->{info}->{domain_check_limit},13,'afilias: domain_check_limit');
+# test for migration from StartingDot to Afilias - .bio
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">foobar.bio</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('foobar.bio');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.bio</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build afilias - ngtld (StartingDot to Afilias migration)');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info(action)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+is($dri->get_info('exist','domain','foobar.bio'),0,'domain_check get_info(exist) from cache');
 
 #### Dedicated Registry
 # Neustar (best)
