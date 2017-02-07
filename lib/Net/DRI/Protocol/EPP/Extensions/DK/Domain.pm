@@ -3,6 +3,7 @@
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -57,6 +58,7 @@ David Makuni <d.makuni@live.co.uk>
 Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -71,57 +73,74 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub register_commands {
 	my ( $class, $version)=@_;
-	my %tmp=( 
-		create => [ \&create, \&create_parse ],
-		check  => [ undef, \&check_parse ],
+	my %tmp=(
+	  'check'  => [ undef, \&check_parse ],
+	  'info'   => [ undef, \&_parse_dkhm_domain ],
+	  'create' => [ \&create, \&_parse_dkhm_domain ],
+	  'renew'  => [ undef, \&_parse_dkhm_domain ],
+	  'update' =>	[ undef, \&_parse_dkhm_domain ]
 	);
-	
+
 	return { 'domain' => \%tmp };
+}
+
+####################################################################################################
+## HELPERS
+sub _build_dkhm_domain
+{
+	my ($epp,$domain,$rd)=@_;
+	my $mes=$epp->message();
+	my $ns = $mes->ns('dkhm');
+
+	return unless Net::DRI::Util::has_key($rd,'confirmation_token');
+
+	my $eid=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="'.$ns.'"');
+	$mes->command_extension($eid,$rd->{confirmation_token});
+
+	return;
+}
+
+sub _parse_dkhm_domain
+{
+	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+
+	my $mes=$po->message();
+	return unless $mes->is_success();
+	my $data;
+
+	if ($data = $mes->get_extension('dkhm','trackingNo')) {
+		$rinfo->{domain}->{$oname}->{tracking_no} = $data->getFirstChild()->textContent();
+	}
+	if ($data = $mes->get_extension('dkhm','domain_confirmed')) {
+		$rinfo->{domain}->{$oname}->{domain_confirmed} = $data->getFirstChild()->textContent();
+	}
+	if ($data = $mes->get_extension('dkhm','registrant_validated')) {
+		$rinfo->{domain}->{$oname}->{registrant_validated} = $data->getFirstChild()->textContent();
+	}
+
+	return;
 }
 
 ####################################################################################################
 
 sub create {
-	my ($epp,$domain,$rd)=@_;
-	my $mes=$epp->message();
-	
-	return unless Net::DRI::Util::has_key($rd,'confirmation_token');
-	
-	my $eid1=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-1.2"');
-	$mes->command_extension($eid1,$rd->{confirmation_token});
-}
-
-sub create_parse {
-	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-	
-	my $mes=$po->message();
-	return unless $mes->is_success();
-
-	my $NS = $mes->ns('ext_domain');
-	my $c = $rinfo->{domain}->{$oname}->{self};	
-	
-	my $adata = $mes->get_extension('ext_domain','trackingNo');
-    return unless $adata;
-	
-	$rinfo->{domain}->{$oname}->{tracking_no} = $adata->getFirstChild()->textContent();
-	
-	return;
+  return _build_dkhm_domain(@_);
 }
 
 sub check_parse {
 	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
 	my $mes=$po->message();
 	return unless $mes->is_success();
-	
-	my $adata = $mes->get_extension('ext_domain','domainAdvisory');
+
+	my $adata = $mes->get_extension('dkhm','domainAdvisory');
   return unless $adata;
-   
+
   if ($adata->hasAttribute('domain') && $adata->getAttribute('advisory'))
   {
    $rinfo->{domain}->{$adata->getAttribute('domain')}->{advisory} = $adata->getAttribute('advisory');
 	}
+
   return;
 }
 
-####################################################################################################
 1;
