@@ -79,7 +79,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'CN'; }
-sub tlds     { return (qw/cn cn.com/, map { $_.'.cn'} qw/ah bj com cq fj gd gs gx gz ha hb he hi hk hl hn jl js jx ln mo net nm nx org qh sc sd sh sn sx tj tw xj xn--55qx5d xz yn zj/ ); }
+sub tlds     { return (qw/cn cn.com xn--fiqs8s/, map { $_.'.cn'} qw/ah bj com cq fj gd gs gx gz ha hb he hi hk hl hn jl js jx ln mo net nm nx org qh sc sd sh sn sx tj tw xj xn--55qx5d xz yn zj/ ); }
 sub object_types { return qw(domain contact ns); }
 sub profile_types { return qw/epp/; }
 
