@@ -70,16 +70,16 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub register_commands {
   my ( $class, $version ) = @_;
-  my %tmp = ( create           => [ \&create ],
-              check            => [ \&check, \&check_parse ],
-              info             => [ \&info, \&info_parse ],
+  my %tmp = ( create           => [ \&create,           \&create_parse ],
+              check            => [ \&check,            \&check_parse ],
+              info             => [ \&info,             \&info_parse ],
               delete           => [ \&delete ],
               update           => [ \&update ],
               renew            => [ \&renew ],
-              transfer_query   => [ \&transfer_query, \&transfer_parse ],
+              transfer_query   => [ \&transfer_query,   \&transfer_parse ],
               transfer_request => [ \&transfer_request, \&transfer_parse ],
-              transfer_cancel  => [ \&transfer_cancel, \&transfer_parse ],
-              transfer_answer  => [ \&transfer_answer, \&transfer_parse ] );
+              transfer_cancel  => [ \&transfer_cancel,  \&transfer_parse ],
+              transfer_answer  => [ \&transfer_answer,  \&transfer_parse ] );
 
   $tmp{check_multi} = $tmp{check};
 
@@ -295,6 +295,11 @@ sub create {
   @d = build_command( $epp, $mes, 'create', $info );
   $mes->command_body( \@d );
   return;
+}
+
+sub create_parse {
+  my ( $po, $otype, $oaction, $oname, $rinfo ) = @_;
+  return _parse_emailfwd( @_, 'creData' );
 }
 
 sub delete    ## no critic (Subroutines::ProhibitBuiltinHomonyms)

@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 54;
+use Test::More tests => 59;
 eval { no warnings; require Test::LongString; Test::LongString->import( max => 100 ); $Test::LongString::Context = 50; };
 if ($@) { no strict 'refs'; *{'main::is_string'} = \&main::is; }
 
@@ -171,5 +171,38 @@ is( $dri->get_info('acID'),     'ClientY',             'emailfwd_transfer_query 
 is( $dri->get_info('reDate'),   '2000-06-06T22:00:00', 'emailfwd_transfer_query get_info(reDate)' );
 is( $dri->get_info('acDate'),   '2000-06-11T22:00:00', 'emailfwd_transfer_query get_info(acDate)' );
 is( $dri->get_info('exDate'),   '2002-09-08T22:00:00', 'emailfwd_transfer_query get_info(exDate)' );
+
+# emailfwd create
+$R2
+    = $E1
+    . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><emailFwd:creData xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0" xsi:schemaLocation="http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd"><emailFwd:name>john@doe.name</emailFwd:name><emailFwd:crDate>1999-04-03T22:00:00.0Z</emailFwd:crDate><emailFwd:exDate>2001-04-03T22:00:00.0Z</emailFwd:exDate></emailFwd:creData></resData>'
+    . $TRID
+    . '</response>'
+    . $E2;
+$cs = $dri->local_object('contactset');
+my $c1 = $dri->local_object('contact')->srid('jd1234');
+my $c2 = $dri->local_object('contact')->srid('sh8013');
+$cs->set( $c1, 'registrant' );
+$cs->set( $c2, 'admin' );
+$cs->set( $c2, 'tech' );
+print Dumper($cs);
+
+# TODO: fix contact type section!
+$rc = $dri->emailfwd_create( 'john@doe.name',
+                             { fwdTo    => 'jdoe@example.com',
+                               duration => DateTime::Duration->new( years => 2 ),
+                               contact  => $cs,
+                               auth     => { pw => '2fooBAR' } } );
+is_string(
+  $R1,
+  $E1
+      . '<command><create><emailFwd:create xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0" xsi:schemaLocation="http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd"><emailFwd:name>john@doe.name</emailFwd:name><emailFwd:fwdTo>jdoe@example.com</emailFwd:fwdTo><emailFwd:period unit="y">2</emailFwd:period><emailFwd:registrant>jd1234</emailFwd:registrant><emailFwd:contact type="admin">sh8013</emailFwd:contact><emailFwd:contact type="tech">sh8013</emailFwd:contact><emailFwd:authInfo><emailFwd:pw>2fooBAR</emailFwd:pw></emailFwd:authInfo></emailFwd:create></create><clTRID>ABC-12345</clTRID></command>'
+      . $E2,
+  'emailfwd_create build_xml'
+);
+is( $dri->get_info('action'), 'create',              'emailfwd_create get_info(action)' );
+is( $dri->get_info('name'),   'john@doe.name',       'emailfwd_create get_info(name)' );
+is( $dri->get_info('crDate'), '1999-04-03T22:00:00', 'emailfwd_create get_info(crDate)' );
+is( $dri->get_info('exDate'), '2001-04-03T22:00:00', 'emailfwd_create get_info(exDate)' );
 
 exit 0;
