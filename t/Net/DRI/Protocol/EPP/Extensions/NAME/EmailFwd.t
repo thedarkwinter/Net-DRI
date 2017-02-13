@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 36;
+use Test::More tests => 43;
 eval { no warnings; require Test::LongString; Test::LongString->import( max => 100 ); $Test::LongString::Context = 50; };
 if ($@) { no strict 'refs'; *{'main::is_string'} = \&main::is; }
 
@@ -123,5 +123,27 @@ is( $dri->get_info('upDate'),      '1999-12-03T09:00:00', 'emailfwd_info get_inf
 is( $dri->get_info('exDate'),      '2005-04-03T22:00:00', 'emailfwd_info get_info(exDate)' );
 is( $dri->get_info('trDate'),      '2000-04-08T09:00:00', 'emailfwd_info get_info(trDate)' );
 is_deeply( $dri->get_info('auth'), { pw => '2fooBAR' }, 'emailfwd_info get_info(authInfo)' );
+
+# emailfwd info - response for an unauthorized client
+$R2
+    = $E1
+    . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><emailFwd:infData xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0" xsi:schemaLocation="http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd"><emailFwd:name>john@doe.name</emailFwd:name><emailFwd:roid>EXAMPLE1-VRSN</emailFwd:roid><emailFwd:clID>ClientX</emailFwd:clID></emailFwd:infData></resData>'
+    . $TRID
+    . '</response>'
+    . $E2;
+$rc = $dri->emailfwd_info('john@doe.name');
+is_string(
+  $R1,
+  $E1
+      . '<command><info><emailFwd:info xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0" xsi:schemaLocation="http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd"><emailFwd:name>john@doe.name</emailFwd:name></emailFwd:info></info><clTRID>ABC-12345</clTRID></command>'
+      . $E2,
+  'emailfwd_info unauthorized client build_xml'
+);
+is( $rc->is_success(),        1,               'emailfwd_info unauthorized client is_success' );
+is( $dri->get_info('action'), 'info',          'emailfwd_info unauthorized client get_info(action)' );
+is( $dri->get_info('exist'),  1,               'emailfwd_info unauthorized client get_info(exist)' );
+is( $dri->get_info('name'),   'john@doe.name', 'emailfwd_info unauthorized client get_info(name)' );
+is( $dri->get_info('roid'),   'EXAMPLE1-VRSN', 'emailfwd_info unauthorized client get_info(roid)' );
+is( $dri->get_info('clID'),   'ClientX',       'emailfwd_info unauthorized client get_info(clID)' );
 
 exit 0;
