@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 43;
+use Test::More tests => 54;
 eval { no warnings; require Test::LongString; Test::LongString->import( max => 100 ); $Test::LongString::Context = 50; };
 if ($@) { no strict 'refs'; *{'main::is_string'} = \&main::is; }
 
@@ -145,5 +145,31 @@ is( $dri->get_info('exist'),  1,               'emailfwd_info unauthorized clien
 is( $dri->get_info('name'),   'john@doe.name', 'emailfwd_info unauthorized client get_info(name)' );
 is( $dri->get_info('roid'),   'EXAMPLE1-VRSN', 'emailfwd_info unauthorized client get_info(roid)' );
 is( $dri->get_info('clID'),   'ClientX',       'emailfwd_info unauthorized client get_info(clID)' );
+
+# emailfwd transfer_query
+$R2
+    = $E1
+    . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><emailFwd:trnData xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0"><emailFwd:name>john@doe.name</emailFwd:name><emailFwd:trStatus>pending</emailFwd:trStatus><emailFwd:reID>ClientX</emailFwd:reID><emailFwd:reDate>2000-06-06T22:00:00.0Z</emailFwd:reDate><emailFwd:acID>ClientY</emailFwd:acID><emailFwd:acDate>2000-06-11T22:00:00.0Z</emailFwd:acDate><emailFwd:exDate>2002-09-08T22:00:00.0Z</emailFwd:exDate></emailFwd:trnData></resData>'
+    . $TRID
+    . '</response>'
+    . $E2;
+$rc = $dri->emailfwd_transfer_query( 'john@doe.name', { auth => { roid => 'JD1234-REP', pw => '2fooBAR' } } );
+is_string(
+  $R1,
+  $E1
+      . '<command><transfer op="query"><emailFwd:transfer xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0" xsi:schemaLocation="http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd"><emailFwd:name>john@doe.name</emailFwd:name><emailFwd:authInfo><emailFwd:pw roid="JD1234-REP">2fooBAR</emailFwd:pw></emailFwd:authInfo></emailFwd:transfer></transfer><clTRID>ABC-12345</clTRID></command>'
+      . $E2,
+  'emailfwd_transfer_query build_xml'
+);
+is( $rc->is_success(), 1, 'emailfwd_transfer_query is_success' );
+is( $dri->get_info( 'action', 'emailfwd', 'john@doe.name' ), 'transfer_query', 'emailfwd_transfer_query get_info(action)' );
+is( $dri->get_info('action'),   'transfer_query',      'emailfwd_transfer_query get_info(action)' );
+is( $dri->get_info('name'),     'john@doe.name',       'emailfwd_transfer_query get_info(name)' );
+is( $dri->get_info('trStatus'), 'pending',             'emailfwd_transfer_query get_info(trStatus)' );
+is( $dri->get_info('reID'),     'ClientX',             'emailfwd_transfer_query get_info(reID)' );
+is( $dri->get_info('acID'),     'ClientY',             'emailfwd_transfer_query get_info(acID)' );
+is( $dri->get_info('reDate'),   '2000-06-06T22:00:00', 'emailfwd_transfer_query get_info(reDate)' );
+is( $dri->get_info('acDate'),   '2000-06-11T22:00:00', 'emailfwd_transfer_query get_info(acDate)' );
+is( $dri->get_info('exDate'),   '2002-09-08T22:00:00', 'emailfwd_transfer_query get_info(exDate)' );
 
 exit 0;

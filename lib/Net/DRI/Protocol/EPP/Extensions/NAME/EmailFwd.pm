@@ -70,12 +70,16 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub register_commands {
   my ( $class, $version ) = @_;
-  my %tmp = ( create => [ \&create ],
-              check  => [ \&check, \&check_parse ],
-              info   => [ \&info, \&info_parse ],
-              delete => [ \&delete ],
-              update => [ \&update ],
-              renew  => [ \&renew ] );
+  my %tmp = ( create           => [ \&create ],
+              check            => [ \&check, \&check_parse ],
+              info             => [ \&info, \&info_parse ],
+              delete           => [ \&delete ],
+              update           => [ \&update ],
+              renew            => [ \&renew ],
+              transfer_query   => [ \&transfer_query, \&transfer_parse ],
+              transfer_request => [ \&transfer_request, \&transfer_parse ],
+              transfer_cancel  => [ \&transfer_cancel, \&transfer_parse ],
+              transfer_answer  => [ \&transfer_answer, \&transfer_parse ] );
 
   $tmp{check_multi} = $tmp{check};
 
@@ -86,6 +90,90 @@ sub setup {
   my ( $class, $po, $version ) = @_;
   $po->ns( { emailFwd => [ 'http://www.nic.name/epp/emailFwd-1.0', 'emailFwd-1.0' ] } );
   $po->capabilities( 'emailfwd_update', 'info', ['set'] );
+  return;
+}
+
+####################################################################################################
+########### Helpers
+
+sub _parse_emailfwd {
+  my ( $po, $otype, $oaction, $oname, $rinfo, $child ) = @_;
+  my $mes = $po->message();
+  return unless $mes->is_success();
+
+  my $ns = $mes->ns('emailFwd');
+  my $infdata = $mes->get_response( $ns, $child );
+  return unless $infdata;
+
+  my $nm;
+  my $cs = $po->create_local_object('contactset');
+  my @s;
+  my $info  = {};
+  my $ginfo = {};
+
+  my $c = $infdata->getFirstChild();
+  while ($c) {
+    next unless ( $c->nodeType() == 1 );    ## only for element nodes
+    my $name = $c->localname() || $c->nodeName();
+    next unless $name;
+
+    if ( $name eq 'name' ) {
+      $ginfo->{$name} = $nm = $c->getFirstChild()->getData();
+    } elsif ( $name eq 'roid' ) {
+      $ginfo->{$name} = $c->getFirstChild()->getData();
+    } elsif ( $name eq 'status' ) {
+      push @s, Net::DRI::Protocol::EPP::Util::parse_node_status($c);
+    } elsif ( $name eq 'fwdTo' ) {
+      $ginfo->{$name} = $c->getFirstChild()->getData();
+    } elsif (
+      grep {
+        $_ eq $name
+      } qw/clID crID upID reID acID tm tmCountry trStatus/
+        ) {
+      $ginfo->{$name} = $c->getFirstChild()->getData();
+    } elsif (
+      grep {
+        $_ eq $name
+      } qw/crDate upDate trDate exDate tmDate acDate reDate/
+        ) {
+      $ginfo->{$name} = DateTime::Format::ISO8601->new()->parse_datetime( $c->getFirstChild()->getData() );
+    } elsif (
+      grep {
+        $_ eq $name
+      } qw/registrant contact/
+        ) {
+      my $type = $c->getAttribute('type') || 'registrant';
+      $cs->add( Net::DRI::Data::Contact->new()->srid( $c->getFirstChild()->getData() ), $type );
+    } elsif ( $name eq 'authInfo' ) {
+      my $pw = ( $c->getElementsByTagNameNS( $mes->ns('emailFwd'), 'pw' ) )[0];
+      $ginfo->{auth} = { pw => ( defined($pw) && $pw->hasChildNodes() ? $pw->getFirstChild->getData() : undef ) };
+    }
+  } continue {
+    $c = $c->getNextSibling();
+  }
+
+  $ginfo->{contact}         = $cs;
+  $ginfo->{exist}           = defined($nm);
+  $ginfo->{action}          = $oaction;
+  $ginfo->{self}            = $info;
+  $ginfo->{status}          = $po->create_local_object('status')->add(@s);
+  $rinfo->{emailfwd}->{$nm} = $ginfo;
+
+  return;
+}
+
+sub _build_transfer {
+  my ( $epp, $mail, $rd, $op ) = @_;
+  my $mes = $epp->message();
+  Net::DRI::Exception->die( 1, 'protocol/EPP', 2, 'emailFwd name needed' ) unless ( defined($mail) );
+  $mes->command( [ 'transfer', { 'op' => $op } ],
+                 'emailFwd:transfer', sprintf( 'xmlns:emailFwd="%s" xsi:schemaLocation="%s %s"', $mes->nsattrs('emailFwd') ) );
+  my @d;
+  push @d, [ 'emailFwd:name', $mail ];
+  push @d, Net::DRI::Protocol::EPP::Util::build_period( $rd->{duration}, 'emailFwd' ) if Net::DRI::Util::has_duration($rd);
+  push @d, [ 'emailFwd:authInfo', [ 'emailFwd:pw', $rd->{auth}->{pw}, exists( $rd->{auth}->{roid} ) ? { 'roid' => $rd->{auth}->{roid} } : undef ] ]
+      if exists $rd->{auth};
+  $mes->command_body( \@d );
   return;
 }
 
@@ -186,67 +274,15 @@ sub info {
 
 sub info_parse {
   my ( $po, $otype, $oaction, $oname, $rinfo ) = @_;
-  my $mes = $po->message();
-  return unless $mes->is_success();
+  $oaction = 'info';
+  return _parse_emailfwd( @_, 'infData' );
+}
 
-  my $ns = $mes->ns('emailFwd');
-  my $infdata = $mes->get_response( $ns, 'infData' );
-  return unless $infdata;
+sub transfer_query { return _build_transfer( @_, 'query' ); }
 
-  my $nm;
-  my $cs = $po->create_local_object('contactset');
-  my @s;
-  my $info  = {};
-  my $ginfo = {};
-
-  my $c = $infdata->getFirstChild();
-  while ($c) {
-    next unless ( $c->nodeType() == 1 );    ## only for element nodes
-    my $name = $c->localname() || $c->nodeName();
-    next unless $name;
-
-    if ( $name eq 'name' ) {
-      $ginfo->{$name} = $nm = $c->getFirstChild()->getData();
-    } elsif ( $name eq 'roid' ) {
-      $ginfo->{$name} = $c->getFirstChild()->getData();
-    } elsif ( $name eq 'status' ) {
-      push @s, Net::DRI::Protocol::EPP::Util::parse_node_status($c);
-    } elsif ( $name eq 'fwdTo' ) {
-      $ginfo->{$name} = $c->getFirstChild()->getData();
-    } elsif (
-      grep {
-        $_ eq $name
-      } qw/clID crID upID/
-        ) {
-      $ginfo->{$name} = $c->getFirstChild()->getData();
-    } elsif (
-      grep {
-        $_ eq $name
-      } qw/crDate upDate trDate exDate/
-        ) {
-      $ginfo->{$name} = DateTime::Format::ISO8601->new()->parse_datetime( $c->getFirstChild()->getData() );
-    } elsif (
-      grep {
-        $_ eq $name
-      } qw/registrant contact/
-        ) {
-      my $type = $c->getAttribute('type') || 'registrant';
-      $cs->add( Net::DRI::Data::Contact->new()->srid( $c->getFirstChild()->getData() ), $type );
-    } elsif ( $name eq 'authInfo' ) {
-      my $pw = ( $c->getElementsByTagNameNS( $mes->ns('emailFwd'), 'pw' ) )[0];
-      $ginfo->{auth} = { pw => ( defined($pw) && $pw->hasChildNodes() ? $pw->getFirstChild->getData() : undef ) };
-    }
-  } continue {
-    $c = $c->getNextSibling();
-  }
-
-  $ginfo->{contact}         = $cs;
-  $ginfo->{exist}           = defined($nm);
-  $ginfo->{action}          = 'info';
-  $ginfo->{self}            = $info;
-  $ginfo->{status}          = $po->create_local_object('status')->add(@s);
-  $rinfo->{emailfwd}->{$nm} = $ginfo;
-  return;
+sub transfer_parse {
+  my ( $po, $otype, $oaction, $oname, $rinfo ) = @_;
+  return _parse_emailfwd( @_, 'trnData' );
 }
 
 ############ Transform commands
