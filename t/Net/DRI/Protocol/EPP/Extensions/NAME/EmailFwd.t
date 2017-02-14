@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 76;
+use Test::More tests => 77;
 eval { no warnings; require Test::LongString; Test::LongString->import( max => 100 ); $Test::LongString::Context = 50; };
 if ($@) { no strict 'refs'; *{'main::is_string'} = \&main::is; }
 
@@ -263,5 +263,38 @@ is( $dri->get_info('acID'),     'ClientY',             'emailfwd_transfer_start 
 is( $dri->get_info('reDate'),   '2000-06-08T22:00:00', 'emailfwd_transfer_start get_info(reDate)' );
 is( $dri->get_info('acDate'),   '2000-06-13T22:00:00', 'emailfwd_transfer_start get_info(acDate)' );
 is( $dri->get_info('exDate'),   '2002-09-08T22:00:00', 'emailfwd_transfer_start get_info(exDate)' );
+
+# emailfwd update
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result>' . $TRID . '</response>' . $E2;
+my $toc = $dri->local_object('changes');
+
+# add/del status
+$toc->add( 'status', $dri->local_object('status')->no( 'publish', 'Payment overdue.' ) );
+$toc->del( 'status', $dri->local_object('status')->no('update') );
+
+# add contact
+$cs = $dri->local_object('contactset');
+$cs->set( $dri->local_object('contact')->srid('mak21'), 'tech' );
+$toc->add( 'contact', $cs );
+
+# delete contact
+$cs = $dri->local_object('contactset');
+$cs->set( $dri->local_object('contact')->srid('sh8013'), 'tech' );
+$toc->del( 'contact', $cs );
+
+# set fields
+$cs = $dri->local_object('contactset');
+$cs->set( $dri->local_object('contact')->srid('sh8013'), 'registrant' );
+$toc->set( 'contact', $cs );
+$toc->set( 'fwdTo',   'johnny@example.com' );
+$toc->set( 'auth', { pw => '2BARfoo' } );
+$rc = $dri->emailfwd_update( 'john@doe.name', $toc );
+is_string(
+  $R1,
+  $E1
+      . '<command><update><emailFwd:update xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0" xsi:schemaLocation="http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd"><emailFwd:name>john@doe.name</emailFwd:name><emailFwd:add><emailFwd:contact type="tech">mak21</emailFwd:contact><emailFwd:status lang="en" s="clientHold">Payment overdue.</emailFwd:status></emailFwd:add><emailFwd:rem><emailFwd:contact type="tech">sh8013</emailFwd:contact><emailFwd:status s="clientUpdateProhibited"/></emailFwd:rem><emailFwd:chg><emailFwd:fwdTo>johnny@example.com</emailFwd:fwdTo><emailFwd:registrant>sh8013</emailFwd:registrant><emailFwd:authInfo><emailFwd:pw>2BARfoo</emailFwd:pw></emailFwd:authInfo></emailFwd:chg></emailFwd:update></update><clTRID>ABC-12345</clTRID></command>'
+      . $E2,
+  'emailfwd_update build_xml'
+);
 
 exit 0;

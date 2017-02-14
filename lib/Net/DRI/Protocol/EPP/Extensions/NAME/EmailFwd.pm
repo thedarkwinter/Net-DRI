@@ -318,18 +318,57 @@ sub delete    ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 }
 
 sub update {
-  my ( $epp, $hosts, $todo ) = @_;
+  my ( $epp, $mail, $todo ) = @_;
   my $mes = $epp->message();
 
   Net::DRI::Exception::usererr_invalid_parameters( $todo . ' must be a Net::DRI::Data::Changes object' ) unless Net::DRI::Util::isa_changes($todo);
 
-  if ( ( grep { !/^(?:ns)$/ } $todo->types() ) || ( grep { !/^(?:set)$/ } $todo->types('ns') ) ) {
-    Net::DRI::Exception->die( 0, 'protocol/EPP', 11, 'Only ns set available for nsgroup' );
+  $mes->command( 'update', 'emailFwd:update', sprintf( 'xmlns:emailFwd="%s" xsi:schemaLocation="%s %s"', $mes->nsattrs('emailFwd') ) );
+  my ( @d, @add, @del, @set );
+  push @d, [ 'emailFwd:name', $mail ];
+
+  # addRemType (add, del) => contactType(admin, billing and tech) AND status
+  # add contactType
+  my $cadd = $todo->add('contact');
+
+  # del contactType
+  my $cdel = $todo->del('contact');
+
+  # based on Net::DRI::Protocol::EPP::Util::build_core_contacts() and tweaked for this case!
+  my %r = map { $_ => 1 } $epp->core_contact_types();
+  if ( Net::DRI::Util::isa_contactset($cdel) || Net::DRI::Util::isa_contactset($cadd) ) {
+    foreach my $t ( sort( grep { exists( $r{$_} ) } $cadd->types() ) ) {
+      my @oadd = $cadd->get($t);
+      my @odel = $cdel->get($t);
+      push @add, map { [ ( 'update', 'emailFwd' ) . ':contact', $_->srid(), { 'type' => $t } ] } @oadd;
+      push @del, map { [ ( 'update', 'emailFwd' ) . ':contact', $_->srid(), { 'type' => $t } ] } @odel;    # print Dumper(\@d);
+    }
   }
 
-  my $ns = $todo->set('ns');
-  my @d = build_command( $epp, $mes, 'update', $hosts );
-  push @d, add_nsname($ns);
+  # END: addRemType (add, del) => contactType(admin, billing and tech) AND status
+
+  # add status
+  my $sadd = $todo->add('status');
+  push @add, $sadd->build_xml( 'emailFwd:status', 'core' ) if Net::DRI::Util::isa_statuslist($sadd);
+  push @d, [ 'emailFwd:add', @add ] if @add;
+
+  # del status
+  my $sdel = $todo->del('status');
+  push @del, $sdel->build_xml( 'emailFwd:status', 'core' ) if Net::DRI::Util::isa_statuslist($sdel);
+  push @d, [ 'emailFwd:rem', @del ] if @del;
+
+  # END addRemType (add, del) => contactType(admin, billing and tech) AND status
+
+  my $cs   = $todo->set('contact');
+  my $auth = $todo->set('auth');
+
+  # chgType (set) => (fwdTo, registrant, authInfo )
+  push( @set, [ 'emailFwd:fwdTo', $todo->set('fwdTo') ] ) if defined $todo->set('fwdTo');
+  push( @set, [ 'emailFwd:registrant', $cs->get('registrant')->srid() ] ) if defined $cs && $cs->has_type('registrant');
+  push @set, [ 'emailFwd:authInfo', [ 'emailFwd:pw', $auth->{pw} ] ] if defined $auth;
+
+  push @d, [ 'emailFwd:chg', @set ] if @set;
+
   $mes->command_body( \@d );
   return;
 }

@@ -224,11 +224,6 @@ sub emailfwd_update {
   ## Technical syntax check of email object needed here
   Net::DRI::Util::check_isa( $tochange, 'Net::DRI::Data::Changes' );
 
-  foreach my $t ( $tochange->types() ) {
-    next if $ndr->protocol_capable( 'emailfwd_update', $t );
-    Net::DRI::Exception->die( 0, 'DRD', 5, 'Protocol ' . $fp . ' is not capable of emailfwd_update/' . $t );
-  }
-
   my $rc = $ndr->process( 'emailfwd', 'update', [ $email, $tochange ] );
   return $rc;
 }
