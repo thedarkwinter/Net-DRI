@@ -356,5 +356,9 @@ sub renew_parse {
   return _parse_emailfwd( @_, 'renData' );
 }
 
+sub transfer_request { return _build_transfer( @_, 'request' ); }
+sub transfer_cancel  { return _build_transfer( @_, 'cancel' ); }
+sub transfer_answer  { return _build_transfer( @_, $_[2]->{approve} ? 'approve' : 'reject' ); }
+
 ####################################################################################################
 1;
