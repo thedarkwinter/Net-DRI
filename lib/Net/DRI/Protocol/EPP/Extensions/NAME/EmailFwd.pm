@@ -184,24 +184,29 @@ sub build_command {
   my @ret;
   my @auth;
 
-  delete $info->{contact};
-  delete $info->{auth};
-
   Net::DRI::Exception->die( 1, 'protocol/EPP', 2, 'emailFwd name needed' ) unless ( defined( $info->{name} ) );
 
   my @ns = $msg->nsattrs('emailFwd');
   @ns = qw(http://www.nic.name/epp/emailFwd-1.0 http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd) unless @ns;
   $msg->command( [ $command, 'emailFwd:' . $command, sprintf( 'xmlns:emailFwd="%s" xsi:schemaLocation="%s %s"', @ns ) ] );
 
-  # @ret = map { ['emailFwd:' . $_, $info->{$_}] } keys(%{$info});
   push( @ret, [ 'emailFwd:name',  $info->{name} ] )  if ( defined( $info->{name} ) );
   push( @ret, [ 'emailFwd:fwdTo', $info->{fwdTo} ] ) if ( defined( $info->{fwdTo} ) );
   push( @ret, [ 'emailFwd:curExpDate', $info->{curExpDate} ] )
       if ( defined( $info->{curExpDate} ) );
-  push( @ret, [ 'emailFwd:period', { unit => 'y' }, $info->{period}->in_units('years') ] ) if ( defined( $info->{period} ) );
-  push( @ret, [ 'emailFwd:registrant', $info->{registrant} ] ) if ( defined( $info->{registrant} ) );
-  foreach my $type ( sort { $a cmp $b } keys %$contacts ) {
-    push( @ret, [ 'emailFwd:contact', { type => $type }, $contacts->{$type} ] );
+
+  # lets force duration to period in case the first one is used
+  $info->{period} = $info->{duration} if $info->{duration};
+  push( @ret, [ 'emailFwd:period', { unit => 'y' }, $info->{period}->in_units('years') ] ) if defined( $info->{period} );
+
+  # handle contacts
+  my $cs = $contacts;
+  if ( defined($cs) ) {
+    push( @ret, [ 'emailFwd:registrant', $cs->get('registrant')->srid() ] ) if $cs->has_type('registrant');
+    # from xml schema => contactAttrType
+    foreach (qw/admin billing tech/) {
+      push( @ret, [ 'emailFwd:contact', { type => $_ }, $cs->get($_)->srid() ] ) if $cs->has_type($_);
+    }
   }
 
   foreach my $auth ( sort { $a cmp $b } keys %$authid ) {

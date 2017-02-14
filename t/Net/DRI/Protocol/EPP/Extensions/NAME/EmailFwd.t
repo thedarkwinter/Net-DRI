@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 59;
+use Test::More tests => 60;
 eval { no warnings; require Test::LongString; Test::LongString->import( max => 100 ); $Test::LongString::Context = 50; };
 if ($@) { no strict 'refs'; *{'main::is_string'} = \&main::is; }
 
@@ -185,9 +185,6 @@ my $c2 = $dri->local_object('contact')->srid('sh8013');
 $cs->set( $c1, 'registrant' );
 $cs->set( $c2, 'admin' );
 $cs->set( $c2, 'tech' );
-print Dumper($cs);
-
-# TODO: fix contact type section!
 $rc = $dri->emailfwd_create( 'john@doe.name',
                              { fwdTo    => 'jdoe@example.com',
                                duration => DateTime::Duration->new( years => 2 ),
@@ -204,5 +201,16 @@ is( $dri->get_info('action'), 'create',              'emailfwd_create get_info(a
 is( $dri->get_info('name'),   'john@doe.name',       'emailfwd_create get_info(name)' );
 is( $dri->get_info('crDate'), '1999-04-03T22:00:00', 'emailfwd_create get_info(crDate)' );
 is( $dri->get_info('exDate'), '2001-04-03T22:00:00', 'emailfwd_create get_info(exDate)' );
+
+# emailfwd delete
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result>' . $TRID . '</response>' . $E2;
+$rc = $dri->emailfwd_delete('john@doe.name');
+is_string(
+  $R1,
+  $E1
+      . '<command><delete><emailFwd:delete xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0" xsi:schemaLocation="http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd"><emailFwd:name>john@doe.name</emailFwd:name></emailFwd:delete></delete><clTRID>ABC-12345</clTRID></command>'
+      . $E2,
+  'emailfwd_delete build_xml'
+);
 
 exit 0;
