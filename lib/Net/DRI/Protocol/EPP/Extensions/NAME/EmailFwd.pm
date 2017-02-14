@@ -75,7 +75,7 @@ sub register_commands {
               info             => [ \&info,             \&info_parse ],
               delete           => [ \&delete ],
               update           => [ \&update ],
-              renew            => [ \&renew ],
+              renew            => [ \&renew,            \&renew_parse ],
               transfer_query   => [ \&transfer_query,   \&transfer_parse ],
               transfer_request => [ \&transfer_request, \&transfer_parse ],
               transfer_cancel  => [ \&transfer_cancel,  \&transfer_parse ],
@@ -203,6 +203,7 @@ sub build_command {
   my $cs = $contacts;
   if ( defined($cs) ) {
     push( @ret, [ 'emailFwd:registrant', $cs->get('registrant')->srid() ] ) if $cs->has_type('registrant');
+
     # from xml schema => contactAttrType
     foreach (qw/admin billing tech/) {
       push( @ret, [ 'emailFwd:contact', { type => $_ }, $cs->get($_)->srid() ] ) if $cs->has_type($_);
@@ -348,6 +349,11 @@ sub renew {
   my @d = build_command( $epp, $mes, 'renew', $info );
   $mes->command_body( \@d );
   return;
+}
+
+sub renew_parse {
+  my ( $po, $otype, $oaction, $oname, $rinfo ) = @_;
+  return _parse_emailfwd( @_, 'renData' );
 }
 
 ####################################################################################################

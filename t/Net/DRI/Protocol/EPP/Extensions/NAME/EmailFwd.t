@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 60;
+use Test::More tests => 65;
 eval { no warnings; require Test::LongString; Test::LongString->import( max => 100 ); $Test::LongString::Context = 50; };
 if ($@) { no strict 'refs'; *{'main::is_string'} = \&main::is; }
 
@@ -29,7 +29,7 @@ my $dri = Net::DRI::TrapExceptions->new( { cache_ttl => 10, trid_factory => sub 
 $dri->add_registry('NAME');
 $dri->target('NAME')->add_current_profile( 'p1', 'epp', { f_send => \&mysend, f_recv => \&myrecv }, {} );
 
-my ( $rc, $s, $cs );
+my ( $rc, $s, $cs, $d );
 
 ########################################################################################################
 
@@ -212,5 +212,28 @@ is_string(
       . $E2,
   'emailfwd_delete build_xml'
 );
+
+# emailfwd renew
+$R2
+    = $E1
+    . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><emailFwd:renData xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0" xsi:schemaLocation="http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd"><emailFwd:name>john@doe.name</emailFwd:name><emailFwd:exDate>2005-04-03T22:00:00.0Z</emailFwd:exDate></emailFwd:renData></resData>'
+    . $TRID
+    . '</response>'
+    . $E2;
+$rc = $dri->emailfwd_renew( 'john@doe.name',
+                            { duration => DateTime::Duration->new( years => 5 ),
+                              current_expiration => DateTime->new( year => 2000, month => 4, day => 3 ) } );
+is(
+  $R1,
+  $E1
+      . '<command><renew><emailFwd:renew xmlns:emailFwd="http://www.nic.name/epp/emailFwd-1.0" xsi:schemaLocation="http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd"><emailFwd:name>john@doe.name</emailFwd:name><emailFwd:curExpDate>2000-04-03</emailFwd:curExpDate><emailFwd:period unit="y">5</emailFwd:period></emailFwd:renew></renew><clTRID>ABC-12345</clTRID></command>'
+      . $E2,
+  'emailfwd_renew build_xml'
+);
+is( $dri->get_info('action'), 'renew', 'emailfwd_renew get_info(action)' );
+is( $dri->get_info('exist'),  1,       'emailfwd_renew get_info(exist)' );
+$d = $dri->get_info('exDate');
+isa_ok( $d, 'DateTime', 'emailfwd_renew get_info(exDate)' );
+is( "" . $d, '2005-04-03T22:00:00', 'emailfwd_renew get_info(exDate) value' );
 
 exit 0;
