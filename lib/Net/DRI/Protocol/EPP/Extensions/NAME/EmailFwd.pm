@@ -1,7 +1,9 @@
 ## Domain Registry Interface, EPP Email forwarding extension commands
 ## (based on .NAME Technical Accreditation Guide v3.03)
 ##
-## Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
+## Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>
+## Copyright (c) 2017 Paulo Jorge <paullojorgge@gmail.com>
+## All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -55,6 +57,7 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+Copyright (c) 2017 Paulo Jorge <paullojorgge@gmail.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
