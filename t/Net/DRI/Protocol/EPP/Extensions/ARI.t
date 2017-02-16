@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 102;
+use Test::More tests => 112;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -33,7 +33,7 @@ my $d;
 my ($dh,@c,$idn);
 
 
-##################### 
+#####################
 ## IDN Extension + Variants Extensions (both use the Net::DRI::Data::IDN Object) : IDNVariant.pm
 
 # domain info
@@ -64,7 +64,7 @@ $rc=$dri->domain_update('example3.menu',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.menu</domain:name></domain:update></update><extension><variant:update xmlns:variant="urn:ar:params:xml:ns:variant-1.1" xsi:schemaLocation="urn:ar:params:xml:ns:variant-1.1 variant-1.1.xsd"><variant:add><variant:variant>ggg.menu</variant:variant></variant:add><variant:rem><variant:variant>abc.menu</variant:variant><variant:variant>xyz.menu</variant:variant></variant:rem></variant:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update variants build_xml');
 
 
-##################### 
+#####################
 ## KeyValue Extension
 
 # domain info
@@ -90,7 +90,7 @@ is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns
 
 
 
-##################### 
+#####################
 ## exAvail Extension
 
 # domain check
@@ -108,7 +108,7 @@ is($ea->{'date'},'2012-10-20T00:00:00','domain_check get_info ex_avail date');
 is($ea->{'primary_domain_name'},'example.menu','domain_check get_info ex_avail primary_domain_name');
 
 
-##################### 
+#####################
 ## Price Extension
 
 # domain check
@@ -200,7 +200,7 @@ is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain
 is($rc->is_success(),1,'domain_transfer_start price is_success');
 is($dri->get_info('action'),'transfer','domain_transfer_start price get_info(action)');
 
-##################### 
+#####################
 ## TMCHApplication Extension (TMCH + Application = LaunchPhase type system)
 
 my $encoded_mark = <<'EOF';
@@ -414,7 +414,7 @@ $rc=$dri->domain_delete('example8.menu',{pure_delete=>1,lp=>$lp});
 is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example8.menu</domain:name></domain:delete></delete><extension><application:delete xmlns:application="urn:ar:params:xml:ns:application-1.0" xsi:schemaLocation="urn:ar:params:xml:ns:application-1.0 application-1.0.xsd"><application:id>abc123</application:id></application:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete lp build_xml');
 
 
-##################### 
+#####################
 ## Block Extension
 
 # domain info
@@ -434,5 +434,27 @@ is($dri->get_info('action'),'create','domain_create get_info(action)');
 is($dri->get_info('block_id'),'BLK-2','domain_info get_info name');
 
 # domain renew & delete are the same
+
+# migration tests
+
+# domain check
+# test .xn--jvr189m TLD
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example3.xn--jvr189m</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example3.xn--jvr189m');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.xn--jvr189m</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build (.xn--jvr189m)');
+is($rc->is_success(),1,'domain_check is_success (.xn--jvr189m)');
+is($dri->get_info('action'),'check','domain_check get_info(action) (.xn--jvr189m)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist) (.xn--jvr189m)');
+is($dri->get_info('exist','domain','example3.xn--jvr189m'),0,'domain_check get_info(exist) from cache (.xn--jvr189m)');
+
+# domain check
+# test .kindle TLD
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example3.kindle</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example3.kindle');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.kindle</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build (.kindle)');
+is($rc->is_success(),1,'domain_check is_success (.kindle)');
+is($dri->get_info('action'),'check','domain_check get_info(action) (.kindle)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist) (.kindle)');
+is($dri->get_info('exist','domain','example3.kindle'),0,'domain_check get_info(exist) from cache (.kindle)');
 
 exit 0;
