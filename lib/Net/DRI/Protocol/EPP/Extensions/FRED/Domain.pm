@@ -1,4 +1,4 @@
-## Domain Registry Interface, CZ.NIC Domain EPP extension commands
+## Domain Registry Interface, FRED Domain EPP extension commands
 ##
 ## Copyright (c) 2008-2010,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ## Copyright (c) 2014-2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CZ::Domain;
+package Net::DRI::Protocol::EPP::Extensions::FRED::Domain;
 
 use strict;
 use warnings;
@@ -30,7 +30,7 @@ use DateTime::Format::ISO8601;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CZ::Domain - .CZ Domain extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::FRED::Domain - FRED Domain extension commands for Net::DRI
 
 =head1 DESCRIPTION
 

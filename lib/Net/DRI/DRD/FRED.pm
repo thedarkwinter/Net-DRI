@@ -1,4 +1,4 @@
-## Domain Registry Interface, .CZ policies
+## Domain Registry Interface, .FRED policies
 ##
 ## Copyright (c) 2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ##           (c) 2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
@@ -13,14 +13,14 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::CZ;
+package Net::DRI::DRD::FRED;
 
 use strict;
 use warnings;
 
 use base qw/Net::DRI::DRD/;
 
-use Net::DRI::Data::Contact::CZ;
+use Net::DRI::Data::Contact::FRED;
 use DateTime::Duration;
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -31,19 +31,30 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_accept
 
 =head1 NAME
 
-Net::DRI::DRD::CZ - .CZ policies for Net::DRI
+Net::DRI::DRD::FRED - .FRED policies for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension to manage nameservers & technical contact NSSET, see CZ.t for examples.
+Additional domain extension to manage nameservers & technical contact NSSET, see FRED.t for examples.
 
-Additional contact extension with 'vat', 'notify_email' and 'identity' fields, see L<Net::DRI::Data::Contact::CZ>
+Additional contact extension with 'vat', 'notify_email' and 'identity' fields, see L<Net::DRI::Data::Contact::FRED>
+
+The FRED system powers the following TLD's:
+
+.MW - Malawi
+.CZ - Czech Republic
+.AO - Angola
+.TZ - Tanzania
+.CR - Costa Rica
+.AL - Albania
+.MK - Macedonia
+.AR - Argentina
 
 =head2 Custom extensions:
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::CZ:NSSET>
+=head3 L<Net::DRI::Protocol::EPP::Extensions::FRED:NSSET>
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::CZ:KeySET>
+=head3 L<Net::DRI::Protocol::EPP::Extensions::FRED:KeySET>
 
 =head1 SUPPORT
 
@@ -87,20 +98,29 @@ sub new {
 }
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name          { return 'CZ'; }
-sub tlds          { return ('cz'); }
+sub name          { return 'FRED'; }
+sub tlds          { return (
+                      'mw',(map { $_.'.mw'} qw/ac co com coop edu gov int museum net org/),
+                      'cz',
+                      'ao',
+                      'tz',(map { $_.'.tz'} qw/co ac go or mil sc ne hotel mobi tv info me/),
+                      'cr',(map { $_.'.cr'} qw/ac co ed fi go or sa/),
+                      'al',(map { $_.'.al'} qw/com net org edu/),
+                      'mk',(map { $_.'.mk'} qw/com org net edu gov inf/),
+                      'ar',(map { $_.'.ar'} qw/com edu gob int mil net org tur/)
+                   ); }
 sub object_types  { return ('domain','contact','ns','nsset','keyset'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default {
   my ($self,$type)=@_;
-  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CZ',{}) if $type eq 'epp';
+  return ('Net::DRI::Transport::Socket',{'ssl_version' => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::FRED',{}) if $type eq 'epp';
   return;
 }
 
 sub set_factories {
    my ($self,$po)=@_;
-   $po->factories('contact',sub { return Net::DRI::Data::Contact::CZ->new(@_); });
+   $po->factories('contact',sub { return Net::DRI::Data::Contact::FRED->new(@_); });
    return;
 }
 
