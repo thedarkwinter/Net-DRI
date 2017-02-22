@@ -299,14 +299,14 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-ngtlds: xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas
+ngtlds: xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas zara
 gtlds: xxx mobi
 cctlds: ag bz gi lc mn me sc vc
 
 =cut
 
  if ($bep eq 'afiliassrs') {
-   my @ngtlds = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas/;
+   my @ngtlds = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas zara/;
    my @gtlds = qw/xxx mobi/;
    my @cctlds = (
        'ag',(map { $_.'.ag'} qw/co com net nom org/),
