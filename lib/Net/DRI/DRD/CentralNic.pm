@@ -90,7 +90,7 @@ sub new
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=0;
- $self->{info}->{contact_i18n}=4;       ## DM - INT & LOC supported as of 20/02/2017. See EL-167.
+ $self->{info}->{contact_i18n}=4;       ## INT & LOC
  return $self;
 }
 
