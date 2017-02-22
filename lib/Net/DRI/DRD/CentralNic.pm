@@ -90,7 +90,7 @@ sub new
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=0;
- $self->{info}->{contact_i18n}=2;       ## INT only - FIXME : check this is still the case
+ $self->{info}->{contact_i18n}=4;       ## INT & LOC
  return $self;
 }
 
