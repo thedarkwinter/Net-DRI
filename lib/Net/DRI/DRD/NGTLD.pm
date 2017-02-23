@@ -329,31 +329,6 @@ cctlds: ag bz gi lc mn me sc vc
 
 =pod
 
-=head2 Amazon Registry Services, Inc. (provider: Neustar)
-
- $dri->add_registry('NGTLD',{provider=>'amazon'});
-
-=head3 Status: Untested
-
-=head3 TLDs
-
-=head3 Custom extensions
-
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.6
-
-=cut
-
- return {
-     bep_type => 1, # dedicated registry
-     tlds => [''],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'amazon';
-
-
-
-=pod
-
 =head2 ARI
 
  $dri->add_registry('NGTLD',{provider=>'ari'});
