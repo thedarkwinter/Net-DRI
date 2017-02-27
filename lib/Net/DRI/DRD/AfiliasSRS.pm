@@ -98,7 +98,7 @@ sub name     { return 'AfiliasSRS'; }
 sub tlds     {
  my @pro = qw/pro law.pro jur.pro bar.pro med.pro cpa.pro aca.pro eng.pro/; # in afilias main complex
  my @afilias = qw/info mobi xn--5tzm5g xn--6frz82g bet black blue green kim lgbt lotto meet organic pet pink poker red shiksha vote voto/; # info / main complex
- my @afilias_clients = qw/xxx mobi xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians irish ist istanbul ltda onl porn rich sex srl storage vegas zara/; # xxx / clients complex
+ my @afilias_clients = qw/xxx mobi xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians ist istanbul ltda onl porn rich sex srl storage vegas zara/; # xxx / clients complex
  my @cctlds = (
      'ag',(map { $_.'.ag'} qw/co com net nom org/),
      'bz',(map { $_.'.bz'} qw/co com net/),
