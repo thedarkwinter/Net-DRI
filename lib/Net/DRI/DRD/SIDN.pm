@@ -43,7 +43,7 @@ sub transport_protocol_default
  my ($self,$type)=@_;
 
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::DAS::SIDN',{}) if $type eq 'das';
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::SIDN',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{ 'ssl_version' => 'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::SIDN',{}) if $type eq 'epp';
  return;
 }
 
