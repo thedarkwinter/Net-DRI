@@ -71,7 +71,8 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub new {
+sub new
+{
   my $class = shift;
   my $self  = $class->SUPER::new(@_);
   $self->{info}->{host_as_attr} = 0;
@@ -79,15 +80,14 @@ sub new {
   return $self;
 }
 
-sub periods {
-  return map { DateTime::Duration->new( years => $_ ) } ( 1 .. 10 );
-}
+sub periods { return map { DateTime::Duration->new( years => $_ ) } ( 1 .. 10 ); }
 sub name          { return 'NAME'; }
 sub tlds          { return ('name'); }
 sub object_types  { return ( 'domain', 'contact', 'ns', 'defReg' ); }
 sub profile_types { return qw/epp whois/; }
 
-sub transport_protocol_default {
+sub transport_protocol_default
+{
   my ( $self, $type ) = @_;
 
   return ( 'Net::DRI::Transport::Socket', {}, 'Net::DRI::Protocol::EPP::Extensions::NAME', {} ) if $type eq 'epp';
@@ -97,7 +97,8 @@ sub transport_protocol_default {
 
 ####################################################################################################
 
-sub verify_name_domain {
+sub verify_name_domain
+{
   my ( $self, $ndr, $domain, $op ) = @_;
   return $self->_verify_name_rules(
     $domain, $op,
@@ -110,7 +111,8 @@ sub verify_name_domain {
 
 ####################################################################################################
 
-sub emailfwd_check {
+sub emailfwd_check
+{
   my ( $self, $ndr, @p ) = @_;
   my ( @names, $rd );
   foreach my $p (@p) {
@@ -163,7 +165,8 @@ sub emailfwd_exist    ## 1/0/undef
   return $ndr->get_info('exist');
 }
 
-sub emailfwd_info {
+sub emailfwd_info
+{
   my ( $self, $ndr, $email, $rd ) = @_;
   ## Technical syntax check of email object needed here
   my $rc = $ndr->try_restore_from_cache( 'emailfwd', $email, 'info' );
@@ -171,7 +174,8 @@ sub emailfwd_info {
   return $rc;
 }
 
-sub emailfwd_transfer {
+sub emailfwd_transfer
+{
   my ( $self, $ndr, $roid, $op, $rd ) = @_;
 
   $rd = {} unless $rd;
@@ -203,21 +207,24 @@ sub emailfwd_transfer_query  { my ( $self, $ndr, $roid, $rd ) = @_; return $self
 sub emailfwd_transfer_accept { my ( $self, $ndr, $roid, $rd ) = @_; return $self->emailfwd_transfer( $ndr, $roid, 'accept', $rd ); }
 sub emailfwd_transfer_refuse { my ( $self, $ndr, $roid, $rd ) = @_; return $self->emailfwd_transfer( $ndr, $roid, 'refuse', $rd ); }
 
-sub emailfwd_create {
+sub emailfwd_create
+{
   my ( $self, $ndr, $email, $rd ) = @_;
   ## Technical syntax check of email object needed here
   my $rc = $ndr->process( 'emailfwd', 'create', [ $email, $rd ] );
   return $rc;
 }
 
-sub emailfwd_delete {
+sub emailfwd_delete
+{
   my ( $self, $ndr, $email ) = @_;
   ## Technical syntax check of email object needed here
   my $rc = $ndr->process( 'emailfwd', 'delete', [$email] );
   return $rc;
 }
 
-sub emailfwd_update {
+sub emailfwd_update
+{
   my ( $self, $ndr, $email, $tochange ) = @_;
   my $fp = $ndr->protocol->nameversion();
 
@@ -228,7 +235,8 @@ sub emailfwd_update {
   return $rc;
 }
 
-sub emailfwd_renew {
+sub emailfwd_renew
+{
   my ( $self, $ndr, $email, $rd ) = @_;
   ## Technical syntax check of email object needed here
   Net::DRI::Util::check_isa( $rd->{duration},           'DateTime::Duration' ) if defined( $rd->{duration} );
@@ -239,7 +247,8 @@ sub emailfwd_renew {
 ####################################################################################################
 
 # based on domain_check
-sub defreg_check {
+sub defreg_check
+{
   my ( $self, $ndr, @p ) = @_;
   my ( @names, $rd );
   foreach my $p (@p) {
@@ -299,14 +308,16 @@ sub defreg_exist    ## 1/0/undef
   return $ndr->get_info('exist');
 }
 
-sub defreg_info {
+sub defreg_info
+{
   my ( $self, $ndr, $roid, $rd ) = @_;
   my $rc = $ndr->try_restore_from_cache( 'defreg', $roid, 'info' );
   if ( !defined $rc ) { $rc = $ndr->process( 'defreg', 'info', [ $roid, $rd ] ); }
   return $rc;
 }
 
-sub defreg_transfer {
+sub defreg_transfer
+{
   my ( $self, $ndr, $roid, $op, $rd ) = @_;
 
   $rd = {} unless $rd;
@@ -338,17 +349,20 @@ sub defreg_transfer_query  { my ( $self, $ndr, $roid, $rd ) = @_; return $self->
 sub defreg_transfer_accept { my ( $self, $ndr, $roid, $rd ) = @_; return $self->defreg_transfer( $ndr, $roid, 'accept', $rd ); }
 sub defreg_transfer_refuse { my ( $self, $ndr, $roid, $rd ) = @_; return $self->defreg_transfer( $ndr, $roid, 'refuse', $rd ); }
 
-sub defreg_create {
+sub defreg_create
+{
   my ( $self, $ndr, $name, $rd ) = @_;
   return $ndr->process( 'defreg', 'create', [ $name, $rd ] );
 }
 
-sub defreg_delete {
+sub defreg_delete
+{
   my ( $self, $ndr, $roid ) = @_;
   return $ndr->process( 'defreg', 'delete', [$roid] );
 }
 
-sub defreg_update {
+sub defreg_update
+{
   my ( $self, $ndr, $roid, $tochange ) = @_;
   my $fp = $ndr->protocol->nameversion();
 
@@ -363,7 +377,8 @@ sub defreg_update {
   return $rc;
 }
 
-sub defreg_renew {
+sub defreg_renew
+{
   my ( $self, $ndr, $roid, $rd ) = @_;
   return $ndr->process( 'defreg', 'renew', [ $roid, $rd->{duration}, $rd->{current_expiration} ] );
 }
