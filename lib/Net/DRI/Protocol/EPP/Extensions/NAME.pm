@@ -20,8 +20,6 @@ use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
 
-use Net::DRI::Protocol::EPP::Extensions::NAME::EmailFwd;
-
 =pod
 
 =head1 NAME
@@ -71,7 +69,6 @@ sub setup
  my ($self,$rp)=@_;
  $self->ns({ emailFwd => ['http://www.nic.name/epp/emailFwd-1.0','emailFwd-1.0.xsd'] });
  $self->ns({ defReg => ['http://www.nic.name/epp/defReg-1.0','defReg-1.0.xsd'] });
- $self->capabilities('emailfwd_update','info',['set']);
  return;
 }
 

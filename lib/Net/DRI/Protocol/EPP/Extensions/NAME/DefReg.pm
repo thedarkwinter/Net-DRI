@@ -76,7 +76,6 @@ sub register_commands
  my %tmp1=( create => [ \&create, \&create_parse ],
             check  => [ \&check, \&check_parse ],
             info   => [ \&info, \&info_parse ],
-            info   => [ \&info, \&info_parse ],
             delete => [ \&delete ],
 	          update => [ \&update ],
 	          renew  => [ \&renew ],
