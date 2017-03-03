@@ -72,7 +72,7 @@ sub setup
              keygroup=> ['http://www.dns.be/xml/epp/keygroup-1.0','keygroup-1.0.xsd'],
           });
  $self->capabilities('contact_update','status',undef); ## No changes in status possible for .BE domains/contacts
- $self->capabilities('domain_update','status',undef);
+ #$self->capabilities('domain_update','status',undef);
  $self->capabilities('domain_update','auth',undef); ## No change in authinfo (since it is not used from the beginning)
  $self->capabilities('domain_update','nsgroup',['add','del']);
  $self->factories('contact',sub { return Net::DRI::Data::Contact::BE->new(); });
