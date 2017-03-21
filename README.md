@@ -59,9 +59,9 @@ $dri->target('buzz')->add_current_profile(....);
 Some TLDs have specific extensions that need to be loaded. In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension
 
 ```perl
-$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'nyc'}); # using name
+$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'nyc'}); # using name
 $dri->target('nyc')->add_current_profile(....);
-$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'whatever',tlds=['nyc']}); # using tld
+$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'whatever',tlds=['nyc']}); # using tld
 ```
 
 ##### Some experimental ngTLD functions

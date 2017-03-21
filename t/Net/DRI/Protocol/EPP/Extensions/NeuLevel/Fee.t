@@ -24,7 +24,7 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
 $dri->add_registry('NGTLD',{provider => 'NEUSTAR',name=>'pharmacy'}); # for testing Fee
 $dri->target('pharmacy')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-$dri->add_registry('NGTLD',{provider => 'NEUSTAR',name=>'nyc'}); # for testing EXTContact
+$dri->add_registry('NGTLD',{provider => 'ARI',name=>'nyc'}); # for testing EXTContact
 $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;

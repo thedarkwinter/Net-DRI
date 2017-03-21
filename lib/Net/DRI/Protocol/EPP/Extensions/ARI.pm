@@ -22,7 +22,23 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS NeuLevel::Message AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block/; }
+sub setup {
+ my ($self,$rp)=@_;
+ $self->ns({neulevel => ['urn:ietf:params:xml:ns:neulevel-1.0','neulevel-1.0.xsd']});
+ return;
+}
+
+sub default_extensions {
+  my ($self,$pp) = @_;
+  my @ext = qw/GracePeriod SecDNS NeuLevel::Message AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block/;
+  if (exists $pp->{custom} ) {
+    my @custom = (ref $pp->{custom} eq 'ARRAY') ? @{$pp->{custom}} : ($pp->{custom});
+    foreach (@custom) {
+      push @ext,$_;
+    }
+  }
+  return @ext;
+}
 
 ####################################################################################################
 1;
