@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 127;
+use Test::More tests => 129;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -105,12 +105,14 @@ is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Sock
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::Fee/],'neustar: loaded_modules');
 is($drd->{bep}->{bep_type},1,'neustar: bep_type');
 
-# Neustar (pharmacy with EXTContact)
-$rc = $dri->add_registry('NGTLD',{provider => 'neustar',name=>'nyc'});
-is($rc->{last_registry},'nyc','neustar nyc: add_registry');
+# ARI (nyc with EXTContact)
+$rc = $dri->add_registry('NGTLD',{provider => 'ari',name=>'nyc'});
+is($rc->{last_registry},'nyc','ari nyc: add_registry');
 $rc = $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-is($rc->is_success(),1,'neustar nyc: add_current_profile');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::EXTContact CentralNic::Fee/],'neustar nyc: loaded_modules (EXTContact)');
+is($rc->is_success(),1,'ari nyc: add_current_profile');
+is($dri->name(),'nyc','ari nyc: name');
+is_deeply([$dri->tlds()],['nyc'],'ari nyc: tlds');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::EXTContact/],'ari nyc: loaded_modules (w/ EXTContact)');
 
 # FFM (Neustar + CentralNic::Fee )
 $rc = $dri->add_registry('NGTLD',{provider => 'ffm'});
