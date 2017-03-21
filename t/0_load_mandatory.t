@@ -144,7 +144,7 @@ use_ok('Net::DRI::Data::Contact::COOP');
 use_ok('Net::DRI::Data::Contact::LU');
 use_ok('Net::DRI::Data::Contact::ASIA');
 use_ok('Net::DRI::Data::Contact::Nominet');
-use_ok('Net::DRI::Data::Contact::NYC');
+use_ok('Net::DRI::Data::Contact::ARI');
 use_ok('Net::DRI::Data::Contact::DENIC');
 use_ok('Net::DRI::Data::Contact::SWITCH');
 use_ok('Net::DRI::Data::Contact::NO');

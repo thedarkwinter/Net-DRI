@@ -32,7 +32,7 @@ my ($fee,$c,$c2,$toc);
 
 ################################################################################
 ## Fee extension
-$dri->target('.pharmacy');
+$dri->target('pharmacy');
 
 # domain check
 my $price = { duration=>DateTime::Duration->new(years=>5) };
