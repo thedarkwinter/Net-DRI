@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 129;
+use Test::More tests => 124;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -104,15 +104,6 @@ $drd = $dri->{registries}->{pharmacy}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],'neustar: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken NeuLevel::Fee/],'neustar: loaded_modules');
 is($drd->{bep}->{bep_type},1,'neustar: bep_type');
-
-# ARI (nyc with EXTContact)
-$rc = $dri->add_registry('NGTLD',{provider => 'ari',name=>'nyc'});
-is($rc->{last_registry},'nyc','ari nyc: add_registry');
-$rc = $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-is($rc->is_success(),1,'ari nyc: add_current_profile');
-is($dri->name(),'nyc','ari nyc: name');
-is_deeply([$dri->tlds()],['nyc'],'ari nyc: tlds');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::EXTContact/],'ari nyc: loaded_modules (w/ EXTContact)');
 
 # FFM (Neustar + CentralNic::Fee )
 $rc = $dri->add_registry('NGTLD',{provider => 'ffm'});
@@ -224,8 +215,8 @@ $rc = $dri->add_registry('NGTLD',{provider => 'ari'});
 is($rc->{last_registry},'ari','ari: add_registry');
 $rc = $dri->target('ari')->add_current_profile('ari','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{ari}->{driver};
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block/],'ari: loaded_modules');
-is_deeply([$dri->tlds()],['xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--g2xx48c','xn--gckr3f0f','xn--gk3at1e','xn--jvr189m','xn--kcrx77d1x4a','xn--kpu716f','xn--mgba7c0bbn0a','xn--ngbc5azd','xn--nyqy26a','xn--pbt977c','xn--rhqv96g','xn--rovu88b','aaa','able','afl','americanexpress','amex','analytics','anz','athleta','audible','author','aws','baby','banamex','bananarepublic','barclaycard','barclays','baseball','best','bible','bond','book','booking','boots','bot','bridgestone','build','buy','buzz','call','cancerresearch','cartier','cba','cbn','ceo','chase','chintai','chloe','circle','citadel','citi','cloud','commbank','compare','coupon','courses','cuisinella','deal','dealer','dell','discover','doha','duns','dupont','earth','farmers','fast','ferrero','film','fire','firestone','flickr','ford','fox','free','ftr','gap','giving','got','grainger','gucci','health','homegoods','homesense','honeywell','hot','hsbc','hyatt','ibm','icu','ieee','iinet','imdb','intel','intuit','iselect','iwc','jlc','jmp','jnj','jot','joy','jpmorgan','kinder','kindle','kpmg','krd','kred','latrobe','like','lilly','lincoln','luxury','marshalls','mcd','mcdonalds','melbourne','men','menu','mint','mlb','moe','moi','monash','montblanc','mtn','mutual','netbank','nfl','now','olayan','olayangroup','oldnavy','one','open','panerai','pay','pharmacy','philips','physio','piaget','pin','ping','playstation','praxi','prime','qpon','quest','qvc','read','rocher','room','safe','safety','sandvik','sandvikcoromant','sas','save','saxo','schmidt','scor','secure','seek','select','seven','silk','smile','song','sony','spot','starhub','statefarm','study','sucks','swiftcover','sydney','tab','taipei','talk','tdk','teva','tjmaxx','tjx','tkmaxx','trust','tube','tunes','tushu','uno','virgin','vista','vistaprint','vivo','walter','wanggou','watches','weather','weatherchannel','whoswho','winners','woodside','wow','wtc','yahoo','yamaxun','yandex','you','zappos','zero','zippo'],'ari: tlds');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::EXTContact/],'ari: loaded_modules');
+is_deeply([$dri->tlds()],['xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--g2xx48c','xn--gckr3f0f','xn--gk3at1e','xn--jvr189m','xn--kcrx77d1x4a','xn--kpu716f','xn--mgba7c0bbn0a','xn--ngbc5azd','xn--nyqy26a','xn--pbt977c','xn--rhqv96g','xn--rovu88b','aaa','able','afl','americanexpress','amex','analytics','anz','athleta','audible','author','aws','baby','banamex','bananarepublic','barclaycard','barclays','baseball','best','bible','bond','book','booking','boots','bot','bridgestone','build','buy','buzz','call','cancerresearch','cartier','cba','cbn','ceo','chase','chintai','chloe','circle','citadel','citi','cloud','commbank','compare','coupon','courses','cuisinella','deal','dealer','dell','discover','doha','duns','dupont','earth','farmers','fast','ferrero','film','fire','firestone','flickr','ford','fox','free','ftr','gap','giving','got','grainger','gucci','health','homegoods','homesense','honeywell','hot','hsbc','hyatt','ibm','icu','ieee','iinet','imdb','intel','intuit','iselect','iwc','jlc','jmp','jnj','jot','joy','jpmorgan','kinder','kindle','kpmg','krd','kred','latrobe','like','lilly','lincoln','luxury','marshalls','mcd','mcdonalds','melbourne','men','menu','mint','mlb','moe','moi','monash','montblanc','mtn','mutual','netbank','nfl','nyc','now','olayan','olayangroup','oldnavy','one','open','panerai','pay','pharmacy','philips','physio','piaget','pin','ping','playstation','praxi','prime','qpon','quest','qvc','read','rocher','room','safe','safety','sandvik','sandvikcoromant','sas','save','saxo','schmidt','scor','secure','seek','select','seven','silk','smile','song','sony','spot','starhub','statefarm','study','sucks','swiftcover','sydney','tab','taipei','talk','tdk','teva','tjmaxx','tjx','tkmaxx','trust','tube','tunes','tushu','uno','virgin','vista','vistaprint','vivo','walter','wanggou','watches','weather','weatherchannel','whoswho','winners','woodside','wow','wtc','yahoo','yamaxun','yandex','you','zappos','zero','zippo'],'ari: tlds');
 
 ####################################################################################################
 #### ngTLD Methods

@@ -30,12 +30,12 @@ Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact - NeuLevel EPP EXTCont
 
 Adds the EXTContact extension. Currently used for .NYC domains
 
-  # Create EXTContact (see L<Net::DRI::Data::Contact::NYC>)
+  # Create EXTContact (see L<Net::DRI::Data::Contact::ARI>)
   $c = $dri->local_object('contact');
   $c->srid('abcde')->.....
   $c->nexus_category('ORG'); # ORG or INDIV
   $rc=$dri->contact_create($c);
-  
+
   # Create domain
   $rc=$dri->domain_create('example.nyc',{..., {'ext_contact'=>$c->srid()});
 
@@ -97,7 +97,7 @@ sub setup
 
 ####################################################################################################
 #### Contact Functions
- 
+
 sub contact_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
@@ -105,7 +105,7 @@ sub contact_parse
  my $infdata=$mes->get_extension('neulevel','extension');
  return unless defined $infdata;
  my $s=$rinfo->{contact}->{$oname}->{self};
- 
+
  my $unspec;
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
@@ -149,14 +149,14 @@ sub contact_update
 
 ####################################################################################################
 #### Domain Functions
- 
+
 sub domain_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  my $infdata=$mes->get_extension('neulevel','extension');
  return unless defined $infdata;
- 
+
  my $unspec;
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {

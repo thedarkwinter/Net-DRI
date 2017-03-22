@@ -1,4 +1,4 @@
-## Domain Registry Interface, Handling of contact data for NYC
+## Domain Registry Interface, Handling of contact data for ARI
 ##
 ## Copyright (c) 2006,2008-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Data::Contact::NYC;
+package Net::DRI::Data::Contact::ARI;
 
 use utf8;
 use strict;
@@ -32,11 +32,11 @@ __PACKAGE__->register_attributes(qw(ext_contact nexus_category));
 
 =head1 NAME
 
-Net::DRI::Data::Contact::NYC - Handle .NYC contact data for Net::DRI
+Net::DRI::Data::Contact::ARI - Handle .ARI contact data for Net::DRI
 
 =head1 DESCRIPTION
 
-This subclass of Net::DRI::Data::Contact adds accessors and validation for NYC specific data.
+This subclass of Net::DRI::Data::Contact adds accessors and validation for ARI specific data.
 
 =head1 METHODS
 
@@ -89,7 +89,7 @@ sub validate
  $change||=0;
  $self->SUPER::validate(1); ## will trigger an Exception if problem
  return 1 unless $self->nexus_category();
- Net::DRI::Exception::usererr_insufficient_parameters('Nexus Contact must be in New York (sp)') unless uc($self->sp()) =~ m/^(?:NY|NEW YORK|NEW YORK STATE)$/;
+ Net::DRI::Exception::usererr_insufficient_parameters('Nexus Contact must be in New York (sp)') unless uc($self->sp()) =~ m/^(?:NY|NEW YORK)$/;
  Net::DRI::Exception::usererr_insufficient_parameters('Nexus Category must be INDIV or ORG') unless uc($self->nexus_category()) =~ m/^(?:INDIV|ORG)$/;
  return 1;
 }
