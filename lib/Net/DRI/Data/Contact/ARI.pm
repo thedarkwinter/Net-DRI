@@ -89,7 +89,7 @@ sub validate
  $change||=0;
  $self->SUPER::validate(1); ## will trigger an Exception if problem
  return 1 unless $self->nexus_category();
- Net::DRI::Exception::usererr_insufficient_parameters('Nexus Contact must be in New York (sp)') unless uc($self->sp()) =~ m/^(?:NY|NEW YORK|NEW YORK STATE)$/;
+ Net::DRI::Exception::usererr_insufficient_parameters('Nexus Contact must be in New York (sp)') unless uc($self->sp()) =~ m/^(?:NY|NEW YORK)$/;
  Net::DRI::Exception::usererr_insufficient_parameters('Nexus Category must be INDIV or ORG') unless uc($self->nexus_category()) =~ m/^(?:INDIV|ORG)$/;
  return 1;
 }
