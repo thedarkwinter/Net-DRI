@@ -397,7 +397,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
 
 =head3 TLDs
 
-art bar college contact design fan fans feedback fun host ink love online pid press protection reit rent rest security site space tech theatre tickets website wiki wme xyz
+art bar college contact design fan fans feedback fun host ink love observer online pid press protection realty reit rent rest security site space tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -416,7 +416,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de/;
-    my @ngtlds = qw/art bar college contact design fan fans feedback fun host ink love online pid press protection reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds = qw/art bar college contact design fan fans feedback fun host ink love observer online pid press protection realty reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/reality now hotel forum gay mail llc/; # some of these might go to other registries
     my @ngtlds_pipeline = qw//; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
