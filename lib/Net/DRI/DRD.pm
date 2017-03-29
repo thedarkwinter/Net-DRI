@@ -1452,7 +1452,7 @@ sub _build_price_query
  {
    $rd->{premium_domain} = 1;
  }
- # this extension is used in addition to premium_domain above, hense to elsif
+ # this extension is used in addition to premium_domain above, hense to elsif.
  if (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}})
  {
    my ($fee,@fees);
@@ -1476,6 +1476,9 @@ sub _build_price_query
  {
    delete $rd->{$_} if exists $rd->{$_};
  }
+ # If param sent, $rd->{fee_domain} eq 0, then delete anything related with CentralNIC::Fee - all this because Verisign use Premium+Fee for some TLDs and others only use the Premium Extension
+ delete $rd->{fee} unless ( exists $rd->{fee_domain} == 0 );
+
  return $rd;
 }
 
