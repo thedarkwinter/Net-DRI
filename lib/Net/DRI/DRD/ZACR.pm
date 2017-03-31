@@ -86,9 +86,9 @@ sub new
  return $self;
 }
 
-sub periods  { return map { DateTime::Duration->new(years => $_) } (1); } 
+sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
 sub name     { return 'ZACR'; }
-sub tlds     { return ('cities.dnservices.co.za','joburg','durban','capetown'); } # FIXME : the first is for OT&E tlds, the rest for live.
+sub tlds     { return ('cities.dnservices.co.za','joburg','durban','capetown','africa'); } # FIXME : the first is for OT&E tlds, the rest for live.
 sub object_types { return ('domain','contact'); }
 sub profile_types { return qw/epp/; }
 
