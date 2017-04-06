@@ -397,7 +397,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
 
 =head3 TLDs
 
-art bar college contact design fan fans feedback fun host ink love observer online pid press protection realty reit rent rest security site space tech theatre tickets website wiki wme xyz
+art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -416,8 +416,8 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de/;
-    my @ngtlds = qw/art bar college contact design fan fans feedback fun host ink love observer online pid press protection realty reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
-    my @ngtlds_contested = qw/reality now hotel forum gay mail llc/; # some of these might go to other registries
+    my @ngtlds = qw/art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
     my @ngtlds_pipeline = qw//; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -588,7 +588,6 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
 accountant bid cricket date download faith loan party racing review science stream trade webcam win
 
-Contension: cam charity forum hotel music rugby search sport
 
 =head3 Custom extensions
 
@@ -598,9 +597,7 @@ L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neu
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'stream', 'trade', 'webcam', 'win', # uncontended
-              , 'cam', 'charity', 'forum', 'hotel', 'music', 'rugby', 'search', 'sport',# contended
-             ],
+     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'stream', 'trade', 'webcam', 'win'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'ffm';
