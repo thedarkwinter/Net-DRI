@@ -337,7 +337,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-xn--1ck2e1b xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba7c0bbn0a xn--ngbc5azd xn--nyqy26a xn--pbt977c xn--rhqv96g xn--rovu88b aaa able afl americanexpress amex analytics anz athleta audible author aws baby banamex bananarepublic barclaycard barclays baseball best bible bond book booking boots bot bridgestone build buy buzz call cancerresearch cartier cba cbn ceo chase chintai chloe circle citadel citi cloud club commbank compare coupon courses cuisinella deal dealer dell discover doha duns dupont earth farmers fast ferrero film fire firestone flickr ford fox free ftr gap giving got grainger gucci health homegoods homesense honeywell hot hsbc hyatt ibm icu ieee iinet imdb intel intuit iselect iwc jlc jmp jnj jot joy jpmorgan kinder kindle kpmg krd kred latrobe like lilly lincoln luxury marshalls mcd mcdonalds melbourne men menu mint mlb moe moi monash montblanc mtn mutual netbank nfl now nyc olayan olayangroup oldnavy one open panerai pay pharmacy philips physio piaget pin ping playstation praxi prime qpon quest qvc read rocher room safe safety sandvik sandvikcoromant sas save saxo schmidt scor secure seek select seven silk smile song sony spot starhub statefarm study sucks swiftcover sydney tab taipei talk tdk teva tjmaxx tjx tkmaxx trust tube tunes tushu uno virgin vista vistaprint vivo walter wanggou watches weather weatherchannel whoswho winners woodside wow wtc yahoo yamaxun yandex you zappos zero zippo
+xn--1ck2e1b xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba7c0bbn0a xn--ngbc5azd xn--nyqy26a xn--pbt977c xn--rhqv96g xn--rovu88b aaa able accountant afl americanexpress amex analytics anz athleta audible author aws baby banamex bananarepublic barclaycard barclays baseball best bible bid bond book booking boots bot bridgestone build buy buzz call cancerresearch cartier cba cbn ceo chase chintai chloe circle citadel citi cloud club commbank compare cricket coupon courses cuisinella date deal dealer dell discover doha download duns dupont earth faith farmers fast ferrero film fire firestone flickr ford fox free ftr gap giving got grainger gucci health homegoods homesense honeywell hot hsbc hyatt ibm icu ieee iinet imdb intel intuit iselect iwc jlc jmp jnj jot joy jpmorgan kinder kindle kpmg krd kred latrobe like lilly lincoln loan luxury marshalls mcd mcdonalds melbourne men menu mint mlb moe moi monash montblanc mtn mutual netbank nfl now nyc olayan olayangroup oldnavy one open panerai party pay pharmacy philips physio piaget pin ping playstation praxi prime qpon quest qvc racing read review rocher room safe safety sandvik sandvikcoromant sas save saxo schmidt science scor secure seek select seven silk smile song sony spot starhub statefarm stream study sucks swiftcover sydney tab taipei talk tdk teva tjmaxx tjx tkmaxx trade trust tube tunes tushu uno virgin vista vistaprint vivo walter wanggou watches weather weatherchannel webcam whoswho win winners woodside wow wtc yahoo yamaxun yandex you zappos zero zippo
 Contended TLD's not included
 
 =head3 Custom extensions:
@@ -379,7 +379,33 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--g2xx48c','xn--gckr3f0f','xn--gk3at1e','xn--jvr189m','xn--kcrx77d1x4a','xn--kpu716f','xn--mgba7c0bbn0a','xn--ngbc5azd','xn--nyqy26a','xn--pbt977c','xn--rhqv96g','xn--rovu88b','aaa','able','afl','americanexpress','amex','analytics','anz','athleta','audible','author','aws','baby','banamex','bananarepublic','barclaycard','barclays','baseball','best','bible','bond','book','booking','boots','bot','bridgestone','build','buy','buzz','call','cancerresearch','cartier','cba','cbn','ceo','chase','chintai','chloe','circle','citadel','citi','cloud','club','commbank','compare','coupon','courses','cuisinella','deal','dealer','dell','discover','doha','duns','dupont','earth','farmers','fast','ferrero','film','fire','firestone','flickr','ford','fox','free','ftr','gap','giving','got','grainger','gucci','health','homegoods','homesense','honeywell','hot','hsbc','hyatt','ibm','icu','ieee','iinet','imdb','intel','intuit','iselect','iwc','jlc','jmp','jnj','jot','joy','jpmorgan','kinder','kindle','kpmg','krd','kred','latrobe','like','lilly','lincoln','luxury','marshalls','mcd','mcdonalds','melbourne','men','menu','mint','mlb','moe','moi','monash','montblanc','mtn','mutual','netbank','nfl','nyc','now','olayan','olayangroup','oldnavy','one','open','panerai','pay','pharmacy','philips','physio','piaget','pin','ping','playstation','praxi','prime','qpon','quest','qvc','read','rocher','room','safe','safety','sandvik','sandvikcoromant','sas','save','saxo','schmidt','scor','secure','seek','select','seven','silk','smile','song','sony','spot','starhub','statefarm','study','sucks','swiftcover','sydney','tab','taipei','talk','tdk','teva','tjmaxx','tjx','tkmaxx','trust','tube','tunes','tushu','uno','virgin','vista','vistaprint','vivo','walter','wanggou','watches','weather','weatherchannel','whoswho','winners','woodside','wow','wtc','yahoo','yamaxun','yandex','you','zappos','zero','zippo'],
+     tlds => ['xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--g2xx48c','xn--gckr3f0f','xn--gk3at1e','xn--jvr189m','xn--kcrx77d1x4a','xn--kpu716f','xn--mgba7c0bbn0a','xn--ngbc5azd','xn--nyqy26a','xn--pbt977c','xn--rhqv96g','xn--rovu88b',
+       'aaa','able','accountant','afl','americanexpress','amex','analytics','anz','athleta','audible','author','aws',
+       'baby','banamex','bananarepublic','barclaycard','barclays','baseball','best','bible','bid','bond','book','booking','boots','bot','bridgestone','build','buy','buzz',
+       'call','cancerresearch','cartier','cba','cbn','ceo','chase','chintai','chloe','circle','citadel','citi','cloud','club','commbank','compare','cricket','coupon','courses','cuisinella',
+       'date','deal','dealer','dell','discover','doha','download','duns','dupont',
+       'earth',
+       'faith','farmers','fast','ferrero','film','fire','firestone','flickr','ford','fox','free','ftr',
+       'gap','giving','got','grainger','gucci',
+       'health','homegoods','homesense','honeywell','hot','hsbc','hyatt',
+       'ibm','icu','ieee','iinet','imdb','intel','intuit','iselect','iwc',
+       'jlc','jmp','jnj','jot','joy','jpmorgan',
+       'kinder','kindle','kpmg','krd','kred',
+       'latrobe','like','lilly','lincoln','loan','luxury',
+       'marshalls','mcd','mcdonalds','melbourne','men','menu','mint','mlb','moe','moi','monash','montblanc','mtn','mutual',
+       'netbank','nfl','nyc','now',
+       'olayan','olayangroup','oldnavy','one','open',
+       'panerai','party','pay','pharmacy','philips','physio','piaget','pin','ping','playstation','praxi','prime',
+       'qpon','quest','qvc',
+       'racing','read','review','rocher','room',
+       'safe','safety','sandvik','sandvikcoromant','sas','save','saxo','schmidt','science','scor','secure','seek','select','seven','silk','smile','song','sony','spot','starhub','statefarm','stream','study','sucks','swiftcover','sydney',
+       'tab','taipei','talk','tdk','teva','tjmaxx','tjx','tkmaxx','trade','trust','tube','tunes','tushu',
+       'uno',
+       'virgin','vista','vistaprint','vivo',
+       'walter','wanggou','watches','weather','weatherchannel','webcam','whoswho','win','winners','woodside','wow','wtc',
+       'yahoo','yamaxun','yandex','you',
+       'zappos','zero','zippo'
+     ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{custom => 'NeuLevel::EXTContact'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::ARI->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::ARI'],
@@ -578,35 +604,6 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 =pod
 
 
-=head2 Famous Four Media (Utilising Neustar)
-
- $dri->add_registry('NGTLD',{provider=>'ffm'});
-
-=head3 Status: Untested
-
-=head3 TLDs
-
-accountant bid cricket date download faith loan party racing review science stream trade webcam win
-
-
-=head3 Custom extensions
-
-L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
-
-=cut
-
- return {
-     bep_type => 1, # dedicated registry
-     tlds => ['accountant', 'bid', 'cricket', 'date', 'download', 'faith', 'loan', 'party', 'racing', 'review', 'science', 'stream', 'trade', 'webcam', 'win'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'ffm';
-
-
-
-=pod
-
-
 =head2 Fury Regisrty (CIRA)
 
 =head3 Fury Client TLDs
@@ -769,13 +766,13 @@ M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown
 
 Uncontested: budapest luxe
 
-Contested: aby beauty coupon cpa data dds gay home hotel inc latino llc realestate
+Contested: aby beauty cpa data dds gay home hotel inc latino llc realestate
 =cut
 
  return {
      bep_type => 2, # shared registry
      tlds => ['budapest', 'luxe',
-              , 'beauty', 'coupon', 'cpa', 'data', 'dds', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate'
+              , 'beauty', 'cpa', 'data', 'dds', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate'
              ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
      whois_server => 'whois-dub.mm-registry.com',
@@ -787,7 +784,7 @@ Contested: aby beauty coupon cpa data dds gay home hotel inc latino llc realesta
 
  $dri->add_registry('NGTLD',{provider=>'mamsrs'}); # M+M In Partnership 'mamsrs' or 'mampartner'
 
-Uncontested: review rugby
+Uncontested: rugby
 
 Contested: basketball music
 
@@ -795,7 +792,7 @@ Contested: basketball music
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['london-collisions', 'review', 'rugby',
+     tlds => ['london-collisions', 'rugby',
               'basketball', 'music',
              ],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
