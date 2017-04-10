@@ -95,8 +95,7 @@ sub name     { return 'NEUSTAR'; }
 sub tlds     {
  my @ro1 = qw/neustar/; # Neustar - is this a single registrant registry?
  my @ro2 = qw/xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible ceo club earth hoteles htc moe nyc osaka pharmacy qpon safety taipei tube uno whoswho/; # various
- my @ro3p1 = qw/accountant bid date download faith loan men review science trade webcam win/; # Famous Four Media - Phase 1
- #my @ro3p1 = qw/music movie/; # Famous Four Media - Phase 2, copy and paste another day! Not sure if these are contended etc...
+ my @ro3p1 = qw/men/; # Famous Four Media - Phase 1
  return (@ro1,@ro2,@ro3p1);
 }
 sub object_types { return ('domain','contact','ns'); }
