@@ -94,9 +94,13 @@ sub setup
  {
   $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.1',$ns.'-2.1.xsd' ] });
  }
- foreach my $ns (qw/authInfo homoglyph/)
+ foreach my $ns (qw/homoglyph/)
  {
   $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.0',$ns.'-1.0.xsd' ] });
+ }
+ foreach my $ns (qw/authInfo/)
+ {
+  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.1',$ns.'-1.1.xsd' ] });
  }
  return;
 }
@@ -176,10 +180,16 @@ sub info
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- return unless Net::DRI::Util::has_key($rd,'authinfo_request') && $rd->{authinfo_request};
-
- my $eid=$mes->command_extension_register('authInfo','info');
- $mes->command_extension($eid,['authInfo:request']);
+ if (Net::DRI::Util::has_key($rd,'authinfo_request') && $rd->{authinfo_request})
+ {
+  my $eid=$mes->command_extension_register('authInfo','info');
+  $mes->command_extension($eid,['authInfo:request']);
+ }
+ if (Net::DRI::Util::has_key($rd,'authinfo_cancel') && $rd->{authinfo_cancel})
+ {
+  my $eid=$mes->command_extension_register('authInfo','info');
+  $mes->command_extension($eid,['authInfo:cancel']);
+ }
  return;
 }
 
@@ -190,7 +200,21 @@ sub info_parse
 
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension('domain-ext','infData');
+ # authInfo valid date
+ my $infdata=$mes->get_extension('authInfo','infData');
+ if ($infdata)
+ {
+  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+  {
+   my ($name,$c)=@$el;
+   if ($name eq 'validUntil')
+   {
+     $rinfo->{domain}->{$oname}->{auth_valid_until}=$po->parse_iso8601($c->textContent());
+   }
+  }
+ }
+
+ $infdata=$mes->get_extension('domain-ext','infData');
  $infdata=$mes->get_extension('domain-ext','trnData') unless $infdata;
  return unless defined $infdata;
 
