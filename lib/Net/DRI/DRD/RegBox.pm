@@ -12,7 +12,7 @@
 ##
 ## See the LICENSE file that comes with this distribution for more details.
 #
-# 
+#
 #
 ####################################################################################################
 
@@ -93,14 +93,14 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'RegBox'; }
-sub tlds     { return (qw/bh berlin brussels gmbh hamburg immo reise tirol versicherung vlaanderen voting wien ikano/); }
+sub tlds     { return (qw/bh berlin brussels gmbh hamburg immo reise tirol versicherung vlaanderen voting ikano/); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- 
+
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{'brown_fee_version' => '0.9'}) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
  return;
