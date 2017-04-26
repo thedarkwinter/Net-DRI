@@ -5,7 +5,7 @@ use warnings;
 use Net::DRI;
 use Data::Dumper;
 
-use Test::More tests => 529;
+use Test::More tests => 504;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -196,7 +196,7 @@ is($r->org(),'Afilias Ltd.','domain_info get_info (contact) registrant org');
 
 
 ####################################################################################################
-# ARI
+# ARI (Neustar Narwahl)
 
 $R2='Domain Name: nic.build
 Domain ID: D215DA75E3E0A4133AE5DD1B3BE26C3E6-ARI
@@ -868,123 +868,6 @@ $r = $c->get('registrant');
 isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
 is($r->name(),'Chris Cowherd','domain_info get_info (contact) registrant name');
 is($r->org(),'Donuts Inc.','domain_info get_info (contact) registrant org');
-
-####################################################################################################
-# Famous Four / Neustar
-$R2='Domain Name:                                 NIC.TRADE
-Domain ID:                                   D313-TRADE
-Sponsoring Registrar:                        NEUSTAR Organization
-Sponsoring Registrar IANA ID:                9999
-Registrar URL (registration services):       www.neustar.co
-Domain Status:                               serverDeleteProhibited
-Domain Status:                               serverTransferProhibited
-Domain Status:                               serverUpdateProhibited
-
-Registrant ID:                               NICCONTACT1
-Registrant Name:                             Neustar, Inc.
-Registrant Address1:                         21575 Ridgetop Cir
-Registrant City:                             Sterling
-Registrant State/Province:                   VA
-Registrant Postal Code:                      20166
-Registrant Country:                          United States
-Registrant Country Code:                     US
-Registrant Phone Number:                     +1.5714345400
-Registrant Email:                            support@neustar.biz
-
-Administrative Contact ID:                   NICCONTACT1
-Administrative Contact Name:                 Neustar, Inc.
-Administrative Contact Address1:             21575 Ridgetop Cir
-Administrative Contact City:                 Sterling
-Administrative Contact State/Province:       VA
-Administrative Contact Postal Code:          20166
-Administrative Contact Country:              United States
-Administrative Contact Country Code:         US
-Administrative Contact Phone Number:         +1.5714345400
-Administrative Contact Email:                support@neustar.biz
-
-Billing Contact ID:                          NICCONTACT1
-Billing Contact Name:                        Neustar, Inc.
-Billing Contact Address1:                    21575 Ridgetop Cir
-Billing Contact City:                        Sterling
-Billing Contact State/Province:              VA
-Billing Contact Postal Code:                 20166
-Billing Contact Country:                     United States
-Billing Contact Country Code:                US
-Billing Contact Phone Number:                +1.5714345400
-Billing Contact Email:                       support@neustar.biz
-
-Technical Contact ID:                        NICCONTACT1
-Technical Contact Name:                      Neustar, Inc.
-Technical Contact Address1:                  21575 Ridgetop Cir
-Technical Contact City:                      Sterling
-Technical Contact State/Province:            VA
-Technical Contact Postal Code:               20166
-Technical Contact Country:                   United States
-Technical Contact Country Code:              US
-Technical Contact Phone Number:              +1.5714345400
-Technical Contact Email:                     support@neustar.biz
-
-DNSSEC:                                      unsigned
-Name Server:                                 NS1.DNS.NIC.TRADE
-Name Server:                                 NS2.DNS.NIC.TRADE
-Name Server:                                 NS3.DNS.NIC.TRADE
-Name Server:                                 NS4.DNS.NIC.TRADE
-Name Server:                                 NS5.DNS.NIC.TRADE
-Name Server:                                 NS6.DNS.NIC.TRADE
-
-Created by Registrar:                        NEUSTAR Organization
-Last Updated by Registrar:                   NEULEVELCSR
-Domain Registration Date:                    2013-08-09T23:03:59Z
-Domain Expiration Date:                      2014-08-08T23:59:59Z
-Domain Last Updated Date:                    2014-03-07T19:33:58Z
-Name Value Pair:                             Variant=NIC.TRADE
-
-
-
->>>> Whois database was last updated on: 2014-05-20T22:16:59Z <<<<
-
-
-The WHOIS service offered by the Registry Operator, and the access to the records in the Registry Operator WHOIS database, are provided for information purposes only and is designed (i)to assist persons in determining whether a specific domain name registration record is available or not in the Registry Operator database and (ii)to obtain information related to the registration records of existing domain names.  The Registry Operator cannot, under any circumstances, be held liable in such instances where the stored information would prove to be wrong, incomplete, or not accurate in any sense. By submitting a WHOIS query, you, the user, agree that you will not use this data: (i)to allow, enable or otherwise support in any way the transmission of unsolicited, commercial advertising or other solicitations whether via direct mail, email, telephone or otherwise; (ii)to enable high volume, automated, electronic processes that apply to the registry (or its systems); (iii)for target advertising in any possible way; (iv)to cause nuisance in any possible way to the registrants by sending (whether by automated, electronic processes capable of enabling high volumes or other possible means) messages to them; (v)to violate any law, rule, regulation or statute; and/or (vi)in contravention of any applicable data and privacy protection acts. Without prejudice to the above, it is explicitly forbidden to extract, copy and/or use or re-utilize in any form and by any means (electronically or not) the whole or a quantitatively or qualitatively substantial part of the contents of the WHOIS database without prior and explicit permission by Registry Operator, nor in any attempt hereof, or to apply automated, electronic processes to Registry Operator (or its systems or their designated third party Registry Service Provider\'s systems). You agree that any reproduction and/or transmission of data for commercial purposes will always be considered as the extraction of a substantial part of the c
-ontent of the WHOIS database. By utilizing this website and/or submitting a query you agree to abide by this policy and accept that Registry Operator can take measures to limit the use of its WHOIS services in order to protect the privacy of its registrants or the integrity of the database. We reserve the right to make changes to these Terms and Conditions at any time without prior notice to you. It is your responsibility to review these Terms and Conditions each time you access or use the WHOIS service and to familiarise yourself with any changes. If you do not agree to the changes implemented by Registry Operator, your sole and exclusive remedy is to terminate your use of the WHOIS service.
-
-By executing a query, in any manner whatsoever, you agree to abide by these Terms and Conditions. NOTE: FAILURE TO LOCATE A RECORD IN THE WHOIS DATABASE IS NOT INDICATIVE OF THE AVAILABILITY OF A DOMAIN NAME.
-
-All domain names are subject to certain additional domain name registration
-rules.  For details, please visit our site at www.whois.trade.';
-
-$dri->add_registry('NGTLD',{provider=>'ffm','name'=>'trade'});
-$dri->target('trade')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.trade');
-is($rc->is_success(),1,'FFM/Neustar domain_info is_success');
-is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.trade','domain_info get_info (name)');
-is($dri->get_info('id'),'D313-TRADE','domain_info get_info (id)');
-is($dri->get_info('clName'),'NEUSTAR Organization','domain_info get_info (clName)');
-is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
-is($dri->get_info('clWhois'),undef,'domain_info get_info (clWhois)');
-is($dri->get_info('clWebsite'),'www.neustar.co','domain_info get_info (clWebsite)');
-$s=$dri->get_info('status');
-isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
-is_deeply([$s->list_status()],['serverDeleteProhibited','serverTransferProhibited','serverUpdateProhibited'],'domain_info get_info(status) list');
-is($dri->get_info('crDate'),'2013-08-09T23:03:59','domain_info get_info (crDate)');
-is($dri->get_info('upDate'),'2014-03-07T19:33:58','domain_info get_info (upDate)');
-is($dri->get_info('exDate'),'2014-08-08T23:59:59','domain_info get_info (exDate)');
-is($dri->get_info('wuDate'),'2014-05-20T22:16:59','domain_info get_info (wuDate)');
-$h=$dri->get_info('ns');
-isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
-@hs=$h->get_names();
-is_deeply(\@hs,['ns1.dns.nic.trade','ns2.dns.nic.trade','ns3.dns.nic.trade','ns4.dns.nic.trade','ns5.dns.nic.trade','ns6.dns.nic.trade'],'domain_info get_info (ns) get_names');
-$c=$dri->get_info('contact');
-isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
-is_deeply([$c->types()],['admin','billing','registrant','tech'],'domain_info get_info (contactSet) types');
-is($c->get('registrant')->srid(),'NICCONTACT1','domain_info get_info (contact) registrant srid');
-is($c->get('admin')->srid(),'NICCONTACT1','domain_info get_info (contact) admin srid');
-is($c->get('tech')->srid(),'NICCONTACT1','domain_info get_info (contact) tech srid');
-is($c->get('billing')->srid(),'NICCONTACT1','domain_info get_info (contact) billing srid');
-$r = $c->get('registrant');
-isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
-is($r->name(),'Neustar, Inc.','domain_info get_info (contact) registrant name');
-is($r->org(),undef,'domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # GMO Registry
