@@ -86,7 +86,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::SWITCH',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::SWITCH',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef }) if $type eq 'epp';
 ## return ('Net::DRI::Transport::Socket',{remote_host=>'whois.switch.ch'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
  return;
 }
