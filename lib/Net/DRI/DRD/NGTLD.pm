@@ -829,7 +829,7 @@ Contested: radio
 
 =head3 TLDs
 
-htc osaka
+htc
 
 Contended TLD's not included
 
@@ -854,7 +854,7 @@ Neustar operates dedicated connections per TLD, so it is recommended to use the 
  ## these use CentralNic::Fee for "Tier 2 pricing model" or no premium extension (CentralNic::Fee is ignored by server)
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['htc', 'osaka'],
+     tlds => ['htc'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
