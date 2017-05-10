@@ -209,7 +209,35 @@ is($rc->{last_registry},'ari','ari: add_registry');
 $rc = $dri->target('ari')->add_current_profile('ari','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{ari}->{driver};
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::EXTContact/],'ari: loaded_modules');
-is_deeply([$dri->tlds()],['xn--1ck2e1b','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--g2xx48c','xn--gckr3f0f','xn--gk3at1e','xn--jvr189m','xn--kcrx77d1x4a','xn--kpu716f','xn--mgba7c0bbn0a','xn--ngbc5azd','xn--nyqy26a','xn--pbt977c','xn--rhqv96g','xn--rovu88b','aaa','able','accountant','afl','americanexpress','amex','analytics','anz','athleta','audible','author','aws','baby','banamex','bananarepublic','barclaycard','barclays','baseball','best','bible','bid','bond','book','booking','boots','bot','bridgestone','build','buy','buzz','call','cancerresearch','cartier','cba','cbn','ceo','chase','chintai','chloe','circle','citadel','citi','cloud','club','commbank','compare','cricket','coupon','courses','cuisinella','date','deal','dealer','dell','discover','doha','download','duns','dupont','earth','faith','farmers','fast','ferrero','film','fire','firestone','flickr','ford','fox','free','ftr','gap','giving','got','grainger','gucci','health','homegoods','homesense','honeywell','hot','hsbc','hyatt','ibm','icu','ieee','iinet','imdb','intel','intuit','iselect','iwc','jlc','jmp','jnj','jot','joy','jpmorgan','kinder','kindle','kpmg','krd','kred','latrobe','like','lilly','lincoln','loan','luxury','marshalls','mcd','mcdonalds','melbourne','men','menu','mint','mlb','moe','moi','monash','montblanc','mtn','mutual','netbank','nfl','nyc','now','olayan','olayangroup','oldnavy','one','open','panerai','party','pay','pharmacy','philips','physio','piaget','pin','ping','playstation','praxi','prime','qpon','quest','qvc','racing','read','review','rocher','room','safe','safety','sandvik','sandvikcoromant','sas','save','saxo','schmidt','science','scor','secure','seek','select','seven','silk','smile','song','sony','spot','starhub','statefarm','stream','study','sucks','swiftcover','sydney','tab','taipei','talk','tdk','teva','tjmaxx','tjx','tkmaxx','trade','trust','tube','tunes','tushu','uno','virgin','vista','vistaprint','vivo','walter','wanggou','watches','weather','weatherchannel','webcam','whoswho','win','winners','woodside','wow','wtc','yahoo','yamaxun','yandex','you','zappos','zero','zippo'],'ari: tlds');
+is_deeply([$dri->tlds()],
+ ['xn--1ck2e1b','xn--8y0a063a','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--g2xx48c','xn--gckr3f0f','xn--gk3at1e','xn--jvr189m','xn--kcrx77d1x4a','xn--kpu716f','xn--mgba3a3ejt','xn--mgba7c0bbn0a','xn--mgbb9fbpob','xn--ngbc5azd','xn--nyqy26a','xn--pbt977c','xn--rhqv96g','xn--rovu88b',
+  'aaa','able','accountant','aetna','afl','aig','americanexpress','amex','amica','analytics','anz','aramco','athleta','audible','author','aws','axa',
+  'baby','banamex','bananarepublic','barclaycard','barclays','baseball','best','bible','bid','bond','book','booking','boots','bot','bridgestone','build','buy','buzz',
+  'call','calvinklein','cancerresearch','caravan','cartier','cba','cbn','cbre','ceo','chase','chintai','chloe','circle','cisco','citadel','citi','cloud','club','commbank','compare','cricket','coupon','courses','cuisinella',
+  'date','deal','dealer','dell','discover','doha','download','duns','dupont',
+  'earth','everbank',
+  'faith','farmers','fast','ferrero','film','fire','firestone','flickr','flir','ford','fox','free','frontier','ftr',
+  'gap','giving','got','grainger','gucci',
+  'hbo','health','homegoods','homesense','honeywell','hot','hoteles','hotels','hsbc','hyatt',
+  'ibm','icu','ieee','iinet','imdb','intel','intuit','ipiranga','iselect','itau','iwc',
+  'jlc','jmp','jnj','jot','joy','jpmorgan',
+  'kinder','kindle','kpmg','krd','kred',
+  'lanxess','latrobe','lifeinsurance','like','lilly','lincoln','loan','loft','luxury',
+  'marshalls','mattel','mcd','mcdonalds','melbourne','men','menu','mint','mlb','mobily','moe','moi','monash','montblanc','moto','mtn','mutual',
+  'nba','netbank','netflix','nfl','nike','northwesternmutual','now','nyc',
+  'office','olayan','olayangroup','oldnavy','one','open','osaka',
+  'pamperedchef','panerai','party','passagens','pay','pfizer','pharmacy','philips','physio','piaget','pin','ping','playstation','pramerica','praxi','prime','pru','prudential',
+  'qpon','quest','qvc',
+  'racing','read','review','rocher','room',
+  'safe','safety','sandvik','sandvikcoromant','sas','save','saxo','schmidt','science','scor','secure','seek','select','seven','silk','skype','smile','song','sony','spot','staples','starhub','statefarm','stream','study','sucks','swiftcover','sydney',
+  'tab','taipei','talk','taobao','target','tdk','teva','tjmaxx','tjx','tkmaxx','tmall','trade','trust','tube','tunes','tushu',
+  'unicom','uno',
+  'virgin','vista','vistaprint','vivo','vuelos',
+  'walter','wanggou','watches','weather','weatherchannel','webcam','whoswho','williamhill','win','winners','woodside','wow','wtc',
+  'yahoo','yamaxun','yandex','you',
+  'zappos','zero','zippo'
+],'ari: tlds');
+
 
 ####################################################################################################
 #### ngTLD Methods
