@@ -1,7 +1,6 @@
-## Domain Registry Interface, ZACR (ZA Central Registry) GTLD Driver
+## Domain Registry Interface, CO.ZA policy on reserved names
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2011,2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -11,38 +10,30 @@
 ## (at your option) any later version.
 ##
 ## See the LICENSE file that comes with this distribution for more details.
-####################################################################################################
+#########################################################################################
 
-package Net::DRI::DRD::ZACR;
+package Net::DRI::DRD::COZA;
 
 use strict;
 use warnings;
 
 use base qw/Net::DRI::DRD/;
 
+use Net::DRI::Util;
+use Net::DRI::Exception;
 use DateTime::Duration;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/host_update host_current_status host_check host_exist host_delete host_create host_info/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse/);
 
 =pod
 
 =head1 NAME
 
-Net::DRI::DRD::ZACR - ZA Central Registry Driver for Net::DRI
+Net::DRI::DRD::COZA - CO.ZA policies for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension ZACR New Generic TLDs. Note this is separate from COZA ccTLD Driver as the systems differ.
-
-ZACR utilises the following standard, and custom extensions. Please see the test files for more examples.
-
-=head2 Standard extensions:
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
-
-=head2 Custom extensions:
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::COZA::Domain> http://co.za/epp/extensions/cozadomain-1-0
+Please see the README file for details.
 
 =head1 SUPPORT
 
@@ -58,12 +49,11 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2011,2012 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,31 +65,43 @@ See the LICENSE file that comes with this distribution for more details.
 
 =cut
 
-####################################################################################################
+#####################################################################################
 
 sub new
 {
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=1;
- $self->{info}->{contact_i18n}=4; ## LOC+INT
+ $self->{info}->{contact_i18n}=1; ## LOC only ## Documentation does not say exactly what is allowed
+ bless($self,$class);
  return $self;
 }
 
-sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
-sub name     { return 'ZACR'; }
-sub tlds     { return ('cities.dnservices.co.za','joburg','durban','capetown','africa','wien'); } # FIXME : the first is for OT&E tlds, the rest for live.
-sub object_types { return ('domain','contact'); }
+sub periods  { return map { DateTime::Duration->new(years => $_) } (1); } ## unknown precisely
+sub name     { return 'COZA'; }
+sub tlds     { return (map { $_.'.za' } qw /co net org web/); }
+sub object_types { return (qw/domain contact/); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::COZA',{}) if $type eq 'epp';
  return;
 }
 
-####################################################################################################
+######################################################################################
 
+sub registrar_balance
+{
+ my ($self,$ndr,$rd)=@_;
+ if (!defined $rd) {
+   $rd = ( defined($self->info('client_id'))?$self->info('client_id') :$self->info('clid') );
+ }
+ my $rc=$ndr->process('contact','info',[$ndr->local_object('contact')->srid($rd),{balance=>1}]);
+ return $rc;
+}
+
+#################################################################################################################
 1;
