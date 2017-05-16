@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .UK (Nominet) policies for Net::DRI
 ##
 ## Copyright (c) 2007-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2013-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -56,7 +56,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007-2011 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2013-2016 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

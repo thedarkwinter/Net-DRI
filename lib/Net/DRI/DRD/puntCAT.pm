@@ -1,6 +1,6 @@
-## Domain Registry Interface, .CAT policies
+## Domain Registry Interface, puntCAT (.CAT) policies for Net::DRI
 ##
-## Copyright (c) 2006,2008,2009,2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008,2009,2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::CAT;
+package Net::DRI::DRD::puntCAT;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use Net::DRI::Data::Contact::CAT;
 
 =head1 NAME
 
-Net::DRI::DRD::CAT - .CAT policies for Net::DRI
+Net::DRI::DRD::puntCAT - puntCAT (.CAT) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -50,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008,2009,2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2008,2009,2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ sub new
 ## The registry allows renewal as long as final date is less than 11 years in the future (10 years & 5 months would thus be ok)
 ## We are currently more restrictive than that, see DRD::verify_duration_renew()
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'CAT'; }
+sub name     { return 'puntCAT'; }
 sub tlds     { return ('cat'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

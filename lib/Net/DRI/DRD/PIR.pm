@@ -1,7 +1,7 @@
-## Domain Registry Interface, .ORG policies
+## Domain Registry Interface, PIR (.ORG) policies
 ##
 ## Copyright (c) 2006-2009 Rony Meyer <perl@spot-light.ch>. All rights reserved.
-##           (c) 2010-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2010-2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::ORG;
+package Net::DRI::DRD::PIR;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::ORG - .ORG policies for Net::DRI
+Net::DRI::DRD::PIR - PIR (.ORG) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2006-2009 Rony Meyer <perl@spot-light.ch>.
-          (c) 2010-2011 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2010-2011,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'ORG'; }
+sub name     { return 'PIR'; }
 sub tlds     { return ('org'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

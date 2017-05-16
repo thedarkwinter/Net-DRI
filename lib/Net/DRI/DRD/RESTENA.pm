@@ -1,6 +1,6 @@
-## Domain Registry Interface, .LU policy from DocRegistrar-2.0.6.pdf
+## Domain Registry Interface, RESTENA (.LU) policy from DocRegistrar-2.0.6.pdf
 ##
-## Copyright (c) 2007-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2007-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::LU;
+package Net::DRI::DRD::RESTENA;
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_renew domain_tr
 
 =head1 NAME
 
-Net::DRI::DRD::LU - .LU policies for Net::DRI
+Net::DRI::DRD::RESTENA - RESTENA (.LU) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2007-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2007-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ sub new
 }
 
 sub periods  { return; } ## registry does not expect any duration at all
-sub name     { return 'DNSLU'; }
+sub name     { return 'RESTENA'; }
 sub tlds     { return ('lu'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

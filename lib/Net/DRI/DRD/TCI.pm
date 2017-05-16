@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .XN--P1AI (РФ)/SU/RU policies
 ##
-## Copyright (c) 2010-2011,2016 Dmitry Belyavsky <beldmit@gmail.com>
+## Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
 ##               2011,2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI

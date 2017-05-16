@@ -1,6 +1,7 @@
-## Domain Registry Interface, .BH policies
+## Domain Registry Interface, TRA (.BH) policies
 ##
 ## Copyright (c) 2011 Michael Braunoeder <mib@nic.at>. All rights reserved
+##           (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +14,7 @@
 #
 ####################################################################################################
 
-package Net::DRI::DRD::BH;
+package Net::DRI::DRD::TRA;
 
 use strict;
 use warnings;
@@ -26,7 +27,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::BH - .BH policies for Net::DRI
+Net::DRI::DRD::TRA - TRA (.BH) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -51,6 +52,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2011 Michael Braunoeder <mib@nic.at>.
+          (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,7 +77,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'BH'; }
+sub name     { return 'TRA'; }
 sub tlds     { return ('bh'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

@@ -1,7 +1,7 @@
-## Domain Registry Interface, .AT policy
+## Domain Registry Interface, NIC.AT (.AT) policy
 ## Contributed by Michael Braunoeder from NIC.AT <mib@nic.at>
 ##
-## Copyright (c) 2006-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::AT;
+package Net::DRI::DRD::NicAT;
 
 use strict;
 use warnings;
@@ -30,7 +30,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_accept
 
 =head1 NAME
 
-Net::DRI::DRD::AT - .AT policies for Net::DRI
+Net::DRI::DRD::NicAT - NIC.AT (.AT) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -54,7 +54,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
-sub name     { return 'NICAT'; }
+sub name     { return 'NicAT'; }
 sub tlds     { return ('at'); }
 sub object_types { return ('domain','contact'); }
 sub profile_types { return qw/epp whois/; }

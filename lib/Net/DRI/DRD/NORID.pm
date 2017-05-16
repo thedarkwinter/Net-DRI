@@ -1,7 +1,7 @@
-## Domain Registry Interface, .NO policies for Net::DRI
+## Domain Registry Interface, NORID (.NO) policies for Net::DRI
 ##
 ## Copyright (c) 2008-2010 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>, Trond Haugen E<lt>info@norid.noE<gt>. All rights reserved.
-##           (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::DRD::NO;
+package Net::DRI::DRD::NORID;
 
 use strict;
 use warnings;
@@ -31,7 +31,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_accept
 
 =head1 NAME
 
-Net::DRI::DRD::NO - .NO policies for Net::DRI
+Net::DRI::DRD::NORID - NORID (.NO) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -56,7 +56,7 @@ Trond Haugen E<lt>info@norid.noE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008-2010 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>, Trond Haugen E<lt>info@norid.noE<gt>
-          (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+          (c) 2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

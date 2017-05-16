@@ -14,24 +14,24 @@ my $rc;
 my $ok=eval {
 ############################################################################################################
 
-$dri->add_registry('VNDS',{});
-$rc=$dri->target('VNDS')->add_current_profile('profile1','whois');
+$dri->add_registry('VeriSign::COM_NET',{});
+$rc=$dri->target('VeriSign::COM_NET')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('nsi.com',$dri);
 display('laposte.net',$dri);
 
-$dri->add_registry('AERO',{});
-$rc=$dri->target('AERO')->add_current_profile('profile1','whois');
+$dri->add_registry('SITA',{});
+$rc=$dri->target('SITA')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('cdg.aero',$dri);
 
-$dri->add_registry('ORG',{});
-$rc=$dri->target('ORG')->add_current_profile('profile1','whois');
+$dri->add_registry('PIR',{});
+$rc=$dri->target('PIR')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('laptop.org',$dri);
 
-$dri->add_registry('INFO',{});
-$rc=$dri->target('INFO')->add_current_profile('profile1','whois');
+$dri->add_registry('Afilias',{});
+$rc=$dri->target('Afilias')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('mta.info',$dri);
 
@@ -41,58 +41,58 @@ die($rc) unless $rc->is_success();
 display('europa.eu',$dri);
 display('eurid.eu',$dri);
 
-$dri->add_registry('BIZ',{});
-$rc=$dri->target('BIZ')->add_current_profile('profile1','whois');
+$dri->add_registry('Neustar::BIZ',{});
+$rc=$dri->target('Neustar::BIZ')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('neulevel.biz',$dri);
 
-$dri->add_registry('MOBI',{});
-$rc=$dri->target('MOBI')->add_current_profile('profile1','whois');
+$dri->add_registry('dotMOBI',{});
+$rc=$dri->target('dotMOBI')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('buongiorno.mobi',$dri);
 
-$dri->add_registry('NAME',{});
-$rc=$dri->target('NAME')->add_current_profile('profile1','whois');
+$dri->add_registry('VeriSign::NAME',{});
+$rc=$dri->target('VeriSign::NAME')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('sudoku.name',$dri);
 
-$dri->add_registry('LU',{});
-$rc=$dri->target('LU')->add_current_profile('profile1','whois');
+$dri->add_registry('RESTENA',{});
+$rc=$dri->target('RESTENA')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('restena.lu',$dri);
 
-$dri->add_registry('WS',{});
-$rc=$dri->target('WS')->add_current_profile('profile1','whois');
+$dri->add_registry('GDI',{});
+$rc=$dri->target('GDI')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('website.ws',$dri);
 
-$dri->add_registry('SE',{});
-$rc=$dri->target('SE')->add_current_profile('profile1','whois');
+$dri->add_registry('IIS',{});
+$rc=$dri->target('IIS')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('malmo.se',$dri);
 
-$dri->add_registry('CAT',{});
-$rc=$dri->target('CAT')->add_current_profile('profile1','whois');
+$dri->add_registry('puntCAT',{});
+$rc=$dri->target('puntCAT')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('barcelona.cat',$dri);
 
-$dri->add_registry('AT',{});
-$rc=$dri->target('AT')->add_current_profile('profile1','whois');
+$dri->add_registry('NicAT',{});
+$rc=$dri->target('NicAT')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('stare.at',$dri);
 
-$dri->add_registry('TRAVEL',{});
-$rc=$dri->target('TRAVEL')->add_current_profile('profile1','whois');
+$dri->add_registry('Tralliance',{});
+$rc=$dri->target('Tralliance')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('paris.travel',$dri);
 
-$dri->add_registry('US',{});
-$rc=$dri->target('US')->add_current_profile('profile1','whois');
+$dri->add_registry('Neustar::US',{});
+$rc=$dri->target('Neustar::US')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('disney.us',$dri);
 
-$dri->add_registry('PT',{});
-$rc=$dri->target('PT')->add_current_profile('profile1','whois');
+$dri->add_registry('DNSPT',{});
+$rc=$dri->target('DNSPT')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('lisboa.pt',$dri);
 

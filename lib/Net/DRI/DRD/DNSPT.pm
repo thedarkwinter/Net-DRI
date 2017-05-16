@@ -1,6 +1,6 @@
-## Domain Registry Interface, Registry Driver for .PT
+## Domain Registry Interface, DNSPT (.PT) Registry Driver for Net::DRI
 ##
-## Copyright (c) 2008-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::DRD::PT;
+package Net::DRI::DRD::DNSPT;
 
 use strict;
 use warnings;
@@ -29,7 +29,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete contact
 
 =head1 NAME
 
-Net::DRI::DRD::PT - FCCN .PT Registry driver for Net::DRI
+Net::DRI::DRD::DNSPT - DNSPT (.PT) Registry driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -53,7 +53,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ sub new
 }
 
 sub periods      { return map { DateTime::Duration->new(years => $_) } (1,3,5); }
-sub name         { return 'FCCN'; }
+sub name         { return 'DNSPT'; }
 sub tlds         { return qw/pt net.pt org.pt edu.pt int.pt publ.pt com.pt nome.pt/; }
 sub object_types { return ('domain','contact'); }
 sub profile_types { return qw/epp whois/; }

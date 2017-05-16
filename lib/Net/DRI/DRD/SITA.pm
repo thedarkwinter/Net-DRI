@@ -1,6 +1,6 @@
-## Domain Registry Interface, .AERO policies
+## Domain Registry Interface, SITA (.AERO) policies
 ##
-## Copyright (c) 2006-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::AERO;
+package Net::DRI::DRD::SITA;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use Net::DRI::Data::Contact::AERO;
 
 =head1 NAME
 
-Net::DRI::DRD::AERO - .AERO policies for Net::DRI
+Net::DRI::DRD::SITA - SITA (.AERO) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -50,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'AERO'; }
+sub name     { return 'SITA'; }
 sub tlds     { return ('aero'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

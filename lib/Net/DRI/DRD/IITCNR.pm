@@ -1,6 +1,6 @@
-## Domain Registry Interface, .IT policies
+## Domain Registry Interface, IIT CNR (.IT) policies
 ##
-## Copyright (c) 2009-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009-2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::IT;
+package Net::DRI::DRD::IITCNR;
 
 use strict;
 use warnings;
@@ -28,7 +28,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/host_check host_info h
 
 =head1 NAME
 
-Net::DRI::DRD::IT - .IT policies for Net::DRI
+Net::DRI::DRD::IITCNR - IIT CNR (.IT) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -52,7 +52,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009-2011 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009-2011,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'IIT-CNR'; }
+sub name     { return 'IITCNR'; }
 sub tlds     { return qw /it co.it/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }

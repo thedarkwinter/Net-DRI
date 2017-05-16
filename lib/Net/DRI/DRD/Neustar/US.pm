@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .US policies
 ##
 ## Copyright (c) 2007,2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
-##           (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::US;
+package Net::DRI::DRD::Neustar::US;
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ use Net::DRI::Data::Contact::US;
 
 =head1 NAME
 
-Net::DRI::DRD::US - .US policies for Net::DRI
+Net::DRI::DRD::Neustar::US - .US policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -52,7 +52,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2009 Tonnerre Lombard E<lt>tonnerre.lombard@sygroup.chE<gt>.
-          (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -76,7 +76,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'US'; }
+sub name     { return 'Neustar::US'; }
 sub tlds     { return ('us'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

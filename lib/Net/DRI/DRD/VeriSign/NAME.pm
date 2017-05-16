@@ -1,9 +1,7 @@
-## Domain Registry Interface, .NAME policies
+## Domain Registry Interface, VeriSign Registry Driver for .NAME
 ##
-## Copyright (c) 2007-2009,2011 HEXONET Support GmbH, www.hexonet.com,
-##                    Alexander Biehl <info@hexonet.com>
-##			and Patrick Mevzek <netdri@dotandco.com>.
-##                    All rights reserved.
+## Copyright (c) 2007-2009,2011 HEXONET Support GmbH, www.hexonet.com, Alexander Biehl <info@hexonet.com>. All rights reserved
+## Copyright (c) 2005-2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -15,23 +13,23 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::NAME;
+package Net::DRI::DRD::VeriSign::NAME;
 
 use strict;
 use warnings;
 
 use base qw/Net::DRI::DRD/;
 
-use Net::DRI::Exception;
-use Net::DRI::Util;
 use DateTime::Duration;
-use Data::Dumper;
+
+use Net::DRI::Util;
+use Net::DRI::Exception;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::DRD::NAME - .NAME policies for Net::DRI
+Net::DRI::DRD::VeriSign::NAME - VeriSign .NAME Registry driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -55,9 +53,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2007-2009,2011 HEXONET Support GmbH, E<lt>http://www.hexonet.comE<gt>,
-Alexander Biehl <info@hexonet.com>
-and Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2007-2009,2011 Alexander Biehl <info@hexonet.com>.
+Copyright (c) 2005-2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -77,20 +74,21 @@ sub new
   my $self  = $class->SUPER::new(@_);
   $self->{info}->{host_as_attr} = 0;
   $self->{info}->{contact_i18n} = 2;    ## INT only
+ $self->{info}->{check_limit}=13;
   return $self;
 }
 
 sub periods { return map { DateTime::Duration->new( years => $_ ) } ( 1 .. 10 ); }
-sub name          { return 'NAME'; }
-sub tlds          { return ('name'); }
-sub object_types  { return ( 'domain', 'contact', 'ns', 'defReg' ); }
+sub name          { return 'VeriSign::NAME'; }
+sub tlds          { return qw/name/; }
+sub object_types  { return qw/domain contact ns defReg/; }
 sub profile_types { return qw/epp whois/; }
 
 sub transport_protocol_default
 {
   my ( $self, $type ) = @_;
 
-  return ( 'Net::DRI::Transport::Socket', {}, 'Net::DRI::Protocol::EPP::Extensions::NAME', {} ) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host=>'nameeppote.verisign-grs.com', remote_port=>700},'Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NAME',{}) if $type eq 'epp';
   return ( 'Net::DRI::Transport::Socket', { remote_host => 'whois.nic.name' }, 'Net::DRI::Protocol::Whois', {} ) if $type eq 'whois';
   return;
 }
@@ -100,9 +98,7 @@ sub transport_protocol_default
 sub verify_name_domain
 {
   my ( $self, $ndr, $domain, $op ) = @_;
-  return $self->_verify_name_rules(
-    $domain, $op,
-    { check_name        => 1,
+ return $self->_verify_name_rules($domain,$op,{check_name => 1,
       check_name_dots   => [ 1, 2 ],
       my_tld_not_strict => 1,          ## we need less strict checks because in X.Y.name domain names both X and Y are variables
       icann_reserved    => 1,
@@ -382,8 +378,6 @@ sub defreg_renew
   my ( $self, $ndr, $roid, $rd ) = @_;
   return $ndr->process( 'defreg', 'renew', [ $roid, $rd->{duration}, $rd->{current_expiration} ] );
 }
-
-####################################################################################################
 
 ####################################################################################################
 1;

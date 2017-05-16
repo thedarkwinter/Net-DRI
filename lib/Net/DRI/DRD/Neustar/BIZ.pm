@@ -1,7 +1,7 @@
-## Domain Registry Interface, .BIZ policies
+## Domain Registry Interface, Neustar (.BIZ) policies
 ##
 ## Copyright (c) 2007,2008,2009 Distribute.IT Pty Ltd, www.distributeit.com.au, Rony Meyer <perl@spot-light.ch>. All rights reserved.
-##           (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::BIZ;
+package Net::DRI::DRD::Neustar::BIZ;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::BIZ - .BIZ policies for Net::DRI
+Net::DRI::DRD::Neustar::BIZ - Neustar (.BIZ) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2009 Distribute.IT Pty Ltd, E<lt>http://www.distributeit.com.auE<gt>, Rony Meyer <perl@spot-light.ch>.
-          (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+          (c) 2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'BIZ'; }
+sub name     { return 'Neustar::BIZ'; }
 sub tlds     { return ('biz'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

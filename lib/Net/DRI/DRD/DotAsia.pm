@@ -1,7 +1,7 @@
-## Domain Registry Interface, .ASIA policies
+## Domain Registry Interface, DotAsia (.ASIA) policies
 ##
 ## Copyright (c) 2007-2009,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
-##           (c) 2010,2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2010,2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::ASIA;
+package Net::DRI::DRD::DotAsia;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::ASIA - .ASIA policies for Net::DRI
+Net::DRI::DRD::DotAsia - DotAsia (.ASIA) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -51,7 +51,7 @@ Tonnerre Lombard E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007-2009,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-          (c) 2010,2011 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2010,2011,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'ASIA'; }
+sub name     { return 'DotAsia'; }
 sub tlds     { return ('asia'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

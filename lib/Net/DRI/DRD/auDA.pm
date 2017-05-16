@@ -1,7 +1,7 @@
-## Domain Registry Interface, .AU policies
+## Domain Registry Interface, auDA (.AU) policies
 ##
 ## Copyright (c) 2007,2008,2009 Distribute.IT Pty Ltd, www.distributeit.com.au, Rony Meyer <perl@spot-light.ch>. All rights reserved.
-##           (c) 2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::AU;
+package Net::DRI::DRD::auDA;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::AU - .AU policies for Net::DRI
+Net::DRI::DRD::auDA - auDA (.AU) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -51,7 +51,7 @@ Rony Meyer, E<lt>perl@spot-light.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2009 Distribute.IT Pty Ltd, E<lt>http://www.distributeit.com.auE<gt>, Rony Meyer <perl@spot-light.ch>.
-          (c) 2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+          (c) 2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (2..3); }
-sub name     { return 'AU'; }
+sub name     { return 'auDA'; }
 sub tlds     { return qw/com.au net.au org.au asn.au id.au vic.au tas.au nsw.au act.au qld.au sa.au nt.au wa.au/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp das/; }

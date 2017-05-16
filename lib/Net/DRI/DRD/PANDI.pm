@@ -1,6 +1,6 @@
-## Domain Registry Interface, policies for .ID
+## Domain Registry Interface, PANDI (.ID) policies for Net::DRI
 ##
-## Copyright (c) 2012 Patrick Mevzek <netdri@dotandco.com>.
+## Copyright (c) 2012,2016 Patrick Mevzek <netdri@dotandco.com>.
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::ID;
+package Net::DRI::DRD::PANDI;
 
 use utf8;
 use strict;
@@ -27,7 +27,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::ID - .ID policies for Net::DRI
+Net::DRI::DRD::PANDI - PANDI (.ID) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -51,7 +51,7 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2012,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

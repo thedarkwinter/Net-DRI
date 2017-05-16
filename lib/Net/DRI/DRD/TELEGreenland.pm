@@ -1,6 +1,6 @@
-## Domain Registry Interface, GL Registry Driver
+## Domain Registry Interface, TELEGreenland (.GL) Registry Driver for Net::DRI
 ##
-## Copyright (c) 2010,2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::DRD::GL;
+package Net::DRI::DRD::TELEGreenland;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime;
 
 =head1 NAME
 
-Net::DRI::DRD::GL - GL Registry driver for Net::DRI
+Net::DRI::DRD::TELEGreenland - .GL Registry driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -56,7 +56,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2011 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2011,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -71,7 +71,7 @@ See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
 sub periods      { return map { DateTime::Duration->new(years => $_) } (1..5); }
-sub name         { return 'GL'; }
+sub name         { return 'TELEGreenland'; }
 sub tlds         { return (qw/gl co.gl com.gl net.gl edu.gl org.gl/); }
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }

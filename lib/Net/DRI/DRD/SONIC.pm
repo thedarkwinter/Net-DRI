@@ -1,6 +1,7 @@
-## Domain Registry Interface, .SO policies
+## Domain Registry Interface, SONIC (.SO) policies
 ##
 ## Copyright (c) 2009-2011 Cloud Registry Pty Ltd <http://www.cloudregistry.net>. All rights reserved.
+##           (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::SO;
+package Net::DRI::DRD::SONIC;
 
 use strict;
 use warnings;
@@ -25,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::SO - .SO policies for Net::DRI
+Net::DRI::DRD::SONIC - SONIC (.SO) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -51,6 +52,7 @@ Wil Tan E<lt>wil@cloudregistry.netE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2009-2011 Cloud Registry Pty Ltd <http://www.cloudregistry.net>.
+          (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,8 +77,8 @@ sub new
 }
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name          { return 'SO'; }
-sub tlds          { return (qw/so com.so net.so org.so/); }
+sub name          { return 'SONIC'; }
+sub tlds          { return (qw/so com.so edu.so gov.so me.so net.so org.so/); }
 sub object_types  { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; } ## { return qw/epp whois/; }
 
