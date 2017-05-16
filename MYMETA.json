@@ -4,7 +4,7 @@
       "Patrick Mevzek <netdri@dotandco.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142690, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142690, CPAN::Meta::Converter version 2.150010",
    "keywords" : [
       "DNS",
       "EPP",
@@ -156,5 +156,5 @@
       ]
    },
    "version" : "0.96_08",
-   "x_serialization_backend" : "JSON::PP version 2.27300"
+   "x_serialization_backend" : "JSON::PP version 2.27400"
 }

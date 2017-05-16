@@ -1,5 +1,24 @@
 Net::DRI changelog from newest to oldest changes
 
+0.11-tdw 2017-15-15 DEVELOPMENT RELEASE
+!! Note, this is not an official release; it is based on Net-DRI-0.96_08. See http://search.cpan.org/dist/Net-DRI/ !!
+!! Note 2, the next release will include the restructure of DRDs, and hopefully a cleanup with it.
+!! See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes
+= A number of new TLDs have been added in various places
+= Many TLDs have migrated between providers since the last release. Lots of Afilias and Neustar/ARI movements, Nominet-MMX movements.
+= Some EPP Servers only allow TLS1.2 and the DRD's have been updated to force this (Switch, Nominet, GMO, SIDN... )
+= A number of registries have updated their fee extension implementations (Afilias, GMO, Verisign...)
+= Various bug fixes from David Makuni and Paulo Jorge
+= Eurid updated to latest release extensions
++ .NAME DefReg extension added
++ .NAME EmailFws extension update by Paulo Jorge
++ Additional Fee extension support (0.11) from Patrick Mevzek
++ Update to .PL renewals/reactivation from Marcus Fauré
++ Additional TCI ccTLD and gTLD DRDs and updates from Dmitry Belyavsky
++ Added .IN, .RO support from David Makuni
++ Added CZNic's FRED support from David Makuni for  .CZ, .MW, .AO, .TZ, .CR, .AL, .MK, .AR
+
+
 0.10-tdw 2016-06-20 DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_08. See http://search.cpan.org/dist/Net-DRI/ !!
 + Added gTLD Support for Amsterdam(SIDN), LAT (NicMX), Amazon(Neustar) (Paulo Jorge)
@@ -17,7 +36,7 @@ Net::DRI changelog from newest to oldest changes
 = Various gTLDs switched to draft-brown-fees, PIR/Afilias/Neustar/CoCCA/Unireg/KS/KNET/RegBox
 = Updated Eurid modules, poll-1.2, domain-2.0, and added tld .xn--e1a4c
 = domain_check_price updated for phase support
-= Small changes/fixes (.es, .no, .nl, 
+= Small changes/fixes (.es, .no, .nl,
 = Various TLD lists updated in NGTLD.DRD
 = Log files can change name without crashing now
 + hold_down option for registry transport to leave a connection disable for X seconds
@@ -47,7 +66,7 @@ other protocols (Whois,DAS,RRP) or transports *might* not work in this version, 
 + Added support for draft-brown-epp-fees-03 (fee-0.6) for CRR (Paulo Jorge)
 = Minor TMCH protocol fixes
 + LaunchPhase extension: updated to draft-ietf-eppext-launchphase-02
-+ Fix some issues arising from Hash Randomisation 
++ Fix some issues arising from Hash Randomisation
 = NGTLD DRD TLD Corrections/Additions
 + EPP lang defaults to en at login if server supports it instead of first mentioned language
 + AFNIC gTLD: RegistryMessage parser to create LaunchPhase action from panData
@@ -193,8 +212,8 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 = Transport/HTTP : allow for persistent connections (has_state=1) to replicate Transport/Socket behaviour
 = Protocol/EPP/Connection : Better handling of disconnects
 = Protocol/RRI/Connection : Better handling of disconnects
-+ Logging : added options suppress_keepalive, trim_headers 
-+ Logging/Files : added option format_filename 
++ Logging : added options suppress_keepalive, trim_headers
++ Logging/Files : added option format_filename
 + Protocol/EPP : added nameserver method host_as_ns to build <domain:ns>ns1.test.com</..>, currently utilised by ES
 + Data/IDN : A new IDN object to try and make a common method of creating / parsing domains with IDNs. Requires Net::IDN::Encode
 = EPP/Core/Contact : use $ns for namespace instead of 'contact', allowing external extensions to use the parser
@@ -872,7 +891,7 @@ Detailed changes:
 
 0.92 2008-10-08
 
-+ IRIS support (RFC3981) with LWZ transport (RFC4993) for DCHK (RFC5144): currently only DENIC registry (.DE) provide this service, 
++ IRIS support (RFC3981) with LWZ transport (RFC4993) for DCHK (RFC5144): currently only DENIC registry (.DE) provide this service,
   but this new set of protocols have been created to replace the current sad state of whois (a change that will probably take years)
   See eg/iris_dchk.pl
 + Net::DRI::Shell : a new version of the earlier prototype, now revamped, extended, documented, with support for all Net::DRI operations, and batch feature for domain name operations with logging and time statistics. See its documentation for all details ; it can very easily be used to leverage all power of Net::DRI without writing any line of code!
@@ -1058,9 +1077,9 @@ Detailed changes:
 + Contact : new method _intfirst() (from suggestion by Rony Meyer)
 + Transport/Socket : new parameter protocol_data, see documentation (from idea by Rony Meyer)
 + DRD/VNDS : also handle .CC & .TV
-+ DRD/NAME and DRD/NU : provided by Alexander Biehl 
++ DRD/NAME and DRD/NU : provided by Alexander Biehl
 + 3 new EPP extensions for CentralNic : WebForwarding, TTL & Domain Release (see t/621centralnic_epp.t for examples of use)
-+ Whois support for .MOBI .NAME (see example in eg/whois.pl) 
++ Whois support for .MOBI .NAME (see example in eg/whois.pl)
 + Transport : new way to do logging (send/receive methods receive an extra parameter at beginning, the trid)
 = DRD : is_my_tld() correctly handles registries with more than one TLD (from initial bugreport by Rony Meyer)
 = Data/Hosts : new method clear() (patch by Tonnerre Lombard)
@@ -1289,7 +1308,7 @@ Detailed changes:
 
 0.12 2005-05-31
 
-+ New ``registries'': 
++ New ``registries'':
    1) AFNIC (through web services, domain check only)
    2) Gandi (through web site, domain nameservers update only)
 + New transport: SOAP (HTTP/HTTPS only)
@@ -1301,7 +1320,7 @@ Detailed changes:
     (see README for details)
 - BUGFIX for RRP : order of elements is now exactly as specified by standard
 - BUGFIX for Net::DRI::DRD in host_is_mine: parameters (warning not triggered in some perls)
-- BUGFIX for Net::DRI::DRD in err_invalid_domain_name/err_invalid_host_name: correct message 
+- BUGFIX for Net::DRI::DRD in err_invalid_domain_name/err_invalid_host_name: correct message
                                                & really raise an exception if a problem is found !
 - BUGFIX for Net::DRI::DRD in check_name: correct count of dots
 + Net::DRI::Transport::Socket : require on the protocol connection class to make sure it works

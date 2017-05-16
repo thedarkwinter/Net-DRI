@@ -1,4 +1,12 @@
-### Net-DRI-0.10-tdw
+### Net-DRI-0.11-tdw
+
+* * *
+#### Warning!
+#### Warning!
+
+I will soon (who knows how long) be switching to the new DRD structure from Net-DRI-0.96_09, which means your scripts will need to be updated!!
+Please see the [Changes](http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes) file for more details.
+
 
 * * *
 #### Overview
