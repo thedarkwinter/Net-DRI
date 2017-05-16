@@ -94,7 +94,7 @@ sub name     { return 'NEUSTAR'; }
 #sub tlds { return qw/fcfs multi lrclaims gaclaims ga/; } # OT&E
 sub tlds     {
  my @ro1 = qw/neustar/; # Neustar - is this a single registrant registry?
- my @ro2 = qw/xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible ceo club earth hoteles htc moe nyc osaka pharmacy qpon safety taipei tube uno whoswho/; # various
+ my @ro2 = qw/xn--g2xx48c xn--nyqy26a xn--rhqv96g baby best bible ceo club earth htc moe nyc pharmacy qpon safety taipei tube uno whoswho/; # various
  my @ro3p1 = qw/men/; # Famous Four Media - Phase 1
  return (@ro1,@ro2,@ro3p1);
 }
