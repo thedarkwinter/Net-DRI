@@ -38,9 +38,9 @@ my $ok=eval {
 };
 print $@->as_string() if ! $ok;
 $dri->{trid_factory} = sub { return 'ABC-12345'; };
-$dri->add_registry('VNDS');
+$dri->add_current_registry('VeriSign::NameStore');
 $ok=eval {
-	$dri->target('VNDS')->add_current_profile('p1',
+	$dri->add_current_profile('p1',
 		'epp',
 		{
 			f_send=> \&mysend,

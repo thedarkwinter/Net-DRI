@@ -244,10 +244,61 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 + Added Protocol for TMDB which supports SMDRL and CNIS only
 + Added TMDB DRD using TMDB.pm
 
+
+0.96_09 2016-05-22 DEVELOPMENT RELEASE
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+
+This version changes almost all DRD module names, you will need to change your scripts.
+This is a consequence of an old design decision that no DRD module should have a TLD as name.
+Now, by default a DRD of a TLD registry will have the sponsor name as listed on IANA website.
+
+= DRD/AERO is now DRD/SITA
+= DRD/AG is now DRD/UHSA
+= DRD/ASIA is now DRD/DotAsia
+= DRD/AT is now DRD/NicAT, and add co.at and or.at in list of tlds supported
+= DRD/AU is now DRD/auDA
+= DRD/BE is now DRD/DNSBelgium
+= DRD/BH is now DRD/TRA
+= DRD/BIZ is now DRD/Neustar/BIZ
+= DRD/BR is now DRD/CGIBR
+= DRD/BZ is now DRD/BelizeNIC
+= DRD/CAT is now DRD/puntCAT
+= DRD/COOP is now DRD/DotCooperation
+= DRD/COZA is now DRD/ZACR, and add .org.za, .net.za and .web.za in list of tlds supported
+= DRD/CZ is now DRD/CZNIC
+= DRD/GL is now DRD/TELEGreenland
+= DRD/HN is now DRD/RDS
+= DRD/ID is now DRD/PANDI
+= DRD/INFO is now DRD/Afilias
+= DRD/IT is now DRD/IITCNR
+= DRD/LU is now DRD/RESTENA
+= DRD/MOBI is now DRD/dotMOBI
+= DRD/NO is now DRD/NORID
+= DRD/NU is now DRD/IUSN
+= DRD/ORG is now DRD/PIR
+= DRD/PL is now DRD/NASK
+= DRD/PRO is now DRD/RegistryPro
+= DRD/PT is now DRD/DNSPT
+= DRD/SC is now DRD/VCS
+= DRD/SE is now DRD/IIS
+= DRD/SO is now DRD/SONIC, and add edu.so, gov.so and me.so in list of tlds supported
+= DRD/TRAVEL is now DRD/Tralliance
+= DRD/WS is now DRD/GDI
+= DRD/MN is now DRD/Datacom
+= DRD/IM is now DRD/Domicilium, and add ac.im, plc.co.im, ltd.co.im and remove net.im in list of tlds supported
+= DRD/LC is now DRD/NicLC, and add edu.lc, gov.lc and remove l.lc and p.lc in list of tlds supported
+= DRD/ME is now DRD/doMEn
+= DRD/VC is now DRD/SaintVincentGrenadines
+= DRD/US is now DRD/Neustar/US
+= DRD/NAME is now DRD/VeriSign/NAME
+= DRD/VNDS is now splitted into DRD/VeriSign/COM_NET and DRD/VeriSign/NameStore
+
 0.96_08 2016-03-31 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
-other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
 
 + Data/LanguageTag : new module to implement RFC 5646 ("Tags for Identifying Languages") parsing (everything possible offline without access to the registry)
 + Protocol/EPP/Extensions/ChangePoll : new module to implement draft-gould-change-poll-04
@@ -259,7 +310,6 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 + Protocol/EPP/Extensions/Reverse : new module to implement draft-brown-epp-reverse-00
 + Protocol/EPP/Extensions/ContactVerification : new module to implement draft-wang-eppext-contact-verification-01
 + Protocol/EPP/Extensions/DomainVerification : new module to implement draft-wang-eppext-domain-verification-01
-+ Protocol/EPP/Extensions/VerificationCode : new module to implement draft-gould-eppext-verificationcode-02
 = Protocol/EPP/Extensions/ICANN/MarkSignedMark : flag to enable/disable local XML validation as needed, adapt tests
 = Protocol/EPP/Extensions/ICANN/MarkSignedMark : updated to draft-ietf-eppext-tmch-smd-06
 = Protocol/EPP/Extensions/KeyRelay : updated to draft-ietf-eppext-keyrelay-11
@@ -282,7 +332,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 0.96_07 2015-05-25 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
-other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
 
 + bump minimum perl version required to 5.10.0 (using // and state operator)
 + ExtUtils::MakeMaker version 6.64 at least is needed
@@ -312,7 +362,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 0.96_06 2014-09-10 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
-other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
 
 + better Perl Kwalitee support (less POD errors, better list of files to skip, etc…)
 + Nominet : various updates from registry, switching to standard EPP (patch by Michael Holloway, with minor changes)
@@ -344,7 +394,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 0.96_05 2013-05-01 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
-other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
 
 + Net::DRI (all modules in distribution) pass Perl Best Practices level 4; xt/003critic.t now uses level 4 by default
 + .TEL EPP support, from patch by Michael Holloway
@@ -403,7 +453,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 0.96_04 2012-11-20 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
-other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
 
 + EURid : preliminary upgrade to registry release 9.0; major changes everywhere specially around transfers (updates have not been extensively tested, please give feedback)
 + .ID basic support with EPP
@@ -430,7 +480,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 0.96_03 2012-04-15 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
-other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
 
 + .FR/.RE/.YT/.TF/.WF/.PM various updates : updates to frnic-1.2, handling qualification process, new legal form ids, change of EPP test server hostname, DCHK support, etc.
 + TCI updates submitted by Dmitry Belyavsky
@@ -463,7 +513,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 0.96_02 2011-10-01 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
-other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
 
 + .CO.ZA : new TLD supported with EPP Domain & Contact extensions
 + .RU/.SU/.РФ : new registry aka TCI (provided by Dmitry Belyavsky)
@@ -534,7 +584,7 @@ other protocols (Whois,DAS,RRI,RRP) or transports (EPP over HTTPS) will not work
 
 0.96_01 2011-03-13 DEVELOPMENT RELEASE (not to be used in production without extensive testing if upgrading from some previous version)
 
-WARNING: due to work in progress in Transport and Transport::Socket, only EPP protocol will work among Socket based protocols, so no Whois,DAS,IRIS,RRI and RRP.
+WARNING: due to work in progress in Transport and Transport::Socket, only EPP protocol will work among Socket based protocols, so no DAS,IRIS,RRI and RRP.
 This will be fixed for production release 0.97
 
 + DRD/ISPAPI + Protocol/EPP/Extensions/ISPAPI + Protocol/EPP/Extensions/ISPAPI/KeyValue + eg/ispapi_epp.pl : Net::DRI support for Hexonet's ISPAPI EPP server (contributed by Alexander Biehl & Jans Wagner from Hexonet)

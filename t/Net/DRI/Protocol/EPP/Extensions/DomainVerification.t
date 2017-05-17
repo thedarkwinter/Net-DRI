@@ -21,8 +21,8 @@ sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'C
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('VNDS');
-$dri->target('VNDS')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['DomainVerification','-VeriSign::NameStore']});
+$dri->add_current_registry('VeriSign::COM_NET');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['DomainVerification','-VeriSign::NameStore']});
 
 
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example.com</domain:name></domain:cd><domain:cd><domain:name avail="0">example.net</domain:name></domain:cd></domain:chkData></resData><extension><veridomain:chkData xmlns:veridomain="urn:ietf:params:xml:ns:veridomain-1.0"><veridomain:distinction name="example.com" type="reserved"/><veridomain:distinction name="example.net" type="prohibited"/></veridomain:chkData></extension>'.$TRID.'</response>'.$E2;

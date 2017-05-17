@@ -18,8 +18,8 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('VNDS');
-$dri->target('VNDS')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
+$dri->add_current_registry('VeriSign::COM_NET');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
 
 #########################################################################################################
 ## Example taken from draft-hollenbeck-epp-sync-01, updated (removed empty <domain:chg/>

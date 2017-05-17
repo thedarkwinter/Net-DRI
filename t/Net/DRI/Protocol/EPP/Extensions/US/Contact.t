@@ -20,8 +20,8 @@ sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl=>10,trid_factory => sub { return 'coricopat-9978-1002'}});
-$dri->add_registry('US');
-$dri->target('US')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('Neustar::US');
+$dri->target('Neustar::US')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 #########################################################################################################
 ## Examples taken from draft-liu-epp-usTLD-00 + updates to current EPP
@@ -51,7 +51,6 @@ $rc=$dri->contact_info($co);
 $c=$dri->get_info('self','contact','abcde');
 is($c->application_purpose(),'P1','contact_info parse AppPurpose');
 is($c->nexus_category(),'C11','contact_info parse NexusCategory');
-
 
 $R2='';
 $co=$dri->local_object('contact')->srid('abc');

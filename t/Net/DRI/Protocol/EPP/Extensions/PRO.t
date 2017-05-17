@@ -38,9 +38,9 @@ my $ok=eval {
 };
 print $@->as_string() if ! $ok;
 $dri->{trid_factory} = sub { return 'ABC-12345'; };
-$dri->add_registry('PRO');
+$dri->add_registry('RegistryPro');
 $ok=eval {
-	$dri->target('PRO')->add_current_profile('p1',
+	$dri->target('RegistryPro')->add_current_profile('p1',
 		'epp',
 		{
 			f_send=> \&mysend,

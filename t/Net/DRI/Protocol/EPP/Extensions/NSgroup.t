@@ -27,8 +27,8 @@ my ($rc,$toc);
 ## DNSBE uses version 1.0, while Eurid uses 1.1 (with their own namespace declarations)
 ## So we test both versions here. 1.1 is at the bottom!
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl=>10,trid_factory => sub { return 'clientref-123007'}});
-$dri->add_registry('BE');
-$dri->target('BE')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('DNSBelgium');
+$dri->target('DNSBelgium')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 $R2='<?xml version="1.0" encoding="UTF-8"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:dnsbe="http://www.dns.be/xml/epp/dnsbe-1.0" xmlns:nsgroup="http://www.dns.be/xml/epp/nsgroup-1.0" xmlns:agent="http://www.dns.be/xml/epp/agent-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd http://www.dns.be/xml/epp/dnsbe-1.0 dnsbe-1.0.xsd http://www.dns.be/xml/epp/nsgroup-1.0 nsgroup-1.0.xsd http://www.dns.be/xml/epp/agent-1.0 agent-1.0.xsd"><response><result code="1000"><msg>Command completed successfully</msg><value><nsgroup:name>mynsgroup1</nsgroup:name></value></result><extension><dnsbe:ext><dnsbe:result><dnsbe:msg>Content check ok</dnsbe:msg></dnsbe:result></dnsbe:ext></extension><trID><clTRID>clientref-123007</clTRID><svTRID>dnsbe-1543</svTRID></trID></response></epp>';
 my $c1=$dri->local_object('hosts');

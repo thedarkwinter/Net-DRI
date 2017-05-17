@@ -20,8 +20,8 @@ sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_registry('ASIA');
-$dri->target('ASIA')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('DotAsia');
+$dri->target('DotAsia')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $ok;
 my $rc;

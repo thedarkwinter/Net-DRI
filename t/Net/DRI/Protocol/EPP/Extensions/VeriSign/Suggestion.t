@@ -22,8 +22,15 @@ sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'C
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('VNDS');
-$dri->target('VNDS')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['VeriSign::Suggestion']});
+$dri->add_current_registry('VeriSign::COM_NET'); ## VeriSign documentation says the extension is only in the NameStore system, but all examples in documentation use COM/NET!
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['VeriSign::Suggestion']});
+
+## See above comment on documentation mismatch
+{
+ no warnings;
+ require Net::DRI::DRD::VeriSign::NameStore;
+ *Net::DRI::DRD::VeriSign::COM_NET::domain_suggest=*Net::DRI::DRD::VeriSign::NameStore::domain_suggest;
+}
 
 $R2='';
 my $rc=$dri->domain_suggest('mimisflowershop.com',{language=>'ENG',contentfilter=>'false',customfilter=>'false',forsale=>'off',maxlength=>30,maxresults=>20,usehyphens=>1,usenumbers=>1,view=>'grid',action=>{basic=>'medium',related=>'high',similar=>'off',topical=>'high'},tld=>['COM','Net']});

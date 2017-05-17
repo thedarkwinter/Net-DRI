@@ -17,8 +17,8 @@ sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl=>10,trid_factory => sub { return 'clientref-123007'}});
-$dri->add_registry('BE');
-$dri->target('BE')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('DNSBelgium');
+$dri->target('DNSBelgium')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 my ($rc,$toc);
 
 ####################################################################################################

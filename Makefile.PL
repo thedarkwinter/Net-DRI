@@ -21,6 +21,7 @@ WriteMakefile(
         'Email::Valid' => 0,
         'XML::LibXML' => '1.99',
         'Module::Load' => 0,
+        'Scalar::Util' => 0,
         'Hash::KeyMorpher' => '0.09',
 	      'Net::IDN::Encode' => 0,
 	      'Locale::Language' => 0,
