@@ -26,7 +26,7 @@ use base qw(Class::Accessor::Chained::Fast Net::DRI::BaseClass);
 __PACKAGE__->mk_ro_accessors(qw/trid_factory identify_client logging cache/);
 
 our $AUTOLOAD;
-our $VERSION='0.11-tdw';
+our $VERSION='0.12-tdw';
 
 =pod
 
@@ -290,7 +290,7 @@ sub tld2reg
 
 sub installed_registries
 {
- return qw/AdamsNames AERO AFNIC AG ARNES ASIA AT AU BE BIZ BookMyName BR BZ CAT CentralNic CIRA CoCCA COOP COZA CZ DENIC EURid Gandi GL HN ICMRegistry ID IENUMAT IM INFO IRegistry ISPAPI IT LC LU ME MN MOBI NAME Nominet NO NU OpenSRS ORG OVH PL PRO PT SC SE SIDN SO SWITCH TCI Telnic TRAVEL UPU US VC VNDS WS/;
+ return qw/AdamsNames Afilias AFNIC ARNES auDA BelizeNIC BookMyName CentralNic CGIBR CIRA CoCCA CZNIC Datacom DENIC DNSBelgium DNSPT doMEn Domicilium DotAsia DotCooperation dotMOBI EURid Gandi GDI ICMRegistry IENUMAT IRegistry ISPAPI IIS IITCNR IUSN NASK Neustar::BIZ Neustar::US NicAT NicLC Nominet NORID OpenSRS OVH PANDI PIR puntCAT RDS RegistryPro RESTENA SaintVincentGrenadines SIDN SITA SONIC SWITCH TCI TELEGreenland Telnic TRA Tralliance UHSA UPU VCS VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore ZACR/;
 }
 
 ####################################################################################################

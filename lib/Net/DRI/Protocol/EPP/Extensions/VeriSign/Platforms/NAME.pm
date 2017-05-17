@@ -1,7 +1,6 @@
-## Domain Registry Interface, .NAME EPP extensions
+## Domain Registry Interface, VeriSign EPP extensions
 ##
-## Copyright (c) 2007-2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
-##           (c) 2010,2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,44 +12,46 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::NAME;
+package Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NAME;
 
 use strict;
 use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
 
+use Net::DRI::Protocol::EPP::Extensions::VeriSign::EmailFwd;
+
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::NAME - .NAME EPP extensions for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NAME - VeriSign dotName (.NAME) EPP extensions for Net::DRI
 
 =head1 DESCRIPTION
 
 Please see the README file for details.
 
+Note that the PremiumDomain extension is not loaded by default.
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
 
-E<lt>tonnerre.lombard@sygroup.chE<gt>
+E<lt>netdri@dotandco.comE<gt>
 
 Please also see the SUPPORT file in the distribution.
 
 =head1 SEE ALSO
 
-E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt> or
-E<lt>http://oss.bsdprojects.net/projects/netdri/E<gt>
+E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
+Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2007-2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-          (c) 2010,2012 Patrick Mevzek <netdri@dotandco.com>
+Copyright (c) 2006,2008-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -67,12 +68,23 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
+ $self->default_parameters()->{subproductid}=$rp->{default_product} || '_auto_';
  $self->ns({ emailFwd => ['http://www.nic.name/epp/emailFwd-1.0','emailFwd-1.0.xsd'] });
- $self->ns({ defReg => ['http://www.nic.name/epp/defReg-1.0','defReg-1.0.xsd'] });
+ $self->capabilities('emailfwd_update','info',['set']);
  return;
 }
 
-sub default_extensions { return qw/NAME::EmailFwd NAME::DefReg VeriSign::IDNLanguage GracePeriod SecDNS/; }
+## List of VeriSign extensions: http://www.verisigninc.com/en_US/channel-resources/domain-registry-products/epp-sdks/index.xhtml?loc=en_US
+## But see http://www.verisign.com/assets/epp-sdk/Verisign-EPP-SDK-Prog-Guide.pdf §13 Mappings and Extensions
+## TODO for .NAME: defreg, namewatch, persreg
+
+sub default_extensions
+{
+ my ($self,$rp)=@_;
+ my @c=qw/VeriSign::Sync VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::EmailFwd GracePeriod SecDNS/;
+ push @c,'VeriSign::NameStore'; ## this must come last
+ return @c;
+}
 
 ####################################################################################################
 1;

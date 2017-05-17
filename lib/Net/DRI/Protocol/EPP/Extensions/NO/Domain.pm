@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2008-2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
+##           (c) 2016 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -19,7 +20,7 @@ package Net::DRI::Protocol::EPP::Extensions::NO::Domain;
 use strict;
 use warnings;
 
-use Net::DRI::DRD::NO;
+use Net::DRI::DRD::NORID;
 use Net::DRI::Protocol::EPP::Core::Domain;
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -56,6 +57,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 Copyright (c) 2008-2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
+(c) 2016 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -395,7 +397,7 @@ sub transfer_execute {
         Net::DRI::Util::check_isa( $du, 'DateTime::Duration' );
 
         Net::DRI::Exception->die( 0, 'DRD::NO', 3, 'Invalid duration' )
-            if Net::DRI::DRD::NO->verify_duration_renew(undef, $du, $domain ); ## TODO: this test should be done in Net::DRI::DRD::NO directly !
+            if Net::DRI::DRD::NORID->verify_duration_renew(undef, $du, $domain ); ## TODO: this test should be done in Net::DRI::DRD::NORID directly !
         $dur = Net::DRI::Protocol::EPP::Util::build_period($du);
     }
 

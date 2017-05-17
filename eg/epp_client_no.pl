@@ -391,7 +391,7 @@ sub init_reg_no {
        }
 );
 
-    $dri->add_registry( 'NO', { clid => $clid } );
+    $dri->add_registry( 'NORID', { clid => $clid } );
 
     my %pars = (
         defer => 0,
