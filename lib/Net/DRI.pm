@@ -64,7 +64,7 @@ RRI (.DE registration protocol), Whois, DAS (Domain Availability Service used by
 IRIS (RFC3981) DCHK (RFC5144) over LWZ (RFC4993) for .DE currently and XCP (RFC4992),
 .FR/.RE email and webservices interface, and resellers interface of some registrars
 (Gandi, OpenSRS, etc.).
-It has transports for connecting with UDP/TCP/TLS, HTTP/HTTPS, 
+It has transports for connecting with UDP/TCP/TLS, HTTP/HTTPS,
 Web Services (XML-RPC and SOAP with/without WSDL),
 or SMTP-based registries/registrars.
 
@@ -97,7 +97,7 @@ During the C<new()> call, a C<trid_factory()> is initialized to a default safe v
 
 You need to call this method only if you wish to use another function to generate transaction identificators.
 
-All other objects (registry profiles and transports) 
+All other objects (registry profiles and transports)
 created after that will inherit this value. If you call again C<trid_factory()>
 the change will only apply to new objects (registry profiles and transports) created after the change,
 it will not apply to already existing objects (registry profiles and transports).
@@ -105,7 +105,7 @@ it will not apply to already existing objects (registry profiles and transports)
 =head2 identify_client()
 
 If not using your own trid_factory, you can enable identify_client to submit the version of Net-DRI with the trid.
-This feature is disabled by default, but enabling it could help registries identify which EPP clients their registrars are using, 
+This feature is disabled by default, but enabling it could help registries identify which EPP clients their registrars are using,
 and provide better support to their clients. It may also encourage them to support developement of Net-DRI.
 
 =head2 logging()
@@ -290,7 +290,7 @@ sub tld2reg
 
 sub installed_registries
 {
- return qw/AdamsNames Afilias AFNIC ARNES auDA BelizeNIC BookMyName CentralNic CGIBR CIRA CoCCA CZNIC Datacom DENIC DNSBelgium DNSPT doMEn Domicilium DotAsia DotCooperation dotMOBI EURid Gandi GDI ICMRegistry IENUMAT IRegistry ISPAPI IIS IITCNR IUSN NASK Neustar::BIZ Neustar::US NicAT NicLC Nominet NORID OpenSRS OVH PANDI PIR puntCAT RDS RegistryPro RESTENA SaintVincentGrenadines SIDN SITA SONIC SWITCH TCI TELEGreenland Telnic TRA Tralliance UHSA UPU VCS VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore ZACR/;
+ return qw/AdamsNames Afilias AFNIC ARNES auDA BelizeNIC BookMyName CentralNic CGIBR CIRA CoCCA CZNIC Datacom DENIC DNSBelgium DNSPT doMEn Domicilium DotAsia DotCooperation dotMOBI EURid Gandi GDI ICMRegistry IENUMAT IRegistry ISPAPI IIS IITCNR IUSN NASK Neustar::BIZ Neustar::US NicAT NicLC Nominet NORID OpenSRS OVH PANDI PIR puntCAT RDS RegistryPro RESTENA SaintVincentGrenadines SIDN SITA SONIC SWITCH TCI TELEGreenland Telnic TRA Tralliance UHSA UPU VCS VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore ZACR Neustar::COInternet Neustar::Narwal/;
 }
 
 ####################################################################################################

@@ -29,9 +29,9 @@ sub setup
  return;
 }
 
-sub default_extensions { 
+sub default_extensions {
  my ($self,$pp) = @_;
- my @ext = qw/GracePeriod SecDNS LaunchPhase IDN NeuLevel::Message AllocationToken/;
+ my @ext = qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact/;
  if (exists $pp->{custom} )
  {
    my @custom = (ref $pp->{custom} eq 'ARRAY') ? @{$pp->{custom}} : ($pp->{custom});

@@ -1,5 +1,56 @@
 Net::DRI changelog from newest to oldest changes
 
+DRD Moves (Upstream)
+= DRD/AERO is now DRD/SITA
+= DRD/AG is now DRD/UHSA
+= DRD/ASIA is now DRD/DotAsia
+= DRD/AT is now DRD/NicAT, and add co.at and or.at in list of tlds supported
+= DRD/AU is now DRD/auDA
+= DRD/BE is now DRD/DNSBelgium
+= DRD/BH is now DRD/TRA
+= DRD/BIZ is now DRD/Neustar/BIZ
+= DRD/BR is now DRD/CGIBR
+= DRD/BZ is now DRD/BelizeNIC
+= DRD/CAT is now DRD/puntCAT
+= DRD/COOP is now DRD/DotCooperation
+= DRD/COZA is now DRD/ZACR, and add .org.za, .net.za and .web.za in list of tlds supported
+= DRD/CZ is now DRD/CZNIC
+= DRD/GL is now DRD/TELEGreenland
+= DRD/HN is now DRD/RDS
+= DRD/ID is now DRD/PANDI
+= DRD/INFO is now DRD/Afilias
+= DRD/IT is now DRD/IITCNR
+= DRD/LU is now DRD/RESTENA
+= DRD/MOBI is now DRD/dotMOBI
+= DRD/NO is now DRD/NORID
+= DRD/NU is now DRD/IUSN
+= DRD/ORG is now DRD/PIR
+= DRD/PL is now DRD/NASK
+= DRD/PRO is now DRD/RegistryPro
+= DRD/PT is now DRD/DNSPT
+= DRD/SC is now DRD/VCS
+= DRD/SE is now DRD/IIS
+= DRD/SO is now DRD/SONIC, and add edu.so, gov.so and me.so in list of tlds supported
+= DRD/TRAVEL is now DRD/Tralliance
+= DRD/WS is now DRD/GDI
+= DRD/MN is now DRD/Datacom
+= DRD/IM is now DRD/Domicilium, and add ac.im, plc.co.im, ltd.co.im and remove net.im in list of tlds supported
+= DRD/LC is now DRD/NicLC, and add edu.lc, gov.lc and remove l.lc and p.lc in list of tlds supported
+= DRD/ME is now DRD/doMEn
+= DRD/VC is now DRD/SaintVincentGrenadines
+= DRD/US is now DRD/Neustar/US
+= DRD/NAME is now DRD/VeriSign/NAME
+= DRD/VNDS is now splitted into DRD/VeriSign/COM_NET and DRD/VeriSign/NameStore
+
+DRD Moves (tdw version)
+NEUSTAR -> Neustar/Narwal
+CO -> Neustar/COInternet
+Telnet -> Neustar/Telnic
+Tralliance (TRAVEL) -> Neustar/Tralliance
+US -> Neustar/US (name?)
+
+
+
 0.11-tdw 2017-15-15 DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_08. See http://search.cpan.org/dist/Net-DRI/ !!
 !! Note 2, the next release will include the restructure of DRDs, and hopefully a cleanup with it.

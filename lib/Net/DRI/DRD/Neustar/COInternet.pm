@@ -1,7 +1,7 @@
-## Domain Registry Interface, .CO policies
+## Domain Registry Interface, Neustar (CO) policies
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2014-2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::CO;
+package Net::DRI::DRD::Neustar::COInternet;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::CO - .CO policies for Net::DRI
+Net::DRI::DRD::Neustar::COInternet - Neustar (.CO) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -54,7 +54,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2014-2015 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'CO'; }
+sub name     { return 'Neustar::COInternet'; }
 sub tlds     { return ('co','com.co','net.co','nom.co'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return ('epp'); }
