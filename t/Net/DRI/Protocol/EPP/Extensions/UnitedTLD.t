@@ -148,7 +148,7 @@ is($ch2->{create},'10000','domain_create get_info (charge earlyAccess create)');
 ## Finance Extension
 $R2=$E1.'<response>'.r().'<resData><finance:infData xmlns:finance="http://www.unitedtld.com/epp/finance-1.0"><finance:balance>200000.00</finance:balance><finance:threshold type="final">0.00</finance:threshold><finance:threshold type="restricted">500.00</finance:threshold><finance:threshold type="notification">1000.00</finance:threshold></finance:infData></resData>'.$TRID.'</response>'.$E2;
 $rc = $dri->registrar_balance();
-is($R1,$E1.'<command><info><finance:info xmlns:finance="http://www.unitedtld.com/epp/finance-1.0"/></info><clTRID>ABC-12345</clTRID></command>'.$E2,'registrar_balance build_xml');
+is($R1,$E1.'<command><info><finance:info xmlns:finance="http://www.unitedtld.com/epp/finance-1.0" xsi:schemaLocation="http://www.unitedtld.com/epp/finance-1.0 finance-1.0.xsd"/></info><clTRID>ABC-12345</clTRID></command>'.$E2,'registrar_balance build_xml');
 is($dri->get_info('balance'),'200000.00','registrar_balance get_info (balance)');
 is($dri->get_info('final'),'0.00','registrar_balance get_info (final)');
 is($dri->get_info('restricted'),'500.00','registrar_balance get_info (restricted)');
