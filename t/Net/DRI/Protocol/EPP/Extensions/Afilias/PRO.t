@@ -38,18 +38,9 @@ my $ok=eval {
 };
 print $@->as_string() if ! $ok;
 $dri->{trid_factory} = sub { return 'ABC-12345'; };
-$dri->add_registry('RegistryPro');
-$ok=eval {
-	$dri->target('RegistryPro')->add_current_profile('p1',
-		'epp',
-		{
-			f_send=> \&mysend,
-			f_recv=> \&myrecv
-		});
-	1;
-};
+$dri->add_current_registry('Afilias::Main');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions => ['Afilias::RPro', 'Afilias::AV']});
 print $@->as_string() if ! $ok;
-
 
 my $rc;
 my $s;

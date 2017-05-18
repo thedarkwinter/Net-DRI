@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::PRO::AV;
+package Net::DRI::Protocol::EPP::Extensions::Afilias::AV;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime::Format::ISO8601;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::PRO::AV - .PRO EPP A/V extensions for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::Afilias::AV - .PRO EPP A/V extensions for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -77,6 +77,13 @@ sub register_commands
 	);
 
 	return { 'av' => \%avcmds };
+}
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ av  => ['http://registrypro.pro/2003/epp/1/av-2.0', 'av-2.0.xsd'] });
+ return;
 }
 
 ####################################################################################################

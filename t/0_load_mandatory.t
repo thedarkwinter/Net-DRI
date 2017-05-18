@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 526;
+use Test::More tests => 523;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -235,8 +235,9 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CAT::DefensiveRegistration');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AERO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AERO::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AERO::Domain');
-use_ok('Net::DRI::Protocol::EPP::Extensions::MOBI');
-use_ok('Net::DRI::Protocol::EPP::Extensions::MOBI::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::Mobi');
+use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::RPro');
+use_ok('Net::DRI::Protocol::EPP::Extensions::Afilias::AV');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DNSBE');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DNSBE::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DNSBE::Contact');
@@ -315,9 +316,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::AFNIC_GTLD::RegistryMessage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BR');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BR::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BR::Domain');
-use_ok('Net::DRI::Protocol::EPP::Extensions::PRO');
-use_ok('Net::DRI::Protocol::EPP::Extensions::PRO::AV');
-use_ok('Net::DRI::Protocol::EPP::Extensions::PRO::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FCCN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FCCN::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FCCN::Contact');
@@ -371,7 +369,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AusRegistry::KeyValue');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AusRegistry::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AusRegistry::Variant');
-use_ok('Net::DRI::Protocol::EPP::Extensions::ICMRegistry');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Telnic');
 use_ok('Net::DRI::Protocol::EPP::Extensions::KeyRelay');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BIZ');

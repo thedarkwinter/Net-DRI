@@ -26,9 +26,9 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
-           create =>	[ \&create, undef ],
-           update =>	[ \&update, undef ],
-           info =>	[ undef, \&info_parse ]
+           'create' =>	[ \&create, undef ],
+           'update' =>	[ \&update, undef ],
+           'info'   =>	[ undef, \&info_parse ]
          );
 
  return { 'domain' => \%tmp };
@@ -38,6 +38,7 @@ sub setup
 {
  my ($class,$po,$version)=@_;
  $po->ns({association => ['urn:afilias:params:xml:ns:association-1.0','association-1.0.xsd']});
+ $po->capabilities('domain_update','association',['add','del','set']);
  return;
 }
 
@@ -62,7 +63,7 @@ sub create
  my ($epp,$domain,$rd)=@_;
  return unless Net::DRI::Util::has_key($rd,'association');
  my $as=$rd->{association};
- Net::DRI::Exception::usererr_invalid_parameters('Invalid Association Membership Contact ID and PW') unless Net::DRI::Util::xml_is_token($as->{'id'},1,63) && Net::DRI::Util::xml_is_token($as->{'pw'},6,16); 
+ Net::DRI::Exception::usererr_invalid_parameters('Invalid Association Membership Contact ID and PW') unless Net::DRI::Util::xml_is_token($as->{'id'},1,63) && Net::DRI::Util::xml_is_token($as->{'pw'},6,16);
  my @t = build_association($as);
  my $mes=$epp->message();
  my $eid=$mes->command_extension_register('association','create');
@@ -86,7 +87,7 @@ sub update
  my @n;
  if (defined $toadd)
  {
-  Net::DRI::Exception::usererr_invalid_parameters('Invalid Association Membership Contact ID and PW') unless Net::DRI::Util::xml_is_token($toadd->{'id'},1,63) && Net::DRI::Util::xml_is_token($toadd->{'pw'},6,16); 
+  Net::DRI::Exception::usererr_invalid_parameters('Invalid Association Membership Contact ID and PW') unless Net::DRI::Util::xml_is_token($toadd->{'id'},1,63) && Net::DRI::Util::xml_is_token($toadd->{'pw'},6,16);
   push @n,['association:add',build_association($toadd)]
  }
  if (defined $todel)
@@ -97,7 +98,7 @@ sub update
  }
  if (defined $tochg)
  {
-  Net::DRI::Exception::usererr_invalid_parameters('Invalid Association Membership Contact ID and PW') unless Net::DRI::Util::xml_is_token($tochg->{'id'},1,63) && Net::DRI::Util::xml_is_token($tochg->{'pw'},6,16); 
+  Net::DRI::Exception::usererr_invalid_parameters('Invalid Association Membership Contact ID and PW') unless Net::DRI::Util::xml_is_token($tochg->{'id'},1,63) && Net::DRI::Util::xml_is_token($tochg->{'pw'},6,16);
   push @n,['association:rem',build_association($tochg)] if (defined $tochg);
  }
 

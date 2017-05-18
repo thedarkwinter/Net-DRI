@@ -1,8 +1,7 @@
 ## Domain Registry Interface, .IN
 ##
 ## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2016 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2016-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##           (c) 2016 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -15,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::IN;
+package Net::DRI::DRD::Afilias::IN;
 
 use strict;
 use warnings;
@@ -30,7 +29,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::IN - .IN
+Net::DRI::DRD::Afilias::IN - .IN
 
 =head1 DESCRIPTION
 
@@ -51,17 +50,12 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 =head1 AUTHOR
 
 David Makuni E<lt>d.makuni@live.co.ukE<gt>;
-Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>;
-Michael Holloway E<lt>michael@thedarkwinter.comE<gt>;
-Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-David Makuni <d.makuni@live.co.uk>
-Paulo Jorge <paullojorgge@gmail.com>;
-Michael Holloway <michael@thedarkwinter.com>;
-Patrick Mevzek <netdri@dotandco.com>.
-All rights reserved.
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2016 Rony Meyer <perl@spot-light.ch>.
+          (c) 2017 Michael Holloway <michael@thedarkwinter.com>.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

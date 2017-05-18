@@ -25,8 +25,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new(10);
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('IN');
-$dri->target('IN')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
+$dri->add_current_registry('Afilias::IN');
+$dri->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
 
 my ($rc,$s,$d,$co,$dh,@c);
 my ($c,$cs,$ns,$c1);

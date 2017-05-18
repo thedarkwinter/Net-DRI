@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::PRO::Domain;
+package Net::DRI::Protocol::EPP::Extensions::Afilias::RPro;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ use Net::DRI::Util;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::PRO::Domain - .PRO EPP domain extensions for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::Afilias::RPro - .PRO EPP domain extensions for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -77,6 +77,15 @@ sub register_commands
          );
 
  return { 'domain' => \%tmp };
+}
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ av  => ['http://registrypro.pro/2003/epp/1/av-2.0', 'av-2.0.xsd'] });
+ $po->ns({ rpro=> ['http://registrypro.pro/2003/epp/1/rpro-epp-2.0','rpro-epp-2.0.xsd'] });
+ $po->capabilities('domain_update','pro',['set']);
+ return;
 }
 
 ####################################################################################################

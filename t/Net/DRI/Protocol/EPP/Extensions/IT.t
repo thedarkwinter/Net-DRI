@@ -22,8 +22,8 @@ sub r { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Co
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 0});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('IT');
-$dri->target('IT')->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv});
+$dri->add_current_registry('IITCNR');
+$dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv});
 
 my $rc;
 my $s;
@@ -163,7 +163,7 @@ $rc = $dri->message_retrieve();
 is($dri->get_info('last_id'),24,'domain deleted message get_info(last_id)');
 is($dri->get_info('action','message',24),'delete','domain deleted message get_info(action)');
 is($dri->get_info('name','message',24),'esempio.it','domain deleted message get_info(name)');
- 
+
 # redemtion started
 $R2 = $E1 . '<response><result code="1301"><msg lang="en">Command completed successfully; ack todequeue</msg></result><msgQ id="84" count="1"><qDate>2008-08-04T18:57:45+02:00</qDate><msg lang="en">redemptionPeriod is started</msg></msgQ><extension xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xmlns:extdom="http://www.nic.it/ITNIC-EPP/extdom-2.0" xmlns:extepp="http://www.nic.it/ITNIC-EPP/extepp-2.0"><extdom:chgStatusMsgData><extdom:name>esempio.it</extdom:name><extdom:targetStatus><domain:status lang="en" s="pendingDelete"/><rgp:rgpStatus lang="en" s="redemptionPeriod"/></extdom:targetStatus></extdom:chgStatusMsgData></extension>' . $TRID . '</response>' . $E2;
 $rc = $dri->message_retrieve();

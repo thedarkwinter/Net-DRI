@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::MOBI::Domain;
+package Net::DRI::Protocol::EPP::Extensions::Afilias::Mobi;
 
 use strict;
 use warnings;
@@ -65,13 +65,21 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
           create => [ \&create, undef ],
           update => [ \&update, undef ],
           info   => [ undef, \&info_parse ],
          );
 
  return { 'domain' => \%tmp };
+}
+
+sub setup
+{
+  my ($class,$po,$version)=@_;
+  $po->ns({ map { $_ => [ 'urn:afilias:params:xml:ns:ext:'.$_.'-1.0',$_.'-1.0.xsd' ] } qw/mobi/ });
+  $po->capabilities('domain_update','maintainer_url',['set']);
+  return;
 }
 
 ####################################################################################################
