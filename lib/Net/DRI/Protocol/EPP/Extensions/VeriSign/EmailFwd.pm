@@ -15,7 +15,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::NAME::EmailFwd;
+package Net::DRI::Protocol::EPP::Extensions::VeriSign::EmailFwd;
 
 use strict;
 use warnings;
@@ -31,7 +31,7 @@ use Data::Dumper;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::NAME::EmailFwd - EPP EmailFwd extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::VeriSign::EmailFwd - EPP EmailFwd extension commands for Net::DRI
 
 =head1 DESCRIPTION
 
