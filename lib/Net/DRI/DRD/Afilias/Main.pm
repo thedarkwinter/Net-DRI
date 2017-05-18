@@ -1,7 +1,8 @@
-## Domain Registry Interface, PIR (.ORG) policies
+## Domain Registry Interface, Afilias (Main) policies
 ##
 ## Copyright (c) 2006-2009 Rony Meyer <perl@spot-light.ch>. All rights reserved.
-##           (c) 2010-2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2010,2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved..
+##           (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::PIR;
+package Net::DRI::DRD::Afilias::Main;
 
 use strict;
 use warnings;
@@ -26,11 +27,33 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::PIR - PIR (.ORG) policies for Net::DRI
+Net::DRI::DRD::Afilias::Main - Afilias (Main) Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Please see the README file for details.
+Additional domain extensions Afilias Main Registry Platform.
+
+Afilias has extended the .INFO plaform to include these TLDs in a Shared Registry System
+
+Afilias utilises the following standard extensions. Please see the test files for more examples.
+
+=head2 Standard extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
+
+=head2 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage> urn:afilias:params:xml:ns:idn-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:ipr-1.1
+
+L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
 
 =head1 SUPPORT
 
@@ -51,7 +74,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2006-2009 Rony Meyer <perl@spot-light.ch>.
-          (c) 2010-2011,2016 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2010,2011 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -70,22 +94,33 @@ sub new
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=0;
- $self->{info}->{contact_i18n}=2; ## INT only
+ $self->{info}->{contact_i18n}=4; ## LOC+INT
+ $self->{info}->{check_limit}=13;
+ $self->{info}->{is_shared_platform}=1; # TODO
  return $self;
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'PIR'; }
-sub tlds     { return ('org'); }
+sub name     { return 'Afilias::Main'; }
+
+sub tlds     {
+ my @legacygTLDs = (
+    'info', 'mobi',
+    'pro',(map { $_.'.pro'} qw/law jur bar med cpa aca eng/)
+    );
+ my @newgTLDs = qw/xn--5tzm5g xn--6frz82g archi bet bio black blue green kim lgbt lotto meet organic pet pink poker promo red shiksha ski vote voto/;
+ my @ccTLDs = qw/io sh ac/;
+ return (@legacygTLDs, @newgTLDs, @ccTLDs);
+}
 sub object_types { return ('domain','contact','ns'); }
-sub profile_types { return qw/epp whois/; }
+sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Afilias',{})                             if $type eq 'epp';
- return ('Net::DRI::Transport::Socket',{remote_host=>'whois.publicinterestregistry.net'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.8'}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host=>'whois.afilias.net'},'Net::DRI::Protocol::Whois',{'NGTLD'=>1}) if $type eq 'whois';
  return;
 }
 

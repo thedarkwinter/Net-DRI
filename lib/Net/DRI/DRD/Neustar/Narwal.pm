@@ -27,7 +27,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::Neustar::Narwal - NEUSTAR Driver for Net::DRI
+Net::DRI::DRD::Neustar::Narwal - Neustar Driver for Net::DRI
 
 =head1 DESCRIPTION
 
