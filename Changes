@@ -1,5 +1,18 @@
 Net::DRI changelog from newest to oldest changes
 
+
+0.12-tdw 2017-XX-XX DEVELOPMENT RELEASE
+!! Note, this is not an official release; it is based on Net-DRI-0.96_09. See http://search.cpan.org/dist/Net-DRI/ !!
+!! Note, this release includes the restructure of DRDs from Net-DRI-0.96_09, meaing that you will need to change your scripts.
+!! See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes, along with the note:
+!! "This version changes almost all DRD module names, you will need to change your scripts.
+!!  This is a consequence of an old design decision that no DRD module should have a TLD as name.
+!!  Now, by default a DRD of a TLD registry will have the sponsor name as listed on IANA website."
+!! Note3, While the upstream favours the Registry name for DRD, I favour the BackendOperator::Platform Naming
+!! So instead of (.travel) Tralliance, I use Neustar::Tralliance, though there is variation in here I am still working on!
+= Fix a few warnings redundant argument in sprintf/namespace issues
+= For perl 5.23+ I have fixed all push & shift on scalar reference errors
+
 DRD Moves (Upstream)
 = DRD/AERO is now DRD/SITA
 = DRD/AG is now DRD/UHSA
@@ -42,7 +55,7 @@ DRD Moves (Upstream)
 = DRD/NAME is now DRD/VeriSign/NAME
 = DRD/VNDS is now splitted into DRD/VeriSign/COM_NET and DRD/VeriSign/NameStore
 
-DRD Moves (tdw version)
+DRD Moves (tdw version, in some cases overrides the upstream move!)
 NEUSTAR -> Neustar/Narwal
 CO -> Neustar/COInternet
 Telnet -> Neustar/Telnic
@@ -51,7 +64,9 @@ US -> Neustar/US (name?)
 
 
 
-0.11-tdw 2017-15-15 DEVELOPMENT RELEASE
+
+
+0.11-tdw 2017-05-15 DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_08. See http://search.cpan.org/dist/Net-DRI/ !!
 !! Note 2, the next release will include the restructure of DRDs, and hopefully a cleanup with it.
 !! See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes

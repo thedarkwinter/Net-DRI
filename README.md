@@ -4,9 +4,13 @@
 #### Warning!
 #### Warning!
 
-I will soon (who knows how long) be switching to the new DRD structure from Net-DRI-0.96_09, which means your scripts will need to be updated!!
-Please see the [Changes](http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes) file for more details.
-
+!! This release includes the restructure of DRDs from Net-DRI-0.96_09, meaing that you will need to change your scripts.
+!! See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes, along with the note:
+!! "This version changes almost all DRD module names, you will need to change your scripts.
+!!  This is a consequence of an old design decision that no DRD module should have a TLD as name.
+!!  Now, by default a DRD of a TLD registry will have the sponsor name as listed on IANA website."
+!! While the upstream favours the Registry name for DRD, I favour the BackendOperator::Platform Naming
+!! So instead of (.travel) Tralliance, I use Neustar::Tralliance, though there is variation in here I am still working on!
 
 * * *
 #### Overview
