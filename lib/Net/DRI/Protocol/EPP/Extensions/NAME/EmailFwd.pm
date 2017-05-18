@@ -343,8 +343,8 @@ sub update {
     foreach my $t ( sort( grep { exists( $r{$_} ) } $cadd->types() ) ) {
       my @oadd = $cadd->get($t);
       my @odel = $cdel->get($t);
-      push @add, map { [ ( 'update', 'emailFwd' ) . ':contact', $_->srid(), { 'type' => $t } ] } @oadd;
-      push @del, map { [ ( 'update', 'emailFwd' ) . ':contact', $_->srid(), { 'type' => $t } ] } @odel;    # print Dumper(\@d);
+      push @add, map { [ 'emailFwd:contact', $_->srid(), { 'type' => $t } ] } @oadd;
+      push @del, map { [ 'emailFwd:contact', $_->srid(), { 'type' => $t } ] } @odel;    # print Dumper(\@d);
     }
   }
 
