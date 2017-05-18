@@ -1,4 +1,4 @@
-## Domain Registry Interface, Tango-RS EPP LaunchPhase Extension for managing launch phases 
+## Domain Registry Interface, Tango-RS EPP LaunchPhase Extension for managing launch phases
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -28,7 +28,7 @@ use Net::DRI::Protocol::EPP::Extensions::LaunchPhase;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase - LaunchPhase EPP Extension for Corenic 
+Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase - LaunchPhase EPP Extension for Corenic
 
 =head1 DESCRIPTION
 
@@ -86,11 +86,20 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(           
-           create => [ \&create, undef ],          
+ my %tmp=(
+           create => [ \&create, undef ],
         );
 
  return { 'domain' => \%tmp };
+}
+
+sub capabilities_add { return (['domain_update','lp',['set']]); }
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ 'launch' => [ 'urn:ietf:params:xml:ns:launch-1.0','launch-1.0.xsd' ] });
+ return;
 }
 
 ####################################################################################################
@@ -105,12 +114,11 @@ sub create
  Net::DRI::Exception::usererr_invalid_parameters('lp') unless ref($lpref) eq 'HASH' || ref($lpref) eq 'ARRAY';
  @lps = ($lpref) if ref($lpref) eq 'HASH';
  @lps = @{$lpref} if ref($lpref) eq 'ARRAY';
-
  foreach my $lp (@lps)
  {
-  Net::DRI::Exception::usererr_insufficient_parameters('phase and intended_use mandatory') unless exists $lp->{phase} && $rd->{intended_use};  
+  Net::DRI::Exception::usererr_insufficient_parameters('phase and intended_use mandatory') unless exists $lp->{phase} && $rd->{intended_use};
   Net::DRI::Exception::usererr_invalid_parameters('type') if exists $lp->{type} && $lp->{type}  !~ m/^(application|registration)$/;
-  Net::DRI::Exception::usererr_invalid_parameters('For create sunrise: at least one code_marks, signed_marks, encoded_signed_marks is required') if $lp->{'phase'} eq 'sunrise' and !(exists $lp->{code_marks} || exists $lp->{signed_marks} || exists $lp->{encoded_signed_marks}); 
+  Net::DRI::Exception::usererr_invalid_parameters('For create sunrise: at least one code_marks, signed_marks, encoded_signed_marks is required') if $lp->{'phase'} eq 'sunrise' and !(exists $lp->{code_marks} || exists $lp->{signed_marks} || exists $lp->{encoded_signed_marks});
   Net::DRI::Exception::usererr_invalid_parameters('Missing intended_use param') unless exists $rd->{intended_use};
   Net::DRI::Exception::usererr_insufficient_parameters('reference_url mandatory') if !exists $rd->{reference_url} && $lp->{phase} eq 'custom' && $lp->{sub_phase} =~ m/^(public-interest|local-entities)$/;
   Net::DRI::Exception::usererr_insufficient_parameters('trademark_id and trademark_issuer are mandatory') if !exists $rd->{trademark_id} && $lp->{phase} eq 'custom' && $lp->{sub_phase} =~ m/^(local-trademark)$/;
@@ -119,7 +127,7 @@ sub create
   $eid=$mes->command_extension_register('launch','create') unless defined $eid;
   my @n = Net::DRI::Protocol::EPP::Extensions::LaunchPhase::_build_idContainerType($lp);
   my @n2;
-  
+
   # Code Marks
   if (exists $lp->{code_marks})
   {
@@ -156,15 +164,15 @@ sub create
       push @n2, [$em];
      } elsif ($em =~ m!<smd:encodedSignedMark xmlns:smd="urn:ietf:params:xml:ns:signedMark-1.0">\s*?(.*)</smd:encodedSignedMark>!s || $em =~ m!-----BEGIN ENCODED SMD-----\s*?(.*)\s*?-----END!s)
      {
-      push @n2,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$1] if $1;       
+      push @n2,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$1] if $1;
      } elsif ($em =~ m!^[A-Za-z0-9\+/\=\s]+$!s) # aleady base64 string
      {
       push @n2,['smd:encodedSignedMark', {'xmlns:smd'=>'urn:ietf:params:xml:ns:signedMark-1.0'},$em] if $em;
      } else
      {
       Net::DRI::Exception::usererr_invalid_parameters('encodedSignedMark must ve a valid XML root element OR a string (e.g. imported from an Encoded SMD file)');
-     }      
-   }    
+     }
+   }
   }
 
   # augmented mark
@@ -173,7 +181,6 @@ sub create
   push @n2, ['ext:applicationInfo',{'type'=>'trademark-issuer'},$rd->{trademark_issuer} ] if $rd->{trademark_issuer};
   push @n2, ['ext:applicationInfo',{'type'=>'intended-use'},$rd->{intended_use} ];
   push @n, ['ext:augmentedMark' , {'xmlns:ext'=>$mes->ns('mark-ext')},@n2] if @n2;
-
 
   # Claims  / Mixed
   if (exists $lp->{notices})
@@ -191,8 +198,8 @@ sub create
     push @n, ['launch:notice',@notice];
    }
   }
-	
-  shift $mes->command_extension($eid,\@n);
+
+  $mes->command_extension($eid,\@n);
  }
  return;
 }

@@ -367,7 +367,7 @@ sub parse
   $tmp=Net::DRI::Util::xml_child_content($trid,$NS,'svTRID');
   $self->svtrid($tmp) if defined $tmp;
  }
- 
+
  return;
 }
 

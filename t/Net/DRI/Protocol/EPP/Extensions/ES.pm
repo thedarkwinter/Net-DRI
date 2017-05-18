@@ -1,3 +1,4 @@
+
 #!/usr/bin/perl
 
 use strict;
@@ -89,7 +90,7 @@ $rc = $dri->domain_create('test1.es',{
 	accion_comercial => '555',
 	auto_renew => 1,
 	});
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:ns>ns1.example.com</domain:ns><domain:ns>ns1.example.net</domain:ns><domain:registrant>12345</domain:registrant><domain:contact type="admin">12346</domain:contact><domain:contact type="billing">12348</domain:contact><domain:contact type="tech">12347</domain:contact><domain:authInfo><domain:pw>pass</domain:pw></domain:authInfo><domain:autoRenew>true</domain:autoRenew><domain:es_marca>123</domain:es_marca><domain:es_inscripcion>12355</domain:es_inscripcion><domain:es_accion_comercial>555</domain:es_accion_comercial></domain:create></create>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_create build');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test1.es</domain:name><domain:ns>ns1.example.com</domain:ns><domain:ns>ns1.example.net</domain:ns><domain:registrant>12345</domain:registrant><domain:contact type="admin">12346</domain:contact><domain:contact type="billing">12348</domain:contact><domain:contact type="tech">12347</domain:contact><domain:authInfo><domain:pw>pass</domain:pw></domain:authInfo><domain:autoRenew>true</domain:autoRenew><domain:es_marca>123</domain:es_marca><domain:es_inscripcion>12355</domain:es_inscripcion><domain:es_accion_comercial>555</domain:es_accion_comercial></domain:create></create>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'domain_create build');
 is($rc->is_success(), 1, 'domain_create is success');
 is($dri->get_info('exDate'),'2014-01-01T13:00:00','domain_create get_info(exDate)');
 
@@ -161,7 +162,7 @@ $c->tipo_identificacion(1);
 $c->identificacion('ME123');
 $R2=$E1.'<response>'.r().'<resData><contact:creData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>12345</contact:id><contact:crDate>2009-10-14T14:48:35.0</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
 $rc = $dri->contact_create($c);
-is($R1, $E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:postalInfo type="loc"><contact:name>Mike Ekim</contact:name><contact:org>Ekim Inc</contact:org><contact:addr><contact:street>123 Long Road</contact:street><contact:city>Boglog</contact:city><contact:pc>BG123</contact:pc><contact:cc>ES</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.1234561</contact:voice><contact:email>mike@ekim.es</contact:email><contact:es_tipo_identificacion>1</contact:es_tipo_identificacion><contact:es_identificacion>ME123</contact:es_identificacion></contact:create></create>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'contact_create build');
+is_string($R1, $E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:postalInfo type="loc"><contact:name>Mike Ekim</contact:name><contact:org>Ekim Inc</contact:org><contact:addr><contact:street>123 Long Road</contact:street><contact:city>Boglog</contact:city><contact:pc>BG123</contact:pc><contact:cc>ES</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.1234561</contact:voice><contact:email>mike@ekim.es</contact:email><contact:es_tipo_identificacion>1</contact:es_tipo_identificacion><contact:es_identificacion>ME123</contact:es_identificacion></contact:create></create>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'contact_create build');
 is($rc->is_success(), 1, 'contact_create is_success');
 
 

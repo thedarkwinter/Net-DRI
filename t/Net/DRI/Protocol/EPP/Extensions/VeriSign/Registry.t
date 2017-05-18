@@ -94,7 +94,7 @@ $R2=$E1.'<response>'.r().
 '<resData>
 <registry:infData xmlns:registry="http://www.verisign.com/epp/registry-1.0" xsi:schemaLocation="http://www.verisign.com/epp/registry-1.0 registry-1.0.xsd">
 <registry:zone>
-  <registry:name>zone1</registry:name>  
+  <registry:name>zone1</registry:name>
   <registry:group>STANDARD</registry:group>
   <registry:subProduct>EXAMPLE</registry:subProduct>
   <registry:related>
@@ -364,7 +364,7 @@ is_deeply($zones_name,['EXAMPLE','EXAMPLE2','EXAMPLE3'],'registry_info get_info(
 my $zones_type=$related->{'zone_member_type'};
 is_deeply($zones_type,['equal','equal','equal'],'registry_info get_info(related) zoneMember type attribute');
 
-# TODO: tests for get_info(phase) - find a friendly way to perform the test. array values keep changing... 
+# TODO: tests for get_info(phase) - find a friendly way to perform the test. array values keep changing...
 #my $phase=$dri->get_info('phase');
 #print Dumper($phase);
 #my @values = values @{$phase}[0];
@@ -439,33 +439,33 @@ is($domainname->{ns}->{max},'13','registry_info get_info(domain) ns(max)');
 is($domainname->{child_host}->{min},'0','registry_info get_info(domain) childHost(min)');
 my $dom_period=$domainname->{period}[0];
 is($dom_period->[0]->{period_command_attr},'create','registry_info get_info(domain) period1(command attribute)');
-$dom_period=shift $dom_period->[1];
+$dom_period= $dom_period->[1]->[0];
 is($dom_period->{unit_attr},'y','registry_info get_info(domain) period1(unit)');
 is($dom_period->{min},'1','registry_info get_info(domain) period1(min)');
 is($dom_period->{max},'10','registry_info get_info(domain) period1(max)');
 is($dom_period->{default},'1','registry_info get_info(domain) period1(default)');
 $dom_period=$domainname->{period}[1];
 is($dom_period->[0]->{period_command_attr},'renew','registry_info get_info(domain) period2(command attribute)');
-$dom_period=shift $dom_period->[1];
+$dom_period= $dom_period->[1]->[0];
 is($dom_period->{unit_attr},'y','registry_info get_info(domain) period2(unit)');
 is($dom_period->{min},'2','registry_info get_info(domain) period2(min)');
 is($dom_period->{max},'5','registry_info get_info(domain) period2(max)');
 is($dom_period->{default},'2','registry_info get_info(domain) period2(default)');
 is($domainname->{transfer_hold_period_attr},'d','registry_info get_info(domain) transferHoldPeriod attribute');
 is($domainname->{transfer_hold_period},'5','registry_info get_info(domain) transferHoldPeriod');
-my $dom_grace_period=shift $domainname->{grace_period}[0];
+my $dom_grace_period= $domainname->{grace_period}[0]->[0];
 is($dom_grace_period->{grace_period_command_attr},'create','registry_info get_info(domain) gracePeriod1(command attribute)');
 is($dom_grace_period->{grace_period_unit_attr},'d','registry_info get_info(domain) gracePeriod1(unit attribute)');
 is($dom_grace_period->{grace_period},'5','registry_info get_info(domain) gracePeriod1');
-$dom_grace_period=shift $domainname->{grace_period}[1];
+$dom_grace_period= $domainname->{grace_period}[1]->[0];
 is($dom_grace_period->{grace_period_command_attr},'renew','registry_info get_info(domain) gracePeriod2(command attribute)');
 is($dom_grace_period->{grace_period_unit_attr},'d','registry_info get_info(domain) gracePeriod2(unit attribute)');
 is($dom_grace_period->{grace_period},'5','registry_info get_info(domain) gracePeriod2');
-$dom_grace_period=shift$domainname->{grace_period}[2];
+$dom_grace_period= $domainname->{grace_period}[2]->[0];
 is($dom_grace_period->{grace_period_command_attr},'transfer','registry_info get_info(domain) gracePeriod3(command attribute)');
 is($dom_grace_period->{grace_period_unit_attr},'d','registry_info get_info(domain) gracePeriod3(unit attribute)');
 is($dom_grace_period->{grace_period},'5','registry_info get_info(domain) gracePeriod3');
-$dom_grace_period=shift $domainname->{grace_period}[3];
+$dom_grace_period= $domainname->{grace_period}[3]->[0];
 is($dom_grace_period->{grace_period_command_attr},'autoRenew','registry_info get_info(domain) gracePeriod4(command attribute)');
 is($dom_grace_period->{grace_period_unit_attr},'d','registry_info get_info(domain) gracePeriod4(unit attribute)');
 is($dom_grace_period->{grace_period},'45','registry_info get_info(domain) gracePeriod4');
@@ -484,10 +484,10 @@ is($dom_dnssec->{ds_data_interface}->{digest_type},'1','registry_info get_info(d
 is($dom_dnssec->{max_sig_life}->{client_defined},'false','registry_info get_info(domain) dnssec(maxSigLife(clientDefined))');
 is($domainname->{max_check_domain},'5','registry_info get_info(domain) maxCheckDomain');
 my $dom_supported_status=$domainname->{supported_status};
-is_string(values @{$dom_supported_status}[0],'ok','registry_info get_info(domain) supportedStatus(1)');
-is_string(values @{$dom_supported_status}[1],'clientDeleteProhibited','registry_info get_info(domain) supportedStatus(2)');
-is_string(values @{$dom_supported_status}[5],'clientRenewProhibited','registry_info get_info(domain) supportedStatus(6)');
-is_string(values @{$dom_supported_status}[13],'pendingTransfer','registry_info get_info(domain) supportedStatus(14)');
+is_string(@{$dom_supported_status}[0]->{status},'ok','registry_info get_info(domain) supportedStatus(1)');
+is_string(@{$dom_supported_status}[1]->{status},'clientDeleteProhibited','registry_info get_info(domain) supportedStatus(2)');
+is_string(@{$dom_supported_status}[5]->{status},'clientRenewProhibited','registry_info get_info(domain) supportedStatus(6)');
+is_string(@{$dom_supported_status}[13]->{status},'pendingTransfer','registry_info get_info(domain) supportedStatus(14)');
 is($domainname->{auth_info_regex}->{expression},'^.*$','registry_info get_info(domain) authInfoRegex');
 
 my $host=$dri->get_info('host');
@@ -499,9 +499,9 @@ is_string($host->{external}->{max_ip},'0','registry_info get_info(host) external
 is_string($host->{external}->{share_policy},'perZone','registry_info get_info(host) external(sharePolicy)');
 is_string($host->{name_regex}->{expression}[0],'^.*$','registry_info get_info(host) nameRegex(expression1)');
 my $host_supported_status=$host->{supported_status};
-is_string(values @{$host_supported_status}[0],'ok','registry_info get_info(host) supportedStatus(1)');
-is_string(values @{$host_supported_status}[1],'clientDeleteProhibited','registry_info get_info(host) supportedStatus(2)');
-is_string(values @{$host_supported_status}[7],'pendingTransfer','registry_info get_info(host) supportedStatus(8)');
+is_string(@{$host_supported_status}[0]->{status},'ok','registry_info get_info(host) supportedStatus(1)');
+is_string(@{$host_supported_status}[1]->{status},'clientDeleteProhibited','registry_info get_info(host) supportedStatus(2)');
+is_string(@{$host_supported_status}[7]->{status},'pendingTransfer','registry_info get_info(host) supportedStatus(8)');
 
 my $contact=$dri->get_info('contact');
 is_string($contact->{contact_id_regex}->{expression},'^.*$','registry_info get_info(contact) contactIdRegex');
@@ -530,14 +530,14 @@ is_string($contact_postal->{voice_ext}->{max_length},'40','registry_info get_inf
 is_string($contact_postal->{fax_ext}->{min_length},'1','registry_info get_info(contact) postalInfo(faxExt->minLength)');
 is_string($contact_postal->{fax_ext}->{max_length},'40','registry_info get_info(contact) postalInfo(faxExt->maxLength)');
 my $contact_email_regex=$contact_postal->{email_regex};
-is_string(values @{$contact_email_regex}[0],'^.+\..+$','registry_info get_info(contact) postalInfo(emailRegex)');
+is_string(@{$contact_email_regex}[0]->{expression},'^.+\..+$','registry_info get_info(contact) postalInfo(emailRegex)');
 is_string($contact->{max_check_contact},'5','registry_info get_info(contact) maxCheckContact');
 is_string($contact->{auth_info_regex}->{expression},'^.*$','registry_info get_info(contact) authInfoRegex');
 is_string($contact->{client_disclosure_supported},'false','registry_info get_info(contact) clientDisclosureSupported');
 my $contact_supported_status=$contact->{supported_status};
-is_string(values @{$contact_supported_status}[2],'serverDeleteProhibited','registry_info get_info(contact) supportedStatus(3)');
-is_string(values @{$contact_supported_status}[4],'serverTransferProhibited','registry_info get_info(contact) supportedStatus(5)');
-is_string(values @{$contact_supported_status}[6],'serverUpdateProhibited','registry_info get_info(contact) supportedStatus(7)');
+is_string(@{$contact_supported_status}[2]->{status},'serverDeleteProhibited','registry_info get_info(contact) supportedStatus(3)');
+is_string(@{$contact_supported_status}[4]->{status},'serverTransferProhibited','registry_info get_info(contact) supportedStatus(5)');
+is_string(@{$contact_supported_status}[6]->{status},'serverUpdateProhibited','registry_info get_info(contact) supportedStatus(7)');
 is_string($contact->{transfer_hold_period},'5','registry_info get_info(contact) transferHoldPeriod');
 is_string($contact->{transfer_hold_period_attr},'d','registry_info get_info(contact) transferHoldPeriod(attribute)');
 

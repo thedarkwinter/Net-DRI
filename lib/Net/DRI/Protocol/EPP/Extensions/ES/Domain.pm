@@ -1,4 +1,4 @@
-## Domain Registry Interface, ES Domain EPP extension commands 
+## Domain Registry Interface, ES Domain EPP extension commands
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -86,7 +86,7 @@ sub info_parse
  return unless $mes->is_success();
  my $infdata=$mes->get_response('domain','infData');
  return unless defined $infdata;
- 
+
   foreach my $el (Net::DRI::Util::xml_list_children($infdata))
   {
    my ($name,$c)=@$el;
@@ -95,7 +95,7 @@ sub info_parse
    $name = Net::DRI::Util::to_under($name) if $name =~ m/^(ipMaestra|autoRenew)$/; # these two fields are mixed case in xml
    $rinfo->{domain}->{$oname}->{$name}=$c->textContent();
   }
-  
+
   # get auto_renew outside <infData> element
   my $autorenew=$mes->get_response('domain','autoRenew');
   return unless defined $autorenew;
@@ -202,9 +202,9 @@ sub transfer_request_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- if ($mes->result_code() == 1000) 
+ if ($mes->result_code() == 1000)
  {
-    my $results = shift $mes->{results};
+    my $results = $mes->{results}->[0];
     $results->{code}=1001;
     $mes->{results} = [$results];
  }
@@ -217,18 +217,19 @@ sub domain_extension
  Net::DRI::Exception->die(0,'protocol/EPP',3,'Invalid IP Address for ip_maestra') if (defined $rd->{'ip_maestra'} && !Net::DRI::Util::is_ipv4(defined $rd->{'ip_maestra'}));
  Net::DRI::Exception->die(0,'protocol/EPP',3,'Marca And Inscripcion must either both be defined or neither') if ( ($rd->{'marca'} || $rd->{'inscripcion'}) && !($rd->{'marca'} && $rd->{'inscripcion'}) );
  Net::DRI::Exception->die(0,'protocol/EPP',3,'accion_comercial must be a number between 1 and 9999 if its defined') if (defined $rd->{'accion_comercial'} && !Net::DRI::Util::isint($rd->{'accion_comercial'})) ;
-
+ my @command_body = @{$mes->{'command_body'}};
  if (defined($rd->{'auto_renew'}))
  {
    undef $rd->{'auto_renew'} if (defined $rd->{'auto_renew'} && $rd->{'auto_renew'} =~ m/^(0|false|no)$/);
-   push $mes->{'command_body'},['domain:autoRenew',($rd->{'auto_renew'}?'true':'false')];
+   push @command_body, ['domain:autoRenew',($rd->{'auto_renew'}?'true':'false')];
  }
- 
- push $mes->{'command_body'},['domain:es_ipMaestra',$rd->{'ip_maestra'}] if defined $rd->{'ip_maestra'};
- push $mes->{'command_body'},['domain:es_marca',$rd->{'marca'}] if defined $rd->{'marca'};
- push $mes->{'command_body'},['domain:es_inscripcion',$rd->{'inscripcion'}] if defined $rd->{'inscripcion'};
- push $mes->{'command_body'},['domain:es_accion_comercial',$rd->{'accion_comercial'}] if defined $rd->{'accion_comercial'};
- push $mes->{'command_body'},['domain:codaux',$rd->{'codaux'}] if defined $rd->{'codaux'};
+
+ push @command_body, ['domain:es_ipMaestra',$rd->{'ip_maestra'}] if defined $rd->{'ip_maestra'};
+ push @command_body, ['domain:es_marca',$rd->{'marca'}] if defined $rd->{'marca'};
+ push @command_body, ['domain:es_inscripcion',$rd->{'inscripcion'}] if defined $rd->{'inscripcion'};
+ push @command_body, ['domain:es_accion_comercial',$rd->{'accion_comercial'}] if defined $rd->{'accion_comercial'};
+ push @command_body, ['domain:codaux',$rd->{'codaux'}] if defined $rd->{'codaux'};
+ $mes->command_body(@command_body);
 }
 
 ####################################################################################################

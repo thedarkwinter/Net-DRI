@@ -27,7 +27,7 @@ $dri->target('rightside')->add_current_profile('p1','epp',{f_send=>\&mysend,f_re
 
 my ($rc,$toc,$ch1,$ch2);
 
-### DUE TO SOME COPY+PASTING FROM DIFFERENT DOCS, SOME OF RESPONSES ARE NOT CORRECT DATAWISE (BUT SYNTAX FINE)... SO EG create 
+### DUE TO SOME COPY+PASTING FROM DIFFERENT DOCS, SOME OF RESPONSES ARE NOT CORRECT DATAWISE (BUT SYNTAX FINE)... SO EG create
 
 ## Charge extension
 #Check domain
@@ -36,7 +36,7 @@ $rc = $dri->domain_check('premium.actor');
 is($rc->is_success(),1,'domain_check is_success');
 is($dri->get_info('action'),'check','domain_check get_info (action)');
 is($dri->get_info('exist'),0,'domain_check get_info (exist)');
-$ch1 = shift $dri->get_info('charge');
+$ch1 = $dri->get_info('charge')->[0];
 is($ch1->{type},'price','domain_check get_info (charge type)');
 is($ch1->{category},'premium','domain_check get_info (charge category)');
 is($ch1->{category_name},'Price Category A','domain_check get_info (charge category name)');
@@ -71,7 +71,7 @@ is($dri->get_info('action'),'check','domain_check multi get_info (action)');
 is($dri->get_info('exist','domain','85014aaaa.actor'),0,'domain_check multi get_info(exist) 1/2');
 is($dri->get_info('exist','domain','85014bbbb.actor'),0,'domain_check multi get_info(exist) 2/3');
 is($dri->get_info('exist','domain','85014cccc.actor'),0,'domain_check multi get_info(exist) 3/3');
-$ch2 = shift $dri->get_info('charge','domain','85014bbbb.actor');
+$ch2 = $dri->get_info('charge','domain','85014bbbb.actor')->[0];
 is($ch2->{create},'20.0000','domain_check multi get_info (charge create)');
 # using the standardised methods
 is($dri->get_info('is_premium','domain','85014bbbb.actor'),1,'domain_check get_info (is_premium)');
@@ -82,7 +82,7 @@ $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params
 $rc = $dri->domain_info('85014aaaa.actor');
 is($rc->is_success(),1,'domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
-$ch2 = shift $dri->get_info('charge');
+$ch2 = $dri->get_info('charge')->[0];
 is($ch2->{renew},'20.0000','domain_info get_info (charge renew)');
 
 # Create domain - using $ch from domain_check
@@ -91,7 +91,7 @@ $rc=$dri->domain_create('premium.actor',{pure_create=>1,auth=>{pw=>'2fooBAR'},'c
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>premium.actor</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><charge:agreement xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xsi:schemaLocation="http://www.unitedtld.com/epp/charge-1.0 charge-1.0.xsd"><charge:set><charge:category name="Price Category A">premium</charge:category><charge:type>price</charge:type><charge:amount command="create">999.9900</charge:amount></charge:set></charge:agreement></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml');
 is($rc->is_success(),1,'domain_create is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
-$ch2 = shift $dri->get_info('charge');
+$ch2 = $dri->get_info('charge')->[0];
 is($ch2->{create},'999.9900','domain_create get_info (charge create)');
 
 # Update (RGP Restore)
@@ -102,7 +102,7 @@ $toc->set('charge',$ch1);
 $rc=$dri->domain_update('premium.actor',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>premium.actor</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="request"/></rgp:update><charge:agreement xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xsi:schemaLocation="http://www.unitedtld.com/epp/charge-1.0 charge-1.0.xsd"><charge:set><charge:category name="Price Category A">premium</charge:category><charge:type>price</charge:type><charge:amount command="update" name="restore">1249.9900</charge:amount></charge:set></charge:agreement></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_request +charge');
 is($rc->is_success(),1,'domain_update is_success');
-$ch2 = shift $dri->get_info('charge');
+$ch2 = $dri->get_info('charge')->[0];
 is($ch2->{restore},'20.0000','domain_update get_info (charge restore)');
 
 # Transfer
@@ -110,7 +110,7 @@ $R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params
 $rc=$dri->domain_transfer_start('premium.actor',{auth=>{pw=>'2fooBAR'},charge=>$ch1});
 is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>premium.actor</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:transfer></transfer><extension><charge:agreement xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xsi:schemaLocation="http://www.unitedtld.com/epp/charge-1.0 charge-1.0.xsd"><charge:set><charge:category name="Price Category A">premium</charge:category><charge:type>price</charge:type><charge:amount command="transfer">750.0000</charge:amount></charge:set></charge:agreement></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer build');
 is($rc->is_success(),1,'domain_transfer is_success');
-$ch2 = shift $dri->get_info('charge');
+$ch2 = $dri->get_info('charge')->[0];
 is($ch2->{transfer},'20.0000','domain_transfer get_info (charge transfer)');
 
 # Renew
@@ -118,7 +118,7 @@ $R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params
 $rc=$dri->domain_renew('premium.actor',{charge=>$ch1,duration => DateTime::Duration->new(years=>5), current_expiration => DateTime->new(year=>2000,month=>4,day=>3)});
 is($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>premium.actor</domain:name><domain:curExpDate>2000-04-03</domain:curExpDate><domain:period unit="y">5</domain:period></domain:renew></renew><extension><charge:agreement xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xsi:schemaLocation="http://www.unitedtld.com/epp/charge-1.0 charge-1.0.xsd"><charge:set><charge:category name="Price Category A">premium</charge:category><charge:type>price</charge:type><charge:amount command="renew">999.9900</charge:amount></charge:set></charge:agreement></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build');
 is($rc->is_success(),1,'domain_transfer is_success');
-$ch2 = shift $dri->get_info('charge');
+$ch2 = $dri->get_info('charge')->[0];
 is($ch2->{renew},'20.0000','domain_renew get_info (charge renew)');
 
 

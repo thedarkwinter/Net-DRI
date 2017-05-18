@@ -76,7 +76,7 @@ isa_ok($st,'Net::DRI::Protocol::EPP::Core::Status','registrar_info get_info(stat
 is_deeply([$st->list_status()],['ok'],'registrar_info({status s="ok"}');
 
 # portfolio
-$p = shift $dri->get_info('portfolio'); # first array element
+$p = $dri->get_info('portfolio')->[0]; # first array element
 is($p->{name},'afilias','registrar_info({portfolio name="afilias"})');
 is($p->{'balance'},'100','registrar_info({balance => "100"})');
 is($p->{'threshold'},'1.00','registrar_info({threshold => "1.00"})');
