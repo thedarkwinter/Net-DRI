@@ -1,4 +1,4 @@
-## Domain Registry Interface, ES Contact EPP extension commands 
+## Domain Registry Interface, ES Contact EPP extension commands
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -79,17 +79,18 @@ sub create
 {
  my ($epp,$c)=@_;
  my $mes=$epp->message();
- 
- # these fields all cause xml.sax errorson the server  unless they are ommited 
- my $cb = $mes->{'command_body'};
- $mes->{'command_body'} = [];
- foreach my $el (@{$cb}) {
-  push $mes->{'command_body'},$el unless @${el}[0] =~ m/id|authInfo|disclose$/;
+
+ # these fields all cause xml.sax errorson the server  unless they are ommited
+ my @command_body;
+ foreach my $el (@{$mes->{'command_body'}}) {
+  push @command_body,$el unless $el->[0] =~ m/(id|authInfo|disclose)$/;
  }
 
- push $mes->{'command_body'},['contact:es_tipo_identificacion',$c->tipo_identificacion()];
- push $mes->{'command_body'},['contact:es_identificacion',$c->identificacion()];
- push $mes->{'command_body'},['contact:es_form_juridica',$c->form_juridica()] if defined($c->form_juridica());
+ push @command_body, ['contact:es_tipo_identificacion',$c->tipo_identificacion()];
+ push @command_body, ['contact:es_identificacion',$c->identificacion()];
+ push @command_body, ['contact:es_form_juridica',$c->form_juridica()] if defined($c->form_juridica());
+ $mes->{'command_body'} = undef;
+ $mes->command_body(@command_body);
 }
 
 sub info_parse

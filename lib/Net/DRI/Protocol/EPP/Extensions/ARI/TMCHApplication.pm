@@ -44,7 +44,7 @@ To utilize this extension, an additional hash 'lp' must be used with domain comm
  $rc = $dri->domain_check('example1.tld',{lp => {'type'=>'claims'}});
  $lp = $dri->get_info('lp');
  print $lp->{'claim_key'} if $lp->{exist};
- 
+
 =head2 info
 
 =item include_mark (set to a true value to include mark information - will return an encoded_signed_mark)
@@ -54,7 +54,7 @@ To utilize this extension, an additional hash 'lp' must be used with domain comm
   $rc = $dri->domain_info(example1.tld',{'application_id'=>'abc123','include_mark'=>'true'});
   $lp = $dri->get_info('lp');
   print "Launch status is " . $lp->status();
-  
+
   # this might well change:
   @marks = @{$lpres->{'marks'}};
   my $m = shift @marks;
@@ -68,7 +68,7 @@ This differs somewhat from LaunchPhase, but there are four different create comm
 
   $rc=$dri->domain_create('example4.tld',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp => { phase => 'sunrise','encoded_signed_marks'=>[ $enc ] } );
   print "application Id is: " . $dri->get_info('lp')->{application_id};
-  
+
 =head3 Claims Create (The same syntax as LaunchPhase Claims Create). Additionally (untested), you can add the encoded_signed_mark to simulate the LaunchPhase mixed create (Sunrise + Claims)
 
   $lp = {phase => 'claims', notices => [ {'id'=>'abc123','not_after_date'=>DateTime->new({year=>2008,month=>12}),'accepted_date'=>DateTime->new({year=>2009,month=>10}) } ] }; # claims
@@ -175,7 +175,7 @@ sub check_parse
  return unless $mes->is_success();
  my $chkdata=$mes->get_extension($mes->ns('tmch'),'chkData');
  return unless defined $chkdata;
- 
+
  foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
  {
    my ($n,$c)=@$el;
@@ -219,7 +219,7 @@ sub info
    my $eid=$mes->command_extension_register('tmch','info');
    $mes->command_extension($eid,[]);
  }
- 
+
  return;
 }
 
@@ -230,7 +230,7 @@ sub info_parse
  return unless $mes->is_success();
  my $app_infData=$mes->get_extension($mes->ns('application'),'infData');
  my $tmch_infData=$mes->get_extension($mes->ns('tmch'),'infData');
- 
+
  if ($app_infData)
  {
   foreach my $el (Net::DRI::Util::xml_list_children($app_infData))
@@ -241,7 +241,7 @@ sub info_parse
    $rinfo->{domain}->{$oname}->{lp}->{status}=$c->getAttribute('s') if $n eq 'status';
   }
  }
- 
+
  if ($tmch_infData)
  {
   foreach my $el (Net::DRI::Util::xml_list_children($tmch_infData))
@@ -251,7 +251,7 @@ sub info_parse
    {
     $rinfo->{domain}->{$oname}->{lp}->{marks} = ();
     my $mark = Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_encoded_signed_mark($po,$c);
-    push @{$rinfo->{domain}->{$oname}->{lp}->{marks}}, shift $mark->{'mark'} if $mark;
+    @{$rinfo->{domain}->{$oname}->{lp}->{marks}} = $mark->{'mark'}->[0] if $mark && $mark->{'mark'} && $mark->{'mark'}->[0];
    }
   }
  }
@@ -277,11 +277,11 @@ sub create
  }
 
 
- ## TMCH 
- if (exists $lp->{phase} || exists $lp->{notices} || exists $lp->{encoded_signed_marks}) 
+ ## TMCH
+ if (exists $lp->{phase} || exists $lp->{notices} || exists $lp->{encoded_signed_marks})
  {
   @n=();
-  
+
   # Sunrise or Mixed (Claims+Sunrise) : Add SMD
   Net::DRI::Exception::usererr_insufficient_parameters('encoded_signed_marks')  if ($lp->{phase} && $lp->{phase} eq 'sunrise' && !exists $lp->{encoded_signed_marks});
   if (exists $lp->{encoded_signed_marks})
@@ -321,7 +321,7 @@ sub create
    $mes->command_extension($eid,\@n);
   }
  }
- 
+
  return;
 }
 
@@ -338,7 +338,7 @@ sub create_parse
   $rinfo->{domain}->{$oname}->{lp}->{phase}=$c->textContent() if $n eq 'phase';
   $rinfo->{domain}->{$oname}->{lp}->{application_id}=$c->textContent() if $n eq 'id';
  }
- return; 
+ return;
 }
 
 sub update_delete
@@ -356,7 +356,7 @@ sub update_delete
   $cmd = 'delete';
   $lp = $rd->{'lp'};
  }
- 
+
  #Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase}; # seems to be optional
  Net::DRI::Exception::usererr_insufficient_parameters('application_id') unless exists $lp->{application_id};
 

@@ -41,7 +41,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/LaunchPhase GracePeriod SecDNS TANGO::IDN TANGO::Auction TANGO::LaunchPhase TANGO::ContactEligibility TANGO::Promotion/; }
+sub default_extensions { return qw/GracePeriod SecDNS TANGO::IDN TANGO::Auction TANGO::LaunchPhase TANGO::ContactEligibility TANGO::Promotion/; }
 
 ####################################################################################################
 1;
