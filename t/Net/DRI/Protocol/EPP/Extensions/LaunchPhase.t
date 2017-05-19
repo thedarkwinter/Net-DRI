@@ -24,11 +24,11 @@ sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'C
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 
-$dri->add_registry('VNDS');
-$dri->target('VNDS')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['LaunchPhase','-VeriSign::NameStore']});
+$dri->add_current_registry('VeriSign::COM_NET');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['LaunchPhase','-VeriSign::NameStore']});
 
 # for the mark processing
-my $po=$dri->{registries}->{VNDS}->{profiles}->{p1}->{protocol};
+my $po=$dri->{registries}->{'VeriSign::COM_NET'}->{profiles}->{p1}->{protocol};
 eval { Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::setup(undef,$po,undef);};
 my $parser=XML::LibXML->new();
 my ($doc,$root,$rh);
@@ -38,7 +38,7 @@ my ($rc,$e,$toc);
 my ($lp,$lpres);
 
 #########################################################################################################
-## CHECK 
+## CHECK
 
 # 3.1.1.  Claims Check Form
 $lp = {type=>'claims'} ;
@@ -439,9 +439,9 @@ $rc=$dri->domain_create('example4.com',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.com</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd"><launch:phase>claims</launch:phase><launch:notice><launch:noticeID>abc123</launch:noticeID><launch:notAfter>2008-12-01T00:00:00Z</launch:notAfter><launch:acceptedDate>2009-10-01T00:00:00Z</launch:acceptedDate></launch:notice></launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml [claims create]');
 
 # create with multiple notices (launchphase-02 example although this was supported before anyway)
-$lp = {phase => 'claims', notices => [ 
-   {id=>'370d0b7c9223372036854775807',  validator_id=>'tmch',        not_after_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>10}),  accepted_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>9}) }, 
-   {id=>'470d0b7c9223654313275808',     validator_id=>'custom-tmch', not_after_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>10}),  accepted_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>9,second=>30}) } 
+$lp = {phase => 'claims', notices => [
+   {id=>'370d0b7c9223372036854775807',  validator_id=>'tmch',        not_after_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>10}),  accepted_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>9}) },
+   {id=>'470d0b7c9223654313275808',     validator_id=>'custom-tmch', not_after_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>10}),  accepted_date=>DateTime->new({year=>2014,month=>06,day=>19,hour=>9,second=>30}) }
  ] };
 $R2='';
 $rc=$dri->domain_create('example4.com',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=>$lp});
@@ -482,7 +482,7 @@ is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns
 
 
 #########################################################################################################
-## POLL MESSAGE 
+## POLL MESSAGE
 
 # *withOut* domain:infData
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="3" id="123"><qDate>2013-12-13T13:55:40.547Z</qDate><msg>Application created.  Status validated</msg></msgQ><extension><launch:infData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>sunrise</launch:phase><launch:applicationID>123456</launch:applicationID><launch:status s="validated" /></launch:infData></extension>'.$TRID.'</response>'.$E2;
@@ -497,5 +497,5 @@ $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),'124','message_retrieve get_info(last_id)');
 $lp = $dri->get_info('lp','message',124);
 is($lp->{'application_id'},'123456','message_retrieve get_info lp->{application_id}');
-  
+
 exit 0;

@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::Telnic;
+package Net::DRI::DRD::Neustar::Telnic;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::Telnic - Telnic (.TEL) policies for Net::DRI
+Net::DRI::DRD::Neustar::Telnic - Telnic (.TEL) policies for Net::DRI
 
 =head1 DESCRIPTION
 
