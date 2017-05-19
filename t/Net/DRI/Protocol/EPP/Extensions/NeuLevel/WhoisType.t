@@ -53,7 +53,7 @@ $rc = $dri->domain_create('epptest.tel', {
 				whois_type => { type => 'natural', publish => 'n'},
 	});
 
-$ext = '<extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>WhoisType=NATURAL Publish=N</neulevel:unspec></neulevel:extension></extension>';	
+$ext = '<extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>WhoisType=NATURAL Publish=N</neulevel:unspec></neulevel:extension></extension>';
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>epptest.tel</domain:name><domain:ns><domain:hostObj>ns1.eppvalid.tel</domain:hostObj><domain:hostObj>ns2.eppvalid.tel</domain:hostObj></domain:ns><domain:registrant>C1-tel</domain:registrant><domain:contact type="admin">C2-tel</domain:contact><domain:contact type="billing">C4-tel</domain:contact><domain:contact type="tech">C3-tel</domain:contact><domain:authInfo><domain:pw>bleblubleu</domain:pw></domain:authInfo></domain:create></create>'.$ext.'<clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($rc->is_success(),1,'domain_create is_success');
 
@@ -62,7 +62,7 @@ my $todo = $dri->local_object('changes');
 $todo->set('whois_type', {type=>'LEGAL',publish=>'y'});
 $rc = $dri->domain_update('epptest.tel', $todo);
 
-$ext = '<extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>WhoisType=LEGAL</neulevel:unspec></neulevel:extension></extension>';	
+$ext = '<extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>`WhoisT`ype=LEGAL</neulevel:unspec></neulevel:extension></extension>';
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>epptest.tel</domain:name></domain:update></update>'.$ext.'<clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
 is($rc->is_success(),1,'domain_update is_success');
 
