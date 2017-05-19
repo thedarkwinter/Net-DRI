@@ -15,7 +15,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::NAME::DefReg;
+package Net::DRI::Protocol::EPP::Extensions::VeriSign::DefReg;
 
 use strict;
 use warnings;
@@ -30,7 +30,7 @@ use DateTime::Format::ISO8601;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::NAME::DefReg - EPP DefReg extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::VeriSign::DefReg - EPP DefReg extension commands for Net::DRI
 
 =head1 DESCRIPTION
 

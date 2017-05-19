@@ -81,7 +81,7 @@ sub setup
 sub default_extensions
 {
  my ($self,$rp)=@_;
- my @c=qw/VeriSign::Sync VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::EmailFwd GracePeriod SecDNS/;
+ my @c=qw/VeriSign::Sync VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::DefReg VeriSign::EmailFwd GracePeriod SecDNS/;
  push @c,'VeriSign::NameStore'; ## this must come last
  return @c;
 }

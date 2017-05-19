@@ -26,8 +26,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('NAME');
-$dri->target('NAME')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{});
+$dri->add_current_registry('VeriSign::NAME');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{});
 
 my ($rc,$s,$cs);
 
