@@ -299,14 +299,14 @@ Afilias SRS has extended the .XXX plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-ngtlds: xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians ist istanbul ltda onl porn rich sex srl storage vegas zara
+ngtlds: xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians ist istanbul ltda onl porn rich sex srl vegas zara
 gtlds: xxx mobi
 cctlds: ag bz gi lc mn me sc vc
 
 =cut
 
  if ($bep eq 'afiliassrs') {
-   my @ngtlds = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians ist istanbul ltda onl porn rich sex srl storage vegas zara/;
+   my @ngtlds = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians ist istanbul ltda onl porn rich sex srl vegas zara/;
    my @gtlds = qw/xxx mobi/;
    my @cctlds = (
        'ag',(map { $_.'.ag'} qw/co com net nom org/),
@@ -423,7 +423,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
 
 =head3 TLDs
 
-art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space tech theatre tickets website wiki wme xyz
+art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space storage store tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -442,7 +442,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de/;
-    my @ngtlds = qw/art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds = qw/art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
     my @ngtlds_pipeline = qw//; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
