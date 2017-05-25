@@ -1,4 +1,4 @@
-## Domain Registry Interface, AFNIC EPP extension for poll messages
+## Domain Registry Interface, AFNIC EPP extension for poll messages related to launchphase
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::AFNIC_GTLD::RegistryMessage;
+package Net::DRI::Protocol::EPP::Extensions::AFNIC::RegistryMessage;
 
 use strict;
 use warnings;

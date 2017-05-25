@@ -22,16 +22,10 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_registry('NGTLD',{provider => 'afnic',name=>'sncf'} );
-$dri->target('sncf')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-#$dri->add_registry('AFNIC_GTLD');
-#$dri->target('AFNIC_GTLD')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_current_registry('AFNIC::GTLD');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['AFNIC::PremiumDomain']});
 
-my $rc;
-my $s;
-my $d;
-my ($dh,@c);
-
+my ($rc,$s,$d,$dh,@c);
 
 #####################
 ## Notifications
@@ -53,6 +47,7 @@ is($dri->get_info('object_id','message',124),'foobar.sncf','message_retrieve get
 
 #####################
 ## PremiumDomain
+## Note, I think they don't ise this any more? Instead they use fee-0.11 (at least for paris and alsace)
 
 ## Old format (?)
 my $price = { duration=>DateTime::Duration->new(years=>5) };

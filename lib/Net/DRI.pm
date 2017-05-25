@@ -191,6 +191,8 @@ sub new
  # used for backwards compatibility on depricated TLDs in function check_depricated_drd
  $self->{depricated_drd_map} = {
      'AERO' => 'SITA',
+     'AFNIC' => 'AFNIC::AFNIC',
+     'AFNIC_GTLD' => 'AFNIC::GTLD',
      'AG' => 'Afilias::Shared',
      'ASIA' => 'DotAsia',
      'AT' => 'NicAT',

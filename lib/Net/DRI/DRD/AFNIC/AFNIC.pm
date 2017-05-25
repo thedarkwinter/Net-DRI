@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::AFNIC;
+package Net::DRI::DRD::AFNIC::AFNIC;
 
 use strict;
 use warnings;
@@ -77,7 +77,7 @@ sub new
 }
 
 sub periods      { return map { DateTime::Duration->new(years => $_) } (1); }
-sub name         { return 'AFNIC'; }
+sub name         { return 'AFNIC::AFNIC'; }
 sub tlds         { return (qw/fr re tf wf pm yt asso.fr com.fr tm.fr gouv.fr/); } ## see http://www.afnic.fr/doc/autres-nic/dom-tom
 sub object_types { return ('domain','contact'); }
 sub profile_types { return qw/epp dchk/; }

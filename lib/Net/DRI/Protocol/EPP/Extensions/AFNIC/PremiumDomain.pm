@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::AFNIC_GTLD::PremiumDomain;
+package Net::DRI::Protocol::EPP::Extensions::AFNIC::PremiumDomain;
 
 use strict;
 use warnings;

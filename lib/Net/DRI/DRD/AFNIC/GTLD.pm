@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::AFNIC_GTLD;
+package Net::DRI::DRD::AFNIC::GTLD;
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ use Net::DRI::Util;
 
 =head1 NAME
 
-Net::DRI::DRD::AFNIC_GTLD - AFNIC GTLD Registry Driver for Net::DRI
+Net::DRI::DRD::AFNIC::GTLD - AFNIC GTLD Registry Driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -37,11 +37,17 @@ Additional domain extension AFNIC New Generic TLDs. Note this is separate from A
 
 AFNIC utilises the following standard extensions. Please see the test files for more examples.
 
+=head2 Standard extensions:
+
 =head3 L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0 [not implemented on server yet]
+=head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
+
+=head2 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.11
 
 =head1 SUPPORT
 
@@ -85,9 +91,9 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'AFNIC_GTLD'; }
+sub name     { return 'AFNIC::GTLD'; }
 
-sub tlds { return qw/alsace aquitaine banque bzh corsica ovh paris/ ; }
+sub tlds { return qw/alsacex aquarelle aquitaine banque bzh corsica frogans lancaster leclerc mma ovh paris sncf/ ; }
 
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
@@ -95,8 +101,19 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,'custom'=>['AFNIC_GTLD::RegistryMessage']}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['AFNIC::RegistryMessage', 'CentralNic::Fee'], 'brown_fee_version' => '0.11'}) if $type eq 'epp';
  return;
+}
+
+####################################################################################################
+
+sub verify_name_domain
+{
+ my ($self,$ndr,$domain,$op)=@_;
+ return $self->_verify_name_rules($domain,$op,{check_name => 1,
+                                               my_tld => 1,
+                                               icann_reserved => 1,
+                                              });
 }
 
 ####################################################################################################
