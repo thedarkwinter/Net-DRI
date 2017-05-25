@@ -1,7 +1,7 @@
-## Domain Registry Interface, ZACR (ZA Central Registry) GTLD Driver
+## Domain Registry Interface, ZACR (*.ZA and gTLD) policies for Net::DRI
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2011,2012,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2016,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -11,7 +11,7 @@
 ## (at your option) any later version.
 ##
 ## See the LICENSE file that comes with this distribution for more details.
-####################################################################################################
+#########################################################################################
 
 package Net::DRI::DRD::ZACR;
 
@@ -21,18 +21,19 @@ use warnings;
 use base qw/Net::DRI::DRD/;
 
 use DateTime::Duration;
+use Net::DRI::Data::Contact::ZACR;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/host_update host_current_status host_check host_exist host_delete host_create host_info/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse host_update host_current_status host_check host_exist host_delete host_create host_inf/);
 
 =pod
 
 =head1 NAME
 
-Net::DRI::DRD::ZACR - ZA Central Registry Driver for Net::DRI
+Net::DRI::DRD::ZACR - ZACR (*.ZA and gTLD) policies for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension ZACR New Generic TLDs. Note this is separate from COZA ccTLD Driver as the systems differ.
+Additional domain extension ZACR TLDs.
 
 ZACR utilises the following standard, and custom extensions. Please see the test files for more examples.
 
@@ -42,7 +43,11 @@ ZACR utilises the following standard, and custom extensions. Please see the test
 
 =head2 Custom extensions:
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::COZA::Domain> http://co.za/epp/extensions/cozadomain-1-0
+=head3 L<Net::DRI::Protocol::EPP::Extensions::ZACR::Domain> http://co.za/epp/extensions/cozadomain-1-0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::ZACR::Contact> http://co.za/epp/extensions/cozacontact-1-0
+
+=head3 L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
 
 =head1 SUPPORT
 
@@ -58,12 +63,12 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2011,2012,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2013,2016,2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -75,7 +80,7 @@ See the LICENSE file that comes with this distribution for more details.
 
 =cut
 
-####################################################################################################
+#####################################################################################
 
 sub new
 {
@@ -86,10 +91,10 @@ sub new
  return $self;
 }
 
-sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
+sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'ZACR'; }
-sub tlds     { return ('cities.dnservices.co.za','joburg','durban','capetown','africa','wien'); } # FIXME : the first is for OT&E tlds, the rest for live.
-sub object_types { return ('domain','contact'); }
+sub tlds     { return qw/co.za co.net co.org co.web joburg durban capetown africa wien/; }
+sub object_types { return (qw/domain contact/); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
@@ -100,6 +105,24 @@ sub transport_protocol_default
  return;
 }
 
-####################################################################################################
+sub set_factories
+{
+ my ($self,$po)=@_;
+ $po->factories('contact',sub { return Net::DRI::Data::Contact::ZACR->new(@_); });
+ return;
+}
+######################################################################################
+
+sub registrar_balance
+{
+ my ($self,$ndr,$rd)=@_;
+ if (!defined $rd) {
+   $rd = ( defined($self->info('client_id'))?$self->info('client_id') :$self->info('clid') );
+ }
+ my $rc=$ndr->process('contact','info',[$ndr->local_object('contact')->srid($rd),{balance=>1}]);
+ return $rc;
+}
+
+######################################################################################
 
 1;

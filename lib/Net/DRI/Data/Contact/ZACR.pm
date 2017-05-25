@@ -1,4 +1,4 @@
-## Domain Registry Interface, Handling of contact data for .CO.ZA
+## Domain Registry Interface, Handling of contact data for ZACR
 ##
 ## Copyright (c) 2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Data::Contact::COZA;
+package Net::DRI::Data::Contact::ZACR;
 
 use strict;
 use warnings;
@@ -62,11 +62,11 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Data::Contact::COZA - Handle CO.ZA contact data for Net::DRI
+Net::DRI::Data::Contact::ZACR - Handle ZACR contact data for Net::DRI
 
 =head1 SYNOPSIS
 
-This module is never used directly, it is used by Net::DRI::Protocol::EPP::Extensions::COZA
+This module is never used directly, it is used by Net::DRI::Protocol::EPP::Extensions::ZACR
 
 =head1 DESCRIPTION
 

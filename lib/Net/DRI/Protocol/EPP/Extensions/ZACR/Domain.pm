@@ -1,5 +1,5 @@
-## Domain Registry Interface, .CO.ZA Contact EPP extension commands
-## From http://registry.coza.net.za/doku.php?id=eppcontactextension
+ ## Domain Registry Interface, ZACR Domain EPP extension commands
+## From http://registry.coza.net.za/doku.php?id=eppdomainextension
 ##
 ## Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::COZA::Contact;
+package Net::DRI::Protocol::EPP::Extensions::ZACR::Domain;
 
 use strict;
 use warnings;
@@ -27,40 +27,54 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
-          info   => [ \&info,   \&info_parse ],
-          update => [ \&update, undef ],
+          update         => [ \&update , undef ],
+          info           => [ \&info   , \&info_parse ],
          );
 
- return { 'contact' => \%tmp };
+ return { 'domain' => \%tmp };
 }
 
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'cozacontact' => [ 'http://co.za/epp/extensions/cozacontact-1-0','coza-contact-1.0.xsd' ] });
- $po->capabilities('contact_update','status',undef); ## No changes in status possible for .CO.ZA contacts
- $po->capabilities('contact_update','cancel_action',['set']);
+ $po->ns({ 'cozadomain' => [ 'http://co.za/epp/extensions/cozadomain-1-0','coza-domain-1.0.xsd' ] });
+ $po->capabilities('domain_update','cancel_action',['set']);
+ $po->capabilities('domain_update','auto_renew',['set']);
  return;
 }
 
 ####################################################################################################
 
-sub info
+## There is no update_parse as this is done by result code and message
+sub update
 {
- my ($epp,$c,$rp)=@_;
+ my ($epp,$domain,$todo)=@_;
  my $mes=$epp->message();
 
- if (Net::DRI::Util::has_key($rp,'domain_listing') && $rp->{domain_listing})
+ my $autorenew=$todo->set('auto_renew');
+ if (defined $autorenew)
  {
-  my $eid=$mes->command_extension_register('cozacontact','info');
-  $mes->command_extension($eid,[['cozacontact:domainListing','true']]);
+  my $eid=$mes->command_extension_register('cozadomain','update');
+  $mes->command_extension($eid,[['cozadomain:chg',['cozadomain:autorenew',$autorenew ? 'true' : 'false']]]);
+  return;
  }
 
- if (Net::DRI::Util::has_key($rp,'balance') && $rp->{balance})
+ my $cancel=$todo->set('cancel_action');
+ if (defined $cancel)
  {
-  my $eid=$mes->command_extension_register('cozacontact','info');
-  $mes->command_extension($eid,[['cozacontact:balance','true']]);
+  my @actions = qw/PendingManualSuspension PendingUpdate PendingManualDeletion PendingGracePeriodSuspension PendingSuspension PendingDeletion PendingClosedRedemption/;
+  Net::DRI::Exception::usererr_invalid_parameters("cancel_action parameter must be one of @actions") unless grep ($_ eq $cancel, @actions);
+  my $eid=$mes->command_extension_register('cozadomain','update',{cancelPendingAction=>$cancel});
  }
+ return;
+}
+
+## We always add the extension as it requests the extension back from the server with autorenew flags
+sub info
+{
+ my ($epp,$domain,$rp)=@_;
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('cozadomain','info');
  return;
 }
 
@@ -70,34 +84,12 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension('cozacontact','infData');
+ my $infdata=$mes->get_extension('cozadomain','infData');
  return unless defined $infdata;
 
- my %l;
- foreach my $el (Net::DRI::Util::xml_list_children($infdata))
- {
-  my ($name,$node)=@$el;
-  next unless $name eq 'domain';
-  push @{$l{lc $node->getAttribute('level')}},$node->textContent();
- }
- $rinfo->{contact}->{$oname}->{domain_listing}=\%l;
-
- my $ns=$mes->ns('cozacontact');
- my $balance=Net::DRI::Util::xml_traverse($infdata,$ns,'balance');
- $rinfo->{registrar}->{$oname}->{balance}=0+$balance->textContent() if defined $balance;
- return;
-}
-
-sub update
-{
- my ($epp,$c,$todo)=@_;
- my $mes=$epp->message();
-
- my $cancel=$todo->set('cancel_action');
- return unless defined $cancel;
-
- Net::DRI::Exception::usererr_invalid_parameters('cancel_action parameter must be PendingUpdate') unless $cancel eq 'PendingUpdate';
- my $eid=$mes->command_extension_register('cozacontact','update',{cancelPendingAction=>$cancel});
+ my $ns=$mes->ns('cozadomain');
+ my $autorenew=Net::DRI::Util::xml_traverse($infdata,$ns,'autorenew');
+ $rinfo->{domain}->{$oname}->{auto_renew}=Net::DRI::Util::xml_parse_boolean($autorenew->textContent()) if defined $autorenew;
  return;
 }
 
@@ -110,7 +102,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::COZA::Contact - .CO.ZA Contact EPP Extension for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ZACR::Domain - ZACR Domain EPP Extension for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -145,4 +137,3 @@ the Free Software Foundation; either version 2 of the License, or
 See the LICENSE file that comes with this distribution for more details.
 
 =cut
-

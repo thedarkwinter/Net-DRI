@@ -1309,8 +1309,8 @@ L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge> http://www.unitedtld.c
 
 The extensions are optional, so no need to do anything out of the ordinary if you don't want to.
 
-L<Net::DRI::Protocol::EPP::Extensions::COZA::Domain> http://co.za/epp/extensions/cozadomain-1-0
-L<Net::DRI::Protocol::EPP::Extensions::COZA::Contact> http://co.za/epp/extensions/cozacontact-1-0
+L<Net::DRI::Protocol::EPP::Extensions::ZACR::Domain> http://co.za/epp/extensions/cozadomain-1-0
+L<Net::DRI::Protocol::EPP::Extensions::ZACR::Contact> http://co.za/epp/extensions/cozacontact-1-0
 
 =cut
 
