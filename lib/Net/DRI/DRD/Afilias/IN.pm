@@ -78,7 +78,7 @@ sub new {
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'IN'; }
+sub name     { return 'Afilias::IN'; }
 sub tlds     { return ('in', map { $_.'.in'} qw/co gen ind net org/ ); }
 sub object_types { return qw(domain contact ns); }
 sub profile_types { return qw/epp/; }

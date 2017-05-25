@@ -50,7 +50,7 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>, SyGroup GmbH. 
+Copyright (c) 2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>, SyGroup GmbH.
           (c) 2011,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
@@ -75,7 +75,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'Tralliance'; }
+sub name     { return 'Neustar::Tralliance'; }
 sub tlds     { return ('travel'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }

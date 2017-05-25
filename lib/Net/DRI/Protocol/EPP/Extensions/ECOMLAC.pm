@@ -1,7 +1,7 @@
-## Domain Registry Interface, .MX_GTLD policies from 'LAT Implementation Guide EPP.PDF'
+## Domain Registry Interface, ECOMLAC (.LAT) GTLD policies from 'LAT Implementation Guide EPP.PDF'
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2015,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##           (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::MX_GTLD;
+package Net::DRI::Protocol::EPP::Extensions::ECOMLAC;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::MX_GTLD
+Net::DRI::Protocol::EPP::Extensions::ECOMLAC
 
 =head1 DESCRIPTION
 

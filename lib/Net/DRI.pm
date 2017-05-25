@@ -216,6 +216,8 @@ sub new
      'ME' => 'Afilias::Shared',
      'MN' => 'Afilias::Shared',
      'MOBI' => 'Afilias::Main',
+     'MX' => 'NICMexico',
+     'MX_GTLD' => 'ECOMLAC',
      'NAME' => 'VeriSign::NAME',
      'NO' => 'NORID',
      'NU' => 'IIS',
