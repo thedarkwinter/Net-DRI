@@ -34,7 +34,7 @@ my ($c,$cs,$ns,$c1);
 ####################################################################################################
 ######## Initial Commands ########
 
-my $drd = $dri->{registries}->{IN}->{driver};
+my $drd = $dri->driver();
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::IN',{}],'IN - epp transport_protocol_default');
 $R2='';
 $rc=$dri->process('session','noop',[]);
