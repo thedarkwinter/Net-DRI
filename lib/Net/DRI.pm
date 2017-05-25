@@ -187,7 +187,62 @@ sub new
  bless($self,$class);
  $self->logging()->setup_channel(__PACKAGE__,'core');
  $self->log_output('notice','core','Successfully created Net::DRI object with logging='.$logname);
+
+ # used for backwards compatibility on depricated TLDs in function check_depricated_drd
+ $self->{depricated_drd_map} = {
+     'AERO' => 'SITA',
+     'AG' => 'Afilias::Shared',
+     'ASIA' => 'DotAsia',
+     'AT' => 'NicAT',
+     'AU' => 'auDA',
+     'BE' => 'DNSBelgium',
+     'BH' => 'TRA',
+     'BR' => 'CGIBR',
+     'BZ' => 'Afilias::Shared',
+     'CAT' => 'puntCAT',
+     'COOP' => 'DotCooperation',
+     'COZA' => 'ZACR',
+     'CZ' => 'CZNIC',
+     'GL' => 'TELEGreenland',
+     'HN' => 'RDS',
+     'ID' => 'PANDI',
+     'IM' => 'Domicilium',
+     'INFO' => 'Afilias::Main',
+     'IT' => 'IITCNR',
+     'LC' => 'Afilias::Shared',
+     'LU' => 'RESTENA',
+     'ME' => 'Afilias::Shared',
+     'MN' => 'Afilias::Shared',
+     'MOBI' => 'Afilias::Main',
+     'NAME' => 'VeriSign::NAME',
+     'NO' => 'NORID',
+     'NU' => 'IIS',
+     'ORG' => 'Afilias::PIR',
+     'PL' => 'NASK',
+     'PRO' => 'Afilias::Main',
+     'PT' => 'DNSPT',
+     'SC' => 'Afilias::Shared',
+     'SE' => 'IIS',
+     'SO' => 'SONIC',
+     'TRAVEL' => 'Neustar::Tralliance',
+     'VC' => 'Afilias::Shared',
+     'VNDS' => 'VeriSign::COM_NET', # warning, this was actually split into COM_NET and NameStore!
+     'WS' => 'GDI',
+  };
+
  return $self;
+}
+
+# if the DRD has been depricated, it will warn, and then return the new registry so that the script can continue
+sub check_depricated_drd
+{
+ my ($self,$reg) = @_;
+ if (exists $self->{depricated_drd_map}->{$reg}) {
+   warn "Warning Net::DRI::DRD::$reg is depricated, please use Net::DRI::DRD::".$self->{depricated_drd_map}->{$reg}." as a replacement!" unless $reg eq 'VNDS';
+   warn "Warning Net::DRI::DRD::$reg is depricated, please use Net::DRI::DRD::COM_NET or NameStore as a replacement!" if $reg eq 'VNDS';
+   $reg = $self->{depricated_drd_map}->{$reg};
+ }
+ return $reg;
 }
 
 sub add_current_registry
@@ -202,6 +257,7 @@ sub add_registry
 {
  my ($self,$reg,@data)=@_;
  Net::DRI::Exception::usererr_insufficient_parameters('add_registry needs a registry name') unless Net::DRI::Util::all_valid($reg);
+ $reg=$self->check_depricated_drd($reg);
  $reg='Net::DRI::DRD::'.$reg unless $reg=~m/^\+/;
  Net::DRI::Util::load_module($reg,'DRI');
 
@@ -298,7 +354,7 @@ sub installed_registries
 sub target
 {
  my ($self,$driver,$profile)=@_;
-
+ $driver=$self->check_depricated_drd($driver);
  ## Try to convert if given a domain name or a tld instead of a driver's name
  if (defined $driver && ! exists $self->{registries}->{$driver})
  {
