@@ -59,8 +59,8 @@ $rc = $dri->add_registry('NGTLD',{provider => 'donuts'});
 is($rc->{last_registry},'donuts','donuts: add_registry');
 $rc = $dri->target('donuts')->add_current_profile('p1-donuts','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{donuts}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],'donuts: epp transport_protocol_default');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken UNITEDTLD::Charge UNITEDTLD::Finance/],'donuts: loaded_modules');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}],'donuts: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken UnitedTLD::Charge UnitedTLD::Finance/],'donuts: loaded_modules');
 is($drd->{bep}->{bep_type},2,'donuts: bep_type');
 is($drd->{info}->{check_limit},5,'donuts: check_limit');
 is($drd->{info}->{host_check_limit},5,'donuts: host_check_limit');
@@ -128,7 +128,7 @@ is_deeply( [$dri->object_types()],['domain','contact'],'zacr: object_types');
 is_deeply( [$dri->profile_types()],['epp','whois'],'zacr: profile_types');
 $drd = $dri->{registries}->{joburg}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],'zacr: epp transport_protocol_default');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules_no_host, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase ZACR::Domain ZACR::Contact UNITEDTLD::Charge/],'zacr: loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules_no_host, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase ZACR::Domain ZACR::Contact UnitedTLD::Charge/],'zacr: loaded_modules');
 
 is($drd->{bep}->{bep_type},1,'zacr: bep_type');
 

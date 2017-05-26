@@ -22,7 +22,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase ZACR::Domain ZACR::Contact UNITEDTLD::Charge/; } # IDN not used
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase ZACR::Domain ZACR::Contact UnitedTLD::Charge/; } # IDN not used
 
 ####################################################################################################
 

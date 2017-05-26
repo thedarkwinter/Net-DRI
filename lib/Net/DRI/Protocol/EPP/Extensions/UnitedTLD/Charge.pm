@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge;
+package Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge;
 
 use strict;
 use warnings;

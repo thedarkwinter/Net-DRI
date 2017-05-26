@@ -1,7 +1,7 @@
-## Domain Registry Interface, United TLD Driver
+## Domain Registry Interface, UnitedTLD Rightside TLD Driver
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -46,9 +46,9 @@ United TLDutilises the following standard extensions. Please see the test files 
 
 =head2 Custom Extensions
 
-=head3 L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
+=head3 L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
 
-=head3 L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
+=head3 L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
 
 =head1 SUPPORT
 
@@ -95,8 +95,11 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'UNITEDTLD'; }
 
-#sub tlds     { return ('tld','claimsga','claimslandrush'); } # OT&E tlds
-sub tlds     { return qw/dpml.pub actor airforce army attorney auction band consulting dance degree democrat dentist engineer family forsale futbol games gives haus immobilien kaufen lawyer live market moda mortgage navy news ninja pub rehab republican reviews rip rocks sale social software studio vet video/; } # http://rightside.co/rightside-registry/tld-portfolio/
+sub tlds  {
+ my @dpml = qw/dpml.pub/; # DPML
+ my @gtlds = qw/actor airforce army attorney auction band consulting dance degree democrat dentist engineer family forsale futbol games gives haus immobilien kaufen lawyer live market moda mortgage navy news ninja pub rehab republican reviews rip rocks sale social software studio vet video /;
+ return (@dpml,@gtlds);
+}
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
@@ -104,7 +107,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}) if $type eq 'epp';
  return;
 }
 

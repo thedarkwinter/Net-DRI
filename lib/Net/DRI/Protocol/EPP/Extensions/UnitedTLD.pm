@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::UNITEDTLD;
+package Net::DRI::Protocol::EPP::Extensions::UnitedTLD;
 
 use strict;
 use warnings;
@@ -30,11 +30,11 @@ Net::DRI::DRD::MAM - United TLD (Demand Media) Driver for Net::DRI
 
 Additional domain extension United TLD New Generic TLDs.  This extension set is used by Donuts and Rightside
 
-=cut 
+=cut
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken UNITEDTLD::Charge UNITEDTLD::Finance/; }
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken UnitedTLD::Charge UnitedTLD::Finance/; }
 
 ####################################################################################################
 1;

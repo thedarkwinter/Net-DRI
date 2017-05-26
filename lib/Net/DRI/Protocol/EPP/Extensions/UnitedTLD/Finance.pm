@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::UNITEDTLD::Finance;
+package Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance;
 
 use strict;
 use warnings;
