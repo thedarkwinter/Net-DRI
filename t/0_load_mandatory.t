@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 525;
+use Test::More tests => 524;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -43,7 +43,7 @@ use_ok('Net::DRI::DRD::Afilias::PIR');
 use_ok('Net::DRI::DRD::Afilias::IN');
 use_ok('Net::DRI::DRD::RESTENA');
 use_ok('Net::DRI::DRD::Neustar::BIZ');
-use_ok('Net::DRI::DRD::DotAsia');
+use_ok('Net::DRI::DRD::Afilias::DotAsia');
 use_ok('Net::DRI::DRD::auDA');
 use_ok('Net::DRI::DRD::Neustar::US');
 use_ok('Net::DRI::DRD::OVH');
@@ -76,7 +76,6 @@ use_ok('Net::DRI::DRD::TCI');
 use_ok('Net::DRI::DRD::SONIC');
 use_ok('Net::DRI::DRD::PANDI');
 use_ok('Net::DRI::DRD::UPU');
-use_ok('Net::DRI::DRD::ARI');
 use_ok('Net::DRI::DRD::CORENIC');
 use_ok('Net::DRI::DRD::TANGO');
 use_ok('Net::DRI::DRD::Deloitte');

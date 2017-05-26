@@ -1,4 +1,4 @@
-## Domain Registry Interface, DotAsia (.ASIA) policies
+## Domain Registry Interface, Afilias DotAsia (.ASIA) policies
 ##
 ## Copyright (c) 2007-2009,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ##           (c) 2010,2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::DotAsia;
+package Net::DRI::DRD::Afilias::DotAsia;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::DotAsia - DotAsia (.ASIA) policies for Net::DRI
+Net::DRI::DRD::Afilias::DotAsia - Afilias DotAsia (.ASIA) policies for Net::DRI
 
 =head1 DESCRIPTION
 
