@@ -22,8 +22,8 @@ sub r { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Co
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('Nominet');
-$dri->target('Nominet')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('Nominet::UK');
+$dri->target('Nominet::UK')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my ($rc,$s,$d,$dh,@c,$co,$cs,$ns);
 
@@ -295,8 +295,8 @@ is($dri->get_info('right'),'example.sld.uk','domain_check rights get_info(right)
 # check - rights with regitrant id: use 'registrant' => '123123' as string, or contact object with only SRID
 $c = $dri->local_object('contact')->srid('CONT1'); # empty contact object with srid
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example2.uk</domain:name></domain:cd></domain:chkData></resData><extension><nom-direct-rights:chkData xmlns:nom-direct-rights="http://www.nominet.org.uk/epp/xml/nom-direct-rights-1.0" xsi:schemaLocation="http://www.nominet.org.uk/epp/xml/nom-direct-rights-1.0 nom-direct-rights-1.0.xsd"><nom-direct-rights:ror>example2.sld.uk</nom-direct-rights:ror></nom-direct-rights:chkData></extension>'.$TRID.'</response>'.$E2;
-#$rc=$dri->domain_check('example2.uk',{registrant => $c}); 
-$rc=$dri->domain_check('example2.uk',{registrant => 'CONT1'}); 
+#$rc=$dri->domain_check('example2.uk',{registrant => $c});
+$rc=$dri->domain_check('example2.uk',{registrant => 'CONT1'});
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example2.uk</domain:name></domain:check></check><extension><nom-direct-rights:check xmlns:nom-direct-rights="http://www.nominet.org.uk/epp/xml/nom-direct-rights-1.0" xsi:schemaLocation="http://www.nominet.org.uk/epp/xml/nom-direct-rights-1.0 nom-direct-rights-1.0.xsd" xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><nom-direct-rights:registrant>CONT1</nom-direct-rights:registrant></nom-direct-rights:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check rights build');
 is($rc->is_success(),1,'domain_check rights is_success');
 is($dri->get_info('exist'),0,'domain_check rights get_info(exist)');
@@ -305,7 +305,7 @@ is($dri->get_info('right'),'example2.sld.uk','domain_check rights get_info(right
 # check - rights with postalinfo (no srid)
 $c = $dri->local_object('contact')->name('Contact name')->org('Org name')->street(['10 Example Street'])->city('Oxford')->sp('Oxfordshire')->pc('OX4 4DQ')->cc('GB')->email('john.smith@example.uk');
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example3.uk</domain:name></domain:cd></domain:chkData></resData><extension><nom-direct-rights:chkData xmlns:nom-direct-rights="http://www.nominet.org.uk/epp/xml/nom-direct-rights-1.0" xsi:schemaLocation="http://www.nominet.org.uk/epp/xml/nom-direct-rights-1.0 nom-direct-rights-1.0.xsd"><nom-direct-rights:ror>example3.sld.uk</nom-direct-rights:ror></nom-direct-rights:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('example3.uk',{registrant => $c}); 
+$rc=$dri->domain_check('example3.uk',{registrant => $c});
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.uk</domain:name></domain:check></check><extension><nom-direct-rights:check xmlns:nom-direct-rights="http://www.nominet.org.uk/epp/xml/nom-direct-rights-1.0" xsi:schemaLocation="http://www.nominet.org.uk/epp/xml/nom-direct-rights-1.0 nom-direct-rights-1.0.xsd" xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><nom-direct-rights:postalInfo type="loc"><contact:name>Contact name</contact:name><contact:org>Org name</contact:org><contact:addr><contact:street>10 Example Street</contact:street><contact:city>Oxford</contact:city><contact:sp>Oxfordshire</contact:sp><contact:pc>OX4 4DQ</contact:pc><contact:cc>GB</contact:cc></contact:addr></nom-direct-rights:postalInfo><nom-direct-rights:email>john.smith@example.uk</nom-direct-rights:email></nom-direct-rights:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check rights build');
 is($rc->is_success(),1,'domain_check rights is_success');
 is($dri->get_info('exist'),0,'domain_check rights get_info(exist)');
@@ -326,7 +326,7 @@ $rc=$dri->message_delete('12345');
 is($rc->is_success(),1,'message_delete is_success');
 is_string($R1,$E1.'<command><poll msgID="12345" op="ack"/><clTRID>ABC-12345</clTRID></command>'.$E2,'message_delete build xml');
 
-#  abuse 
+#  abuse
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="10" id="123456"><qDate>2007-09-26T07:31:30</qDate><msg>Domain Activity Notification</msg></msgQ><resData><abuse-feed:infData xmlns:abuse-feed="http://www.nominet.org.uk/epp/xml/nom-abuse-feed-1.0" xsi:schemaLocation="http://www.nominet.org.uk/epp/xml/nom-abuse-feed-1.0 nom-abuse-feed-1.0.xsd"><abuse-feed:key>phished.co.uk</abuse-feed:key><abuse-feed:activity>phishing</abuse-feed:activity><abuse-feed:source>Netcraft</abuse-feed:source><abuse-feed:hostname>www.youve.been.phished.co.uk</abuse-feed:hostname><abuse-feed:url>http://www.youve.been.phished.co.uk/give/us/your/money.htm</abuse-feed:url><abuse-feed:date>2011-03-01T11:44:01</abuse-feed:date><abuse-feed:ip>213.135.134.24</abuse-feed:ip><abuse-feed:nameserver>ns0.crooked.dealings.net</abuse-feed:nameserver><abuse-feed:dnsAdmin>hostmaster@crooked.dealings.net</abuse-feed:dnsAdmin><abuse-feed:target>paypal</abuse-feed:target><abuse-feed:wholeDomain>Y</abuse-feed:wholeDomain></abuse-feed:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($rc->is_success(),1,'message_retrieve is_success (abuse)');
@@ -433,7 +433,7 @@ is($dri->get_info('action','message',123456),'registrant_change_auth_request','m
 is($dri->get_info('case_id','message',123456),'3560','message get_info(case_id)');
 is_deeply($dri->get_info('domains','message',123456),[qw/epp-example1.co.uk epp-example2.co.uk/],'message get_info(domains)');
 
-# registrant change 
+# registrant change
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="4" id="123456"><qDate>2007-10-06T10:29:30Z</qDate><msg>Registrant Transfer Notification</msg></msgQ><resData><n:trnData xmlns:n="http://www.nominet.org.uk/epp/xml/std-notifications-1.2" xsi:schemaLocation="http://www.nominet.org.uk/epp/xml/std-notifications-1.2 std-notifications-1.2.xsd"><n:orig>p@automaton-example.org.uk</n:orig><n:accountId>58658458</n:accountId>12<n:oldAccountId>596859</n:oldAccountId><n:domainListData noDomains="2" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><n:domainName>epp-example1.co.uk</n:domainName><n:domainName>epp-example2.co.uk</n:domainName></n:domainListData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>ST68956589R4</contact:id><contact:roid>123456-UK</contact:roid><contact:status s="ok"/><contact:postalInfo type="loc"><contact:name>Mr R. Strant</contact:name><contact:addr><contact:street>2102 High Street</contact:street><contact:city>Oxford</contact:city><contact:sp>Oxon</contact:sp><contact:pc>OX1 1QQ</contact:pc><contact:cc>GB</contact:cc></contact:addr></contact:postalInfo><contact:email>example@epp-example1.co.uk</contact:email><contact:clID>TEST</contact:clID><contact:crID>TEST</contact:crID><contact:crDate>1999-04-03T22:00:00.0Z</contact:crDate><contact:upID>domains@isp.com</contact:upID><contact:upDate>1999-12-03T09:00:00.0Z</contact:upDate></contact:infData></n:trnData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($rc->is_success(),1,'message_retrieve is_success (registrant_change)');

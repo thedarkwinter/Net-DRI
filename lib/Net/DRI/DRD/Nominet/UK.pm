@@ -1,7 +1,7 @@
-## Domain Registry Interface, .UK (Nominet) policies for Net::DRI
+## Domain Registry Interface, Nominet (UK) policies for Net::DRI
 ##
 ## Copyright (c) 2007-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2013-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::Nominet;
+package Net::DRI::DRD::Nominet::UK;
 
 use strict;
 use warnings;
@@ -25,13 +25,13 @@ use Net::DRI::Exception;
 
 use DateTime::Duration;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_update_status_add domain_update_status_del domain_update_status_set domain_update_status domain_status_allows_delete domain_status_allows_update domain_status_allows_transfer domain_status_allows_renew domain_status_allows domain_current_status host_update_status_add host_update_status_del host_update_status_set host_update_status host_current_status contact_update_status_add contact_update_status_del contact_update_status_set contact_update_status contact_current_status contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query  domain_transfer_stop domain_transfer_query host_delete contact_delete/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_update_status_add domain_update_status_del domain_update_status_set domain_update_status domain_status_allows_delete domain_status_allows_update domain_status_allows_transfer domain_status_allows_renew domain_status_allows domain_current_status host_update_status_add host_update_status_del host_update_status_set host_update_status host_current_status contact_update_status_add contact_update_status_del contact_update_status_set contact_update_status contact_current_status contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query domain_transfer_stop domain_transfer_query host_delete contact_delete/);
 
 =pod
 
 =head1 NAME
 
-Net::DRI::DRD::Nominet - .UK (Nominet) policies for Net::DRI
+Net::DRI::DRD::Nominet::UK - Nominet (.UK) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -56,7 +56,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007-2011 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2013-2016 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2013-2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,7 @@ sub new
 }
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'Nominet'; }
+sub name     { return 'Nominet::UK'; }
 sub tlds {
   my @uk = ('uk', map { $_.'.uk'} qw/co ltd me net org plc sch/);
   # from Schools_Domain_Name_Rules.pdf

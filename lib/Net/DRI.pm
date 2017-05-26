@@ -215,6 +215,7 @@ sub new
      'IT' => 'IITCNR',
      'LC' => 'Afilias::Shared',
      'LU' => 'RESTENA',
+     'MAM' => 'Nominet::MMX',
      'ME' => 'Afilias::Shared',
      'MN' => 'Afilias::Shared',
      'MOBI' => 'Afilias::Afilias',
@@ -222,6 +223,7 @@ sub new
      'MX_GTLD' => 'ECOMLAC',
      'NAME' => 'VeriSign::NAME',
      'NO' => 'NORID',
+     'Nominet' => 'Nominet::UK',
      'NU' => 'IIS',
      'ORG' => 'Afilias::PIR',
      'PL' => 'NASK',
@@ -352,7 +354,7 @@ sub tld2reg
 
 sub installed_registries
 {
- return qw/AdamsNames Afilias AFNIC ARNES auDA BelizeNIC BookMyName CentralNic CGIBR CIRA CoCCA CZNIC Datacom DENIC DNSBelgium DNSPT doMEn Domicilium DotAsia DotCooperation dotMOBI EURid Gandi GDI ICMRegistry IENUMAT IRegistry ISPAPI IIS IITCNR IUSN NASK Neustar::BIZ Neustar::US NicAT NicLC Nominet NORID OpenSRS OVH PANDI PIR puntCAT RDS RegistryPro RESTENA SaintVincentGrenadines SIDN SITA SONIC SWITCH TCI TELEGreenland Telnic TRA Tralliance UHSA UPU VCS VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore ZACR Neustar::COInternet Neustar::Narwal/;
+ return qw/AdamsNames Afilias AFNIC ARNES auDA BelizeNIC BookMyName CentralNic CGIBR CIRA CoCCA CZNIC Datacom DENIC DNSBelgium DNSPT doMEn Domicilium DotAsia DotCooperation dotMOBI EURid Gandi GDI ICMRegistry IENUMAT IRegistry ISPAPI IIS IITCNR IUSN NASK Neustar::BIZ Neustar::US NicAT NicLC Nominet::UK Nominet::GTLD Nominet::MMX NORID OpenSRS OVH PANDI PIR puntCAT RDS RegistryPro RESTENA SaintVincentGrenadines SIDN SITA SONIC SWITCH TCI TELEGreenland Telnic TRA Tralliance UHSA UPU VCS VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore ZACR Neustar::COInternet Neustar::Narwal/;
 }
 
 ####################################################################################################

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 523;
+use Test::More tests => 525;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -48,7 +48,9 @@ use_ok('Net::DRI::DRD::auDA');
 use_ok('Net::DRI::DRD::Neustar::US');
 use_ok('Net::DRI::DRD::OVH');
 use_ok('Net::DRI::DRD::BookMyName');
-use_ok('Net::DRI::DRD::Nominet');
+use_ok('Net::DRI::DRD::Nominet::UK');
+use_ok('Net::DRI::DRD::Nominet::MMX');
+use_ok('Net::DRI::DRD::Nominet::GTLD');
 use_ok('Net::DRI::DRD::DENIC');
 use_ok('Net::DRI::DRD::SWITCH');
 use_ok('Net::DRI::DRD::FRED');
