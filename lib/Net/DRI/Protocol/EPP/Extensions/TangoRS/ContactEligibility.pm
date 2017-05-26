@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility;
+package Net::DRI::Protocol::EPP::Extensions::TangoRS::ContactEligibility;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility - Contact Eligibility Extension for Tango-RS (?) and Corenic.
+Net::DRI::Protocol::EPP::Extensions::TangoRS::ContactEligibility - Contact Eligibility Extension for Tango-RS (?) and Corenic.
 At the moment only been used for .swiss. Since CORENIC use a similar EPP implementation continue add the extension under TANGO :)
 
 =head1 DESCRIPTION
@@ -103,7 +103,7 @@ sub create
 
 sub update
 {
- my ($epp,$contact,$todo)=@_; 
+ my ($epp,$contact,$todo)=@_;
  my $mes=$epp->message();
  my $extc=$todo->set('info');
 
@@ -123,7 +123,7 @@ sub info_parse
  return unless $mes->is_success();
  my $infdata=$mes->get_extension($mes->ns('el'),'infData');
  return unless defined $infdata;
-  
+
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
    my ($n,$c)=@$el;

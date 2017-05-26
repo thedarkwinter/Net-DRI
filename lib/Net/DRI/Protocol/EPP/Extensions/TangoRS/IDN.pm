@@ -1,4 +1,4 @@
-## Domain Registry Interface, EPP TANGO (Knipp) IDN Extension
+## Domain Registry Interface, EPP TangoRS (Knipp) IDN Extension
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::TANGO::IDN;
+package Net::DRI::Protocol::EPP::Extensions::TangoRS::IDN;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::TANGO::IDN - IDN Extensions for TANGO
+Net::DRI::Protocol::EPP::Extensions::TangoRS::IDN - IDN Extensions for TANGO
 
 =head1 DESCRIPTION
 
@@ -39,14 +39,14 @@ Adds the IDN (http://xmlns.tango-rs.net/epp/idn-1.0)  extensions to domain comma
 
 =item idn variants
 
- eg. 
+ eg.
  $idn = $dri->local_object('idn')->autodetect('xn--sdcdc.tld','de')->variants(['xn--sdcsdc.tld']);
  $rc = $dri->domain_create('domain.tld',{... idn => $idn } );
- 
+
  $idn = $dri->local_object('idn');
  $toc->add('idn',$idn->clone()->variants(['xn--sdcsdccs.tld]));
  $rc = $dri->domain_update('domain.tld',$toc);
- 
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
@@ -99,7 +99,7 @@ sub _build_idnContainerType
  my ($rd,$force_empty_variants) = @_;
  Net::DRI::Exception::usererr_invalid_parameters('Value for "idn" key must be a Net::DRI::Data::IDN object') unless UNIVERSAL::isa($rd->{idn},'Net::DRI::Data::IDN');
  Net::DRI::Exception::usererr_insufficient_parameters('IDN object hash must have a ISO 639-1/2 or 15924 language tag') unless (defined $rd->{idn}->iso639_1() || $rd->{idn}->iso639_2() || defined $rd->{idn}->iso15924());
- 
+
  ## IDN
  my @n;
  if (defined $rd->{idn}->iso639_1())
@@ -159,7 +159,7 @@ sub parse
  return unless my $idn = _parse_idnContainerType($po,$oname,$infData);
  $rinfo->{$otype}->{$oname}->{idn}=$idn;
  return;
-} 
+}
 
 sub check
 {
@@ -191,9 +191,9 @@ sub update
 
  my $add = $todo->add('idn');
  my $del = $todo->del('idn');
- return unless ( ($add && UNIVERSAL::isa($add,'Net::DRI::Data::IDN') && $add->variants()) 
+ return unless ( ($add && UNIVERSAL::isa($add,'Net::DRI::Data::IDN') && $add->variants())
                                   || ($del && UNIVERSAL::isa($del,'Net::DRI::Data::IDN') && $del->variants()) );
- 
+
  my @toadd = @{$add->{variants}} if $add->variants();
  my @todel = @{$del->{variants}} if $del->variants();
  return unless (@toadd || @todel);

@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::TANGO;
+package Net::DRI::Protocol::EPP::Extensions::TangoRS;
 
 use strict;
 use warnings;
@@ -32,7 +32,7 @@ sub setup
 
 sub default_extensions {
  my ($self,$pp) = @_;
- my @ext = qw/GracePeriod SecDNS LaunchPhase TANGO::IDN TANGO::Auction/;
+ my @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction/;
  push @ext, 'CentralNic::Fee' if $pp->{enable_fee};
  return @ext;
 }

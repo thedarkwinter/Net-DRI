@@ -471,22 +471,22 @@ xn--80asehdb xn--80aswg xn--mgbab2bd barcelona eurovision erni eurovision eus ga
 
 =head3 Custom extensions: (From Tango-RS but with CoreNIC namespaces)
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> : http://xmlns.corenic.net/epp/idn-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::IDN> : http://xmlns.corenic.net/epp/idn-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> : http://xmlns.corenic.net/epp/auction-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction> : http://xmlns.corenic.net/epp/auction-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::Promotion> : http://xmlns.corenic.net/epp/promotion-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Promotion> : http://xmlns.corenic.net/epp/promotion-1.0
 
 =cut
 
  return {
      bep_type => 1, # dedicated registry
      tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORE',{}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'corenic';
 
@@ -1131,11 +1131,11 @@ pay is in contention
 
 =head3 Custom extensions:
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> urn:ar:params:xml:ns:idn-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::IDN> urn:ar:params:xml:ns:idn-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> urn:ar:params:xml:ns:auction-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction> urn:ar:params:xml:ns:auction-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.6
 
@@ -1146,7 +1146,7 @@ Fee extension is currently only used in .NRW and for domain_check command only.
  return {
      bep_type => 1, # dedicated registry
      tlds => ['ruhr','cologne','gmx','ifm','koeln','nrw'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TANGO',{enable_fee => ($tld eq 'nrw')}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{enable_fee => ($tld eq 'nrw')}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'tango';
 

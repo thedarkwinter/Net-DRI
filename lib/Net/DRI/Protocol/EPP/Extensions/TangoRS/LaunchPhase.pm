@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase;
+package Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase;
 
 use strict;
 use warnings;
@@ -28,7 +28,7 @@ use Net::DRI::Protocol::EPP::Extensions::LaunchPhase;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase - LaunchPhase EPP Extension for Corenic
+Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase - LaunchPhase EPP Extension for Corenic
 
 =head1 DESCRIPTION
 

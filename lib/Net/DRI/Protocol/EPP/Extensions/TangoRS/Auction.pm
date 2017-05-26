@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::TANGO::Auction;
+package Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::TANGO::Auction - Auction Extension for Tango-RS and Corenic
+Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction - Auction Extension for Tango-RS and Corenic
 
 =head1 DESCRIPTION
 
@@ -88,7 +88,7 @@ sub build_bid
 {
   my ($rd) = shift;
   Net::DRI::Exception::usererr_invalid_parameters('auction currency') unless exists $rd->{currency} && $rd->{currency}  =~ m/^\w{3}$/; # 3 letter currency code
-  Net::DRI::Exception::usererr_invalid_parameters('auction bid') unless exists $rd->{bid} && $rd->{bid}  =~ m/^\d+(.\d+)?$/; 
+  Net::DRI::Exception::usererr_invalid_parameters('auction bid') unless exists $rd->{bid} && $rd->{bid}  =~ m/^\d+(.\d+)?$/;
   my @n;
   push @n, ['auction:bid',{'currency'=>uc($rd->{currency}) },$rd->{bid} ] ;
   return @n;
@@ -100,7 +100,7 @@ sub create
 {
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
- return unless Net::DRI::Util::has_key($rd,'auction'); 
+ return unless Net::DRI::Util::has_key($rd,'auction');
 
  my @n = build_bid($rd->{'auction'});
  return unless @n;
@@ -132,7 +132,7 @@ sub info_parse
  return unless $mes->is_success();
  my $infdata=$mes->get_extension($mes->ns('auction'),'infData');
  return unless defined $infdata;
-  
+
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
    my ($n,$c)=@$el;

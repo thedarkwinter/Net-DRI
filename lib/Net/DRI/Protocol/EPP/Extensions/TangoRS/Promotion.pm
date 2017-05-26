@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::TANGO::Promotion;
+package Net::DRI::Protocol::EPP::Extensions::TangoRS::Promotion;
 
 use strict;
 use warnings;
@@ -28,7 +28,7 @@ use DateTime::Format::Strptime;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::TANGO::Promotion - Promotion Extension for Tango-RS and Corenic
+Net::DRI::Protocol::EPP::Extensions::TangoRS::Promotion - Promotion Extension for Tango-RS and Corenic
 
 =head1 DESCRIPTION
 

@@ -1,7 +1,7 @@
-## Domain Registry Interface, CORENIC Driver
+## Domain Registry Interface, TangoRS (Knipp) Driver
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013,2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::CORENIC;
+package Net::DRI::DRD::TangoRS::TangoRS;
 
 use strict;
 use warnings;
@@ -26,13 +26,13 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::CORENIC - CORENIC Driver for Net::DRI
+Net::DRI::DRD::TangoRS::TangoRS - Tango Registry Services (Knipp) Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension CoreNIC New Generic TLDs
+Additional domain extension Tango''s New Generic TLDs
 
-CoreNIC utilises the following standard, and custom extensions. Please see the test files for more examples.
+TANGO utilises the following standard extensions. Please see the test files for more examples.
 
 =head2 Standard extensions:
 
@@ -42,17 +42,11 @@ CoreNIC utilises the following standard, and custom extensions. Please see the t
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
 
-=head2 Custom extensions: (From TANGO-RS but with CoreNIC namespaces)
+=head2 Custom extensions:
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> : http://xmlns.corenic.net/epp/idn-1.0
+=head3 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::IDN> urn:ar:params:xml:ns:idn-1.0
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> : http://xmlns.corenic.net/epp/auction-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::Promotion> : http://xmlns.corenic.net/epp/promotion-1.0
+=head3 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction> urn:ar:params:xml:ns:auction-1.0
 
 =head1 SUPPORT
 
@@ -72,8 +66,8 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2013,2015 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2014,2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -93,20 +87,20 @@ sub new
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=0;
  $self->{info}->{contact_i18n}=4; ## LOC+INT
-
  return $self;
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'CORENIC'; }
-sub tlds     { return ('xn--80asehdb','xn--80aswg','xn--mgbab2bd','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'); }
+sub name     { return 'TangoRS::TangoRS'; }
+sub tlds     { return (qw/ruhr cologne gmx ifm koeln nrw/); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{}) if $type eq 'epp';
+
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{}) if $type eq 'epp';
  return;
 }
 

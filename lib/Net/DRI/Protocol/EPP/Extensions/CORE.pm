@@ -1,4 +1,4 @@
-## Domain Registry Interface, CORENIC EPP extensions
+## Domain Registry Interface, TangoRS CORE EPP extensions
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CORENIC;
+package Net::DRI::Protocol::EPP::Extensions::CORE;
 
 use strict;
 use warnings;
@@ -41,7 +41,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS TANGO::IDN TANGO::Auction TANGO::LaunchPhase TANGO::ContactEligibility TANGO::Promotion/; }
+sub default_extensions { return qw/GracePeriod SecDNS TangoRS::IDN TangoRS::Auction TangoRS::LaunchPhase TangoRS::ContactEligibility TangoRS::Promotion/; }
 
 ####################################################################################################
 1;
