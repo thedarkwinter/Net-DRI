@@ -1,4 +1,4 @@
-## Domain Registry Interface, .NZ
+## Domain Registry Interface, InternetNZ (.NZ)
 ##
 ## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::NZ;
+package Net::DRI::DRD::InternetNZ;
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/contact_transfer conta
 
 =head1 NAME
 
-Net::DRI::DRD::NZ - .NZ
+Net::DRI::DRD::InternetNZ - .NZ
 
 =head1 DESCRIPTION
 
@@ -47,13 +47,11 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>;
-Michael Holloway E<lt>michael@thedarkwinter.comE<gt>;
 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2016: Paulo Jorge <paullojorgge@gmail.com>; 
+Copyright (c) 2016: Paulo Jorge <paullojorgge@gmail.com>;
 Michael Holloway <michael@thedarkwinter.com>;
 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
@@ -79,7 +77,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(months => $_) } (1..120); }
-sub name     { return 'NZ'; }
+sub name     { return 'InternetNZ'; }
 sub tlds     { return (qw/nz/, map { $_.'.nz'} qw/ac co cri geek gen govt health iwi kiwi maori mil net org school govt parliament/ ); } # I got them from here: https://en.wikipedia.org/wiki/.nz
 sub object_types { return qw(domain contact); }
 sub profile_types { return qw/epp/; }

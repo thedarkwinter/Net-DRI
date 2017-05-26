@@ -239,6 +239,7 @@ sub new
      'NO' => 'NORID',
      'Nominet' => 'Nominet::UK',
      'NU' => 'IIS',
+     'NZ' => 'InternetNZ',
      'ORG' => 'Afilias::PIR',
      'PL' => 'NASK',
      'PRO' => 'Afilias::Afilias',

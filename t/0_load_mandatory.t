@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 527;
+use Test::More tests => 528;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -112,6 +112,7 @@ use_ok('Net::DRI::DRD::TCI::MSKIX');
 use_ok('Net::DRI::DRD::TCI::RU');
 use_ok('Net::DRI::DRD::TCI::RF');
 use_ok('Net::DRI::DRD::TCI::SU');
+use_ok('Net::DRI::DRD::InternetNZ');
 use_ok('Net::DRI::Data::Raw');
 use_ok('Net::DRI::Data::Hosts');
 use_ok('Net::DRI::Data::Changes');
