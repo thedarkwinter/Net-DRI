@@ -215,6 +215,7 @@ sub new
      'CN' => 'CNNIC::CN',
      'CNNIC' => 'CNNIC::CN',
      'CZ' => 'CZNIC',
+     'DK' => 'DKHostmaster',
      'DONUTS' => 'UnitedTLD::Donuts',
      'GL' => 'TELEGreenland',
      'HN' => 'RDS',

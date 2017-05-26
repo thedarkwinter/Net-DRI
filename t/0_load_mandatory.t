@@ -98,7 +98,7 @@ use_ok('Net::DRI::DRD::CRR');
 use_ok('Net::DRI::DRD::NGTLD');
 use_ok('Net::DRI::DRD::NICMexico');
 use_ok('Net::DRI::DRD::LV');
-use_ok('Net::DRI::DRD::DK');
+use_ok('Net::DRI::DRD::DKHostmaster');
 use_ok('Net::DRI::DRD::PH');
 use_ok('Net::DRI::DRD::ECOMLAC');
 use_ok('Net::DRI::DRD::CNNIC::CN');

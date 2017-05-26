@@ -1,4 +1,4 @@
-## Domain Registry Interface, .DK Policies for EPP
+## Domain Registry Interface, DKHostmaster (.DK) Policies for EPP
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -15,7 +15,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::DK;
+package Net::DRI::DRD::DKHostmaster;
 
 use strict;
 use warnings;
@@ -33,7 +33,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete contact
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::DK - .DK EPP Contact extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::DKHostmaster - .DK EPP Contact extension commands for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -83,7 +83,7 @@ sub new {
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'DK'; }
+sub name     { return 'DKHostmaster'; }
 sub tlds     { return 'dk'; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
