@@ -246,6 +246,7 @@ sub new
      'PT' => 'DNSPT',
      'RegBox' => 'NicAT::RegBox',
      'RF' => 'TCI::RF',
+     'RO' => 'NICRO',
      'RU' => 'TCI::RU',
      'SC' => 'Afilias::Shared',
      'SE' => 'IIS',

@@ -1,4 +1,4 @@
-## Domain Registry Interface, .RO Policies for EPP [https://epp2-test.rotld.ro/epp/index.html]
+## Domain Registry Interface, NICRO (.RO) Policies for EPP [https://epp2-test.rotld.ro/epp/index.html]
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::RO;
+package Net::DRI::DRD::NICRO;
 
 use strict;
 use warnings;
@@ -32,7 +32,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_delete host_upd
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::RO - .RO EPP Contact extension commands for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::NICRO - (.RO) EPP Contact extension commands for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -80,7 +80,7 @@ sub new {
 }
 
 sub periods         { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name            { return 'RO'; }
+sub name            { return 'NICRO'; }
 sub tlds            { return ('ro',map { $_.'.ro'} qw/arts com firm info org rec store tm www nt/ ); }
 sub object_types    { return ('domain','contact','ns'); }
 sub profile_types   { return qw/epp/; }

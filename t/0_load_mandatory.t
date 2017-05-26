@@ -105,7 +105,7 @@ use_ok('Net::DRI::DRD::CNNIC::CN');
 use_ok('Net::DRI::DRD::CNNIC::GTLD');
 use_ok('Net::DRI::DRD::NICEC');
 use_ok('Net::DRI::DRD::HostmasterUA');
-use_ok('Net::DRI::DRD::RO');
+use_ok('Net::DRI::DRD::NICRO');
 use_ok('Net::DRI::DRD::TCI::TCI');
 use_ok('Net::DRI::DRD::TCI::GTLD');
 use_ok('Net::DRI::DRD::TCI::MSKIX');
