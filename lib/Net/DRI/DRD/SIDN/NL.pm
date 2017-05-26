@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::DRD::SIDN;
+package Net::DRI::DRD::SIDN::NL;
 
 use strict;
 use warnings;
@@ -32,7 +32,7 @@ sub new
  return $self;
 }
 
-sub name          { return 'SIDN'; }
+sub name          { return 'SIDN::NL'; }
 sub tlds          { return (qw/nl/); }
 sub periods       { return map { DateTime::Duration->new(months => $_) } (1,3,12); } # default 3 months. Accept as well 1 year <=> 12 months
 sub object_types  { return (qw/domain contact ns/); }
@@ -67,7 +67,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::DRD::SIDN - SIDN (.NL) Registry driver for Net::DRI
+Net::DRI::DRD::SIDN::NL - SIDN (.NL) Registry driver for Net::DRI
 
 =head1 SYNOPSIS
 

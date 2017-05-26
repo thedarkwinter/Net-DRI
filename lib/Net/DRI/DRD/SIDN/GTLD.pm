@@ -1,7 +1,7 @@
 ## Domain Registry Interface, SIDN Registry Driver for GTLDs
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2015,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##           (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::SIDN_GTLD;
+package Net::DRI::DRD::SIDN::GTLD;
 
 use strict;
 use warnings;
@@ -30,7 +30,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/contact_transfer conta
 
 =head1 NAME
 
-Net::DRI::DRD::SIDN_GTLD - SIDN GTLD Registry Driver for Net::DRI
+Net::DRI::DRD::SIDN::GTLD - SIDN GTLD Registry Driver for Net::DRI
 
 Additional domain extension SIDN New Generic TLDs. Note this is separate from SIDN ccTLD Driver as the systems differ.
 
@@ -60,7 +60,7 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2015 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2015,2017 Michael Holloway <michael@thedarkwinter.com>.
           (c) 2015 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
@@ -84,9 +84,9 @@ sub new
  return $self;
 }
 
-sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10);
+sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 
-sub name     { return 'SIDN_GTLD'; }
+sub name     { return 'SIDN::GTLD'; }
 
 sub tlds { return qw/amsterdam/ ; }
 
@@ -101,4 +101,4 @@ sub transport_protocol_default
 
 ####################################################################################################
 
-1; 
+1;
