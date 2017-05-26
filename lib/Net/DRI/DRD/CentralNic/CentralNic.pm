@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::DRD::CentralNic;
+package Net::DRI::DRD::CentralNic::CentralNic;
 
 use strict;
 use warnings;
@@ -29,7 +29,7 @@ use Net::DRI::Util;
 
 =head1 NAME
 
-Net::DRI::DRD::CentralNic - CentralNic (gTLD and SLD) Registry driver for Net::DRI
+Net::DRI::DRD::CentralNic::CentralNic - CentralNic (gTLD and SLD) Registry driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -49,7 +49,13 @@ CentralNic utilises the following standard extensions. Please see the test files
 
 =head2 Custom extensions:
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.4
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::AuxContact> urn:ietf:params:xml:ns:auxcontact-0.1
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::RegType> urn:ietf:params:xml:ns:regtype-0.1
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::COOP::Contact> http://www.nic.coop/contactCoopExt-1.0
 
 =head1 SUPPORT
 
@@ -95,14 +101,14 @@ sub new
 }
 
 sub periods { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name { return 'CentralNic'; }
+sub name { return 'CentralNic::CentralNic'; }
 sub tlds {
   my @coms = (map { $_.'.com' } qw/africa ar br cn de eu gb gr hu jpn kr mex no qc ru sa se uk us uy za/);
   my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
   my @orgs = (map { $_.'.org' } qw/us ae/);
   my @others = qw/pw com.de/;
   my @ngtlds = qw/art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space storage store tech theatre tickets website wiki wme xyz/;
-  my @ngtlds_contested = qw/reality now hotel forum gay mail llc/; # some of these might go to other registries
+  my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
   return (@coms,@nets,@orgs,@others,@ngtlds);
 }
 
@@ -112,28 +118,9 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{'brown_fee_version' => '0.8'}) if $type eq 'epp';
  return;
 }
-
-## From http://centralnicstatus.com/2011/07/01/mandatory-use-of-epp-client-ssl-certificates-2011-07-25/
-## certificates are now mandatory
-## (stolen from DRD/COOP, see comment in it)
-
-# FIXME, should we not somehow make a more generic way of doing this since every (?) epp registry requires it?
-sub transport_protocol_init
-{
- my ($self,$type,$tc,$tp,$pc,$pp,$test)=@_;
-
- if ($type eq 'epp' && !$test)
- {
-  my @n=grep { ! exists($tp->{$_}) || ! defined($tp->{$_}) || ! $tp->{$_}} qw/ssl_key_file ssl_cert_file ssl_ca_file/;
-  Net::DRI::Exception::usererr_insufficient_parameters('These transport parameters must be defined: '.join(' ',@n)) if @n;
- }
-
- return;
-}
-
 
 ####################################################################################################
 

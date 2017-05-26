@@ -202,6 +202,8 @@ sub new
      'BR' => 'CGIBR',
      'BZ' => 'Afilias::Shared',
      'CAT' => 'puntCAT',
+     'CentralNic' => 'CentralNic::CentralNic',
+     'CentralNicGW' => 'CentralNic::Gateway',
      'COOP' => 'DotCooperation',
      'COZA' => 'ZACR',
      'CZ' => 'CZNIC',

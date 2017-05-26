@@ -1,4 +1,4 @@
-## Domain Registry Interface, CentralNicGW Driver
+## Domain Registry Interface, CentralNic Gateway (ccTLD) Driver
 ##
 ## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::CentralNicGW;
+package Net::DRI::DRD::CentralNic::Gateway;
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::CentralNicGW - CentralNicGW Driver for Net::DRI
+Net::DRI::DRD::CentralNic::Gateway - CentralNic Gateway (ccTLD) Driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -73,12 +73,11 @@ sub new
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=0;
  $self->{info}->{contact_i18n}=4; ## LOC+INT
-
  return $self;
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'CentralNicGW'; }
+sub name     { return 'CentralNic::Gateway'; }
 sub tlds     { return (qw/am cx fm la radio.fm radio.am/); }
 sub object_types { return qw(domain contact ns); }
 sub profile_types { return qw/epp/; }
@@ -86,8 +85,7 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
-
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','CentralNic::RegType','CentralNic::AuxContact'], 'brown_fee_version' => '0.8' }) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{'brown_fee_version' => '0.8'}) if $type eq 'epp';
 
  return;
 }
