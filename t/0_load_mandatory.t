@@ -103,7 +103,7 @@ use_ok('Net::DRI::DRD::PH');
 use_ok('Net::DRI::DRD::ECOMLAC');
 use_ok('Net::DRI::DRD::CNNIC::CN');
 use_ok('Net::DRI::DRD::CNNIC::GTLD');
-use_ok('Net::DRI::DRD::EC');
+use_ok('Net::DRI::DRD::NICEC');
 use_ok('Net::DRI::DRD::HostmasterUA');
 use_ok('Net::DRI::DRD::RO');
 use_ok('Net::DRI::DRD::TCI::TCI');

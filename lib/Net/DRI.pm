@@ -217,6 +217,7 @@ sub new
      'CZ' => 'CZNIC',
      'DK' => 'DKHostmaster',
      'DONUTS' => 'UnitedTLD::Donuts',
+     'EC' => 'NICEC',
      'GL' => 'TELEGreenland',
      'HN' => 'RDS',
      'ID' => 'PANDI',

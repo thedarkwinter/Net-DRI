@@ -1,4 +1,4 @@
-## Domain Registry Interface, .EC
+## Domain Registry Interface, NICEC (.EC) Policies for EPP
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::EC;
+package Net::DRI::DRD::NICEC;
 
 use strict;
 use warnings;
@@ -28,7 +28,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::DRD::EC - .EC policies
+Net::DRI::DRD::NICEC - .EC policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -75,7 +75,7 @@ sub new {
 }
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name          { return 'EC'; }
+sub name          { return 'NICEC'; }
 sub tlds          { return ('ec',map { $_.'.ec'} qw/com info net fin med pro org edu gob giv mil/ ); }
 sub object_types  { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
