@@ -1,9 +1,9 @@
-package Net::DRI::DRD::SU;
+package Net::DRI::DRD::TCI::SU;
 #===============================================================================
 #
 #         FILE:  SU.pm
 #
-#  DESCRIPTION:  
+#  DESCRIPTION:
 #
 #        FILES:  ---
 #         BUGS:  ---
@@ -19,10 +19,10 @@ use strict;
 use warnings;
 use utf8;
 
-use base qw/Net::DRI::DRD::TCI/;
+use base qw/Net::DRI::DRD::TCI::TCI/;
 
-#sub tlds     { return ('xn--p1ai', 'su', 'ru'); }
 sub tlds     { return ('su'); }
+sub name     { return 'TCI::SU'; }
 
 sub transport_protocol_default
 {
@@ -33,4 +33,3 @@ sub transport_protocol_default
 }
 
 1;
-

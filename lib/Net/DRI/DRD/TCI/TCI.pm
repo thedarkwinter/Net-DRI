@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::TCI;
+package Net::DRI::DRD::TCI::TCI;
 
 use utf8;
 use strict;
@@ -35,7 +35,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
-sub name     { return 'TCI'; }
+sub name     { return 'TCI::TCI'; }
 sub tlds     { return ('xn--p1ai', 'su', 'ru', 'org.ru', 'net.ru', 'pp.ru'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
@@ -106,7 +106,7 @@ sub billing_info
 
 =head1 NAME
 
-Net::DRI::DRD::TCI - TCI (.SU/.RU/.XN--P1AI) Registry Driver for Net::DRI
+Net::DRI::DRD::TCI::TCI - TCI (.SU/.RU/.XN--P1AI) Registry Driver for Net::DRI
 
 =head1 DESCRIPTION
 

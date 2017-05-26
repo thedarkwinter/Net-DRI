@@ -1,9 +1,9 @@
-package Net::DRI::DRD::RF;
+package Net::DRI::DRD::TCI::RF;
 #===============================================================================
 #
 #         FILE:  RF.pm
 #
-#  DESCRIPTION:  
+#  DESCRIPTION:
 #
 #        FILES:  ---
 #         BUGS:  ---
@@ -21,8 +21,8 @@ use utf8;
 
 use base qw/Net::DRI::DRD::TCI/;
 
-#sub tlds     { return ('xn--p1ai', 'su', 'ru'); }
 sub tlds     { return ('xn--p1ai'); }
+sub name     { return 'TCI::RF'; }
 
 sub transport_protocol_default
 {
@@ -33,4 +33,3 @@ sub transport_protocol_default
 }
 
 1;
-

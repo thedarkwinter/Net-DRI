@@ -1,9 +1,9 @@
-package Net::DRI::DRD::MSKIX;
+package Net::DRI::DRD::TCI::MSKIX;
 #===============================================================================
 #
 #         FILE:  MSKIX.pm
 #
-#  DESCRIPTION:  
+#  DESCRIPTION:
 #
 #        FILES:  ---
 #         BUGS:  ---
@@ -22,14 +22,15 @@ use utf8;
 use base qw/Net::DRI::DRD::TCI/;
 
 sub tlds     { return ('mskix', 'pp.ru', 'net.ru', 'org.ru'); }
+sub name     { return 'TCI::MSKIX'; }
 
 sub verify_name_domain
 {
  my ($self,$ndr,$domain,$op)=@_;
- return $self->_verify_name_rules($domain,$op,{check_name => 1, 
- 						check_name_dots => [2], 
+ return $self->_verify_name_rules($domain,$op,{check_name => 1,
+ 						check_name_dots => [2],
 						my_tld => 1
-                                              });                                              
+                                              });
 }
 
 sub transport_protocol_default
@@ -41,4 +42,3 @@ sub transport_protocol_default
 }
 
 1;
-
