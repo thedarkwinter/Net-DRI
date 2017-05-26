@@ -207,6 +207,7 @@ sub new
      'CAT' => 'puntCAT',
      'CentralNic' => 'CentralNic::CentralNic',
      'CentralNicGW' => 'CentralNic::Gateway',
+     'CIRA' => 'CIRA::CA',
      'CO' => 'Neustar::COInternet',
      'COOP' => 'DotCooperation',
      'CORENIC' => 'TangoRS::CORE',

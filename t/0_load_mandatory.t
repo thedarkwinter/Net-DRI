@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 526;
+use Test::More tests => 527;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -69,7 +69,8 @@ use_ok('Net::DRI::DRD::SIDN::NL');
 use_ok('Net::DRI::DRD::SIDN::GTLD');
 use_ok('Net::DRI::DRD::IITCNR');
 use_ok('Net::DRI::DRD::IRegistry');
-use_ok('Net::DRI::DRD::CIRA');
+use_ok('Net::DRI::DRD::CIRA::CA');
+use_ok('Net::DRI::DRD::CIRA::Fury');
 use_ok('Net::DRI::DRD::TELEGreenland');
 use_ok('Net::DRI::DRD::ISPAPI');
 use_ok('Net::DRI::DRD::TRA::AE');

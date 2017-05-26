@@ -1,7 +1,6 @@
-## Domain Registry Interface, UnitedTLD Rightside TLD Driver
+## Domain Registry Interface, CIRA Fury
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::UNITEDTLD;
+package Net::DRI::DRD::CIRA::Fury;
 
 use strict;
 use warnings;
@@ -26,13 +25,13 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::MAM - United TLD Driver for Net::DRI
+Net::DRI::DRD::CIRA::Fury - CIRA Fury Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension United TLD New Generic TLDs.
+Additional domain extension for CIRA Fury gTLD Platform
 
-United TLDutilises the following standard extensions. Please see the test files for more examples.
+CIRA  utilises the following standard, and custom extensions. Please see the test files for more examples.
 
 =head2 Standard extensions:
 
@@ -44,11 +43,9 @@ United TLDutilises the following standard extensions. Please see the test files 
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
 
-=head2 Custom Extensions
+=head2 Custom extensions:
 
-=head3 L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
-
-=head3 L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.11
 
 =head1 SUPPORT
 
@@ -68,8 +65,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -93,21 +89,15 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'UNITEDTLD'; }
-
-sub tlds  {
- my @dpml = qw/dpml.pub/; # DPML
- my @gtlds = qw/actor airforce army attorney auction band consulting dance degree democrat dentist engineer family forsale futbol games gives haus immobilien kaufen lawyer live market moda mortgage navy news ninja pub rehab republican reviews rip rocks sale social software studio vet video /;
- return (@dpml,@gtlds);
-}
-sub object_types { return ('domain','contact','ns'); }
+sub name     { return 'CIRA::Fury'; }
+sub tlds     { return qw/kiwi/; }
+sub object_types  { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
-
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{ custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.11' }) if $type eq 'epp';
  return;
 }
 
@@ -123,4 +113,5 @@ sub verify_name_domain
 }
 
 ####################################################################################################
+
 1;

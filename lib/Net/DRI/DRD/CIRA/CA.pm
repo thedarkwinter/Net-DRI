@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::CIRA;
+package Net::DRI::DRD::CIRA::CA;
 
 use strict;
 use warnings;
@@ -38,7 +38,7 @@ sub new
 }
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name          { return 'CIRA'; }
+sub name          { return 'CIRA::CA'; }
 sub tlds          { return (qw/ca/); }
 sub object_types  { return (qw/domain contact ns/); }
 sub profile_types { return qw/epp/; }
