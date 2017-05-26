@@ -191,6 +191,7 @@ sub new
  # used for backwards compatibility on depricated TLDs in function check_depricated_drd
  $self->{depricated_drd_map} = {
      'ARI' => 'Neustar::Narwal',
+     'AE' => 'TRA::AE',
      'AERO' => 'SITA',
      'AFNIC' => 'AFNIC::AFNIC',
      'AFNIC_GTLD' => 'AFNIC::GTLD',
@@ -199,7 +200,7 @@ sub new
      'AT' => 'NicAT::AT',
      'AU' => 'auDA',
      'BE' => 'DNSBelgium',
-     'BH' => 'TRA',
+     'BH' => 'TRA::BH',
      'BIZ' => 'Neustar::BIZ',
      'BR' => 'CGIBR',
      'BZ' => 'Afilias::Shared',
