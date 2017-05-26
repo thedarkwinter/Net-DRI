@@ -227,6 +227,7 @@ sub new
      'IT' => 'IITCNR',
      'LC' => 'Afilias::Shared',
      'LU' => 'RESTENA',
+     'LV' => 'LVRegistry',
      'MAM' => 'Nominet::MMX',
      'ME' => 'Afilias::Shared',
      'MN' => 'Afilias::Shared',

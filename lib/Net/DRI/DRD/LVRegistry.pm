@@ -1,4 +1,4 @@
-## Domain Registry Interface, .LV Policies for EPP [http://www.nic.lv/eppdoc/html/index.html]
+## Domain Registry Interface, LVRegistry (.LV) Policies for EPP [http://www.nic.lv/eppdoc/html/index.html]
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::LV;
+package Net::DRI::DRD::LVRegistry;
 
 use strict;
 use warnings;
@@ -32,11 +32,13 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/host_update host_curre
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::LV - .LV EPP Contact extension commands for Net::DRI
+Net::DRI::DRD::LVRegistry - LVRegistry (.LV) EPP polocies for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension to manage auto renewal settings. See t/662lv_epp.t for example.
+Driver for .ES conections.
+
+Additional domain extension to manage auto renewal settings. See LV.t for example.
 
 Additional contact extension with 'vat' and 'orgno' fields, see L<Net::DRI::Data::Contact::LV>
 
@@ -82,7 +84,7 @@ sub new {
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'LV'; }
+sub name     { return 'LVRegistry'; }
 sub tlds     { return ('lv',map { $_.'.lv'} qw/com id net org edu asn conf/ ); } # .edu.lv requires authorization from the Registry.
 sub object_types { return ('domain','contact'); }
 sub profile_types { return qw/epp/; }
