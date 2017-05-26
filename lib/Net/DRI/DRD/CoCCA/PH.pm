@@ -1,8 +1,6 @@
-## Domain Registry Interface, .PH [EPP - 1.0 Specification]
+## Domain Registry Interface, CoCCA (.PH) [EPP - 1.0 Specification]
 ##
-## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI.
 ##
@@ -14,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::PH;
+package Net::DRI::DRD::CoCCA::PH;
 
 use strict;
 use warnings;
@@ -55,8 +53,6 @@ David Makuni <d.makuni@live.co.uk>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-Copyright (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 Copyright (c) 2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -79,8 +75,8 @@ sub new {
 }
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name          { return 'PH'; }
-sub tlds          { return ('ph',map { $_.'.ph'} qw/com net org/ ); } 
+sub name          { return 'CoCCA::PH'; }
+sub tlds          { return ('ph',map { $_.'.ph'} qw/com net org/ ); }
 sub object_types  { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 

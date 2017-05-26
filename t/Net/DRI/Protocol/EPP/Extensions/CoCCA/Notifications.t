@@ -24,8 +24,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new(10);
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('PH');
-$dri->target('PH')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
+$dri->add_registry('CoCCA::PH');
+$dri->target('CoCCA::PH')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
 
 my ($rc,$s,$d,$co,$dh,@c);
 my ($c,$cs,$ns);
@@ -33,7 +33,7 @@ my ($c,$cs,$ns);
 ####################################################################################################
 ######## Initial Commands ########
 
-my $drd = $dri->{registries}->{PH}->{driver};
+my $drd = $dri->driver();
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::PH',{}],'PH - epp transport_protocol_default');
 $R2='';
 $rc=$dri->process('session','noop',[]);

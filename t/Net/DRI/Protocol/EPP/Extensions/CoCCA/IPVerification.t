@@ -23,8 +23,8 @@ sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'C
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('CoCCA');
-$dri->target('CoCCA')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['CoCCA::IPVerification']});
+$dri->add_registry('CoCCA::CoCCA');
+$dri->target('CoCCA::CoCCA')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['CoCCA::IPVerification']});
 
 
 $R2='';
@@ -35,4 +35,3 @@ $rc=$dri->domain_create('mychipdomain.cx',{pure_create => 1, duration => $dri->l
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mychipdomain.cx</domain:name><domain:period unit="y">1</domain:period><domain:registrant>regis-AmQyW885sq</domain:registrant><domain:authInfo><domain:pw>nHOiQttnHO</domain:pw></domain:authInfo></domain:create></create><extension><cocca:extension xmlns:cocca="https://production.coccaregistry.net/cocca-ip-verification-1.1" xsi:schemaLocation="https://production.coccaregistry.net/cocca-ip-verification-1.1 cocca-ip-verification-1.1.xsd"><cocca:trademarks><cocca:trademark><cocca:registeredMark>Trademarked Name</cocca:registeredMark><cocca:registrationNumber>1234</cocca:registrationNumber><cocca:registrationLocality>NZ</cocca:registrationLocality><cocca:capacity>OWNER</cocca:capacity></cocca:trademark><cocca:trademark><cocca:registeredMark>Trademarked Name</cocca:registeredMark><cocca:registrationNumber>5678</cocca:registrationNumber><cocca:registrationLocality>AU</cocca:registrationLocality><cocca:capacity>ASSIGNEE</cocca:capacity><cocca:companyNumber>9090</cocca:companyNumber></cocca:trademark></cocca:trademarks></cocca:extension></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_create with 2 trademarks');
 
 exit 0;
-

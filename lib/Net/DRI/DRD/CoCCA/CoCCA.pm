@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::DRD::CoCCA;
+package Net::DRI::DRD::CoCCA::CoCCA;
 
 use strict;
 use warnings;
@@ -67,7 +67,7 @@ See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
 sub periods      { return map { DateTime::Duration->new(years => $_) } (1..5); }
-sub name         { return 'CoCCA'; }
+sub name         { return 'CoCCA::CoCCA'; }
 sub tlds         { return (qw/cx gs tl ki mu nf ht na ng cc cm sb mg/); }
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }
