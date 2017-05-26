@@ -1,8 +1,8 @@
 ## Domain Registry Interface, .CN
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##           (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2015,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::CN;
+package Net::DRI::DRD::CNNIC::CN;
 
 use strict;
 use warnings;
@@ -29,7 +29,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::CN - .CN
+Net::DRI::DRD::CNNIC::CN - .CN policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -53,7 +53,9 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008-2012 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2015 Paulo Jorge <paullojorgge@gmail.com>.
+          (c) 2015,2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,7 +80,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'CN'; }
+sub name     { return 'CNNIC::CN'; }
 sub tlds     { return (qw/cn cn.com xn--fiqs8s/, map { $_.'.cn'} qw/ah bj com cq fj gd gs gx gz ha hb he hi hk hl hn jl js jx ln mo net nm nx org qh sc sd sh sn sx tj tw xj xn--55qx5d xz yn zj/ ); }
 sub object_types { return qw(domain contact ns); }
 sub profile_types { return qw/epp/; }

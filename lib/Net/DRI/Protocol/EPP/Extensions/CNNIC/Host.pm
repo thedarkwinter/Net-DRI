@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CN::Host;
+package Net::DRI::Protocol::EPP::Extensions::CNNIC::Host;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CN::Host - CN Host Extension
+Net::DRI::Protocol::EPP::Extensions::CNNIC::Host - CN Host Extension
 
 =head1 DESCRIPTION
 
@@ -94,7 +94,7 @@ sub build_cnnic_host
  my ($rh) = shift;
  my @n;
  my @exthost=('purveyor'); # host extension fields
- 
+
  Net::DRI::Exception::usererr_invalid_parameters('purveyor extension field must be a token between: 3-16!') if !Net::DRI::Util::xml_is_token($rh->{purveyor},3,16);
  foreach (@exthost) {
    push @n,['cnnic-host:'.$_, $rh->{$_}] if $rh->{$_};
@@ -112,7 +112,7 @@ sub info_parse
  my $mes=$po->message();
 
  return unless my $data=$mes->get_extension($mes->ns('cnnic-host'),'infData');
- foreach my $el (Net::DRI::Util::xml_list_children($data)) 
+ foreach my $el (Net::DRI::Util::xml_list_children($data))
  {
   my ($n,$c)=@$el;
   foreach my $el2(qw/purveyor/) {

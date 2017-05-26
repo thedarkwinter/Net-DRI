@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 525;
+use Test::More tests => 526;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -100,7 +100,8 @@ use_ok('Net::DRI::DRD::LV');
 use_ok('Net::DRI::DRD::DK');
 use_ok('Net::DRI::DRD::PH');
 use_ok('Net::DRI::DRD::ECOMLAC');
-use_ok('Net::DRI::DRD::CN');
+use_ok('Net::DRI::DRD::CNNIC::CN');
+use_ok('Net::DRI::DRD::CNNIC::GTLD');
 use_ok('Net::DRI::DRD::EC');
 use_ok('Net::DRI::DRD::HostmasterUA');
 use_ok('Net::DRI::DRD::RO');
@@ -411,10 +412,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ZACR');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::CDN');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Contact');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Registry');
 use_ok('Net::DRI::Protocol::EPP::Extensions::OpenRegistry::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Domain');
@@ -433,9 +430,13 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::MX::AdmStatus');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MAM::QualifiedLawyer');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CN');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CN::Domain');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CN::Contact');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CN::Host');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::CDN');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Contact');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Registry');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Contact');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Host');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PH');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UA');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UA::Domain');

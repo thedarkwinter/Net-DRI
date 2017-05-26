@@ -211,6 +211,8 @@ sub new
      'COOP' => 'DotCooperation',
      'CORENIC' => 'TangoRS::CORE',
      'COZA' => 'ZACR',
+     'CN' => 'CNNIC::CN',
+     'CNNIC' => 'CNNIC::CN',
      'CZ' => 'CZNIC',
      'DONUTS' => 'UnitedTLD::Donuts',
      'GL' => 'TELEGreenland',

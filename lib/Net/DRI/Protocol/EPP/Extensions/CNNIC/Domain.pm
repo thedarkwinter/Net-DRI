@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CN::Domain;
+package Net::DRI::Protocol::EPP::Extensions::CNNIC::Domain;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CN::Domain - CN Domain Extension
+Net::DRI::Protocol::EPP::Extensions::CNNIC::Domain - CN Domain Extension
 
 =head1 DESCRIPTION
 
@@ -94,7 +94,7 @@ sub build_cnnic_domain
  my ($rd) = shift;
  my @n;
  my @extdom=('type','purveyor'); # domain extension fields
- 
+
  Net::DRI::Exception::usererr_invalid_parameters('Invalid domain type. Should be: I (individual) or E (enterprise)" ') if ( exists $rd->{'type'} && $rd->{'type'} !~ m/^(I|E)$/ ); # Only E type domain can be registered according to CNNIC’s policy.
  foreach (@extdom) {
    push @n,['cnnic-domain:'.$_, $rd->{$_}] if $rd->{$_};
@@ -111,7 +111,7 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless my $data=$mes->get_extension($mes->ns('cnnic-domain'),'infData');
- foreach my $el (Net::DRI::Util::xml_list_children($data)) 
+ foreach my $el (Net::DRI::Util::xml_list_children($data))
  {
   my ($n,$c)=@$el;
   foreach my $el2(qw/type purveyor/) {

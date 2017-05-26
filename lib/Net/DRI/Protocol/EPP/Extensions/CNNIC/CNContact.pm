@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CN::Contact;
+package Net::DRI::Protocol::EPP::Extensions::CNNIC::CNContact;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CN::Contact - CN Contact Extensions
+Net::DRI::Protocol::EPP::Extensions::CNNIC::CNContact - CN Contact Extensions
 
 =head1 DESCRIPTION
 
@@ -115,7 +115,7 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless my $data=$mes->get_extension($mes->ns('cnnic-contact'),'infData');
- foreach my $el (Net::DRI::Util::xml_list_children($data)) 
+ foreach my $el (Net::DRI::Util::xml_list_children($data))
  {
   my ($n,$c)=@$el;
   if ($n eq 'contact') {
@@ -150,7 +150,7 @@ sub update
  my $mes=$epp->message();
  my (@n,$toadd,@add,$todel,@del,@cont,@tmpadd,@tmpdel);
  my @extcon=('type','orgno','purveyor','mobile');
- 
+
  foreach (@extcon) {
   # add
   if ($toadd = $todo->add($_))
