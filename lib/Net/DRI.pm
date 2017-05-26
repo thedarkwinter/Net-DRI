@@ -234,6 +234,8 @@ sub new
      'PT' => 'DNSPT',
      'SC' => 'Afilias::Shared',
      'SE' => 'IIS',
+     'SIDN' => 'SIDN::NL',
+     'SIDN_GTLD' => 'SIDN::GTLD',
      'SO' => 'SONIC',
      'Telnic' => 'Neustar::Telnic',
      'TRAVEL' => 'Neustar::Tralliance',

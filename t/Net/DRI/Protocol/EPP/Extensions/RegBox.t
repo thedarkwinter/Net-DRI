@@ -25,8 +25,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 
-$dri->add_registry('NGTLD',{provider=>'RegBox',name=>'berlin'});
-$dri->target('berlin')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_current_registry('NicAT::RegBox');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
 my $s;
@@ -35,7 +35,7 @@ my ($dh,@c,$toc,$cs,$c1,$c2);
 
 
 ####################################################################################################
-## Service Message Extension 
+## Service Message Extension
 ## https://tools.ietf.org/html/draft-mayrhofer-eppext-servicemessage-00
 
 ## 1.1 version of it is active so we need to test loading from greeting

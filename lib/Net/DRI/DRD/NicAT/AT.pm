@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::NicAT;
+package Net::DRI::DRD::NicAT::AT;
 
 use strict;
 use warnings;
@@ -30,7 +30,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_accept
 
 =head1 NAME
 
-Net::DRI::DRD::NicAT - NIC.AT (.AT) policies for Net::DRI
+Net::DRI::DRD::NicAT::AT - NIC.AT (.AT) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -78,7 +78,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
-sub name     { return 'NicAT'; }
+sub name     { return 'NicAT::AT'; }
 sub tlds     { return ('at'); }
 sub object_types { return ('domain','contact'); }
 sub profile_types { return qw/epp whois/; }

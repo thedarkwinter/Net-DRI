@@ -2,6 +2,7 @@
 # $Id: RegBox.pm 740 2014-01-30 14:50:14Z mib $
 ##
 ## Copyright (c) 2014 Michael Braunoeder <mib@nic.at>. All rights reserved
+## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,7 +17,7 @@
 #
 ####################################################################################################
 
-package Net::DRI::DRD::RegBox;
+package Net::DRI::DRD::NicAT::RegBox;
 
 use strict;
 use warnings;
@@ -33,7 +34,7 @@ our $VERSION=do { my @r=(q$Revision: 1.6 $=~/\d+/g); sprintf("%d".".%02d" x $#r,
 
 =head1 NAME
 
-Net::DRI::DRD::RegBox - Registry-in-a-Box policies for Net::DRI
+Net::DRI::DRD::NicAT::RegBox - NicAT Registry-in-a-Box gTLD policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -48,6 +49,10 @@ RegBox utilises the following standard extensions. Please see the test files for
 =head3 L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
+
+=head2 Custom extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at/xmlns/resdata-1.1
 
 =head1 SUPPORT
 
@@ -68,6 +73,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2011 Michael Braunoeder <mib@nic.at>.
+Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -92,8 +98,8 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'RegBox'; }
-sub tlds     { return (qw/bh berlin brussels gmbh hamburg immo reise tirol versicherung vlaanderen voting ikano/); }
+sub name     { return 'NicAT::RegBox'; }
+sub tlds     { return (qw/bh berlin brussels gmbh hamburg tirol versicherung vlaanderen voting ikano/); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }
 
