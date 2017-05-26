@@ -37,7 +37,7 @@ use_ok('Net::DRI::DRD::SITA');
 use_ok('Net::DRI::DRD::DNSBelgium');
 use_ok('Net::DRI::DRD::NicAT');
 use_ok('Net::DRI::DRD::DotCooperation');
-use_ok('Net::DRI::DRD::Afilias::Main');
+use_ok('Net::DRI::DRD::Afilias::Afilias');
 use_ok('Net::DRI::DRD::Afilias::Shared');
 use_ok('Net::DRI::DRD::Afilias::PIR');
 use_ok('Net::DRI::DRD::Afilias::IN');

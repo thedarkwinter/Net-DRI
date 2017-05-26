@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::Afilias::Main;
+package Net::DRI::DRD::Afilias::Afilias;
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::Afilias::Main - Afilias (Main) Driver for Net::DRI
+Net::DRI::DRD::Afilias::Afilias - Afilias (Main) Driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -101,7 +101,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'Afilias::Main'; }
+sub name     { return 'Afilias::Afilias'; }
 
 sub tlds     {
  my @legacygTLDs = (
