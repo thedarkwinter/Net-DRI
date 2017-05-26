@@ -1,4 +1,4 @@
-## Domain Registry Interface, ES policies
+## Domain Registry Interface, RedES (.ES) policies
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::ES;
+package Net::DRI::DRD::RedES;
 
 use strict;
 use warnings;
@@ -29,11 +29,11 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/login contact_update c
 
 =head1 NAME
 
-Net::DRI::DRD::ES - .ES policies for Net::DRI
+Net::DRI::DRD::RedES - (.ES) policies for Net::DRI
 
 =head1 DESCRIPTION
 
-Driver for .ES conections. 
+Driver for .ES conections.
 
 When initialising, you need to send the credentials in the protocol paramaters.
 $rc=$dri->add_current_profile('profile','epp'},{%tp},'client_login'=>'login','client_password'=>'pass'}
@@ -42,7 +42,7 @@ Additional contact fields (See Contact.pm for more information)
  tipo_identificacion
  identificacion
  form_juridica
- 
+
 Additional domain fields
 ip_maestra
 marca
@@ -96,7 +96,7 @@ sub new # FIXME - check these valies
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'ES'; }
+sub name     { return 'RedES'; }
 sub tlds     { return ('es',map { $_.'.es'} qw/com nom org gob edu/ ); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }

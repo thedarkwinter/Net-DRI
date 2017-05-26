@@ -82,7 +82,7 @@ use_ok('Net::DRI::DRD::UPU');
 use_ok('Net::DRI::DRD::TangoRS::CORE');
 use_ok('Net::DRI::DRD::TangoRS::TangoRS');
 use_ok('Net::DRI::DRD::Deloitte');
-use_ok('Net::DRI::DRD::ES');
+use_ok('Net::DRI::DRD::RedES');
 use_ok('Net::DRI::DRD::Neustar::Narwal');
 use_ok('Net::DRI::DRD::Neustar::COInternet');
 use_ok('Net::DRI::DRD::Neustar::BIZ');

@@ -218,6 +218,7 @@ sub new
      'DK' => 'DKHostmaster',
      'DONUTS' => 'UnitedTLD::Donuts',
      'EC' => 'NICEC',
+     'ES' => 'RedES',
      'GL' => 'TELEGreenland',
      'HN' => 'RDS',
      'ID' => 'PANDI',
