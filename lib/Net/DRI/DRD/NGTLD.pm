@@ -407,8 +407,8 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
        'zappos','zero','zippo'
      ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{custom => 'NeuLevel::EXTContact'}],
-     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::ARI->new(@_); } } ],
-     requires => [ 'Net::DRI::Data::Contact::ARI'],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Narwal->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::Narwal'],
      whois_server => 'whois.aridnrs.net.au',
    } if $bep eq 'ari';
 
@@ -846,7 +846,7 @@ Neustar operates dedicated connections per TLD, so it is recommended to use the 
  return {
      bep_type => 1, # dedicated registry
      tlds => ['pharmacy'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => 'NeuLevel::Fee'}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{custom => 'NeuLevel::Fee'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
  } if $bep eq 'neustar' && $tld =~ m/(?:pharmacy)/;
 
@@ -854,7 +854,7 @@ Neustar operates dedicated connections per TLD, so it is recommended to use the 
  return {
      bep_type => 1, # dedicated registry
      tlds => ['htc'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
 

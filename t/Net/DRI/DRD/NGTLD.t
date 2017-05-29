@@ -101,7 +101,7 @@ is($#periods,9,'neustar: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
 is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
 $drd = $dri->{registries}->{pharmacy}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom=>'NeuLevel::Fee'}],'neustar: epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{custom=>'NeuLevel::Fee'}],'neustar: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::Fee/],'neustar: loaded_modules');
 is($drd->{bep}->{bep_type},1,'neustar: bep_type');
 

@@ -47,6 +47,7 @@ lib/Net/DRI/Data/Contact/JOBS.pm
 lib/Net/DRI/Data/Contact/LU.pm
 lib/Net/DRI/Data/Contact/LV.pm
 lib/Net/DRI/Data/Contact/MAM.pm
+lib/Net/DRI/Data/Contact/Narwal.pm
 lib/Net/DRI/Data/Contact/NO.pm
 lib/Net/DRI/Data/Contact/Nominet.pm
 lib/Net/DRI/Data/Contact/NYC.pm
@@ -485,6 +486,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NEUSTAR.pm
+lib/Net/DRI/Protocol/EPP/Extensions/Neustar.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NEWGTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NO/Contact.pm
@@ -564,12 +566,12 @@ lib/Net/DRI/Protocol/EPP/Extensions/UNIREG.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/Centric.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/Market.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/RegistryMessage.pm
-lib/Net/DRI/Protocol/EPP/Extensions/UNITEDTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UNITEDTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Charge.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNITEDTLD/Charge.pm
-lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Finance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNITEDTLD/Finance.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Finance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/US.pm
 lib/Net/DRI/Protocol/EPP/Extensions/US/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign.pm

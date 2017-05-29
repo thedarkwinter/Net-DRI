@@ -22,17 +22,14 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_registry('NGTLD',{provider => 'NEUSTAR',name=>'pharmacy'}); # for testing Fee
-$dri->target('pharmacy')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-$dri->add_registry('NGTLD',{provider => 'ARI',name=>'nyc'}); # for testing EXTContact
-$dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_current_registry('Neustar::Narwal');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['NeuLevel::Fee']});
+# TODO: I think this extension is no longer in use
 
 my $rc;
 my ($fee,$c,$c2,$toc);
 
 ################################################################################
-## Fee extension
-$dri->target('pharmacy');
 
 # domain check
 my $price = { duration=>DateTime::Duration->new(years=>5) };

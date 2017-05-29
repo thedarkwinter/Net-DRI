@@ -1,4 +1,4 @@
-## Domain Registry Interface, NEUSTAR New gTLD EPP extensions
+## Domain Registry Interface, Neustar New gTLD EPP extensions
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::NEUSTAR;
+package Net::DRI::Protocol::EPP::Extensions::Neustar;
 
 use strict;
 use warnings;
@@ -31,6 +31,7 @@ sub setup
 
 sub default_extensions {
  my ($self,$pp) = @_;
+ $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
  my @ext = qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact/;
  if (exists $pp->{custom} )
  {

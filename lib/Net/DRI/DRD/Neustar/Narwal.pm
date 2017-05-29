@@ -20,7 +20,7 @@ use warnings;
 
 use base qw/Net::DRI::DRD/;
 
-use DateTime::Duration;
+use Net::DRI::Data::Contact::Narwal;
 
 ####################################################################################################
 =pod
@@ -131,8 +131,15 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{ 'brown_fee_version' => '0.6' }) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}) if $type eq 'epp_ari';
+ return;
+}
+
+sub set_factories
+{
+ my ($self,$po)=@_;
+ $po->factories('contact',sub { return Net::DRI::Data::Contact::Narwal->new(@_); });
  return;
 }
 
