@@ -22,8 +22,8 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_registry('NGTLD',{provider => 'UNIREG'} );
-$dri->target('UNIREG')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_current_registry('UniRegistry');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
 my $s;
@@ -81,7 +81,7 @@ is($dri->get_info('name'),'example.game','market_info get_info(name)');
 is($dri->get_info('type_attr'),'domain','market_info get_info(type_attr)');
 is($dri->get_info('amount'),'5000.00','market_info get_info(amount)');
 is($dri->get_info('status'),'completed','market_info get_info(status)');
-$d=$dri->get_info('crDate');  
+$d=$dri->get_info('crDate');
 isa_ok($d,'DateTime','market_info get_info(crDate)');
 is("".$d,'2015-02-16T14:47:40','market_info get_info(crDate) value');
 $d=$dri->get_info('upDate');

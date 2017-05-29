@@ -1,4 +1,4 @@
-## Domain Registry Interface, Handling of contact data for UNIREG
+## Domain Registry Interface, Handling of contact data for UniRegistry
 ##
 ## Copyright (c) 2006,2008-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Data::Contact::UNIREG;
+package Net::DRI::Data::Contact::UniRegistry;
 
 use utf8;
 use strict;
@@ -32,11 +32,11 @@ __PACKAGE__->register_attributes(qw(challenge alt_email mobile));
 
 =head1 NAME
 
-Net::DRI::Data::Contact::UNIREG - Handle UNIREG contact data for Net::DRI
+Net::DRI::Data::Contact::UniRegistry - Handle UniRegistry contact data for Net::DRI
 
 =head1 DESCRIPTION
 
-This subclass of Net::DRI::Data::Contact adds accessors and validation for UNIREG specific data. See the extension for more information: L<Net::DRI::Protocol::EPP::Extensions::UNIREG::Centric>
+This subclass of Net::DRI::Data::Contact adds accessors and validation for UniRegistry specific data. See the extension for more information: L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric>
 
 =head1 METHODS
 

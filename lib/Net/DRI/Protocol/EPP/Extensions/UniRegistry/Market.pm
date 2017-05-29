@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::UNIREG::Market;
+package Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market;
 
 use strict;
 use warnings;
@@ -25,14 +25,14 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::UNIREG::Market - Market Extension for UniRegistry
+Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market - Market Extension for UniRegistry
 
 =head1 DESCRIPTION
 
 Adds the Uniregistry Market extension. Uniregistry Market is a Uniregistry service designed for registrar partners. It provides the ability to check for object availability, create, cancel, and approve inquiries as well as the ability to buy objects in real time using the EPP protocol.
 
 =head1 SYNOPSIS
- 
+
  # market check => used to determine if an object is available in the Uniregistry Market
  my $rc = $dri->market_check(qw/example1.tld example2.tld/, { 'type_attr'=>'domain', 'suggestions_attr'=>'true'});
 
@@ -164,7 +164,7 @@ sub create
   Net::DRI::Exception::usererr_invalid_parameters('Invalid order_type. Should be: "offer", "bin" or "hold" ') unless $rd->{order_type}=~m/^(offer|bin|hold)$/;
   Net::DRI::Exception::usererr_insufficient_parameters('Amount is mandatory for type "bin"') if !($rd->{amount}) && $rd->{order_type} eq 'bin';
   push @m, ['market:amount',$rd->{amount}] if defined $rd->{amount};
-  push @m, _build_contact($rd->{contact}) if defined $rd->{contact};  
+  push @m, _build_contact($rd->{contact}) if defined $rd->{contact};
   $mes->command_body(\@m);
   return;
 }
@@ -225,9 +225,9 @@ sub market_build_command
   my ($msg,$command,$market,$marketattr)=@_;
   my @m=ref $market ? @$market : $market;
   my @market;
-  
+
   my $tcommand=ref $command ? $command->[0] : $command;
-  
+
   if ($command eq 'create')
   {
     Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless @m;

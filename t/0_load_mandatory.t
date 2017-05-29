@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 541;
+use Test::More tests => 542;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -50,7 +50,7 @@ use_ok('Net::DRI::Data::Contact::SWITCH');
 use_ok('Net::DRI::Data::Contact::TANGO');
 use_ok('Net::DRI::Data::Contact::TCI');
 use_ok('Net::DRI::Data::Contact::TCI_gTLD');
-use_ok('Net::DRI::Data::Contact::UNIREG');
+use_ok('Net::DRI::Data::Contact::UniRegistry');
 use_ok('Net::DRI::Data::Contact::US');
 use_ok('Net::DRI::Data::Contact::ZACR');
 use_ok('Net::DRI::Data::Hosts');
@@ -147,7 +147,7 @@ use_ok('Net::DRI::DRD::TELEGreenland');
 use_ok('Net::DRI::DRD::TMDB');
 use_ok('Net::DRI::DRD::TRA::AE');
 use_ok('Net::DRI::DRD::TRA::BH');
-use_ok('Net::DRI::DRD::UNIREG');
+use_ok('Net::DRI::DRD::UniRegistry');
 use_ok('Net::DRI::DRD::UnitedTLD::Donuts');
 use_ok('Net::DRI::DRD::UnitedTLD::Rightside');
 use_ok('Net::DRI::DRD::UPU');
@@ -439,10 +439,10 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::Telnic');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UA');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UA::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UA::HostDelete');
-use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG');
-use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG::Centric');
-use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG::Market');
-use_ok('Net::DRI::Protocol::EPP::Extensions::UNIREG::RegistryMessage');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry::RegistryMessage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance');

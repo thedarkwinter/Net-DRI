@@ -1,4 +1,4 @@
-## Domain Registry Interface, UNIREG EPP extensions
+## Domain Registry Interface, UniRegistry EPP extensions
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::UNIREG;
+package Net::DRI::Protocol::EPP::Extensions::UniRegistry;
 
 use strict;
 use warnings;
@@ -22,7 +22,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase UNIREG::Centric UNIREG::RegistryMessage UNIREG::Market VeriSign::Sync CentralNic::Fee/; }
+sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase UniRegistry::Centric UniRegistry::RegistryMessage UniRegistry::Market VeriSign::Sync CentralNic::Fee/; }
 
 ####################################################################################################
 1;

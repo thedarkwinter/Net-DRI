@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::UNIREG;
+package Net::DRI::DRD::UniRegistry;
 
 use strict;
 use warnings;
@@ -46,7 +46,13 @@ UniRegistry utilises the following standard extensions. Please see the test file
 
 =head2 Custom extensions:
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::UNIREG::Centric> http://ns.uniregistry.net/centric-1.0
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric> http://ns.uniregistry.net/centric-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> http://ns.uniregistry.net/market-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> (poll parser suppliment)
 
 =head2 Other extensions:
 
@@ -95,7 +101,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'UNIREG'; }
+sub name     { return 'UniRegistry'; }
 
 sub tlds     { return ('auction','audio','auto','blackfriday','cars','christmas','click','country','deal','design','diet','family','ﬂowers','free','furniture','game','gift','gratis','guitars','help','hiphop','home','hosting','inc','juegos','link','lol','love','marketing','media','mom','news','photo','pics','pizza','property','realestate','restaurant','sale','save','school','sexy','store','style','tattoo','team','tech','video'); } # This might be all of them?
 sub object_types { return ('domain','contact','ns'); }
@@ -105,7 +111,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{}) if $type eq 'epp';
  return;
 }
 

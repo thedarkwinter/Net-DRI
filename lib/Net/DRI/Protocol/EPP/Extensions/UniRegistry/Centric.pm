@@ -13,19 +13,19 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::UNIREG::Centric;
+package Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric;
 
 use strict;
 use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
-use Net::DRI::Data::Contact::UNIREG;
+use Net::DRI::Data::Contact::UniRegistry;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::UNIREG::Centric - Centric Extension for UniRegistry
+Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric - Centric Extension for UniRegistry
 
 =head1 DESCRIPTION
 
@@ -38,7 +38,7 @@ Adds the UniRegistry Registrant Centric Extension (http://ns.uniregistry.net/cen
 =item challenge (array of hashes listing security questions and examples; min 3, max 5)
 
 =head1 SYNOPSIS
- 
+
  # domain info
  my $rc = $dri->domain_info('domain.tld');
  my $urc = $dri->get_info('contact')->get('urc');
@@ -109,9 +109,9 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns( { 'urc' => ['http://ns.uniregistry.net/centric-1.0','centric-1.0.xsd']} ); 
+ $po->ns( { 'urc' => ['http://ns.uniregistry.net/centric-1.0','centric-1.0.xsd']} );
  $po->capabilities('domain_update','urc',['set']);
- $po->factories('urc_contact',sub { return Net::DRI::Data::Contact::UNIREG->new(); });
+ $po->factories('urc_contact',sub { return Net::DRI::Data::Contact::UniRegistry->new(); });
 }
 
 ####################################################################################################
@@ -131,7 +131,7 @@ sub build_centric
  my @d = Net::DRI::Protocol::EPP::Core::Contact::build_cdata($contact,$v,'urc');
  push @d,['urc:emailAlt',$contact->alt_email()] if defined($contact->alt_email());
  push @d,Net::DRI::Protocol::EPP::Util::build_tel('urc:mobile',$contact->mobile()) if defined($contact->mobile());
- 
+
  if ($contact->challenge())
  {
    my @ch;
@@ -143,7 +143,7 @@ sub build_centric
    }
    push @d,['urc:security',@ch] if @ch;
  }
- 
+
  return @d;
 }
 
@@ -155,7 +155,7 @@ sub create
  my $mes=$epp->message();
  my $urc;
  Net::DRI::Exception::usererr_insufficient_parameters('URC contact required') unless ( (Net::DRI::Util::has_key($rd,'contact')) && (Net::DRI::Util::check_isa($rd->{'contact'},'Net::DRI::Data::ContactSet')) && ($urc = $rd->{'contact'}->get('urc')) );
- 
+
  my @n = build_centric($urc,$epp->{contacti18n});
  return unless @n;
  my $eid=$mes->command_extension_register('urc','registrant');
@@ -188,7 +188,7 @@ sub info_parse
  return unless $mes->is_success();
  my $infdata=$mes->get_extension($mes->ns('urc'),'registrant');
  return unless defined $infdata;
-   
+
  my %cd=map { $_ => [] } qw/name org city sp pc cc/;
  $cd{street}=[[],[]];
  my $contact = $po->create_local_object('urc_contact');
@@ -263,7 +263,7 @@ sub info_parse
  $contact->sp(@{$cd{sp}});
  $contact->pc(@{$cd{pc}});
  $contact->cc(@{$cd{cc}});
-   
+
  $rinfo->{domain}->{$oname}->{contact}->set($contact,'urc');
  return;
 }

@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::UNIREG::RegistryMessage;
+package Net::DRI::Protocol::EPP::Extensions::UniRegistry::RegistryMessage;
 
 use strict;
 use warnings;
@@ -41,7 +41,7 @@ sub parse
  return unless my $msgid=$mes->msg_id();
  return unless my $content = $rinfo->{message}->{$msgid}->{content}; # depending on order we may not have parsed this yet, defer for later
  return if defined $rinfo->{message}->{$msgid}->{lp}; # if they have a sent a proper lp extension in the message then use that
- 
+
  # try to match LP related text in content
  if ($content =~ m!^Launch Application ([\w-]+) is now in status "(\w+)?"/"(\w+)?": (.*)?!) {
   $rinfo->{message}->{$msgid}->{lp}->{application_id} = $1;
