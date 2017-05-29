@@ -278,7 +278,7 @@ sub check_depricated_drd
  my ($self,$reg) = @_;
  if (exists $self->{depricated_drd_map}->{$reg}) {
    warn "Warning Net::DRI::DRD::$reg is depricated, please use Net::DRI::DRD::".$self->{depricated_drd_map}->{$reg}." as a replacement!" unless $reg eq 'VNDS';
-   warn "Warning Net::DRI::DRD::$reg is depricated, please use Net::DRI::DRD::COM_NET or NameStore as a replacement!" if $reg eq 'VNDS';
+   warn "Warning Net::DRI::DRD::$reg is depricated, please use Net::DRI::DRD::COM_NET or ::NameStore as a replacement!" if $reg eq 'VNDS';
    $reg = $self->{depricated_drd_map}->{$reg};
  }
  return $reg;

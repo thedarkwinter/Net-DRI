@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 528;
+use Test::More tests => 529;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -21,6 +21,7 @@ use_ok('Net::DRI::Logging::Files');
 use_ok('Net::DRI::Logging::Stderr');
 use_ok('Net::DRI::DRD');
 use_ok('Net::DRI::DRD::ICANN');
+use_ok('Net::DRI::DRD::VeriSign::VeriSign');
 use_ok('Net::DRI::DRD::VeriSign::COM_NET');
 use_ok('Net::DRI::DRD::VeriSign::NAME');
 use_ok('Net::DRI::DRD::VeriSign::NameStore');

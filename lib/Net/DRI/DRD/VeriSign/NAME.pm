@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2007-2009,2011 HEXONET Support GmbH, www.hexonet.com, Alexander Biehl <info@hexonet.com>. All rights reserved
 ## Copyright (c) 2005-2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -55,6 +56,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 Copyright (c) 2007-2009,2011 Alexander Biehl <info@hexonet.com>.
 Copyright (c) 2005-2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,7 +76,7 @@ sub new
   my $self  = $class->SUPER::new(@_);
   $self->{info}->{host_as_attr} = 0;
   $self->{info}->{contact_i18n} = 2;    ## INT only
- $self->{info}->{check_limit}=13;
+  $self->{info}->{check_limit}=13;
   return $self;
 }
 
@@ -98,6 +100,7 @@ sub transport_protocol_default
 sub verify_name_domain
 {
   my ( $self, $ndr, $domain, $op ) = @_;
+  print "why are we not calling me?\n";
  return $self->_verify_name_rules($domain,$op,{check_name => 1,
       check_name_dots   => [ 1, 2 ],
       my_tld_not_strict => 1,          ## we need less strict checks because in X.Y.name domain names both X and Y are variables
@@ -106,6 +109,7 @@ sub verify_name_domain
 }
 
 ####################################################################################################
+## EmailForward methods
 
 sub emailfwd_check
 {
@@ -241,6 +245,7 @@ sub emailfwd_renew
 }
 
 ####################################################################################################
+## DefensiveRegistration methods
 
 # based on domain_check
 sub defreg_check
@@ -380,4 +385,5 @@ sub defreg_renew
 }
 
 ####################################################################################################
+
 1;
