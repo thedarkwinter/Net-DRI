@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 537;
+use Test::More tests => 538;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -79,6 +79,7 @@ use_ok('Net::DRI::DRD::CIRA::Fury');
 use_ok('Net::DRI::DRD::CNNIC::CN');
 use_ok('Net::DRI::DRD::CNNIC::GTLD');
 use_ok('Net::DRI::DRD::CoCCA::CoCCA');
+use_ok('Net::DRI::DRD::CoCCA::GTLD');
 use_ok('Net::DRI::DRD::CoCCA::PH');
 use_ok('Net::DRI::DRD::CRR');
 use_ok('Net::DRI::DRD::Deloitte');
