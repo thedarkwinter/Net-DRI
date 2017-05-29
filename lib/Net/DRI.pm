@@ -385,7 +385,7 @@ sub tld2reg
 
 sub installed_registries
 {
- return qw/AdamsNames Afilias AFNIC ARNES auDA BelizeNIC BookMyName CentralNic CGIBR CIRA CoCCA CZNIC Datacom DENIC DNSBelgium DNSPT doMEn Domicilium DotAsia DotCooperation dotMOBI EURid Gandi GDI ICMRegistry IENUMAT IRegistry ISPAPI IIS IITCNR IUSN NASK Neustar::BIZ Neustar::US NicAT NicLC Nominet::UK Nominet::GTLD Nominet::MMX NORID OpenSRS OVH PANDI PIR puntCAT RDS RegistryPro RESTENA SaintVincentGrenadines SIDN SITA SONIC SWITCH TCI TELEGreenland Telnic TRA Tralliance UHSA UPU VCS VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore ZACR Neustar::COInternet Neustar::Narwal/;
+ return qw/AdamsNames Afilias::Afilias Afilias::DotAsia Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::Gateway CGIBR CIRA::CA CIRA::Fury CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium DNSPT Domicilium DotCooperation ECOMLAC EURid FRED Gandi GDI GMO HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI LVRegistry NASK Neustar::BIZ Neustar::COInternet Neustar::Narwal Neustar::Telnic Neustar::Tralliance Neustar::US NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenSRS OVH PANDI puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SONIC SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TMDB TRA::AE TRA::BH UNIREG UnitedTLD::Donuts UnitedTLD::Rightside UPU VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore VeriSign::VeriSign ZACR/;
 }
 
 ####################################################################################################
