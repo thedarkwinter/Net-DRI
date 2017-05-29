@@ -142,6 +142,7 @@ use_ok('Net::DRI::DRD::TCI::RF');
 use_ok('Net::DRI::DRD::TCI::RU');
 use_ok('Net::DRI::DRD::TCI::SU');
 use_ok('Net::DRI::DRD::TCI::TCI');
+use_ok('Net::DRI::DRD::TeleInfo');
 use_ok('Net::DRI::DRD::TELEGreenland');
 use_ok('Net::DRI::DRD::TMDB');
 use_ok('Net::DRI::DRD::TRA::AE');
