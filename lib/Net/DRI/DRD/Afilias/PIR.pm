@@ -98,7 +98,6 @@ sub new
  $self->{info}->{host_as_attr}=0;
  $self->{info}->{contact_i18n}=4; ## LOC+INT
  $self->{info}->{check_limit}=13;
- $self->{info}->{is_shared_platform}=1; # TODO
  return $self;
 }
 
