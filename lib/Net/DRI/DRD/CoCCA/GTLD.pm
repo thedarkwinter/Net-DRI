@@ -1,6 +1,7 @@
 ## Domain Registry Interface, CoCCA Registry GTLD Driver for multiple TLDs
 ##
 ## Copyright (c) 2008-2010 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -29,10 +30,25 @@ Net::DRI::DRD::CoCCA::GTLD - CoCCA Registry GTLD driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Please see the README file for details.
+Additional domain extensions used by CoCCA Generic TLDs
 
-This is only a prototype for testing purpose. Each TLD registry should have its own DRD module
-implementing local policies.
+CoCCA utilises the following standard extensions. Please see the test files for more examples.
+
+=head2 Standard extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
+
+=head2 Custom Extensions
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.8
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CoCCA::Notifications> (offlineUpdate parsing)
 
 =head1 SUPPORT
 
@@ -53,6 +69,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008-2010 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,9 +83,18 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub periods      { return map { DateTime::Duration->new(years => $_) } (1..5); }
+sub new
+{
+ my $class=shift;
+ my $self=$class->SUPER::new(@_);
+ $self->{info}->{host_as_attr}=0;
+ $self->{info}->{contact_i18n}=4; ## LOC+INT
+ return $self;
+}
+
+sub periods      { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name         { return 'CoCCA::GTLD'; }
-sub tlds         { return (qw/cx gs tl ki mu nf ht na ng cc cm sb mg/); }
+sub tlds         { return (qw/xn--p1acf xn--mgbt3dhd pars islam wed nowruz persiangulf tci shia halal/); }
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }
 
