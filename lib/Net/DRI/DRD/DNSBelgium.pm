@@ -79,7 +79,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
 sub name     { return 'DNSBelgium'; }
-sub tlds     { return ('be'); }
+sub tlds     { return ('be'); } # In october 2017, they will be doing vlaanderen and .brussels, but no details yet
 sub object_types { return (qw/domain contact nsgroup keygroup/); }
 sub profile_types { return qw/epp das/; }
 
