@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::CGIBR;
+package Net::DRI::DRD::CGIBR::BR;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::CGIBR - CGI.BR (.BR) policies for Net::DRI
+Net::DRI::DRD::CGIBR::BR - CGI.BR (.BR) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -73,7 +73,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
-sub name     { return 'CGIBR'; }
+sub name     { return 'CGIBR::BR'; }
 ## See http://registro.br/info/dpn.html
 sub tlds     { return ('br',map { $_.'.br' } qw/com agr am art edu coop esp far fm g12 gov imb ind inf jus mil net org psi rec srv tmp tur tv etc adm adv arq ato bio bmd cim cng cnt ecn eng eti fnd fot fst ggf jor lel mat med mus not ntr odo ppg pro psc qql slg trd vet zlg blog flog nom vlog sec3 wiki/ ); }
 sub object_types { return ('domain','contact'); }

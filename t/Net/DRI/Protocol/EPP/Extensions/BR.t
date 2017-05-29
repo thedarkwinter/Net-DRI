@@ -21,8 +21,8 @@ sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'C
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('CGIBR');
-$dri->target('CGIBR')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('CGIBR::BR');
+$dri->target('CGIBR::BR')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 print $@->as_string() if $@;
 
 my ($rc,$s,$d,$dh,@c,$co);
@@ -63,7 +63,7 @@ is_deeply($dri->get_info('ticket_concurrent'),[123451,123455],'domain_info 1 get
 
 $dri->cache_clear();
 
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.com.br</domain:name><domain:roid>EXAMPLE1-REP</domain:roid><domain:status s="ok"/><domain:contact type="admin">fan</domain:contact><domain:contact type="tech">fan</domain:contact><domain:contact type="billing">fan</domain:contact><domain:ns><domain:hostAttr><domain:hostName>ns1.example.com.br</domain:hostName><domain:hostAddr ip="v4">192.0.2.1</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns1.example.net.br</domain:hostName></domain:hostAttr></domain:ns><domain:clID>ClientX</domain:clID><domain:crID>ClientX</domain:crID><domain:crDate>2006-02-03T12:00:00.0Z</domain:crDate><domain:upID>ClientX</domain:upID><domain:upDate>2006-02-03T12:00:00.0Z</domain:upDate></domain:infData></resData><extension><brdomain:infData xmlns:brdomain="urn:ietf:params:xml:ns:brdomain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:brdomain-1.0 brdomain-1.0.xsd"><brdomain:organization>005.506.560/0001-36</brdomain:organization><brdomain:publicationStatus publicationFlag="onHold"><brdomain:onHoldReason>billing</brdomain:onHoldReason></brdomain:publicationStatus><brdomain:autoRenew active="1"/></brdomain:infData></extension>'.$TRID.'</response>'.$E2; 
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.com.br</domain:name><domain:roid>EXAMPLE1-REP</domain:roid><domain:status s="ok"/><domain:contact type="admin">fan</domain:contact><domain:contact type="tech">fan</domain:contact><domain:contact type="billing">fan</domain:contact><domain:ns><domain:hostAttr><domain:hostName>ns1.example.com.br</domain:hostName><domain:hostAddr ip="v4">192.0.2.1</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns1.example.net.br</domain:hostName></domain:hostAttr></domain:ns><domain:clID>ClientX</domain:clID><domain:crID>ClientX</domain:crID><domain:crDate>2006-02-03T12:00:00.0Z</domain:crDate><domain:upID>ClientX</domain:upID><domain:upDate>2006-02-03T12:00:00.0Z</domain:upDate></domain:infData></resData><extension><brdomain:infData xmlns:brdomain="urn:ietf:params:xml:ns:brdomain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:brdomain-1.0 brdomain-1.0.xsd"><brdomain:organization>005.506.560/0001-36</brdomain:organization><brdomain:publicationStatus publicationFlag="onHold"><brdomain:onHoldReason>billing</brdomain:onHoldReason></brdomain:publicationStatus><brdomain:autoRenew active="1"/></brdomain:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('example.com.br',{ticket => 123456});
 is($rc->is_success(),1,'domain_info 2 is_success');
 is($dri->get_info('orgid'),'005.506.560/0001-36','domain_info 2 get_info(orgid)');
