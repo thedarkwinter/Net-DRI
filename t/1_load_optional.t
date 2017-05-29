@@ -7,7 +7,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 17;
 
 #SKIP: {
 #	eval { require Net::SMTP; };
@@ -17,15 +17,22 @@ use Test::More tests => 10;
 
 SKIP: {
 	eval { require XMLRPC::Lite; };
-	skip 'Module XMLRPC::Lite is not installed, you need it if you want to use Net::DRI for: Gandi (WebServices)',2 if $@;
+	skip 'Module XMLRPC::Lite is not installed, you need it if you want to use Net::DRI for: Gandi (WebServices)',8 if $@;
 	require_ok('Net::DRI::Transport::HTTP::XMLRPCLite');
         require_ok('Net::DRI::Protocol::Gandi::WS::Connection'); ## depends on XMLRPC::Data
+        use_ok('Net::DRI::DRD::Gandi');
+        use_ok('Net::DRI::Protocol::Gandi::WS');
+        use_ok('Net::DRI::Protocol::Gandi::WS::Account');
+        use_ok('Net::DRI::Protocol::Gandi::WS::Connection');
+        use_ok('Net::DRI::Protocol::Gandi::WS::Domain');
+        use_ok('Net::DRI::Protocol::Gandi::WS::Message');
 }
 
 SKIP: {
 	eval { require SOAP::Lite; };
-	skip 'Module SOAP::Lite is not installed, you need it if you want to use Net::DRI for: BookMyName (WebServices)',1 if $@;
+	skip 'Module SOAP::Lite is not installed, you need it if you want to use Net::DRI for: BookMyName (WebServices)',2 if $@;
 	require_ok('Net::DRI::Transport::HTTP::SOAPLite');
+        use_ok('Net::DRI::Transport::SOAP');
 }
 
 SKIP: {
