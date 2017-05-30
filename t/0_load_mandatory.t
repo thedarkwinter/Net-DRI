@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 545;
+use Test::More tests => 546;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -126,6 +126,7 @@ use_ok('Net::DRI::DRD::Nominet::GTLD');
 use_ok('Net::DRI::DRD::Nominet::MMX');
 use_ok('Net::DRI::DRD::Nominet::UK');
 use_ok('Net::DRI::DRD::NORID');
+use_ok('Net::DRI::DRD::OpenRegistry::GENT');
 use_ok('Net::DRI::DRD::OpenSRS');
 use_ok('Net::DRI::DRD::OVH');
 use_ok('Net::DRI::DRD::PANDI');

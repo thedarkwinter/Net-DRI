@@ -63,6 +63,7 @@ lib/Net/DRI/Data/Contact/TANGO.pm
 lib/Net/DRI/Data/Contact/TCI.pm
 lib/Net/DRI/Data/Contact/TCI_gTLD.pm
 lib/Net/DRI/Data/Contact/UNIREG.pm
+lib/Net/DRI/Data/Contact/UniRegistry.pm
 lib/Net/DRI/Data/Contact/US.pm
 lib/Net/DRI/Data/Contact/ZACR.pm
 lib/Net/DRI/Data/ContactSet.pm
@@ -106,6 +107,8 @@ lib/Net/DRI/DRD/CentralNic/CentralNic.pm
 lib/Net/DRI/DRD/CentralNic/Gateway.pm
 lib/Net/DRI/DRD/CentralNicGW.pm
 lib/Net/DRI/DRD/CGIBR.pm
+lib/Net/DRI/DRD/CGIBR/BR.pm
+lib/Net/DRI/DRD/CGIBR/GTLD.pm
 lib/Net/DRI/DRD/CIRA.pm
 lib/Net/DRI/DRD/CIRA/CA.pm
 lib/Net/DRI/DRD/CIRA/Fury.pm
@@ -115,6 +118,7 @@ lib/Net/DRI/DRD/CNNIC/GTLD.pm
 lib/Net/DRI/DRD/CO.pm
 lib/Net/DRI/DRD/CoCCA.pm
 lib/Net/DRI/DRD/CoCCA/CoCCA.pm
+lib/Net/DRI/DRD/CoCCA/GTLD.pm
 lib/Net/DRI/DRD/CoCCA/PH.pm
 lib/Net/DRI/DRD/COOP.pm
 lib/Net/DRI/DRD/CORENIC.pm
@@ -139,6 +143,10 @@ lib/Net/DRI/DRD/Gandi.pm
 lib/Net/DRI/DRD/GDI.pm
 lib/Net/DRI/DRD/GL.pm
 lib/Net/DRI/DRD/GMO.pm
+lib/Net/DRI/DRD/GMORegistry/BRRegistry.pm
+lib/Net/DRI/DRD/GMORegistry/GMORegistry.pm
+lib/Net/DRI/DRD/GMORegistry/KYOTO.pm
+lib/Net/DRI/DRD/GMORegistry/SHOP.pm
 lib/Net/DRI/DRD/HN.pm
 lib/Net/DRI/DRD/HostmasterUA.pm
 lib/Net/DRI/DRD/ICANN.pm
@@ -154,6 +162,8 @@ lib/Net/DRI/DRD/InternetNZ.pm
 lib/Net/DRI/DRD/IRegistry.pm
 lib/Net/DRI/DRD/ISPAPI.pm
 lib/Net/DRI/DRD/IT.pm
+lib/Net/DRI/DRD/KNET.pm
+lib/Net/DRI/DRD/KSRegistry.pm
 lib/Net/DRI/DRD/LC.pm
 lib/Net/DRI/DRD/LU.pm
 lib/Net/DRI/DRD/LV.pm
@@ -189,6 +199,7 @@ lib/Net/DRI/DRD/Nominet/UK.pm
 lib/Net/DRI/DRD/NORID.pm
 lib/Net/DRI/DRD/NU.pm
 lib/Net/DRI/DRD/NZ.pm
+lib/Net/DRI/DRD/OpenRegistry/GENT.pm
 lib/Net/DRI/DRD/OpenSRS.pm
 lib/Net/DRI/DRD/ORG.pm
 lib/Net/DRI/DRD/OVH.pm
@@ -227,6 +238,7 @@ lib/Net/DRI/DRD/TCI/SU.pm
 lib/Net/DRI/DRD/TCI/TCI.pm
 lib/Net/DRI/DRD/TCI_gTLD.pm
 lib/Net/DRI/DRD/TELEGreenland.pm
+lib/Net/DRI/DRD/TeleInfo.pm
 lib/Net/DRI/DRD/Telnic.pm
 lib/Net/DRI/DRD/TMDB.pm
 lib/Net/DRI/DRD/TRA/AE.pm
@@ -234,6 +246,7 @@ lib/Net/DRI/DRD/TRA/BH.pm
 lib/Net/DRI/DRD/TRAVEL.pm
 lib/Net/DRI/DRD/UA.pm
 lib/Net/DRI/DRD/UNIREG.pm
+lib/Net/DRI/DRD/UniRegistry.pm
 lib/Net/DRI/DRD/UNITEDTLD.pm
 lib/Net/DRI/DRD/UnitedTLD/Donuts.pm
 lib/Net/DRI/DRD/UnitedTLD/Rightside.pm
@@ -485,8 +498,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNLanguage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.pm
-lib/Net/DRI/Protocol/EPP/Extensions/NEUSTAR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Neustar.pm
+lib/Net/DRI/Protocol/EPP/Extensions/NEUSTAR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NEWGTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NO/Contact.pm
@@ -566,10 +579,14 @@ lib/Net/DRI/Protocol/EPP/Extensions/UNIREG.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/Centric.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/Market.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNIREG/RegistryMessage.pm
-lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Centric.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Market.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/RegistryMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNITEDTLD.pm
-lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Charge.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNITEDTLD/Charge.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Charge.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UNITEDTLD/Finance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Finance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/US.pm
@@ -881,6 +898,7 @@ t/Net/DRI/Protocol/EPP/Extensions/EURid/Registrar.t
 t/Net/DRI/Protocol/EPP/Extensions/EURid/Sunrise.t
 t/Net/DRI/Protocol/EPP/Extensions/FCCN.t
 t/Net/DRI/Protocol/EPP/Extensions/FRED.t
+t/Net/DRI/Protocol/EPP/Extensions/GMORegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/GracePeriod.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate.t
@@ -939,6 +957,8 @@ t/Net/DRI/Protocol/EPP/Extensions/Telnic.t
 t/Net/DRI/Protocol/EPP/Extensions/UA.t
 t/Net/DRI/Protocol/EPP/Extensions/UniReg.t
 t/Net/DRI/Protocol/EPP/Extensions/UNIREG/Market.t
+t/Net/DRI/Protocol/EPP/Extensions/UniRegistry.t
+t/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Market.t
 t/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/US/Contact.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/Balance.t
