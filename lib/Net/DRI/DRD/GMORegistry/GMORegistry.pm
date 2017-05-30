@@ -1,7 +1,7 @@
 ## Domain Registry Interface, GMO Registry Driver
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2014,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::GMO;
+package Net::DRI::DRD::GMORegistry::GMORegistry;
 
 use strict;
 use warnings;
@@ -26,11 +26,11 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::GMO - GMO Registry Driver for Net::DRI
+Net::DRI::DRD::GMORegistry::GMORegistry - GMO Registry Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension GMO Registry New Generic TLDs
+Additional domain extensions for GMO Registry New Generic TLDs
 
 GMO Registry utilises the following standard extensions. Please see the test files for more examples.
 
@@ -46,7 +46,7 @@ GMO Registry utilises the following standard extensions. Please see the test fil
 
 =head3 Custom extensions:
 
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.11
 
 =head1 SUPPORT
 
@@ -67,7 +67,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2014 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2014,2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -91,9 +91,9 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'GMO'; }
+sub name     { return 'GMORegistry::GMORegistry'; }
 
-sub tlds     {  return qw/nagoya tokyo yokohama okinawa ryukyu kyoto gmo ggee/; } # not all on same platform!
+sub tlds { return qw/nagoya tokyo yokohama/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
@@ -101,8 +101,19 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ('CentralNic::Fee'), 'brown_fee_version' => '0.5' }) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }) if $type eq 'epp';
  return;
+}
+
+####################################################################################################
+
+sub verify_name_domain
+{
+ my ($self,$ndr,$domain,$op)=@_;
+ return $self->_verify_name_rules($domain,$op,{check_name => 1,
+                                               my_tld => 1,
+                                               icann_reserved => 1,
+                                              });
 }
 
 ####################################################################################################

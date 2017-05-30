@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 542;
+use Test::More tests => 545;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -94,7 +94,10 @@ use_ok('Net::DRI::DRD::ECOMLAC');
 use_ok('Net::DRI::DRD::EURid');
 use_ok('Net::DRI::DRD::FRED');
 use_ok('Net::DRI::DRD::GDI');
-use_ok('Net::DRI::DRD::GMO');
+use_ok('Net::DRI::DRD::GMORegistry::BRRegistry');
+use_ok('Net::DRI::DRD::GMORegistry::GMORegistry');
+use_ok('Net::DRI::DRD::GMORegistry::KYOTO');
+use_ok('Net::DRI::DRD::GMORegistry::SHOP');
 use_ok('Net::DRI::DRD::HostmasterUA');
 use_ok('Net::DRI::DRD::ICANN');
 use_ok('Net::DRI::DRD::IENUMAT');
