@@ -1,4 +1,4 @@
-## Domain Registry Interface, GMO Registry Driver
+## Domain Registry Interface, OpenRegistry (.GENT) Driver
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::GMORegistry::GMORegistry;
+package Net::DRI::DRD::OpenRegistry::GENT;
 
 use strict;
 use warnings;
@@ -26,11 +26,11 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::GMORegistry::GMORegistry - GMO Registry Driver for Net::DRI
+Net::DRI::DRD::OpenRegistry::GENT - OpenRegistry (.GENT) Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extensions for GMO Registry New Generic TLDs
+Additional domain extensions for OpenRegistry New Generic TLDs
 
 GMO Registry utilises the following standard extensions. Please see the test files for more examples.
 
@@ -42,11 +42,9 @@ GMO Registry utilises the following standard extensions. Please see the test fil
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
-
 =head3 Custom extensions:
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.11
+=head3 L<Net::DRI::Protocol::EPP::Extensions::OpenRegistry::Domain>
 
 =head1 SUPPORT
 
@@ -91,9 +89,9 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'GMORegistry::GMORegistry'; }
+sub name     { return 'OpenRegistry::GENT'; }
 
-sub tlds { return qw/nagoya tokyo yokohama/; }
+sub tlds { return qw/gent/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
@@ -101,7 +99,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['OpenRegistry::Domain']}) if $type eq 'epp';
  return;
 }
 

@@ -225,6 +225,7 @@ sub new
      'HN' => 'RDS',
      'ID' => 'PANDI',
      'IM' => 'Domicilium',
+     'IN' => 'Afilias::IN',
      'INFO' => 'Afilias::Afilias',
      'IT' => 'IITCNR',
      'LC' => 'Afilias::Shared',
