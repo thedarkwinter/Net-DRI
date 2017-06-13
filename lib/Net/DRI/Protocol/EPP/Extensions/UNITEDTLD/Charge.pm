@@ -46,27 +46,27 @@ Adds the Charge Extension (http://www.unitedtld.com/epp/charge-1.0) to domain co
 =item restore [price for restore]
 
  # check and create
- 
+
  $rc = $dri->domain_check('premium.tld');
  my $ch = $dri->get_info('charge');
- if ($ch->{create} < '1000000000.00') { 
-   $rc=$dri->domain_create('premium.tld',{pure_create=>1,auth=>{pw=>'2fooBAR'},......,'charge' => $ch}); 
+ if ($ch->{create} < '1000000000.00') {
+   $rc=$dri->domain_create('premium.tld',{pure_create=>1,auth=>{pw=>'2fooBAR'},......,'charge' => $ch});
  }
- 
+
  # info and transfer
  $rc = $dri->domain_info('premium.tld');
  my $ch = $dri->get_info('charge');
- $rc=$dri->domain_transfer_start('premium.tld',{...,'charge' => $ch}); 
- 
+ $rc=$dri->domain_transfer_start('premium.tld',{...,'charge' => $ch});
+
  # renew (manual hashref)
  $ch = { type => 'price', category =>'premium', category_name=>'super cool',renew=>'100.00' };
- $rc=$dri->domain_renew('premium.tld',{...,'charge' => $ch}); 
- 
+ $rc=$dri->domain_renew('premium.tld',{...,'charge' => $ch});
+
  # early access program combines two charge_sets, the extension will accept either a hashref or an arrayref
  $ch1 = { type => 'price', category =>'premium', category_name=>'super cool',create=>'100.00' };
  $ch2 = { type => 'fee', category =>'earlyAccess',create=>'10000' };
- $rc=$dri->domain_renew('premium.tld',{...,'charge' => [$ch1,$ch2]}); 
- 
+ $rc=$dri->domain_renew('premium.tld',{...,'charge' => [$ch1,$ch2]});
+
 
 =head1 SUPPORT
 
@@ -120,7 +120,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({ map { $_ => ['http://www.unitedtld.com/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/charge/ }); 
+ $po->ns({ map { $_ => ['http://www.unitedtld.com/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/charge/ });
  $po->capabilities('domain_update','charge',['set']);
 }
 
@@ -132,7 +132,7 @@ sub charge_set_parse
  my $start = shift;
  return unless $start;
  my $set = {};
- foreach my $el (Net::DRI::Util::xml_list_children($start)) 
+ foreach my $el (Net::DRI::Util::xml_list_children($start))
  {
   my ($n,$c)=@$el;
   if ($n eq 'category')
@@ -155,7 +155,7 @@ sub charge_set_build
 {
   my ($rdr,$func) = @_;
   my @rds;
-  if (ref $rdr eq 'ARRAY') 
+  if (ref $rdr eq 'ARRAY')
   {
     @rds = @{$rdr};
   } else {
@@ -188,8 +188,8 @@ sub set_premium_values {
  return unless exists $rinfo->{domain}->{$oname}->{charge} && (ref $rinfo->{domain}->{$oname}->{charge} eq 'ARRAY');
  foreach my $ch (@{$rinfo->{domain}->{$oname}->{charge}})
  {
-  if ($ch->{category} eq 'premium') {
-   $rinfo->{domain}->{$oname}->{is_premium} = 1;
+  if ($ch->{category} eq 'premium' || $ch->{category} eq 'standard') {
+   $rinfo->{domain}->{$oname}->{is_premium} = 1 if $ch->{category} eq 'premium';
    $rinfo->{domain}->{$oname}->{price_category} = $ch->{category_name};
    $rinfo->{domain}->{$oname}->{price_currency} = 'USD';
    $rinfo->{domain}->{$oname}->{price_duration} = DateTime::Duration->new(years=>1);
@@ -242,7 +242,7 @@ sub info_parse
  return unless $mes->is_success();
  my $infdata=$mes->get_extension($mes->ns('charge'),'infData');
  return unless defined $infdata;
- 
+
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
    my ($n,$c)=@$el;
@@ -279,7 +279,7 @@ sub transform_build
 {
  my ($epp,$domain,$rd,$cmd)=@_;
  my $mes=$epp->message();
- return unless Net::DRI::Util::has_key($rd,'charge'); 
+ return unless Net::DRI::Util::has_key($rd,'charge');
  my @n = charge_set_build($rd->{'charge'},$cmd);
  return unless @n;
  my $eid=$mes->command_extension_register('charge','agreement');
@@ -294,7 +294,7 @@ sub renew { transform_build(@_,'renew'); }
 sub update {
    my ($epp,$domain,$todo)=@_;
    return unless my $ch = $todo->set('charge');
-   transform_build($epp,$domain,{'charge' => $ch},'restore'); 
+   transform_build($epp,$domain,{'charge' => $ch},'restore');
 }
 
 1;

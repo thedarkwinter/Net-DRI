@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 64;
+use Test::More tests => 80;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -153,5 +153,30 @@ is($dri->get_info('balance'),'200000.00','registrar_balance get_info (balance)')
 is($dri->get_info('final'),'0.00','registrar_balance get_info (final)');
 is($dri->get_info('restricted'),'500.00','registrar_balance get_info (restricted)');
 is($dri->get_info('notification'),'1000.00','registrar_balance get_info (notification)');
+
+##########################
+#Check 'standard' category (zacr)
+$dri->add_registry('NGTLD',{provider=>'zacr',name=>'africa'});
+$dri->target('africa')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><domain:cd><domain:name avail="1">test123.africa</domain:name></domain:cd></domain:chkData></resData><extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="0">test123.africa</launch:name></launch:cd></launch:chkData><charge:chkData xmlns:charge="http://www.unitedtld.com/epp/charge-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><charge:cd><charge:name>test123.africa</charge:name><charge:set><charge:category>standard</charge:category><charge:type>price</charge:type><charge:amount command="transfer">12.5000</charge:amount><charge:amount command="create">150.0000</charge:amount><charge:amount command="renew">12.5000</charge:amount><charge:amount command="update" name="restore">12.5000</charge:amount></charge:set></charge:cd></charge:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc = $dri->domain_check('test123.africa');
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info (action)');
+is($dri->get_info('exist'),0,'domain_check get_info (exist)');
+$ch1 = $dri->get_info('charge')->[0];
+is($ch1->{type},'price','domain_check get_info (charge type)');
+is($ch1->{category},'standard','domain_check get_info (charge category)');
+is($ch1->{create},'150.0000','domain_check get_info (charge create)');
+is($ch1->{transfer},'12.5000','domain_check get_info (charge transfer)');
+is($ch1->{renew},'12.5000','domain_check get_info (charge renew)');
+is($ch1->{restore},'12.5000','domain_check get_info (charge restore)');
+# using the standardised methods
+is($dri->get_info('is_premium'),undef,'domain_check get_info (is_premium)');
+isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration)');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),'150.0000','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),'12.5000','domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price'),'12.5000','domain_check get_info (transfer_price)');
+is($dri->get_info('restore_price'),'12.5000','domain_check get_info (restore_price)');
 
 exit 0;
