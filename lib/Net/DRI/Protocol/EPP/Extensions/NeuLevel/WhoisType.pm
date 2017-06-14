@@ -1,7 +1,7 @@
 ## Domain Registry Interface, Neulevel EPP WhoisType (for .TEL and possibly others)
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2013,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -21,6 +21,50 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
+=pod
+
+=head1 NAME
+
+Net::DRI::Protocol::EPP::Extensions::NeuLevel::WhoisType - Neustar EPP WhoisType Extension for .TEL
+
+=head1 DESCRIPTION
+
+Neustar EPP WhoisType Extension for .TEL
+
+Additional domain extension Neulevel unpsec for WhoisType/Publish
+
+$dri->domain_create('domain.tel', { ....  whoisType => {  type=>'Legal', publish=>'N' } });
+
+=head1 SUPPORT
+
+For now, support questions should be sent to:
+
+E<lt>netdri@dotandco.comE<gt>
+
+Please also see the SUPPORT file in the distribution.
+
+=head1 SEE ALSO
+
+E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
+
+=head1 AUTHOR
+
+Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+
+=head1 COPYRIGHT
+Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2013,2017 Michael Holloway <michael@thedarkwinter.com>.
+All rights reserved.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+See the LICENSE file that comes with this distribution for more details.
+
+=cut
+
 ####################################################################################################
 
 sub register_commands
@@ -34,6 +78,8 @@ sub register_commands
 
  return { 'domain' => \%tmp };
 }
+
+sub capabilities_add { return ('domain_update','whois_type',['set']); }
 
 ####################################################################################################
 
@@ -50,7 +96,7 @@ sub add_whoistype
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- Net::DRI::Exception::usererr_invalid_parameters('whois_type is required for domain creates') unless Net::DRI::Util::has_key($rd,'whois_type');
+ return unless Net::DRI::Util::has_key($rd,'whois_type');
  my $unspec = add_whoistype($rd->{'whois_type'});
  return unless defined $unspec;
  my $mes=$epp->message();

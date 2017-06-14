@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 121;
+use Test::More tests => 123;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -89,20 +89,20 @@ is($dri->get_info('exist'),0,'domain_check get_info(exist)');
 is($dri->get_info('exist','domain','foobar.bio'),0,'domain_check get_info(exist) from cache');
 
 #### Dedicated Registry
-# Neustar (pharmacy)
-$rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'pharmacy'});
-is($rc->{last_registry},'pharmacy','neustar: add_registry');
-$rc = $dri->target('pharmacy')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+# Neustar (hotels)
+$rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'hotels'});
+is($rc->{last_registry},'hotels','neustar: add_registry');
+$rc = $dri->target('hotels')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'neustar: add_current_profile');
-is($dri->name(),'pharmacy','neustar: name');
-is_deeply([$dri->tlds()],['pharmacy'],'neustar: tlds');
+is($dri->name(),'hotels','neustar: name');
+is_deeply([$dri->tlds()],['hotels'],'neustar: tlds');
 @periods = $dri->periods();
 is($#periods,9,'neustar: periods');
 is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
 is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
-$drd = $dri->{registries}->{pharmacy}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{custom=>'NeuLevel::Fee'}],'neustar: epp transport_protocol_default');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::Fee/],'neustar: loaded_modules');
+$drd = $dri->{registries}->{hotels}->{driver};
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],'neustar: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType CentralNic::Fee/],'neustar: loaded_modules');
 is($drd->{bep}->{bep_type},1,'neustar: bep_type');
 
 # Fury
@@ -208,35 +208,37 @@ $rc = $dri->add_registry('NGTLD',{provider => 'ari'});
 is($rc->{last_registry},'ari','ari: add_registry');
 $rc = $dri->target('ari')->add_current_profile('ari','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{ari}->{driver};
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::EXTContact/],'ari: loaded_modules');
-is_deeply([$dri->tlds()],
- ['xn--1ck2e1b','xn--8y0a063a','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--g2xx48c','xn--gckr3f0f','xn--gk3at1e','xn--jvr189m','xn--kcrx77d1x4a','xn--kpu716f','xn--mgba3a3ejt','xn--mgba7c0bbn0a','xn--mgbb9fbpob','xn--ngbc5azd','xn--nyqy26a','xn--pbt977c','xn--rhqv96g','xn--rovu88b',
-  'aaa','able','accountant','aetna','afl','aig','americanexpress','amex','amica','analytics','anz','aramco','athleta','audible','author','aws','axa',
-  'baby','banamex','bananarepublic','barclaycard','barclays','baseball','best','bible','bid','bond','book','booking','boots','bot','bridgestone','build','buy','buzz',
-  'call','calvinklein','cancerresearch','caravan','cartier','cba','cbn','cbre','ceo','chase','chintai','chloe','circle','cisco','citadel','citi','cloud','club','commbank','compare','cricket','coupon','courses','cuisinella',
-  'date','deal','dealer','dell','discover','doha','download','duns','dupont',
-  'earth','everbank',
-  'faith','farmers','fast','ferrero','film','fire','firestone','flickr','flir','ford','fox','free','frontier','ftr',
-  'gap','giving','got','grainger','gucci',
-  'hbo','health','homegoods','homesense','honeywell','hot','hoteles','hotels','hsbc','hyatt',
-  'ibm','icu','ieee','iinet','imdb','intel','intuit','ipiranga','iselect','itau','iwc',
-  'jlc','jmp','jnj','jot','joy','jpmorgan',
-  'kinder','kindle','kpmg','krd','kred',
-  'lanxess','latrobe','lifeinsurance','like','lilly','lincoln','loan','loft','luxury',
-  'marshalls','mattel','mcd','mcdonalds','melbourne','men','menu','mint','mlb','mobily','moe','moi','monash','montblanc','moto','mtn','mutual',
-  'nba','netbank','netflix','nfl','nike','northwesternmutual','now','nyc',
-  'office','olayan','olayangroup','oldnavy','one','open','osaka',
-  'pamperedchef','panerai','party','passagens','pay','pfizer','pharmacy','philips','physio','piaget','pin','ping','playstation','pramerica','praxi','prime','pru','prudential',
-  'qpon','quest','qvc',
-  'racing','read','review','rocher','room',
-  'safe','safety','sandvik','sandvikcoromant','sas','save','saxo','schmidt','science','scor','secure','seek','select','seven','silk','skype','smile','song','sony','spot','staples','starhub','statefarm','stream','study','sucks','swiftcover','sydney',
-  'tab','taipei','talk','taobao','target','tdk','teva','tjmaxx','tjx','tkmaxx','tmall','trade','trust','tube','tunes','tushu',
-  'unicom','uno',
-  'virgin','vista','vistaprint','vivo','vuelos',
-  'walter','wanggou','watches','weather','weatherchannel','webcam','whoswho','williamhill','win','winners','woodside','wow','wtc',
-  'yahoo','yamaxun','yandex','you',
-  'zappos','zero','zippo'
-],'ari: tlds');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message NeuLevel::WhoisType AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::EXTContact/],'ari: loaded_modules');
+is_deeply([$dri->tlds()], [
+     'aaa', 'able', 'accountant', 'aetna', 'afl', 'aig', 'americanexpress', 'amex', 'amica', 'analytics', 'anz', 'aramco', 'athleta', 'audible',
+     'auspost', 'author', 'aws', 'axa', 'baby', 'banamex', 'bananarepublic', 'barclaycard', 'barclays', 'baseball', 'best', 'bible', 'bid', 'biz', 'bond',
+     'book', 'booking', 'boots', 'bot', 'box', 'build', 'buzz', 'call', 'calvinklein', 'cancerresearch', 'caravan', 'cartier', 'catholic', 'cba', 'cbn',
+     'cbre', 'ceo', 'chase', 'chintai', 'chloe', 'circle', 'cisco', 'citadel', 'citi', 'cloud', 'club', 'co', 'commbank', 'compare', 'coupon',
+     'courses', 'cricket', 'cuisinella', 'date', 'deal', 'dealer', 'dell', 'discover', 'doha', 'download', 'duns', 'dupont', 'earth', 'everbank',
+     'faith', 'farmers', 'fast', 'ferrero', 'film', 'fire', 'flickr', 'flir', 'ford', 'fox', 'free', 'frontier', 'ftr', 'gap', 'giving', 'got',
+     'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hot', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm', 'icu',
+     'ieee', 'imdb', 'intel', 'intuit', 'ipiranga', 'iselect', 'itau', 'iwc', 'jlc', 'jmp', 'jnj', 'jot', 'joy', 'jpmorgan', 'kinder', 'kindle', 'kpmg',
+     'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'like', 'lilly', 'lincoln', 'loan', 'loft', 'luxury', 'marshalls', 'mattel', 'mcd',
+     'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'moi', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
+     'netflix', 'neustar', 'nfl', 'nike', 'northwesternmutual', 'now', 'nyc', 'office', 'olayan', 'olayangroup', 'oldnavy', 'one', 'open', 'osaka',
+     'pamperedchef', 'panerai', 'party', 'passagens', 'pay', 'pfizer', 'pharmacy', 'philips', 'physio', 'piaget', 'pin', 'ping', 'pramerica', 'praxi',
+     'prime', 'pru', 'prudential', 'qpon', 'quest', 'qvc', 'racing', 'read', 'review', 'rmit', 'rocher', 'room', 'safe', 'safety', 'sandvik',
+     'sandvikcoromant', 'sas', 'save', 'saxo', 'schmidt', 'science', 'scor', 'secure', 'seek', 'select', 'seven', 'silk', 'skype', 'smile', 'song',
+     'spot', 'staples', 'starhub', 'statefarm', 'stream', 'study', 'sucks', 'swiftcover', 'sydney', 'tab', 'taipei', 'talk', 'taobao', 'target', 'tdk',
+     'tel', 'teva', 'tjmaxx', 'tjx', 'tkmaxx', 'tmall', 'trade', 'travel', 'trust', 'tube', 'tunes', 'tushu', 'uno', 'us', 'virgin', 'vista', 'vistaprint',
+     'vivo', 'vuelos', 'walter', 'wanggou', 'watches', 'weather', 'weatherchannel', 'webcam', 'whoswho', 'williamhill', 'win', 'winners', 'woodside',
+     'wow', 'wtc', 'xn--1ck2e1b', 'xn--80aqecdr1a', 'xn--bck1b9a5dre4c', 'xn--cck2b3b', 'xn--eckvdtc9d', 'xn--fct429k', 'xn--g2xx48c', 'xn--gckr3f0f',
+     'xn--gk3at1e', 'xn--jvr189m', 'xn--kcrx77d1x4a', 'xn--kpu716f', 'xn--mgba3a3ejt', 'xn--mgba7c0bbn0a', 'xn--mgbb9fbpob', 'xn--mgbi4ecexp',
+     'xn--ngbc5azd', 'xn--nyqy26a', 'xn--pbt977c', 'xn--rhqv96g', 'xn--rovu88b', 'xn--tiq49xqyj', 'yahoo', 'yamaxun', 'yandex', 'you', 'zappos',
+     'zero', 'zippo'
+     ],'ari: tlds');
+
+# ARI
+$rc = $dri->add_registry('NGTLD',{provider => 'narwal'});
+is($rc->{last_registry},'narwal','narwal: add_registry');
+$rc = $dri->target('narwal')->add_current_profile('narwal','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{'narwal'}->{driver};
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType/],'ari: loaded_modules');
 
 
 ####################################################################################################
@@ -256,10 +258,10 @@ is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
 
 # neustar subphase = landrush (required)
-$rc = $dri->target('pharmacy');
-$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="landrush">claims</launch:phase><launch:cd><launch:name exists="1">test.pharmacy</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc = $dri->domain_check_claims('test.pharmacy',{phase=>'landrush'});
-is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.pharmacy</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="landrush">claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check_claims build_xml');
+$rc = $dri->target('hotels');
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="landrush">claims</launch:phase><launch:cd><launch:name exists="1">test.hotels</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc = $dri->domain_check_claims('test.hotels',{phase=>'landrush'});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.hotels</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="landrush">claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check_claims build_xml');
 $lpres = $dri->get_info('lp');
 is($lpres->{'exist'},1,'domain_check_claims get_info(exist)');
 is($lpres->{'phase'},'claims','domain_check_claims get_info(phase)');

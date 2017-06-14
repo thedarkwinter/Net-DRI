@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 546;
+use Test::More tests => 544;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -113,7 +113,6 @@ use_ok('Net::DRI::DRD::NASK');
 use_ok('Net::DRI::DRD::Neustar::BIZ');
 use_ok('Net::DRI::DRD::Neustar::COInternet');
 use_ok('Net::DRI::DRD::Neustar::Narwal');
-use_ok('Net::DRI::DRD::Neustar::Telnic');
 use_ok('Net::DRI::DRD::Neustar::Tralliance');
 use_ok('Net::DRI::DRD::Neustar::US');
 use_ok('Net::DRI::DRD::NGTLD');
@@ -439,7 +438,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI_gTLD::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Registrar');
-use_ok('Net::DRI::Protocol::EPP::Extensions::Telnic');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UA');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UA::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UA::HostDelete');

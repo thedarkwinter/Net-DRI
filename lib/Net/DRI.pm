@@ -261,7 +261,7 @@ sub new
      'TANGO' => 'TangoRS::TangoRS',
      'TCI' => 'TCI::TCI',
      'TCI_gTLD' => 'TCI::GTLD',
-     'Telnic' => 'Neustar::Telnic',
+     'Telnic' => 'Neustar::Narwal',
      'TRAVEL' => 'Neustar::Tralliance',
      'UNIREG' => 'UniRegistry',
      'UNITEDTLD' => 'UnitedTLD::Rightside',
