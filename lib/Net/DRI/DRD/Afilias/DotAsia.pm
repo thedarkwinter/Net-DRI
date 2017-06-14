@@ -75,7 +75,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'DotAsia'; }
+sub name     { return 'Afilias::DotAsia'; }
 sub tlds     { return ('asia'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }
