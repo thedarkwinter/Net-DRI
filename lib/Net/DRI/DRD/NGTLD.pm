@@ -1131,7 +1131,7 @@ L<NET::DRI::Protocol::EPP::Extensions::MX::IDN>
  return {
      bep_type => 1, # dedicated Registry
      tlds => ['lat'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::MX_GTLD',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ECOMLAC',{}],
      contact_i18n => 1,
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nicmx';
