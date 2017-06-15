@@ -1099,7 +1099,7 @@ amsterdam
  return {
      bep_type => 1, # dedicated Registry
      tlds => ['amsterdam'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::SIDN_GTLD',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket', { 'ssl_version' => 'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::SIDN_GTLD',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::SIDN->new(@_); } } ],
      contact_i18n => 1, ## LOC only
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
