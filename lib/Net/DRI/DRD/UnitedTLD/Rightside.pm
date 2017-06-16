@@ -93,7 +93,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'UNITEDTLD'; }
+sub name     { return 'UnitedTLD::UnitedTLD'; }
 
 sub tlds  {
  my @dpml = qw/dpml.pub/; # DPML

@@ -69,7 +69,7 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub name     { return 'GMO::BRregistry'; }
+sub name     { return 'GMORegistry::BRRegistry'; }
 sub tlds { return qw/okinawa ryukyu/; }
 
 1;
