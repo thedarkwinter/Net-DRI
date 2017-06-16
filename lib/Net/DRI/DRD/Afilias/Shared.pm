@@ -103,7 +103,7 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Afilias::Shared'; }
 
 sub tlds     {
- my @legacygTLDs = qw/xxx/;
+ my @legacygTLDs = qw/xxx asia/;
  my @newgTLDs = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians ist istanbul ltda onl porn rich sex srl storage vegas zara/;
  my @ccTLDs = (
      'ag',(map { $_.'.ag'} qw/co com net nom org/),
