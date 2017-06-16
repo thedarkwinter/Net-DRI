@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::UNITEDTLD;
+package Net::DRI::DRD::UnitedTLD::Rightside;
 
 use strict;
 use warnings;
@@ -93,7 +93,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'UnitedTLD::UnitedTLD'; }
+sub name     { return 'UnitedTLD::Rightside'; }
 
 sub tlds  {
  my @dpml = qw/dpml.pub/; # DPML
@@ -107,7 +107,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'}'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}) if $type eq 'epp';
  return;
 }
 
