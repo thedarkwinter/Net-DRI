@@ -71,7 +71,7 @@ See the LICENSE file that comes with this distribution for more details.
 
 #####################################################################################
 
-our %CCA2_EU=map { $_ => 1 } qw/AT BE BG CZ CY DE DK ES EE FI FR GR GB HU IE IT LT LU LV MT NL PL PT RO SE SK SI AX GF GI GP MQ RE/;
+our %CCA2_EU=map { $_ => 1 } qw/AT BE BG CZ CY DE DK ES EE FI FR GR GB HU IE IS IT LI LT LU LV MT NL NO PL PT RO SE SK SI AX GF GI GP MQ RE/;
 our %LANGA2_EU=map { $_ => 1 } qw/bg cs da de el en es et fi fr ga hu it lt lv mt nl pl pt ro sk sl sv/;
 
 sub new
