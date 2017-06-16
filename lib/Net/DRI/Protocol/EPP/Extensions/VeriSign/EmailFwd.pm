@@ -91,7 +91,7 @@ sub register_commands {
 
 sub setup {
   my ( $class, $po, $version ) = @_;
-  $po->ns( { emailFwd => [ 'http://www.nic.name/epp/emailFwd-1.0', 'emailFwd-1.0' ] } );
+  $po->ns( { emailFwd => [ 'http://www.nic.name/epp/emailFwd-1.0', 'emailFwd-1.0.xsd' ] } );
   $po->capabilities( 'emailfwd_update', 'info', ['set'] );
   return;
 }

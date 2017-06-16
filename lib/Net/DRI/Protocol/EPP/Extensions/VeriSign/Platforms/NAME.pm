@@ -65,24 +65,15 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub setup
-{
- my ($self,$rp)=@_;
- $self->default_parameters()->{subproductid}=$rp->{default_product} || '_auto_';
- $self->ns({ emailFwd => ['http://www.nic.name/epp/emailFwd-1.0','emailFwd-1.0.xsd'] });
- $self->capabilities('emailfwd_update','info',['set']);
- return;
-}
-
 ## List of VeriSign extensions: http://www.verisigninc.com/en_US/channel-resources/domain-registry-products/epp-sdks/index.xhtml?loc=en_US
 ## But see http://www.verisign.com/assets/epp-sdk/Verisign-EPP-SDK-Prog-Guide.pdf §13 Mappings and Extensions
-## TODO for .NAME: defreg, namewatch, persreg
+## TODO for .NAME: namewatch, persreg
+## NOTE namestore is [currently] announced by the server, but it returns an error when used!
 
 sub default_extensions
 {
  my ($self,$rp)=@_;
- my @c=qw/VeriSign::Sync VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::DefReg VeriSign::EmailFwd GracePeriod SecDNS/;
- push @c,'VeriSign::NameStore'; ## this must come last
+ my @c=qw/VeriSign::PollRGP VeriSign::PollLowBalance VeriSign::IDNLanguage VeriSign::DefReg VeriSign::EmailFwd GracePeriod SecDNS/; # Not implmented:
  return @c;
 }
 
