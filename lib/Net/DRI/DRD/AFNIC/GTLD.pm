@@ -93,7 +93,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'AFNIC::GTLD'; }
 
-sub tlds { return qw/alsacex aquarelle aquitaine banque bzh corsica frogans lancaster leclerc mma ovh paris sncf/ ; }
+sub tlds { return qw/alsace aquarelle aquitaine banque bzh corsica frogans lancaster leclerc mma ovh paris sncf/ ; }
 
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
