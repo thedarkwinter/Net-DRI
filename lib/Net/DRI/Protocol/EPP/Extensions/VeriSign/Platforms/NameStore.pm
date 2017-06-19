@@ -30,8 +30,6 @@ Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NameStore - VeriSign (
 
 Please see the README file for details.
 
-Note that the PremiumDomain extension is not loaded by default.
-
 =head1 SUPPORT
 
 For now, support questions should be sent to:
@@ -82,6 +80,7 @@ sub default_extensions
  my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::Balance GracePeriod SecDNS/;
  push @c,'VeriSign::WhoisInfo'   if !exists $rp->{default_product} || (defined $rp->{default_product} && $rp->{default_product} ne 'dotCC' && $rp->{default_product} ne 'dotTV' );
  push @c,'VeriSign::JobsContact' if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'dotJOBS';
+ push @c,qw/VeriSign::PremiumDomain CentralNic::Fee/; ## not active for all TLDs, a little complicated
  push @c,'VeriSign::NameStore'; ## this must come last
  return @c;
 }
