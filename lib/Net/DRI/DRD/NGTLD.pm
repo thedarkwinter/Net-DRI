@@ -339,7 +339,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space storage store tech theatre tickets website wiki wme xyz
+art bar basketball budapest college contact design fan fans feedback forum fun host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -358,7 +358,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de/;
-    my @ngtlds = qw/art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space storage store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds = qw/art bar basketball budapest college contact design fan fans feedback forum fun host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -556,7 +556,7 @@ They will be adding a fury.xsd extension
 GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo') and a separate shared account for geoTLDs (set provider to 'gmogeo'), and possibly more.
 
  $dri->add_registry('NGTLD',{provider=>'gmo'}); # Own: nagoya tokyo yokohama
- $dri->add_registry('NGTLD',{provider=>'gmogeo'}); # Geo: okinawa ryukyu
+ $dri->add_registry('NGTLD',{provider=>'gmogeo'}); # Geo: okinawa ryukyu (BRRegistry)
  $dri->add_registry('NGTLD',{provider=>'gmokyoto'}); # kyoto
  $dri->add_registry('NGTLD',{provider=>'gmoshop'}); # shop
 
@@ -587,21 +587,21 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      tlds => ['okinawa','ryukyu'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
-   } if $bep eq 'gmogeo';
+ } if $bep eq 'gmogeo' || $bep eq 'brregistry';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['kyoto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
-   } if $bep eq 'gmokyoto';
+ } if $bep eq 'gmokyoto' || $bep eq 'kyoto';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['shop'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
-   } if $bep eq 'gmoshop';
+ } if $bep eq 'gmoshop' || $bep eq 'shop';
 
 =pod
 
@@ -665,75 +665,6 @@ cam desi saarland
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'ks';
 
-
-=pod
-
-
-=head2 Minds And Machines
-
-M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown'), dedicted environments for partner TLDs ('mamsrs' or 'mampartner'), and a separate shared environment for their clients ('mamclient'). *However*, this might change somewhat, so please note that this M+M section might need adjusting and they release more info.
-
-=head3 Status: Working
-
-=head3 M+M Own TLDs
-
- $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
-
-Uncontested: budapest luxe
-
-Contested: aby beauty cpa data dds gay home hotel inc latino llc realestate
-=cut
-
- return {
-     bep_type => 2, # shared registry
-     tlds => ['budapest', 'luxe',
-              , 'beauty', 'cpa', 'data', 'dds', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate'
-             ],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
-     whois_server => 'whois-dub.mm-registry.com',
-   } if $bep eq 'mam' || $bep eq 'mamown';
-
-=pod
-
-=head3 M+M Partner TLDs
-
- $dri->add_registry('NGTLD',{provider=>'mamsrs'}); # M+M In Partnership 'mamsrs' or 'mampartner'
-
-Uncontested: rugby
-
-Contested: basketball music
-
-=cut
-
- return {
-     bep_type => 1, # dedicated registry
-     tlds => ['london-collisions', 'rugby',
-              'basketball', 'music',
-             ],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
-   } if $bep eq 'mamsrs' || $bep eq 'mampartner';
-
-=pod
-
-=head3 M+M Client TLDs
-
- $dri->add_registry('NGTLD',{provider=>'mamclient'}); # M+M Clients 'mamclient'
-
-Uncontested: gop broadway radio
-
-Contested: radio
-
-=cut
- #TODO Does this still exist?
- return {
-     bep_type => 2, # shared registry
-     tlds => ['radio'],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
-   } if $bep eq 'mamclient';
-
-=pod
 
 =pod
 
@@ -955,7 +886,7 @@ gent boston
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['gent','boston'],
+     tlds => ['gent'],
      host_as_attr => 1,
      contact_i18n => 2,
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['OpenRegistry::Domain']}],

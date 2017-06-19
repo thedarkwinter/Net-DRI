@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 123;
+use Test::More tests => 112;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -34,25 +34,6 @@ my ($rc,$drd,@periods);
 # Core module lists for testing loaded_modules
 my @core_modules = map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Domain Contact Host/;
 my @core_modules_no_host = map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Domain Contact/; # e.g. ZACR
-
-
-#### Shared Registry
-# MAM Clients
-$rc = $dri->add_registry('NGTLD',{provider => 'mamclient'});
-is($rc->{last_registry},'mamclient','mamclient: add_registry');
-$rc = $dri->target('mamclient')->add_current_profile('p1-mamclient','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-is($rc->is_success(),1,'mamclient: add_current_profile');
-is($dri->name(),'mamclient','mamclient: name');
-is_deeply([$dri->tlds()],['radio'],'mamclient: tlds');
-@periods = $dri->periods();
-is($#periods,9,'mamclient: periods');
-is_deeply( [$dri->object_types()],['domain','contact','ns'],'mamclient: object_types');
-is_deeply( [$dri->profile_types()],['epp','whois'],'mamclient: profile_types');
-$drd = $dri->{registries}->{mamclient}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],'mamclient: epp transport_protocol_default');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee/],'mamclient: loaded_modules');
-is($drd->{bep}->{bep_type},2,'mamclient: bep_type');
-is($drd->{info}->{check_limit},13,'mamclient: check_limit');
 
 # Donuts
 $rc = $dri->add_registry('NGTLD',{provider => 'donuts'});
