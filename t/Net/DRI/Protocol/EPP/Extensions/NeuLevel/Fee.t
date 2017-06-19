@@ -23,7 +23,7 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
 $dri->add_current_registry('Neustar::Narwal');
-$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['NeuLevel::Fee']});
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['NeuLevel::Fee','-CentralNic::Fee']});
 # TODO: I think this extension is no longer in use
 
 my $rc;

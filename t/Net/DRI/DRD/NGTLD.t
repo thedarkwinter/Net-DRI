@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 112;
+use Test::More tests => 90;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -60,31 +60,6 @@ is($drd->{info}->{check_limit},13,'afilias: check_limit');
 is($drd->{info}->{host_check_limit},13,'afilias: host_check_limit');
 is($dri->info('contact_check_limit'),13,'afilias: contact_check_limit');
 is($drd->{info}->{domain_check_limit},13,'afilias: domain_check_limit');
-# test for migration from StartingDot to Afilias - .bio
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">foobar.bio</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('foobar.bio');
-is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.bio</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build afilias - ngtld (StartingDot to Afilias migration)');
-is($rc->is_success(),1,'domain_check is_success');
-is($dri->get_info('action'),'check','domain_check get_info(action)');
-is($dri->get_info('exist'),0,'domain_check get_info(exist)');
-is($dri->get_info('exist','domain','foobar.bio'),0,'domain_check get_info(exist) from cache');
-
-#### Dedicated Registry
-# Neustar (hotels)
-$rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'hotels'});
-is($rc->{last_registry},'hotels','neustar: add_registry');
-$rc = $dri->target('hotels')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-is($rc->is_success(),1,'neustar: add_current_profile');
-is($dri->name(),'hotels','neustar: name');
-is_deeply([$dri->tlds()],['hotels'],'neustar: tlds');
-@periods = $dri->periods();
-is($#periods,9,'neustar: periods');
-is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
-is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
-$drd = $dri->{registries}->{hotels}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],'neustar: epp transport_protocol_default');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType CentralNic::Fee/],'neustar: loaded_modules');
-is($drd->{bep}->{bep_type},1,'neustar: bep_type');
 
 # Fury
 $rc = $dri->add_registry('NGTLD',{provider => 'fury', 'name' => 'kiwi'});
@@ -110,9 +85,7 @@ is_deeply( [$dri->profile_types()],['epp','whois'],'zacr: profile_types');
 $drd = $dri->{registries}->{joburg}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],'zacr: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules_no_host, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase ZACR::Domain ZACR::Contact UnitedTLD::Charge/],'zacr: loaded_modules');
-
 is($drd->{bep}->{bep_type},1,'zacr: bep_type');
-
 
 # CRR
 $rc = $dri->add_registry('NGTLD',{provider => 'crr'});
@@ -124,7 +97,7 @@ is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::P
 is($drd->{bep}->{bep_type},2,'crr: bep_type');
 is($drd->{info}->{check_limit},13,'crr: check_limit');
 
-# CRR
+# NICBR
 $rc = $dri->add_registry('NGTLD',{provider => 'nicbr'});
 is($rc->{last_registry},'nicbr','nicbr add_registry');
 $rc = $dri->target('nicbr')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
@@ -134,7 +107,6 @@ is_deeply( $dri->protocol()->{loaded_modules},[@core_modules_no_host, map { 'Net
 is($drd->{bep}->{bep_type},2,'nicbr: bep_type');
 is($drd->{info}->{check_limit},13,'nicbr: check_limit');
 is_deeply([$dri->tlds()],['bom','final','rio'],'nicbr: tlds');
-
 
 # Verisign
 $rc = $dri->add_registry('NGTLD',{provider => 'verisign'});
@@ -184,43 +156,35 @@ is($rc->is_success(),1,'teleinfo: add_current_profile');
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'disable_idn' => 1, 'brown_fee_version' => '0.9'}],'teleinfo: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase CentralNic::Fee/],'teleinfo: loaded_modules');
 
-# ARI
+# Neustar Legacy (hotels)
+$rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'hotels'});
+is($rc->{last_registry},'hotels','neustar: add_registry');
+$rc = $dri->target('hotels')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+is($rc->is_success(),1,'neustar: add_current_profile');
+is($dri->name(),'hotels','neustar: name');
+is_deeply([$dri->tlds()],['hotels'],'neustar: tlds');
+@periods = $dri->periods();
+is($#periods,9,'neustar: periods');
+is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
+is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
+$drd = $dri->{registries}->{hotels}->{driver};
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{extensions => ['-NeuLevel::WhoisType','-ARI::KeyValue','-NeuLevel::EXTContact'], 'brown_fee_version' => '0.6' }],'neustar: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message CentralNic::Fee/],'neustar: loaded_modules');
+is($drd->{bep}->{bep_type},1,'neustar: bep_type');
+
+# Neustar-Narwal Using ARI extensions
 $rc = $dri->add_registry('NGTLD',{provider => 'ari'});
-is($rc->{last_registry},'ari','ari: add_registry');
+is($rc->{last_registry},'ari','neustar-ari: add_registry');
 $rc = $dri->target('ari')->add_current_profile('ari','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{ari}->{driver};
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message NeuLevel::WhoisType AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::EXTContact/],'ari: loaded_modules');
-is_deeply([$dri->tlds()], [
-     'aaa', 'able', 'accountant', 'aetna', 'afl', 'aig', 'americanexpress', 'amex', 'amica', 'analytics', 'anz', 'aramco', 'athleta', 'audible',
-     'auspost', 'author', 'aws', 'axa', 'baby', 'banamex', 'bananarepublic', 'barclaycard', 'barclays', 'baseball', 'best', 'bible', 'bid', 'biz', 'bond',
-     'book', 'booking', 'boots', 'bot', 'box', 'build', 'buzz', 'call', 'calvinklein', 'cancerresearch', 'caravan', 'cartier', 'catholic', 'cba', 'cbn',
-     'cbre', 'ceo', 'chase', 'chintai', 'chloe', 'circle', 'cisco', 'citadel', 'citi', 'cloud', 'club', 'co', 'commbank', 'compare', 'coupon',
-     'courses', 'cricket', 'cuisinella', 'date', 'deal', 'dealer', 'dell', 'discover', 'doha', 'download', 'duns', 'dupont', 'earth', 'everbank',
-     'faith', 'farmers', 'fast', 'ferrero', 'film', 'fire', 'flickr', 'flir', 'ford', 'fox', 'free', 'frontier', 'ftr', 'gap', 'giving', 'got',
-     'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hot', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm', 'icu',
-     'ieee', 'imdb', 'intel', 'intuit', 'ipiranga', 'iselect', 'itau', 'iwc', 'jlc', 'jmp', 'jnj', 'jot', 'joy', 'jpmorgan', 'kinder', 'kindle', 'kpmg',
-     'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'like', 'lilly', 'lincoln', 'loan', 'loft', 'luxury', 'marshalls', 'mattel', 'mcd',
-     'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'moi', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
-     'netflix', 'neustar', 'nfl', 'nike', 'northwesternmutual', 'now', 'nyc', 'office', 'olayan', 'olayangroup', 'oldnavy', 'one', 'open', 'osaka',
-     'pamperedchef', 'panerai', 'party', 'passagens', 'pay', 'pfizer', 'pharmacy', 'philips', 'physio', 'piaget', 'pin', 'ping', 'pramerica', 'praxi',
-     'prime', 'pru', 'prudential', 'qpon', 'quest', 'qvc', 'racing', 'read', 'review', 'rmit', 'rocher', 'room', 'safe', 'safety', 'sandvik',
-     'sandvikcoromant', 'sas', 'save', 'saxo', 'schmidt', 'science', 'scor', 'secure', 'seek', 'select', 'seven', 'silk', 'skype', 'smile', 'song',
-     'spot', 'staples', 'starhub', 'statefarm', 'stream', 'study', 'sucks', 'swiftcover', 'sydney', 'tab', 'taipei', 'talk', 'taobao', 'target', 'tdk',
-     'tel', 'teva', 'tjmaxx', 'tjx', 'tkmaxx', 'tmall', 'trade', 'travel', 'trust', 'tube', 'tunes', 'tushu', 'uno', 'us', 'virgin', 'vista', 'vistaprint',
-     'vivo', 'vuelos', 'walter', 'wanggou', 'watches', 'weather', 'weatherchannel', 'webcam', 'whoswho', 'williamhill', 'win', 'winners', 'woodside',
-     'wow', 'wtc', 'xn--1ck2e1b', 'xn--80aqecdr1a', 'xn--bck1b9a5dre4c', 'xn--cck2b3b', 'xn--eckvdtc9d', 'xn--fct429k', 'xn--g2xx48c', 'xn--gckr3f0f',
-     'xn--gk3at1e', 'xn--jvr189m', 'xn--kcrx77d1x4a', 'xn--kpu716f', 'xn--mgba3a3ejt', 'xn--mgba7c0bbn0a', 'xn--mgbb9fbpob', 'xn--mgbi4ecexp',
-     'xn--ngbc5azd', 'xn--nyqy26a', 'xn--pbt977c', 'xn--rhqv96g', 'xn--rovu88b', 'xn--tiq49xqyj', 'yahoo', 'yamaxun', 'yandex', 'you', 'zappos',
-     'zero', 'zippo'
-     ],'ari: tlds');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact CentralNic::Fee/],'neustar-ari: loaded_modules');
 
-# ARI
+# Neustar-Narwal Using Starndard extensions
 $rc = $dri->add_registry('NGTLD',{provider => 'narwal'});
-is($rc->{last_registry},'narwal','narwal: add_registry');
+is($rc->{last_registry},'narwal','neustar-narwal: add_registry');
 $rc = $dri->target('narwal')->add_current_profile('narwal','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{'narwal'}->{driver};
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType/],'ari: loaded_modules');
-
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'neustar-narwal: loaded_modules');
 
 ####################################################################################################
 #### ngTLD Methods
@@ -248,34 +212,5 @@ is($lpres->{'exist'},1,'domain_check_claims get_info(exist)');
 is($lpres->{'phase'},'claims','domain_check_claims get_info(phase)');
 is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check_claims get_info(claim_key)');
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
-
-#### afiliassrs migration tests
-$rc = $dri->add_registry('NGTLD',{provider => 'afiliassrs'});
-is($rc->{last_registry},'afiliassrs','afiliassrs add_registry');
-$rc = $dri->target('afiliassrs')->add_current_profile('p1-afiliassrs','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-# afiliassrs - @ngtlds
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">foobar.global</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('foobar.global');
-is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.global</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build afiliassrs - ngtld');
-is($rc->is_success(),1,'domain_check is_success');
-is($dri->get_info('action'),'check','domain_check get_info(action)');
-is($dri->get_info('exist'),0,'domain_check get_info(exist)');
-is($dri->get_info('exist','domain','foobar.global'),0,'domain_check get_info(exist) from cache');
-# afiliassrs - @gtlds
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">foobar.xxx</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('foobar.xxx');
-is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.xxx</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build afiliassrs - gtld');
-is($rc->is_success(),1,'domain_check is_success');
-is($dri->get_info('action'),'check','domain_check get_info(action)');
-is($dri->get_info('exist'),0,'domain_check get_info(exist)');
-is($dri->get_info('exist','domain','foobar.xxx'),0,'domain_check get_info(exist) from cache');
-# afiliassrs - @cctlds
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">foobar.com.vc</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('foobar.com.vc');
-is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.com.vc</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build afiliassrs - cctld');
-is($rc->is_success(),1,'domain_check is_success');
-is($dri->get_info('action'),'check','domain_check get_info(action)');
-is($dri->get_info('exist'),0,'domain_check get_info(exist)');
-is($dri->get_info('exist','domain','foobar.com.vc'),0,'domain_check get_info(exist) from cache');
 
 exit 0;

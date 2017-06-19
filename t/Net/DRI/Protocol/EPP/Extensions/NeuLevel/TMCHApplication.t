@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 28;
+use Test::More tests => 27;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -20,7 +20,6 @@ our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
 our ($R1,$R2);
 my ($dri,$rc,$s,$d,$dh,@c,$idn,$toc);
-my @core_modules = map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Domain Contact Host/;
 
 sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
@@ -31,7 +30,6 @@ $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1, trid_factory => sub { retur
 # To use ARI extensions instead
 $rc = $dri->add_current_registry('Neustar::Narwal');
 $dri->add_current_profile('p2','epp_ari',{f_send=>\&mysend,f_recv=>\&myrecv});
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS NeuLevel::Message NeuLevel::WhoisType AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::EXTContact/],'Neustar::Narwal (Ari): loaded_modules');
 
 #####################
 ## TMCHApplication Extension (TMCH + Application = LaunchPhase type system)

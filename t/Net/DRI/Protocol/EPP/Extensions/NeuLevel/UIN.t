@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 10;
+use Test::More tests => 9;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -19,7 +19,6 @@ our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
 our ($R1,$R2);
 my ($rc,$ok,$cs,$st,$p);
-my @core_modules = map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Domain Contact Host/;
 
 sub mysend { my ($transport, $count, $msg) = @_; $R1 = $msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2 ? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
@@ -29,7 +28,6 @@ my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('Neustar::Narwal',{clid => 'ClientX'});
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions => ['NeuLevel::UIN']});
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType NeuLevel::UIN/],'Neustar::Narwal (standard): loaded_modules');
 
 ####################################################################################################
 ## UIN Extension

@@ -808,7 +808,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
  return {
      bep_type => 1, # dedicated registry
      tlds => ['hotels htc ipiranga itau'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{extensions => ['-NeuLevel::WhoisType','-ARI::KeyValue','-NeuLevel::EXTContact'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
 
