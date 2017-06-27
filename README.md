@@ -4,24 +4,27 @@
 #### Warning!
 #### Warning!
 
-!! This release includes the restructure of DRDs from Net-DRI-0.96_09, meaing that you will need to change your scripts.
+!! This release includes the restructure of DRDs from Net-DRI-0.96_09, meaning that you will need to change your scripts.
 !! See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes, along with the note:
 !! "This version changes almost all DRD module names, you will need to change your scripts.
 !!  This is a consequence of an old design decision that no DRD module should have a TLD as name.
 !!  Now, by default a DRD of a TLD registry will have the sponsor name as listed on IANA website."
 !! While the upstream favours the Registry name for DRD, I favour the BackendOperator::Platform Naming
 !! So instead of (.travel) Tralliance, I use Neustar::Tralliance, though there is variation in here I am still working on!
+!! Its sometimes more clean to use Backend::TLD when the platform is for a single TLD and the operator is the backend.
+!! - For instance, GMORegistry::GMORegistry, and GMORegistry::BRRegistry, and GMORegistry::SHOP
+!! Note, using old DRD names will probably still work as they will be automaticaly remapped. Probably.
 
 * * *
 #### Overview
 
-Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.dotandco.com/services/software/Net-DRI/), [CPAN](http://search.cpan.org/dist/Net-DRI/) based on Net-DRI-0.96_08 that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.
+Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.dotandco.com/services/software/Net-DRI/), [CPAN](http://search.cpan.org/dist/Net-DRI/) based on Net-DRI-0.96_09 that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.
 
 ##### LaunchPhase extension
 Based on draft-ietf-eppext-launchphase-07
 
 ##### New gTLD backend providers (RO's)
-Afnic, Afilias, Amazon (Neustar), ARI, CoCCA, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media, Fury Registry (CIRA), GMO Registry, KNET, KSRegistry (Starting Dot), Minds And Machines, Neustar, Nic.BR, Nic.MX, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, SIDN, Tango from KNIPP, TCI, TeleInfo, UniRegistry, Verisign, ZACR
+Afnic, Afilias, Amazon (Neustar), ARI (now Neustar), CoCCA, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media (Nominet), Fury Registry (CIRA), GMO Registry, KNET, KSRegistry, Minds And Machines (Nominet-MMX), Neustar, Nic.BR, Nic.MX, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, SIDN, Tango from KNIPP, TCI, TeleInfo, UniRegistry, Verisign, ZACR
 
 ##### Planned/Possible support for providers
 None
@@ -31,7 +34,7 @@ TMCH (Deloitte)
 TMDB (IBM): CNIS and SMDRL only
 
 ##### Added/Updated/Fixed support for ccTLDs
-UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE, NZ, EC, UA, EC, IN, RU, UA, RF, SU, CZ, MW, RO, AfiliasGRS (.AG/.BZ/.LC/.MN/.SC/.VC), CentralNicGW (.AM/.CX/.FM/.LA/RADIO.FM/RADIO.AM)
+UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE, NZ, EC, UA, EC, IN, RU, UA, RF, SU, CZ, MW, RO, CR, Afilias (IO AC SH), AfiliasGRS (AG BZ LC MN SC VC), CentralNic-Gateway (AM CX FM LA)
 
 * * *
 #### NGTLD Usage

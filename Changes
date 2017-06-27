@@ -1,7 +1,7 @@
 Net::DRI changelog from newest to oldest changes
 
 
-0.12-tdw 2017-XX-XX DEVELOPMENT RELEASE
+0.12-tdw 2017-06-XX DEVELOPMENT RELEASE
 !! Note, this is not an official release; it is based on Net-DRI-0.96_09. See http://search.cpan.org/dist/Net-DRI/ !!
 !! Note, this release includes the restructure of DRDs from Net-DRI-0.96_09, meaing that you will need to change your scripts.
 !! See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes, along with the note:
@@ -13,57 +13,88 @@ Net::DRI changelog from newest to oldest changes
 = Fix a few warnings redundant argument in sprintf/namespace issues
 = For perl 5.23+ I have fixed all push & shift on scalar reference errors
 
-DRD Moves (Upstream)
-= DRD/AERO is now DRD/SITA
-= DRD/AG is now DRD/UHSA
-= DRD/ASIA is now DRD/DotAsia
-= DRD/AT is now DRD/NicAT, and add co.at and or.at in list of tlds supported
-= DRD/AU is now DRD/auDA
-= DRD/BE is now DRD/DNSBelgium
-= DRD/BH is now DRD/TRA
-= DRD/BIZ is now DRD/Neustar/BIZ
-= DRD/BR is now DRD/CGIBR
-= DRD/BZ is now DRD/BelizeNIC
-= DRD/CAT is now DRD/puntCAT
-= DRD/COOP is now DRD/DotCooperation
-= DRD/COZA is now DRD/ZACR, and add .org.za, .net.za and .web.za in list of tlds supported
-= DRD/CZ is now DRD/CZNIC
-= DRD/GL is now DRD/TELEGreenland
-= DRD/HN is now DRD/RDS
-= DRD/ID is now DRD/PANDI
-= DRD/INFO is now DRD/Afilias
-= DRD/IT is now DRD/IITCNR
-= DRD/LU is now DRD/RESTENA
-= DRD/MOBI is now DRD/dotMOBI
-= DRD/NO is now DRD/NORID
-= DRD/NU is now DRD/IUSN
-= DRD/ORG is now DRD/PIR
-= DRD/PL is now DRD/NASK
-= DRD/PRO is now DRD/RegistryPro
-= DRD/PT is now DRD/DNSPT
-= DRD/SC is now DRD/VCS
-= DRD/SE is now DRD/IIS
-= DRD/SO is now DRD/SONIC, and add edu.so, gov.so and me.so in list of tlds supported
-= DRD/TRAVEL is now DRD/Tralliance
-= DRD/WS is now DRD/GDI
-= DRD/MN is now DRD/Datacom
-= DRD/IM is now DRD/Domicilium, and add ac.im, plc.co.im, ltd.co.im and remove net.im in list of tlds supported
-= DRD/LC is now DRD/NicLC, and add edu.lc, gov.lc and remove l.lc and p.lc in list of tlds supported
-= DRD/ME is now DRD/doMEn
-= DRD/VC is now DRD/SaintVincentGrenadines
-= DRD/US is now DRD/Neustar/US
++ standalone DRDs have been added for all New gTLDs (previous using NGTLD DRD)
+= ARI is now Neustar/Narwal
+= AE is now TRA/AE
+= AERO is now SITA
+= AFNIC is now AFNIC/AFNIC
+= AFNIC_GTLD is now AFNIC/GTLD
+= AG is now Afilias/Shared
+= ASIA is now Afilias/DotAsia
+= AT is now NicAT/AT
+= AU is now auDA
+= BE is now DNSBelgium
+= BH is now TRA/BH
+= BIZ is now Neustar/BIZ
+= BR is now CGIBR/BR
+= BZ is now Afilias/Shared
+= CAT is now puntCAT
+= CentralNic is now CentralNic/CentralNic
+= CentralNicGW is now CentralNic/Gateway
+= CIRA is now CIRA/CA
+= CO is now Neustar/COInternet
+= CoCCA is now CoCCA/CoCCA
+= COOP is now DotCooperation
+= CORENIC is now TangoRS/CORE
+= COZA is now ZACR
+= CN is now CNNIC/CN
+= CNNIC is now CNNIC/CN
+= CZ is now CZNIC
+= DK is now DKHostmaster
+= DONUTS is now UnitedTLD/Donuts
+= EC is now NICEC
+= ES is now RedES
+= GL is now TELEGreenland
+= GMO is now GMORegistry/GMORegistry
+= HN is now RDS
+= ID is now PANDI
+= IM is now Domicilium
+= IN is now Afilias/IN
+= INFO is now Afilias/Afilias
+= IT is now IITCNR
+= LC is now Afilias/Shared
+= LU is now RESTENA
+= LV is now LVRegistry
+= MAM is now Nominet/MMX
+= ME is now Afilias/Shared
+= MN is now Afilias/Shared
+= MOBI is now Afilias/Afilias
+= MSKIX is now TCI/MSKIX
+= MX is now NICMexico
+= MX_GTLD is now ECOMLAC
+= NAME is now VeriSign/NAME
+= NO is now NORID
+= Nominet is now Nominet/UK
+= NU is now IIS
+= NZ is now InternetNZ
+= ORG is now Afilias/PIR
+= PH is now CoCCA/PH
+= PL is now NASK
+= PRO is now Afilias/Afilias
+= PT is now DNSPT
+= RegBox is now NicAT/RegBox
+= RF is now TCI/RF
+= RO is now NICRO
+= RU is now TCI/RU
+= SC is now Afilias/Shared
+= SE is now IIS
+= SIDN is now SIDN/NL
+= SIDN_GTLD is now SIDN/GTLD
+= SO is now SONIC
+= SU is now TCI/SU
+= TANGO is now TangoRS/TangoRS
+= TCI is now TCI/TCI
+= TCI_gTLD is now TCI/GTLD
+= Telnic is now Neustar/Narwal
+= TRAVEL is now Neustar/Tralliance
+= UNIREG is now UniRegistry
+= UNITEDTLD is now UnitedTLD/Rightside
+= UA is now HostmasterUA
+= US is now Neustar/US
+= VC is now Afilias/Shared
 = DRD/NAME is now DRD/VeriSign/NAME
 = DRD/VNDS is now splitted into DRD/VeriSign/COM_NET and DRD/VeriSign/NameStore
-
-DRD Moves (tdw version, in some cases overrides the upstream move!)
-NEUSTAR -> Neustar/Narwal
-CO -> Neustar/COInternet
-Telnet -> Neustar/Telnic
-Tralliance (TRAVEL) -> Neustar/Tralliance
-US -> Neustar/US (name?)
-
-
-
+= WS is now GDI
 
 
 0.11-tdw 2017-05-15 DEVELOPMENT RELEASE
