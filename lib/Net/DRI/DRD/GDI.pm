@@ -1,6 +1,6 @@
-## Domain Registry Interface, "WorldSite.WS" Registry Driver for .WS
+## Domain Registry Interface, GDI (.WS) Registry Driver for Net::DRI
 ##
-## Copyright (c) 2005,2008,2009 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005,2008,2009,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::WS;
+package Net::DRI::DRD::GDI;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::WS - Website.WS .WS Registry driver for Net::DRI
+Net::DRI::DRD::GDI - GDI (.WS) Registry driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005,2008,2009 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005,2008,2009,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
 sub periods      { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name         { return 'WS'; }
+sub name         { return 'GDI'; }
 sub tlds         { return ('ws'); }
 sub object_types { return ('domain','ns'); }
 sub profile_types { return qw/rrp whois/; }
