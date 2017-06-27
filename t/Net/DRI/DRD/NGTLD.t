@@ -177,7 +177,7 @@ $rc = $dri->add_registry('NGTLD',{provider => 'ari'});
 is($rc->{last_registry},'ari','neustar-ari: add_registry');
 $rc = $dri->target('ari')->add_current_profile('ari','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{ari}->{driver};
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact CentralNic::Fee/],'neustar-ari: loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'neustar-ari: loaded_modules');
 
 # Neustar-Narwal Using Starndard extensions
 $rc = $dri->add_registry('NGTLD',{provider => 'narwal'});

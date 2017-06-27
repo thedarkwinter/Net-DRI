@@ -5,7 +5,7 @@ use warnings;
 use Net::DRI;
 use Data::Dumper;
 
-use Test::More tests => 504;
+use Test::More tests => 480;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -1198,102 +1198,6 @@ $r = $c->get('registrant');
 isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
 is($r->name(),'Ravin Ohri','domain_info get_info (contact) registrant name');
 is($r->org(),'Desi Networks LLC','domain_info get_info (contact) registrant org');
-
-####################################################################################################
-# Minds And Machines
-$R2='Domain ID: 4702-Minds
-Domain Name: nic.budapest
-WHOIS Server: whois-dub.mm-registry.com
-Updated Date: 2014-06-17T12:56:22Z
-Creation Date: 2014-04-23T03:05:36Z
-Registry Expiry Date: 2024-04-23T03:05:36Z
-Sponsoring Registrar: M+M Registry Admin
-Sponsoring Registrar IANA ID: 9999
-Domain Status: OK
-
-Registrant ID: 26416-Minds
-Registrant Name: Caspar Veltheim
-Registrant Organization: Bayern Connect GmbH
-Registrant Street: Antonienstrasse 3
-Registrant City: Munich
-Registrant State/Province:
-Registrant Postal Code: 80802
-Registrant Country: DE
-Registrant Phone: +49.8936035104
-Registrant Phone Ext:
-Registrant Fax:
-Registrant Fax Ext:
-Registrant Email: info@bayernconnect.de
-
-Admin ID: 26416-Minds
-Admin Name: Caspar Veltheim
-Admin Organization: Bayern Connect GmbH
-Admin Street: Antonienstrasse 3
-Admin City: Munich
-Admin State/Province:
-Admin Postal Code: 80802
-Admin Country: DE
-Admin Phone: +49.8936035104
-Admin Phone Ext:
-Admin Fax:
-Admin Fax Ext:
-Admin Email: info@bayernconnect.de
-
-Tech ID: 102-Minds
-Tech Name: Support
-Tech Organization: Minds + Machines Ltd
-Tech Street: 32 Nassau
-Tech City: Dublin 2
-Tech State/Province:
-Tech Postal Code:
-Tech Country: IE
-Tech Phone:
-Tech Phone Ext:
-Tech Fax:
-Tech Fax Ext:
-Tech Email: support@mm-registry.com
-
-Name Server: a.ns.nic.budapest
-Name Server: b.ns.nic.budapest
-
-DNSSEC: signedDelegation
-
->>> Last update of WHOIS database: 2014-06-19T01:20:15Z <<<
-
-TERMS OF USE: The whois information provided on this site is intended to provide you with the relevant contact information for a domain name registrant and the identity of certain administrative and technical contacts associated with that domain name. The data in this record is provided by Minds + Machines Registry, a subsidiary of Minds + Machines Group Limited, formerly Top Level Domain Holdings Limited (“the Company”), for informational purposes only. Accuracy is not guaranteed. The Company is the authoritative source for whois information in top-level domains it operates under contract with the Internet Corporation for Assigned Names and Numbers. This service is intended only for query-based access. By using this service, you agree that you will use any data presented for lawful purposes only and that under no circumstances will you use (a) data acquired for the purpose of allowing, enabling, or otherwise supporting the transmission by email, telephone, facsimile, or other communications mechanisms mass unsolicited, commercial, advertising, or solicitations to entities other than your existing customers; or (b) this service to enable high volume, automated, electronic processes that send queries or data to the systems of any registrar or any registry except as reasonably necessary to register domain names or to modify existing domain name registrations. The Company reserves the right to modify these terms at any time. By submitting this query, you agree to abide by this policy. All rights reserved.';
-
-$dri->add_registry('NGTLD',{provider=>'mam'});
-$dri->target('mam')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.budapest');
-is($rc->is_success(),1,'Minds And Machines domain_info is_success');
-is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.budapest','domain_info get_info (name)');
-is($dri->get_info('id'),'4702-Minds','domain_info get_info (id)');
-is($dri->get_info('clName'),'M+M Registry Admin','domain_info get_info (clName)');
-is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
-is($dri->get_info('clWhois'),'whois-dub.mm-registry.com','domain_info get_info (clWhois)');
-is($dri->get_info('clWebsite'),undef,'domain_info get_info (clWebsite)');
-$s=$dri->get_info('status');
-isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
-is_deeply([$s->list_status()],['OK'],'domain_info get_info(status) list'); # FIXME, should this not be lower-cased somewhere?
-is($dri->get_info('crDate'),'2014-04-23T03:05:36','domain_info get_info (crDate)');
-is($dri->get_info('upDate'),'2014-06-17T12:56:22','domain_info get_info (upDate)');
-is($dri->get_info('exDate'),'2024-04-23T03:05:36','domain_info get_info (exDate)');
-is($dri->get_info('wuDate'),'2014-06-19T01:20:15','domain_info get_info (wuDate)');
-$h=$dri->get_info('ns');
-isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
-@hs=$h->get_names();
-is_deeply(\@hs,['a.ns.nic.budapest','b.ns.nic.budapest'],'domain_info get_info (ns) get_names');
-$c=$dri->get_info('contact');
-isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
-is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
-is($c->get('registrant')->srid(),'26416-Minds','domain_info get_info (contact) registrant srid');
-is($c->get('admin')->srid(),'26416-Minds','domain_info get_info (contact) admin srid');
-is($c->get('tech')->srid(),'102-Minds','domain_info get_info (contact) tech srid');
-$r = $c->get('registrant');
-isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
-is($r->name(),'Caspar Veltheim','domain_info get_info (contact) registrant name');
-is($r->org(),'Bayern Connect GmbH','domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # NIC.BR
