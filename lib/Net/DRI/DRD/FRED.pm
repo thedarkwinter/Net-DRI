@@ -1,8 +1,8 @@
 ## Domain Registry Interface, .FRED policies
 ##
-## Copyright (c) 2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
-##           (c) 2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##
+## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2014-2017 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+## Copyright (c) 2017 Michael Holloway. All rights reserved.
 ## This file is part of Net::DRI
 ##
 ## Net::DRI is free software; you can redistribute it and/or modify
@@ -37,6 +37,10 @@ Net::DRI::DRD::FRED - .FRED policies for Net::DRI
 
 Additional domain extension to manage nameservers & technical contact NSSET, see FRED.t for examples.
 
+FRED (Free Registry for ENUM and Domains) is a Registry-Registrar-Registrant developed by CZNIC. See https://fred.nic.cz/
+
+Note (2017): I believe aech registy operated their FRED system independantly, but they are all the same, so this single module can be used for all the TLDs.
+
 Additional contact extension with 'vat', 'notify_email' and 'identity' fields, see L<Net::DRI::Data::Contact::FRED>
 
 The FRED system powers the following TLD's:
@@ -56,11 +60,19 @@ The FRED system powers the following TLD's:
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::FRED:KeySET>
 
+=head3 L<Net::DRI::Protocol::EPP::Extensions::FRED:FRED> not implemented
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::FRED:Domain> extends domain-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::FRED:Contact> extends contact-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::FRED:Message> poll parser assistant
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
 
-E<lt>development@sygroup.chE<gt>
+E<lt>netdri@dotandco.comE<gt>
 
 Please also see the SUPPORT file in the distribution.
 
@@ -70,12 +82,13 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
+David Makuni <d.makuni@live.co.uk>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-           (c) 2011 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2014-2017 David Makuni <d.makuni@live.co.uk>.
+          (c) 2017 Michael Holloway. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -127,6 +140,7 @@ sub set_factories {
 ####################################################################################################
 
 ####################################################################################################
+## NSSET Commands
 
 sub nsset_check {
   my ($self,$ndr,$keyset,$rd)=@_;
@@ -175,6 +189,9 @@ sub nsset_update {
    my $rc=$ndr->process('nsset','update',[$domain,$tochange,$rd]);
    return $rc;
 }
+
+####################################################################################################
+## KeySet Commands
 
 sub keyset_create {
   my ($self,$ndr,$keyset,$rd)=@_;

@@ -237,7 +237,7 @@ alsace aquarelle aquitaine banque bzh corsica frogans lancaster leclerc mma ovh 
  return {
     bep_type => 1, # dedicated regsitry
     tlds => ['alsace', 'paris'],
-    transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['AFNIC_GTLD::RegistryMessage', 'CentralNic::Fee'], 'brown_fee_version' => '0.11'}],
+    transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['AFNIC::RegistryMessage', 'CentralNic::Fee'], 'brown_fee_version' => '0.11'}],
     contact_i18n => 1, # can only use the "loc" type
     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
   } if $bep eq 'afnic' && $tld =~ m/(?:alsace|paris)/;
@@ -245,7 +245,7 @@ alsace aquarelle aquitaine banque bzh corsica frogans lancaster leclerc mma ovh 
  return {
      bep_type => 1, # dedicated regsitry
      tlds => ['aquarelle', 'aquitaine', 'banque', 'bzh', 'corsica', 'frogans', 'lancaster', 'leclerc', 'mma', 'ovh', 'sncf'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['AFNIC_GTLD::RegistryMessage', 'AFNIC_GTLD::PremiumDomain']}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['AFNIC::RegistryMessage', 'AFNIC::PremiumDomain']}],
      contact_i18n => 1, # can only use the "loc" type
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afnic';
@@ -285,7 +285,7 @@ Contended TLD's not included
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['info','mobi','pro','law.pro','jur.pro','bar.pro','med.pro','cpa.pro','aca.pro','eng.pro',
+     tlds => ['info','mobi','pro','law.pro','jur.pro','bar.pro','med.pro','cpa.pro','aca.pro','eng.pro','io','sh','ac',
               'xn--5tzm5g', 'xn--6frz82g','archi','bet','bio','black','blue','green','kim','lgbt','lotto','meet','organic','pet','pink','poker','promo','red','shiksha','ski','vote','voto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.8'}],
      whois_server => 'whois.afilias.net',
@@ -307,7 +307,7 @@ cctlds: ag bz gi lc mn me sc vc
 
  if ($bep eq 'afiliassrs') {
    my @ngtlds = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians ist istanbul ltda onl porn rich sex srl vegas zara/;
-   my @gtlds = qw/xxx mobi/;
+   my @gtlds = qw/xxx asia/;
    my @cctlds = (
        'ag',(map { $_.'.ag'} qw/co com net nom org/),
        'bz',(map { $_.'.bz'} qw/co com net/),
@@ -327,90 +327,6 @@ cctlds: ag bz gi lc mn me sc vc
    };
  }
 
-=pod
-
-=head2 ARI
-
- $dri->add_registry('NGTLD',{provider=>'ari'});
-
-=head3 Status: Working
-
-=head3 TLDs
-
-xn--1ck2e1b xn--8y0a063a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--ngbc5azd xn--nyqy26a xn--pbt977c xn--rhqv96g xn--rovu88b aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta audible author aws axa baby banamex bananarepublic barclaycard barclays baseball best bible bid bond book booking boots bot bridgestone build buy buzz call calvinklein cancerresearch caravan cartier cba cbn cbre ceo chase chintai chloe circle cisco citadel citi cloud club commbank compare cricket coupon courses cuisinella date deal dealer dell discover doha download duns dupont earth everbank faith farmers fast ferrero film fire firestone flickr flir ford fox free frontier ftr gap giving got grainger gucci hbo health homegoods homesense honeywell hot hoteles hotels hsbc hyatt ibm icu ieee iinet imdb intel intuit ipiranga iselect itau iwc jlc jmp jnj jot joy jpmorgan kinder kindle kpmg krd kred lanxess latrobe lifeinsurance like lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe moi monash montblanc moto mtn mutual nba netbank netflix nfl nike northwesternmutual now nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pay pfizer pharmacy philips physio piaget pin ping playstation pramerica praxi prime pru prudential qpon quest qvc racing read review rocher room safe safety sandvik sandvikcoromant sas save saxo schmidt science scor secure seek select seven silk skype smile song sony spot staples starhub statefarm stream study sucks swiftcover sydney tab taipei talk taobao target tdk teva tjmaxx tjx tkmaxx tmall trade trust tube tunes tushu unicom uno virgin vista vistaprint vivo vuelos walter wanggou watches weather weatherchannel webcam whoswho williamhill win winners woodside wow wtc yahoo yamaxun yandex you zappos zero zippo
-Contended TLD's not included
-
-=head3 Custom extensions:
-
-L<Net::DRI::Protocol::EPP::Extensions::ARI::Application> urn:ar:params:xml:ns:application-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::ARI::Trademark> urn:ar:params:xml:ns:tmch-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::ARI::IDN> urn:ar:params:xml:ns:idn-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::ARI::Variant> urn:ar:params:xml:ns:variant-1.1
-
-L<Net::DRI::Protocol::EPP::Extensions::ARI::Price> urn:ar:params:xml:ns:price-1.2
-
-L<Net::DRI::Protocol::EPP::Extensions::ARI::KeyValue> urn:X-ar:params:xml:ns:kv-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvail-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message> urn:ietf:params:xml:ns:neulevel-1.0
-
-L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact> urn:ietf:params:xml:ns:neulevel-1.0 (For .NYC Only)
-
-L<Net::DRI::Protocol::EPP::Extensions::AllocationToken> urn:ietf:params:xml:ns:allocationToken-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0 && urn:ietf:params:xml:ns:signedMark-1.0
-
-=head3 Notes
-
-1. ARI's implementation of LaunchPhase (TMCH) differers from the standard, however the units are built to mimic the standard extension's usage
-
-2. In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension for contacts and domains.
-See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact>
-
- $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'nyc'}); # using name
- $dri->target('nyc')->add_current_profile(....);
- $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'whatever',tlds=['nyc']}); # using tld
-
-=cut
-
- return {
-     bep_type => 2, # shared registry
-     tlds => ['xn--1ck2e1b','xn--8y0a063a','xn--bck1b9a5dre4c','xn--cck2b3b','xn--eckvdtc9d','xn--fct429k','xn--g2xx48c','xn--gckr3f0f','xn--gk3at1e','xn--jvr189m','xn--kcrx77d1x4a','xn--kpu716f','xn--mgba3a3ejt','xn--mgba7c0bbn0a','xn--mgbb9fbpob','xn--ngbc5azd','xn--nyqy26a','xn--pbt977c','xn--rhqv96g','xn--rovu88b',
-       'aaa','able','accountant','aetna','afl','aig','americanexpress','amex','amica','analytics','anz','aramco','athleta','audible','author','aws','axa',
-       'baby','banamex','bananarepublic','barclaycard','barclays','baseball','best','bible','bid','bond','book','booking','boots','bot','bridgestone','build','buy','buzz',
-       'call','calvinklein','cancerresearch','caravan','cartier','cba','cbn','cbre','ceo','chase','chintai','chloe','circle','cisco','citadel','citi','cloud','club','commbank','compare','cricket','coupon','courses','cuisinella',
-       'date','deal','dealer','dell','discover','doha','download','duns','dupont',
-       'earth','everbank',
-       'faith','farmers','fast','ferrero','film','fire','firestone','flickr','flir','ford','fox','free','frontier','ftr',
-       'gap','giving','got','grainger','gucci',
-       'hbo','health','homegoods','homesense','honeywell','hot','hoteles','hotels','hsbc','hyatt',
-       'ibm','icu','ieee','iinet','imdb','intel','intuit','ipiranga','iselect','itau','iwc',
-       'jlc','jmp','jnj','jot','joy','jpmorgan',
-       'kinder','kindle','kpmg','krd','kred',
-       'lanxess','latrobe','lifeinsurance','like','lilly','lincoln','loan','loft','luxury',
-       'marshalls','mattel','mcd','mcdonalds','melbourne','men','menu','mint','mlb','mobily','moe','moi','monash','montblanc','moto','mtn','mutual',
-       'nba','netbank','netflix','nfl','nike','northwesternmutual','now','nyc',
-       'office','olayan','olayangroup','oldnavy','one','open','osaka',
-       'pamperedchef','panerai','party','passagens','pay','pfizer','pharmacy','philips','physio','piaget','pin','ping','playstation','pramerica','praxi','prime','pru','prudential',
-       'qpon','quest','qvc',
-       'racing','read','review','rocher','room',
-       'safe','safety','sandvik','sandvikcoromant','sas','save','saxo','schmidt','science','scor','secure','seek','select','seven','silk','skype','smile','song','sony','spot','staples','starhub','statefarm','stream','study','sucks','swiftcover','sydney',
-       'tab','taipei','talk','taobao','target','tdk','teva','tjmaxx','tjx','tkmaxx','tmall','trade','trust','tube','tunes','tushu',
-       'unicom','uno',
-       'virgin','vista','vistaprint','vivo','vuelos',
-       'walter','wanggou','watches','weather','weatherchannel','webcam','whoswho','williamhill','win','winners','woodside','wow','wtc',
-       'yahoo','yamaxun','yandex','you',
-       'zappos','zero','zippo'
-     ],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{custom => 'NeuLevel::EXTContact'}],
-     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::ARI->new(@_); } } ],
-     requires => [ 'Net::DRI::Data::Contact::ARI'],
-     whois_server => 'whois.aridnrs.net.au',
-   } if $bep eq 'ari';
 
 =pod
 
@@ -423,7 +339,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
 
 =head3 TLDs
 
-art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space storage store tech theatre tickets website wiki wme xyz
+art bar basketball budapest college contact design fan fans feedback forum fun host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -442,9 +358,8 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de/;
-    my @ngtlds = qw/art bar college contact design fan fans feedback forum fun host ink love observer online pid press protection realty reit rent rest security site space storage store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds = qw/art bar basketball budapest college contact design fan fans feedback forum fun host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
-    my @ngtlds_pipeline = qw//; # no expected dates given, probably contested strings
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
     return {
@@ -472,22 +387,22 @@ xn--80asehdb xn--80aswg xn--mgbab2bd barcelona eurovision erni eurovision eus ga
 
 =head3 Custom extensions: (From Tango-RS but with CoreNIC namespaces)
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> : http://xmlns.corenic.net/epp/idn-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::IDN> : http://xmlns.corenic.net/epp/idn-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> : http://xmlns.corenic.net/epp/auction-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction> : http://xmlns.corenic.net/epp/auction-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::Promotion> : http://xmlns.corenic.net/epp/promotion-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Promotion> : http://xmlns.corenic.net/epp/promotion-1.0
 
 =cut
 
  return {
      bep_type => 1, # dedicated registry
      tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORENIC',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORE',{}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'corenic';
 
@@ -579,9 +494,9 @@ academy accountants agency apartments architect associates bargains bike bingo b
 
 =head3 Custom extensions
 
-L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
+L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
 
-L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
+L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
 
 =head3 DPML Blocks / Overrides:
 
@@ -595,7 +510,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
  return {
      bep_type => 2, # shared registry
      tlds => ['dpml.zone','academy','accountants','agency','apartments','architect','associates','bargains','bike','bingo','boutique','builders','business','cab','cafe','camera','camp','capital','cards','care','careers','cash','casino','catering','center','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','contractors','cool','coupons','credit','creditcard','cruises','dating','deals','delivery','dental','diamonds','digital','direct','directory','discount','doctor','dog','domains','education','email','energy','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','express','fail','farm','finance','financial','fish','fitness','flights','florist','football','foundation','fund','furniture','fyi','gallery','gifts','gold','golf','glass','gmbh','graphics','gratis','gripe','group','guide','guru','healthcare','hockey','holdings','holiday','hospital','house','immo','industries','institute','insure','international','investments','irish','jetzt','jewelry','kitchen','land','lease','legal','life','lighting','limited','limo','loans','ltd','maison','management','mba','marketing','media','medical','memorial','money','movie','network','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','plus','productions','properties','recipes','reise','reisen','rentals','repair','report','restaurant','run','salon','sarl','school','schule','services','shoes','shopping','show','singles','soccer','solar','solutions','sports','style','supplies','supply','support','surgery','systems','tax','taxi','team','technology','tennis','theater','tienda','tips','tires','today','tools','tours','town','toys','training','university','vacations','ventures','viajes','villas','vin','vision','voyage','watch','wine','world','works','wtf','xn--czrs0t','xn--fjq720a','xn--unup4y','xn--vhquv','zone'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}],
      whois_server => 'whois.donuts.co',
      check_limit => 5,
    } if $bep eq 'donuts';
@@ -641,7 +556,7 @@ They will be adding a fury.xsd extension
 GMO uses a shared enveronment (account) for its own TLDs (set provider to 'gmo') and a separate shared account for geoTLDs (set provider to 'gmogeo'), and possibly more.
 
  $dri->add_registry('NGTLD',{provider=>'gmo'}); # Own: nagoya tokyo yokohama
- $dri->add_registry('NGTLD',{provider=>'gmogeo'}); # Geo: okinawa ryukyu
+ $dri->add_registry('NGTLD',{provider=>'gmogeo'}); # Geo: okinawa ryukyu (BRRegistry)
  $dri->add_registry('NGTLD',{provider=>'gmokyoto'}); # kyoto
  $dri->add_registry('NGTLD',{provider=>'gmoshop'}); # shop
 
@@ -672,21 +587,21 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      tlds => ['okinawa','ryukyu'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
-   } if $bep eq 'gmogeo';
+ } if $bep eq 'gmogeo' || $bep eq 'brregistry';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['kyoto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
-   } if $bep eq 'gmokyoto';
+ } if $bep eq 'gmokyoto' || $bep eq 'kyoto';
 
  return {
      bep_type => 2, # shared registry
      tlds => ['shop'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.5' }],
      whois_server => 'whois.centralnic.com',
-   } if $bep eq 'gmoshop';
+ } if $bep eq 'gmoshop' || $bep eq 'shop';
 
 =pod
 
@@ -753,114 +668,151 @@ cam desi saarland
 
 =pod
 
+=head2 Neustar Narwal / ex - ARI
 
-=head2 Minds And Machines
+ $dri->add_registry('NGTLD',{provider=>'ari'}); # To use ARI extensions
 
-M&M uses a shared enveronment for its own TLDs (set provider to 'mam' or 'mamown'), dedicted environments for partner TLDs ('mamsrs' or 'mampartner'), and a separate shared environment for their clients ('mamclient'). *However*, this might change somewhat, so please note that this M+M section might need adjusting and they release more info.
+ $dri->add_registry('NGTLD',{provider=>'narwal'}); # To use Standard/Nesutar extensions
 
-=head3 Status: Working
-
-=head3 M+M Own TLDs
-
- $dri->add_registry('NGTLD',{provider=>'mam'}); # M+M Own TLDs, 'mam' or 'mamown'
-
-Uncontested: budapest luxe
-
-Contested: aby beauty cpa data dds gay home hotel inc latino llc realestate
-=cut
-
- return {
-     bep_type => 2, # shared registry
-     tlds => ['budapest', 'luxe',
-              , 'beauty', 'cpa', 'data', 'dds', 'gay', 'home', 'hotel', 'inc', 'latino','llc', 'realestate'
-             ],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
-     whois_server => 'whois-dub.mm-registry.com',
-   } if $bep eq 'mam' || $bep eq 'mamown';
-
-=pod
-
-=head3 M+M Partner TLDs
-
- $dri->add_registry('NGTLD',{provider=>'mamsrs'}); # M+M In Partnership 'mamsrs' or 'mampartner'
-
-Uncontested: rugby
-
-Contested: basketball music
-
-=cut
-
- return {
-     bep_type => 1, # dedicated registry
-     tlds => ['london-collisions', 'rugby',
-              'basketball', 'music',
-             ],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
-   } if $bep eq 'mamsrs' || $bep eq 'mampartner';
-
-=pod
-
-=head3 M+M Client TLDs
-
- $dri->add_registry('NGTLD',{provider=>'mamclient'}); # M+M Clients 'mamclient'
-
-Uncontested: gop broadway radio
-
-Contested: radio
-
-=cut
- #TODO Does this still exist?
- return {
-     bep_type => 2, # shared registry
-     tlds => ['radio'],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee']}],
-   } if $bep eq 'mamclient';
-
-=pod
-
-
-=head2 Neustar
-
- $dri->add_registry('NGTLD',{provider=>'neustar'});
+ $dri->add_registry('NGTLD',{provider=>'neustar'}); # To use neustar legacy system (being phased out)
 
 =head3 Status: Working
 
 =head3 TLDs
 
-htc
+Legacy (use 'neustar') or DRD::Neustar::BIZ for .biz / DRD::Neustar::Tralliance (for .travel)
+Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD.
 
-Contended TLD's not included
+biz hotels htc ipiranga itau travel
 
-=head3 Custom extensions
+Narwal (use 'ari' or 'narwal') or DRD::Narwal
 
-L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::Fee> urn:ietf:params:xml:ns:neulevel-1.0
+aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta audible auspost author aws axa baby banamex bananarepublic barclaycard barclays baseball best bible bid biz bond book booking boots bot box build buzz call calvinklein cancerresearch caravan cartier catholic cba cbn cbre ceo chase chintai chloe circle cisco citadel citi cloud club co commbank compare coupon courses cricket cuisinella date deal dealer dell discover doha download duns dupont earth everbank faith farmers fast ferrero film fire flickr flir ford fox free frontier ftr gap giving got grainger gucci hbo health homegoods homesense honeywell hot hoteles hotels hsbc htc hyatt ibm icu ieee imdb intel intuit ipiranga iselect itau iwc jlc jmp jnj jot joy jpmorgan kinder kindle kpmg krd kred lanxess latrobe lifeinsurance like lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe moi monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual now nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pay pfizer pharmacy philips physio piaget pin ping pramerica praxi prime pru prudential qpon quest qvc racing read review rmit rocher room safe safety sandvik sandvikcoromant sas save saxo schmidt science scor secure seek select seven silk skype smile song spot staples starhub statefarm stream study sucks swiftcover sydney tab taipei talk taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade travel trust tube tunes tushu uno us virgin vista vistaprint vivo vuelos walter wanggou watches weather weatherchannel webcam whoswho williamhill win winners woodside wow wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--nyqy26a xn--pbt977c xn--rhqv96g xn--rovu88b xn--tiq49xqyj yahoo yamaxun yandex you zappos zero zippo
+
+=head3 Standard extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
+
+L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::AllocationToken> urn:ietf:params:xml:ns:allocationToken-1.0
+
+=head3 Custom extensions (NeuLevel Narwal)
+
+L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message> urn:ietf:params:xml:ns:neulevel-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact> urn:ietf:params:xml:ns:neulevel-1.0 (For .NYC Only)
+
+L<NET::DRI::Protocol::EPP::Extensions::NeuLevel::WhoisType> urn:ietf:params:xml:ns:neulevel-1.0 (For .TEL Only)
+
+=head3 Custom extensions (ARI)
+
+L<Net::DRI::Protocol::EPP::Extensions::ARI::Application> urn:ar:params:xml:ns:application-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::ARI::Trademark> urn:ar:params:xml:ns:tmch-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::ARI::IDN> urn:ar:params:xml:ns:idn-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::ARI::Variant> urn:ar:params:xml:ns:variant-1.1
+
+L<Net::DRI::Protocol::EPP::Extensions::ARI::Price> urn:ar:params:xml:ns:price-1.2
+
+L<Net::DRI::Protocol::EPP::Extensions::ARI::KeyValue> urn:X-ar:params:xml:ns:kv-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::ARI::ExAvail> urn:ar:params:xml:ns:exAvail-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::ARI::Block> urn:ar:params:xml:ns:block-1.0
 
 =head3 Notes
 
-Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD.
+1. You can select from "narwal" or "ari" which use different extensions. "ari" uses custom ARI extensions, while "narwal" uses the more standardizes extensions.
+It is recommended that "neustar" legacy is not used, but rather use the DRD::Neustar::* Drivers.
+
+2. ARI's implementation of LaunchPhase (TMCH) differers from the standard, however the units are built to mimic the standard extension's usage
+
+3. In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension for contacts and domains.
+See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact>
+
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'nyc'}); # using name
+ $dri->target('nyc')->add_current_profile(....);
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'whatever',tlds=['nyc']}); # using tld
 
 =cut
 
- ## these use NeuLevel::Fee for "Tier 1 pricing model"
  return {
-     bep_type => 1, # dedicated registry
-     tlds => ['pharmacy'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => 'NeuLevel::Fee'}],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
- } if $bep eq 'neustar' && $tld =~ m/(?:pharmacy)/;
+     bep_type => 2, # shared registry
+     tlds => [
+        'aaa', 'able', 'accountant', 'aetna', 'afl', 'aig', 'americanexpress', 'amex', 'amica', 'analytics', 'anz', 'aramco', 'athleta', 'audible',
+        'auspost', 'author', 'aws', 'axa', 'baby', 'banamex', 'bananarepublic', 'barclaycard', 'barclays', 'baseball', 'best', 'bible', 'bid', 'biz', 'bond',
+        'book', 'booking', 'boots', 'bot', 'box', 'build', 'buzz', 'call', 'calvinklein', 'cancerresearch', 'caravan', 'cartier', 'catholic', 'cba', 'cbn',
+        'cbre', 'ceo', 'chase', 'chintai', 'chloe', 'circle', 'cisco', 'citadel', 'citi', 'cloud', 'club', 'co', 'commbank', 'compare', 'coupon',
+        'courses', 'cricket', 'cuisinella', 'date', 'deal', 'dealer', 'dell', 'discover', 'doha', 'download', 'duns', 'dupont', 'earth', 'everbank',
+        'faith', 'farmers', 'fast', 'ferrero', 'film', 'fire', 'flickr', 'flir', 'ford', 'fox', 'free', 'frontier', 'ftr', 'gap', 'giving', 'got',
+        'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hot', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm', 'icu',
+        'ieee', 'imdb', 'intel', 'intuit', 'ipiranga', 'iselect', 'itau', 'iwc', 'jlc', 'jmp', 'jnj', 'jot', 'joy', 'jpmorgan', 'kinder', 'kindle', 'kpmg',
+        'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'like', 'lilly', 'lincoln', 'loan', 'loft', 'luxury', 'marshalls', 'mattel', 'mcd',
+        'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'moi', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
+        'netflix', 'neustar', 'nfl', 'nike', 'northwesternmutual', 'now', 'nyc', 'office', 'olayan', 'olayangroup', 'oldnavy', 'one', 'open', 'osaka',
+        'pamperedchef', 'panerai', 'party', 'passagens', 'pay', 'pfizer', 'pharmacy', 'philips', 'physio', 'piaget', 'pin', 'ping', 'pramerica', 'praxi',
+        'prime', 'pru', 'prudential', 'qpon', 'quest', 'qvc', 'racing', 'read', 'review', 'rmit', 'rocher', 'room', 'safe', 'safety', 'sandvik',
+        'sandvikcoromant', 'sas', 'save', 'saxo', 'schmidt', 'science', 'scor', 'secure', 'seek', 'select', 'seven', 'silk', 'skype', 'smile', 'song',
+        'spot', 'staples', 'starhub', 'statefarm', 'stream', 'study', 'sucks', 'swiftcover', 'sydney', 'tab', 'taipei', 'talk', 'taobao', 'target', 'tdk',
+        'tel', 'teva', 'tjmaxx', 'tjx', 'tkmaxx', 'tmall', 'trade', 'travel', 'trust', 'tube', 'tunes', 'tushu', 'uno', 'us', 'virgin', 'vista', 'vistaprint',
+        'vivo', 'vuelos', 'walter', 'wanggou', 'watches', 'weather', 'weatherchannel', 'webcam', 'whoswho', 'williamhill', 'win', 'winners', 'woodside',
+        'wow', 'wtc', 'xn--1ck2e1b', 'xn--80aqecdr1a', 'xn--bck1b9a5dre4c', 'xn--cck2b3b', 'xn--eckvdtc9d', 'xn--fct429k', 'xn--g2xx48c', 'xn--gckr3f0f',
+        'xn--gk3at1e', 'xn--jvr189m', 'xn--kcrx77d1x4a', 'xn--kpu716f', 'xn--mgba3a3ejt', 'xn--mgba7c0bbn0a', 'xn--mgbb9fbpob', 'xn--mgbi4ecexp',
+        'xn--ngbc5azd', 'xn--nyqy26a', 'xn--pbt977c', 'xn--rhqv96g', 'xn--rovu88b', 'xn--tiq49xqyj', 'yahoo', 'yamaxun', 'yandex', 'you', 'zappos',
+        'zero', 'zippo'
+     ],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Narwal->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::Narwal'],
+     whois_server => 'whois.aridnrs.net.au',
+ } if $bep eq 'ari';
 
- ## these use CentralNic::Fee for "Tier 2 pricing model" or no premium extension (CentralNic::Fee is ignored by server)
+ return {
+     bep_type => 2, # shared registry
+     tlds => [
+        'aaa', 'able', 'accountant', 'aetna', 'afl', 'aig', 'americanexpress', 'amex', 'amica', 'analytics', 'anz', 'aramco', 'athleta', 'audible',
+        'auspost', 'author', 'aws', 'axa', 'baby', 'banamex', 'bananarepublic', 'barclaycard', 'barclays', 'baseball', 'best', 'bible', 'bid', 'biz', 'bond',
+        'book', 'booking', 'boots', 'bot', 'box', 'build', 'buzz', 'call', 'calvinklein', 'cancerresearch', 'caravan', 'cartier', 'catholic', 'cba', 'cbn',
+        'cbre', 'ceo', 'chase', 'chintai', 'chloe', 'circle', 'cisco', 'citadel', 'citi', 'cloud', 'club', 'co', 'commbank', 'compare', 'coupon',
+        'courses', 'cricket', 'cuisinella', 'date', 'deal', 'dealer', 'dell', 'discover', 'doha', 'download', 'duns', 'dupont', 'earth', 'everbank',
+        'faith', 'farmers', 'fast', 'ferrero', 'film', 'fire', 'flickr', 'flir', 'ford', 'fox', 'free', 'frontier', 'ftr', 'gap', 'giving', 'got',
+        'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hot', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm', 'icu',
+        'ieee', 'imdb', 'intel', 'intuit', 'ipiranga', 'iselect', 'itau', 'iwc', 'jlc', 'jmp', 'jnj', 'jot', 'joy', 'jpmorgan', 'kinder', 'kindle', 'kpmg',
+        'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'like', 'lilly', 'lincoln', 'loan', 'loft', 'luxury', 'marshalls', 'mattel', 'mcd',
+        'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'moi', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
+        'netflix', 'neustar', 'nfl', 'nike', 'northwesternmutual', 'now', 'nyc', 'office', 'olayan', 'olayangroup', 'oldnavy', 'one', 'open', 'osaka',
+        'pamperedchef', 'panerai', 'party', 'passagens', 'pay', 'pfizer', 'pharmacy', 'philips', 'physio', 'piaget', 'pin', 'ping', 'pramerica', 'praxi',
+        'prime', 'pru', 'prudential', 'qpon', 'quest', 'qvc', 'racing', 'read', 'review', 'rmit', 'rocher', 'room', 'safe', 'safety', 'sandvik',
+        'sandvikcoromant', 'sas', 'save', 'saxo', 'schmidt', 'science', 'scor', 'secure', 'seek', 'select', 'seven', 'silk', 'skype', 'smile', 'song',
+        'spot', 'staples', 'starhub', 'statefarm', 'stream', 'study', 'sucks', 'swiftcover', 'sydney', 'tab', 'taipei', 'talk', 'taobao', 'target', 'tdk',
+        'tel', 'teva', 'tjmaxx', 'tjx', 'tkmaxx', 'tmall', 'trade', 'travel', 'trust', 'tube', 'tunes', 'tushu', 'uno', 'us', 'virgin', 'vista', 'vistaprint',
+        'vivo', 'vuelos', 'walter', 'wanggou', 'watches', 'weather', 'weatherchannel', 'webcam', 'whoswho', 'williamhill', 'win', 'winners', 'woodside',
+        'wow', 'wtc', 'xn--1ck2e1b', 'xn--80aqecdr1a', 'xn--bck1b9a5dre4c', 'xn--cck2b3b', 'xn--eckvdtc9d', 'xn--fct429k', 'xn--g2xx48c', 'xn--gckr3f0f',
+        'xn--gk3at1e', 'xn--jvr189m', 'xn--kcrx77d1x4a', 'xn--kpu716f', 'xn--mgba3a3ejt', 'xn--mgba7c0bbn0a', 'xn--mgbb9fbpob', 'xn--mgbi4ecexp',
+        'xn--ngbc5azd', 'xn--nyqy26a', 'xn--pbt977c', 'xn--rhqv96g', 'xn--rovu88b', 'xn--tiq49xqyj', 'yahoo', 'yamaxun', 'yandex', 'you', 'zappos',
+        'zero', 'zippo'
+     ],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{ 'brown_fee_version' => '0.6' }],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Narwal->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::Narwal'],
+     whois_server => 'whois.aridnrs.net.au',
+ } if $bep eq 'narwal';
+
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['htc'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEUSTAR',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.6' }],
+     tlds => ['hotels htc ipiranga itau'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{extensions => ['-NeuLevel::WhoisType','-ARI::KeyValue','-NeuLevel::EXTContact'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'neustar';
 
 =pod
-
 
 =head2 NIC.br
 
@@ -934,7 +886,7 @@ gent boston
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['gent','boston'],
+     tlds => ['gent'],
      host_as_attr => 1,
      contact_i18n => 2,
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['OpenRegistry::Domain']}],
@@ -1037,9 +989,9 @@ Contended TLD's not included
 
 =head3 Custom extensions
 
-L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
+L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
 
-L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
+L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
 
 =head3 DPML Blocks / Overrides:
 
@@ -1053,7 +1005,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
  return {
      bep_type => 2, # shared registry
      tlds => ['dpml.pub','actor','airforce','army','attorney','auction','band','consulting','dance','degree','democrat','dentist','engineer','family','forsale','futbol','games','gives','haus','immobilien','kaufen','lawyer','live','market','moda','mortgage','navy','news','ninja','pub','rehab','republican','reviews','rip','rocks','sale','social','software','studio','vet','video'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UNITEDTLD',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}],
      whois_server => 'whois.rightside.co',
      check_limit => 5,
    } if $bep eq 'rightside';
@@ -1078,7 +1030,7 @@ amsterdam
  return {
      bep_type => 1, # dedicated Registry
      tlds => ['amsterdam'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::SIDN_GTLD',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket', { 'ssl_version' => 'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::SIDN_GTLD',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::SIDN->new(@_); } } ],
      contact_i18n => 1, ## LOC only
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -1110,7 +1062,7 @@ L<NET::DRI::Protocol::EPP::Extensions::MX::IDN>
  return {
      bep_type => 1, # dedicated Registry
      tlds => ['lat'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::MX_GTLD',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ECOMLAC',{}],
      contact_i18n => 1,
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nicmx';
@@ -1132,11 +1084,11 @@ pay is in contention
 
 =head3 Custom extensions:
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::IDN> urn:ar:params:xml:ns:idn-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::IDN> urn:ar:params:xml:ns:idn-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::Auction> urn:ar:params:xml:ns:auction-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction> urn:ar:params:xml:ns:auction-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TANGO::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
+L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.6
 
@@ -1147,7 +1099,7 @@ Fee extension is currently only used in .NRW and for domain_check command only.
  return {
      bep_type => 1, # dedicated registry
      tlds => ['ruhr','cologne','gmx','ifm','koeln','nrw'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TANGO',{enable_fee => ($tld eq 'nrw')}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{enable_fee => ($tld eq 'nrw')}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'tango';
 
@@ -1221,7 +1173,13 @@ Contended TLD's not included
 
 =head3 Custom extensions:
 
-L<Net::DRI::Protocol::EPP::Extensions::UNIREG::Centric> http://ns.uniregistry.net/centric-1.0
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric> http://ns.uniregistry.net/centric-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> http://ns.uniregistry.net/market-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> (poll parser suppliment)
 
 =head3 Other extensions:
 
@@ -1231,19 +1189,19 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  if ($bep eq 'unireg') {
   # These methods are in the DRD
-  require Net::DRI::DRD::UNIREG;
-  *market_check = sub { return Net::DRI::DRD::UNIREG::market_check(@_); };
-  *market_info= sub { return Net::DRI::DRD::UNIREG::market_info(@_); };
-  *market_create= sub { return Net::DRI::DRD::UNIREG::market_create(@_); };
-  *market_update= sub { return Net::DRI::DRD::UNIREG::market_update(@_); };
+  require Net::DRI::DRD::UniRegistry;
+  *market_check = sub { return Net::DRI::DRD::UniRegistry::market_check(@_); };
+  *market_info= sub { return Net::DRI::DRD::UniRegistry::market_info(@_); };
+  *market_create= sub { return Net::DRI::DRD::UniRegistry::market_create(@_); };
+  *market_update= sub { return Net::DRI::DRD::UniRegistry::market_update(@_); };
  }
 
  return {
      bep_type => 2, # shared registry
      tlds => ['audio','auto','blackfriday','car','cars','christmas','click','country','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','realestate','save','sexy','tattoo'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UNIREG',{'brown_fee_version' => '0.7'}],
-     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UNIREG->new(@_); } } ],
-     requires => [ 'Net::DRI::Data::Contact::UNIREG'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
      whois_server => 'whois.uniregistry.net',
    } if $bep eq 'unireg';
 
@@ -1305,12 +1263,12 @@ africa capetown durban joburg wien
 
 =head3 Custom extensions:
 
-L<NET::DRI::Protocol::EPP::Extensions::UNITEDTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
+L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
 
 The extensions are optional, so no need to do anything out of the ordinary if you don't want to.
 
-L<Net::DRI::Protocol::EPP::Extensions::COZA::Domain> http://co.za/epp/extensions/cozadomain-1-0
-L<Net::DRI::Protocol::EPP::Extensions::COZA::Contact> http://co.za/epp/extensions/cozacontact-1-0
+L<Net::DRI::Protocol::EPP::Extensions::ZACR::Domain> http://co.za/epp/extensions/cozadomain-1-0
+L<Net::DRI::Protocol::EPP::Extensions::ZACR::Contact> http://co.za/epp/extensions/cozacontact-1-0
 
 =cut
 

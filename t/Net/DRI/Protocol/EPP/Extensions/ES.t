@@ -24,8 +24,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new(10);
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('ES');
-$dri->target('ES')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{client_login=>'LOGIN',client_password=>'PASSWORD' });
+$dri->add_registry('RedES');
+$dri->target('RedES')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{client_login=>'LOGIN',client_password=>'PASSWORD' });
 
 my $rc;
 my $s;

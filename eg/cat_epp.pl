@@ -17,10 +17,10 @@ my $dri=Net::DRI->new({cache_ttl=>10,logging=>'files'});
 
 my $ok=eval {
 ############################################################################################################
-$dri->add_registry('CAT',{clid=>$CLID});
+$dri->add_registry('puntCAT',{clid=>$CLID});
 
 ## This connects to .CAT server for tests
-my $rc=$dri->target('CAT')->add_current_profile('profile1','epp',{remote_host=>'epp.ote.puntcat.corenic.net',client_login=>$CLID,client_password=>$PASS});
+my $rc=$dri->target('puntCAT')->add_current_profile('profile1','epp',{remote_host=>'epp.ote.puntcat.corenic.net',client_login=>$CLID,client_password=>$PASS});
 
 die($rc) unless $rc->is_success(); ## Here we catch all errors during setup of transport, such as authentication errors
 

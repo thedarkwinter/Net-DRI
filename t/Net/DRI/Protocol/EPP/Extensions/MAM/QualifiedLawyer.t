@@ -21,10 +21,10 @@ sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
-my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_registry('NGTLD',{provider => 'nominet-mmx'} );
-$dri->{registries}->{'nominet-mmx'}->{driver}->{info}->{contact_i18n} = 2; # force to use type="int" only. both enabled by default for NGTLDs :)
-$dri->target('nominet-mmx')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
+$dri->add_current_registry('Nominet::MMX');
+$dri->driver()->{info}->{contact_i18n} = 2; # force to use type="int" only. both enabled by default for NGTLDs :)
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my ($rc,$co,$co2,$toc);
 

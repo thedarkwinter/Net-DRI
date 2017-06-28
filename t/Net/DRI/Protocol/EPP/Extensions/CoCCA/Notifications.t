@@ -24,8 +24,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new(10);
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('PH');
-$dri->target('PH')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
+$dri->add_current_registry('CoCCA::GTLD');
+$dri->target('CoCCA::GTLD')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
 
 my ($rc,$s,$d,$co,$dh,@c);
 my ($c,$cs,$ns);
@@ -33,8 +33,8 @@ my ($c,$cs,$ns);
 ####################################################################################################
 ######## Initial Commands ########
 
-my $drd = $dri->{registries}->{PH}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::PH',{}],'PH - epp transport_protocol_default');
+my $drd = $dri->driver();
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CoCCA::Notifications', 'CentralNic::Fee'], 'brown_fee_version' => '0.8'}],'CoCCA - epp transport_protocol_default');
 $R2='';
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build');

@@ -264,7 +264,7 @@ if ($ifile) {
 
 do_epp_operation(
     $obj{$opt_o}, $opt_c,  $clid, $pass, $newpass,
-    $socktype,    $server, $port, $fh,   \@doms, 
+    $socktype,    $server, $port, $fh,   \@doms,
     %p);
 
 my $t2 = time();
@@ -307,10 +307,10 @@ sub do_epp_operation {
     my ( $dri, $rc );
 
     eval {
-	
+
 	# Connect/Login
 	( $dri, $rc ) = init_reg_no( $clid, $pw, $newpw, $socktype, $server, $port, $fh );
-	
+
 	# Do the EPP cmds
 	foreach my $d (sort @$doms) {
 	    $p{name} = $d;
@@ -386,12 +386,12 @@ sub init_reg_no {
                        {output_directory => './',
                         output_filename=>$opt_f,
                         level=>'notice',
-			sanitize_data => { session_password => 1}, 
+			sanitize_data => { session_password => 1},
                         xml_indent=>0}]
        }
 );
 
-    $dri->add_registry( 'NO', { clid => $clid } );
+    $dri->add_registry( 'NORID', { clid => $clid } );
 
     my %pars = (
         defer => 0,
@@ -406,7 +406,7 @@ sub init_reg_no {
 
     $pars{client_newpassword} = $newpw if ($newpw);
 
-    my $rc = $dri->target('NO')->add_current_profile(
+    my $rc = $dri->target('NORID')->add_current_profile(
         'profile1',
        'epp',
         { %pars, },
@@ -456,7 +456,7 @@ sub do_command {
 
             # host info can specify a sponsoringclientid
             $a{sponsoringclientid} = $p{sponsoringclientid} if ( $p{sponsoringclientid} );
-            
+
            $a{facets} = $p{facets} if ( $p{facets} );
 
             $rc = $dri->host_info( $p{name}, \%a );
@@ -836,15 +836,15 @@ sub do_command {
             # Secdns
             my @secdns;
             if ( $p{secdns} ) {
-		# 
+		#
 		# Comment on maxSigLife:
-		#  Strange syntax by Net-DRI since it is assumed that maxSigLife 
-		#  is passed per key instead of as a single maxLife key/value inside secdns as 
+		#  Strange syntax by Net-DRI since it is assumed that maxSigLife
+		#  is passed per key instead of as a single maxLife key/value inside secdns as
 		#  is the case for an update.
 		#
-		#  If multiple DNS keys are passed in a create (ARRAY), maxSigLife must be specified 
-		#  inside the array of at least one of the keys. 
-		#  
+		#  If multiple DNS keys are passed in a create (ARRAY), maxSigLife must be specified
+		#  inside the array of at least one of the keys.
+		#
 		#  However, if maxSigLife is passed for several keys, the values must be identical for secDNS-1.1
 		#  whilst for secDNS-1.0 they can be different and maxSigLife can be set per key.
 		#
@@ -1277,7 +1277,7 @@ Keys returned can be:
     * as_string(EXTRA)
     * print()
     * print_full()
-    * trid() 
+    * trid()
 
 =end rc_result_as_fmt
 
@@ -1321,21 +1321,21 @@ sub rc_result_as_fmt {
        $s->{Info}            = $inf;
        $s->{Message}         = $msg;
     } else {
-       $s .=  
-           "Class       : $cl\n" . 
+       $s .=
+           "Class       : $cl\n" .
            "EPP_RFC_code: $cd\n" .
            "EPP_native_code : $ncd\n" .
            "Info        : $inf\n" .
            "Message     : $msg\n";
     }
-       
+
     # rc is ok
     # Print rc-specific info, not found in $dri->result_*()
-         
+
     if ($rc->can('is_pending')) {
        my $v = "";
        $v = $rc->is_pending() if $rc->is_pending();
-       
+
        if ($fmt eq 'hash') {
            $s->{rc_is_pending} = $v;
        } else {
@@ -1354,7 +1354,7 @@ sub rc_result_as_fmt {
     if ($rc->can('trid') && $rc->trid()) {
        my @v;
        @v = $rc->trid();
-       
+
        # trid seems to be returned as an array with two values
        if ($fmt eq 'hash') {
            $s->{clTRID} = $v[0];
@@ -1604,7 +1604,7 @@ sub dri_result_as_fmt {
 
 #   print STDERR "\n\n *** dri_result_as_fmt returns s: ", Dumper $s, "\n***\n\n";
     return $s;
-}      
+}
 
 =begin contact_object_as_fmt
 
@@ -1636,7 +1636,7 @@ Keys returned can be:
        mobilePhone
     identity->type
     identity->value
-    mobilephone, 
+    mobilephone,
     organization
     rolecontact
     xemail
@@ -1669,7 +1669,7 @@ sub contact_object_as_fmt {
                $v = sprintf Dumper $v;
            }
            if ($fmt eq 'hash') {
-               $s->{id} = $v; 
+               $s->{id} = $v;
            } else {
                $s .= sprintf "$F", 'id', $v;
            }
@@ -1685,7 +1685,7 @@ sub contact_object_as_fmt {
 
            if ($o->can($m)) {
                my $v = $o->$m;
-               
+
                if ($m eq 'identity') {
                    my $t = $v->{type} if ($v && $v->{type});
                    my $v = $v->{value}  if ($v && $v->{value});
@@ -1702,7 +1702,7 @@ sub contact_object_as_fmt {
                    # It only signals 0 when one is set to off
                    # We have to initialize all discloseure to 1,
                    # and change to 0 on the ones the server tells us
-                   
+
                    # Special disclose mapping
                    foreach my $d ('voice', 'fax', 'email') {
                        # set default disclose value
@@ -1711,7 +1711,7 @@ sub contact_object_as_fmt {
                        } else {
                            $s .= sprintf "$F", $d."disclose", "1";
                        }
-                       
+
                        next unless (defined($v) && $v);
 #print STDERR "DRI disclose, v returned and is now:", Dumper $v;
                        if ($v->{$d} eq "0") {
@@ -1822,7 +1822,7 @@ sub host_object_as_fmt {
            $s .= sprintf "$F", $m, $v;
        }
     }
-    
+
     my @nms = $hi->get_names();
     if (scalar(@nms) != 1) {
        Net::DRI::Exception->die(1,'Client::DRI.pm',9000, 'Error: we expect only one host name');
@@ -1905,7 +1905,7 @@ Keys returned can be:
     name
     ace
 
-    pw 
+    pw
     pwsetbuthidden
 
     nscount
@@ -2035,7 +2035,7 @@ sub domain_object_as_fmt {
        if ($fmt eq 'hash') {
            $s->{pw} = $au->{pw};
            if ($au->{pw} eq '') {
-               # Special server rule. The domain has an authInfo, but it is secret 
+               # Special server rule. The domain has an authInfo, but it is secret
                # for non-sponsors
                $s->{pwsetbuthidden} = 1;
            }
@@ -2072,10 +2072,10 @@ sub domain_object_as_fmt {
 
     ####################
     # Contacts
-    # 
+    #
     # contact is an array ref.
     my $co = $dri->get_info('contact');
-    
+
     unless ($fmt eq 'hash') {
        $s .= sprintf "--- Contacts ---\n";
     }
@@ -2112,7 +2112,7 @@ sub domain_object_as_fmt {
 	##
 	# note that Net::DRI returns maxSigLife inside each secdns[] element,
 	# even if the value is passed only once over EPP in secDNS-1.1,
-	# this is because that was the structure in 1.0, and the internal 
+	# this is because that was the structure in 1.0, and the internal
 	# representation is kept, although in 1.1 the value will be the same.
 
 	if ($count > 0) {
@@ -2121,7 +2121,7 @@ sub domain_object_as_fmt {
 		$s->{secdns}->{keys}       = $secdns;
 	    } else {
 		$s .= sprintf "$F", 'SecDNS Key count', $count;
-		
+
 		my $i = 0;
 		while ($i < $count) {
 		    my $n = $secdns->[$i];
@@ -2276,7 +2276,7 @@ Keys returned can be:
     # .NO specific
 
     # the specific content desc
-    nocontent     
+    nocontent
 
     # the conditions array, each element contains msg/code/..
     conditions[]
@@ -2323,9 +2323,9 @@ sub message_object_as_fmt {
            foreach my $e (@epp) {
                my $v;
                $v = $dri->get_info( $e, 'message', $li );
-               
+
                #print STDERR "DRI dri info message $e, ref: ", ref($e), "Dumper: ", Dumper $v;
-               
+
                if (defined($v) && $v) {
 
                    # stringify dates
@@ -2352,7 +2352,7 @@ sub message_object_as_fmt {
                    foreach my $i ('code', 'severity', 'msg', 'details') {
                        my $v;
                        $v = '-' unless ($v = $c->{$i});
-                       
+
                        if ($fmt eq 'hash') {
                           push @{$s->{conditions}->{condition}->{$i}}, $v;
                        } else {
@@ -2362,7 +2362,7 @@ sub message_object_as_fmt {
                }
            }
        }
-       
+
        # domain transfer late response result
        # really deep digging into the Net::DRI structures
        if ((my $d = $dri->get_info( 'domain', 'message', $li ))) {
@@ -2402,10 +2402,10 @@ sub message_object_as_fmt {
        # contact create late response result
        # really deep digging into the Net::DRI structures
        if ((my $d = $dri->get_info( 'contact', 'message', $li ))) {
-           
+
            #print STDERR "message_object contact message found: ", ref $d, "\n";;
            #print STDERR "message_object contact message found: ", Dumper $d;
-           
+
            if ( defined($d->{session}->{id}) ) {
                my $id = $d->{session}->{id};
                if (my $ip = $d->{$id}) {
@@ -2432,7 +2432,7 @@ sub message_object_as_fmt {
 
        # any inner TRIDs
        if ((my $trid = $dri->get_info( 'trid', 'message', $li ))) {
-           
+
            if ($fmt eq 'hash') {
                $s->{clTRID} = $trid->{cltrid} if (defined($trid->{cltrid}));
                $s->{svTRID} = $trid->{svtrid} if (defined($trid->{svtrid}));
@@ -2480,7 +2480,7 @@ zip file along with the pdf of the applicant declaration.
 
 sub unpack_dataset_file {
     my $zf = shift;
-    
+
     my $txtfile;
     my ($ds, $fs);
 
@@ -2491,7 +2491,7 @@ sub unpack_dataset_file {
     my $zip = Archive::Zip->new();
     my $status = $zip->read( $zf );
     die "Read of $zf failed\n" if $status != AZ_OK;
-    
+
     for my $ft ('pdf', 'txt') {
        my @filemembers = $zip->membersMatching( ".*\.$ft" );
        unless (@filemembers) {
@@ -2643,7 +2643,7 @@ Encrypted with SSL:
 
 =head3 About logging and filtering of the log output
 
-Logging is useful for debugging purposes, 
+Logging is useful for debugging purposes,
 
 A client side log can be activated by -f option, like:
 
@@ -2667,7 +2667,7 @@ needed only for a transfer-execute.
 
 =head2 Hello command
 
-=over 
+=over
 
 =item Hello
 
@@ -2727,7 +2727,7 @@ the rest of the info.
 If a 'srid' returned on a create is 'TOH169O', it means that the org. handle
 has the value 'TOH169O-NORID'. Lets do an info on this handle.
 
-=over 
+=over
 
 =item Info on an organization contact handle
 
@@ -2979,7 +2979,7 @@ Create a single domain with a a registrant, a contact set with one type each, tw
 B<Comment on maxSigLife usage>:
 
  Net-DRI assumes that maxSigLife is passed per key instead of as a single maxLife key/value inside secdns as is the case for an update.
- If multiple DNS keys are passed in a create (ARRAY), maxSigLife must be specified inside the array of at least one of the keys. 
+ If multiple DNS keys are passed in a create (ARRAY), maxSigLife must be specified inside the array of at least one of the keys.
  However, if maxSigLife is passed for several keys, the values must be identical for secDNS-1.1 whilst for secDNS-1.0 they can be different and maxSigLife can be set per key.
 
 The maxSigLife parameter may be rejected by server policy, but usage is shown anyway.
@@ -2989,7 +2989,7 @@ The maxSigLife parameter may be rejected by server policy, but usage is shown an
 
 =back
 
-=over 
+=over
 
 =item Some domain create variants supported by Net::DRI but rejected by .NO registry policy.
 
@@ -3014,7 +3014,7 @@ because of local policy.
 
 -o domain -c create -p E<34>%p=(name=>'test2.no', pw=>'')E<34>
 
-=back 
+=back
 
 =back
 
@@ -3075,7 +3075,7 @@ B<dsdata and optional keyData>
 
  Using dsData is mandatory.
 
- Using keyData is optional. If wanted, it can be passed along with the DS data. 
+ Using keyData is optional. If wanted, it can be passed along with the DS data.
  If the registry also receive the keyData, more validation can technically be done by the registry.
 
 
@@ -3167,7 +3167,7 @@ This is a .NO specific extension command.
 
 Withdraw will transfer the domain to REG0, thus a registrar can push the
 responsibility for a domain into the bucket.
- 
+
 -o domain -c withdraw -p E<34>%p=(name=>'test.no')E<34>
 
 If the sponsor for a domain is REG0, any registrar can do a transfer on it to
@@ -3239,7 +3239,7 @@ state information will be restored to the normal state.
 
 =item 4 Execute a pending transfer
 
- - Execute must be authorized by the token. 
+ - Execute must be authorized by the token.
  - An optional duration can specify a renew period for the domain (1-12 months).
 
 -o domain -c transfer_execute -p E<34>%p=(name=>'test.no', token=>'MySecretToken', duration=>{months=>'9'})E<34>
@@ -3336,4 +3336,3 @@ See the LICENSE file that comes with this distribution for more details.
 Trond Haugen, E<lt>info@norid.noE<gt>
 
 =cut
-

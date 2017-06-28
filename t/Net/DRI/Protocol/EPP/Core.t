@@ -22,8 +22,8 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_registry('VNDS');
-$dri->target('VNDS')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
+$dri->add_current_registry('VeriSign::COM_NET');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
 
 my $rc;
 my $s;
@@ -156,7 +156,7 @@ is("".$d,'2005-04-03T22:00:00','domain_renew get_info(exDate) value');
 $R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example205.com</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-08T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID><domain:acDate>2000-06-13T22:00:00.0Z</domain:acDate><domain:exDate>2002-09-08T22:00:00.0Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
 {
  no warnings;
- *Net::DRI::DRD::VNDS::verify_duration_transfer=sub { return 0; };
+ *Net::DRI::DRD::VeriSign::COM_NET::verify_duration_transfer=sub { return 0; };
 }
 $rc=$dri->domain_transfer_start('example205.com',{auth=>{pw=>'2fooBAR',roid=>"JD1234-REP"},duration=>DateTime::Duration->new(years=>1)});
 is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example205.com</domain:name><domain:period unit="y">1</domain:period><domain:authInfo><domain:pw roid="JD1234-REP">2fooBAR</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
@@ -547,28 +547,28 @@ while(@ul)
 ####################################################################################################
 ## New extensions selection mechanism
 
-$dri->target('VNDS')->add_current_profile('only_local_extensions','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
+$dri->target('VeriSign::COM_NET')->add_current_profile('only_local_extensions','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://custom/obj1ext-1.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 $R2='';
 $rc=$dri->process('session','login',['ClientX','foo-BAR2',{only_local_extensions => 1}]);
-is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://www.verisign-grs.com/epp/suggestion-1.1</extURI><extURI>http://www.verisign.com/epp/authExt-1.0</extURI><extURI>http://www.verisign.com/epp/authSession-1.0</extURI><extURI>http://www.verisign.com/epp/balance-1.0</extURI><extURI>http://www.verisign.com/epp/whowas-1.0</extURI><extURI>http://www.verisign.com/epp/zoneMgt-1.0</extURI><extURI>urn:ietf:params:xml:ns:coa-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.0</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build only_local_extensions');
+is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://www.verisign.com/epp/authExt-1.0</extURI><extURI>http://www.verisign.com/epp/authSession-1.0</extURI><extURI>http://www.verisign.com/epp/balance-1.0</extURI><extURI>http://www.verisign.com/epp/zoneMgt-1.0</extURI><extURI>urn:ietf:params:xml:ns:coa-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.0</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build only_local_extensions');
 
-$dri->target('VNDS')->add_current_profile('extensions_addrem','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
+$dri->target('VeriSign::COM_NET')->add_current_profile('extensions_addrem','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://custom/obj1ext-1.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 $R2='';
 $rc=$dri->process('session','login',['ClientX','foo-BAR2',{extensions => ['+ADD1','-http://custom/obj1ext-1.0','ADD2']}]);
 is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>ADD1</extURI><extURI>ADD2</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build extensions=+-');
 
-$dri->target('VNDS')->add_current_profile('extensions_absolute','epp',{f_send=>\&mysend,f_recv=>\&myrecv},,{extensions=>['-VeriSign::NameStore']});
+$dri->target('VeriSign::COM_NET')->add_current_profile('extensions_absolute','epp',{f_send=>\&mysend,f_recv=>\&myrecv},,{extensions=>['-VeriSign::NameStore']});
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://custom/obj1ext-1.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 $R2='';
 $rc=$dri->process('session','login',['ClientX','foo-BAR2',{extensions => ['ABS1','ABS2']}]);
 is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>ABS1</extURI><extURI>ABS2</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build extensions=absolute');
 
-$dri->target('VNDS')->add_current_profile('extensions_filter','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
+$dri->target('VeriSign::COM_NET')->add_current_profile('extensions_filter','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://custom/obj1ext-1.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 $R2='';

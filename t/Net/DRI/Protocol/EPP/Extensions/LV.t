@@ -25,8 +25,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new(10);
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('LV');
-$dri->target('LV')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
+$dri->add_registry('LVRegistry');
+$dri->target('LVRegistry')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
 
 my ($rc,$s,$d,$co,$dh,@c);
 my ($c,$cs,$ns);
@@ -34,7 +34,7 @@ my ($c,$cs,$ns);
 ####################################################################################################
 ######## Initial Commands ########
 
-my $drd = $dri->{registries}->{LV}->{driver};
+my $drd = $dri->driver();
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::LV',{}],'LV - epp transport_protocol_default');
 $R2='';
 $rc=$dri->process('session','noop',[]);

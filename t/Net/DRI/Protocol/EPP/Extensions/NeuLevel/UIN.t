@@ -17,53 +17,29 @@ our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:i
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
-our $R1;
-sub mysend
-{
-	my ($transport, $count, $msg) = @_;
-	$R1 = $msg->as_string();
-	return 1;
-}
+our ($R1,$R2);
+my ($rc,$ok,$cs,$st,$p);
 
-our $R2;
-sub myrecv
-{
-	return Net::DRI::Data::Raw->new_from_string($R2 ? $R2 : $E1 .
-		'<response>' . r() . $TRID . '</response>' . $E2);
-}
+sub mysend { my ($transport, $count, $msg) = @_; $R1 = $msg->as_string(); return 1; }
+sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2 ? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
+sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
-my $dri;
-my $ok=eval {
-	$dri = Net::DRI->new({cache_ttl => 10});
-	1;
-};
-print $@->as_string() if ! $ok;
-$dri->{trid_factory} = sub { return 'ABC-12345'; };
-$dri->add_registry('TRAVEL');
-$ok=eval {
-	$dri->target('TRAVEL')->add_current_profile('p1',
-		'epp',
-		{
-			f_send=> \&mysend,
-			f_recv=> \&myrecv
-		},
-		{extensions=>['NeuLevel::UIN']});
-	1;
-};
-print $@->as_string() if ! $ok;
+my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
+$dri->{trid_factory}=sub { return 'ABC-12345'; };
+$dri->add_current_registry('Neustar::Narwal',{clid => 'ClientX'});
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions => ['NeuLevel::UIN']});
+
+####################################################################################################
+## UIN Extension
 
 
-my $rc;
-my $s;
-my $d;
-my ($dh,@c);
 
 ############################################################################
 ## Create a domain
 $R2 = $E1 . '<response>' . r(1001,'Command completed successfully; ' .
 	'action pending') . $TRID . '</response>' . $E2;
 
-my $cs = $dri->local_object('contactset');
+$cs = $dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('TL1-TRAVEL'), 'tech');
 $cs->add($dri->local_object('contact')->srid('SK1-TRAVEL'), 'admin');
 $ok=eval {
@@ -117,9 +93,3 @@ is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:i
 
 ####################################################################################################
 exit(0);
-
-sub r
-{
- my ($c,$m)=@_;
- return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>';
-}

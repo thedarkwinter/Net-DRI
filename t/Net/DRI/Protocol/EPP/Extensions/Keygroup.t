@@ -35,8 +35,8 @@ my ($rc,$s,$d,$co,$toc,$cs,$h,$dh,@c);
 ## DNSBE uses version 1.0, while Eurid uses 1.1 (with their own namespace declarations)
 ## So we test both versions here. 1.1 is at the bottom!
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl=>10,trid_factory => sub { return 'TRID-0001'}});
-$dri->add_registry('BE');
-$dri->target('BE')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_current_registry('DNSBelgium');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 ## Process greetings to select namespace versions
 $R2=$E1.'<greeting><svID>dns.be</svID><svDate>2015-09-17T11:49:35.449Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><svcExtension><extURI>http://www.dns.be/xml/epp/nsgroup-1.0</extURI><extURI>http://www.dns.be/xml/epp/registrar-1.0</extURI><extURI>http://www.dns.be/xml/epp/dnsbe-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.dns.be/xml/epp/keygroup-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;

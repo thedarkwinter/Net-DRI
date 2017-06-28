@@ -16,19 +16,19 @@ our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
 our ($R1,$R2);
+my ($rc,$ok,$cs,$st,$p);
+
 sub mysend { my ($transport, $count, $msg) = @_; $R1 = $msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2 ? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('BIZ',{clid => 'ClientX'});
-$dri->target('BIZ')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-
-my ($rc,$ok,$cs,$st,$p);
+$dri->add_current_registry('Neustar::Narwal',{clid => 'ClientX'});
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions => ['-IDN', 'NeuLevel::IDNLanguage']});
 
 ####################################################################################################
-## IDN Extension
+## IDNLanguage Extension
 
 # Old method
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.biz</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;

@@ -21,8 +21,8 @@ sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'C
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('VNDS');
-$dri->target('VNDS')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['ServiceMessage','-VeriSign::NameStore']});
+$dri->add_current_registry('VeriSign::COM_NET');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['ServiceMessage','-VeriSign::NameStore']});
 
 my ($rc,$lastid,$data);
 
@@ -49,7 +49,7 @@ is_deeply($data->{entries},{date => '2016-02-25', domain => [qw/test-expire1.exa
 
 
 
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="88" id="1816"><qDate>2014-10-21T14:31:54.524131Z</qDate><msg>EPP response to command with client-id [05908A94-592F-11E4-ABEA-51CFAB10F032] and server-id [20141021143201978589AD-secondary-tldbox]</msg></msgQ><resData><message xmlns="http://tld-box.at/xmlns/resdata-1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="ResponseRecovery"><desc>EPP response to command with client-id [05908A94-592F-11E4-ABEA-51CFAB10F032] and server-id [20141021143201978589AD-secondary-tldbox]</desc><data><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><response><result code="1000"><msg>Command completed successfully</msg></result><msgQ count="8" id="1975"/><resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns="urn:ietf:params:xml:ns:domain-1.0"><domain:name>test-connection-interrupt.example</domain:name><domain:crDate>2014-10-21T14:32:01.984360Z</domain:crDate><domain:exDate>2015-10-21T14:32:01.984360Z</domain:exDate></domain:creData></resData><trID><clTRID>05908A94-592F-11E4-ABEA-51CFAB10F032</clTRID><svTRID>20141021143201978589AD-secondary-tldbox</svTRID></trID></response></epp></data></message></resData>'.$TRID.'</response>'.$E2; 
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="88" id="1816"><qDate>2014-10-21T14:31:54.524131Z</qDate><msg>EPP response to command with client-id [05908A94-592F-11E4-ABEA-51CFAB10F032] and server-id [20141021143201978589AD-secondary-tldbox]</msg></msgQ><resData><message xmlns="http://tld-box.at/xmlns/resdata-1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="ResponseRecovery"><desc>EPP response to command with client-id [05908A94-592F-11E4-ABEA-51CFAB10F032] and server-id [20141021143201978589AD-secondary-tldbox]</desc><data><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><response><result code="1000"><msg>Command completed successfully</msg></result><msgQ count="8" id="1975"/><resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns="urn:ietf:params:xml:ns:domain-1.0"><domain:name>test-connection-interrupt.example</domain:name><domain:crDate>2014-10-21T14:32:01.984360Z</domain:crDate><domain:exDate>2015-10-21T14:32:01.984360Z</domain:exDate></domain:creData></resData><trID><clTRID>05908A94-592F-11E4-ABEA-51CFAB10F032</clTRID><svTRID>20141021143201978589AD-secondary-tldbox</svTRID></trID></response></epp></data></message></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 $lastid=$dri->get_info('last_id');
 $data=$rc->get_data('message',$lastid,'servicemessage');

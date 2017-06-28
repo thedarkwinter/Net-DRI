@@ -19,10 +19,10 @@ my $dri=Net::DRI->new({cache_ttl=>10,logging=>'files'});
 
 my $ok=eval {
 ############################################################################################################
-$dri->add_registry('COOP',{clid=>$CLID});
+$dri->add_registry('DotCooperation',{clid=>$CLID});
 
 ## This connects to .COOP server for tests : make sure you have local files key.pem and cert.pem
-my $rc=$dri->target('COOP')->add_current_profile('profile1','epp',{ssl_key_file=>'./key.pem',ssl_cert_file=>'./cert.pem',ssl_ca_file=>'./cert.pem',client_login=>$CLID,client_password=>$PASS});
+my $rc=$dri->target('DotCooperation')->add_current_profile('profile1','epp',{ssl_key_file=>'./key.pem',ssl_cert_file=>'./cert.pem',ssl_ca_file=>'./cert.pem',client_login=>$CLID,client_password=>$PASS});
 
 die($rc) unless $rc->is_success(); ## Here we catch all errors during setup of transport, such as authentication errors
 

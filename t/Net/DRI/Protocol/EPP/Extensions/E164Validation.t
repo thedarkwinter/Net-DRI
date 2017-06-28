@@ -23,16 +23,16 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 my $dri=Net::DRI->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 
-use Net::DRI::DRD::VNDS;
+use Net::DRI::DRD::VeriSign::COM_NET;
 {
  no strict;
  no warnings;
- sub Net::DRI::DRD::VNDS::tlds { return ('e164.arpa'); };
- sub Net::DRI::DRD::VNDS::verify_name_domain { return ''; };
+ sub Net::DRI::DRD::VeriSign::COM_NET::tlds { return ('e164.arpa'); };
+ sub Net::DRI::DRD::VeriSign::COM_NET::verify_name_domain { return ''; };
 }
 
-$dri->add_registry('VNDS');
-$dri->target('VNDS')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['E164Validation','-VeriSign::NameStore']});
+$dri->add_current_registry('VeriSign::COM_NET');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['E164Validation','-VeriSign::NameStore']});
 
 my ($rc,$e,$toc);
 

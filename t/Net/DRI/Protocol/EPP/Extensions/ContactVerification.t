@@ -21,8 +21,8 @@ sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'C
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('VNDS');
-$dri->target('VNDS')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['ContactVerification','-VeriSign::NameStore']});
+$dri->add_current_registry('VeriSign::COM_NET');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['ContactVerification','-VeriSign::NameStore']});
 
 
 $R2=$E1.'<response>'.r().'<resData><contact:chkData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:cd><contact:id avail="0">sh8013</contact:id></contact:cd><contact:cd><contact:id avail="0">sah8013</contact:id></contact:cd><contact:cd><contact:id avail="0">8013sah</contact:id></contact:cd></contact:chkData></resData><extension><vericontact:chkData xmlns:vericontact="urn:ietf:params:xml:ns:vericontact-1.0"><vericontact:distinction id="sh8013" type="verified"/><vericontact:distinction id="sah8013" type="blocked"/><vericontact:distinction id="8013sah" type="unverified"/></vericontact:chkData></extension>'.$TRID.'</response>'.$E2;

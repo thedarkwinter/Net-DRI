@@ -26,7 +26,7 @@ use base qw(Class::Accessor::Chained::Fast Net::DRI::BaseClass);
 __PACKAGE__->mk_ro_accessors(qw/trid_factory identify_client logging cache/);
 
 our $AUTOLOAD;
-our $VERSION='0.11-tdw';
+our $VERSION='0.12-tdw';
 
 =pod
 
@@ -36,7 +36,7 @@ Net::DRI - Interface to Domain Name Registries/Registrars/Resellers
 
 =head1 VERSION
 
-This documentation refers to Net::DRI version 0.11-tdw
+This documentation refers to Net::DRI version 0.12-tdw
 
 =head1 SYNOPSIS
 
@@ -64,7 +64,7 @@ RRI (.DE registration protocol), Whois, DAS (Domain Availability Service used by
 IRIS (RFC3981) DCHK (RFC5144) over LWZ (RFC4993) for .DE currently and XCP (RFC4992),
 .FR/.RE email and webservices interface, and resellers interface of some registrars
 (Gandi, OpenSRS, etc.).
-It has transports for connecting with UDP/TCP/TLS, HTTP/HTTPS, 
+It has transports for connecting with UDP/TCP/TLS, HTTP/HTTPS,
 Web Services (XML-RPC and SOAP with/without WSDL),
 or SMTP-based registries/registrars.
 
@@ -97,7 +97,7 @@ During the C<new()> call, a C<trid_factory()> is initialized to a default safe v
 
 You need to call this method only if you wish to use another function to generate transaction identificators.
 
-All other objects (registry profiles and transports) 
+All other objects (registry profiles and transports)
 created after that will inherit this value. If you call again C<trid_factory()>
 the change will only apply to new objects (registry profiles and transports) created after the change,
 it will not apply to already existing objects (registry profiles and transports).
@@ -105,7 +105,7 @@ it will not apply to already existing objects (registry profiles and transports)
 =head2 identify_client()
 
 If not using your own trid_factory, you can enable identify_client to submit the version of Net-DRI with the trid.
-This feature is disabled by default, but enabling it could help registries identify which EPP clients their registrars are using, 
+This feature is disabled by default, but enabling it could help registries identify which EPP clients their registrars are using,
 and provide better support to their clients. It may also encourage them to support developement of Net-DRI.
 
 =head2 logging()
@@ -187,7 +187,104 @@ sub new
  bless($self,$class);
  $self->logging()->setup_channel(__PACKAGE__,'core');
  $self->log_output('notice','core','Successfully created Net::DRI object with logging='.$logname);
+
+ # used for backwards compatibility on depricated TLDs in function check_depricated_drd
+ $self->{depricated_drd_map} = {
+     'ARI' => 'Neustar::Narwal',
+     'AE' => 'TRA::AE',
+     'AERO' => 'SITA',
+     'AFNIC' => 'AFNIC::AFNIC',
+     'AFNIC_GTLD' => 'AFNIC::GTLD',
+     'AG' => 'Afilias::Shared',
+     'ASIA' => 'Afilias::DotAsia',
+     'AT' => 'NicAT::AT',
+     'AU' => 'auDA',
+     'BE' => 'DNSBelgium',
+     'BH' => 'TRA::BH',
+     'BIZ' => 'Neustar::BIZ',
+     'BR' => 'CGIBR::BR',
+     'BZ' => 'Afilias::Shared',
+     'CAT' => 'puntCAT',
+     'CentralNic' => 'CentralNic::CentralNic',
+     'CentralNicGW' => 'CentralNic::Gateway',
+     'CIRA' => 'CIRA::CA',
+     'CO' => 'Neustar::COInternet',
+     'CoCCA' => 'CoCCA::CoCCA',
+     'COOP' => 'DotCooperation',
+     'CORENIC' => 'TangoRS::CORE',
+     'COZA' => 'ZACR',
+     'CN' => 'CNNIC::CN',
+     'CNNIC' => 'CNNIC::CN',
+     'CZ' => 'CZNIC',
+     'DK' => 'DKHostmaster',
+     'DONUTS' => 'UnitedTLD::Donuts',
+     'EC' => 'NICEC',
+     'ES' => 'RedES',
+     'GL' => 'TELEGreenland',
+     'GMO' => 'GMORegistry::GMORegistry',
+     'HN' => 'RDS',
+     'ID' => 'PANDI',
+     'IM' => 'Domicilium',
+     'IN' => 'Afilias::IN',
+     'INFO' => 'Afilias::Afilias',
+     'IT' => 'IITCNR',
+     'LC' => 'Afilias::Shared',
+     'LU' => 'RESTENA',
+     'LV' => 'LVRegistry',
+     'MAM' => 'Nominet::MMX',
+     'ME' => 'Afilias::Shared',
+     'MN' => 'Afilias::Shared',
+     'MOBI' => 'Afilias::Afilias',
+     'MSKIX' => 'TCI::MSKIX',
+     'MX' => 'NICMexico',
+     'MX_GTLD' => 'ECOMLAC',
+     'NAME' => 'VeriSign::NAME',
+     'NO' => 'NORID',
+     'Nominet' => 'Nominet::UK',
+     'NU' => 'IIS',
+     'NZ' => 'InternetNZ',
+     'ORG' => 'Afilias::PIR',
+     'PH' => 'CoCCA::PH',
+     'PL' => 'NASK',
+     'PRO' => 'Afilias::Afilias',
+     'PT' => 'DNSPT',
+     'RegBox' => 'NicAT::RegBox',
+     'RF' => 'TCI::RF',
+     'RO' => 'NICRO',
+     'RU' => 'TCI::RU',
+     'SC' => 'Afilias::Shared',
+     'SE' => 'IIS',
+     'SIDN' => 'SIDN::NL',
+     'SIDN_GTLD' => 'SIDN::GTLD',
+     'SO' => 'SONIC',
+     'SU' => 'TCI::SU',
+     'TANGO' => 'TangoRS::TangoRS',
+     'TCI' => 'TCI::TCI',
+     'TCI_gTLD' => 'TCI::GTLD',
+     'Telnic' => 'Neustar::Narwal',
+     'TRAVEL' => 'Neustar::Tralliance',
+     'UNIREG' => 'UniRegistry',
+     'UNITEDTLD' => 'UnitedTLD::Rightside',
+     'UA' => 'HostmasterUA',
+     'US' => 'Neustar::US',
+     'VC' => 'Afilias::Shared',
+     'VNDS' => 'VeriSign::COM_NET', # warning, this was actually split into COM_NET and NameStore!
+     'WS' => 'GDI',
+  };
+
  return $self;
+}
+
+# if the DRD has been depricated, it will warn, and then return the new registry so that the script can continue
+sub check_depricated_drd
+{
+ my ($self,$reg) = @_;
+ if (defined $reg && exists $self->{depricated_drd_map}->{$reg}) {
+   warn "Warning Net::DRI::DRD::$reg is depricated, please use Net::DRI::DRD::".$self->{depricated_drd_map}->{$reg}." as a replacement!" unless $reg eq 'VNDS';
+   warn "Warning Net::DRI::DRD::$reg is depricated, please use Net::DRI::DRD::COM_NET or ::NameStore as a replacement!" if $reg eq 'VNDS';
+   $reg = $self->{depricated_drd_map}->{$reg};
+ }
+ return $reg;
 }
 
 sub add_current_registry
@@ -202,6 +299,7 @@ sub add_registry
 {
  my ($self,$reg,@data)=@_;
  Net::DRI::Exception::usererr_insufficient_parameters('add_registry needs a registry name') unless Net::DRI::Util::all_valid($reg);
+ $reg=$self->check_depricated_drd($reg);
  $reg='Net::DRI::DRD::'.$reg unless $reg=~m/^\+/;
  Net::DRI::Util::load_module($reg,'DRI');
 
@@ -290,7 +388,7 @@ sub tld2reg
 
 sub installed_registries
 {
- return qw/AdamsNames AERO AFNIC AG ARNES ASIA AT AU BE BIZ BookMyName BR BZ CAT CentralNic CIRA CoCCA COOP COZA CZ DENIC EURid Gandi GL HN ICMRegistry ID IENUMAT IM INFO IRegistry ISPAPI IT LC LU ME MN MOBI NAME Nominet NO NU OpenSRS ORG OVH PL PRO PT SC SE SIDN SO SWITCH TCI Telnic TRAVEL UPU US VC VNDS WS/;
+ return qw/AdamsNames Afilias::Afilias Afilias::DotAsia Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::Gateway CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium DNSPT Domicilium DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::KYOTO GMORegistry::SHOP HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET KSRegistry LVRegistry NASK Neustar::BIZ Neustar::COInternet Neustar::Narwal Neustar::Tralliance Neustar::US NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenRegistry::GENT OpenSRS OVH PANDI puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SONIC SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE TRA::BH UniRegistry UnitedTLD::Donuts UnitedTLD::Rightside UPU VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore VeriSign::VeriSign ZACR/;
 }
 
 ####################################################################################################
@@ -298,7 +396,7 @@ sub installed_registries
 sub target
 {
  my ($self,$driver,$profile)=@_;
-
+ $driver=$self->check_depricated_drd($driver);
  ## Try to convert if given a domain name or a tld instead of a driver's name
  if (defined $driver && ! exists $self->{registries}->{$driver})
  {

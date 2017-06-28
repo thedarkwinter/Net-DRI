@@ -1,7 +1,7 @@
 ## Domain Registry Interface, Charleston Road Registry Driver
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2014,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -63,7 +63,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2014 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2014,2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -88,7 +88,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'CRR'; }
-sub tlds     { return qw/xn--q9jyb4c ads android app boo car dad day eat esq fly foo here how ing kid meme mov new prof rsvp soy tour zip/; }
+sub tlds     { return qw/xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android app boo cal channel chrome dad day eat esq fly foo gbiz gle gmail google here how ing kid meme mov new nexus prod prof rsvp soy tour youtube zip/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }
 
@@ -99,6 +99,17 @@ sub transport_protocol_default
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],'disable_idn'=>1}) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{remote_host=>'whois.charlestonroadregistry.com'},'Net::DRI::Protocol::Whois',{'NGTLD'=>1}) if $type eq 'whois';
  return;
+}
+
+####################################################################################################
+
+sub verify_name_domain
+{
+ my ($self,$ndr,$domain,$op)=@_;
+ return $self->_verify_name_rules($domain,$op,{check_name => 1,
+                                               my_tld => 1,
+                                               icann_reserved => 1,
+                                              });
 }
 
 ####################################################################################################

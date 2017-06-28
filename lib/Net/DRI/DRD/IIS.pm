@@ -1,8 +1,8 @@
-## Domain Registry Interface, .IIS policy on reserved names
+## Domain Registry Interface, IIS (.SE, .NU) policy on reserved names for Net::DRI
 ## Contributed by Elias Sidenbladh and Ulrich Wisser from NIC SE
-## Updated 2014 Michael Holloway to change regerences to IIS for inclusion of .NU
 ##
-## Copyright (c) 2006-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -32,7 +32,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_stop d
 
 =head1 NAME
 
-Net::DRI::DRD::IIS - .SE policies for Net::DRI
+Net::DRI::DRD::IIS - IIS (.SE, .NU) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -56,7 +56,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

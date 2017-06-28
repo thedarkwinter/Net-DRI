@@ -22,8 +22,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('NGTLD',{provider=>'centralnic'});
-$dri->target('centralnic')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_current_registry('CentralNic::CentralNic');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
 my $s;
@@ -77,7 +77,7 @@ is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) 
 
 ## Check: multiple domains
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example1.space</domain:name></domain:cd><domain:cd><domain:name avail="0">example2.bar</domain:name><domain:reason>In use</domain:reason></domain:cd><domain:cd><domain:name avail="0">example3.wiki</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example1.space</fee:domain><fee:currency>USD</fee:currency><fee:action phase="sunrise">create</fee:action><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example2.bar</fee:domain><fee:currency>EUR</fee:currency><fee:action phase="claims" subphase="landrush">create</fee:action><fee:period unit="y">2</fee:period><fee:fee>5.00</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.4 fee-0.4.xsd"><fee:domain>example3.wiki</fee:domain><fee:currency>EUR</fee:currency><fee:action>transfer</fee:action><fee:period unit="y">2</fee:period><fee:fee>2.50</fee:fee></fee:chkData></extension>'.$TRID.'</response>'.$E2;
-my @fees = ( 
+my @fees = (
   {domain=>'example1.space',currency=>'USD',action=>'create',phase=>'sunrise',duration=>$dri->local_object('duration','years',1)},
   {domain=>'example2.bar',currency=>'EUR',action=>'create',phase=>'claims',sub_phase=>'landrush',duration=>$dri->local_object('duration','years',2)},
   {domain=>'example3.wiki',currency=>'EUR',action=>'transfer',duration=>$dri->local_object('duration','years',2)}
@@ -118,7 +118,7 @@ is($dri->get_info('transfer_price','domain','example3.wiki'),'2.50','domain_chec
 
 ## domain_check with multiple actions on one domain
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example4.wiki</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4"><fee:domain>example4.wiki</fee:domain><fee:currency>USD</fee:currency><fee:action>create</fee:action><fee:period unit="y">1</fee:period><fee:fee>11.50</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4"><fee:domain>example4.wiki</fee:domain><fee:currency>USD</fee:currency><fee:action>renew</fee:action><fee:period unit="y">1</fee:period><fee:fee>11.50</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4"><fee:domain>example4.wiki</fee:domain><fee:currency>USD</fee:currency><fee:action>transfer</fee:action><fee:period unit="y">1</fee:period><fee:fee>11.50</fee:fee></fee:chkData><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.4"><fee:domain>example4.wiki</fee:domain><fee:currency>USD</fee:currency><fee:action>restore</fee:action><fee:period unit="y">1</fee:period><fee:fee>27.00</fee:fee></fee:chkData></extension>'.$TRID.'</response>'.$E2;
-@fees = ( 
+@fees = (
   {currency=>'USD',action=>'create',duration=>$dri->local_object('duration','years',1)},
   {currency=>'USD',action=>'renew',duration=>$dri->local_object('duration','years',1)},
   {currency=>'USD',action=>'transfer',duration=>$dri->local_object('duration','years',1)},
