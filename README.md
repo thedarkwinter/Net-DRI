@@ -4,16 +4,21 @@
 #### Warning!
 #### Warning!
 
-!! Since 0.12-tdw (2017-06-28),this fork contains the restructure of DRDs from Net-DRI-0.96_09, meaning that you will need to change your scripts.
-!! See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes, along with the note:
-!! "This version changes almost all DRD module names, you will need to change your scripts.
-!!  This is a consequence of an old design decision that no DRD module should have a TLD as name.
-!!  Now, by default a DRD of a TLD registry will have the sponsor name as listed on IANA website."
-!! While the upstream favours the Registry name for DRD, I favour the BackendOperator::Platform Naming
-!! So instead of (.travel) Tralliance, I use Neustar::Tralliance, though there is variation in here I am still working on!
-!! Its sometimes more clean to use Backend::TLD when the platform is for a single TLD and the operator is the backend.
-!! - For instance, GMORegistry::GMORegistry, and GMORegistry::BRRegistry, and GMORegistry::SHOP
-!! Note, using old DRD names will probably still work as they will be automaticaly remapped. Probably.
+!! Since 0.12-tdw (2017-06-28),this fork contains the restructure of DRDs from Net-DRI-0.96_09, meaning that you will need to change your scripts. See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes, along with the note:
+
+"_This version changes almost all DRD module names, you will need to change your scripts.
+  This is a consequence of an old design decision that no DRD module should have a TLD as name.
+  Now, by default a DRD of a TLD registry will have the sponsor name as listed on IANA website._"
+* While the upstream favours the Registry name for DRD, I favour the BackendOperator::Platform Naming
+
+-- So instead of (.travel) Tralliance, I use Neustar::Tralliance, though there is variation in here I am still working on!
+
+-- Its sometimes more clean to use Backend::TLD when the platform is for a single TLD and the operator is the backend.
+
+-- For instance, GMORegistry::GMORegistry, and GMORegistry::BRRegistry, and GMORegistry::SHOP
+
+-- Note, using old DRD names will probably still work as they will be automaticaly remapped. Probably.
+
 
 * * *
 #### Overview
