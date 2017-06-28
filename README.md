@@ -1,10 +1,10 @@
-### Net-DRI-0.11-tdw
+### Net-DRI-0.12-tdw
 
 * * *
 #### Warning!
 #### Warning!
 
-!! This release includes the restructure of DRDs from Net-DRI-0.96_09, meaning that you will need to change your scripts.
+!! Since 0.12-tdw (2017-06-28),this fork contains the restructure of DRDs from Net-DRI-0.96_09, meaning that you will need to change your scripts.
 !! See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes, along with the note:
 !! "This version changes almost all DRD module names, you will need to change your scripts.
 !!  This is a consequence of an old design decision that no DRD module should have a TLD as name.

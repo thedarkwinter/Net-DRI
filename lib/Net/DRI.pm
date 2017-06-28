@@ -36,7 +36,7 @@ Net::DRI - Interface to Domain Name Registries/Registrars/Resellers
 
 =head1 VERSION
 
-This documentation refers to Net::DRI version 0.11-tdw
+This documentation refers to Net::DRI version 0.12-tdw
 
 =head1 SYNOPSIS
 
