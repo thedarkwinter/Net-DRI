@@ -1,7 +1,11 @@
 ### Net-DRI-0.12-tdw
 
 * * *
-#### Warning!
+#### Overview
+
+Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.dotandco.com/services/software/Net-DRI/), [CPAN](http://search.cpan.org/dist/Net-DRI/) based on Net-DRI-0.96_09 that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.
+
+* * *
 #### Warning!
 
 !! Since 0.12-tdw (2017-06-28),this fork contains the restructure of DRDs from Net-DRI-0.96_09, meaning that you will need to change your scripts. See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes, along with the note:
@@ -15,12 +19,7 @@
   * For instance, GMORegistry::GMORegistry, and GMORegistry::BRRegistry, and GMORegistry::SHOP
   * Note, using old DRD names will probably still work as they will be automaticaly remapped. Probably.
 
-
 * * *
-#### Overview
-
-Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.dotandco.com/services/software/Net-DRI/), [CPAN](http://search.cpan.org/dist/Net-DRI/) based on Net-DRI-0.96_09 that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.
-
 ##### LaunchPhase extension
 Based on draft-ietf-eppext-launchphase-07
 
