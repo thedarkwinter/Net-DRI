@@ -99,6 +99,13 @@ sub transport_protocol_default
  return;
 }
 
+sub set_factories
+{
+ my ($self,$po)=@_;
+ $po->factories('contact',sub { return Net::DRI::Data::Contact::CNNIC->new(@_); });
+ return;
+}
+
 ####################################################################################################
 
 sub verify_name_domain
