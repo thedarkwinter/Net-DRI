@@ -90,6 +90,7 @@ sub validate
   Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: type mandatory') unless ($self->type());
  }
 
+ push @errs,'srid' if ($self->srid() && !Net::DRI::Util::xml_is_normalizedstring(($self->name())[1],1,80));
  push @errs,'name' if ($self->name() && !Net::DRI::Util::xml_is_normalizedstring(($self->name())[1],1,255));
  push @errs,'org'  if ($self->org()  && !Net::DRI::Util::xml_is_normalizedstring(($self->org())[1],undef,255));
 
