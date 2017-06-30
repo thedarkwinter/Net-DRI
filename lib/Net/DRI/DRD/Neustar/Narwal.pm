@@ -19,7 +19,6 @@ use strict;
 use warnings;
 
 use base qw/Net::DRI::DRD/;
-
 use Net::DRI::Data::Contact::Narwal;
 
 ####################################################################################################
