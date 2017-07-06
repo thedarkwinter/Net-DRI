@@ -33,13 +33,13 @@ $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1, trid_factory => sub { retur
 # We should probably test these with greetings??
 
 # To use standard
-$dri->add_current_registry('Neustar::Narwal');
+$dri->add_current_registry('Neustar::Narwhal');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'Neustar::Narwal (standard): loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'Neustar::Narwhal (standard): loaded_modules');
 
 # To se ARI extensions instead
 $dri->add_current_profile('p2','epp_ari',{f_send=>\&mysend,f_recv=>\&myrecv});
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'Neustar::Narwal (Ari): loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'Neustar::Narwhal (Ari): loaded_modules');
 
 # To use NGTLD with legacy
 $dri->add_current_registry('NGTLD',{provider => 'neustar', 'name' => 'hotels'});

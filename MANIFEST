@@ -44,7 +44,7 @@ lib/Net/DRI/Data/Contact/JOBS.pm
 lib/Net/DRI/Data/Contact/LU.pm
 lib/Net/DRI/Data/Contact/LV.pm
 lib/Net/DRI/Data/Contact/MAM.pm
-lib/Net/DRI/Data/Contact/Narwal.pm
+lib/Net/DRI/Data/Contact/Neustar.pm
 lib/Net/DRI/Data/Contact/NO.pm
 lib/Net/DRI/Data/Contact/Nominet.pm
 lib/Net/DRI/Data/Contact/NZ.pm
@@ -122,7 +122,7 @@ lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
 lib/Net/DRI/DRD/Neustar/BIZ.pm
 lib/Net/DRI/DRD/Neustar/COInternet.pm
-lib/Net/DRI/DRD/Neustar/Narwal.pm
+lib/Net/DRI/DRD/Neustar/Narwhal.pm
 lib/Net/DRI/DRD/Neustar/Tralliance.pm
 lib/Net/DRI/DRD/Neustar/US.pm
 lib/Net/DRI/DRD/NGTLD.pm
@@ -674,7 +674,7 @@ t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Fee.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNVariant.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/KeyValue.t
-t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Narwal.t
+t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Narwhal.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Price.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/TMCHApplication.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.t
