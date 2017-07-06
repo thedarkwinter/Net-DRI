@@ -172,19 +172,19 @@ is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Sock
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message CentralNic::Fee/],'neustar: loaded_modules');
 is($drd->{bep}->{bep_type},1,'neustar: bep_type');
 
-# Neustar-Narwal Using ARI extensions
+# Neustar-Narwhal Using ARI extensions
 $rc = $dri->add_registry('NGTLD',{provider => 'ari'});
 is($rc->{last_registry},'ari','neustar-ari: add_registry');
 $rc = $dri->target('ari')->add_current_profile('ari','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{ari}->{driver};
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'neustar-ari: loaded_modules');
 
-# Neustar-Narwal Using Starndard extensions
-$rc = $dri->add_registry('NGTLD',{provider => 'narwal'});
-is($rc->{last_registry},'narwal','neustar-narwal: add_registry');
-$rc = $dri->target('narwal')->add_current_profile('narwal','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-$drd = $dri->{registries}->{'narwal'}->{driver};
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'neustar-narwal: loaded_modules');
+# Neustar-Narwhal Using Starndard extensions
+$rc = $dri->add_registry('NGTLD',{provider => 'narwhal'});
+is($rc->{last_registry},'narwhal','neustar-narwhal: add_registry');
+$rc = $dri->target('narwhal')->add_current_profile('narwhal','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{'narwhal'}->{driver};
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'neustar-narwhal: loaded_modules');
 
 ####################################################################################################
 #### ngTLD Methods

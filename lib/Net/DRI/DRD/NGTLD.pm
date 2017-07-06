@@ -668,11 +668,11 @@ cam desi saarland
 
 =pod
 
-=head2 Neustar Narwal / ex - ARI
+=head2 Neustar Narwhal / ex - ARI
 
  $dri->add_registry('NGTLD',{provider=>'ari'}); # To use ARI extensions
 
- $dri->add_registry('NGTLD',{provider=>'narwal'}); # To use Standard/Nesutar extensions
+ $dri->add_registry('NGTLD',{provider=>'narwhal'}); # To use Standard/Nesutar extensions
 
  $dri->add_registry('NGTLD',{provider=>'neustar'}); # To use neustar legacy system (being phased out)
 
@@ -685,7 +685,7 @@ Neustar operates dedicated connections per TLD, so it is recommended to use the 
 
 biz hotels htc ipiranga itau travel
 
-Narwal (use 'ari' or 'narwal') or DRD::Narwal
+Narwhal (use 'ari' or 'narwhal') or DRD::Narwhal
 
 aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta audible auspost author aws axa baby banamex bananarepublic barclaycard barclays baseball best bible bid biz bond book booking boots bot box build buzz call calvinklein cancerresearch caravan cartier catholic cba cbn cbre ceo chase chintai chloe circle cisco citadel citi cloud club co commbank compare coupon courses cricket cuisinella date deal dealer dell discover doha download duns dupont earth everbank faith farmers fast ferrero film fire flickr flir ford fox free frontier ftr gap giving got grainger gucci hbo health homegoods homesense honeywell hot hoteles hotels hsbc htc hyatt ibm icu ieee imdb intel intuit ipiranga iselect itau iwc jlc jmp jnj jot joy jpmorgan kinder kindle kpmg krd kred lanxess latrobe lifeinsurance like lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe moi monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual now nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pay pfizer pharmacy philips physio piaget pin ping pramerica praxi prime pru prudential qpon quest qvc racing read review rmit rocher room safe safety sandvik sandvikcoromant sas save saxo schmidt science scor secure seek select seven silk skype smile song spot staples starhub statefarm stream study sucks swiftcover sydney tab taipei talk taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade travel trust tube tunes tushu uno us virgin vista vistaprint vivo vuelos walter wanggou watches weather weatherchannel webcam whoswho williamhill win winners woodside wow wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--nyqy26a xn--pbt977c xn--rhqv96g xn--rovu88b xn--tiq49xqyj yahoo yamaxun yandex you zappos zero zippo
 
@@ -701,7 +701,7 @@ L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::AllocationToken> urn:ietf:params:xml:ns:allocationToken-1.0
 
-=head3 Custom extensions (NeuLevel Narwal)
+=head3 Custom extensions (NeuLevel Narwhal)
 
 L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message> urn:ietf:params:xml:ns:neulevel-1.0
 
@@ -729,7 +729,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::Block> urn:ar:params:xml:ns:block-1.
 
 =head3 Notes
 
-1. You can select from "narwal" or "ari" which use different extensions. "ari" uses custom ARI extensions, while "narwal" uses the more standardizes extensions.
+1. You can select from "narwhal" or "ari" which use different extensions. "ari" uses custom ARI extensions, while "narwhal" uses the more standardizes extensions.
 It is recommended that "neustar" legacy is not used, but rather use the DRD::Neustar::* Drivers.
 
 2. ARI's implementation of LaunchPhase (TMCH) differers from the standard, however the units are built to mimic the standard extension's usage
@@ -769,8 +769,8 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'zero', 'zippo'
      ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
-     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Narwal->new(@_); } } ],
-     requires => [ 'Net::DRI::Data::Contact::Narwal'],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Neustar->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::Neustar'],
      whois_server => 'whois.aridnrs.net.au',
  } if $bep eq 'ari';
 
@@ -800,10 +800,10 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'zero', 'zippo'
      ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{ 'brown_fee_version' => '0.6' }],
-     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Narwal->new(@_); } } ],
-     requires => [ 'Net::DRI::Data::Contact::Narwal'],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Neustar->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::Neustar'],
      whois_server => 'whois.aridnrs.net.au',
- } if $bep eq 'narwal';
+ } if $bep eq 'narwal' || $bep eq 'narwhal';
 
  return {
      bep_type => 1, # dedicated registry
