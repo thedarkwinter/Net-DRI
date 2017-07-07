@@ -34,7 +34,7 @@ TMCH (Deloitte)
 TMDB (IBM): CNIS and SMDRL only
 
 ##### Added/Updated/Fixed support for ccTLDs
-UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE, NZ, EC, UA, EC, IN, RU, UA, RF, SU, CZ, MW, RO, CR, Afilias (IO AC SH), AfiliasGRS (AG BZ LC MN SC VC), CentralNic-Gateway (AM CX FM LA)
+UK, IT, ES, NO, SE/NU (IIS module), BE, EU, DE, CH, ZA, CO, MX, LV, DK, US, PH, CN, AE, NZ, EC, UA, EC, IN, RU, UA, RF, SU, CZ, MW, RO, CR, Afilias (IO AC SH), AfiliasGRS (AG BZ LC MN SC VC), CentralNic-Gateway (AM CX FM LA), CL
 
 * * *
 #### NGTLD Usage
