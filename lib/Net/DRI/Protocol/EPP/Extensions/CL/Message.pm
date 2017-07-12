@@ -32,15 +32,20 @@ sub parse_poll
   foreach my $el (Net::DRI::Util::xml_list_children($resdata))
   {
     my ($name,$content)=@$el;
-    $r{pollryrr} = parse_pollt  ($po, $content) if $name && $name eq 'pollt';
-  }
 
-  $rinfo->{'message'}->{$msgid}->{pollryrr} = $r{pollryrr};
+    # this is only until v1.0.4
+    $rinfo->{'message'}->{$msgid}->{pollryrr} = parse_pollryrr($po, $content) if $name && $name eq 'pollt';
+    # on v1.0.5 they deprecated pollryrr and start to use clpoll - keeping both extending what we already have
+    if ( $name && $name eq 'changeState' ) {
+      $r{clpoll} = parse_clpoll($po, $content);
+      $rinfo->{'domain'}->{$r{clpoll}->{'name'}} = $r{clpoll} if $r{clpoll}->{'name'};
+    }
+  }
 
   return $rinfo;
 }
 
-sub parse_pollt
+sub parse_pollryrr
 {
   my ($po, $node_pollt) = @_;
   return unless $node_pollt;
@@ -50,15 +55,15 @@ sub parse_pollt
   foreach my $el_pollt (Net::DRI::Util::xml_list_children($node_pollt))
   {
     my ($name_pollt,$content_pollt)=@$el_pollt;
-    $set_pollt = __parse_pollt_changeState($po,$content_pollt) if $name_pollt && $name_pollt eq 'changeState';
-    $set_pollt = __parse_pollt_changeStateTransfer($po,$content_pollt) if $name_pollt && $name_pollt eq 'changeStateTransfer';
-    $set_pollt = __parse_pollt_mega($po,$content_pollt) if $name_pollt && $name_pollt eq 'mega';
+    $set_pollt = __parse_pollryrr_changeState($po,$content_pollt) if $name_pollt && $name_pollt eq 'changeState';
+    $set_pollt = __parse_pollryrr_changeStateTransfer($po,$content_pollt) if $name_pollt && $name_pollt eq 'changeStateTransfer';
+    $set_pollt = __parse_pollryrr_mega($po,$content_pollt) if $name_pollt && $name_pollt eq 'mega';
   }
 
   return $set_pollt;
 }
 
-sub __parse_pollt_changeState
+sub __parse_pollryrr_changeState
 {
   my ( $po,$node_changeState ) = @_;
   return unless $node_changeState;
@@ -81,7 +86,7 @@ sub __parse_pollt_changeState
 }
 
 # by technical documentation this is deprecated. will keep it here since its defined on their schemas
-sub __parse_pollt_changeStateTransfer
+sub __parse_pollryrr_changeStateTransfer
 {
   my ( $po, $node_changeStateTransfer ) = @_;
   return unless $node_changeStateTransfer;
@@ -105,7 +110,7 @@ sub __parse_pollt_changeStateTransfer
   return $set_changeStateTransfer;
 }
 
-sub __parse_pollt_mega
+sub __parse_pollryrr_mega
 {
   my ( $po, $node_mega ) = @_;
   return unless $node_mega;
@@ -139,6 +144,39 @@ sub __parse_pollt_mega
   $set_mega->{'domain'} = \@domain;
 
   return $set_mega;
+}
+
+sub parse_clpoll
+{
+  my ($po, $node_clpoll_changeState) = @_;
+  return unless $node_clpoll_changeState;
+
+  my $set_clpoll_changeState = {};
+  my @status = ();
+
+  foreach my $el_clpoll_changeState (Net::DRI::Util::xml_list_children($node_clpoll_changeState))
+  {
+    my ($name_clpoll_changeState,$content_clpoll_changeState)=@$el_clpoll_changeState;
+    if ($name_clpoll_changeState eq 'domain' ) {
+      foreach my $el_clpoll_changeState_domain (Net::DRI::Util::xml_list_children($content_clpoll_changeState))
+      {
+        my ($name_domain_type, $content_domain_type) = @$el_clpoll_changeState_domain;
+        $set_clpoll_changeState->{$name_domain_type} = $content_domain_type->textContent() if $name_domain_type;
+      }
+    } elsif ( $name_clpoll_changeState =~ m/^(rgpStatus|disputeStatus|reason)/ ) {
+      $set_clpoll_changeState->{$1} = $content_clpoll_changeState->textContent();
+      # get and set attribute for disputeStatus - if exists
+      if ($name_clpoll_changeState eq 'disputeStatus' && $content_clpoll_changeState->hasAttribute('causeDisputeTermination') && $content_clpoll_changeState->getAttribute('causeDisputeTermination') =~ m/^(disputeDismissed|transferredToComplainant|keepsDomainName)$/) {
+        $set_clpoll_changeState->{'causeDisputeTermination'} = $content_clpoll_changeState->getAttribute('causeDisputeTermination')
+      }
+    } elsif ( $name_clpoll_changeState eq 'status' ) {
+      push @status,$content_clpoll_changeState->textContent();
+    }
+  }
+
+  $set_clpoll_changeState->{'status'} = $po->create_local_object('status')->add(@status);
+
+  return $set_clpoll_changeState;
 }
 
 1;
