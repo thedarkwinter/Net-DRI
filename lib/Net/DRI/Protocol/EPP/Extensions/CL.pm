@@ -75,7 +75,7 @@ sub setup
   return;
 }
 
-sub default_extensions { return qw/CL::Message/; }
+sub default_extensions { return qw/GracePeriod CL::Message/; }
 
 ####################################################################################################
 1;
