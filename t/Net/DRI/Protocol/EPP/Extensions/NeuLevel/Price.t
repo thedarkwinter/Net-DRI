@@ -28,7 +28,7 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
 # $rc = $dri->add_registry('NGTLD',{provider => 'ari'});
 # To use ARI extensions instead
-$rc = $dri->add_current_registry('Neustar::Narwal');
+$rc = $dri->add_current_registry('Neustar::Narwhal');
 $dri->add_current_profile('p2','epp_ari',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 #####################
