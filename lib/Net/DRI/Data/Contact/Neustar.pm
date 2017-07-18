@@ -1,4 +1,4 @@
-## Domain Registry Interface, Handling of contact data for Neustar::Narwal
+## Domain Registry Interface, Handling of contact data for Neustar::Neustar
 ##
 ## Copyright (c) 2006,2008-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Data::Contact::Narwal;
+package Net::DRI::Data::Contact::Neustar;
 
 use utf8;
 use strict;
@@ -32,11 +32,11 @@ __PACKAGE__->register_attributes(qw(ext_contact nexus_category));
 
 =head1 NAME
 
-Net::DRI::Data::Contact::Narwal - Handle Neustar::Narwal contact data for Net::DRI
+Net::DRI::Data::Contact::Neustar - Handle Neustar::Neustar contact data for Net::DRI
 
 =head1 DESCRIPTION
 
-This subclass of Net::DRI::Data::Contact adds accessors and validation for ARI specific data.
+This subclass of Net::DRI::Data::Contact adds accessors and validation for Neustar specific data.
 
 =head1 METHODS
 
