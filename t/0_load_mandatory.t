@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 544;
+use Test::More tests => 539;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -14,7 +14,6 @@ use_ok('Net::DRI::Data::Contact');
 use_ok('Net::DRI::Data::Contact::AERO');
 use_ok('Net::DRI::Data::Contact::AFNIC');
 use_ok('Net::DRI::Data::Contact::ARNES');
-use_ok('Net::DRI::Data::Contact::ASIA');
 use_ok('Net::DRI::Data::Contact::AT');
 use_ok('Net::DRI::Data::Contact::BE');
 use_ok('Net::DRI::Data::Contact::BR');
@@ -62,7 +61,6 @@ use_ok('Net::DRI::Data::StatusList');
 use_ok('Net::DRI::DRD');
 use_ok('Net::DRI::DRD::AdamsNames');
 use_ok('Net::DRI::DRD::Afilias::Afilias');
-use_ok('Net::DRI::DRD::Afilias::DotAsia');
 use_ok('Net::DRI::DRD::Afilias::IN');
 use_ok('Net::DRI::DRD::Afilias::PIR');
 use_ok('Net::DRI::DRD::Afilias::Shared');
@@ -240,9 +238,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::ARNES');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ARNES::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ARNES::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ARNES::Status');
-use_ok('Net::DRI::Protocol::EPP::Extensions::ASIA');
-use_ok('Net::DRI::Protocol::EPP::Extensions::ASIA::CED');
-use_ok('Net::DRI::Protocol::EPP::Extensions::ASIA::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AT');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AT::ATResult');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AT::Contact');

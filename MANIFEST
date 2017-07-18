@@ -23,7 +23,6 @@ lib/Net/DRI/Data/Contact.pm
 lib/Net/DRI/Data/Contact/AERO.pm
 lib/Net/DRI/Data/Contact/AFNIC.pm
 lib/Net/DRI/Data/Contact/ARNES.pm
-lib/Net/DRI/Data/Contact/ASIA.pm
 lib/Net/DRI/Data/Contact/AT.pm
 lib/Net/DRI/Data/Contact/BE.pm
 lib/Net/DRI/Data/Contact/BR.pm
@@ -71,7 +70,6 @@ lib/Net/DRI/Data/StatusList.pm
 lib/Net/DRI/DRD.pm
 lib/Net/DRI/DRD/AdamsNames.pm
 lib/Net/DRI/DRD/Afilias/Afilias.pm
-lib/Net/DRI/DRD/Afilias/DotAsia.pm
 lib/Net/DRI/DRD/Afilias/IN.pm
 lib/Net/DRI/DRD/Afilias/PIR.pm
 lib/Net/DRI/DRD/Afilias/Shared.pm
@@ -250,9 +248,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/ARNES.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARNES/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARNES/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ARNES/Status.pm
-lib/Net/DRI/Protocol/EPP/Extensions/ASIA.pm
-lib/Net/DRI/Protocol/EPP/Extensions/ASIA/CED.pm
-lib/Net/DRI/Protocol/EPP/Extensions/ASIA/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AT.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AT/ATResult.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AT/Contact.pm
@@ -608,7 +603,6 @@ t/Net/DRI/Protocol/EPP/Extensions/Afilias/Restore.t
 t/Net/DRI/Protocol/EPP/Extensions/AFNIC.t
 t/Net/DRI/Protocol/EPP/Extensions/AFNIC_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/AllocationToken.t
-t/Net/DRI/Protocol/EPP/Extensions/ASIA.t
 t/Net/DRI/Protocol/EPP/Extensions/AT.t
 t/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Price.t
 t/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Sync.t
