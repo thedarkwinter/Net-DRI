@@ -310,7 +310,7 @@ cctlds: ag bz gi lc mn me sc vc
    my @gtlds = qw/xxx asia/;
    my @cctlds = (
        'ag',(map { $_.'.ag'} qw/co com net nom org/),
-       'bz',(map { $_.'.bz'} qw/co com net/),
+       'bz',(map { $_.'.bz'} qw/co com net org/),
        'gi',
        'lc',(map { $_.'.lc'} qw/co com l net org p/),
        'me',
