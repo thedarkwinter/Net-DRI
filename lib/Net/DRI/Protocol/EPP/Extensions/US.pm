@@ -68,7 +68,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/US::Contact NeuLevel::Message/; }
+sub default_extensions { return qw/SecDNS US::Contact NeuLevel::Message/; }
 
 ####################################################################################################
 1;
