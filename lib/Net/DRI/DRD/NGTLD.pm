@@ -851,7 +851,7 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-abogado bayern beer blog broadway casa cooking fashion fishing fit garden gop horse law miami rodeo surf vip vodka wedding work yoga
+abogado bayern beer blog boston bradesco broadway casa cooking dds fashion fishing fit garden gop horse law london miami rodeo surf vip vodka wedding work yoga
 
 =cut
 
@@ -864,7 +864,7 @@ abogado bayern beer blog broadway casa cooking fashion fishing fit garden gop ho
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['abogado','bayern','beer','blog','bradesco','broadway','casa','cooking','fashion','fishing','fit','garden','gop','horse','law','london','miami','rodeo','surf','vip','vodka','wedding','work','yoga'],
+     tlds => ['abogado', 'bayern', 'beer', 'blog', 'boston', 'bradesco', 'broadway', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'horse', 'law', 'london', 'miami', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','MAM::QualifiedLawyer'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
@@ -880,7 +880,7 @@ abogado bayern beer blog broadway casa cooking fashion fishing fit garden gop ho
 
 =head3 TLDs
 
-gent boston
+gent
 
 =cut
 

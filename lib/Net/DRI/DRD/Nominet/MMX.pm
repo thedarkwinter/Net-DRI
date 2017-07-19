@@ -96,7 +96,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Nominet::MMX'; }
-sub tlds     { return qw/abogado bayern beer blog bradesco broadway casa cooking fashion fishing fit garden gop horse law london miami rodeo surf vip vodka wedding work yoga/; }
+sub tlds     { return qw/abogado bayern beer blog boston bradesco broadway casa cooking dds fashion fishing fit garden gop horse law london miami rodeo surf vip vodka wedding work yoga/; }
 sub object_types { return qw/domain contact ns/; }
 sub profile_types { return qw/epp/; }
 
