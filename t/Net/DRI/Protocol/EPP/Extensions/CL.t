@@ -378,8 +378,8 @@ is($dri->get_info('reason','message',125),'Domain name transferred to the compla
 
 ####################################################################################################
 ########  Unavailable operations ########
-dies_ok { dri->domain_transfer_accept('foobar-approve.cl',{auth=>{pw=>'2fooBAR',roid=>"JD1234-REP"},duration=>DateTime::Duration->new(years=>1)}) } 'Net-DRI die due unavailable operation: domain transfer op="accept"' ;
-dies_ok { dri->domain_transfer_stop() } 'Net-DRI die due unavailable operation: domain transfer op="cancel"' ;
+dies_ok { $dri->domain_transfer_accept('foobar-approve.cl',{auth=>{pw=>'2fooBAR',roid=>"JD1234-REP"},duration=>DateTime::Duration->new(years=>1)}) } 'Net-DRI die due unavailable operation: domain transfer op="accept"' ;
+dies_ok { $dri->domain_transfer_stop() } 'Net-DRI die due unavailable operation: domain transfer op="cancel"' ;
 
 
 #####################################################################################################
