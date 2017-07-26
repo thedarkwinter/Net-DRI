@@ -70,6 +70,7 @@ sub new
  my $class=shift;
  my $self=$class->SUPER::new(@_);
  $self->{info}->{check_limit}=13;
+ $self->{info}->{contact_i18n}=7; # They accept LOC *or* INT, but only one of them.
  return $self;
 }
 
