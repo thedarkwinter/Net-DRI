@@ -24,6 +24,9 @@ use Net::DRI::Util;
 use DateTime::Duration;
 use Net::DRI::Exception;
 
+# From documentation (NIC_Chile_EPP_Documentation_1.0.5.pdf) - 5.4. Transfers: "... (“cancel” and ”approve” not supported")"
+__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_accept domain_transfer_stop/);
+
 =pod
 
 =head1 NAME

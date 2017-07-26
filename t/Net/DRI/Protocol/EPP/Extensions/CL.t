@@ -9,7 +9,8 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 182;
+use Test::More tests => 184;
+use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -373,6 +374,12 @@ is_deeply([$s->list_status()],['inactive'],'message get_info(status) list - clpo
 is($dri->get_info('disputeStatus','message',125),'disputeClosed','message get_info(disputeStatus) - clpoll');
 is($dri->get_info('causeDisputeTermination','message',125),'transferredToComplainant','message get_info(causeDisputeTermination) - clpoll');
 is($dri->get_info('reason','message',125),'Domain name transferred to the complainant','message get_info(reason) - clpoll');
+
+
+####################################################################################################
+########  Unavailable operations ########
+dies_ok { dri->domain_transfer_accept('foobar-approve.cl',{auth=>{pw=>'2fooBAR',roid=>"JD1234-REP"},duration=>DateTime::Duration->new(years=>1)}) } 'Net-DRI die due unavailable operation: domain transfer op="accept"' ;
+dies_ok { dri->domain_transfer_stop() } 'Net-DRI die due unavailable operation: domain transfer op="cancel"' ;
 
 
 #####################################################################################################
