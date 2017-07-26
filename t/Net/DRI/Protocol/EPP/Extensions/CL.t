@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 184;
+use Test::More tests => 185;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -378,8 +378,10 @@ is($dri->get_info('reason','message',125),'Domain name transferred to the compla
 
 ####################################################################################################
 ########  Unavailable operations ########
-dies_ok { $dri->domain_transfer_accept('foobar-approve.cl',{auth=>{pw=>'2fooBAR',roid=>"JD1234-REP"},duration=>DateTime::Duration->new(years=>1)}) } 'Net-DRI die due unavailable operation: domain transfer op="accept"' ;
-dies_ok { $dri->domain_transfer_stop() } 'Net-DRI die due unavailable operation: domain transfer op="cancel"' ;
+dies_ok { $dri->domain_transfer_accept('foobar-accept.cl',{auth => {pw => '2fooBAR'}}); } 'Net-DRI die due unavailable operation: domain transfer op="accept"';
+dies_ok { $dri->domain_transfer_stop('foobar-cancel.cl',{auth => {pw => '2fooBAR'}}); } 'Net-DRI die due unavailable operation: domain transfer op="cancel"';
+# lets test just 1 avail operation
+lives_ok { $dri->domain_transfer_query('foobar-cancel.cl',{auth=>{pw=>'2fooBAR',roid=>'JD1234-REP'}}); } 'Net-DRI didnt die due available operation: domain transfer op="query"' ;
 
 
 #####################################################################################################
