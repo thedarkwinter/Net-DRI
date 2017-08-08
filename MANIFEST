@@ -99,6 +99,7 @@ lib/Net/DRI/DRD/Domicilium.pm
 lib/Net/DRI/DRD/DotCooperation.pm
 lib/Net/DRI/DRD/ECOMLAC.pm
 lib/Net/DRI/DRD/EURid.pm
+lib/Net/DRI/DRD/FICORA.pm
 lib/Net/DRI/DRD/FRED.pm
 lib/Net/DRI/DRD/Gandi.pm
 lib/Net/DRI/DRD/GDI.pm
@@ -328,6 +329,9 @@ lib/Net/DRI/Protocol/EPP/Extensions/EURid/Sunrise.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FCCN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FCCN/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FCCN/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Balance.pm
+lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Contact.pm
+lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/Domain.pm
@@ -644,6 +648,7 @@ t/Net/DRI/Protocol/EPP/Extensions/EURid/Notifications.t
 t/Net/DRI/Protocol/EPP/Extensions/EURid/Registrar.t
 t/Net/DRI/Protocol/EPP/Extensions/EURid/Sunrise.t
 t/Net/DRI/Protocol/EPP/Extensions/FCCN.t
+t/Net/DRI/Protocol/EPP/Extensions/FICORA.t
 t/Net/DRI/Protocol/EPP/Extensions/FRED.t
 t/Net/DRI/Protocol/EPP/Extensions/GMORegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/GracePeriod.t
