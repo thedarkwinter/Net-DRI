@@ -19,8 +19,9 @@ package Net::DRI::Protocol::EPP::Extensions::FICORA::Domain;
 use strict;
 use warnings;
 
-use Net::DRI::Exception;
 use Net::DRI::Util;
+use Net::DRI::Exception;
+use Net::DRI::Protocol::EPP::Util;
 use DateTime::Duration;
 
 =pod
@@ -69,25 +70,15 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
-          create => [ \&create ],
-    #       info   => [ \&info, \&info_parse ],
-    #       update => [ \&update ],
-    #       renew  => [ \&renew ],
-    #       renounce => [ \&renounce ],
-    #       delete => [ \&delete ],
-	  # transfer_request => [ \&transfer_request ],
+          create        => [ \&create, undef ],
+          info          => [ undef, \&info_parse ],
+          autorenew     => [ \&autorenew, undef ],
          );
 
  return { 'domain' => \%tmp };
 }
 
 ####################################################################################################
-
-# sub build_command_extension
-# {
-#  my ($mes,$epp,$tag)=@_;
-#  return $mes->command_extension_register($tag,sprintf('xmlns:ptdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ptdomain')));
-# }
 
 sub create
 {
@@ -101,128 +92,58 @@ sub create
  return;
 }
 
-# sub info_parse
-# {
-#  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-#  my $mes=$po->message();
-#  return unless $mes->is_success();
-#
-#  my $infdata=$mes->get_extension('ptdomain','infData');
-#  return unless $infdata;
-#
-#  my $c=$infdata->getFirstChild();
-#  while($c)
-#  {
-#   next unless ($c->nodeType() == 1); ## only for element nodes
-#   my $name=$c->localname() || $c->nodeName();
-#   next unless $name;
-#
-#   if ($name=~m/^(?:legitimacy|registration_basis)$/)
-#   {
-#    $rinfo->{domain}->{$oname}->{$name}=$c->getAttribute('type');
-#   } elsif ($name=~m/^(?:nextPossibleRegistration|addPeriod|waitingRemoval)$/) # most are not used anymore but let's keep it :)
-#   {
-#    $rinfo->{domain}->{$oname}->{Net::DRI::Util::remcam($name)}=Net::DRI::Util::xml_parse_boolean($c->getFirstChild()->getData());
-#   } elsif  ($name=~m/^(?:autoRenew|notRenew)$/)
-#   {
-#    $rinfo->{domain}->{$oname}->{Net::DRI::Util::remcam($name)}=$c->textContent();
-#   } elsif ($name eq 'renew')
-#   {
-#    $rinfo->{domain}->{$oname}->{renew_period}=DateTime::Duration->new(years => $c->getAttribute('period'));
-#   }
-#  } continue { $c=$c->getNextSibling(); }
-#  return;
-# }
-#
-# sub update
-# {
-#  my ($epp,$domain,$toc,$rd)=@_;
-#  my $mes=$epp->message();
-#
-#  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
-#
-#  my $eid=build_command_extension($mes,$epp,'ptdomain:update');
-#  my @n=add_roid($rd->{roid});
-#  $mes->command_extension($eid,\@n);
-#  return;
-# }
-#
-# sub renew
-# {
-#  my ($epp,$domain,$rd)=@_;
-#  my $mes=$epp->message();
-#
-#  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
-#
-#  my $c=Net::DRI::Util::has_key($rd,'duration');
-#  foreach my $d (qw/auto_renew not_renew/)
-#  {
-#   next unless Net::DRI::Util::has_key($rd,$d);
-#   $rd->{$d} = xml_parse_auto_renew($rd->{$d});
-#  }
-#
-#  my $eid=build_command_extension($mes,$epp,'ptdomain:renew');
-#  my @n=add_roid($rd->{roid});
-#  push @n,['ptdomain:autoRenew',$rd->{auto_renew}] if Net::DRI::Util::has_key($rd,'auto_renew');
-#  push @n,['ptdomain:notRenew',$rd->{not_renew}] if Net::DRI::Util::has_key($rd,'not_renew');
-#  $mes->command_extension($eid,\@n);
-#  return;
-# }
-#
-# sub renounce
-# {
-#  my ($epp,$domain,$rd)=@_;
-#  my $mes=$epp->message();
-#
-#  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
-#
-#  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
-#  $mes->command_body(\@d);
-#
-#  my $eid=build_command_extension($mes,$epp,'ptdomain:transfer');
-#  my @n;
-#  push @n,add_roid($rd->{roid});
-#  push @n,['ptdomain:renounce','true']; # Forcing always to true. By the manual: "When a registrar wants to renounce the sponsorship of a domain he sends a transfer request without authorization code and with the <ptdomain:renounce> field set to true."
-#  $mes->command_extension($eid,\@n);
-#  return;
-# }
-#
-# sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
-# {
-#  my ($epp,$domain,$rd)=@_;
-#  my $mes=$epp->message();
-#
-#  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
-#
-#  my $eid=build_command_extension($mes,$epp,'ptdomain:delete');
-#  my @n=add_roid($rd->{roid});
-#  $mes->command_extension($eid,\@n);
-#  return;
-# }
-#
-# sub transfer_request
-# {
-#  my ($epp,$domain,$rd)=@_;
-#  my $mes=$epp->message();
-#
-#  Net::DRI::Exception::usererr_insufficient_parameters('you have to specify authinfo for .PT domain transfer (mapped to transferKey)') unless Net::DRI::Util::has_auth($rd);
-#
-#  my $eid=build_command_extension($mes,$epp,'ptdomain:transfer');
-#  $mes->command_extension($eid,['ptdomain:transferKey',$rd->{"auth"}->{"pw"}]);
-#  return;
-# }
-#
-# sub xml_parse_auto_renew
-# {
-#  my $in=shift;
-#  if ($in=~m/^(0|false|no)$/) {
-#   return 'false';
-#  } elsif ($in=~m/^(1|true|yes)$/) {
-#   return 'true';
-#  } else {
-#   return Net::DRI::Exception::usererr_invalid_parameters('auto_renew or not_renew must be either false or true for .PT domain name creation');
-#  }
-# }
+sub info_parse
+{
+  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+  my $mes=$po->message();
+  return unless $mes->is_success();
+  my $infdata=$mes->get_response('domain','infData');
+  return unless defined $infdata;
+
+  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+  {
+    my ($name,$content)=@$el;
+
+    # registrylock
+    $rinfo->{domain}->{$oname}->{'registrylock'}=$content->textContent() if $name eq 'registrylock';
+
+    # autorenew
+    $rinfo->{domain}->{$oname}->{'autorenew'}=$content->textContent() if $name eq 'autorenew';
+
+    # ds: FIXME: do we need to parse this or is this a bug on their tech documentation?
+    # <domain:dsData> => should not be parsed in secDNS-1 extension???
+  }
+
+  return;
+}
+
+
+# Auto renew is an extension for the <domain:renew> message. In the extension, the
+# request may be given a <domain:autorenew> element with values 0 or 1. Value 1 sets
+# the auto renewal process on to the specific domain name and removes the auto
+# renewal process. Automatic renewal renews a domain name 30 days before expiration.
+# Before renewing, the ISP will be messaged a Poll message that the renewing will
+# happen in x days.
+sub autorenew
+{
+  my ($epp,$domain,$rd)=@_;
+  Net::DRI::Exception::usererr_insufficient_parameters('value (must be 0 or 1)') unless Net::DRI::Util::has_key($rd,'value');
+
+  my $mes=$epp->message();
+  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,'autorenew',$domain);
+
+  my $value = $rd->{value} if $rd->{value};
+  Net::DRI::Exception::usererr_invalid_parameters('value must be 0 or 1') unless ($value =~ m/^(0|1)$/) ;
+  push @d,['domain:value',$value];
+
+  $mes->command_body(\@d);
+
+  # ugly but lets hard code first position of command array
+  # they expect renew and not autorenew!
+  $mes->command()->[0] = 'renew';
+
+  return;
+}
 
 ####################################################################################################
 1;

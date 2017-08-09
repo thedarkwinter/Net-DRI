@@ -10,7 +10,8 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 100;
+use Test::More tests => 115;
+use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -77,6 +78,15 @@ is($rc->is_success(),1,'registrar_balance is_success');
 is($dri->get_info('balanceamount'),'123','registrar_balance get_info(balanceamount)');
 is($dri->get_info('timestamp'),'1999-04-03T22:00:00.0Z','registrar_balance get_info(timestamp)');
 
+## Auto renew
+$R2='';
+$rc=$dri->domain_autorenew('example-autorenew.fi',{value=>1});
+is($R1,$E1.'<command><renew><domain:autorenew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example-autorenew.fi</domain:name><domain:value>1</domain:value></domain:autorenew></renew><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build');
+is($rc->is_success(),1,'domain_autorenew is_success');
+# test for value different than 0,1
+throws_ok { $dri->domain_autorenew('example-autorenew.fi',{value=>2}) } qr/Invalid parameters: value must be 0 or 1/, 'domain_autorenew - parse invalid param value: 2';
+throws_ok { $dri->domain_autorenew('example-autorenew.fi',{value=>-1}) } qr/Invalid parameters: value must be 0 or 1/, 'domain_autorenew - parse invalid param value: -1';
+
 ## Domain check
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">foobar1.fi</domain:name></domain:cd><domain:cd><domain:name avail="0">foobar2.fi</domain:name><domain:reason>In use</domain:reason></domain:cd><domain:cd><domain:name avail="1">foobar3.fi</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check('foobar1.fi','foobar2.fi','foobar3.fi');
@@ -93,6 +103,9 @@ $rc=$dri->domain_info('example.fi',{auth=>{pw=>'2fooBAR'}});
 is($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">example.fi</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info build with auth');
 is($dri->get_info('action'),'info','domain_info get_info(action)');
 is($dri->get_info('exist'),1,'domain_info get_info(exist)');
+is($dri->get_info('name'),'example.fi','domain_info get_info(name)');
+is($dri->get_info('registrylock'),1,'domain_info get_info(registrylock)');
+is($dri->get_info('autorenew'),1,'domain_info get_info(autorenew)');
 $s=$dri->get_info('status');
 isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
 is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list');
@@ -139,34 +152,20 @@ is($dri->protocol()->ns()->{secDNS}->[0],'urn:ietf:params:xml:ns:secDNS-1.1','se
 ##########
 ##########
 
-# ##########
-# ##########
-# # TODO: FIXME => check chapter 4.3 Transfer
-# # - Do we need to update the info_parse to get dsData - the XSD is not using the standards :(
-# # - Double check new field on info_parse: registrylock, autorenew, autorenewDate (check Schemas.zip: DomainInfoResponse2.xsd)
-# ##########
-# ## Domain transfer
-# $R2=$E1.'<response>'.r().'<resData><obj:trnData xmlns:obj="urn:ietf:params:xml:ns:obj"><obj:name>foobartransfer.fi</obj:name><obj:trStatus>Transferred</obj:trStatus><obj:reID>ClientX</obj:reID><obj:reDate>2000-06-08T22:00:00.0Z</obj:reDate><obj:acID>ClientY</obj:acID></obj:trnData></resData>'.$TRID.'</response>'.$E2;
-# $rc=$dri->domain_transfer_start('foobartransfer.fi',{auth=>{pw=>'2fooBAR'}});
-# # TODO: FIXME
-# # is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobartransfer.fi</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo><domain:ns><domain:hostObj>ns1.example.net</domain:hostObj><domain:hostObj>ns2.example.net</domain:hostObj></domain:ns></domain:transfer></transfer><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></command>'.$E2,'domain_transfer_request build');
-# is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobartransfer.fi</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
-# is($dri->get_info('action'),'transfer','domain_transfer_start get_info(action)');
-# is($dri->get_info('exist'),1,'domain_transfer_start get_info(exist)');
-# is($dri->get_info('trStatus'),'pending','domain_transfer_start get_info(trStatus)');
-# is($dri->get_info('reID'),'ClientX','domain_transfer_start get_info(reID)');
-# $d=$dri->get_info('reDate');
-# isa_ok($d,'DateTime','domain_transfer_start get_info(reDate)');
-# is("".$d,'2000-06-08T22:00:00','domain_transfer_start get_info(reDate) value');
-# is($dri->get_info('acID'),'ClientY','domain_transfer_start get_info(acID)');
-# $d=$dri->get_info('acDate');
-# isa_ok($d,'DateTime','domain_transfer_start get_info(acDate)');
-# is("".$d,'2000-06-13T22:00:00','domain_transfer_start get_info(acDate) value');
-# $d=$dri->get_info('exDate');
-# isa_ok($d,'DateTime','domain_transfer_start get_info(exDate)');
-# is("".$d,'2002-09-08T22:00:00','domain_transfer_start get_info(exDate) value');
-# ##########
-# ##########
+## Domain transfer
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.fi</domain:name><domain:trStatus>Transferred</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-08T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_start('example.fi',{auth=>{pw=>'2fooBAR'}});
+is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.fi</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
+is($dri->get_info('action'),'transfer','domain_transfer_start get_info(action)');
+is($dri->get_info('exist'),1,'domain_transfer_start get_info(exist)');
+is($dri->get_info('trStatus'),'Transferred','domain_transfer_start get_info(trStatus)');
+is($dri->get_info('reID'),'ClientX','domain_transfer_start get_info(reID)');
+$d=$dri->get_info('reDate');
+isa_ok($d,'DateTime','domain_transfer_start get_info(reDate)');
+is("".$d,'2000-06-08T22:00:00','domain_transfer_start get_info(reDate) value');
+is($dri->get_info('acID'),'ClientY','domain_transfer_start get_info(acID)');
+##########
+##########
 
 ## Domain create
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:crDate>2014-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2016-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;

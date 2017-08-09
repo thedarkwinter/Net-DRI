@@ -25,6 +25,8 @@ use Net::DRI::Util;
 use Net::DRI::Exception;
 use DateTime::Duration;
 
+# From EPP_interface.pdf: 4.3 Transfer
+# Only op=”request” is possible. All transfers are accepted or rejected at once. Transfer related ”query”, ”approve” and ”reject” operations are not supported.
 __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_query domain_transfer_accept domain_transfer_stop domain_transfer_refuse/);
 
 =pod
@@ -55,7 +57,7 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>;
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008-2012 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -93,4 +95,14 @@ sub transport_protocol_default
 
 ####################################################################################################
 
+####################################################################################################
+## Domain Commands
+
+sub domain_autorenew
+{
+  my ($self,$ndr,$domain,$rd)=@_;
+  return $ndr->process('domain','autorenew',[$domain,$rd]);
+}
+
+####################################################################################################
 1;
