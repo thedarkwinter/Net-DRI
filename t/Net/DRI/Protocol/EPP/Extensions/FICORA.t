@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 115;
+use Test::More tests => 117;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -167,17 +167,45 @@ is($dri->get_info('acID'),'ClientY','domain_transfer_start get_info(acID)');
 ##########
 ##########
 
-## Domain create
+###
+# # FIXME: depending of Registry answer this will be removed! Their sample use both versions (not standard) when they state: 4.4 Create > Based on RFC 5731 and RFC5910.
+# ## Domain create - old documentation
+# $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:crDate>2014-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2016-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+# $cs=$dri->local_object('contactset');
+# $c1=$dri->local_object('contact')->srid('registrantusername');
+# $c2=$dri->local_object('contact')->srid('admin');
+# $c3=$dri->local_object('contact')->srid('technical');
+# $cs->set($c1,'registrant');
+# $cs->set($c2,'admin');
+# $cs->set($c3,'tech');
+# $rc=$dri->domain_create('esimerkki.fi',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.esimerkki.fi'],['ns2.esimerkki.fi']),contact=>$cs,auth=>{pw=>'password'},secdns=>[{keyTag=>'12345',alg=>3,digestType=>1,digest=>'49FD46E6C4B45C55D4AC',maxSigLife=>604800}]});
+# is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.esimerkki.fi</domain:hostObj><domain:hostObj>ns2.esimerkki.fi</domain:hostObj></domain:ns><domain:registrant>registrantusername</domain:registrant><domain:contact type="admin">admin</domain:contact><domain:contact type="tech">technical</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:maxSigLife>604800</secDNS:maxSigLife><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+# is($dri->get_info('action'),'create','domain_create get_info(action)');
+# is($dri->get_info('exist'),1,'domain_create get_info(exist)');
+# $d=$dri->get_info('crDate');
+# isa_ok($d,'DateTime','domain_create get_info(crDate)');
+# is("".$d,'2014-04-03T22:00:00','domain_create get_info(crDate) value');
+# $d=$dri->get_info('exDate');
+# isa_ok($d,'DateTime','domain_create get_info(exDate)');
+# is("".$d,'2016-04-03T22:00:00','domain_create get_info(exDate) value');
+
+## Domain create - test based on recent documentation (NOTE - for now I am assuming that they use hostAttr only! - their sample use both: hostObj AND hostAttr - should be only one!)
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:crDate>2014-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2016-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
 $cs=$dri->local_object('contactset');
-$c1=$dri->local_object('contact')->srid('registrantusername');
+$c1=$dri->local_object('contact')->srid('haltijantunnus');
 $c2=$dri->local_object('contact')->srid('admin');
-$c3=$dri->local_object('contact')->srid('technical');
+$c3=$dri->local_object('contact')->srid('tekninen');
 $cs->set($c1,'registrant');
 $cs->set($c2,'admin');
 $cs->set($c3,'tech');
-$rc=$dri->domain_create('esimerkki.fi',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.esimerkki.fi'],['ns2.esimerkki.fi']),contact=>$cs,auth=>{pw=>'password'},secdns=>[{keyTag=>'12345',alg=>3,digestType=>1,digest=>'49FD46E6C4B45C55D4AC',maxSigLife=>604800}]});
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.esimerkki.fi</domain:hostObj><domain:hostObj>ns2.esimerkki.fi</domain:hostObj></domain:ns><domain:registrant>registrantusername</domain:registrant><domain:contact type="admin">admin</domain:contact><domain:contact type="tech">technical</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:maxSigLife>604800</secDNS:maxSigLife><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+$dh=$dri->local_object('hosts');
+$dh->add('ns1.example.net',['192.0.2.2'],['1080:0:0:0:8:800:200C:417A'],1);
+$dh->add('ns2.example.net',[],[],1);
+# TODO: delete following line when I have further information from FICORA!
+# $rc=$dri->domain_create('esimerkki.fi',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.esimerkki.fi'],['ns2.esimerkki.fi']),contact=>$cs,auth=>{pw=>'salasana'},secdns=>[{keyTag=>'12345',alg=>3,digestType=>1,digest=>'49FD46E6C4B45C55D4AC',maxSigLife=>604800}]});
+# is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.esimerkki.fi</domain:hostObj><domain:hostObj>ns2.esimerkki.fi</domain:hostObj><domain:hostAttr><domain:hostName>ns1.example.net</domain:hostName><domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr><domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.example.net</domain:hostName></domain:hostAttr></domain:ns><domain:registrant>haltijantunnus</domain:registrant><domain:contact type="admin">admin</domain:contact><domain:contact type="tech">tekninen</domain:contact><domain:authInfo><domain:pw>salasana</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:maxSigLife>604800</secDNS:maxSigLife><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+$rc=$dri->domain_create('esimerkki.fi',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dh,contact=>$cs,auth=>{pw=>'salasana'},secdns=>[{keyTag=>'12345',alg=>3,digestType=>1,digest=>'49FD46E6C4B45C55D4AC',maxSigLife=>604800}]});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostAttr><domain:hostName>ns1.example.net</domain:hostName><domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr><domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.example.net</domain:hostName></domain:hostAttr></domain:ns><domain:registrant>haltijantunnus</domain:registrant><domain:contact type="admin">admin</domain:contact><domain:contact type="tech">tekninen</domain:contact><domain:authInfo><domain:pw>salasana</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:maxSigLife>604800</secDNS:maxSigLife><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($dri->get_info('action'),'create','domain_create get_info(action)');
 is($dri->get_info('exist'),1,'domain_create get_info(exist)');
 $d=$dri->get_info('crDate');
@@ -186,6 +214,23 @@ is("".$d,'2014-04-03T22:00:00','domain_create get_info(crDate) value');
 $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','domain_create get_info(exDate)');
 is("".$d,'2016-04-03T22:00:00','domain_create get_info(exDate) value');
+
+# test => <domain:registrant> is mandatory (check if return notification about insufficient params)
+$cs=$dri->local_object('contactset');
+$c1=$dri->local_object('contact')->srid('haltijantunnus');
+$c2=$dri->local_object('contact')->srid('admin');
+$c3=$dri->local_object('contact')->srid('tekninen');
+# $cs->set($c1,'registrant');
+$cs->set($c2,'admin');
+$cs->set($c3,'tech');
+throws_ok { $dri->domain_create('noregisrant.fi',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),contact=>$cs,auth=>{pw=>'foobarnoreg'}} ) } qr/Registrant contact required for FICORA/, 'domain_create - no contact type registrant';
+
+# test => <domain:period> is mandatory (check if return notification about insufficient params)
+$cs->set($c1,'registrant');
+throws_ok { $dri->domain_create('noregisrant.fi',{pure_create=>1,contact=>$cs,auth=>{pw=>'foobarnoreg'}} ) } qr/Period required for FICORA/, 'domain_create - no period';
+##########
+##########
+
 
 # ##########
 # ##########

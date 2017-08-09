@@ -86,7 +86,7 @@ sub create
  my $mes=$epp->message();
 
  # .FI: <domain:registrant> and <domain:period> is mandatory
- Net::DRI::Exception::usererr_insufficient_parameters('Registrant contact required for .FI domain name creation') unless (Net::DRI::Util::has_contact($rd) && $rd->{contact}->has_type('registrant'));
+ Net::DRI::Exception::usererr_insufficient_parameters('Registrant contact required for FICORA (.FI) domain name creation') unless (Net::DRI::Util::has_contact($rd) && $rd->{contact}->has_type('registrant'));
  Net::DRI::Exception::usererr_insufficient_parameters('Period required for FICORA (.FI) domain name creation') unless Net::DRI::Util::has_duration($rd);
 
  return;
