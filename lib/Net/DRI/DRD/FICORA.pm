@@ -104,5 +104,17 @@ sub domain_autorenew
   return $ndr->process('domain','autorenew',[$domain,$rd]);
 }
 
+sub domain_delete_schedule
+{
+  my ($self,$ndr,$domain,$rd)=@_;
+  return $ndr->process('domain','delete_schedule',[$domain,$rd]);
+}
+
+sub domain_delete_cancel
+{
+  my ($self,$ndr,$domain,$rd)=@_;
+  return $ndr->process('domain','delete_cancel',[$domain,$rd]);
+}
+
 ####################################################################################################
 1;

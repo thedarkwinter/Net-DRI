@@ -67,6 +67,8 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup {
   my ( $self, $rp ) = @_;
   $self->factories('contact',sub { return Net::DRI::Data::Contact::FICORA->new(); });
+  $self->ns({ 'domain-ext'  => ['urn:ietf:params:xml:ns:domain-ext-1.0','domain-ext-1.0.xsd'] });
+
   return;
 }
 

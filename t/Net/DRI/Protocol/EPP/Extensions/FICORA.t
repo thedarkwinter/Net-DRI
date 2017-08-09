@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 117;
+use Test::More tests => 125;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -232,18 +232,32 @@ throws_ok { $dri->domain_create('noregisrant.fi',{pure_create=>1,contact=>$cs,au
 ##########
 
 
-# ##########
-# ##########
-# # TODO: FIXME
-# # - Do we need to always send <obj:delete> element?
-# ##########
-# ## Domain delete
-# $R2='';
-# $rc=$dri->domain_delete('example203.com',{pure_delete=>1});
-# is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example203.com</domain:name></domain:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete build');
-# is($rc->is_success(),1,'domain_delete is_success');
-# ##########
-# ##########
+## Domain delete
+
+# test with only delete command
+$R2='';
+$rc=$dri->domain_delete('exampleonlydelete.fi',{pure_delete=>1});
+is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exampleonlydelete.fi</domain:name></domain:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete (simple) build');
+is($rc->is_success(),1,'domain_delete (simple) is_success');
+
+# test with scheduled delete time
+# NOTE: check the response code. they return 1001 for scheduled domain delete command. they only return 1000 for domains deleted or delete is canceled - check next test!
+$R2=$E1.'<response><result code="1001"><msg>Command completed successfully; action pending</msg></result><trID><clTRID>ABC-12345</clTRID><svTRID>54321-XYZ </svTRID></trID></response>'.$E2;
+$rc=$dri->domain_delete_schedule('example-scheduled-delete.fi',{delDate=>DateTime->new(year=>2015,month=>1,day=>1)});
+is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example-scheduled-delete.fi</domain:name></domain:delete></delete><extension><domain-ext:delete xmlns:domain-ext="urn:ietf:params:xml:ns:domain-ext-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-ext-1.0 domain-ext-1.0.xsd"><domain-ext:schedule><domain-ext:delDate>2015-01-01T00:00:00.0Z</domain-ext:delDate></domain-ext:schedule></domain-ext:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete (scheduled) build');
+is($rc->is_success(),1,'domain_delete_schedule is_success');
+# lets add a test to check invalid delDate param and one to check if its missing or not
+throws_ok { $dri->domain_delete_schedule('example-scheduled-delete.fi',{delDate=>1}) } qr/must be a DateTime object/, 'domain_delete_schedule - wrong delDate format';
+throws_ok { $dri->domain_delete_schedule('example-scheduled-delete.fi') } qr/delDate mandatory/, 'domain_delete_schedule - no delDate';
+
+# test domain delete is cancelled
+$R2=$E1.'<response>'.r().'</response>'.$E2;
+$rc=$dri->domain_delete_cancel('example-delete-cancelled.fi',{pure_delete=>1});
+is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example-delete-cancelled.fi</domain:name></domain:delete></delete><extension><domain-ext:delete xmlns:domain-ext="urn:ietf:params:xml:ns:domain-ext-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-ext-1.0 domain-ext-1.0.xsd"><domain-ext:cancel/></domain-ext:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete (cancelled) build');
+is($rc->is_success(),1,'domain_delete_cancel is_success');
+
+##########
+##########
 
 # ##########
 # ##########
