@@ -75,6 +75,7 @@ sub register_commands
           autorenew         => [ \&autorenew, undef ],
           delete_schedule   => [ \&delete_schedule, undef],
           delete_cancel     => [ \&delete_cancel, undef],
+          update            => [ \&update, undef],
          );
 
  return { 'domain' => \%tmp };
@@ -189,6 +190,82 @@ sub delete_cancel
 
   my $eid=$mes->command_extension_register('domain-ext:delete',sprintf('xmlns:domain-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain-ext')));
   $mes->command_extension($eid,['domain-ext:cancel','']);
+
+  return;
+}
+
+
+sub update
+{
+  my ($epp,$domain,$todo)=@_;
+
+  my $mes=$epp->message();
+
+  Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a non empty Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
+
+  my $nsadd=$todo->add('ns');
+  my $nsdel=$todo->del('ns');
+  my $sadd=$todo->add('status');
+  my $sdel=$todo->del('status');
+  my $cadd=$todo->add('contact');
+  my $cdel=$todo->del('contact');
+  my $adel=$todo->del('auth'); # they have an authInfo element for deletion
+
+  my (@add,@del);
+  push @add,Net::DRI::Protocol::EPP::Util::build_ns($epp,$nsadd,$domain)         if Net::DRI::Util::isa_hosts($nsadd);
+  push @add,Net::DRI::Protocol::EPP::Util::build_core_contacts($epp,$cadd)       if Net::DRI::Util::isa_contactset($cadd);
+  push @add,$sadd->build_xml('domain:status','core')                             if Net::DRI::Util::isa_statuslist($sadd);
+  push @del,Net::DRI::Protocol::EPP::Util::build_ns($epp,$nsdel,$domain,undef,1) if Net::DRI::Util::isa_hosts($nsdel);
+  push @del,Net::DRI::Protocol::EPP::Util::build_core_contacts($epp,$cdel)       if Net::DRI::Util::isa_contactset($cdel);
+  push @del,$sdel->build_xml('domain:status','core') if Net::DRI::Util::isa_statuslist($sdel);
+
+  # build authInfo for delete action
+  my $pwdel = $adel->{'pw'} if $adel->{'pw'};
+  my $regtransfer = $adel->{'pwregistranttransfer'} if $adel->{'pwregistranttransfer'};
+  my @delauthinfo;
+  @delauthinfo = ['domain:pw',$pwdel] if $pwdel;
+  push @delauthinfo, ['domain:pwregistranttransfer',$regtransfer] if $regtransfer;
+  push @del, ['domain:authInfo',@delauthinfo] if @delauthinfo;
+  # END build authInfo for delete action
+
+  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,'update',$domain);
+  push @d,['domain:add',@add] if @add;
+  push @d,['domain:rem',@del] if @del;
+
+  my $chg=$todo->set('registrant');
+  my @chg;
+  push @chg,['domain:registrant',$chg->srid()] if Net::DRI::Util::isa_contact($chg);
+  $chg=$todo->set('auth');
+  push @chg,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$chg,1) if ($chg && (ref $chg eq 'HASH') && exists $chg->{pw});
+
+  # now lets build new element => registrylock
+  my ($registrylock,$type,$smsnumber,$numbertosend);
+  my @smsnumber;
+  my @numbertosend;
+  my $authkey;
+
+  $registrylock = $todo->set('registrylock') if $todo->set('registrylock');
+  $type = $registrylock->{'type'} if $registrylock->{'type'};
+  $smsnumber = $registrylock->{'smsnumber'} if $registrylock->{'smsnumber'};
+  $numbertosend = $registrylock->{'numbertosend'} if $registrylock->{'numbertosend'};
+
+  foreach my $elsms (@{$smsnumber}) {
+    push @smsnumber,['domain:smsnumber',$elsms];
+  }
+  foreach my $elnum (@{$numbertosend}) {
+    push @numbertosend,['domain:numbertosend',$elnum];
+  }
+
+  $authkey = ['domain:authkey', $registrylock->{'authkey'}] if $registrylock->{'authkey'};
+
+  if ( defined($todo->set('registrylock')) ) {
+    Net::DRI::Exception::usererr_insufficient_parameters('operation type is mandatory for registrylock and need to be: activate, deactivate, requestkey') unless ( $type =~ m/^(activate|deactivate|requestkey)$/ );
+    push @chg,['domain:registrylock',(@smsnumber,@numbertosend,$authkey),{type=>$type}];
+  }
+  # END now lets build new element => registrylock
+
+  push @d,['domain:chg',@chg] if @chg;
+  $mes->command_body(\@d);
 
   return;
 }

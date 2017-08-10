@@ -68,6 +68,8 @@ sub setup {
   my ( $self, $rp ) = @_;
   $self->factories('contact',sub { return Net::DRI::Data::Contact::FICORA->new(); });
   $self->ns({ 'domain-ext'  => ['urn:ietf:params:xml:ns:domain-ext-1.0','domain-ext-1.0.xsd'] });
+  $self->capabilities('domain_update','auth',[ 'del', 'set' ]);
+  $self->capabilities('domain_update','registrylock',[ 'set' ]);
 
   return;
 }

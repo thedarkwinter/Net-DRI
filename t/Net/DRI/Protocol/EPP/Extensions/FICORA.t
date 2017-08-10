@@ -255,21 +255,297 @@ $R2=$E1.'<response>'.r().'</response>'.$E2;
 $rc=$dri->domain_delete_cancel('example-delete-cancelled.fi',{pure_delete=>1});
 is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example-delete-cancelled.fi</domain:name></domain:delete></delete><extension><domain-ext:delete xmlns:domain-ext="urn:ietf:params:xml:ns:domain-ext-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-ext-1.0 domain-ext-1.0.xsd"><domain-ext:cancel/></domain-ext:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete (cancelled) build');
 is($rc->is_success(),1,'domain_delete_cancel is_success');
-
 ##########
 ##########
 
-# ##########
-# ##########
-# # TODO: FIXME
-# # - Do we need to always send <obj:delete> element?
-# ## Domain update
-# $R2='';
-# $rc=$dri->domain_delete('example203.com',{pure_delete=>1});
-# is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example203.com</domain:name></domain:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete build');
-# is($rc->is_success(),1,'domain_delete is_success');
-# ##########
-# ##########
+
+## Domain update
+# TODO!!!
+# my $dom_update_cmd_ficore_documentation=<<'EOF';
+# <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+# <epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">
+#   <command>
+#     <update>
+#       <domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">
+#         <domain:name>example.fi</domain:name>
+#         <domain:add>
+#           <domain:ns>
+#             <domain:hostObj>ns3.example.com</domain:hostObj>
+#             <domain:hostObj>ns4.example.com</domain:hostObj>
+#             <domain:hostAttr>
+#               <domain:hostName>ns1.example.net</domain:hostName>
+#               <domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr>
+#               <domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr>
+#             </domain:hostAttr>
+#             <domain:hostAttr>
+#               <domain:hostName>ns2.example.net</domain:hostName>
+#             </domain:hostAttr>
+#           </domain:ns>
+#           <domain:contact type="tech">mak21</domain:contact>
+#           <domain:contact type="admin">mak21</domain:contact>
+#           <domain:status s="clientHold" lang="en">Payment overdue.</domain:status>
+#         </domain:add>
+#         <domain:rem>
+#           <domain:ns>
+#             <domain:hostObj>ns1.example.com</domain:hostObj>
+#             <domain:hostObj>ns2.example.com</domain:hostObj>
+#             <domain:hostAttr>
+#               <domain:hostName>ns1.example.net</domain:hostName>
+#               <domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr>
+#               <domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr>
+#             </domain:hostAttr>
+#             <domain:hostAttr>
+#               <domain:hostName>ns2.example.net</domain:hostName>
+#             </domain:hostAttr>
+#           </domain:ns>
+#           <domain:contact type="tech">C4000</domain:contact>
+#           <domain:contact type="admin">C2000</domain:contact>
+#           <domain:status s="clientUpdateProhibited"/>
+#           <domain:authInfo>
+#             <domain:pw>2BARfoo</domain:pw>
+#             <domain:pwregistranttransfer>2BARfoo</domain:pwregistranttransfer>
+#           </domain:authInfo>
+#         </domain:rem>
+#         <domain:chg>
+#           <domain:registrant>C5000</domain:registrant>
+#           <domain:authInfo>
+#             <domain:pw>2BARfoo</domain:pw>
+#             <domain:pwregistranttransfer>2BARfoo</domain:pwregistranttransfer>
+#           </domain:authInfo>
+#           <domain:registrylock type="activate">
+#             <domain:smsnumber>+2314s12312</domain:smsnumber>
+#             <domain:smsnumber>+2314s12312</domain:smsnumber>
+#             <domain:smsnumber>+2314s12312</domain:smsnumber>
+#             <domain:numbertosend>1423</domain:numbertosend>
+#             <domain:numbertosend>1423</domain:numbertosend>
+#             <domain:numbertosend>1423</domain:numbertosend>
+#             <domain:authkey>7867896f896sadf9786</domain:authkey>
+#           </domain:registrylock>
+#         </domain:chg>
+#       </domain:update>
+#     </update>
+#     <extension>
+#       <secDNS:update xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1">
+#         <secDNS:rem>
+#           <secDNS:dsData>
+#             <secDNS:keyTag>12345</secDNS:keyTag>
+#             <secDNS:alg>3</secDNS:alg>
+#             <secDNS:digestType>1</secDNS:digestType>
+#             <secDNS:digest>38EC35D5B3A34B33C99B</secDNS:digest>
+#             <secDNS:keyData>
+#               <secDNS:flags>257</secDNS:flags>
+#               <secDNS:protocol>233</secDNS:protocol>
+#               <secDNS:alg>1</secDNS:alg>
+#               <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+#             </secDNS:keyData>
+#           </secDNS:dsData>
+#           <secDNS:dsData>
+#             <secDNS:keyTag>12345</secDNS:keyTag>
+#             <secDNS:alg>3</secDNS:alg>
+#             <secDNS:digestType>1</secDNS:digestType>
+#             <secDNS:digest>38EC35D5B3A34B33C99B</secDNS:digest>
+#             <secDNS:keyData>
+#               <secDNS:flags>257</secDNS:flags>
+#               <secDNS:protocol>233</secDNS:protocol>
+#               <secDNS:alg>1</secDNS:alg>
+#               <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+#             </secDNS:keyData>
+#           </secDNS:dsData>
+#           <secDNS:all>true</secDNS:all>
+#         </secDNS:rem>
+#         <secDNS:add>
+#           <secDNS:dsData>
+#             <secDNS:keyTag>12346</secDNS:keyTag>
+#             <secDNS:alg>3</secDNS:alg>
+#             <secDNS:digestType>1</secDNS:digestType>
+#             <secDNS:digest>38EC35D5B3A34B44C39B</secDNS:digest>
+#             <secDNS:keyData>
+#               <secDNS:flags>257</secDNS:flags>
+#               <secDNS:protocol>233</secDNS:protocol>
+#               <secDNS:alg>1</secDNS:alg>
+#               <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+#             </secDNS:keyData>
+#           </secDNS:dsData>
+#           <secDNS:dsData>
+#             <secDNS:keyTag>12346</secDNS:keyTag>
+#             <secDNS:alg>3</secDNS:alg>
+#             <secDNS:digestType>1</secDNS:digestType>
+#             <secDNS:digest>38EC35D5B3A34B44C39B</secDNS:digest>
+#             <secDNS:keyData>
+#               <secDNS:flags>257</secDNS:flags>
+#               <secDNS:protocol>233</secDNS:protocol>
+#               <secDNS:alg>1</secDNS:alg>
+#               <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+#             </secDNS:keyData>
+#           </secDNS:dsData>
+#         </secDNS:add>
+#         <secDNS:chg></secDNS:chg>
+#       </secDNS:update>
+#     </extension>
+#     <clTRID>ABC-12345</clTRID>
+#   </command>
+# </epp>
+# EOF
+my $dom_update_cmd=<<'EOF';
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">
+  <command>
+    <update>
+      <domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">
+        <domain:name>example.fi</domain:name>
+        <domain:add>
+          <domain:ns>
+            <domain:hostAttr>
+              <domain:hostName>ns1.example.net</domain:hostName>
+              <domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr>
+              <domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr>
+            </domain:hostAttr>
+            <domain:hostAttr>
+              <domain:hostName>ns2.example.net</domain:hostName>
+            </domain:hostAttr>
+          </domain:ns>
+          <domain:contact type="admin">mak21</domain:contact>
+          <domain:contact type="tech">mak21</domain:contact>
+          <domain:status lang="en" s="clientHold" >Payment overdue.</domain:status>
+        </domain:add>
+        <domain:rem>
+          <domain:ns>
+            <domain:hostAttr>
+              <domain:hostName>ns1.example.net</domain:hostName>
+            </domain:hostAttr>
+            <domain:hostAttr>
+              <domain:hostName>ns2.example.net</domain:hostName>
+            </domain:hostAttr>
+          </domain:ns>
+          <domain:contact type="admin">C2000</domain:contact>
+          <domain:contact type="tech">C4000</domain:contact>
+          <domain:status s="clientUpdateProhibited"/>
+          <domain:authInfo>
+            <domain:pw>2BARfoo</domain:pw>
+            <domain:pwregistranttransfer>2BARfoo</domain:pwregistranttransfer>
+          </domain:authInfo>
+        </domain:rem>
+        <domain:chg>
+          <domain:registrant>C5000</domain:registrant>
+          <domain:authInfo>
+            <domain:pw>2BARfoo</domain:pw>
+            <domain:pwregistranttransfer>2BARfoo</domain:pwregistranttransfer>
+          </domain:authInfo>
+          <domain:registrylock type="activate">
+            <domain:smsnumber>+2314s12312</domain:smsnumber>
+            <domain:smsnumber>+2314s12312</domain:smsnumber>
+            <domain:smsnumber>+2314s12312</domain:smsnumber>
+            <domain:numbertosend>1423</domain:numbertosend>
+            <domain:numbertosend>1423</domain:numbertosend>
+            <domain:numbertosend>1423</domain:numbertosend>
+            <domain:authkey>7867896f896sadf9786</domain:authkey>
+          </domain:registrylock>
+        </domain:chg>
+      </domain:update>
+    </update>
+    <extension>
+      <secDNS:update xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1">
+        <secDNS:rem>
+          <secDNS:dsData>
+            <secDNS:keyTag>12345</secDNS:keyTag>
+            <secDNS:alg>3</secDNS:alg>
+            <secDNS:digestType>1</secDNS:digestType>
+            <secDNS:digest>38EC35D5B3A34B33C99B</secDNS:digest>
+            <secDNS:keyData>
+              <secDNS:flags>257</secDNS:flags>
+              <secDNS:protocol>233</secDNS:protocol>
+              <secDNS:alg>1</secDNS:alg>
+              <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+            </secDNS:keyData>
+          </secDNS:dsData>
+          <secDNS:dsData>
+            <secDNS:keyTag>12345</secDNS:keyTag>
+            <secDNS:alg>3</secDNS:alg>
+            <secDNS:digestType>1</secDNS:digestType>
+            <secDNS:digest>38EC35D5B3A34B33C99B</secDNS:digest>
+            <secDNS:keyData>
+              <secDNS:flags>257</secDNS:flags>
+              <secDNS:protocol>233</secDNS:protocol>
+              <secDNS:alg>1</secDNS:alg>
+              <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+            </secDNS:keyData>
+          </secDNS:dsData>
+          <secDNS:all>true</secDNS:all>
+        </secDNS:rem>
+        <secDNS:add>
+          <secDNS:dsData>
+            <secDNS:keyTag>12346</secDNS:keyTag>
+            <secDNS:alg>3</secDNS:alg>
+            <secDNS:digestType>1</secDNS:digestType>
+            <secDNS:digest>38EC35D5B3A34B44C39B</secDNS:digest>
+            <secDNS:keyData>
+              <secDNS:flags>257</secDNS:flags>
+              <secDNS:protocol>233</secDNS:protocol>
+              <secDNS:alg>1</secDNS:alg>
+              <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+            </secDNS:keyData>
+          </secDNS:dsData>
+          <secDNS:dsData>
+            <secDNS:keyTag>12346</secDNS:keyTag>
+            <secDNS:alg>3</secDNS:alg>
+            <secDNS:digestType>1</secDNS:digestType>
+            <secDNS:digest>38EC35D5B3A34B44C39B</secDNS:digest>
+            <secDNS:keyData>
+              <secDNS:flags>257</secDNS:flags>
+              <secDNS:protocol>233</secDNS:protocol>
+              <secDNS:alg>1</secDNS:alg>
+              <secDNS:pubKey>AQPJ////4Q==</secDNS:pubKey>
+            </secDNS:keyData>
+          </secDNS:dsData>
+        </secDNS:add>
+        <secDNS:chg></secDNS:chg>
+      </secDNS:update>
+    </extension>
+    <clTRID>ABC-12345</clTRID>
+  </command>
+</epp>
+EOF
+$R2='';
+my $toc=$dri->local_object('changes');
+$dh=$dri->local_object('hosts');
+$dh->add('ns1.example.net',['192.0.2.2'],['1080:0:0:0:8:800:200C:417A'],1);
+$dh->add('ns2.example.net',[],[],1);
+$toc->add('ns',$dh);
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('mak21'),'tech');
+$cs->set($dri->local_object('contact')->srid('mak21'),'admin');
+$toc->add('contact',$cs);
+$toc->add('status',$dri->local_object('status')->no('publish','Payment overdue.'));
+$toc->del('ns',$dh);
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('C4000'),'tech');
+$cs->set($dri->local_object('contact')->srid('C2000'),'admin');
+$toc->del('contact',$cs);
+$toc->del('status',$dri->local_object('status')->no('update'));
+$toc->del('auth',{pw=>'2BARfoo', pwregistranttransfer=>'2BARfoo'});
+$toc->set('registrant',$dri->local_object('contact')->srid('C5000'));
+$toc->set('auth',{pw=>'2BARfoo', pwregistranttransfer=>'2BARfoo'});
+$toc->set('registrylock',
+  {
+    type=>'activate',
+    smsnumber=>['+2314s12312','+2314s12316','+2314s12318'],
+    numbertosend=>['1423','1424','1425'],
+    authkey=>'7867896f896sadf9786',
+  }
+);
+$rc=$dri->domain_update('example.fi',$toc);
+# example from Core.t
+#is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example206.com</domain:name><domain:add><domain:ns><domain:hostObj>ns2.example.com</domain:hostObj></domain:ns><domain:contact type="tech">mak21</domain:contact><domain:status lang="en" s="clientHold">Payment overdue.</domain:status></domain:add><domain:rem><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj></domain:ns><domain:contact type="tech">sh8013</domain:contact><domain:status s="clientUpdateProhibited"/></domain:rem><domain:chg><domain:registrant>sh8013</domain:registrant><domain:authInfo><domain:pw>2BARfoo</domain:pw></domain:authInfo></domain:chg></domain:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
+is($R1,$dom_update_cmd,'domain_update build');
+is($rc->is_success(),1,'domain_update is_success');
+
+# test to send invalid registrylock type attribute
+$toc->set('registrylock',{type=>'foobar'});
+throws_ok { $dri->domain_update('example.fi',$toc) } qr/registrylock and need to be: activate, deactivate, requestkey/, 'domain_update - parse invalid registrylock type attribute';
+##########
+##########
+exit 0;
+
 
 ## Domain renew
 $R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:exDate>2016-04-03T22:00:00.0Z</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
@@ -280,6 +556,9 @@ is($dri->get_info('exist'),1,'domain_renew get_info(exist)');
 $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','domain_renew get_info(exDate)');
 is("".$d,'2016-04-03T22:00:00','domain_renew get_info(exDate) value');
+##########
+##########
+
 
 ## Contact check
 $R2=$E1.'<response>'.r().'<resData><contact:chkData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:cd><contact:id avail="1">username1</contact:id></contact:cd><contact:cd><contact:id avail="0">username2</contact:id><contact:reason>In use</contact:reason></contact:cd><contact:cd><contact:id avail="1">username3</contact:id></contact:cd></contact:chkData></resData>'.$TRID.'</response>'.$E2;
