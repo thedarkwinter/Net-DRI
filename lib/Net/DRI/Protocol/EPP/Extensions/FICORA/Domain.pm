@@ -234,9 +234,13 @@ sub update
 
   my $chg=$todo->set('registrant');
   my @chg;
+  my @chgauthinfo;
   push @chg,['domain:registrant',$chg->srid()] if Net::DRI::Util::isa_contact($chg);
   $chg=$todo->set('auth');
-  push @chg,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$chg,1) if ($chg && (ref $chg eq 'HASH') && exists $chg->{pw});
+
+  push @chgauthinfo, ['domain:pw',$chg->{pw}] if $chg->{pw};
+  push @chgauthinfo, ['domain:pwregistranttransfer',$chg->{pwregistranttransfer}] if $chg->{pwregistranttransfer};
+  push @chg,['domain:authInfo',@chgauthinfo] if @chgauthinfo;
 
   # now lets build new element => registrylock
   my ($registrylock,$type,$smsnumber,$numbertosend);
