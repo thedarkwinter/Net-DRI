@@ -69,7 +69,7 @@ sub register_commands
  my ($class,$version)=@_;
  my %tmp=(
           create => [ \&create, undef ],
-          # update => [ \&update, undef ],
+          update => [ \&update, undef ],
           info   => [ undef, \&info_parse ],
          );
 
@@ -298,6 +298,33 @@ sub build_disclose {
   push(@d, ['contact:addr']) if (exists($d->{addr}));
 
   return ['contact:disclose',@d,{flag=>(keys(%v))[0]}];
+}
+
+
+sub update
+{
+ my ($epp,$contact,$todo)=@_;
+ my $mes=$epp->message();
+
+ Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a non empty Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
+
+ my $sadd=$todo->add('status');
+ my $sdel=$todo->del('status');
+
+ my @d=build_command($mes,'update',$contact);
+ push @d,['contact:add',$sadd->build_xml('contact:status')] if Net::DRI::Util::isa_statuslist($sadd);
+ push @d,['contact:rem',$sdel->build_xml('contact:status')] if Net::DRI::Util::isa_statuslist($sdel);
+
+ my $newc=$todo->set('info');
+ if (defined $newc)
+ {
+  Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid contact '.$newc) unless Net::DRI::Util::isa_contact($newc);
+  $newc->validate(1); ## will trigger an Exception if needed
+  my @c=build_ficora_contact($newc,$epp->{contacti18n});
+  push @d,['contact:chg',@c] if @c;
+ }
+ $mes->command_body(\@d);
+ return;
 }
 
 ####################################################################################################

@@ -101,37 +101,41 @@ sub validate
 
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
- # Contact role is mandatory with value between 2-5
- push @errs, 'contact role mandatory and can only be between: 2-5' unless ( defined($self->role()) && $self->role() >= 2 && $self->role() <= 5 );
-
- # Contact type is mandatory with value between 0-7
- push @errs, 'contact type mandatory and can only be between: 0-7' unless ( defined($self->type()) && $self->type() >= 0 && $self->type() <= 7 );
-
- # <contact:sp> is not mandatory, other address fields are mandatory
- push @errs, 'address fields: city, pc an cc are mandatory (except sp)' unless ( defined($self->city()) && defined($self->pc()) && defined($self->cc()) );
-
- # For contact role 5, <contact:legalemail> is mandatory, for others  <contact:email> is mandatory
- if ($self->role() eq '5')
+ if ( $change != 1 ) # not mandatory for contact_update()
  {
-  push @errs, 'legal email is mandatory (if role eq 5: Registrant/Holder)' unless ( defined($self->legalemail()) );
- } else {
-  push @errs, 'email is mandatory' unless ( defined($self->email()) );
- }
+   # Contact role is mandatory with value between 2-5
+   push @errs, 'contact role mandatory and can only be between: 2-5' unless ( defined($self->role()) && $self->role() >= 2 && $self->role() <= 5 );
 
- # For a Finnish person, (role=5, type=0, isfinnish=1) <contact:identity> is mandatory and is validated as a Finnish identity
- # For a Finnish company, (role=5, type=1-7, isfinnish=1) <contact:registernumber> is mandatory and is validated
- # For a foreign person, (role=5, type=0, isfinnish=0) <contact:birthDate> is mandatory and is validated
- # For a foreign company, (role=5, type=1-7, isfinnish=0) <contact:registernumber> is mandatory
- if ($self->role() eq '5' && $self->type() eq '0' && $self->isfinnish() eq '1')
- {
-  push @errs, 'identity is mandatory and is validated by Registry for (role=5, type=0, isfinnish=1)' unless ( defined($self->identity()) );
- } elsif ($self->role() eq '5' && $self->type() >= 1 && $self->type() <= 7 && $self->isfinnish() eq '1')
- {
-  push @errs, 'registernumber is mandatory and is validated by Registry for (role=5, type=1-7, isfinnish=1)' unless ( defined($self->registernumber()) );
- } elsif ($self->role() eq '5' && $self->type() eq '0' && $self->isfinnish eq '0') {
-  push @errs, 'birthDate is mandatory and is validated by Registry for (role=5, type=0, isfinnish=0)' unless ( defined($self->birthdate()) );
- } elsif ($self->role() eq '5' && $self->type() >= 1 && $self->type() <= 7 && $self->isfinnish() eq '0') {
-  push @errs, 'registernumber is mandatory and is validated by Registry for (role=5, type=1-7, isfinnish=0)' unless ( defined($self->registernumber()) );
+   # Contact type is mandatory with value between 0-7
+   push @errs, 'contact type mandatory and can only be between: 0-7' unless ( defined($self->type()) && $self->type() >= 0 && $self->type() <= 7 );
+
+   # <contact:sp> is not mandatory, other address fields are mandatory
+   push @errs, 'address fields: city, pc an cc are mandatory (except sp)' unless ( defined($self->city()) && defined($self->pc()) && defined($self->cc()) );
+
+
+   # For contact role 5, <contact:legalemail> is mandatory, for others  <contact:email> is mandatory
+   if (defined($self->role()) && $self->role() eq '5')
+   {
+    push @errs, 'legal email is mandatory (if role eq 5: Registrant/Holder)' unless ( defined($self->legalemail()) );
+   } else {
+    push @errs, 'email is mandatory' unless ( defined($self->email()) );
+   }
+
+   # For a Finnish person, (role=5, type=0, isfinnish=1) <contact:identity> is mandatory and is validated as a Finnish identity
+   # For a Finnish company, (role=5, type=1-7, isfinnish=1) <contact:registernumber> is mandatory and is validated
+   # For a foreign person, (role=5, type=0, isfinnish=0) <contact:birthDate> is mandatory and is validated
+   # For a foreign company, (role=5, type=1-7, isfinnish=0) <contact:registernumber> is mandatory
+   if ($self->role() eq '5' && $self->type() eq '0' && $self->isfinnish() eq '1')
+   {
+    push @errs, 'identity is mandatory and is validated by Registry for (role=5, type=0, isfinnish=1)' unless ( defined($self->identity()) );
+   } elsif ($self->role() eq '5' && $self->type() >= 1 && $self->type() <= 7 && $self->isfinnish() eq '1')
+   {
+    push @errs, 'registernumber is mandatory and is validated by Registry for (role=5, type=1-7, isfinnish=1)' unless ( defined($self->registernumber()) );
+   } elsif ($self->role() eq '5' && $self->type() eq '0' && $self->isfinnish eq '0') {
+    push @errs, 'birthDate is mandatory and is validated by Registry for (role=5, type=0, isfinnish=0)' unless ( defined($self->birthdate()) );
+   } elsif ($self->role() eq '5' && $self->type() >= 1 && $self->type() <= 7 && $self->isfinnish() eq '0') {
+    push @errs, 'registernumber is mandatory and is validated by Registry for (role=5, type=1-7, isfinnish=0)' unless ( defined($self->registernumber()) );
+   }
  }
 
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
@@ -143,7 +147,7 @@ sub validate
 sub init
 {
  my ($self,$what,$ndr)=@_;
- if ($what eq 'create')
+ if ($what eq 'create' || $what eq 'update')
  {
   my $a=$self->auth();
   $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); ## authInfo is not used

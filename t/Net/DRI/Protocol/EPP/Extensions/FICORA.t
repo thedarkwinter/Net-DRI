@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 128;
+use Test::More tests => 132;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -368,6 +368,9 @@ is($dri->get_info('exist','contact','username1'),0,'contact_check multi get_info
 is($dri->get_info('exist','contact','username2'),1,'contact_check multi get_info(exist) 2/3');
 is($dri->get_info('exist_reason','contact','username2'),'In use','contact_check multi get_info(exist_reason)');
 is($dri->get_info('exist','contact','username3'),0,'contact_check multi get_info(exist) 3/3');
+##########
+##########
+
 
 ## Contact info
 $R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:postalInfo type="loc"><contact:firstname>John Doe</contact:firstname><contact:lastname>John Doe</contact:lastname><contact:org>Example Inc.</contact:org><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+358401231234</contact:voice><contact:email>jdoe@example.com</contact:email><contact:legalemail>jdoe@example.com</contact:legalemail><contact:clID>ClientY</contact:clID><contact:crID>ClientX</contact:crID><contact:crDate>1999-04-03T22:00:00.0Z</contact:crDate><contact:upDate>1999-12-03T09:00:00.0Z</contact:upDate><contact:disclose flag="0"><contact:voice/><contact:email/><contact:address/></contact:disclose></contact:infData></resData>'.$TRID.'</response>'.$E2;
@@ -400,6 +403,9 @@ $d=$dri->get_info('upDate');
 isa_ok($d,'DateTime','contact_info get_info(upDate)');
 is("".$d,'1999-12-03T09:00:00','contact_info get_info(upDate) value');
 is_deeply($co->disclose(),{voice=>0,email=>0,address=>0},'contact_info get_info(self) disclose');
+##########
+##########
+
 
 ## Contact create
 $R2='';
@@ -428,6 +434,48 @@ $co->disclose({addr=>0,email=>0});
 $rc=$dri->contact_create($co);
 is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sha1</contact:id><contact:role>5</contact:role><contact:type>1</contact:type><contact:postalInfo type="loc"><contact:isfinnish>1</contact:isfinnish><contact:firstname>Essi</contact:firstname><contact:lastname>Esimerkki Oy</contact:lastname><contact:name>HR</contact:name><contact:org>Esimerkki Oy</contact:org><contact:birthDate>2005-04-03T22:00:00.0Z</contact:birthDate><contact:identity>123423A123F</contact:identity><contact:registernumber>1234312SFAD-5</contact:registernumber><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street/><contact:street/><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.com</contact:email><contact:legalemail>jdoe@example.com</contact:legalemail><contact:disclose flag="0"><contact:email/><contact:addr/></contact:disclose></contact:create></create><clTRID>ABC-12345</clTRID></command></epp>','contact_create build');
 is($rc->is_success(),1,'contact_create is_success');
+
+
+## contact delete
+$R2='';
+$co=$dri->local_object('contact')->srid('C5000');
+$rc=$dri->contact_delete($co);
+is($R1,$E1.'<command><delete><contact:delete xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>C5000</contact:id></contact:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_delete build');
+is($rc->is_success(),1,'contact_delete is_success');
+##########
+##########
+
+
+## contact update
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$co=$dri->local_object('contact')->srid('C5000');
+$toc=$dri->local_object('changes');
+my $co2=$dri->local_object('contact');
+$co2->type('2');
+$co2->isfinnish('1');
+$co2->firstname('John');
+$co2->lastname('Doe');
+$co2->name('HR');
+$co2->org('Example Inc.');
+$co2->birthdate('2005-04-03T22:00:00.0Z');
+$co2->identity('123423A123F');
+$co2->registernumber('1234312-5');
+$co2->street(['123 Example Dr.','Suite 100','Suite 100']);
+$co2->city('Dulles');
+$co2->sp('VA');
+$co2->pc('20166-6503');
+$co2->cc('US');
+$co2->voice('+1.7035555555x1234');
+$co2->fax('+1.7035555556');
+$co2->email('jdoe@example.com');
+$co2->legalemail('jdoe@example.com');
+$co2->disclose({addr=>0,email=>0,voice=>0});
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>C5000</contact:id><contact:chg><contact:type>2</contact:type><contact:postalInfo type="loc"><contact:isfinnish>1</contact:isfinnish><contact:firstname>John</contact:firstname><contact:lastname>Doe</contact:lastname><contact:name>HR</contact:name><contact:org>Example Inc.</contact:org><contact:birthDate>2005-04-03T22:00:00.0Z</contact:birthDate><contact:identity>123423A123F</contact:identity><contact:registernumber>1234312-5</contact:registernumber><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.com</contact:email><contact:legalemail>jdoe@example.com</contact:legalemail><contact:disclose flag="0"><contact:voice/><contact:email/><contact:addr/></contact:disclose></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
+is($rc->is_success(),1,'contact_update is_success');
+##########
+##########
 
 
 exit 0;
