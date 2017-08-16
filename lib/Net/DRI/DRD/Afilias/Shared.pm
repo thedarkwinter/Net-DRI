@@ -107,7 +107,7 @@ sub tlds     {
  my @newgTLDs = qw/xn--4gbrim xn--kput3i adult bnpparibas creditunion eco ged global indians ist istanbul ltda onl porn rich sex srl storage vegas zara/;
  my @ccTLDs = (
      'ag',(map { $_.'.ag'} qw/co com net nom org/),
-     'bz',(map { $_.'.bz'} qw/co com net/),
+     'bz',(map { $_.'.bz'} qw/co com net org/),
      'gi',
      'lc',(map { $_.'.lc'} qw/co com l net org p/),
      'me',
