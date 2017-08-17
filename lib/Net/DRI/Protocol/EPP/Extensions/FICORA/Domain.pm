@@ -73,8 +73,7 @@ sub register_commands
           create            => [ \&create, undef ],
           info              => [ undef, \&info_parse ],
           autorenew         => [ \&autorenew, undef ],
-          delete_schedule   => [ \&delete_schedule, undef],
-          delete_cancel     => [ \&delete_cancel, undef],
+          delete            => [ \&delete, undef],
           update            => [ \&update, undef],
          );
 
@@ -149,47 +148,34 @@ sub autorenew
 }
 
 
-# schedule contains delDate tag, which should contain the scheduled time for
-# domain delete. delDate cannot be set to more than one year from now or
-# beyond the current expiration time.
-sub delete_schedule
+sub delete
 {
   my ($epp,$domain,$rd)=@_;
-
-  # will not bother doing validation for more than one year from now or beyong exDate
-  # i assume that the Registry does it from their side and return an error message!
-  Net::DRI::Exception::usererr_insufficient_parameters('delDate mandatory') unless Net::DRI::Util::has_key($rd,'delDate');
 
   my $mes=$epp->message();
   my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,'delete',$domain);
   $mes->command_body(\@d);
 
   my @de; # for the extension
-  my $eid=$mes->command_extension_register('domain-ext:delete',sprintf('xmlns:domain-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain-ext')));
-  Net::DRI::Util::check_isa($rd->{delDate},'DateTime');
-  push @de,['domain-ext:delDate',$rd->{delDate}->strftime('%Y-%m-%dT%T.%1NZ')];
-  $mes->command_extension($eid,['domain-ext:schedule',@de]);
+  my $eid=$mes->command_extension_register('domain-ext:delete',sprintf('xmlns:domain-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain-ext'))) if ( $rd->{delDate} || $rd->{cancel} );
 
-  return;
-}
-
-
-
-# When the Cancel tag is given, the message will be handled as domain name
-# delete removal, where the delDate is not considered. In this case, the domain
-# name should still be in patent period and in state removed or awaiting removal.
-# In the end, the domain name will return to granted state, but the expiration time
-# will not be affected.
-sub delete_cancel
-{
-  my ($epp,$domain,$rd)=@_;
-
-  my $mes=$epp->message();
-  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,'delete',$domain);
-  $mes->command_body(\@d);
-
-  my $eid=$mes->command_extension_register('domain-ext:delete',sprintf('xmlns:domain-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain-ext')));
-  $mes->command_extension($eid,['domain-ext:cancel','']);
+  if ($rd->{delDate})
+  {
+    # schedule contains delDate tag, which should contain the scheduled time for
+    # domain delete. delDate cannot be set to more than one year from now or
+    # beyond the current expiration time.
+    Net::DRI::Util::check_isa($rd->{delDate},'DateTime');
+    push @de,['domain-ext:delDate',$rd->{delDate}->strftime('%Y-%m-%dT%T.%1NZ')];
+    $mes->command_extension($eid,['domain-ext:schedule',@de]);
+  } elsif ($rd->{cancel})
+  {
+    # When the Cancel tag is given, the message will be handled as domain name
+    # delete removal, where the delDate is not considered. In this case, the domain
+    # name should still be in patent period and in state removed or awaiting removal.
+    # In the end, the domain name will return to granted state, but the expiration time
+    # will not be affected.
+    $mes->command_extension($eid,['domain-ext:cancel','']);
+  }
 
   return;
 }

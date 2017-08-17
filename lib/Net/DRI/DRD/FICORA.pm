@@ -75,8 +75,8 @@ sub new
 {
  my $class=shift;
  my $self=$class->SUPER::new(@_);
- $self->{info}->{host_as_attr}=2;
- $self->{info}->{contact_i18n}=1;	## LOC only
+ $self->{info}->{host_as_attr}=2; ## registy accept host object as well but lets only use host attributes. RFC recommend the use of one OR another not both
+ $self->{info}->{contact_i18n}=1; ## LOC only
  return $self;
 }
 
@@ -104,17 +104,6 @@ sub domain_autorenew
   return $ndr->process('domain','autorenew',[$domain,$rd]);
 }
 
-sub domain_delete_schedule
-{
-  my ($self,$ndr,$domain,$rd)=@_;
-  return $ndr->process('domain','delete_schedule',[$domain,$rd]);
-}
-
-sub domain_delete_cancel
-{
-  my ($self,$ndr,$domain,$rd)=@_;
-  return $ndr->process('domain','delete_cancel',[$domain,$rd]);
-}
 
 ####################################################################################################
 1;

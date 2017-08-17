@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 132;
+use Test::More tests => 131;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -141,16 +141,7 @@ is("".$d,'2000-04-08T09:00:00','domain_info get_info(trDate) value');
 is_deeply($dri->get_info('auth'),{pw=>'2fooBAR'},'domain_info get_info(auth)');
 is($dri->get_info('exist'),1,'domain_info get_info(exist) +SecDNS 1');
 is($dri->protocol()->ns()->{secDNS}->[0],'urn:ietf:params:xml:ns:secDNS-1.1','secDNS 1.1 for server announcing 1.1 only');
-##########
-##########
-# FIXME: the sample from the technical documentation looks wrong. secDNS-1 should be an extension? :(
-# print Dumper($dri->get_info('secDNS-1'));
-# is_deeply($rc->get_data('secdns'),[{maxSigLife=>604800,keyTag=>12345,alg=>3,digestType=>1,digest=>'38EC35D5B3A34B33C99B',key_flags=>257,key_protocol=>233,key_alg=>1,key_pubKey=>'AQPJ////4Q=='}],'domain_info parse secDNS-1.1 dsData with keyData');
-# $e=$dri->get_info('secdns');
-# print Dumper($e);
-# is_deeply($e,[{keyTag=>'12345',alg=>3,digestType=>1,digest=>'38EC35D5B3A34B33C99B'}],'domain_info get_info(secdns) +SecDNS 1');
-##########
-##########
+
 
 ## Domain transfer
 $R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.fi</domain:name><domain:trStatus>Transferred</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-08T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID></domain:trnData></resData>'.$TRID.'</response>'.$E2;
@@ -167,29 +158,8 @@ is($dri->get_info('acID'),'ClientY','domain_transfer_start get_info(acID)');
 ##########
 ##########
 
-###
-# # FIXME: depending of Registry answer this will be removed! Their sample use both versions (not standard) when they state: 4.4 Create > Based on RFC 5731 and RFC5910.
-# ## Domain create - old documentation
-# $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:crDate>2014-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2016-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
-# $cs=$dri->local_object('contactset');
-# $c1=$dri->local_object('contact')->srid('registrantusername');
-# $c2=$dri->local_object('contact')->srid('admin');
-# $c3=$dri->local_object('contact')->srid('technical');
-# $cs->set($c1,'registrant');
-# $cs->set($c2,'admin');
-# $cs->set($c3,'tech');
-# $rc=$dri->domain_create('esimerkki.fi',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.esimerkki.fi'],['ns2.esimerkki.fi']),contact=>$cs,auth=>{pw=>'password'},secdns=>[{keyTag=>'12345',alg=>3,digestType=>1,digest=>'49FD46E6C4B45C55D4AC',maxSigLife=>604800}]});
-# is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.esimerkki.fi</domain:hostObj><domain:hostObj>ns2.esimerkki.fi</domain:hostObj></domain:ns><domain:registrant>registrantusername</domain:registrant><domain:contact type="admin">admin</domain:contact><domain:contact type="tech">technical</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:maxSigLife>604800</secDNS:maxSigLife><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
-# is($dri->get_info('action'),'create','domain_create get_info(action)');
-# is($dri->get_info('exist'),1,'domain_create get_info(exist)');
-# $d=$dri->get_info('crDate');
-# isa_ok($d,'DateTime','domain_create get_info(crDate)');
-# is("".$d,'2014-04-03T22:00:00','domain_create get_info(crDate) value');
-# $d=$dri->get_info('exDate');
-# isa_ok($d,'DateTime','domain_create get_info(exDate)');
-# is("".$d,'2016-04-03T22:00:00','domain_create get_info(exDate) value');
 
-## Domain create - test based on recent documentation (NOTE - for now I am assuming that they use hostAttr only! - their sample use both: hostObj AND hostAttr - should be only one!)
+## Domain create - test based on recent documentation (their sample use both: hostObj AND hostAttr - by the RFC should be only one! - Net-DRI is using hostAttr only!)
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:crDate>2014-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2016-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
 $cs=$dri->local_object('contactset');
 $c1=$dri->local_object('contact')->srid('haltijantunnus');
@@ -201,9 +171,6 @@ $cs->set($c3,'tech');
 $dh=$dri->local_object('hosts');
 $dh->add('ns1.example.net',['192.0.2.2'],['1080:0:0:0:8:800:200C:417A'],1);
 $dh->add('ns2.example.net',[],[],1);
-# TODO: delete following line when I have further information from FICORA!
-# $rc=$dri->domain_create('esimerkki.fi',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.esimerkki.fi'],['ns2.esimerkki.fi']),contact=>$cs,auth=>{pw=>'salasana'},secdns=>[{keyTag=>'12345',alg=>3,digestType=>1,digest=>'49FD46E6C4B45C55D4AC',maxSigLife=>604800}]});
-# is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.esimerkki.fi</domain:hostObj><domain:hostObj>ns2.esimerkki.fi</domain:hostObj><domain:hostAttr><domain:hostName>ns1.example.net</domain:hostName><domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr><domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.example.net</domain:hostName></domain:hostAttr></domain:ns><domain:registrant>haltijantunnus</domain:registrant><domain:contact type="admin">admin</domain:contact><domain:contact type="tech">tekninen</domain:contact><domain:authInfo><domain:pw>salasana</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:maxSigLife>604800</secDNS:maxSigLife><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 $rc=$dri->domain_create('esimerkki.fi',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dh,contact=>$cs,auth=>{pw=>'salasana'},secdns=>[{keyTag=>'12345',alg=>3,digestType=>1,digest=>'49FD46E6C4B45C55D4AC',maxSigLife=>604800}]});
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>esimerkki.fi</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostAttr><domain:hostName>ns1.example.net</domain:hostName><domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr><domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.example.net</domain:hostName></domain:hostAttr></domain:ns><domain:registrant>haltijantunnus</domain:registrant><domain:contact type="admin">admin</domain:contact><domain:contact type="tech">tekninen</domain:contact><domain:authInfo><domain:pw>salasana</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:maxSigLife>604800</secDNS:maxSigLife><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($dri->get_info('action'),'create','domain_create get_info(action)');
@@ -243,16 +210,15 @@ is($rc->is_success(),1,'domain_delete (simple) is_success');
 # test with scheduled delete time
 # NOTE: check the response code. they return 1001 for scheduled domain delete command. they only return 1000 for domains deleted or delete is canceled - check next test!
 $R2=$E1.'<response><result code="1001"><msg>Command completed successfully; action pending</msg></result><trID><clTRID>ABC-12345</clTRID><svTRID>54321-XYZ </svTRID></trID></response>'.$E2;
-$rc=$dri->domain_delete_schedule('example-scheduled-delete.fi',{delDate=>DateTime->new(year=>2015,month=>1,day=>1)});
+$rc=$dri->domain_delete('example-scheduled-delete.fi',{delDate=>DateTime->new(year=>2015,month=>1,day=>1)});
 is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example-scheduled-delete.fi</domain:name></domain:delete></delete><extension><domain-ext:delete xmlns:domain-ext="urn:ietf:params:xml:ns:domain-ext-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-ext-1.0 domain-ext-1.0.xsd"><domain-ext:schedule><domain-ext:delDate>2015-01-01T00:00:00.0Z</domain-ext:delDate></domain-ext:schedule></domain-ext:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete (scheduled) build');
 is($rc->is_success(),1,'domain_delete_schedule is_success');
-# lets add a test to check invalid delDate param and one to check if its missing or not
-throws_ok { $dri->domain_delete_schedule('example-scheduled-delete.fi',{delDate=>1}) } qr/must be a DateTime object/, 'domain_delete_schedule - wrong delDate format';
-throws_ok { $dri->domain_delete_schedule('example-scheduled-delete.fi') } qr/delDate mandatory/, 'domain_delete_schedule - no delDate';
+# lets add a test to check invalid delDate param
+throws_ok { $dri->domain_delete('example-scheduled-delete.fi',{delDate=>1}) } qr/must be a DateTime object/, 'domain_delete_schedule - wrong delDate format';
 
 # test domain delete is cancelled
 $R2=$E1.'<response>'.r().'</response>'.$E2;
-$rc=$dri->domain_delete_cancel('example-delete-cancelled.fi',{pure_delete=>1});
+$rc=$dri->domain_delete('example-delete-cancelled.fi',{cancel=>1});
 is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example-delete-cancelled.fi</domain:name></domain:delete></delete><extension><domain-ext:delete xmlns:domain-ext="urn:ietf:params:xml:ns:domain-ext-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-ext-1.0 domain-ext-1.0.xsd"><domain-ext:cancel/></domain-ext:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete (cancelled) build');
 is($rc->is_success(),1,'domain_delete_cancel is_success');
 ##########
