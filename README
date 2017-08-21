@@ -71,7 +71,7 @@ Currently Net::DRI ships with:
     * https://tools.ietf.org/html/draft-wang-eppext-domain-verification-01
 - a full DAS (Domain Availability Service) implementation for .BE .EU .NL .AU
 - a full Whois implementation (RFC 3912) for thin and thick registries :
-     support included for domain names in .COM .NET .ORG .BIZ .INFO .AERO
+     support included for domain names in .COM .NET .ORG .INFO .AERO
      .EU .MOBI .NAME .LU .WS .SE .CAT .AT .TRAVEL .US .PT
 - an IRIS (RFC3981) implementation with LWZ transport (RFC4993) for DCHK (RFC5144):
   currently only .FR provides this service.
@@ -87,7 +87,7 @@ Currently Net::DRI ships with:
 - Net::DRI::DRD::* modules for:
   COM NET CC BZ TV JOBS
   AdamsNames AERO AG ASIA AT AU
-  BE BH BIZ BR BZ
+  BE BH BR BZ
   CAT CentralNic CIRA COOP CZ CO.CZ CO.ZA
   CX GS TL KI MU NF HT NA NG CC CM SB MG
   DE EU GL HN FR PM RE YT TF WF

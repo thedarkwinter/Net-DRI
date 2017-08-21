@@ -118,7 +118,6 @@ lib/Net/DRI/DRD/KNET.pm
 lib/Net/DRI/DRD/KSRegistry.pm
 lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
-lib/Net/DRI/DRD/Neustar/BIZ.pm
 lib/Net/DRI/DRD/Neustar/COInternet.pm
 lib/Net/DRI/DRD/Neustar/Narwhal.pm
 lib/Net/DRI/DRD/Neustar/Tralliance.pm
@@ -262,7 +261,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/KeyValue.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Price.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Sync.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Variant.pm
-lib/Net/DRI/Protocol/EPP/Extensions/BIZ.pm
 lib/Net/DRI/Protocol/EPP/Extensions/BR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/BR/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/BR/Domain.pm
@@ -534,7 +532,6 @@ lib/Net/DRI/Protocol/Whois.pm
 lib/Net/DRI/Protocol/Whois/Connection.pm
 lib/Net/DRI/Protocol/Whois/Domain/AERO.pm
 lib/Net/DRI/Protocol/Whois/Domain/AT.pm
-lib/Net/DRI/Protocol/Whois/Domain/BIZ.pm
 lib/Net/DRI/Protocol/Whois/Domain/CAT.pm
 lib/Net/DRI/Protocol/Whois/Domain/COM.pm
 lib/Net/DRI/Protocol/Whois/Domain/common.pm
