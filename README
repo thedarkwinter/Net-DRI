@@ -71,7 +71,7 @@ Currently Net::DRI ships with:
     * https://tools.ietf.org/html/draft-wang-eppext-domain-verification-01
 - a full DAS (Domain Availability Service) implementation for .BE .EU .NL .AU
 - a full Whois implementation (RFC 3912) for thin and thick registries :
-     support included for domain names in .COM .NET .ORG .INFO .AERO
+     support included for domain names in .COM .NET .ORG .BIZ .INFO .AERO
      .EU .MOBI .NAME .LU .WS .SE .CAT .AT .TRAVEL .US .PT
 - an IRIS (RFC3981) implementation with LWZ transport (RFC4993) for DCHK (RFC5144):
   currently only .FR provides this service.
@@ -573,7 +573,7 @@ examples of use and full API coverage.
 
 * domain_is_mine()
 
- Returns 1 if we are the current sponsor of the domain name given as first argument 
+ Returns 1 if we are the current sponsor of the domain name given as first argument
  at the current registry and current profile.
  Else, 0.
 

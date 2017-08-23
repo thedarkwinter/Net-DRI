@@ -201,6 +201,7 @@ sub new
      'AU' => 'auDA',
      'BE' => 'DNSBelgium',
      'BH' => 'TRA::BH',
+     'BIZ' => 'Neustar::Narwhal',
      'BR' => 'CGIBR::BR',
      'BZ' => 'Afilias::Shared',
      'CAT' => 'puntCAT',
@@ -237,6 +238,7 @@ sub new
      'MSKIX' => 'TCI::MSKIX',
      'MX' => 'NICMexico',
      'MX_GTLD' => 'ECOMLAC',
+     'Neustar::BIZ' => 'Neustar::Narwhal',
      'Neustar::Narwal' => 'Neustar::Narwhal', # i spelt it wrong, change before its too late!
      'NAME' => 'VeriSign::NAME',
      'NO' => 'NORID',
