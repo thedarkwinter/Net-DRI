@@ -24,6 +24,7 @@ use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
 use DateTime::Duration;
 use DateTime::Format::ISO8601;
+use Data::Dumper;
 
 =pod
 
@@ -154,38 +155,136 @@ sub ver {
 
 sub fee_set_build
 {
-  my ($rp)=@_;
-  Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with key action, and optionally currency and duration') unless (ref $rp eq 'HASH') && Net::DRI::Util::has_key($rp,'action');
+  my ($version,$rp)=@_;
+  Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with key command, and optionally currency and duration') unless (ref $rp eq 'HASH') && (Net::DRI::Util::has_key($rp,'command') || Net::DRI::Util::has_key($rp,'action'));
   Net::DRI::Exception::usererr_invalid_parameters('fee currency should be 3 letters ISO-4217 code') if exists $rp->{currency} && $rp->{currency} !~ m/^[A-Z]{3}$/; # No longer required field
   Net::DRI::Exception::usererr_invalid_parameters('fee action should be: create, transfer, renew or restore') if exists $rp->{action} && $rp->{action} !~ m/^(?:create|transfer|renew|restore)$/;
 
   my (@n,$name,$lp);
   $lp->{phase} = $rp->{phase} if exists $rp->{phase};
   $lp->{subphase} = $rp->{sub_phase} if exists $rp->{sub_phase};
-  push @n,['fee:command',$lp,$rp->{action}];
-  push @n,['fee:currency',$rp->{currency}] if exists $rp->{currency};
-
-  if (exists $rp->{duration}) {
-    Net::DRI::Exception::usererr_invalid_parameters('duration should be a DateTime::Duration object') unless Net::DRI::Util::is_class($rp->{duration},'DateTime::Duration');
-    my $rj=Net::DRI::Protocol::EPP::Util::build_period($rp->{duration});
-    push @n,['fee:period',$rj->[1],$rj->[2]];
+  if ($version == 11) {
+    push @n,['fee:command',$lp,$rp->{action}];
+    push @n,['fee:currency',$rp->{currency}] if exists $rp->{currency};
+    if (exists $rp->{duration}) {
+      Net::DRI::Exception::usererr_invalid_parameters('duration should be a DateTime::Duration object') unless Net::DRI::Util::is_class($rp->{duration},'DateTime::Duration');
+      my $rj=Net::DRI::Protocol::EPP::Util::build_period($rp->{duration});
+      push @n,['fee:period',$rj->[1],$rj->[2]];
+    }
+    push @n,['fee:class', $rp->{class}] if exists $rp->{class};
   }
-  push @n,['fee:class', $rp->{class}] if exists $rp->{class};
+
+  # !! somehow this all works. it could do with a cleanup and half, but it builds compatible domain_check commands (see fee-0.21.t)
+  if ($version >= 21) {
+    push @n,['fee:currency',$rp->{currency}] if exists $rp->{currency};
+    my @commands = ($rp->{command} // $rp->{action}); # backwards compatible?
+
+    foreach (@commands)
+    {
+      print ref $_ . "\n\n";
+      if (ref $_ eq 'ARRAY')
+      {
+        foreach my $ar (@$_)
+        {
+          if (ref $ar eq 'HASH') {
+            my $valid = {};
+            foreach my $k (qw/name phase subphase/) {
+              $valid->{$k} = $ar->{$k} if defined $ar->{$k};
+            }
+            if (exists $ar->{duration}) {
+              Net::DRI::Exception::usererr_invalid_parameters('duration should be a DateTime::Duration object') unless Net::DRI::Util::is_class($ar->{duration},'DateTime::Duration');
+              my $rj=Net::DRI::Protocol::EPP::Util::build_period($ar->{duration});
+              push @n,['fee:command',$valid,['fee:period',$rj->[1],$rj->[2]]];
+            } else {
+              push @n,['fee:command',$valid];
+            }
+          } else {
+            push @n,['fee:command',{name => $ar}];
+          }
+        }
+      } else {
+        push @n,['fee:command',{name => $_}];
+      }
+    }
+  }
+
   return @n;
 }
 
 ## MH: TODO: Fix this parser to ADD fees togother, but still make each fee an individual element in an array with its attributes
+sub fee_element_parse
+{
+  my ($version,$content,$set) = @_;
+  return unless $content;
+  # Fees are kind of loosely defined based on free text description field with refundable also possible. This will total it up and concat the description and refundable fields but its only human readable
+  $set->{fee} = 0 unless exists $set->{fee};
+  $set->{fee} += $content->textContent();
+  $set->{description} = '' unless exists $set->{description};
+  if ($content->hasAttribute('description'))
+  {
+    $set->{description} = "\n" . $content->getAttribute('description');
+    my $d = lc $content->getAttribute('description');
+    $d =~ s/ /_/g;
+    $d = 'early_access_fee' if $d =~ m/early_access/;
+    $set->{"fee_$d"} = 0 + $content->textContent();
+  }
+  if ($content->hasAttribute('refundable') && $content->getAttribute('refundable') eq '1') {
+    $set->{description} .= "Refundable"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+    $set->{refundable} = 1;
+  }
+  if ($content->hasAttribute('grace-period')) {
+    $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+    $set->{grace_period} = $content->getAttribute('grace-period');
+  }
+  if ($content->hasAttribute('applied') && $content->getAttribute('applied')=~m/^(?:immediate|delayed)$/) {
+    $set->{description} .= "(Applied=>" . $content->getAttribute('applied') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+    $set->{applied} = $content->getAttribute('applied');
+  }
+  #chomp $set->{description};
+  return;
+}
+
 sub fee_set_parse
 {
-  my ($start) = @_;
+  my ($version,$start) = @_;
   return unless $start;
   my $set = {};
 
   $set->{price_avail} = $start->getAttribute('avail') if $start->hasAttribute('avail'); # since 0.11
+  $set->{'premium'} = 0; # assume this unless we know better
   foreach my $el (Net::DRI::Util::xml_list_children($start))
   {
     my ($name,$content)=@$el;
-    if ($name eq 'object')
+
+    # Version 0.21+
+    if ($name eq 'objID')
+    {
+      $set->{'domain'} = $content->textContent();
+    } elsif ($name eq 'command' && $version >= 21)
+    {
+      my $cmd = $content->getAttribute('name') if $content->hasAttribute('name');
+      $set->{command}->{$cmd} = {};
+      $set->{'phase'} = $content->getAttribute('phase') if $content->hasAttribute('phase');
+      $set->{'subphase'} = $content->getAttribute('subphase') if $content->hasAttribute('subphase');
+      foreach my $el2 (Net::DRI::Util::xml_list_children($content))
+      {
+        my ($name2,$content2)=@$el2;
+        if ($name2 eq 'period')
+        {
+          my $unit={y=>'years', m=>'months'}->{$content2->getAttribute('unit')};
+          $set->{command}->{$cmd}->{'duration'} = DateTime::Duration->new($unit => 0+$content2->textContent());
+        } elsif ($name2 eq 'reason')
+        {
+          $set->{reason} = $content2->textContent();
+        } elsif ($name2 eq 'fee')
+        {
+          fee_element_parse($version,$content2,$set->{command}->{$cmd});
+
+        }
+      }
+
+    # Version 0.11+
+    } elsif ($name eq 'object')
     {
       # TODO. This could theoretically not be a domain...
       foreach my $el2 (Net::DRI::Util::xml_list_children($content))
@@ -193,13 +292,12 @@ sub fee_set_parse
         my ($name2,$content2)=@$el2;
         $set->{'domain'} = $content2->textContent() if $name2 eq 'name';
       }
-      $set->{'premium'} = 0;
-    }
-    elsif ($name eq 'command')
+    } elsif ($name eq 'command' && $version == 11)
     {
       $set->{'action'} = $content->textContent();
       $set->{'phase'} = $content->getAttribute('phase') if $content->hasAttribute('phase');
       $set->{'sub_phase'} = $content->getAttribute('subphase') if $content->hasAttribute('subphase');
+
     } elsif ($name eq 'currency')
     {
       $set->{'currency'} = $content->textContent();
@@ -208,31 +306,8 @@ sub fee_set_parse
       my $unit={y=>'years',m=>'months'}->{$content->getAttribute('unit')};
       $set->{'duration'} = DateTime::Duration->new($unit => 0+$content->textContent());
     } elsif ($name eq 'fee')
-    # Fees are kind of loosely defined based on free text description field with refundable also possible. This will total it up and concat the description and refundable fields but its only human readable
     {
-      $set->{fee} = 0 unless exists $set->{fee};
-      $set->{fee} += $content->textContent();
-      $set->{description} = '' unless exists $set->{description};
-      if ($content->hasAttribute('description'))
-      {
-        $set->{description} = "\n" . $content->getAttribute('description');
-        my $d = lc $content->getAttribute('description');
-        $d =~ s/ /_/g;
-        $d = 'early_access_fee' if $d =~ m/early_access/;
-        $set->{"fee_$d"} = 0 + $content->textContent();
-      }
-      if ($content->hasAttribute('refundable') && $content->getAttribute('refundable') eq '1') {
-        $set->{description} .= "Refundable"; #TODO remove in regext-fee (0.12?), the description shold not contain these
-        $set->{refundable} = 1;
-      }
-      if ($content->hasAttribute('grace-period')) {
-        $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
-        $set->{grace_period} = $content->getAttribute('grace-period');
-      }
-      if ($content->hasAttribute('applied') && $content->getAttribute('applied')=~m/^(?:immediate|delayed)$/) {
-        $set->{description} .= "(Applied=>" . $content->getAttribute('applied') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
-        $set->{applied} = $content->getAttribute('applied');
-      }
+      fee_element_parse($version,$content,$set);
     } elsif ($name eq 'class')
     {
       $set->{class} = $content->textContent();
@@ -243,6 +318,7 @@ sub fee_set_parse
     }
   }
   chomp $set->{description} if $set->{description};
+  #print Dumper $set;
   return $set;
 }
 
@@ -258,7 +334,7 @@ sub set_premium_values {
   $rinfo->{domain}->{$oname}->{price_category} = $ch->{class};
   $rinfo->{domain}->{$oname}->{price_currency} = $ch->{currency};
   $rinfo->{domain}->{$oname}->{price_duration} = $ch->{duration};
-  $rinfo->{domain}->{$oname}->{$ch->{action} .'_price'} = $ch->{fee}; # action can be create/renew/transfer/restore. extension only returns what was requested
+  $rinfo->{domain}->{$oname}->{$ch->{action} .'_price'} = $ch->{fee} if $ch->{action}; # action can be create/renew/transfer/restore. extension only returns what was requested
   $rinfo->{domain}->{$oname}->{eap_price} = $ch->{fee_early_access_fee} if exists $ch->{fee_early_access_fee};
  }
  return;
@@ -276,11 +352,9 @@ sub check
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
 
-  if (ver($mes) >= 11)
-  {
-   my $eid=$mes->command_extension_register('fee','check');
-   $mes->command_extension($eid, [fee_set_build($fees[0])]);
-  }
+  my $eid=$mes->command_extension_register('fee','check');
+  $mes->command_extension($eid, [fee_set_build(ver($mes),$fees[0])]);
+
   return;
 
 }
@@ -290,20 +364,26 @@ sub check_parse
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success;
+  my $version = ver($mes);
 
   my $chkdata = $mes->get_extension($mes->ns('fee'),'chkData');
   return unless defined $chkdata;
 
+  my ($currency);
   foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
   {
     my ($name,$content)=@$el;
-    if ($name =~ m/^cd$/)
+    if ($name eq 'currency') { # its here in 21, same currency across all
+      $currency = $content->textContent();
+    } elsif ($name =~ m/^cd$/)
     {
-      my $dn = Net::DRI::Util::xml_traverse($content, $mes->ns('fee'), qw/object name/);
+      my $dn = Net::DRI::Util::xml_traverse($content, $mes->ns('fee'), qw/object name/) if ($version == 11);
+      $dn = Net::DRI::Util::xml_traverse($content, $mes->ns('fee'), qw/objID/) if ($version == 21);
       $dn = $dn->textContent() if defined $dn;
-      my $fee_set = fee_set_parse($content);
+      my $fee_set = fee_set_parse($version,$content);
       if ($fee_set)
       {
+        $fee_set->{'currency'} = $currency if defined $currency;
         push @{$rinfo->{domain}->{$dn}->{fee}},$fee_set;
         set_premium_values($po,$otype,$oaction,$dn,$rinfo);
       }
@@ -329,10 +409,11 @@ sub transform_parse
       if ($name eq 'currency')
       {
         $p{'currency'}=$content->textContent();
-      } elsif ($name =~ m/^(fee|balance|creditLimit)/)
+      } elsif ($name =~ m/^(fee|balance|creditLimit|credit)/)
       {
         my $k= ($1 eq 'creditLimit') ? 'credit_limit' : $1;
         $p{$k}=0+$content->textContent();
+        $p{'description'} = $content->getAttribute('description') if $content->hasAttribute('description');
       }
     }
     $rinfo->{domain}->{$oname}->{fee}=\%p;
