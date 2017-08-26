@@ -121,6 +121,7 @@ sub setup
   my ($class,$po,$version)=@_;
   # This means any commands called before greeting will use that version until its bumped to highest version
   my $v = $po->{brown_fee_version} // $po->{fee_version};
+  print "loading version: $v\n";
   $v = '0.11' unless defined $v && $v =~ m/^\d.(\d+)$/;
   $po->ns({ 'fee' => [ 'urn:ietf:params:xml:ns:fee-'.$v,'fee-'.$v.'.xsd' ] });
   $po->capabilities('domain_update','fee',['set']);
