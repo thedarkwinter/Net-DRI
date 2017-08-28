@@ -328,15 +328,42 @@ sub fee_set_parse
 sub set_premium_values {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  return unless exists $rinfo->{domain}->{$oname}->{fee} && (ref $rinfo->{domain}->{$oname}->{fee} eq 'ARRAY');
- foreach my $ch (@{$rinfo->{domain}->{$oname}->{fee}})
+ my $version = ver($po->message());
+
+ my $short_ref = $rinfo->{domain}->{$oname}; # just to shortern the lines of code :)
+ # for 0.11
+ if ($version == 11)
  {
-  $rinfo->{domain}->{$oname}->{is_premium} = $ch->{premium} unless $rinfo->{domain}->{$oname}->{is_premium};
-  $rinfo->{domain}->{$oname}->{price_category} = $ch->{class};
-  $rinfo->{domain}->{$oname}->{price_currency} = $ch->{currency};
-  $rinfo->{domain}->{$oname}->{price_duration} = $ch->{duration};
-  $rinfo->{domain}->{$oname}->{$ch->{action} .'_price'} = $ch->{fee} if $ch->{action}; # action can be create/renew/transfer/restore. extension only returns what was requested
-  $rinfo->{domain}->{$oname}->{eap_price} = $ch->{fee_early_access_fee} if exists $ch->{fee_early_access_fee};
+   foreach my $ch (@{$short_ref->{fee}})
+   {
+    $short_ref->{is_premium} = $ch->{premium} unless $short_ref->{is_premium};
+    $short_ref->{price_category} = $ch->{class};
+    $short_ref->{price_currency} = $ch->{currency};
+    $short_ref->{price_duration} = $ch->{duration};
+    $short_ref->{$ch->{action} .'_price'} = $ch->{fee} if $ch->{action}; # action can be create/renew/transfer/restore. extension only returns what was requested
+    $short_ref->{eap_price} = $ch->{fee_early_access_fee} if exists $ch->{fee_early_access_fee};
+   }
  }
+
+ # 0.21+ its a bit more complicated. I would assume that if they are requested all prices, then re wely on the create_price is primary source...
+ if ($version >= 21)
+ {
+   my $ch = @{$short_ref->{fee}}[0]; # there is now only one, but its still an array
+   $short_ref->{is_premium} = $ch->{premium} // 0;
+   #$short_ref->{price_category} = $ch->{class};
+   $short_ref->{price_currency} = $ch->{currency};
+
+   foreach my $command (qw/create renew transfer restore/)
+   {
+     $short_ref->{price_duration} = $ch->{command}->{$command}->{duration} if $ch->{command}->{$command}->{duration} && !defined $short_ref->{price_duration};
+     $short_ref->{$command .'_price'} = $ch->{command}->{$command}->{fee};
+   }
+   $short_ref->{eap_price} = $ch->{command}->{create}->{fee_early_access_fee} if exists $ch->{command}->{create}->{fee_early_access_fee};
+ }
+ #foreach my $k (qw/is_premium price_category price_currency price_duration price_duration eap_price/) {
+ #  print "$k : " . ($short_ref->{$k} // 'undef') . "\n";
+ #}
+ #print Dumper $short_ref;
  return;
 }
 
@@ -399,6 +426,7 @@ sub transform_parse
   my $mes=$po->message();
   return unless $mes->is_success();
   my $resdata;
+
   foreach my $ex (qw/creData delData renData trnData updData/)
   {
     next unless $resdata=$mes->get_extension($mes->ns('fee'),$ex);
@@ -417,6 +445,11 @@ sub transform_parse
       }
     }
     $rinfo->{domain}->{$oname}->{fee}=\%p;
+    # to add to the standardised calls
+    my $ac = $oaction =~ m/^transfer/ ? 'transfer' : $oaction;
+    $ac = 'restore' if $oaction eq 'update';
+    $rinfo->{domain}->{$oname}->{$ac . "_price"} = $p{fee};
+    $rinfo->{domain}->{$oname}->{"price_currency"} = $p{currency};
   }
   return;
 }

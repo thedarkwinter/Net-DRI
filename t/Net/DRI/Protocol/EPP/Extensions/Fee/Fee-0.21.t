@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 81;
+use Test::More tests => 102;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -41,7 +41,8 @@ is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.21','Fee 0.2
 
 
 ###################
-###### To keep up with the new formats, here are the accepted domain_check systaxes
+###### To keep up with the new formats, here are the accepted domain_check systaxes, allowing for "the old way" and making flexible calls for "the new way"
+###### Keep in mind that the responses are different, but it you use "the standardised methods" you should be okay.
 
 # for backwards compatibility, action is still accepted
 $rc=$dri->domain_check('explore-1.space',{fee=>{currency => 'USD',action=>'create'}});
@@ -85,15 +86,13 @@ is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)'
 is($d->{command}->{create}->{duration}->years(),'2','domain_check get_info(duration)');
 
 # using the standardised methods
-SKIP: {
-  skip "!!!!!!!!!!!!!!!!!!!!!!!!!! premium standardised functions not done", 2;
-  is($dri->get_info('is_premium'),0,'domain_checkget_info (is_premium) undef');
-  is($dri->get_info('create_price'),10.00,'domain_check get_info (create_price)');
-};
+is($dri->get_info('is_premium'),0,'domain_checkget_info (is_premium) 0');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),10.00,'domain_check get_info (create_price)');
 
 ###################
 ###### domain_check_multi
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">explore.space</domain:name></domain:cd><domain:cd><domain:name avail="1">discover.space</domain:name></domain:cd><domain:cd><domain:name avail="1">colonize.space</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:currency>USD</fee:currency><fee:cd avail="1"><fee:objID>explore.space</fee:objID><fee:command name="create"><fee:period unit="y">2</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">10.00</fee:fee></fee:command><fee:command name="renew"><fee:period unit="y">1</fee:period><fee:fee description="Renewal Fee" refundable="1" grace-period="P5D">5.00</fee:fee></fee:command><fee:command name="transfer"><fee:period unit="y">1</fee:period><fee:fee description="Transfer Fee" refundable="1" grace-period="P5D">5.00</fee:fee></fee:command><fee:command name="restore"><fee:fee description="Redemption Fee">5.00</fee:fee></fee:command></fee:cd><fee:cd avail="1"><fee:objID>discover.space</fee:objID><fee:command name="create"><fee:period unit="y">2</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">10.00</fee:fee></fee:command><fee:command name="renew"><fee:period unit="y">1</fee:period><fee:fee description="Renewal Fee" refundable="1" grace-period="P5D">5.00</fee:fee></fee:command><fee:command name="transfer"><fee:period unit="y">1</fee:period><fee:fee description="Transfer Fee" refundable="1" grace-period="P5D">5.00</fee:fee></fee:command><fee:command name="restore"><fee:fee description="Redemption Fee">5.00</fee:fee></fee:command></fee:cd><fee:cd avail="0"><fee:objID>colonize.space</fee:objID><fee:command name="create"><fee:period unit="y">2</fee:period><fee:reason>Only 1 year registration periods are vaild.</fee:reason></fee:command></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">explore.space</domain:name></domain:cd><domain:cd><domain:name avail="1">discover.space</domain:name></domain:cd><domain:cd><domain:name avail="1">colonize.space</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:currency>USD</fee:currency><fee:cd avail="1"><fee:objID>explore.space</fee:objID><fee:command name="create"><fee:period unit="y">2</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">10.00</fee:fee></fee:command><fee:command name="renew"><fee:period unit="y">1</fee:period><fee:fee description="Renewal Fee" refundable="1" grace-period="P5D">5.00</fee:fee></fee:command><fee:command name="transfer"><fee:period unit="y">1</fee:period><fee:fee description="Transfer Fee" refundable="1" grace-period="P5D">5.00</fee:fee></fee:command><fee:command name="restore"><fee:fee description="Redemption Fee">5.00</fee:fee></fee:command></fee:cd><fee:cd avail="1"><fee:objID>discover.space</fee:objID><fee:command name="create"><fee:period unit="y">5</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">25.00</fee:fee></fee:command><fee:command name="renew"><fee:period unit="y">1</fee:period><fee:fee description="Renewal Fee" refundable="1" grace-period="P5D">5.00</fee:fee></fee:command><fee:command name="transfer"><fee:period unit="y">1</fee:period><fee:fee description="Transfer Fee" refundable="1" grace-period="P5D">5.00</fee:fee></fee:command><fee:command name="restore"><fee:fee description="Redemption Fee">5.00</fee:fee></fee:command></fee:cd><fee:cd avail="0"><fee:objID>colonize.space</fee:objID><fee:command name="create"><fee:period unit="y">2</fee:period><fee:reason>Only 1 year registration periods are vaild.</fee:reason></fee:command></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
 
 $dri->cache_clear();
 $rc=$dri->domain_check('explore.space','discover.space','colonize.space', {
@@ -136,14 +135,23 @@ is($d->{command}->{transfer}->{fee},5,'domain_check multi get_info(renew fee)');
 is($d->{command}->{restore}->{fee},5,'domain_check multi get_info(restore fee)');
 
 # using the standardised methods
-SKIP: {
-  skip "!!!!!!!!!!!!!!!!!!!!!!!!!! premium standardised functions not done", 2;
-  is($dri->get_info('is_premium'),0,'domain_checkget_info (is_premium) undef');
-  is($dri->get_info('create_price'),10.00,'domain_check get_info (create_price)');
-  is($dri->get_info('renew_price'),5.00,'domain_check get_info (renew_price)');
-  is($dri->get_info('transfer_price'),5.00,'domain_check get_info (transfer_price)');
-  is($dri->get_info('restore_price'),5.00,'domain_check get_info (restpre_price)');
-};
+is($dri->get_info('is_premium','domain','explore.space'),0,'domain_check get_info (is_premium) undef');
+is($dri->get_info('price_currency','domain','explore.space'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('price_duration','domain','explore.space')->years(),2,'domain_check get_info (price_currency)');
+is($dri->get_info('create_price','domain','explore.space'),10.00,'domain_check get_info (create_price)');
+is($dri->get_info('renew_price','domain','explore.space'),5.00,'domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price','domain','explore.space'),5.00,'domain_check get_info (transfer_price)');
+is($dri->get_info('restore_price','domain','explore.space'),5.00,'domain_check get_info (restpre_price)');
+
+is($dri->get_info('is_premium','domain','discover.space'),0,'domain_check get_info (is_premium) undef');
+is($dri->get_info('price_currency','domain','discover.space'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('price_duration','domain','discover.space')->years(),5,'domain_check get_info (price_currency)');
+is($dri->get_info('create_price','domain','discover.space'),25.00,'domain_check get_info (create_price)');
+is($dri->get_info('renew_price','domain','discover.space'),5.00,'domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price','domain','discover.space'),5.00,'domain_check get_info (transfer_price)');
+is($dri->get_info('restore_price','domain','discover.space'),5.00,'domain_check get_info (restpre_price)');
+
+
 $d = shift @{$dri->get_info('fee','domain','colonize.space')};
 is($d->{domain},'colonize.space','domain_check get_info(domain)');
 is($d->{price_avail},0,'domain_check parse fee (price_avail)');
@@ -207,6 +215,10 @@ is($d->{fee},5.00,'Fee extension: domain_create parse fee');
 is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
 is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
 
+# using the standardised methods
+is($dri->get_info('price_currency'),'USD','domain_create get_info (price_currency)');
+is($dri->get_info('create_price'),5,'domain_create get_info (create_price)');
+
 
 ###################
 ###### domain_delete
@@ -232,6 +244,10 @@ $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_renew parse currency');
 is($d->{fee},5.00,'Fee extension: domain_renew parse fee');
 
+# using the standardised methods
+is($dri->get_info('price_currency'),'USD','domain_renew get_info (price_currency)');
+is($dri->get_info('renew_price'),5,'domain_renew get_info (renew_price)');
+
 
 
 ###################
@@ -244,6 +260,10 @@ $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_transfer parse currency');
 is($d->{fee},5.00,'Fee extension: domain_transfer parse fee');
 
+# using the standardised methods
+is($dri->get_info('price_currency'),'USD','domain_transfer get_info (price_currency)');
+is($dri->get_info('transfer_price'),5,'domain_transfer get_info (transfer_price)');
+
 
 ###################
 ###### domain_update
@@ -253,10 +273,14 @@ $toc=Net::DRI::Data::Changes->new();
 $toc->set('registrant',$dri->local_object('contact')->srid('sh8013'));
 $toc->set('fee',{currency=>'USD',fee=>'5.00'});
 $rc=$dri->domain_update('explore.space',$toc);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>explore.space</domain:name><domain:chg><domain:registrant>sh8013</domain:registrant></domain:chg></domain:update></update><extension><fee:update xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.21 fee-0.21.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_update build_xml');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>explore.space</domain:name><domain:chg><domain:registrant>sh8013</domain:registrant></domain:chg></domain:update></update><extension><fee:update xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.21 fee-0.21.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_update (restore) build_xml');
 is($rc->is_success(),1,'domain_update is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_transfer parse currency');
 is($d->{fee},5.00,'Fee extension: domain_transfer parse fee');
+
+# using the standardised methods
+is($dri->get_info('price_currency'),'USD','domain_update (restore) get_info (price_currency)');
+is($dri->get_info('restore_price'),5,'domain_update (restore) get_info (restore_price)');
 
 exit 0;
