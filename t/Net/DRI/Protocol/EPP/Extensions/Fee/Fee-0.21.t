@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 113;
+use Test::More tests => 139;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -255,7 +255,6 @@ is($dri->get_info('restore_price'),5,'domain_update (restore) get_info (restore_
 ###### domain_check (premium domain)
 ###### This test is syntesized as no example exists in the draft
 
-###### domain_check (single)
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">premium-0.space</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:currency>USD</fee:currency><fee:cd avail="1"><fee:objID>premium-0.space</fee:objID><fee:command name="create"><fee:period unit="y">1</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">100.00</fee:fee><fee:class>premium</fee:class></fee:command></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
 
 # specify command(s) as an arrayref
@@ -279,6 +278,47 @@ is($d->{command}->{create}->{duration}->years(),'1','domain_check get_info(durat
 is($dri->get_info('is_premium'),1,'domain_checkget_info (is_premium) 0');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
 is($dri->get_info('create_price'),100.00,'domain_check get_info (create_price)');
+
+####################################################################################################
+###### domain_check with more than 1 fee element (e.g. sunrise)
+###### This test is syntesized as no example exists in the draft
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">sunrise.space</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:currency>USD</fee:currency><fee:cd avail="1"><fee:objID>sunrise.space</fee:objID><fee:command name="create" phase="sunrise"><fee:period unit="y">1</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">10.00</fee:fee><fee:fee description="Application Fee" refundable="0" applied="immediate">500.00</fee:fee></fee:command></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+
+# specify command(s) as an arrayref
+$rc=$dri->domain_check('sunrise.space',{fee=>{currency => 'USD',command=>'create'}});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>sunrise.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.21 fee-0.21.xsd"><fee:currency>USD</fee:currency><fee:command name="create"/></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check (premium) build_xml');
+
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info (action)');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+$d = shift @{$dri->get_info('fee')};
+is($d->{domain},'sunrise.space','domain_check get_info(domain)');
+is($d->{price_avail},1,'domain_check parse fee (price_avail)');
+is($d->{premium},0,'domain_check parse premium');
+is($d->{currency},'USD','domain_check get_info(currency)');
+is($d->{command}->{create}->{fee_registration_fee},10.00,'domain_check get_info(fee_registration_fee)');
+is($d->{command}->{create}->{fee_application_fee},500.00,'domain_check get_info(fee_application_fee)');
+is($d->{command}->{create}->{fee},510.00,'domain_check get_info(fee)'); # fees are added together for the total. this is debateable!
+is($d->{command}->{create}->{description},'Registration Fee (Refundable) (Grace=>P5D),Application Fee (Applied=>immediate)','domain_check get_info(description)'); # descriptions melded into a string
+is($d->{command}->{create}->{phase},'sunrise','domain_check get_info(phase)');
+is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)');
+is($d->{command}->{create}->{duration}->years(),'1','domain_check get_info(duration)');
+
+# since 0.21, there is a better way of accessing different fee types with more detail
+is_deeply(\@{$d->{command}->{create}->{fee_types}},['registration_fee','application_fee'],'domain_check get_info(fee_types)');
+is($d->{command}->{create}->{registration_fee}->{description},'Registration Fee','domain_check get_info(registration_fee->description)');
+is($d->{command}->{create}->{registration_fee}->{fee},10.00,'domain_check get_info(registration_fee->fee)');
+is($d->{command}->{create}->{registration_fee}->{refundable},1,'domain_check get_info(registration_fee->refundable)');
+is($d->{command}->{create}->{registration_fee}->{grace_period},'P5D','domain_check get_info(registration_fee->grace_period)');
+is($d->{command}->{create}->{application_fee}->{description},'Application Fee','domain_check get_info(application_fee->description)');
+is($d->{command}->{create}->{application_fee}->{fee},500.00,'domain_check get_info(application_fee->fee)');
+is($d->{command}->{create}->{application_fee}->{applied},'immediate','domain_check get_info(application_fee->applied)');
+
+# using the standardised methods
+is($dri->get_info('is_premium'),0,'domain_checkget_info (is_premium) 0');
+is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
+is($dri->get_info('create_price'),510.00,'domain_check get_info (create_price)');
 
 ####################################################################################################
 ###### domain_check (premium domain - TangoRS::CORE)
@@ -307,5 +347,6 @@ is($d->{command}->{create}->{duration}->years(),'1','domain_check get_info(durat
 is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium) 0');
 is($dri->get_info('price_currency'),'EUR','domain_check get_info (price_currency)');
 is($dri->get_info('create_price'),400.00,'domain_check get_info (create_price)');
+
 
 exit 0;

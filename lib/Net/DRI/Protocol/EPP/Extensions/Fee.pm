@@ -76,6 +76,14 @@ Or, in an attempt to make this work accross the board for all pricing/premium ex
  $dri->get_info('price_currency');
  $dri->get_info('create_price'); // renew_price / transfer_price / restore_price
 
+In the response,. the fees are added together, this is debateable! Unfortunately, its a bit too flexible and makes it difficult
+ to determine if this should be the case. You can however look in detail at the fees;
+
+ # since 0.21, there is a better way of accessing different fee types with more detail
+ $d = shift @{$dri->get_info('fee')};
+ @fee_types = @{$d->{command}->{create}->{fee_types}}; #['registration_fee','application_fee'], now you know where to look
+ print $d->{command}->{create}->{registration_fee}->{fee}; and description, refundable, grace_period, applied
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
@@ -234,31 +242,37 @@ sub fee_element_parse
 {
   my ($version,$content,$set) = @_;
   return unless $content;
-  # Fees are kind of loosely defined based on free text description field with refundable also possible. This will total it up and concat the description and refundable fields but its only human readable
+  # Fees are kind of loosely defined based on free text description field with refundable, applied, grace-period also possible.
+  # The main fee is the total of them all, its not necessarily correct, but there you have it.
   $set->{fee} = 0 unless exists $set->{fee};
   $set->{fee} += $content->textContent();
-  $set->{description} = '' unless exists $set->{description};
+  my $d = 'default';
   if ($content->hasAttribute('description'))
   {
-    $set->{description} = "\n" . $content->getAttribute('description');
-    my $d = lc $content->getAttribute('description');
+    $set->{description} = (!$set->{description} ? '' : $set->{description} . ",") . $content->getAttribute('description');
+    $d = lc $content->getAttribute('description');
     $d =~ s/ /_/g;
     $d = 'early_access_fee' if $d =~ m/early_access/;
     $set->{"fee_$d"} = 0 + $content->textContent();
+    $set->{$d}->{description} =  $content->getAttribute('description');
+    push @{$set->{fee_types}}, $d;
   }
   if ($content->hasAttribute('refundable') && $content->getAttribute('refundable') eq '1') {
-    $set->{description} .= "Refundable"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+    $set->{description} .= " (Refundable)"; # backwards compatible, sort of
     $set->{refundable} = 1;
+    $set->{$d}->{refundable} =  $content->getAttribute('refundable');
   }
   if ($content->hasAttribute('grace-period')) {
-    $set->{description} .= "(Grace=>" . $content->getAttribute('grace-period') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+    $set->{description} .= " (Grace=>" . $content->getAttribute('grace-period') . ")"; # backwards compatible, sort of
     $set->{grace_period} = $content->getAttribute('grace-period');
+    $set->{$d}->{grace_period} =  $content->getAttribute('grace-period');
   }
   if ($content->hasAttribute('applied') && $content->getAttribute('applied')=~m/^(?:immediate|delayed)$/) {
-    $set->{description} .= "(Applied=>" . $content->getAttribute('applied') . ")"; #TODO remove in regext-fee (0.12?), the description shold not contain these
+    $set->{description} .= " (Applied=>" . $content->getAttribute('applied') . ")"; # backwards compatible, sort of
     $set->{applied} = $content->getAttribute('applied');
+    $set->{$d}->{applied} =  $content->getAttribute('applied');
   }
-  #chomp $set->{description};
+  $set->{$d}->{fee} = 0+$content->textContent();
   return;
 }
 
