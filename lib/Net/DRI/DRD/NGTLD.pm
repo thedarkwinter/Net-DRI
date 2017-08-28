@@ -402,7 +402,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Promotion> : http://xmlns.coreni
  return {
      bep_type => 1, # dedicated registry
      tlds => ['xn--80asehdb','xn--80aswg','xn--mgbab2bd','barcelona','eurovision','erni','eurovision','eus','gal','lacaixa','madrid','mango','museum','quebec','radio','scot','sport','swiss'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORE',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CORE',{fee_version => ($tld eq 'radio' ? '0.21': undef)}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'corenic';
 
@@ -1099,9 +1099,9 @@ Fee extension is currently only used in .NRW and for domain_check command only.
  return {
      bep_type => 1, # dedicated registry
      tlds => ['ruhr','cologne','gmx','ifm','koeln','nrw'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{enable_fee => ($tld eq 'nrw')}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version => ($tld eq 'nrw' ? '0.21': undef)}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'tango';
+   } if $bep eq 'tango' || $bep eq 'tangors';
 
 =pod
 

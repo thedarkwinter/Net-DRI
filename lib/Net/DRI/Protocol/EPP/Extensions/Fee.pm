@@ -1,7 +1,7 @@
 ## Domain Registry Interface, CentralNic EPP Fee extension
 ##
-## Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -38,27 +38,43 @@ Adds the Regext EPP Fee Extension. Previously, this was CentralNIC::Fee (draft-b
 
 Fee extension is defined in https://tools.ietf.org/html/draft-ietf-regext-epp-fees-00
 
-=item currency* (3 letter currency code)
+This extension supports fee-0.11 (legacy format), and fee-0.21+0.23 (current format). All versions between are not supported, and not used in the wild.
 
-=item action* (create, transfer, renew or restore)
+=item command* (create, renew, delete, update, transfer, restore)
 
-=item duration* (Datetime::Duration)
+See fee-0.21.this can be a string, or array, or array of hashes. For backwards compatility, 'action' is still accepted.
+This is the only required element, the rest will default to server config.
+
+=item currency (3 letter currency code)
+
+USD, EUR etc...
+
+=item duration (optional: Datetime::Duration)
+
+# in 0.21+, this is an element of command
 
 =item phase (launch phase, e.g. landrush)
 
+# in 0.21+, this is an element of command
+
 =item sub_phase (launch sub phase, e.g. phase=>claims, sub_phase=>landrush)
 
+# 0.11 usage
  my $fee = {fee=>{currency=>'EUR',action=>'transfer',duration=>$dri->local_object('duration','years',2)}}
  $rc=$dri->domain_check('example9.tld',{fee => $fee} );
  $price = $dri->get_info('fee');
 
-Or
+ # 0.21 usage
+  $fee={fee=>{currency => 'USD',command=>[ {name => 'create', 'phase' => 'sunrise'}, 'renew']}});
+  $rc=$dri->domain_check('example9.tld',{fee => $fee} );
+  $price = $dri->get_info('fee');
+
+Or, in an attempt to make this work accross the board for all pricing/premium extensions, use domain_check_price...
 
  $rc=$dri->domain_check_price('example9.tld');
  $dri->get_info('is_premium');
  $dri->get_info('price_currency');
  $dri->get_info('create_price'); // renew_price / transfer_price / restore_price
-
 
 =head1 SUPPORT
 
@@ -74,13 +90,16 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
+Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -122,7 +141,6 @@ sub setup
   my ($class,$po,$version)=@_;
   # This means any commands called before greeting will use that version until its bumped to highest version
   my $v = $po->{brown_fee_version} // $po->{fee_version};
-  print "loading version: $v\n";
   $v = '0.11' unless defined $v && $v =~ m/^\d.(\d+)$/;
   $po->ns({ 'fee' => [ 'urn:ietf:params:xml:ns:fee-'.$v,'fee-'.$v.'.xsd' ] });
   $po->capabilities('domain_update','fee',['set']);
@@ -131,7 +149,7 @@ sub setup
 
 ####################################################################################################
 ### DEVELOPING
-## Please run t/621centralnic_epp.t, t/678mam_epp.t and t/693crr_epp.t as they use different versions of the extension!
+## Please run fee-0.11.t, fee-0.21.t, fee-0.23.t as they use different versions of the extension!
 ####################################################################################################
 
 ## parse_greeting to determine extension version from server
@@ -188,9 +206,9 @@ sub fee_set_build
         {
           if (ref $ar eq 'HASH') {
             my $valid = {};
-            foreach my $k (qw/name phase subphase/) {
-              $valid->{$k} = $ar->{$k} if defined $ar->{$k};
-            }
+            $valid->{name} = $ar->{name} if defined $ar->{name};
+            $valid->{phase} = $ar->{phase} if defined $ar->{phase};
+            $valid->{subphase} = $ar->{sub_phase} if defined $ar->{sub_phase};
             if (exists $ar->{duration}) {
               Net::DRI::Exception::usererr_invalid_parameters('duration should be a DateTime::Duration object') unless Net::DRI::Util::is_class($ar->{duration},'DateTime::Duration');
               my $rj=Net::DRI::Protocol::EPP::Util::build_period($ar->{duration});
@@ -264,8 +282,11 @@ sub fee_set_parse
     {
       my $cmd = $content->getAttribute('name') if $content->hasAttribute('name');
       $set->{command}->{$cmd} = {};
-      $set->{'phase'} = $content->getAttribute('phase') if $content->hasAttribute('phase');
-      $set->{'subphase'} = $content->getAttribute('subphase') if $content->hasAttribute('subphase');
+      $set->{command}->{$cmd}->{custom_name} = $content->getAttribute('customName') if $content->hasAttribute('customName');
+      $set->{command}->{$cmd}->{phase} = $set->{phase} = $content->getAttribute('phase') if $content->hasAttribute('phase');
+      $set->{command}->{$cmd}->{sub_phase} = $set->{sub_phase} = $content->getAttribute('subphase') if $content->hasAttribute('subphase');
+      $set->{premium} = 1 if defined $set->{command}->{$cmd}->{sub_phase} && $set->{sub_phase} =~ m/^(open|claims|sunrise)-(\d+)$/i; # TangoRS uses phases to determine premium!
+
       foreach my $el2 (Net::DRI::Util::xml_list_children($content))
       {
         my ($name2,$content2)=@$el2;
@@ -276,10 +297,13 @@ sub fee_set_parse
         } elsif ($name2 eq 'reason')
         {
           $set->{reason} = $content2->textContent();
+        } elsif ($name2 eq 'class')
+        {
+          $set->{class} = $content2->textContent();
+          $set->{premium} = 1 if $set->{class} =~ m/(premium|tier.|non-standard)/i;
         } elsif ($name2 eq 'fee')
         {
           fee_element_parse($version,$content2,$set->{command}->{$cmd});
-
         }
       }
 
@@ -405,7 +429,7 @@ sub check_parse
     } elsif ($name =~ m/^cd$/)
     {
       my $dn = Net::DRI::Util::xml_traverse($content, $mes->ns('fee'), qw/object name/) if ($version == 11);
-      $dn = Net::DRI::Util::xml_traverse($content, $mes->ns('fee'), qw/objID/) if ($version == 21);
+      $dn = Net::DRI::Util::xml_traverse($content, $mes->ns('fee'), qw/objID/) if ($version >= 21);
       $dn = $dn->textContent() if defined $dn;
       my $fee_set = fee_set_parse($version,$content);
       if ($fee_set)
@@ -447,8 +471,8 @@ sub transform_parse
     $rinfo->{domain}->{$oname}->{fee}=\%p;
     # to add to the standardised calls
     my $ac = $oaction =~ m/^transfer/ ? 'transfer' : $oaction;
-    $ac = 'restore' if $oaction eq 'update';
     $rinfo->{domain}->{$oname}->{$ac . "_price"} = $p{fee};
+    $rinfo->{domain}->{$oname}->{"restore_price"} = $rinfo->{domain}->{$oname}->{"update_price"} if $oaction eq 'update'; # hard to tell which it is...
     $rinfo->{domain}->{$oname}->{"price_currency"} = $p{currency};
   }
   return;

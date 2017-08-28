@@ -41,7 +41,14 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS TangoRS::IDN TangoRS::Auction TangoRS::LaunchPhase TangoRS::ContactEligibility TangoRS::Promotion/; }
+sub default_extensions {
+ my ($self,$pp) = @_;
+ my @ext = qw/GracePeriod SecDNS TangoRS::IDN TangoRS::Auction TangoRS::LaunchPhase TangoRS::ContactEligibility TangoRS::Promotion/;
+ $self->{fee_version} = $self->{brown_fee_version} = $pp->{brown_fee_version} // $pp->{fee_version};
+ push @ext, 'Fee' if $self->{fee_version} && $self->{fee_version} >= '0.21';
+
+ return @ext;
+}
 
 ####################################################################################################
 1;

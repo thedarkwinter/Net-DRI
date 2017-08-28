@@ -1,7 +1,7 @@
 ## Domain Registry Interface, TangoRS CORE Driver
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013,2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2013,2015,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -42,17 +42,21 @@ CoreNIC utilises the following standard, and custom extensions. Please see the t
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
 
+=head2 Custom extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::Fee> urn:ietf:params:xml:ns:fee-0.21
+
 =head2 Custom extensions: (From TANGO-RS but with CoreNIC namespaces)
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::IDN> : http://xmlns.corenic.net/epp/idn-1.0
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction> : http://xmlns.corenic.net/epp/auction-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
+=head3 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TangoRS::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
+=head3 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::ContactEligibility> : http://xmlns.corenic.net/epp/contact-eligibility-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Promotion> : http://xmlns.corenic.net/epp/promotion-1.0
+=head3 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Promotion> : http://xmlns.corenic.net/epp/promotion-1.0
 
 =head1 SUPPORT
 
@@ -73,7 +77,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2013,2015 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2013,2015,2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
