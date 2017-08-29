@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 82;
+use Test::More tests => 71;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -38,11 +38,11 @@ my $d;
 my ($dh,@c,$idn,$co,$co2);
 
 ###################################################################################################
-## Tango uses the fee-0.6 of Gavin Brown (CentralNic) extension: https://tools.ietf.org/html/draft-brown-epp-fees-03 for .NRW
+## Tango uses the fee-0.21 of for .NRW
 $dri->target('nrw');
-$R2=$E1.'<greeting><svID>TANGO testing server</svID><svDate>2014-06-25T10:44:01.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.6</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$R2=$E1.'<greeting><svID>TANGO testing server</svID><svDate>2014-06-25T10:44:01.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.21</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
-is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.6','Fee 0.6 loaded correctly');
+is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.21','Fee 0.21 loaded correctly');
 
 # For ruhr, we make sure no fee extension is loaded
 $dri->target('ruhr');
@@ -137,24 +137,7 @@ is($auction->{currency},'EUR','domain_info get_info(currency)');
 #####################
 ## Price fee Extension
 # domain_check_price (defaults)
-$dri->target('nrw');
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example4.nrw</domain:name></domain:cd><domain:cd><domain:name avail="1">example4.nrw</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.6"><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>create</fee:command><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:cd><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>renew</fee:command><fee:period unit="y">1</fee:period><fee:fee>10.00</fee:fee></fee:cd><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>transfer</fee:command><fee:period unit="y">1</fee:period><fee:fee>5.00</fee:fee></fee:cd><fee:cd><fee:name premium="false">example4.nrw</fee:name><fee:currency>USD</fee:currency><fee:command>restore</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check_price('example4.nrw');
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example4.nrw</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:domain><fee:name>example4.nrw</fee:name><fee:command>create</fee:command></fee:domain><fee:domain><fee:name>example4.nrw</fee:name><fee:command>renew</fee:command></fee:domain><fee:domain><fee:name>example4.nrw</fee:name><fee:command>transfer</fee:command></fee:domain><fee:domain><fee:name>example4.nrw</fee:name><fee:command>restore</fee:command></fee:domain></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check_price build');
-is($dri->get_info('action'),'check','domain_check_price get_info(action)');
-is($dri->get_info('exist'),0,'domain_check_price get_info(exist)');
-
-# using the standardised methods
-is($dri->get_info('is_premium'),0,'domain_check_price get_info (is_premium) no');
-isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check_price get_info (price_duration) is DateTime::Duration');
-is($dri->get_info('price_duration')->years(),1,'domain_check_price get_info (price_duration)');
-is($dri->get_info('price_currency'),'USD','domain_check_price get_info (price_currency)');
-is($dri->get_info('create_price'),10.00,'domain_check_price get_info (create_price)');
-is($dri->get_info('renew_price'),10.00,'domain_check_price get_info (renew_price)');
-is($dri->get_info('transfer_price'),5,'domain_check_price get_info (transfer_price)');
-is($dri->get_info('restore_price'),20,'domain_check_price get_info (restore_price)');
-
-
+# See fee-0.21.t
 
 #####################
 ## Augmented Mark (LaunchPhase) Extension (based on dotSCOT-TechDoc-20140710.pdf)
