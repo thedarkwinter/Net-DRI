@@ -24,7 +24,6 @@ use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
 use DateTime::Duration;
 use DateTime::Format::ISO8601;
-use Data::Dumper;
 
 =pod
 
@@ -356,7 +355,7 @@ sub fee_set_parse
     }
   }
   chomp $set->{description} if $set->{description};
-  #print Dumper $set;
+
   return $set;
 }
 
@@ -398,10 +397,7 @@ sub set_premium_values {
    }
    $short_ref->{eap_price} = $ch->{command}->{create}->{fee_early_access_fee} if exists $ch->{command}->{create}->{fee_early_access_fee};
  }
- #foreach my $k (qw/is_premium price_category price_currency price_duration price_duration eap_price/) {
- #  print "$k : " . ($short_ref->{$k} // 'undef') . "\n";
- #}
- #print Dumper $short_ref;
+
  return;
 }
 

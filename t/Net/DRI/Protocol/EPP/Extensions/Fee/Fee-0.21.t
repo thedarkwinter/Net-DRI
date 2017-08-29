@@ -6,9 +6,8 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
-use Data::Dumper;
 
-use Test::More tests => 139;
+use Test::More tests => 142;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -319,6 +318,20 @@ is($d->{command}->{create}->{application_fee}->{applied},'immediate','domain_che
 is($dri->get_info('is_premium'),0,'domain_checkget_info (is_premium) 0');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
 is($dri->get_info('create_price'),510.00,'domain_check get_info (create_price)');
+
+####################################################################################################
+###### domain_check_price
+###### This should be more compatible with other registies too
+
+$rc=$dri->domain_check_price('explore-11.space',{'currency' => 'USD', 'phase'=>'sunrise'});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>explore-11.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.21 fee-0.21.xsd"><fee:currency>USD</fee:currency><fee:command name="create" phase="sunrise"/><fee:command name="renew"/><fee:command name="transfer"/><fee:command name="restore"/></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build_xml (using array of hashes with two commands)');
+
+$rc=$dri->domain_check_price('explore-12.space',{'currency' => 'USD', 'phase'=>'custom', 'sub_phase' => 'prebook', 'duration' => 5});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>explore-12.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.21 fee-0.21.xsd"><fee:currency>USD</fee:currency><fee:command name="create" phase="custom" subphase="prebook"><fee:period unit="y">5</fee:period></fee:command><fee:command name="renew"><fee:period unit="y">5</fee:period></fee:command><fee:command name="transfer"><fee:period unit="y">5</fee:period></fee:command><fee:command name="restore"/></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build_xml (using array of hashes with two commands)');
+
+$rc=$dri->domain_check_price('explore-13.space');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>explore-13.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.21" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.21 fee-0.21.xsd"><fee:command name="create"/><fee:command name="renew"/><fee:command name="transfer"/><fee:command name="restore"/></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build_xml (using array of hashes with two commands)');
+
 
 ####################################################################################################
 ###### domain_check (premium domain - TangoRS::CORE)
