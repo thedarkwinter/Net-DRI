@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 131;
+use Test::More tests => 132;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -440,6 +440,12 @@ $toc->set('info',$co2);
 $rc=$dri->contact_update($co,$toc);
 is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>C5000</contact:id><contact:chg><contact:type>2</contact:type><contact:postalInfo type="loc"><contact:isfinnish>1</contact:isfinnish><contact:firstname>John</contact:firstname><contact:lastname>Doe</contact:lastname><contact:name>HR</contact:name><contact:org>Example Inc.</contact:org><contact:birthDate>2005-04-03T22:00:00.0Z</contact:birthDate><contact:identity>123423A123F</contact:identity><contact:registernumber>1234312-5</contact:registernumber><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.com</contact:email><contact:legalemail>jdoe@example.com</contact:legalemail><contact:disclose flag="0"><contact:voice/><contact:email/><contact:addr/></contact:disclose></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
 is($rc->is_success(),1,'contact_update is_success');
+##########
+##########
+
+
+## test period limit - we can only perform actions for a max period of 5 years!
+throws_ok { $dri->domain_renew('example204.fi',{duration => DateTime::Duration->new(years=>6), current_expiration => DateTime->new(year=>2000,month=>4,day=>3)}) } qr/Invalid duration/, 'domain_renew - parse invalid period (bigger than 5 years)';
 ##########
 ##########
 

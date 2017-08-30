@@ -80,7 +80,7 @@ sub new
  return $self;
 }
 
-sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
+sub periods  { return map { DateTime::Duration->new(years => $_) } (1..5); } # 5 years maximum
 sub name     { return 'FICORA'; }
 sub tlds     { return ('fi', 'ax'); } # TODO: check this! They also manage .AX - should we create a different file FICORA/AX.pm?
 sub object_types { return qw(domain contact ns); }
