@@ -74,7 +74,7 @@ sub setup {
   return;
 }
 
-sub default_extensions { return qw/FICORA::Balance FICORA::Contact FICORA::Domain SecDNS/; }
+sub default_extensions { return qw/FICORA::Balance FICORA::Contact FICORA::Domain FICORA::Message SecDNS/; }
 
 ####################################################################################################
 1;

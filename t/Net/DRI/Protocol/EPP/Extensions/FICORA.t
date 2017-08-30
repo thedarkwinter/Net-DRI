@@ -450,4 +450,19 @@ throws_ok { $dri->domain_renew('example204.fi',{duration => DateTime::Duration->
 ##########
 
 
+# poll message extra tests - not on their technical documentation - based on their OT&E
+$R2='<?xml version="1.0" encoding="utf-8"?><epp xmlns:host="urn:ietf:params:xml:ns:host-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xmlns:obj="urn:ietf:params:xml:ns:obj-1.0" xmlns="urn:ietf:params:xml:ns:epp-1.0"><response><result code="1301"><msg>Command completed successfully; ack to dequeue</msg></result><msgQ count="76" id="04bf96cb-ab15-44d8-b89c-a7cf00eab81c"><qDate>2017-08-14T14:14:35.183</qDate><msg>Contact deleted</msg></msgQ><resData><obj:trnData><obj:name>C527431</obj:name></obj:trnData></resData><trID><clTRID>NET-DRI-0.12-TDW-FICORA-62-1504106326123136</clTRID><svTRID>wl9mgnu</svTRID></trID></response></epp>';
+$rc=$dri->message_retrieve();
+# print Dumper($rc);
+is($dri->get_info('last_id'),'04bf96cb-ab15-44d8-b89c-a7cf00eab81c','message get_info last_id');
+is($dri->message_count(),76,'message_count');
+is(''.$dri->get_info('qdate','message','04bf96cb-ab15-44d8-b89c-a7cf00eab81c'),'2017-08-14T14:14:35','message get_info qdate');
+is($dri->get_info('content','message','04bf96cb-ab15-44d8-b89c-a7cf00eab81c'),'Contact deleted','message get_info msg');
+is($dri->get_info('lang','message','04bf96cb-ab15-44d8-b89c-a7cf00eab81c'),'en','message get_info lang');
+is($dri->get_info('object_type','message','04bf96cb-ab15-44d8-b89c-a7cf00eab81c'),'contact','message get_info object_type');
+is($dri->get_info('name','message','04bf96cb-ab15-44d8-b89c-a7cf00eab81c'),'C527431','message get_info name');
+
+# TODO: find a poll message for domains and add test!
+
+
 exit 0;
