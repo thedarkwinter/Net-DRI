@@ -84,7 +84,7 @@ sub transport_protocol_default
  my ($self,$type)=@_;
 
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::RRP',{}) if $type eq 'rrp'; ## this is used only for internal tests
- return ('Net::DRI::Transport::Socket',{remote_host=>'epp-ote.verisign-grs.com', remote_port=>700},'Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::COM_NET',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host=>'epp-ote.verisign-grs.com', remote_port=>700},'Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::COM_NET',{'ssl_version'=>'TLSv12'}) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{remote_host=>'whois.verisign-grs.com'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
  return;
 }

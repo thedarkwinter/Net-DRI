@@ -90,7 +90,7 @@ sub transport_protocol_default
 {
   my ( $self, $type ) = @_;
 
-  return ('Net::DRI::Transport::Socket',{remote_host=>'nameeppote.verisign-grs.com', remote_port=>700},'Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NAME',{}) if $type eq 'epp';
+  return ('Net::DRI::Transport::Socket',{remote_host=>'nameeppote.verisign-grs.com', remote_port=>700},'Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NAME',{'ssl_version'=>'TLSv12'}) if $type eq 'epp';
   return ( 'Net::DRI::Transport::Socket', { remote_host => 'whois.nic.name' }, 'Net::DRI::Protocol::Whois', {} ) if $type eq 'whois';
   return;
 }
