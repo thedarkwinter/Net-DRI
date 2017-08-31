@@ -43,8 +43,9 @@ sub parse_poll
 
   if ($rinfo->{$otype}->{$oname}->{'content'} && lc($rinfo->{$otype}->{$oname}->{'content'}) =~ m/^(contact)/ ) {
     $rinfo->{$otype}->{$oname}->{'object_type'} = 'contact';
+    $rinfo->{$otype}->{$oname}->{'object_id'} = $rinfo->{$otype}->{$oname}->{'name'};
   } else {
-    $rinfo->{$otype}->{$oname}->{'object_type'} = 'domain'; # FIXME: do they have something similar for host object???
+    $rinfo->{$otype}->{$oname}->{'object_type'} = 'domain';
   }
 
   return;

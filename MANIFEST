@@ -36,6 +36,7 @@ lib/Net/DRI/Data/Contact/DK.pm
 lib/Net/DRI/Data/Contact/ES.pm
 lib/Net/DRI/Data/Contact/EURid.pm
 lib/Net/DRI/Data/Contact/FCCN.pm
+lib/Net/DRI/Data/Contact/FICORA.pm
 lib/Net/DRI/Data/Contact/FRED.pm
 lib/Net/DRI/Data/Contact/IIS.pm
 lib/Net/DRI/Data/Contact/IT.pm
@@ -332,6 +333,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/FCCN/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Balance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/Domain.pm
