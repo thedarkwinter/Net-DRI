@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 20;
+use Test::More tests => 27;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -27,7 +27,7 @@ $dri->add_registry('SIDN::NL');
 $dri->target('SIDN::NL')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 print $@->as_string() if $@;
 
-my ($rc,$co,$h,$toc);
+my ($rc,$co,$h,$toc,$d);
 
 ####################################################################################################
 ## Error messages
@@ -55,6 +55,24 @@ is($rc->get_data('period'),3,'domain_info period');
 $R2='';
 $rc=$dri->domain_undelete('DOMAINdelete37.nl');
 is_string($R1,$E1.'<extension><sidn:command xmlns:sidn="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0 sidn-ext-epp-1.0.xsd"><sidn:domainCancelDelete><sidn:name>DOMAINdelete37.nl</sidn:name></sidn:domainCancelDelete><sidn:clTRID>ABC-12345</sidn:clTRID></sidn:command></extension>'.$E2,'domain_undelete build');
+
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example202.nl</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+my $cs=$dri->local_object('contactset');
+my $c1=$dri->local_object('contact')->srid('jd1234');
+my $c2=$dri->local_object('contact')->srid('sh8013');
+$cs->set($c1,'registrant');
+$cs->set($c2,'admin');
+$cs->set($c2,'tech');
+$rc=$dri->domain_create('example202.nl',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),ns=>$dri->local_object('hosts')->set(['ns1.example.com'],['ns1.example.net']),contact=>$cs,auth=>{pw=>'2fooBAR'}});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example202.nl</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj><domain:hostObj>ns1.example.net</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is($dri->get_info('action'),'create','domain_create get_info(action)');
+is($dri->get_info('exist'),1,'domain_create get_info(exist)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','domain_create get_info(crDate)');
+is("".$d,'1999-04-03T22:00:00','domain_create get_info(crDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_create get_info(exDate)');
+is("".$d,'2001-04-03T22:00:00','domain_create get_info(exDate) value');
 
 
 ####################################################################################################
