@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 539;
+use Test::More tests => 536;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -108,7 +108,6 @@ use_ok('Net::DRI::DRD::KNET');
 use_ok('Net::DRI::DRD::KSRegistry');
 use_ok('Net::DRI::DRD::LVRegistry');
 use_ok('Net::DRI::DRD::NASK');
-use_ok('Net::DRI::DRD::Neustar::BIZ');
 use_ok('Net::DRI::DRD::Neustar::COInternet');
 use_ok('Net::DRI::DRD::Neustar::Narwhal');
 use_ok('Net::DRI::DRD::Neustar::Tralliance');
@@ -252,7 +251,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::AusRegistry::KeyValue');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AusRegistry::Price');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AusRegistry::Sync');
 use_ok('Net::DRI::Protocol::EPP::Extensions::AusRegistry::Variant');
-use_ok('Net::DRI::Protocol::EPP::Extensions::BIZ');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BR');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BR::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::BR::Domain');
@@ -519,7 +517,6 @@ use_ok('Net::DRI::Protocol::Whois');
 use_ok('Net::DRI::Protocol::Whois::Connection');
 use_ok('Net::DRI::Protocol::Whois::Domain::AERO');
 use_ok('Net::DRI::Protocol::Whois::Domain::AT');
-use_ok('Net::DRI::Protocol::Whois::Domain::BIZ');
 use_ok('Net::DRI::Protocol::Whois::Domain::CAT');
 use_ok('Net::DRI::Protocol::Whois::Domain::COM');
 use_ok('Net::DRI::Protocol::Whois::Domain::common');

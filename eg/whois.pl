@@ -41,11 +41,6 @@ die($rc) unless $rc->is_success();
 display('europa.eu',$dri);
 display('eurid.eu',$dri);
 
-$dri->add_registry('Neustar::BIZ',{});
-$rc=$dri->target('Neustar::BIZ')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
-display('neulevel.biz',$dri);
-
 $dri->add_registry('dotMOBI',{});
 $rc=$dri->target('dotMOBI')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
