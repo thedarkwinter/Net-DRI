@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 536;
+use Test::More tests => 537;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -421,6 +421,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::TangoRS::ContactEligibility');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TangoRS::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TangoRS::Promotion');
+use_ok('Net::DRI::Protocol::EPP::Extensions::TangoRS::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Billing');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TCI::Contact');

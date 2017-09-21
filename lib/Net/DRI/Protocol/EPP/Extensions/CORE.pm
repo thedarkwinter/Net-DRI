@@ -41,7 +41,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/GracePeriod SecDNS TangoRS::IDN TangoRS::Auction TangoRS::LaunchPhase TangoRS::ContactEligibility TangoRS::Promotion/; }
+sub default_extensions { return qw/GracePeriod SecDNS TangoRS::IDN TangoRS::Auction TangoRS::LaunchPhase TangoRS::ContactEligibility TangoRS::Promotion TangoRS::Message/; }
 
 ####################################################################################################
 1;

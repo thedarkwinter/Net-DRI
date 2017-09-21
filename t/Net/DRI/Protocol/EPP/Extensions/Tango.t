@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 82;
+use Test::More tests => 95;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -397,6 +397,24 @@ $toc->set('info',$co2);
 $rc=$dri->contact_update($co,$toc);
 is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id></contact:update></update><extension><el:update xmlns:el="http://xmlns.corenic.net/epp/contact-eligibility-1.0" xsi:schemaLocation="http://xmlns.corenic.net/epp/contact-eligibility-1.0 contact-eligibility-1.0.xsd"><el:chg><el:enterpriseID/></el:chg></el:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build removing the eligibility information');
 is($rc->is_success(),1,'contact_update is_success');
+
+# add test for poll message extension
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="85"><qDate>2017-09-21T11:18:44.170Z</qDate></msgQ><resData><panData xmlns="urn:ietf:params:xml:ns:domain-1.0"><name paResult="true">foobar.swiss</name><paTRID><svTRID xmlns="urn:ietf:params:xml:ns:epp-1.0">1505992724170-8409</svTRID></paTRID><paDate>2017-09-21T11:18:44.170Z</paDate></panData></resData><extension><infData xmlns="urn:ietf:params:xml:ns:launch-1.0"><phase>open</phase><applicationID>REG_FOOBAR12345-SWISS</applicationID><status s="allocated"/></infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),85,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),85,'message get_info last_id 2');
+is($dri->get_info('id','message',85),85,'message get_info id');
+is(''.$dri->get_info('qdate','message',85),'2017-09-21T11:18:44','message get_info qdate');
+is($dri->get_info('object_type','message','85'),'domain','message get_info object_type');
+is($dri->get_info('object_id','message','85'),'foobar.swiss','message get_info id');
+is($dri->get_info('action','message','85'),'review','message get_info action'); ## with this, we know what action has triggered this delayed message
+is($dri->get_info('result','message','85'),1,'message get_info result');
+is($dri->get_info('svtrid','message','85'),'1505992724170-8409','message get_info svtrid');
+is(''.$dri->get_info('date','message','85'),'2017-09-21T11:18:44','message get_info date');
+$lp = $dri->get_info('lp','message','85');
+is($lp->{'phase'},'open','message_retrieve get_info lp->{phase}');
+is($lp->{'application_id'},'REG_FOOBAR12345-SWISS','message_retrieve get_info lp->{application_id}');
+is($lp->{'status'},'allocated','message_retrieve get_info lp->{status}');
 
 #####################
 ## Promotion Extension
