@@ -1,6 +1,7 @@
 ## Domain Registry Interface, Neulevel EPP EXT Contact Extension
 ##
 ## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2017 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -114,9 +115,10 @@ sub contact_parse
   foreach my $kv (split(/ /,$c->textContent()))
   {
    my ($k,$v) = split(/=/,$kv);
-   next unless $k =~ m/^(?:EXTContact|NexusCategory)$/;
+   next unless $k =~ m/^(?:AppPurpose|EXTContact|NexusCategory)$/;
    $s->nexus_category($v) if $k eq 'NexusCategory';
    $s->ext_contact($v)   if $k eq 'EXTContact';
+   $s->application_purpose($v) if $k eq 'AppPurpose';
   }
  }
 
@@ -126,23 +128,39 @@ sub contact_parse
 sub contact_create
 {
  my ($epp,$c)=@_;
- return unless (grep $_ eq 'nexus_category', $c->attributes()) && defined $c->{nexus_category};
- my $unspec = 'EXTContact=' . ($c->ext_contact() && $c->ext_contact() eq 'N' ? 'N':'Y') . ' NexusCategory=' . uc($c->nexus_category());
  my $mes=$epp->message();
  my $eid=$mes->command_extension_register('neulevel','extension');
- $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+ return unless (grep $_ eq 'nexus_category', $c->attributes()) && defined $c->{nexus_category};
+
+ # check if application_purpose exist - if exist return AppPurpose (for .US) otherwise EXTContact
+ if ($c->{application_purpose}) {
+   my $us_str=sprintf('AppPurpose=%s NexusCategory=%s',$c->application_purpose(),$c->nexus_category());
+   $mes->command_extension($eid,['neulevel:unspec',$us_str]);
+ } else {
+   my $unspec = 'EXTContact=' . ($c->ext_contact() && $c->ext_contact() eq 'N' ? 'N':'Y') . ' NexusCategory=' . uc($c->nexus_category());
+   $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+ }
+
  return;
 }
 
 sub contact_update
 {
  my ($epp,$oldc,$todo)=@_;
- my $c=$todo->set('info');
- return unless (grep $_ eq 'nexus_category', $c->attributes()) && defined $c->{nexus_category};
- my $unspec = 'EXTContact=' . ($c->ext_contact() && $c->ext_contact() eq 'N' ? 'N':'Y') . ' NexusCategory=' . uc($c->nexus_category());
  my $mes=$epp->message();
  my $eid=$mes->command_extension_register('neulevel','extension');
- $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+ my $c=$todo->set('info');
+ return unless (grep $_ eq 'nexus_category', $c->attributes()) && defined $c->{nexus_category};
+
+ # check if application_purpose exist - if exist return AppPurpose (for .US) otherwise EXTContact
+ if ($c->{application_purpose}) {
+   my $us_str=sprintf('AppPurpose=%s NexusCategory=%s',$c->application_purpose(),$c->nexus_category());
+   $mes->command_extension($eid,['neulevel:unspec', $us_str]);
+ } else {
+   my $unspec = 'EXTContact=' . ($c->ext_contact() && $c->ext_contact() eq 'N' ? 'N':'Y') . ' NexusCategory=' . uc($c->nexus_category());
+   $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+ }
+
  return;
 }
 

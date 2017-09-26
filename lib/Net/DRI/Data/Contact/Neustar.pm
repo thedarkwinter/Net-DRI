@@ -26,7 +26,7 @@ use Email::Valid;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-__PACKAGE__->register_attributes(qw(ext_contact nexus_category));
+__PACKAGE__->register_attributes(qw(application_purpose ext_contact nexus_category));
 
 =pod
 
@@ -88,9 +88,14 @@ sub validate
  my ($self,$change)=@_;
  $change||=0;
  $self->SUPER::validate(1); ## will trigger an Exception if problem
+ my @errs;
  return 1 unless $self->nexus_category();
- Net::DRI::Exception::usererr_insufficient_parameters('Nexus Contact must be in New York (sp)') if defined $self->sp() && uc($self->sp()) !~ m/^(?:NY|NEW YORK)$/;
- Net::DRI::Exception::usererr_insufficient_parameters('Nexus Category must be INDIV or ORG') if defined $self->nexus_category() && uc($self->nexus_category()) !~ m/^(?:INDIV|ORG)$/;
+
+ if (defined($self->application_purpose()))
+ {
+  push @errs,'application_purpose' unless ($self->application_purpose()=~m/^P[1-5]$/ || ($change && ($self->application_purpose() eq '')));
+ }
+
  return 1;
 }
 
