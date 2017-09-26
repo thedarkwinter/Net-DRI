@@ -37,18 +37,51 @@ Net::DRI::Data::Contact::Neustar - Handle Neustar::Neustar contact data for Net:
 =head1 DESCRIPTION
 
 This subclass of Net::DRI::Data::Contact adds accessors and validation for Neustar specific data.
+Please read the following in order to understand what's mandatory for .US and .NYC domains!
 
 =head1 METHODS
 
 The following accessors/mutators can be called in chain, as they all return the object itself.
 
+=head2 application_purpose()
+
+For .US domains the registrant need to meet some Nexus requirements. A Nexus category and App purpose are mandatory! Other contacts may have this as well, but are not required to.
+
+=head4 Intended Usage of Domain:
+
+P1 = Business for profit
+
+P2 = Nonprofit
+
+P3 = Personal
+
+P4 = Educational
+
+P5 = Governmental
+
 =head2 nexus_category()
 
-One of the contacts must be based in New York, and the nexus category must be one of INDIV or ORG
+=head4 Nexus Category - .NYC:
+
+For .NYC domains one of the contacts must be based in New York, and the nexus category must be one of INDIV or ORG.
+
+=head4 Nexus Category - .US:
+
+For .US domains the nexus category must be:
+
+C11 (US Citizen)
+
+C12 (Permanent Resident)
+
+C21 (US organization)
+
+C31 (Foreign organization doing business in US)
+
+C32 (Foreign organization with US office)
 
 =head2 ext_contact()
 
-Y/N defining whether or not this is the nexus contact. This will default to Y if not set and nexus_category is set.
+For .NYC domains the nexus contact need to beY/N.
 
 =head1 SUPPORT
 

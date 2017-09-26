@@ -40,6 +40,18 @@ Adds the EXTContact extension. Currently used for .NYC domains
   # Create domain
   $rc=$dri->domain_create('example.nyc',{..., {'ext_contact'=>$c->srid()});
 
+
+Adds the Nexus requirements . Currently used for .US domains
+
+  $c = $dri->local_object('contact');
+  $c->srid('abcde')->.....
+  $c->application_purpose('P1'); # P1, P2, P3, P4 or P5
+  $c->nexus_category('C31/DE'); # C11, C12, C21, C31, C32
+  $rc=$dri->contact_create($c);
+
+
+For more information please read the POD under: Net::DRI::Data::Contact::Neustar.pm
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
