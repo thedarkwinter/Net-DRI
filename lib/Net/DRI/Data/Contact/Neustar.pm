@@ -81,7 +81,7 @@ C32 (Foreign organization with US office)
 
 =head2 ext_contact()
 
-For .NYC domains the nexus contact need to beY/N.
+For .NYC domains the nexus contact need to be: Y/N.
 
 =head1 SUPPORT
 
