@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 94;
+use Test::More tests => 96;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -545,6 +545,7 @@ $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),81,'message_retrieve get_info(last_id)');
 $lp = $dri->get_info('lp','message',81);
 is($lp->{'application_id'},'app123','message_retrieve get_info lp->{application_id}');
-
+is($lp->{'phase'},'open','message_retrieve get_info lp->{phase}');
+is($lp->{'status'},'allocated','message_retrieve get_info lp->{status}');
 
 exit 0;
