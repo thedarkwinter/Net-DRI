@@ -93,7 +93,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'ZACR'; }
-sub tlds     { return qw/co.za co.net co.org co.web joburg durban capetown africa wien/; }
+sub tlds     { return qw/co.za net.za org.za web.za joburg durban capetown africa wien/; }
 sub object_types { return (qw/domain contact/); }
 sub profile_types { return qw/epp/; }
 
