@@ -29,11 +29,12 @@ sub setup
  return;
 }
 
-sub default_extensions { 
+sub default_extensions {
  my ($self,$pp) = @_;
  my @ext = qw/GracePeriod SecDNS LaunchPhase/;
  push @ext, 'IDN' unless (exists $pp->{disable_idn} && $pp->{disable_idn});
  $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
+ $self->{fee_version} = $pp->{fee_version} if exists $pp->{fee_version};
  if (exists $pp->{custom} )
  {
   my @custom = (ref $pp->{custom} eq 'ARRAY') ? @{$pp->{custom}} : ($pp->{custom});
@@ -56,7 +57,7 @@ Additional domain extension for new Generic TLDs. This extension is intended to 
 
 =head2 Supported Registries
 
-=head3 
+=head3
 L<AFNIC|Net::DRI::DRD::AFNIC_GTLD>
 L<Minds And Machines|Net::DRI::DRD::MAM>
 L<Charleston Road Registry|Net::DRI::DRD::CRC>

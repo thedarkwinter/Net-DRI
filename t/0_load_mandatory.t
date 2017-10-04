@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 531;
+use Test::More tests => 532;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -314,6 +314,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::EURid::Sunrise');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FCCN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FCCN::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FCCN::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FRED');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FRED::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FRED::Domain');
