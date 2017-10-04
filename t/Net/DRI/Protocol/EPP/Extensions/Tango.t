@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 71;
+use Test::More tests => 92;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -298,7 +298,6 @@ $lp = {phase => 'claims', notices => [ {id=>'abc123','not_after_date'=>DateTime-
 $rc=$dri->domain_create('examplen-d.scot',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=>$lp,intended_use=>'fooBAR'});
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>examplen-d.scot</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd"><launch:phase>claims</launch:phase><ext:augmentedMark xmlns:ext="http://xmlns.corenic.net/epp/mark-ext-1.0"><ext:applicationInfo type="intended-use">fooBAR</ext:applicationInfo></ext:augmentedMark><launch:notice><launch:noticeID>abc123</launch:noticeID><launch:notAfter>2008-12-01T00:00:00Z</launch:notAfter><launch:acceptedDate>2009-10-01T00:00:00Z</launch:acceptedDate></launch:notice></launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create GA phase');
 
-
 #####################
 ## Contact Eligibility Extension
 
@@ -454,5 +453,87 @@ is($promo_total->{'currency'},'EUR','promo_info parse (currency)');
 # promotion name
 is(defined($promo_promotionName), 1 ,'promo_info get_info(promotionName) defined');
 is($promo_promotionName,'Unlimited Creation codes','promo_info parse (promotionName)');
+
+#########################################################################################################
+## CHECK That normal LaunchPhase functions still will when using TangoRS::LaunchPhase extension
+$dri->target('eus');
+$dri->cache_clear();
+my ($lpres);
+
+# Claims Check Form using a custom phase name with custom (autodetected)
+$lp = {type=>'claims','phase'=>'foobar'} ;
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="foobar">custom</launch:phase><launch:cd><launch:name exists="1">examplef.eus</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('examplef.eus',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>examplef.eus</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="foobar">custom</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
+
+# Claims Check Form using a claims phase with custom sub_phase
+$lp = { type=>'claims','phase'=>'claims', 'sub_phase'=>'barfoo' } ;
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="barfoo">claims</launch:phase><launch:cd><launch:name exists="1">examplef2.eus</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('examplef2.eus',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>examplef2.eus</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase name="barfoo">claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
+
+# With multiple claims (launchphase-02), claim_key became 1 or more, so we need to make room for this without breaking backwards compatibility
+$lp = {type=>'claims'} ;
+$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>claims</launch:phase><launch:cd><launch:name exists="1">exampleg2.eus</launch:name><launch:claimKey validatorID="tmch">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey><launch:claimKey validatorID="custom-tmch">20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('exampleg2.eus',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exampleg2.eus</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="claims"><launch:phase>claims</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
+$lpres = $dri->get_info('lp');
+is($lpres->{'exist'},1,'domain_check get_info(exist)');
+is($lpres->{'phase'},'claims','domain_check get_info(phase)');
+# pre launchphase-02 method will only get the last claim, but its safe if there is only one claim
+is($lpres->{'claim_key'},'20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002','domain_check get_info(claim_key) ');
+is($lpres->{'validator_id'},'custom-tmch','domain_check get_info(validator_id) ');
+# added claims_count and claims in launchphase-02
+is($lpres->{'claims_count'},'2','domain_check get_info(claims_count)');
+is_deeply($lpres->{'claims'},[{claim_key=>'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','validator_id'=>'tmch'},{claim_key=>'20140423200/1/2/3/rJ1Nr2vDsAzasdff7EasdfgjX4R000000002','validator_id'=>'custom-tmch'}],'domain_check get_info(claims_count)');
+
+#3.1.2.  Availability Check Form
+$lp = {phase=>'idn-release',type=>'avail'};
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example3.eus</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example3.eus',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.eus</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="avail"><launch:phase name="idn-release">custom</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+
+#3.1.2.  Availability Check Form
+$lp = {phase=>'idn-release',type=>'avail'};
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example3.eus</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example3.eus',{lp => $lp});
+is ($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.eus</domain:name></domain:check></check><extension><launch:check xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="avail"><launch:phase name="idn-release">custom</launch:phase></launch:check></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_check build_xml');
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+
+## INFO
+#3.2.  EPP <info> Command
+$lp = {phase => 'sunrise','application_id'=>'abc123','include_mark'=>'true'};
+my $markxml = '<mark:mark xmlns:mark="urn:ietf:params:xml:ns:mark-1.0"><mark:trademark><mark:id>1234-2</mark:id><mark:markName>Example One</mark:markName><mark:holder entitlement="owner"><mark:org>Example Inc.</mark:org><mark:addr><mark:street>123 Example Dr.</mark:street><mark:street>Suite 100</mark:street><mark:city>Reston</mark:city><mark:sp>VA</mark:sp><mark:pc>20190</mark:pc><mark:cc>US</mark:cc></mark:addr></mark:holder><mark:jurisdiction>US</mark:jurisdiction><mark:class>35</mark:class><mark:class>36</mark:class><mark:label>example-one</mark:label><mark:label>exampleone</mark:label><mark:goodsAndServices>Dirigendas et eiusmodifeaturing infringo in airfare et cartam servicia.</mark:goodsAndServices><mark:regNum>234235</mark:regNum><mark:regDate>2009-08-16T09:00:00.0Z</mark:regDate><mark:exDate>2015-08-16T09:00:00.0Z</mark:exDate></mark:trademark></mark:mark>';
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example2.eus</domain:name><domain:roid>EXAMPLE1-REP</domain:roid><domain:status s="ok"/><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:ns><domain:hostObj>ns1.example.eus</domain:hostObj><domain:hostObj>ns2.example.eus</domain:hostObj></domain:ns><domain:host>ns1.example.eus</domain:host><domain:host>ns2.example.eus</domain:host><domain:clID>ClientX</domain:clID><domain:crID>ClientY</domain:crID><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:upID>ClientX</domain:upID><domain:upDate>1999-12-03T09:00:00.0Z</domain:upDate><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate><domain:trDate>2000-04-08T09:00:00.0Z</domain:trDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><launch:infData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>sunrise</launch:phase><launch:applicationID>abc123</launch:applicationID><launch:status s="pendingAllocation"/>'.$markxml.'</launch:infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('example2.eus',{lp => $lp});
+is ($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">example2.eus</domain:name></domain:info></info><extension><launch:info xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" includeMark="true"><launch:phase>sunrise</launch:phase><launch:applicationID>abc123</launch:applicationID></launch:info></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_info build_xml');
+$lpres = $dri->get_info('lp');
+is($lpres->{'phase'},'sunrise','domain_info get_info(phase) ');
+is($lpres->{'application_id'},'abc123','domain_info get_info(application_id) ');
+is($lpres->{'status'},'pendingAllocation','domain_info get_info(launch_status) ');
+my @marks = @{$lpres->{'marks'}};
+my $m = $marks[0];
+is ($m->{mark_name},'Example One','domain_info get_info(mark name)');
+
+$doc=$parser->parse_string('<?xml version="1.0" encoding="UTF-8"?>'.$markxml);
+$root=$doc->getDocumentElement();
+my $m2=Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::parse_mark($po,$root);
+is_deeply($m, @{$m2}[0], 'data structures should be the same');
+
+# UPDATE
+$lp = {phase => 'sunrise','application_id'=>'abc321'};
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->set('lp',$lp);
+$rc=$dri->domain_update('example10.eus',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example10.eus</domain:name></domain:update></update><extension><launch:update xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd"><launch:phase>sunrise</launch:phase><launch:applicationID>abc321</launch:applicationID></launch:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build_xml');
+
+
+# DELETE
+$lp = {phase => 'sunrise','application_id'=>'abc321'};
+$R2='';
+$rc=$dri->domain_delete('example10.eus',{pure_delete=>1,lp=>$lp});
+is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example10.eus</domain:name></domain:delete></delete><extension><launch:delete xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd"><launch:phase>sunrise</launch:phase><launch:applicationID>abc321</launch:applicationID></launch:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete build_xml');
 
 exit 0;
