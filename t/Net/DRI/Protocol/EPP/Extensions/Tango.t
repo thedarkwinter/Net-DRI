@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 92;
+use Test::More tests => 94;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -535,5 +535,16 @@ $lp = {phase => 'sunrise','application_id'=>'abc321'};
 $R2='';
 $rc=$dri->domain_delete('example10.eus',{pure_delete=>1,lp=>$lp});
 is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example10.eus</domain:name></domain:delete></delete><extension><launch:delete xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd"><launch:phase>sunrise</launch:phase><launch:applicationID>abc321</launch:applicationID></launch:delete></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete build_xml');
+
+#########################################################################################################
+## POLL MESSAGE
+
+# *with* domain:infData
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="81"><qDate>2017-07-13T12:00:00.000Z</qDate></msgQ><resData><panData xmlns="urn:ietf:params:xml:ns:domain-1.0"><name paResult="true">examplepoll.eus</name><paTRID><svTRID xmlns="urn:ietf:params:xml:ns:epp-1.0">54322-XYZ</svTRID></paTRID><paDate>2017-07-13T00:00:00.000Z</paDate></panData></resData><extension><infData xmlns="urn:ietf:params:xml:ns:launch-1.0"><phase>open</phase><applicationID>app123</applicationID><status s="allocated" /></infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),81,'message_retrieve get_info(last_id)');
+$lp = $dri->get_info('lp','message',81);
+is($lp->{'application_id'},'app123','message_retrieve get_info lp->{application_id}');
+
 
 exit 0;
