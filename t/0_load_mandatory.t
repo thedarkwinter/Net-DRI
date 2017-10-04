@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 536;
+use Test::More tests => 531;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -50,7 +50,6 @@ use_ok('Net::DRI::Data::Contact::TANGO');
 use_ok('Net::DRI::Data::Contact::TCI');
 use_ok('Net::DRI::Data::Contact::TCI_gTLD');
 use_ok('Net::DRI::Data::Contact::UniRegistry');
-use_ok('Net::DRI::Data::Contact::US');
 use_ok('Net::DRI::Data::Contact::ZACR');
 use_ok('Net::DRI::Data::Hosts');
 use_ok('Net::DRI::Data::IDN');
@@ -111,7 +110,6 @@ use_ok('Net::DRI::DRD::NASK');
 use_ok('Net::DRI::DRD::Neustar::COInternet');
 use_ok('Net::DRI::DRD::Neustar::Narwhal');
 use_ok('Net::DRI::DRD::Neustar::Tralliance');
-use_ok('Net::DRI::DRD::Neustar::US');
 use_ok('Net::DRI::DRD::NGTLD');
 use_ok('Net::DRI::DRD::NicAT::AT');
 use_ok('Net::DRI::DRD::NicAT::RegBox');
@@ -441,8 +439,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry::RegistryMessage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance');
-use_ok('Net::DRI::Protocol::EPP::Extensions::US');
-use_ok('Net::DRI::Protocol::EPP::Extensions::US::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::Balance');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::ClientAttributes');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::DefReg');
@@ -530,7 +526,6 @@ use_ok('Net::DRI::Protocol::Whois::Domain::ORG');
 use_ok('Net::DRI::Protocol::Whois::Domain::PT');
 use_ok('Net::DRI::Protocol::Whois::Domain::SE');
 use_ok('Net::DRI::Protocol::Whois::Domain::TRAVEL');
-use_ok('Net::DRI::Protocol::Whois::Domain::US');
 use_ok('Net::DRI::Protocol::Whois::Domain::WS');
 use_ok('Net::DRI::Protocol::Whois::Message');
 use_ok('Net::DRI::Registry');
