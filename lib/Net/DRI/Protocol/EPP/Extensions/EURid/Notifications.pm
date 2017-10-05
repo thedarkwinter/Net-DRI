@@ -103,7 +103,7 @@ sub parse
   }
  }
 
- if ($n{context}=~m/^(?:DOMAIN|TRANSFER|DYNUPDATE|RESERVED_ACTIVATION|LEGAL|REGISTRY_LOCK)$/)
+ if ($n{context}=~m/^(?:DOMAIN|TRANSFER|DYNUPDATE|RESERVED_ACTIVATION|LEGAL|REGISTRY_LOCK|OBJECT_CLEANUP|REGISTRATION_LIMIT)$/)
  {
   $oname=$n{object};
   $rinfo->{domain}->{$oname}->{context}=$n{context};
@@ -111,6 +111,7 @@ sub parse
   $rinfo->{domain}->{$oname}->{action}=$n{action};
   $rinfo->{domain}->{$oname}->{detail}=$n{detail} if exists $n{detail};
   $rinfo->{domain}->{$oname}->{object_type}=$n{objectType};
+  $rinfo->{domain}->{$oname}->{object}=$n{object} if exists $n{object};
   $rinfo->{domain}->{$oname}->{object_unicode}=$n{objectUnicode} if exists $n{objectUnicode};
   $rinfo->{domain}->{$oname}->{registrar}=$n{registrar} if exists $n{registrar};
   $rinfo->{domain}->{$oname}->{exist}=1;
@@ -119,6 +120,7 @@ sub parse
   $n{level} = $n{object} if $n{context} eq 'WATERMARK'; # it used to be called level, so this is for backwards compat
   $rinfo->{session}->{notification}=\%n;
  }
+
  return;
 }
 
