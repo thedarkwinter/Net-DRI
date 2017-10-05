@@ -92,7 +92,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::EURid::IDN - EURid IDN EPP Extension for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::EURid::DNSQuality - EURid DNSQuality Extension for Net::DRI
 
 =head1 DESCRIPTION
 
