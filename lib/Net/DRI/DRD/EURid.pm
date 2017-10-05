@@ -119,4 +119,12 @@ sub verify_name_domain
 }
 
 #################################################################################################################
+
+## DNS Quality
+sub dns_quality_info
+{
+ my ($self, $reg, $dom, $rd) = @_;
+ return $reg->process('domain', 'dns_quality_info', [$dom, $rd]);
+}
+
 1;
