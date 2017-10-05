@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 66;
+use Test::More tests => 94;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -134,5 +134,53 @@ is($dri->get_info('object_unicode','message','456'),undef,'message_retrieve get_
 is($dri->get_info('exist','message','456'),undef,'message_retrieve get_info exist');
 is($dri->get_info('level','message','456'),567,'message_retrieve get_info level');
 is($rc->get_data('message','456','level'),567,'notification !domain get_data(level)');
+
+
+########################################################################################################
+## New notifications This was taken from Release Notes_11October2017_v1.0.pdf
+
+# New notification in DOMAIN context
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="7" id="9951"><qDate>2017-08-02T11:36:38.033Z</qDate><msg>Domain name released from quarantine: abcabc-1498131396995.eu</msg></msgQ><resData><poll-1.2:pollData xmlns:poll-1.2="http://www.eurid.eu/xml/epp/poll-1.2"><poll-1.2:context>DOMAIN</poll-1.2:context><poll-1.2:objectType>DOMAIN</poll-1.2:objectType><poll-1.2:object>abcabc-1498131396995.eu</poll-1.2:object><poll-1.2:objectUnicode>abcabc-1498131396995.eu</poll-1.2:objectUnicode><poll-1.2:action>RELEASED_FROM_QUARANTINE</poll-1.2:action><poll-1.2:code>1720</poll-1.2:code></poll-1.2:pollData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($R1,$E1.'<command><poll op="req"/><clTRID>ABC-12345</clTRID></command>'.$E2,'message_restrieve build_xml');
+is($rc->is_success(), 1, 'message_retrieve is_success');
+is($dri->get_info('last_id'),9951,'message_retrieve get_info(last_id)');
+is($dri->get_info('context','message',9951),'DOMAIN','message_retrieve get_info context');
+is($dri->get_info('notification_code','message',9951),1720,'message_retrieve get_info notification_code');
+is($dri->get_info('action','message',9951),'RELEASED_FROM_QUARANTINE','message_retrieve get_info action');
+is($dri->get_info('object_type','message',9951),'DOMAIN','message_retrieve get_info object_type');
+is($dri->get_info('object','message',9951),'abcabc-1498131396995.eu','message_retrieve get_info object');
+is($dri->get_info('exist','message',9951),1,'message_retrieve get_info exist');
+is($dri->get_info('object_unicode','message',9951),'abcabc-1498131396995.eu','message_retrieve get_info object_unicode');
+
+# New context “OBJECT_CLEANUP”
+# TODO, though this is disbabled by default. It probably works anyway
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="7" id="9953"><qDate>2017-08-22T12:42:34.117Z</qDate><msg>Contact deleted (guess, no example!)</msg></msgQ><resData><poll-1.2:pollData xmlns:poll-1.2="http://www.eurid.eu/xml/epp/poll-1.2"><poll-1.2:context>OBJECT_CLEANUP</poll-1.2:context><poll-1.2:objectType>CONTACT</poll-1.2:objectType><poll-1.2:object>contactAlias</poll-1.2:object><poll-1.2:objectUnicode>contactAlias</poll-1.2:objectUnicode><poll-1.2:action>DELETED</poll-1.2:action><poll-1.2:code>2800</poll-1.2:code></poll-1.2:pollData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($R1,$E1.'<command><poll op="req"/><clTRID>ABC-12345</clTRID></command>'.$E2,'message_restrieve build_xml');
+is($rc->is_success(), 1, 'message_retrieve is_success');
+is($dri->get_info('last_id'),9953,'message_retrieve get_info(last_id)');
+is($dri->get_info('context','message',9953),'OBJECT_CLEANUP','message_retrieve get_info context');
+is($dri->get_info('notification_code','message',9953),2800,'message_retrieve get_info notification_code');
+is($dri->get_info('action','message',9953),'DELETED','message_retrieve get_info action');
+is($dri->get_info('object_type','message',9953),'CONTACT','message_retrieve get_info object_type');
+is($dri->get_info('object','message',9953),'contactAlias','message_retrieve get_info object');
+is($dri->get_info('object_unicode','message',9953),'contactAlias','message_retrieve get_info object_unicode');
+
+## Also 2801 for KEYGROUP and 2802 for NAMESERVER GROUP
+
+# New context “REGISTRATION_LIMIT”
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="7" id="9952"><qDate>2017-08-22T12:42:34.117Z</qDate><msg>Watermark level reached: 7</msg></msgQ><resData><poll-1.2:pollData xmlns:poll-1.2="http://www.eurid.eu/xml/epp/poll-1.2"><poll-1.2:context>REGISTRATION_LIMIT</poll-1.2:context><poll-1.2:objectType>WATERMARK</poll-1.2:objectType><poll-1.2:object>7</poll-1.2:object><poll-1.2:objectUnicode>7</poll-1.2:objectUnicode><poll-1.2:action>REACHED</poll-1.2:action><poll-1.2:code>2620</poll-1.2:code></poll-1.2:pollData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($R1,$E1.'<command><poll op="req"/><clTRID>ABC-12345</clTRID></command>'.$E2,'message_restrieve build_xml');
+is($rc->is_success(), 1, 'message_retrieve is_success');
+is($dri->get_info('last_id'),9952,'message_retrieve get_info(last_id)');
+is($dri->get_info('context','message',9952),'REGISTRATION_LIMIT','message_retrieve get_info context');
+is($dri->get_info('notification_code','message',9952),2620,'message_retrieve get_info notification_code');
+is($dri->get_info('action','message',9952),'REACHED','message_retrieve get_info action');
+is($dri->get_info('object_type','message',9952),'WATERMARK','message_retrieve get_info object_type');
+is($dri->get_info('object','message',9952),'7','message_retrieve get_info object');
+is($dri->get_info('object_unicode','message',9952),'7','message_retrieve get_info object_unicode');
+
 
 exit 0;

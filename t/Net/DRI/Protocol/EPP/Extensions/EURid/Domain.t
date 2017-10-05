@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 147;
+use Test::More tests => 154;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -388,5 +388,19 @@ is($dri->get_info('name_idn'),'вмкйршаудхыийведйкгг.ею','d
 is($dri->get_info('ace'),'xn--80adbeadbhzhddejt0e9bxb3cwd.xn--e1a4c','domain_transfer_query get_info(ace)');
 is($dri->get_info('unicode'),'вмкйршаудхыийведйкгг.ею','domain_transfer_query get_info(unicode)');
 
+
+########################################################################################################
+## dnsQuality Info
+# This was taken off Release Notes_11October2017_v1.0.pdf
+
+$R2=$E1.'<response>'.r().'<resData><dnsQuality:infData xmlns:dnsQuality="http://www.eurid.eu/xml/epp/dnsQuality-2.0"><dnsQuality:name>dnsq_domain.eu</dnsQuality:name><dnsQuality:checkTime>2017-08-17T11:23:44.312+02:00</dnsQuality:checkTime><dnsQuality:score>1000</dnsQuality:score></dnsQuality:infData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->dns_quality_info('dnsq_domain.eu');
+is_string($R1,$E1.'<command><info><dnsQuality:info xmlns:dnsQuality="http://www.eurid.eu/xml/epp/dnsQuality-2.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/dnsQuality-2.0 dnsQuality-2.0.xsd"><dnsQuality:name>dnsq_domain.eu</dnsQuality:name></dnsQuality:info></info><clTRID>ABC-12345</clTRID></command></epp>','domain_info build');
+is($rc->is_success(),1,'domain_info is_success');
+is($dri->get_info('action'),'info','domain_info get_info(action)');
+is($dri->get_info('exist'),1,'domain_info get_info(exist)');
+is($dri->get_info('name'),'dnsq_domain.eu','domain_info get_info(name)');
+is($dri->get_info('check_time'),'2017-08-17T11:23:44','domain_info get_info(name)');
+is($dri->get_info('score'),1000,'domain_info get_info(name)');
 
 exit 0;
