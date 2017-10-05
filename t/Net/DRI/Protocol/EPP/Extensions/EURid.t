@@ -44,7 +44,7 @@ is($dri->protocol()->ns()->{'authInfo'}->[0],'http://www.eurid.eu/xml/epp/authIn
 is($dri->protocol()->ns()->{'nsgroup'}->[0],'http://www.eurid.eu/xml/epp/nsgroup-1.1','nsgroup-1.1 for server announcing 1.1');
 is($dri->protocol()->ns()->{'keygroup'}->[0],'http://www.eurid.eu/xml/epp/keygroup-1.1','keygroup 1.1 for server announcing 1.1');
 is($dri->protocol()->ns()->{'homoglyph'}->[0],'http://www.eurid.eu/xml/epp/homoglyph-1.0','homoglyph-1.0 for server announcing 1.0');
-is($dri->protocol()->ns()->{'dnsQuality'}->[0],'http://www.eurid.eu/xml/epp/dnsQuality-2.0','dnsQuality-2.0 for server announcing 2.0');
+is($dri->protocol()->ns()->{'dns_quality'}->[0],'http://www.eurid.eu/xml/epp/dnsQuality-2.0','dnsQuality-2.0 for server announcing 2.0');
 
 
 exit 0;

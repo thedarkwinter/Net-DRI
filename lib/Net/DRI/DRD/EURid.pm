@@ -36,6 +36,8 @@ Net::DRI::DRD::EURid - EURid (.EU) policies for Net::DRI
 
 Please see the README file for details.
 
+Last updated 05/10/2017 for the Octover 11 2017 release
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
