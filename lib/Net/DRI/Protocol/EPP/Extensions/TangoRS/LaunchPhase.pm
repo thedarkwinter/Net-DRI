@@ -87,7 +87,13 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
-           create => [ \&create, undef ],
+          # inherit all except create from Net::DRI::Protocol::EPP::Extensions::LaunchPhase
+           create => [ \&create, \&Net::DRI::Protocol::EPP::Extensions::LaunchPhase::check_parse ],
+           check   => [ \&Net::DRI::Protocol::EPP::Extensions::LaunchPhase::check, \&Net::DRI::Protocol::EPP::Extensions::LaunchPhase::check_parse ],
+           check_multi  => [ \&Net::DRI::Protocol::EPP::Extensions::LaunchPhase::check, \&Net::DRI::Protocol::EPP::Extensions::LaunchPhase::check_parse ],
+           info      => [ \&Net::DRI::Protocol::EPP::Extensions::LaunchPhase::info, \&Net::DRI::Protocol::EPP::Extensions::LaunchPhase::info_parse ],
+           update    => [ \&Net::DRI::Protocol::EPP::Extensions::LaunchPhase::update_delete ],
+           delete   => [ \&Net::DRI::Protocol::EPP::Extensions::LaunchPhase::update_delete],
         );
 
  return { 'domain' => \%tmp };

@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 78;
+use Test::More tests => 85;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -26,7 +26,7 @@ my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { re
 $dri->add_registry('NGTLD',{provider => 'sidn',name=>'sidn_gtld'});
 $dri->target('sidn_gtld')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-my ($rc,$co,$co2,$cs,$toc,$d);
+my ($rc,$co,$co2,$cs,$c1,$c2,$toc,$d);
 
 ## hello / greeting
 $R2='';
@@ -158,5 +158,24 @@ $toc->set('rgp',{ op => 'report', report => {predata=>'Pre-delete registration d
 $rc=$dri->domain_update('doris.amsterdam',$toc);
 is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>doris.amsterdam</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="report"><rgp:report><rgp:preData>Pre-delete registration data goes here. Both XML and free text are allowed.</rgp:preData><rgp:postData>Post-restore registration data goes here. Both XML and free text are allowed.</rgp:postData><rgp:delTime>2003-07-10T22:00:00.0Z</rgp:delTime><rgp:resTime>2003-07-20T22:00:00.0Z</rgp:resTime><rgp:resReason>Registrant error.</rgp:resReason><rgp:statement>This registrar has not restored the Registered Name in order to assume the rights to use or sell the Registered Name for itself or for any third party.</rgp:statement><rgp:statement>The information in this report is true to best of this registrar\'s knowledge, and this registrar acknowledges that intentionally supplying false information in this report shall constitute an incurable material breach of the Registry-Registrar Agreement.</rgp:statement><rgp:other>Supporting information goes here.</rgp:other></rgp:report></rgp:restore></rgp:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_report');
 is($rc->is_success(),1,'domain_update is_success +RGP');
+
+# domain create
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example202.amsterdam</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+$cs=$dri->local_object('contactset');
+$c1=$dri->local_object('contact')->srid('jd1234');
+$c2=$dri->local_object('contact')->srid('sh8013');
+$cs->set($c1,'registrant');
+$cs->set($c2,'admin');
+$cs->set($c2,'tech');
+$rc=$dri->domain_create('example202.amsterdam',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),ns=>$dri->local_object('hosts')->set(['ns1.example.com'],['ns1.example.net']),contact=>$cs,auth=>{pw=>'2fooBAR'}});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example202.amsterdam</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj><domain:hostObj>ns1.example.net</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is($dri->get_info('action'),'create','domain_create get_info(action)');
+is($dri->get_info('exist'),1,'domain_create get_info(exist)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','domain_create get_info(crDate)');
+is("".$d,'1999-04-03T22:00:00','domain_create get_info(crDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_create get_info(exDate)');
+is("".$d,'2001-04-03T22:00:00','domain_create get_info(exDate) value');
 
 exit 0;

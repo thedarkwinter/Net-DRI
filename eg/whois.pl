@@ -41,11 +41,6 @@ die($rc) unless $rc->is_success();
 display('europa.eu',$dri);
 display('eurid.eu',$dri);
 
-$dri->add_registry('Neustar::BIZ',{});
-$rc=$dri->target('Neustar::BIZ')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
-display('neulevel.biz',$dri);
-
 $dri->add_registry('dotMOBI',{});
 $rc=$dri->target('dotMOBI')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
@@ -86,11 +81,6 @@ $rc=$dri->target('Tralliance')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('paris.travel',$dri);
 
-$dri->add_registry('Neustar::US',{});
-$rc=$dri->target('Neustar::US')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
-display('disney.us',$dri);
-
 $dri->add_registry('DNSPT',{});
 $rc=$dri->target('DNSPT')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
@@ -100,7 +90,7 @@ $dri->end();
 };
 
 if (! $ok)
-{ 
+{
  my $err=$@;
  print "\n\nAn EXCEPTION happened !\n";
  if (ref $err)

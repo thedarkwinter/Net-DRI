@@ -33,7 +33,9 @@ sub setup
 sub default_extensions {
  my ($self,$pp) = @_;
  my @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction/;
- push @ext, 'CentralNic::Fee' if $pp->{enable_fee};
+ $self->{fee_version} = $self->{brown_fee_version} = $pp->{brown_fee_version} // $pp->{fee_version};
+ push @ext, 'Fee' if $self->{fee_version} && $self->{fee_version} >= '0.21';
+
  return @ext;
 }
 

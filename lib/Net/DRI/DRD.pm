@@ -1452,8 +1452,10 @@ sub _build_price_query
  {
    $rd->{premium_domain} = 1;
  }
- # this extension is used in addition to premium_domain above, hense to elsif.
- if (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}})
+
+ my $fee_version = 0+$ndr->protocol()->{brown_fee_version} // $ndr->protocol()->{fee_version};
+ # CentralNic::Fee (<=011) this extension is used in addition to premium_domain above, hense to elsif.
+ if ((grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}}) || $fee_version <= 0.11)
  {
    my ($fee,@fees);
    foreach my $k (qw/currency action duration phase sub_phase/)
@@ -1472,6 +1474,35 @@ sub _build_price_query
    }
    $rd->{fee} = \@fees;
  }
+ # Fee (Regext)
+ elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::Fee', @{$ndr->protocol()->{loaded_modules}})
+ {
+   my ($fee,@fees);
+   $fee->{'currency'} = $rd->{currency} if exists $rd->{currency} && $rd->{currency} =~ m/^\w{3}$/;
+   my $duration = $ndr->local_object('duration','years',$rd->{duration}) if exists $rd->{duration} && ref $rd->{duration} eq '' && $rd->{duration} =~ m/^\d$/;
+   $duration = $rd->{duration} if exists $rd->{duration} && UNIVERSAL::isa($rd->{duration}, 'DateTime::Duration');
+
+   my $phase = {};
+   $fee->{phase} = $rd->{phase} if exists $rd->{phase}; # 0.11
+   $fee->{sub_phase} = $rd->{sub_phase} if exists $rd->{sub_phase}; # 0.11
+   $phase->{phase} = $rd->{phase} if exists $rd->{phase}; # 0.21+
+   $phase->{sub_phase} = $rd->{sub_phase} if exists $rd->{sub_phase}; # 0.21+
+
+   if (keys %{$phase} || $duration) {
+     foreach my $k (qw/create renew transfer restore/)
+     {
+         my $set = ($k eq 'create') ? { %$phase } : {};
+         $set->{duration} = $duration if $duration && $k ne 'restore';
+         $set->{name} = $k if keys %{$set};
+         push @{$fee->{command}}, ((keys %{$set}) ? { %$set } : $k);
+     }
+   } else {
+     @{$fee->{command}} = qw/create renew transfer restore/;
+   }
+
+   $rd->{fee} = $fee;
+ }
+
  foreach (qw/currency action duration/)
  {
    delete $rd->{$_} if exists $rd->{$_};

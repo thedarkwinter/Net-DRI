@@ -59,7 +59,6 @@ lib/Net/DRI/Data/Contact/TANGO.pm
 lib/Net/DRI/Data/Contact/TCI.pm
 lib/Net/DRI/Data/Contact/TCI_gTLD.pm
 lib/Net/DRI/Data/Contact/UniRegistry.pm
-lib/Net/DRI/Data/Contact/US.pm
 lib/Net/DRI/Data/Contact/ZACR.pm
 lib/Net/DRI/Data/ContactSet.pm
 lib/Net/DRI/Data/Hosts.pm
@@ -120,11 +119,9 @@ lib/Net/DRI/DRD/KNET.pm
 lib/Net/DRI/DRD/KSRegistry.pm
 lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
-lib/Net/DRI/DRD/Neustar/BIZ.pm
 lib/Net/DRI/DRD/Neustar/COInternet.pm
 lib/Net/DRI/DRD/Neustar/Narwhal.pm
 lib/Net/DRI/DRD/Neustar/Tralliance.pm
-lib/Net/DRI/DRD/Neustar/US.pm
 lib/Net/DRI/DRD/NGTLD.pm
 lib/Net/DRI/DRD/NicAT/AT.pm
 lib/Net/DRI/DRD/NicAT/RegBox.pm
@@ -264,7 +261,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/KeyValue.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Price.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Sync.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AusRegistry/Variant.pm
-lib/Net/DRI/Protocol/EPP/Extensions/BIZ.pm
 lib/Net/DRI/Protocol/EPP/Extensions/BR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/BR/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/BR/Domain.pm
@@ -322,6 +318,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/ES/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ES/Tray.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid/Contact.pm
+lib/Net/DRI/Protocol/EPP/Extensions/EURid/DNSQuality.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid/Notifications.pm
@@ -459,7 +456,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/RegistryMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Charge.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Finance.pm
-lib/Net/DRI/Protocol/EPP/Extensions/US.pm
 lib/Net/DRI/Protocol/EPP/Extensions/US/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Balance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/ClientAttributes.pm
@@ -540,7 +536,6 @@ lib/Net/DRI/Protocol/Whois.pm
 lib/Net/DRI/Protocol/Whois/Connection.pm
 lib/Net/DRI/Protocol/Whois/Domain/AERO.pm
 lib/Net/DRI/Protocol/Whois/Domain/AT.pm
-lib/Net/DRI/Protocol/Whois/Domain/BIZ.pm
 lib/Net/DRI/Protocol/Whois/Domain/CAT.pm
 lib/Net/DRI/Protocol/Whois/Domain/COM.pm
 lib/Net/DRI/Protocol/Whois/Domain/common.pm
@@ -554,7 +549,6 @@ lib/Net/DRI/Protocol/Whois/Domain/ORG.pm
 lib/Net/DRI/Protocol/Whois/Domain/PT.pm
 lib/Net/DRI/Protocol/Whois/Domain/SE.pm
 lib/Net/DRI/Protocol/Whois/Domain/TRAVEL.pm
-lib/Net/DRI/Protocol/Whois/Domain/US.pm
 lib/Net/DRI/Protocol/Whois/Domain/WS.pm
 lib/Net/DRI/Protocol/Whois/Message.pm
 lib/Net/DRI/Registry.pm
@@ -703,7 +697,6 @@ t/Net/DRI/Protocol/EPP/Extensions/UA.t
 t/Net/DRI/Protocol/EPP/Extensions/UniRegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Market.t
 t/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.t
-t/Net/DRI/Protocol/EPP/Extensions/US/Contact.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/Balance.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/ClientAttributes.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/DefReg.t
