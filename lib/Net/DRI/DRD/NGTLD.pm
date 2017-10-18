@@ -354,10 +354,10 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 =cut
 
  if ($bep eq 'centralnic') {
-    my @coms = (map { $_.'.com' } qw/africa ar br cn de eu gb gr hu jpn kr mex no qc ru sa se uk us uy za/);
+    my @coms = (map { $_.'.com' } qw/africa ar br cn co de eu gb gr hu jpn kr mex no qc ru sa se uk us uy za/);
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
-    my @others = qw/pw com.de/;
+    my @others = qw/pw com.de com.se/;
     my @ngtlds = qw/art bar basketball budapest college contact design fan fans feedback forum fun host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
