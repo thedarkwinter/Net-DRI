@@ -21,7 +21,10 @@ Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.
 
 * * *
 ##### LaunchPhase extension
-Based on draft-ietf-eppext-launchphase-07
+Based on draft-ietf-eppext-launchphase-07 / draft-ietf-regext-launchphase-00
+
+##### Fee extension
+Based on draft-ietf-regext-epp-fees-06 (fee-0.23)
 
 ##### New gTLD backend providers (RO's)
 Afnic, Afilias, Amazon (Neustar), ARI (now Neustar), CoCCA, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media (Nominet), Fury Registry (CIRA), GMO Registry, KNET, KSRegistry, Minds And Machines (Nominet-MMX), Neustar, Nic.BR, Nic.MX, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, SIDN, Tango from KNIPP, TCI, TeleInfo, UniRegistry, Verisign, ZACR
