@@ -77,13 +77,10 @@ sub create
 {
  my ($epp,$domain,$rd)=@_;
  Net::DRI::Exception::usererr_insufficient_parameters('contacts are mandatory in .NL for domain_create') unless Net::DRI::Util::has_contact($rd);
- my $cs=$rd->{contact};
- my @c=$cs->get('registrant');
- Net::DRI::Exception::usererr_insufficient_parameters('one registrant is mandatory in .NL for domain_create') unless (@c==1 && Net::DRI::Util::isa_contact($c[0],'Net::DRI::Data::Contact::SIDN'));
- @c=$cs->get('admin');
- Net::DRI::Exception::usererr_insufficient_parameters('one admin contact is mandatory in .NL for domain_create') unless (@c==1 && Net::DRI::Util::isa_contact($c[0],'Net::DRI::Data::Contact::SIDN'));
- @c=$cs->get('tech');
- Net::DRI::Exception::usererr_insufficient_parameters('at least one tech contact is mandatory in .NL for domain_create') unless (@c >= 1 && scalar(@c)==scalar(grep { Net::DRI::Util::isa_contact($_,'Net::DRI::Data::Contact::SIDN') } @c));
+ Net::DRI::Exception::usererr_insufficient_parameters('one registrant is mandatory in .NL for domain_create') unless ($rd->{contact}->has_type('registrant'));
+ Net::DRI::Exception::usererr_insufficient_parameters('one admin is mandatory in .NL for domain_create') unless ($rd->{contact}->has_type('admin'));
+ Net::DRI::Exception::usererr_insufficient_parameters('at least one tech contact is mandatory in .NL for domain_create') unless ($rd->{contact}->has_type('tech'));
+
  return;
 }
 

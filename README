@@ -87,7 +87,7 @@ Currently Net::DRI ships with:
 - Net::DRI::DRD::* modules for:
   COM NET CC BZ TV JOBS
   AdamsNames AERO AG ASIA AT AU
-  BE BH BIZ BR BZ
+  BE BH BR BZ
   CAT CentralNic CIRA COOP CZ CO.CZ CO.ZA
   CX GS TL KI MU NF HT NA NG CC CM SB MG
   DE EU GL HN FR PM RE YT TF WF
@@ -573,7 +573,7 @@ examples of use and full API coverage.
 
 * domain_is_mine()
 
- Returns 1 if we are the current sponsor of the domain name given as first argument 
+ Returns 1 if we are the current sponsor of the domain name given as first argument
  at the current registry and current profile.
  Else, 0.
 

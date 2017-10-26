@@ -48,6 +48,8 @@ TANGO utilises the following standard extensions. Please see the test files for 
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction> urn:ar:params:xml:ns:auction-1.0
 
+=head3 L<Net::DRI::Protocol::EPP::Extensions::Fee> urn:ietf:params:xml:ns:fee-0.21
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:

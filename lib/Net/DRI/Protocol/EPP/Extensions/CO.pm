@@ -23,7 +23,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::BIZ - Neulevel .CO EPP extensions for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::CO - Neulevel .CO EPP extensions for Net::DRI
 
 =head1 DESCRIPTION
 
