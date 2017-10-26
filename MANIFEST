@@ -331,6 +331,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Balance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Message.pm
+lib/Net/DRI/Protocol/EPP/Extensions/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/Domain.pm
@@ -645,6 +646,9 @@ t/Net/DRI/Protocol/EPP/Extensions/EURid/Registrar.t
 t/Net/DRI/Protocol/EPP/Extensions/EURid/Sunrise.t
 t/Net/DRI/Protocol/EPP/Extensions/FCCN.t
 t/Net/DRI/Protocol/EPP/Extensions/FICORA.t
+t/Net/DRI/Protocol/EPP/Extensions/Fee/Fee-0.11.t
+t/Net/DRI/Protocol/EPP/Extensions/Fee/Fee-0.21.t
+t/Net/DRI/Protocol/EPP/Extensions/Fee/Fee-0.23.t
 t/Net/DRI/Protocol/EPP/Extensions/FRED.t
 t/Net/DRI/Protocol/EPP/Extensions/GMORegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/GracePeriod.t
