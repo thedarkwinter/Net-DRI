@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 536;
+use Test::More tests => 537;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -83,7 +83,8 @@ use_ok('Net::DRI::DRD::CRR');
 use_ok('Net::DRI::DRD::Deloitte');
 use_ok('Net::DRI::DRD::DENIC');
 use_ok('Net::DRI::DRD::DKHostmaster');
-use_ok('Net::DRI::DRD::DNSBelgium');
+use_ok('Net::DRI::DRD::DNSBelgium::BE');
+use_ok('Net::DRI::DRD::DNSBelgium::GTLD');
 use_ok('Net::DRI::DRD::DNSPT');
 use_ok('Net::DRI::DRD::Domicilium');
 use_ok('Net::DRI::DRD::DotCooperation');

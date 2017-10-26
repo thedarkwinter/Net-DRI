@@ -50,7 +50,7 @@ $dri->end();
 };
 
 if (! $ok)
-{ 
+{
  my $err=$@;
  print "\n\nAn EXCEPTION happened !\n";
  if (ref $err)

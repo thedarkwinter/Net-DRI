@@ -92,7 +92,8 @@ lib/Net/DRI/DRD/CRR.pm
 lib/Net/DRI/DRD/Deloitte.pm
 lib/Net/DRI/DRD/DENIC.pm
 lib/Net/DRI/DRD/DKHostmaster.pm
-lib/Net/DRI/DRD/DNSBelgium.pm
+lib/Net/DRI/DRD/DNSBelgium/BE.pm
+lib/Net/DRI/DRD/DNSBelgium/GTLD.pm
 lib/Net/DRI/DRD/DNSPT.pm
 lib/Net/DRI/DRD/Domicilium.pm
 lib/Net/DRI/DRD/DotCooperation.pm
