@@ -123,6 +123,7 @@ lib/Net/DRI/DRD/Neustar/Tralliance.pm
 lib/Net/DRI/DRD/NGTLD.pm
 lib/Net/DRI/DRD/NicAT/AT.pm
 lib/Net/DRI/DRD/NicAT/RegBox.pm
+lib/Net/DRI/DRD/NICChile.pm
 lib/Net/DRI/DRD/NICEC.pm
 lib/Net/DRI/DRD/NICMexico.pm
 lib/Net/DRI/DRD/NICRO.pm
@@ -277,6 +278,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Notifications.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CL.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CL/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CloudRegistry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CloudRegistry/LaunchPhase.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CN.pm
@@ -616,6 +619,7 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNicGW.t
 t/Net/DRI/Protocol/EPP/Extensions/ChangePoll.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
+t/Net/DRI/Protocol/EPP/Extensions/CL.t
 t/Net/DRI/Protocol/EPP/Extensions/CN.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC/Bundling.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC_gTLD.t

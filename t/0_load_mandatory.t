@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 533;
+use Test::More tests => 536;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -113,6 +113,7 @@ use_ok('Net::DRI::DRD::Neustar::Tralliance');
 use_ok('Net::DRI::DRD::NGTLD');
 use_ok('Net::DRI::DRD::NicAT::AT');
 use_ok('Net::DRI::DRD::NicAT::RegBox');
+use_ok('Net::DRI::DRD::NICChile');
 use_ok('Net::DRI::DRD::NICEC');
 use_ok('Net::DRI::DRD::NICMexico');
 use_ok('Net::DRI::DRD::NICRO');
@@ -267,6 +268,8 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Notifications');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CL');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CL::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CloudRegistry');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CloudRegistry::LaunchPhase');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CN');
