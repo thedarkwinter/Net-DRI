@@ -104,6 +104,7 @@ lib/Net/DRI/DRD/GDI.pm
 lib/Net/DRI/DRD/GMORegistry/BRRegistry.pm
 lib/Net/DRI/DRD/GMORegistry/GMORegistry.pm
 lib/Net/DRI/DRD/GMORegistry/KYOTO.pm
+lib/Net/DRI/DRD/GMORegistry/PANDI.pm
 lib/Net/DRI/DRD/GMORegistry/SHOP.pm
 lib/Net/DRI/DRD/HostmasterUA.pm
 lib/Net/DRI/DRD/ICANN.pm
@@ -134,7 +135,6 @@ lib/Net/DRI/DRD/NORID.pm
 lib/Net/DRI/DRD/OpenRegistry/GENT.pm
 lib/Net/DRI/DRD/OpenSRS.pm
 lib/Net/DRI/DRD/OVH.pm
-lib/Net/DRI/DRD/PANDI.pm
 lib/Net/DRI/DRD/puntCAT.pm
 lib/Net/DRI/DRD/RedES.pm
 lib/Net/DRI/DRD/RESTENA.pm
