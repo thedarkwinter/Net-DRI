@@ -621,6 +621,7 @@ t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/CL.t
 t/Net/DRI/Protocol/EPP/Extensions/CN.t
+t/Net/DRI/Protocol/EPP/Extensions/CL.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC/Bundling.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/CO.t
