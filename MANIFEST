@@ -118,7 +118,6 @@ lib/Net/DRI/DRD/KNET.pm
 lib/Net/DRI/DRD/KSRegistry.pm
 lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
-lib/Net/DRI/DRD/Neustar/COInternet.pm
 lib/Net/DRI/DRD/Neustar/Narwhal.pm
 lib/Net/DRI/DRD/Neustar/Tralliance.pm
 lib/Net/DRI/DRD/NGTLD.pm
@@ -291,7 +290,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Host.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Registry.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ContactVerification.pm
@@ -374,7 +372,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/MX/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/Rar.pm
-lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/CO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/EXTContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNLanguage.pm

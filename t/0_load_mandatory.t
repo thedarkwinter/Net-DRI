@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 536;
+use Test::More tests => 533;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -108,7 +108,6 @@ use_ok('Net::DRI::DRD::KNET');
 use_ok('Net::DRI::DRD::KSRegistry');
 use_ok('Net::DRI::DRD::LVRegistry');
 use_ok('Net::DRI::DRD::NASK');
-use_ok('Net::DRI::DRD::Neustar::COInternet');
 use_ok('Net::DRI::DRD::Neustar::Narwhal');
 use_ok('Net::DRI::DRD::Neustar::Tralliance');
 use_ok('Net::DRI::DRD::NGTLD');
@@ -281,7 +280,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Host');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Registry');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CoCCA::IPVerification');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CoCCA::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ContactVerification');
@@ -364,7 +362,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Rar');
-use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::CO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::IDNLanguage');
