@@ -944,7 +944,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Validation> urn:ietf:params:xml:
 
 =head3 TLDs
 
-bh berlin brussels hamburg tirol versicherung vlaanderen voting ikano
+bh berlin hamburg tirol versicherung voting ikano
 
 Contended TLD's not included
 
@@ -962,7 +962,7 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['bh','berlin','brussels','hamburg','tirol','versicherung','vlaanderen','voting','ikano'],
+     tlds => ['bh','berlin','hamburg','tirol','versicherung','voting','ikano'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{'brown_fee_version' => '0.9'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::RegBox->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::RegBox'],

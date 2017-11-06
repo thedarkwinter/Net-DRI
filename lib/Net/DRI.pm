@@ -199,6 +199,7 @@ sub new
      'ASIA' => 'Afilias::Shared',
      'AT' => 'NicAT::AT',
      'AU' => 'auDA',
+     'BE' => 'DNSBelgium::BE',
      'BH' => 'TRA::BH',
      'BIZ' => 'Neustar::Narwhal',
      'BR' => 'CGIBR::BR',
@@ -216,8 +217,6 @@ sub new
      'CNNIC' => 'CNNIC::CN',
      'CZ' => 'CZNIC',
      'DK' => 'DKHostmaster',
-     'DNSBelgium' => 'DNSBelgium::BE',
-     'DNSBelgium_GTLD' => 'DNSBelgium::GTLD',
      'DONUTS' => 'UnitedTLD::Donuts',
      'EC' => 'NICEC',
      'ES' => 'RedES',
@@ -392,7 +391,7 @@ sub tld2reg
 
 sub installed_registries
 {
- return qw/AdamsNames Afilias::Afilias Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::Gateway CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium::BE DNSBelgium::GTLD DNSPT Domicilium DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET KSRegistry LVRegistry NASK Neustar::COInternet Neustar::Narwhal Neustar::Tralliance NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenRegistry::GENT OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SONIC SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE TRA::BH UniRegistry UnitedTLD::Donuts UnitedTLD::Rightside UPU VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore VeriSign::VeriSign ZACR/;
+ return qw/AdamsNames Afilias::Afilias Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::Gateway CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium::BE DNSPT Domicilium DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET KSRegistry LVRegistry NASK Neustar::COInternet Neustar::Narwhal Neustar::Tralliance NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenRegistry::GENT OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SONIC SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE TRA::BH UniRegistry UnitedTLD::Donuts UnitedTLD::Rightside UPU VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore VeriSign::VeriSign ZACR/;
 }
 
 ####################################################################################################
