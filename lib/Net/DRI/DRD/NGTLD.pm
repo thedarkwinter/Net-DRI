@@ -482,6 +482,30 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android app boo cal channel chrome dad 
 =pod
 
 
+=head2 DNSBelgium
+
+ $dri->add_registry('NGTLD',{provider=>'dnsbelgium'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+ brussels dnsbelgium vlaanderen
+
+=cut
+
+  return {
+      bep_type => 2, # shared registry
+      tlds => ['brussels', 'dnsbelgium', 'vlaanderen'], # README: dnsbelgium used on their OT&E only!
+      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],
+      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+    } if $bep eq 'dnsbelgium';
+
+
+
+=pod
+
+
 =head2 Donuts
 
  $dri->add_registry('NGTLD',{provider=>'donuts'});
