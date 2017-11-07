@@ -41,7 +41,7 @@ is($rc->{last_registry},'dnsbelgium','dnsbelgium: add_registry');
 $rc = $dri->target('dnsbelgium')->add_current_profile('p1-dnsbelgium','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{dnsbelgium}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'dnsbelgium: epp transport_protocol_default');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN/],'dnsbelgium: loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules_no_host, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN/],'dnsbelgium: loaded_modules');
 is($drd->{bep}->{bep_type},2,'dnsbelgium: bep_type');
 is($drd->{info}->{check_limit},13,'dnsbelgium: check_limit');
 is_deeply([$dri->tlds()],['brussels','dnsbelgium','vlaanderen'],'dnsbelgium: tlds');
@@ -68,7 +68,7 @@ is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Sock
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase Afilias::IPR Afilias::IDNLanguage Afilias::Message Afilias::Registrar Afilias::JSONMessage CentralNic::Fee/],'afilias: loaded_modules');
 is($drd->{bep}->{bep_type},2,'aflias: bep_type');
 is($drd->{info}->{check_limit},13,'afilias: check_limit');
-is($drd->{info}->{host_check_limit},13,'afiCentralNiclias: host_check_limit');
+is($drd->{info}->{host_check_limit},13,'afilias: host_check_limit');
 is($dri->info('contact_check_limit'),13,'afilias: contact_check_limit');
 is($drd->{info}->{domain_check_limit},13,'afilias: domain_check_limit');
 
