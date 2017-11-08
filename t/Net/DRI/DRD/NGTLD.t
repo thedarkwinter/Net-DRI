@@ -42,7 +42,7 @@ $rc = $dri->target('dnsbelgium')->add_current_profile('p1-dnsbelgium','epp',{f_s
 $drd = $dri->{registries}->{dnsbelgium}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'dnsbelgium: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules_no_host, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN/],'dnsbelgium: loaded_modules');
-is($drd->{bep}->{bep_type},2,'dnsbelgium: bep_type');
+is($drd->{bep}->{bep_type},1,'dnsbelgium: bep_type');
 is($drd->{info}->{check_limit},13,'dnsbelgium: check_limit');
 is_deeply([$dri->tlds()],['brussels','dnsbelgium','vlaanderen'],'dnsbelgium: tlds');
 
