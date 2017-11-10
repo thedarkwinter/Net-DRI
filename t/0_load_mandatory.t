@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 533;
+use Test::More tests => 534;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -362,6 +362,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX::Rar');
+use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::CO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::IDNLanguage');

@@ -372,6 +372,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/MX/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX/Rar.pm
+lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/CO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/EXTContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNLanguage.pm
@@ -620,7 +621,6 @@ t/Net/DRI/Protocol/EPP/Extensions/CL.t
 t/Net/DRI/Protocol/EPP/Extensions/CN.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC/Bundling.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC_gTLD.t
-t/Net/DRI/Protocol/EPP/Extensions/CO.t
 t/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.t
 t/Net/DRI/Protocol/EPP/Extensions/CoCCA/Notifications.t
 t/Net/DRI/Protocol/EPP/Extensions/ContactVerification.t
@@ -660,6 +660,7 @@ t/Net/DRI/Protocol/EPP/Extensions/LV.t
 t/Net/DRI/Protocol/EPP/Extensions/MAM/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/MX.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Block.t
+t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/CO.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Contact.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Domain.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/ExAvail.t
