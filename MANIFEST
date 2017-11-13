@@ -118,7 +118,6 @@ lib/Net/DRI/DRD/KNET.pm
 lib/Net/DRI/DRD/KSRegistry.pm
 lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
-lib/Net/DRI/DRD/Neustar/COInternet.pm
 lib/Net/DRI/DRD/Neustar/Narwhal.pm
 lib/Net/DRI/DRD/Neustar/Tralliance.pm
 lib/Net/DRI/DRD/NGTLD.pm
@@ -291,7 +290,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Host.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Registry.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ContactVerification.pm
@@ -623,7 +621,6 @@ t/Net/DRI/Protocol/EPP/Extensions/CL.t
 t/Net/DRI/Protocol/EPP/Extensions/CN.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC/Bundling.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC_gTLD.t
-t/Net/DRI/Protocol/EPP/Extensions/CO.t
 t/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.t
 t/Net/DRI/Protocol/EPP/Extensions/CoCCA/Notifications.t
 t/Net/DRI/Protocol/EPP/Extensions/ContactVerification.t
@@ -663,6 +660,7 @@ t/Net/DRI/Protocol/EPP/Extensions/LV.t
 t/Net/DRI/Protocol/EPP/Extensions/MAM/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/MX.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Block.t
+t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/CO.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Contact.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Domain.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/ExAvail.t
