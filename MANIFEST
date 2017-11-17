@@ -42,10 +42,10 @@ lib/Net/DRI/Data/Contact/IT.pm
 lib/Net/DRI/Data/Contact/JOBS.pm
 lib/Net/DRI/Data/Contact/LU.pm
 lib/Net/DRI/Data/Contact/LV.pm
-lib/Net/DRI/Data/Contact/MAM.pm
 lib/Net/DRI/Data/Contact/Neustar.pm
 lib/Net/DRI/Data/Contact/NO.pm
 lib/Net/DRI/Data/Contact/Nominet.pm
+lib/Net/DRI/Data/Contact/NominetMMX.pm
 lib/Net/DRI/Data/Contact/NZ.pm
 lib/Net/DRI/Data/Contact/OpenSRS.pm
 lib/Net/DRI/Data/Contact/PL.pm
@@ -363,7 +363,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/LU/Status.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LV.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LV/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LV/Domain.pm
-lib/Net/DRI/Protocol/EPP/Extensions/MAM/QualifiedLawyer.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MSKIX.pm
 lib/Net/DRI/Protocol/EPP/Extensions/MX.pm
@@ -393,6 +392,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/Nominet/DirectRights.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Notifications.pm
+lib/Net/DRI/Protocol/EPP/Extensions/Nominet/QualifiedLawyer.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NSgroup.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NZ.pm
@@ -657,7 +657,6 @@ t/Net/DRI/Protocol/EPP/Extensions/KNET.t
 t/Net/DRI/Protocol/EPP/Extensions/LaunchPhase.t
 t/Net/DRI/Protocol/EPP/Extensions/LU.t
 t/Net/DRI/Protocol/EPP/Extensions/LV.t
-t/Net/DRI/Protocol/EPP/Extensions/MAM/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/MX.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Block.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/CO.t
@@ -675,6 +674,7 @@ t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.t
 t/Net/DRI/Protocol/EPP/Extensions/NO.t
 t/Net/DRI/Protocol/EPP/Extensions/Nominet.t
+t/Net/DRI/Protocol/EPP/Extensions/Nominet/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/NSgroup.t
 t/Net/DRI/Protocol/EPP/Extensions/NZ.t
 t/Net/DRI/Protocol/EPP/Extensions/OpenReg.t

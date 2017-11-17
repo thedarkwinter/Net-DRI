@@ -14,14 +14,14 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::MAM::QualifiedLawyer;
+package Net::DRI::Protocol::EPP::Extensions::Nominet::QualifiedLawyer;
 
 use strict;
 use warnings;
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
-use Net::DRI::Data::Contact::MAM;
+use Net::DRI::Data::Contact::NominetMMX;
 
 =pod
 
@@ -102,9 +102,9 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({'qualifiedLawyer' => ['http://www.mindsandmachines.com/epp/qualifiedLawyer-1.0', 'qualifiedLawyer-1.0.xsd']});
- $po->factories('contact',sub { return Net::DRI::Data::Contact::MAM->new(); });
- 
+ $po->ns({'qualifiedLawyer' => ['urn:ietf:params:xml:ns:qualifiedLawyer-1.0', 'qualifiedLawyer-1.0.xsd']});
+ $po->factories('contact',sub { return Net::DRI::Data::Contact::NominetMMX->new(); });
+
  return;
 }
 
@@ -114,13 +114,13 @@ sub build_qualified_lawyer
 {
  my ($rd) = shift;
  my @n;
- 
+
  push @n, ['qualifiedLawyer:accreditationId',$rd->{'accreditation_id'}];
  push @n, ['qualifiedLawyer:accreditationBody',$rd->{'accreditation_body'}];
  push @n, ['qualifiedLawyer:accreditationYear',$rd->{'accreditation_year'}];
  push @n, ['qualifiedLawyer:jurisdictionCC',$rd->{'jurisdiction_cc'}];
  push @n, ['qualifiedLawyer:jurisdictionSP',$rd->{'jurisdiction_sp'}] if $rd->{'jurisdiction_sp'};
- 
+
  return @n;
 }
 
@@ -131,13 +131,13 @@ sub create
  my ($epp,$contact)=@_;
  my $mes=$epp->message();
  return unless $contact->{'accreditation_id'}; # only checking this param. Other mandatory params protection under Data::Contact::MAM :)
- 
+
  my @n = build_qualified_lawyer($contact);
  return unless @n;
- 
+
  my $eid=$mes->command_extension_register('qualifiedLawyer','create');
  $mes->command_extension($eid,\@n);
- 
+
  return;
 }
 
@@ -150,17 +150,17 @@ sub update
 
  my @n = build_qualified_lawyer($extc);
  return unless @n;
- 
+
  my $eid=$mes->command_extension_register('qualifiedLawyer','update');
  $mes->command_extension($eid,\@n);
- 
+
  return;
 }
 
 sub info_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$po->message(); 
+ my $mes=$po->message();
  return unless $mes->is_success();
  my $infdata=$mes->get_extension($mes->ns('qualifiedLawyer'),'info');
  return unless defined $infdata;
