@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 534;
+use Test::More tests => 536;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -70,6 +70,7 @@ use_ok('Net::DRI::DRD::auDA');
 use_ok('Net::DRI::DRD::BookMyName');
 use_ok('Net::DRI::DRD::CentralNic::CentralNic');
 use_ok('Net::DRI::DRD::CentralNic::Gateway');
+use_ok('Net::DRI::DRD::CentralNic::SKNIC');
 use_ok('Net::DRI::DRD::CGIBR::BR');
 use_ok('Net::DRI::DRD::CGIBR::GTLD');
 use_ok('Net::DRI::DRD::CIRA::CA');
@@ -260,6 +261,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::AuxContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::RegType');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::SkContactIdent');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ChangePoll');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Agreement');

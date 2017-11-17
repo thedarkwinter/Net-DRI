@@ -260,6 +260,7 @@ sub new
      'SE' => 'IIS',
      'SIDN' => 'SIDN::NL',
      'SIDN_GTLD' => 'SIDN::GTLD',
+     'SK' => 'CentralNic::SKNIC',
      'SO' => 'SONIC',
      'SU' => 'TCI::SU',
      'TANGO' => 'TangoRS::TangoRS',
@@ -392,7 +393,7 @@ sub tld2reg
 
 sub installed_registries
 {
- return qw/AdamsNames Afilias::Afilias Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::Gateway CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium DNSPT Domicilium DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET KSRegistry LVRegistry NASK Neustar::Narwhal Neustar::Tralliance NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenRegistry::GENT OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SONIC SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE TRA::BH UniRegistry UnitedTLD::Donuts UnitedTLD::Rightside UPU VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore VeriSign::VeriSign ZACR/;
+ return qw/AdamsNames Afilias::Afilias Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::Gateway CentralNic::SKNIC CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium DNSPT Domicilium DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET KSRegistry LVRegistry NASK Neustar::Narwhal Neustar::Tralliance NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenRegistry::GENT OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SONIC SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE TRA::BH UniRegistry UnitedTLD::Donuts UnitedTLD::Rightside UPU VeriSign::COM_NET VeriSign::NAME VeriSign::NameStore VeriSign::VeriSign ZACR/;
 }
 
 ####################################################################################################

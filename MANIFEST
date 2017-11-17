@@ -79,6 +79,7 @@ lib/Net/DRI/DRD/auDA.pm
 lib/Net/DRI/DRD/BookMyName.pm
 lib/Net/DRI/DRD/CentralNic/CentralNic.pm
 lib/Net/DRI/DRD/CentralNic/Gateway.pm
+lib/Net/DRI/DRD/CentralNic/SKNIC.pm
 lib/Net/DRI/DRD/CGIBR/BR.pm
 lib/Net/DRI/DRD/CGIBR/GTLD.pm
 lib/Net/DRI/DRD/CIRA/CA.pm
@@ -270,6 +271,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/CentralNic.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/AuxContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/SkContactIdent.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ChangePoll.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Agreement.pm
@@ -613,6 +615,7 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.7.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.8.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.9.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.t
+t/Net/DRI/Protocol/EPP/Extensions/CentralNic/SKNIC.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNicGW.t
 t/Net/DRI/Protocol/EPP/Extensions/ChangePoll.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
