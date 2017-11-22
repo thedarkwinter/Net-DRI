@@ -482,6 +482,32 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android app boo cal channel chrome dad 
 =pod
 
 
+=head2 DNSBelgium
+
+ $dri->add_registry('NGTLD',{provider=>'dnsbelgium'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+ brussels dnsbelgium vlaanderen
+
+=cut
+
+  return {
+      bep_type => 1, # dedicated registry
+      host_as_attr => 1,
+      contact_i18n => 2, #  ## They accept LOC *or* INT, but only one of them. Forcing INT!
+      tlds => ['brussels', 'dnsbelgium', 'vlaanderen'], # README: dnsbelgium used on their OT&E only!
+      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],
+      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+    } if $bep eq 'dnsbelgium';
+
+
+
+=pod
+
+
 =head2 Donuts
 
  $dri->add_registry('NGTLD',{provider=>'donuts'});
@@ -948,7 +974,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Validation> urn:ietf:params:xml:
 
 =head3 TLDs
 
-bh berlin brussels hamburg tirol versicherung vlaanderen voting ikano
+bh berlin hamburg tirol versicherung voting ikano
 
 Contended TLD's not included
 
@@ -966,7 +992,7 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['bh','berlin','brussels','hamburg','tirol','versicherung','vlaanderen','voting','ikano'],
+     tlds => ['bh','berlin','hamburg','tirol','versicherung','voting','ikano'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{'brown_fee_version' => '0.9'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::RegBox->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::RegBox'],

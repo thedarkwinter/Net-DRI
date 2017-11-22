@@ -18,8 +18,8 @@ $rc=$dri->target('EURid')->add_current_profile('profile1','das');
 die($rc) unless $rc->is_success();
 das('europa.eu');
 das('netdri-test-doestnotexist.eu');
-$dri->add_registry('DNSBelgium',{});
-$rc=$dri->target('DNSBelgium')->add_current_profile('profile1','das');
+$dri->add_registry('DNSBelgium::BE',{});
+$rc=$dri->target('DNSBelgium::BE')->add_current_profile('profile1','das');
 die($rc) unless $rc->is_success();
 das('brussels.be');
 das('netdri-test-doestnotexist.be');
@@ -50,7 +50,7 @@ $dri->end();
 };
 
 if (! $ok)
-{ 
+{
  my $err=$@;
  print "\n\nAn EXCEPTION happened !\n";
  if (ref $err)
