@@ -32,7 +32,7 @@ sub setup
 sub default_extensions {
  my ($self,$pp) = @_;
  $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
- my @ext = qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/;
+ my @ext = qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/;
  if (exists $pp->{custom} )
  {
    my @custom = (ref $pp->{custom} eq 'ARRAY') ? @{$pp->{custom}} : ($pp->{custom});

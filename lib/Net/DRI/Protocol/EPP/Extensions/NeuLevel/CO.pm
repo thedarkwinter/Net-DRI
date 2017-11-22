@@ -1,6 +1,6 @@
-## Domain Registry Interface, Neulevel EPP Fee Extension
+## Domain Registry Interface, Neulevel EPP CO Extension
 ##
-## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2017 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -67,7 +67,9 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
-           info => [ undef, \&parse ],
+           create   => [ \&transform, undef ],
+           info     => [ undef, \&parse ],
+           renew    => [ \&transform, undef ],
          );
 
  return { 'domain' => \%tmp };
@@ -93,6 +95,23 @@ sub parse
    my ($k,$v) = split(/=/,$kv);
    $rinfo->{$otype}->{$oname}->{domain_suspended_indicator}=$v if $k eq 'DomainSuspendedIndicator';
   }
+ }
+
+ sub transform
+ {
+  my ($epp,$domain,$rd)=@_;
+  return unless Net::DRI::Util::has_key($rd,'unspec');
+  my $unspec;
+  my $rd_unspec = $rd->{'unspec'};
+  if ($rd_unspec->{'reservation_domain'}) {
+    $unspec = 'ReservationDomain=' . $rd_unspec->{'reservation_domain'};
+  } elsif ($rd_unspec->{'restore_reason_code'} && $rd_unspec->{'restore_comment'} && $rd_unspec->{'true_data'} && $rd_unspec->{'valid_use'}) {
+    $unspec = 'RestoreReasonCode=' . $rd_unspec->{'restore_reason_code'} . ' RestoreComment=' . $rd_unspec->{'restore_comment'} . ' TrueData=' . $rd_unspec->{'true_data'} . ' ValidUse=' . $rd_unspec->{'valid_use'};
+  }
+  my $mes=$epp->message();
+  my $eid=$mes->command_extension_register('neulevel','extension');
+  $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+  return;
  }
 
  return;

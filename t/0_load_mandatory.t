@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 537;
+use Test::More tests => 535;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -33,7 +33,7 @@ use_ok('Net::DRI::Data::Contact::IT');
 use_ok('Net::DRI::Data::Contact::JOBS');
 use_ok('Net::DRI::Data::Contact::LU');
 use_ok('Net::DRI::Data::Contact::LV');
-use_ok('Net::DRI::Data::Contact::MAM');
+use_ok('Net::DRI::Data::Contact::NominetMMX');
 use_ok('Net::DRI::Data::Contact::Neustar');
 use_ok('Net::DRI::Data::Contact::NO');
 use_ok('Net::DRI::Data::Contact::Nominet');
@@ -109,7 +109,6 @@ use_ok('Net::DRI::DRD::KNET');
 use_ok('Net::DRI::DRD::KSRegistry');
 use_ok('Net::DRI::DRD::LVRegistry');
 use_ok('Net::DRI::DRD::NASK');
-use_ok('Net::DRI::DRD::Neustar::COInternet');
 use_ok('Net::DRI::DRD::Neustar::Narwhal');
 use_ok('Net::DRI::DRD::Neustar::Tralliance');
 use_ok('Net::DRI::DRD::NGTLD');
@@ -282,7 +281,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Host');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Registry');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CoCCA::IPVerification');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CoCCA::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ContactVerification');
@@ -356,7 +354,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::LU::Status');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LV');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LV::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LV::Domain');
-use_ok('Net::DRI::Protocol::EPP::Extensions::MAM::QualifiedLawyer');
+use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::QualifiedLawyer');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ME');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MSKIX');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX');
