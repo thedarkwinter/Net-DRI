@@ -35,7 +35,7 @@ my ($rc,$s,$d,$co,$toc,$cs,$h,$dh,@c);
 ## DNSBE uses version 1.0, while Eurid uses 1.1 (with their own namespace declarations)
 ## So we test both versions here. 1.1 is at the bottom!
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl=>10,trid_factory => sub { return 'TRID-0001'}});
-$dri->add_current_registry('DNSBelgium');
+$dri->add_current_registry('DNSBelgium::BE');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 ## Process greetings to select namespace versions

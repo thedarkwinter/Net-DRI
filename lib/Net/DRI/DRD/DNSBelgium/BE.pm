@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2006-2011,2O16 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2017 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::DRD::DNSBelgium;
+package Net::DRI::DRD::DNSBelgium::BE;
 
 use utf8;
 use strict;
@@ -29,7 +30,7 @@ __PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_stop d
 
 =head1 NAME
 
-Net::DRI::DRD::DNSBelgium - DNSBelgium (.BE) policies for Net::DRI
+Net::DRI::DRD::DNSBelgium::BE - DNSBelgium (.BE) policies for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -55,6 +56,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 Copyright (c) 2006-2011,2016 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2017 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,8 +80,8 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); }
-sub name     { return 'DNSBelgium'; }
-sub tlds     { return ('be'); } # In october 2017, they will be doing vlaanderen and .brussels, but no details yet
+sub name     { return 'DNSBelgium::BE'; }
+sub tlds     { return ('be'); }
 sub object_types { return (qw/domain contact nsgroup keygroup/); }
 sub profile_types { return qw/epp das/; }
 

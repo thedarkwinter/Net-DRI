@@ -94,7 +94,8 @@ lib/Net/DRI/DRD/CRR.pm
 lib/Net/DRI/DRD/Deloitte.pm
 lib/Net/DRI/DRD/DENIC.pm
 lib/Net/DRI/DRD/DKHostmaster.pm
-lib/Net/DRI/DRD/DNSBelgium.pm
+lib/Net/DRI/DRD/DNSBelgium/BE.pm
+lib/Net/DRI/DRD/DNSBelgium/GTLD.pm
 lib/Net/DRI/DRD/DNSPT.pm
 lib/Net/DRI/DRD/Domicilium.pm
 lib/Net/DRI/DRD/DotCooperation.pm
@@ -455,7 +456,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/RegistryMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Charge.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD/Finance.pm
-lib/Net/DRI/Protocol/EPP/Extensions/US/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Balance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/ClientAttributes.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/DefReg.pm
