@@ -21,7 +21,10 @@ use warnings;
 
 use base qw/Net::DRI::DRD/;
 
+use Net::DRI::Data::Contact::SKNIC;
 use DateTime::Duration;
+use Net::DRI::Util;
+use Net::DRI::Exception;
 
 =pod
 
@@ -51,9 +54,9 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2016 Michael Holloway <michael@thedarkwinter.com>.
-          (c) 2016 Paulo Jorge <paullojorgge@gmail.com>.
+Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2017 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2017 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -88,6 +91,12 @@ sub transport_protocol_default
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{'brown_fee_version' => '0.5'}) if $type eq 'epp';
 
  return;
+}
+
+sub set_factories {
+   my ($self,$po)=@_;
+   $po->factories('contact',sub { return Net::DRI::Data::Contact::SKNIC->new(@_); });
+   return;
 }
 
 ####################################################################################################

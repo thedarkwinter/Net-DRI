@@ -53,6 +53,7 @@ lib/Net/DRI/Data/Contact/RegBox.pm
 lib/Net/DRI/Data/Contact/RO.pm
 lib/Net/DRI/Data/Contact/SE.pm
 lib/Net/DRI/Data/Contact/SIDN.pm
+lib/Net/DRI/Data/Contact/SKNIC.pm
 lib/Net/DRI/Data/Contact/SWITCH.pm
 lib/Net/DRI/Data/Contact/TANGO.pm
 lib/Net/DRI/Data/Contact/TCI.pm

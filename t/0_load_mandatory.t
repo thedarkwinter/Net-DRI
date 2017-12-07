@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 536;
+use Test::More tests => 537;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -45,6 +45,7 @@ use_ok('Net::DRI::Data::Contact::RO');
 use_ok('Net::DRI::Data::Contact::SE');
 use_ok('Net::DRI::Data::ContactSet');
 use_ok('Net::DRI::Data::Contact::SIDN');
+use_ok('Net::DRI::Data::Contact::SKNIC');
 use_ok('Net::DRI::Data::Contact::SWITCH');
 use_ok('Net::DRI::Data::Contact::TANGO');
 use_ok('Net::DRI::Data::Contact::TCI');

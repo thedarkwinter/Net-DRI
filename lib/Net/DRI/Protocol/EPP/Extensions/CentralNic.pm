@@ -26,7 +26,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 sub default_extensions {
  my ($self,$pp) = @_;
  $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
- my @extensions = qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee CentralNic::RegType CentralNic::AuxContact/; #TODO COOP::Contact
+ my @extensions = qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee CentralNic::RegType CentralNic::AuxContact CentralNic::SkContactIdent/; #TODO COOP::Contact
  return @extensions;
 }
 
