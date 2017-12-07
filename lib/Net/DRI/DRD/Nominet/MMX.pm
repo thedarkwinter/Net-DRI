@@ -109,15 +109,4 @@ sub transport_protocol_default
 }
 
 ####################################################################################################
-
-sub verify_name_domain
-{
- my ($self,$ndr,$domain,$op)=@_;
- return $self->_verify_name_rules($domain,$op,{check_name => 1,
-                                               my_tld => 1,
-                                               icann_reserved => 1,
-                                              });
-}
-
-####################################################################################################
 1;
