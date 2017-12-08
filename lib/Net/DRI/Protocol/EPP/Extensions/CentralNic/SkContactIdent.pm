@@ -66,8 +66,10 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my %ops=(
-    create => [ \&create, undef ]
-    );
+  create  =>  [ \&create, undef ],
+  # update  =>  [ \&update, undef ], # README: not supported? please read function comment!
+  info    =>  [ undef, \&info_parse ],
+ );
  return { 'contact' => \%ops };
 }
 
@@ -97,6 +99,51 @@ sub create
 
  return;
 }
+
+sub info_parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
+
+ my $cont_info = $rinfo->{contact}->{$oname}->{self};
+ my $ext_data = $mes->get_extension( 'skContactIdent', 'infData' );
+ return unless $ext_data;
+
+ foreach my $el ( Net::DRI::Util::xml_list_children($ext_data) ) {
+  my ( $name, $content ) = @$el;
+  if ( lc($name) eq 'legalform' ) {
+   $cont_info->legal_form( $content->textContent() );
+  } elsif ( lc($name) eq 'identvalue' ) {
+   $cont_info->ident_value( $content->textContent() );
+  }
+ }
+
+ return;
+}
+
+# # didn't work on their OT&E - commenting in case they release documentation or XSD with <contact:update> example!
+# sub update
+# {
+#  my ( $epp, $contact, $todo ) = @_;
+#  my $mes  = $epp->message();
+#  my $newc = $todo->set('info');
+#  my @n;
+#
+#  return unless defined $contact->legal_form() && $contact->ident_value();
+#  push @n,['skContactIdent:legalForm', $contact->legal_form()] if $contact->legal_form();
+#  if ( $contact->ident_value() ) {
+#   push @n,['skContactIdent:identValue', [ 'skContactIdent:corpIdent', $contact->ident_value()] ] if lc($contact->legal_form()) eq 'corp';
+#   # README: the next one i am not sure... just a guess! - not on their technical documentation neither XSD samples!
+#   push @n,['skContactIdent:identValue', [ 'skContactIdent:persIdent', $contact->ident_value()] ] if lc($contact->legal_form()) eq 'pers';
+#  }
+#
+#  return unless @n;
+#  my $eid=$mes->command_extension_register('skContactIdent','update');
+#  $mes->command_extension($eid,\@n);
+#
+#  return;
+# }
 
 ####################################################################################################
 1;
