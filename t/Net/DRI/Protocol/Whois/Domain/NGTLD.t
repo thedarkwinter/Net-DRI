@@ -5,7 +5,7 @@ use warnings;
 use Net::DRI;
 use Data::Dumper;
 
-use Test::More tests => 480;
+use Test::More tests => 456;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
