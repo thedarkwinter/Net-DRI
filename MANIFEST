@@ -132,7 +132,6 @@ lib/Net/DRI/DRD/Nominet/GTLD.pm
 lib/Net/DRI/DRD/Nominet/MMX.pm
 lib/Net/DRI/DRD/Nominet/UK.pm
 lib/Net/DRI/DRD/NORID.pm
-lib/Net/DRI/DRD/OpenRegistry/GENT.pm
 lib/Net/DRI/DRD/OpenSRS.pm
 lib/Net/DRI/DRD/OVH.pm
 lib/Net/DRI/DRD/puntCAT.pm
@@ -397,7 +396,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/Nominet/QualifiedLawyer.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NSgroup.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NZ.pm
-lib/Net/DRI/Protocol/EPP/Extensions/OpenRegistry/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PH.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PIR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL.pm
@@ -677,7 +675,6 @@ t/Net/DRI/Protocol/EPP/Extensions/Nominet.t
 t/Net/DRI/Protocol/EPP/Extensions/Nominet/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/NSgroup.t
 t/Net/DRI/Protocol/EPP/Extensions/NZ.t
-t/Net/DRI/Protocol/EPP/Extensions/OpenReg.t
 t/Net/DRI/Protocol/EPP/Extensions/PIR.t
 t/Net/DRI/Protocol/EPP/Extensions/PL.t
 t/Net/DRI/Protocol/EPP/Extensions/RegBox.t
