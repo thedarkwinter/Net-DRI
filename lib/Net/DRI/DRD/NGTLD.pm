@@ -339,7 +339,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art bar basketball budapest college contact design fan fans feedback forum fun host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz
+art bar basketball budapest college contact design fan fans feedback forum fun gent host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -358,7 +358,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl/;
-    my @ngtlds = qw/art bar basketball budapest college contact design fan fans feedback forum fun host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds = qw/art bar basketball budapest college contact design fan fans feedback forum fun gent host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -898,31 +898,6 @@ abogado bayern beer blog boston bradesco broadway casa cooking dds fashion fishi
      transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','Nominet::QualifiedLawyer'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
-
-=pod
-
-
-=head2 OpenRegistry
-
- $dri->add_registry('NGTLD',{provider=>'openreg'}); # or provider = openregistry
-
-=head3 Status: Working
-
-=head3 TLDs
-
-gent
-
-=cut
-
- return {
-     bep_type => 1, # dedicated registry
-     tlds => ['gent'],
-     host_as_attr => 1,
-     contact_i18n => 2,
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['OpenRegistry::Domain']}],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep =~ m/^openreg(istry)?$/;
-
 
 =pod
 
