@@ -1,8 +1,5 @@
 #!/usr/bin/perl
 
-# TODO: FIXME!!!!!
-
-
 use strict;
 use warnings;
 

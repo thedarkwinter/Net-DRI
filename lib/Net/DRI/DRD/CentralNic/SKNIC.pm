@@ -54,9 +54,12 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2017 Michael Holloway <michael@thedarkwinter.com>.
-          (c) 2017 Paulo Jorge <paullojorgge@gmail.com>.
+(c) 2017 Patrick Mevzek <netdri@dotandco.com>,
+
+(c) 2017 Michael Holloway <michael@thedarkwinter.com>,
+
+(c) 2017 Paulo Jorge <paullojorgge@gmail.com>.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -55,8 +55,12 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
-=head1 COPYRIGHT (c) 2017 Patrick Mevzek <netdri@dotandco.com>.push @errs, 'org not supported for .nz' if $self->org();
-(c) 2017 Michael Holloway <michael@thedarkwinter.com>.
+=head1 COPYRIGHT
+
+(c) 2017 Patrick Mevzek <netdri@dotandco.com>,
+
+(c) 2017 Michael Holloway <michael@thedarkwinter.com>,
+
 (c) 2017 Paulo Jorge <paullojorgge@gmail.com>.
 
 All rights reserved.

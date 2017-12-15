@@ -31,7 +31,7 @@ Net::DRI::Protocol::EPP::Extensions::CentralNic::SkContactIdent- CentralNic SK E
 
 =head1 DESCRIPTION
 
-In case of a natural person ("PERS" constant): date of birth (not mandatory - format: YYYY-MM-DD) and legal entity.
+In case of a natural person ("PERS" constant): date of birth (not mandatory - format: YYYY-MM-DD).
 
 In case entrepreneur ("CORP" constant): identification number.
 
@@ -43,14 +43,23 @@ E<lt>netdri@dotandco.comE<gt>
 
 Please also see the SUPPORT file in the distribution.
 
-=head1 SEE ALSO netdri@dotandco.com
+=head1 SEE ALSO
+
+E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
+
+=head1 AUTHOR
+
+Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
+
 =head1 COPYRIGHT
 
-Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+(c) 2017 Patrick Mevzek <netdri@dotandco.com>,
 
-Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+(c) 2017 Michael Holloway <michael@thedarkwinter.com>,
 
-Copyright (c) 2017 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+(c) 2017 Paulo Jorge <paullojorgge@gmail.com>.
+
+All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -89,7 +98,6 @@ sub create
  push @n,['skContactIdent:legalForm', $contact->legal_form()];
  if ( $contact->ident_value() ) {
   push @n,['skContactIdent:identValue', [ 'skContactIdent:corpIdent', $contact->ident_value()] ] if lc($contact->legal_form()) eq 'corp';
-  # README: the next one i am not sure... just a guess! - not on their technical documentation neither XSD samples!
   push @n,['skContactIdent:identValue', [ 'skContactIdent:persIdent', $contact->ident_value()] ] if lc($contact->legal_form()) eq 'pers';
  }
 
@@ -134,7 +142,6 @@ sub info_parse
 #  push @n,['skContactIdent:legalForm', $contact->legal_form()] if $contact->legal_form();
 #  if ( $contact->ident_value() ) {
 #   push @n,['skContactIdent:identValue', [ 'skContactIdent:corpIdent', $contact->ident_value()] ] if lc($contact->legal_form()) eq 'corp';
-#   # README: the next one i am not sure... just a guess! - not on their technical documentation neither XSD samples!
 #   push @n,['skContactIdent:identValue', [ 'skContactIdent:persIdent', $contact->ident_value()] ] if lc($contact->legal_form()) eq 'pers';
 #  }
 #
