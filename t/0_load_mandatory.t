@@ -2,8 +2,7 @@
 
 use strict;
 use warnings;
-
-use Test::More tests => 536;
+use Test::More tests => 542;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -27,6 +26,7 @@ use_ok('Net::DRI::Data::Contact::DK');
 use_ok('Net::DRI::Data::Contact::ES');
 use_ok('Net::DRI::Data::Contact::EURid');
 use_ok('Net::DRI::Data::Contact::FCCN');
+use_ok('Net::DRI::Data::Contact::FICORA');
 use_ok('Net::DRI::Data::Contact::FRED');
 use_ok('Net::DRI::Data::Contact::IIS');
 use_ok('Net::DRI::Data::Contact::IT');
@@ -319,6 +319,11 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::EURid::Sunrise');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FCCN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FCCN::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FCCN::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::FICORA');
+use_ok('Net::DRI::Protocol::EPP::Extensions::FICORA::Balance');
+use_ok('Net::DRI::Protocol::EPP::Extensions::FICORA::Contact');
+use_ok('Net::DRI::Protocol::EPP::Extensions::FICORA::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::FICORA::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FRED');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FRED::Contact');
