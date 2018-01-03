@@ -315,6 +315,7 @@ cctlds: ag bz gi lc mn me sc vc
        'lc',(map { $_.'.lc'} qw/co com l net org p/),
        'me',
        'mn',
+       'pr',(map { $_.'.pr'} qw/biz com info isla name net org pro/),
        'sc',(map { $_.'.sc'} qw/com net org/),
        'vc',(map { $_.'.vc'} qw/com net org/));
    my @tlds = (@ngtlds,@gtlds,@cctlds);
