@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 538;
+use Test::More tests => 536;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -124,7 +124,6 @@ use_ok('Net::DRI::DRD::Nominet::GTLD');
 use_ok('Net::DRI::DRD::Nominet::MMX');
 use_ok('Net::DRI::DRD::Nominet::UK');
 use_ok('Net::DRI::DRD::NORID');
-use_ok('Net::DRI::DRD::OpenRegistry::GENT');
 use_ok('Net::DRI::DRD::OpenSRS');
 use_ok('Net::DRI::DRD::OVH');
 use_ok('Net::DRI::DRD::puntCAT');
@@ -390,7 +389,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::Session');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NO::Result');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NSgroup');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NZ');
-use_ok('Net::DRI::Protocol::EPP::Extensions::OpenRegistry::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PH');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PIR');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL');
