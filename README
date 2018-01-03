@@ -56,7 +56,7 @@ Currently Net::DRI ships with:
     .EU .COM .NET .MOBI .AERO .CAT .US .PL .SE .BE .AT .COOP .LU .ASIA .AU .NAME .ORG .UK
     .DE .CH .LI .HN .SC .VC .AG .BZ .LC .MN .ME .CZ .TRAVEL .NO .BR .JOBS .PRO .FR .PT
     .CX .GS .TL .KI .MS .MU .NF .HT .IM .SI .NG .NA .IT .NL .CA .CO.ZA
-    .RU .SU .РФ .XXX .TEL .NU
+    .RU .SU .РФ .XXX .TEL .NU .SK .ID
   * and various extensions from IETF internet-drafts or other documents:
     * https://tools.ietf.org/html/draft-zhou-eppext-reseller-03
     * https://tools.ietf.org/html/draft-zhou-eppext-reseller-mapping-03
