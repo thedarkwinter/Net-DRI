@@ -21,8 +21,9 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_current_registry('Neustar::COInternet');
-$dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv});
+# .CO migrated to Narwal, but to keep this 0.6 test working, I have simply forced the extension selection and version
+$dri->add_current_registry('Neustar::Narwhal');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv}, {extensions=>['-ARI::Price','CentralNic::Fee'],brown_fee_version=>'0.6'});
 
 my $rc;
 my $s;

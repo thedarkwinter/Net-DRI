@@ -1,6 +1,7 @@
-## Domain Registry Interface, OpenRegistry Domain Extension
+## Domain Registry Interface, .CL policies from 'NIC_Chile_EPP_Documentation_1.0.4.pdf'
 ##
-## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2017 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,19 +13,18 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::OpenRegistry::Domain;
+package Net::DRI::Protocol::EPP::Extensions::CL;
 
 use strict;
 use warnings;
 
-use Net::DRI::Util;
-use Net::DRI::Exception;
+use base qw/Net::DRI::Protocol::EPP/;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::OpenRegistry::Domain; - OpenRegistry Domain extennsion for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::CL - .CL EPP extensions 'NIC_Chile_EPP_Documentation_1.0.4.pdf' for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -44,13 +44,12 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Paulo Jorge <paullojorgge@gmail.com>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-(c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>.
-All rights reserved.
+Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2017 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -63,27 +62,20 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub register_commands
+sub setup
 {
- my ($class,$version)=@_;
- my %tmp=(
-           info => [ \&info, undef ],
-         );
+  my ($self,$rp)=@_;
+  $self->ns({
+      clcontact   => ['urn:ietf:params:xml:ns:clcontact-1.0','clcontact-1.0.xsd'],
+      cldomain    => ['urn:ietf:params:xml:ns:cldomain-1.0','cldomain-1.0.xsd'],
+      clnic       => ['urn:ietf:params:xml:ns:clnic-1.0','clnic-1.0.xsd'],
+      pollryrr    => ['urn:ietf:params:xml:ns:pollryrr-1.0','pollryrr-1.0.xsd'],
+    });
 
- return { 'domain' => \%tmp };
+  return;
 }
+
+sub default_extensions { return qw/GracePeriod CL::Message/; }
 
 ####################################################################################################
-
-# OpenRegistry does not support the hosts attribute on the info command!
-sub info
-{
- my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
- my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,'info',$domain);
- push @d,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$rd->{auth}) if Net::DRI::Util::has_auth($rd);
- $mes->command_body(\@d);
- return;
-}
-
 1;

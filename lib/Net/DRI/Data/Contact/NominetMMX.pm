@@ -1,4 +1,4 @@
-## Domain Registry Interface, Handling of contact data for MAM
+## Domain Registry Interface, Handling of contact data for NominetMMX
 ##
 ## Copyright (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
@@ -12,7 +12,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Data::Contact::MAM;
+package Net::DRI::Data::Contact::NominetMMX;
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Data::Contact::MAM - Handle MAM contact data for Net::DRI
+Net::DRI::Data::Contact::NominetMMX - Handle NominetMMX contact data for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -43,7 +43,7 @@ Token with maxLength value="256"
 
 =head2 accreditation_year()
 
-Token with length value="5"??? => Ask MAM since it's not defined in their XSD - based in their tecnical example!
+Token with length value="5"??? => Ask NominetMMX since it's not defined in their XSD - based in their tecnical example!
 
 =head2 jurisdiction_cc()
 
@@ -89,7 +89,7 @@ sub validate
  my ($self,$change)=@_;
  $change||=0;
  my @errs;
- 
+
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
  if ($self->accreditation_id() || $self->accreditation_body() || $self->accreditation_year() || $self->jurisdiction_cc())
@@ -100,7 +100,7 @@ sub validate
   push @errs, 'jurisdiction_cc should be a string with 2 characters (ex.: US)' unless Net::DRI::Util::xml_is_token($self->jurisdiction_cc(),2,2);
   Net::DRI::Exception::usererr_invalid_parameters(join(' / ',@errs)) if @errs;
  }
- 
+
  return 1; ## everything ok
 }
 

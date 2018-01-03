@@ -50,7 +50,7 @@ Nominet-MMX utilises the following standard extensions. Please see the test file
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::MAM::QualifiedLawyer> urn:ietf:params:xml:ns:qualifiedLawyer-1.0 (for .law and .abogado)
+=head3 L<Net::DRI::Protocol::EPP::Extensions::Nominet::QualifiedLawyer> urn:ietf:params:xml:ns:qualifiedLawyer-1.0 (for .law and .abogado)
 
 =head1 SUPPORT
 
@@ -104,7 +104,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','MAM::QualifiedLawyer'], 'brown_fee_version' => '0.5' }) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','Nominet::QualifiedLawyer'], 'brown_fee_version' => '0.5' }) if $type eq 'epp';
  return;
 }
 
@@ -115,7 +115,7 @@ sub verify_name_domain
  my ($self,$ndr,$domain,$op)=@_;
  return $self->_verify_name_rules($domain,$op,{check_name => 1,
                                                my_tld => 1,
-                                               icann_reserved => 1,
+                                               icann_reserved => 0,
                                               });
 }
 

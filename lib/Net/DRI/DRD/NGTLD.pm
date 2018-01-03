@@ -339,7 +339,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art bar basketball budapest college contact design fan fans feedback forum fun host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz
+art bar basketball budapest college contact design fan fans feedback forum fun gent host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -357,8 +357,8 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @coms = (map { $_.'.com' } qw/africa ar br cn co de eu gb gr hu jpn kr mex no qc ru sa se uk us uy za/);
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
-    my @others = qw/pw com.de com.se/;
-    my @ngtlds = qw/art bar basketball budapest college contact design fan fans feedback forum fun host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
+    my @others = qw/pw com.de com.se co.nl/;
+    my @ngtlds = qw/art bar basketball budapest college contact design fan fans feedback forum fun gent host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -477,6 +477,32 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android app boo cal channel chrome dad 
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'], 'disable_idn'=>1, 'brown_fee_version' => '0.6'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'crr';
+
+
+=pod
+
+
+=head2 DNSBelgium
+
+ $dri->add_registry('NGTLD',{provider=>'dnsbelgium'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+ brussels dnsbelgium vlaanderen
+
+=cut
+
+  return {
+      bep_type => 1, # dedicated registry
+      host_as_attr => 1,
+      contact_i18n => 2, #  ## They accept LOC *or* INT, but only one of them. Forcing INT!
+      tlds => ['brussels', 'dnsbelgium', 'vlaanderen'], # README: dnsbelgium used on their OT&E only!
+      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],
+      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+    } if $bep eq 'dnsbelgium';
+
 
 
 =pod
@@ -749,7 +775,9 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'aaa', 'able', 'accountant', 'aetna', 'afl', 'aig', 'americanexpress', 'amex', 'amica', 'analytics', 'anz', 'aramco', 'athleta', 'audible',
         'auspost', 'author', 'aws', 'axa', 'baby', 'banamex', 'bananarepublic', 'barclaycard', 'barclays', 'baseball', 'best', 'bible', 'bid', 'biz', 'bond',
         'book', 'booking', 'boots', 'bot', 'box', 'build', 'buzz', 'call', 'calvinklein', 'cancerresearch', 'caravan', 'cartier', 'catholic', 'cba', 'cbn',
-        'cbre', 'ceo', 'chase', 'chintai', 'chloe', 'circle', 'cisco', 'citadel', 'citi', 'cloud', 'club', 'co', 'commbank', 'compare', 'coupon',
+        'cbre', 'ceo', 'chase', 'chintai', 'chloe', 'circle', 'cisco', 'citadel', 'citi', 'cloud', 'club',
+        'co', 'com.co', 'net.co', 'nom.co',
+        'commbank', 'compare', 'coupon',
         'courses', 'cricket', 'cuisinella', 'date', 'deal', 'dealer', 'dell', 'discover', 'doha', 'download', 'duns', 'dupont', 'earth', 'everbank',
         'faith', 'farmers', 'fast', 'ferrero', 'film', 'fire', 'flickr', 'flir', 'ford', 'fox', 'free', 'frontier', 'ftr', 'gap', 'giving', 'got',
         'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hot', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm', 'icu',
@@ -780,7 +808,9 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'aaa', 'able', 'accountant', 'aetna', 'afl', 'aig', 'americanexpress', 'amex', 'amica', 'analytics', 'anz', 'aramco', 'athleta', 'audible',
         'auspost', 'author', 'aws', 'axa', 'baby', 'banamex', 'bananarepublic', 'barclaycard', 'barclays', 'baseball', 'best', 'bible', 'bid', 'biz', 'bond',
         'book', 'booking', 'boots', 'bot', 'box', 'build', 'buzz', 'call', 'calvinklein', 'cancerresearch', 'caravan', 'cartier', 'catholic', 'cba', 'cbn',
-        'cbre', 'ceo', 'chase', 'chintai', 'chloe', 'circle', 'cisco', 'citadel', 'citi', 'cloud', 'club', 'co', 'commbank', 'compare', 'coupon',
+        'cbre', 'ceo', 'chase', 'chintai', 'chloe', 'circle', 'cisco', 'citadel', 'citi', 'cloud', 'club',
+        'co', 'com.co', 'net.co', 'nom.co',
+        'commbank', 'compare', 'coupon',
         'courses', 'cricket', 'cuisinella', 'date', 'deal', 'dealer', 'dell', 'discover', 'doha', 'download', 'duns', 'dupont', 'earth', 'everbank',
         'faith', 'farmers', 'fast', 'ferrero', 'film', 'fire', 'flickr', 'flir', 'ford', 'fox', 'free', 'frontier', 'ftr', 'gap', 'giving', 'got',
         'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hot', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm', 'icu',
@@ -865,34 +895,9 @@ abogado bayern beer blog boston bradesco broadway casa cooking dds fashion fishi
  return {
      bep_type => 1, # dedicated registry
      tlds => ['abogado', 'bayern', 'beer', 'blog', 'boston', 'bradesco', 'broadway', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'horse', 'law', 'london', 'miami', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','MAM::QualifiedLawyer'], 'brown_fee_version' => '0.5' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','Nominet::QualifiedLawyer'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
-
-=pod
-
-
-=head2 OpenRegistry
-
- $dri->add_registry('NGTLD',{provider=>'openreg'}); # or provider = openregistry
-
-=head3 Status: Working
-
-=head3 TLDs
-
-gent
-
-=cut
-
- return {
-     bep_type => 1, # dedicated registry
-     tlds => ['gent'],
-     host_as_attr => 1,
-     contact_i18n => 2,
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1,custom=>['OpenRegistry::Domain']}],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep =~ m/^openreg(istry)?$/;
-
 
 =pod
 
@@ -944,7 +949,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Validation> urn:ietf:params:xml:
 
 =head3 TLDs
 
-bh berlin brussels hamburg tirol versicherung vlaanderen voting ikano
+bh berlin hamburg tirol versicherung voting ikano
 
 Contended TLD's not included
 
@@ -962,7 +967,7 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['bh','berlin','brussels','hamburg','tirol','versicherung','vlaanderen','voting','ikano'],
+     tlds => ['bh','berlin','hamburg','tirol','versicherung','voting','ikano'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{'brown_fee_version' => '0.9'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::RegBox->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::RegBox'],

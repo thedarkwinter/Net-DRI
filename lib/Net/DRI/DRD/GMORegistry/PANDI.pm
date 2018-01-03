@@ -1,6 +1,9 @@
-## Domain Registry Interface, Neulevel .CO EPP extensions
+## Domain Registry Interface, PANDI Registry (.ID) Driver
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2017 Stamatis Michas <don.matis@gmail.com>. All rights reserved.
+##           (c) 2017 Paulo Jorge <paullojorge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,22 +15,26 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::CO;
+package Net::DRI::DRD::GMORegistry::PANDI;
 
 use strict;
 use warnings;
 
-use base qw/Net::DRI::Protocol::EPP/;
+use base qw/Net::DRI::DRD::GMORegistry::GMORegistry/;
+
+use DateTime::Duration;
 
 =pod
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::CO - Neulevel .CO EPP extensions for Net::DRI
+Net::DRI::DRD::GMORegistry::GMORegistry - PANDI Registry (.ID) Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Please see the README file for details.
+Additional domain extensions for PANDI Registry (.ID) - Indonesian ccTLD
+
+This DRD extends the L<Net::DRI::DRD::GMORegistry::GMORegistry>
 
 =head1 SUPPORT
 
@@ -43,11 +50,15 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+Stamatis Michas, E<lt>don.matis@gmail.comE<gt>
+Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2017 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2017 Stamatis Michas <don.matis@gmail.com>.
+          (c) 2017 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -61,18 +72,10 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub setup
-{
- my ($self,$rp)=@_;
- $self->ns({neulevel => ['urn:ietf:params:xml:ns:neulevel-1.0','neulevel-1.0.xsd']});
- return;
+sub name     { return 'GMORegistry::PANDI'; }
+sub tlds     {
+  my @ccTLDs = ('id',(map { $_.'.id'} qw/ac biz co desa go mil my net or sch web/));
+  return (@ccTLDs);
 }
 
-sub default_extensions {
- my ($self,$pp) = @_;
- $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
- return qw/NeuLevel::IDNLanguage NeuLevel::UIN SecDNS GracePeriod NeuLevel::Message NeuLevel::CO CentralNic::Fee/;
-}
-
-####################################################################################################
 1;
