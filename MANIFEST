@@ -432,6 +432,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Host.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SIDN_GTLD.pm
+lib/Net/DRI/Protocol/EPP/Extensions/SKNIC.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SU.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SWITCH.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TangoRS.pm

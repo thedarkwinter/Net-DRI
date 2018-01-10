@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 542;
+use Test::More tests => 543;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -421,6 +421,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::SIDN_GTLD');
 use_ok('Net::DRI::Protocol::EPP::Extensions::SIDN::Host');
 use_ok('Net::DRI::Protocol::EPP::Extensions::SIDN::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::SIDN::Notifications');
+use_ok('Net::DRI::Protocol::EPP::Extensions::SKNIC');
 use_ok('Net::DRI::Protocol::EPP::Extensions::SU');
 use_ok('Net::DRI::Protocol::EPP::Extensions::SWITCH');
 use_ok('Net::DRI::Protocol::EPP::Extensions::TangoRS');
