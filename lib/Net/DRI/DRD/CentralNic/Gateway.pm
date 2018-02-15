@@ -78,7 +78,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'CentralNic::Gateway'; }
-sub tlds     { return (qw/am cx fm la radio.fm radio.am/); }
+sub tlds     { return (qw/am cx la/); }
 sub object_types { return qw(domain contact ns); }
 sub profile_types { return qw/epp/; }
 
