@@ -116,7 +116,7 @@ sub credit_info_parse {
           $zone = $c2->textContent() if ($n2 eq 'zone');
           $credit = 0+$c2->textContent() if ($n2 eq 'credit');
         }
-        $rinfo->{$otype}->{$oname}->{balance} = $credit; # the last one! warning
+        $rinfo->{$otype}->{$oname}->{balance} = $credit if $zone =~ m/^[a-z]{2}$/; # we match the primary TLD here
         push @{$rinfo->{$otype}->{$oname}->{zones}}, { 'zone' => $zone, 'credit' => $credit };
     }
   }
