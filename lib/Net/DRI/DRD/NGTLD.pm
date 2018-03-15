@@ -340,7 +340,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art bar basketball budapest college contact design fan fans feedback forum fun gent host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz
+art bar basketball budapest college contact design fan fans feedback forum fun gent host ink love luxe observer online ooo pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl/;
-    my @ngtlds = qw/art bar basketball budapest college contact design fan fans feedback forum fun gent host ink love luxe observer online pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds = qw/art bar basketball budapest college contact design fan fans feedback forum fun gent host ink love luxe observer online ooo pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -1222,7 +1222,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =head3 TLDs
 
-xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe azure bank bing broker career cfd crs forex hotmail insurance java maif makeup markets microsoft ooo oracle pictet realestate realtor sca shell sky spreadbetting trading xbox windows
+xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe azure bank bing broker career cfd crs forex hotmail insurance java maif makeup markets microsoft oracle pictet realestate realtor sca shell sky spreadbetting trading xbox windows
 
 Contended TLD's not included
 
@@ -1247,7 +1247,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
  return {
      bep_type => 2,
      contact_i18n => 7, # They accept LOC *or* INT, but only one of them.
-     tlds => ['com','net','cc','tv','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','azure','bank','bing','broker','career','cfd','crs','forex','hotmail','insurance','java','maif','makeup','markets','microsoft','ooo','oracle','pictet','realestate','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],
+     tlds => ['com','net','cc','tv','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','azure','bank','bing','broker','career','cfd','crs','forex','hotmail','insurance','java','maif','makeup','markets','microsoft','oracle','pictet','realestate','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn' => 1, custom => ['VeriSign::Sync', 'VeriSign::PollLowBalance', 'VeriSign::PollRGP', 'VeriSign::IDNLanguage', 'VeriSign::WhoWas', 'VeriSign::Suggestion', 'VeriSign::ClientAttributes', 'VeriSign::TwoFactorAuth', 'VeriSign::ZoneManagement', 'VeriSign::Balance', 'VeriSign::NameStore', 'VeriSign::PremiumDomain', 'CentralNic::Fee'], 'brown_fee_version' => '0.9'}],
      whois_server => 'ccwhois.verisign-grs.com',
    } if $bep eq 'verisign';
