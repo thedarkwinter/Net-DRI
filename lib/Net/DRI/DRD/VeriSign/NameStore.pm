@@ -26,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::VeriSign::NameStore - VeriSign .CC/.TV/.JOBS/ngTLDs Registry driver for Net::DRI
+Net::DRI::DRD::VeriSign::NameStore - VeriSign .CC/.TV/.NAME/.JOBS/ngTLDs Registry driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -76,7 +76,7 @@ sub new
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return 'VeriSign::NameStore'; }
-sub tlds          { return qw/cc tv jobs xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe azure bank bing broker career cfd crs forex hotmail insurance java maif makeup markets microsoft oracle pictet realestate realtor sca shell sky spreadbetting trading xbox windows/; } ## If this changes, VeriSign/NameStore will need to be updated also
+sub tlds          { return qw/cc tv name jobs xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe azure bank bing broker career cfd crs forex hotmail insurance java maif makeup markets microsoft oracle pictet realestate realtor sca shell sky spreadbetting trading xbox windows/; } ## If this changes, VeriSign/NameStore will need to be updated also
 sub object_types  { return qw/domain ns registry/; }
 
 sub transport_protocol_default
@@ -86,6 +86,280 @@ sub transport_protocol_default
  return ('Net::DRI::Transport::Socket',{remote_host=>'otessl.verisign-grs.com', remote_port=>700, 'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NameStore',{'brown_fee_version' => '0.9'}) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{remote_host=>'whois.verisign-grs.com'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
  return;
+}
+
+####################################################################################################
+
+####################################################################################################
+## EmailForward methods
+
+sub emailfwd_check
+{
+  my ( $self, $ndr, @p ) = @_;
+  my ( @names, $rd );
+  foreach my $p (@p) {
+    if ( defined $p && ref $p eq 'HASH' ) {
+      Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in email_check') if defined $rd;
+      $rd = Net::DRI::Util::create_params( 'emailfwd_check', $p );
+      next;
+    }
+    push @names, $p;
+  }
+  Net::DRI::Exception::usererr_invalid_parameters('emailfwd_check needs at leat one email to check') unless @names;
+  $rd = {} unless defined $rd;
+
+  my ( @rs,       @todo );
+  my ( %seenmail, %seenrc );
+  foreach my $mail (@names) {
+    next if exists $seenmail{$mail};
+    $seenmail{$mail} = 1;
+    push @todo, $mail;
+  }
+
+  return Net::DRI::Util::link_rs(@rs) unless @todo;
+
+  if ( @todo > 1 && $ndr->protocol()->has_action( 'emailfwd', 'check_multi' ) ) {
+    my $l = $self->info('emailfwd_check_limit') ? $self->info('emailfwd_check_limit') : $self->info('check_limit');
+    if ( !defined $l ) {
+      $ndr->log_output( 'notice', 'core',
+                        'No check_limit specified in driver, assuming 10 for domain_check action. Please report if you know the correct value' );
+      $l = 10;
+    }
+    while (@todo) {
+      my @lt = splice( @todo, 0, $l );
+      push @rs, $ndr->process( 'emailfwd', 'check_multi', [ \@lt, $rd ] );
+    }
+  } else    ## either one mail only, or more than one but no check_multi available at protocol level
+  {
+    push @rs, map { $ndr->process( 'emailfwd', 'check', [ $_, $rd ] ); } @todo;
+  }
+
+  # print Dumper(\@rs); # debug/check array
+  return Net::DRI::Util::link_rs(@rs);
+}
+
+sub emailfwd_exist    ## 1/0/undef
+{
+  my ( $self, $ndr, $email ) = @_;
+  ## Technical syntax check of email object needed here
+  my $rc = $ndr->emailfwd_check($email);
+  return unless $rc->is_success();
+  return $ndr->get_info('exist');
+}
+
+sub emailfwd_info
+{
+  my ( $self, $ndr, $email, $rd ) = @_;
+  ## Technical syntax check of email object needed here
+  my $rc = $ndr->try_restore_from_cache( 'emailfwd', $email, 'info' );
+  if ( !defined $rc ) { $rc = $ndr->process( 'emailfwd', 'info', [ $email, $rd ] ); }
+  return $rc;
+}
+
+sub emailfwd_transfer
+{
+  my ( $self, $ndr, $roid, $op, $rd ) = @_;
+
+  $rd = {} unless $rd;
+  $rd = Net::DRI::Util::create_params( 'domain_transfer', $rd );    # same as domain, really
+  Net::DRI::Exception::usererr_invalid_parameters('Transfer operation must be start,stop,accept,refuse or query')
+      unless ( $op =~ m/^(?:start|stop|query|accept|refuse)$/ );
+
+  my $rc;
+  if ( $op eq 'start' ) {
+    $rc = $ndr->process( 'emailfwd', 'transfer_request', [ $roid, $rd ] );
+  } elsif ( $op eq 'stop' ) {
+    $rc = $ndr->process( 'emailfwd', 'transfer_cancel', [ $roid, $rd ] );
+  } elsif ( $op eq 'query' ) {
+    $rc = $ndr->process( 'emailfwd', 'transfer_query', [ $roid, $rd ] );
+  } else    ## accept/refuse
+  {
+    $rd->{approve} = ( $op eq 'accept' ) ? 1 : 0;
+    $rc = $ndr->process( 'emailfwd', 'transfer_answer', [ $roid, $rd ] );
+  }
+
+  return $rc;
+}
+
+sub emailfwd_transfer_start  { my ( $self, $ndr, $roid, $rd ) = @_; return $self->emailfwd_transfer( $ndr, $roid, 'start',  $rd ); }
+sub emailfwd_transfer_stop   { my ( $self, $ndr, $roid, $rd ) = @_; return $self->emailfwd_transfer( $ndr, $roid, 'stop',   $rd ); }
+sub emailfwd_transfer_query  { my ( $self, $ndr, $roid, $rd ) = @_; return $self->emailfwd_transfer( $ndr, $roid, 'query',  $rd ); }
+sub emailfwd_transfer_accept { my ( $self, $ndr, $roid, $rd ) = @_; return $self->emailfwd_transfer( $ndr, $roid, 'accept', $rd ); }
+sub emailfwd_transfer_refuse { my ( $self, $ndr, $roid, $rd ) = @_; return $self->emailfwd_transfer( $ndr, $roid, 'refuse', $rd ); }
+
+sub emailfwd_create
+{
+  my ( $self, $ndr, $email, $rd ) = @_;
+  ## Technical syntax check of email object needed here
+  my $rc = $ndr->process( 'emailfwd', 'create', [ $email, $rd ] );
+  return $rc;
+}
+
+sub emailfwd_delete
+{
+  my ( $self, $ndr, $email ) = @_;
+  ## Technical syntax check of email object needed here
+  my $rc = $ndr->process( 'emailfwd', 'delete', [$email] );
+  return $rc;
+}
+
+sub emailfwd_update
+{
+  my ( $self, $ndr, $email, $tochange ) = @_;
+  my $fp = $ndr->protocol->nameversion();
+
+  ## Technical syntax check of email object needed here
+  Net::DRI::Util::check_isa( $tochange, 'Net::DRI::Data::Changes' );
+
+  my $rc = $ndr->process( 'emailfwd', 'update', [ $email, $tochange ] );
+  return $rc;
+}
+
+sub emailfwd_renew
+{
+  my ( $self, $ndr, $email, $rd ) = @_;
+  ## Technical syntax check of email object needed here
+  Net::DRI::Util::check_isa( $rd->{duration},           'DateTime::Duration' ) if defined( $rd->{duration} );
+  Net::DRI::Util::check_isa( $rd->{current_expiration}, 'DateTime' )           if defined( $rd->{current_expiration} );
+  return $ndr->process( 'emailfwd', 'renew', [ $email, $rd->{duration}, $rd->{current_expiration} ] );
+}
+
+####################################################################################################
+## DefensiveRegistration methods
+
+# based on domain_check
+sub defreg_check
+{
+  my ( $self, $ndr, @p ) = @_;
+  my ( @names, $rd );
+  foreach my $p (@p) {
+    if ( defined $p && ref $p eq 'HASH' ) {
+      Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in defreg_check') if defined $rd;
+      $rd = $p;
+      next;
+    }
+    push @names, $p;
+  }
+  Net::DRI::Exception::usererr_insufficient_parameters('defreg_check needs at least one name to check') unless @names;
+  $rd = {} unless defined $rd;
+
+  my ( @rs,      @todo );
+  my ( %seendom, %seenrc );
+  foreach my $domain (@names) {
+    next if exists $seendom{$domain};
+    $seendom{$domain} = 1;
+    my $rs = $ndr->try_restore_from_cache( 'defreg', $domain, 'check' );
+    if ( !defined $rs ) {
+      push @todo, $domain;
+    } else {
+      push @rs, $rs
+          unless exists $seenrc{ ''
+            . $rs
+          }; ## Some ResultStatus may relate to multiple domain names (this is why we are doing this anyway !), so make sure not to use the same ResultStatus multiple times
+      $seenrc{ '' . $rs } = 1;
+    }
+  }
+
+  return Net::DRI::Util::link_rs(@rs) unless @todo;
+
+  if ( @todo > 1 && $ndr->protocol()->has_action( 'defreg', 'check_multi' ) ) {
+    my $l = $self->info('defreg_check_limit') ? $self->info('defReg_check_limit') : $self->info('check_limit');
+    if ( !defined $l ) {
+      $ndr->log_output( 'notice', 'core',
+                        'No check_limit specified in driver, assuming 10 for defreg_check action. Please report if you know the correct value' );
+      $l = 10;
+    }
+    while (@todo) {
+      my @lt = splice( @todo, 0, $l );
+      push @rs, $ndr->process( 'defreg', 'check_multi', [ \@lt, $rd ] );
+    }
+  } else    ## either one domain only, or more than one but no check_multi available at protocol level
+  {
+    push @rs, map { $ndr->process( 'defreg', 'check', [ $_, $rd ] ); } @todo;
+  }
+
+  return Net::DRI::Util::link_rs(@rs);
+}
+
+sub defreg_exist    ## 1/0/undef
+{
+  my ( $self, $ndr, $roid ) = @_;
+  my $rc = $ndr->defreg_check($roid);
+  return unless $rc->is_success();
+  return $ndr->get_info('exist');
+}
+
+sub defreg_info
+{
+  my ( $self, $ndr, $roid, $rd ) = @_;
+  my $rc = $ndr->try_restore_from_cache( 'defreg', $roid, 'info' );
+  if ( !defined $rc ) { $rc = $ndr->process( 'defreg', 'info', [ $roid, $rd ] ); }
+  return $rc;
+}
+
+sub defreg_transfer
+{
+  my ( $self, $ndr, $roid, $op, $rd ) = @_;
+
+  $rd = {} unless $rd;
+  $rd = Net::DRI::Util::create_params( 'domain_transfer', $rd );    # same as domain, really
+  Net::DRI::Exception::usererr_invalid_parameters('Transfer operation must be start,stop,accept,refuse or query')
+      unless ( $op =~ m/^(?:start|stop|query|accept|refuse)$/ );
+
+  my $rc;
+  if ( $op eq 'start' ) {
+    $rc = $ndr->process( 'defreg', 'transfer_request', [ $roid, $rd ] );
+  } elsif ( $op eq 'stop' ) {
+    $rc = $ndr->process( 'defreg', 'transfer_cancel', [ $roid, $rd ] );
+  } elsif ( $op eq 'query' ) {
+    $rc = $ndr->process( 'defreg', 'transfer_query', [ $roid, $rd ] );
+  } else    ## accept/refuse
+  {
+    $rd->{approve} = ( $op eq 'accept' ) ? 1 : 0;
+    $rc = $ndr->process( 'defreg', 'transfer_answer', [ $roid, $rd ] );
+  }
+
+  return $rc;
+}
+
+sub defreg_transfer_start  { my ( $self, $ndr, $roid, $rd ) = @_; return $self->defreg_transfer( $ndr, $roid, 'start',  $rd ); }
+sub defreg_transfer_stop   { my ( $self, $ndr, $roid, $rd ) = @_; return $self->defreg_transfer( $ndr, $roid, 'stop',   $rd ); }
+sub defreg_transfer_query  { my ( $self, $ndr, $roid, $rd ) = @_; return $self->defreg_transfer( $ndr, $roid, 'query',  $rd ); }
+sub defreg_transfer_accept { my ( $self, $ndr, $roid, $rd ) = @_; return $self->defreg_transfer( $ndr, $roid, 'accept', $rd ); }
+sub defreg_transfer_refuse { my ( $self, $ndr, $roid, $rd ) = @_; return $self->defreg_transfer( $ndr, $roid, 'refuse', $rd ); }
+
+sub defreg_create
+{
+  my ( $self, $ndr, $name, $rd ) = @_;
+  return $ndr->process( 'defreg', 'create', [ $name, $rd ] );
+}
+
+sub defreg_delete
+{
+  my ( $self, $ndr, $roid ) = @_;
+  return $ndr->process( 'defreg', 'delete', [$roid] );
+}
+
+sub defreg_update
+{
+  my ( $self, $ndr, $roid, $tochange ) = @_;
+  my $fp = $ndr->protocol->nameversion();
+
+  Net::DRI::Util::check_isa( $tochange, 'Net::DRI::Data::Changes' );
+
+  foreach my $t ( $tochange->types() ) {
+    next if $ndr->protocol_capable( 'defreg_update', $t );
+    Net::DRI::Exception->die( 0, 'DRD', 5, 'Protocol ' . $fp . ' is not capable of defreg_update/' . $t );
+  }
+
+  my $rc = $ndr->process( 'defreg', 'update', [ $roid, $tochange ] );
+  return $rc;
+}
+
+sub defreg_renew
+{
+  my ( $self, $ndr, $roid, $rd ) = @_;
+  return $ndr->process( 'defreg', 'renew', [ $roid, $rd->{duration}, $rd->{current_expiration} ] );
 }
 
 ####################################################################################################

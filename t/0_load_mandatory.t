@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 543;
+use Test::More tests => 540;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -152,7 +152,6 @@ use_ok('Net::DRI::DRD::UnitedTLD::Donuts');
 use_ok('Net::DRI::DRD::UnitedTLD::Rightside');
 use_ok('Net::DRI::DRD::UPU');
 use_ok('Net::DRI::DRD::VeriSign::COM_NET');
-use_ok('Net::DRI::DRD::VeriSign::NAME');
 use_ok('Net::DRI::DRD::VeriSign::NameStore');
 use_ok('Net::DRI::DRD::VeriSign::VeriSign');
 use_ok('Net::DRI::DRD::ZACR');
@@ -458,7 +457,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::IDNLanguage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::JobsContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::NameStore');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::COM_NET');
-use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NAME');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NameStore');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::PollLowBalance');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::PollRGP');
@@ -531,7 +529,6 @@ use_ok('Net::DRI::Protocol::Whois::Domain::EU');
 use_ok('Net::DRI::Protocol::Whois::Domain::INFO');
 use_ok('Net::DRI::Protocol::Whois::Domain::LU');
 use_ok('Net::DRI::Protocol::Whois::Domain::MOBI');
-use_ok('Net::DRI::Protocol::Whois::Domain::NAME');
 use_ok('Net::DRI::Protocol::Whois::Domain::NGTLD');
 use_ok('Net::DRI::Protocol::Whois::Domain::ORG');
 use_ok('Net::DRI::Protocol::Whois::Domain::PT');
