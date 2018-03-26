@@ -46,8 +46,8 @@ $rc=$dri->target('dotMOBI')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('buongiorno.mobi',$dri);
 
-$dri->add_registry('VeriSign::NAME',{});
-$rc=$dri->target('VeriSign::NAME')->add_current_profile('profile1','whois');
+$dri->add_registry('VeriSign::NameStore',{});
+$rc=$dri->target('VeriSign::NameStore')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('sudoku.name',$dri);
 

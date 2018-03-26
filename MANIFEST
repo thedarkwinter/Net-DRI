@@ -164,7 +164,6 @@ lib/Net/DRI/DRD/UnitedTLD/Donuts.pm
 lib/Net/DRI/DRD/UnitedTLD/Rightside.pm
 lib/Net/DRI/DRD/UPU.pm
 lib/Net/DRI/DRD/VeriSign/COM_NET.pm
-lib/Net/DRI/DRD/VeriSign/NAME.pm
 lib/Net/DRI/DRD/VeriSign/NameStore.pm
 lib/Net/DRI/DRD/VeriSign/VeriSign.pm
 lib/Net/DRI/DRD/ZACR.pm
@@ -469,7 +468,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/IDNLanguage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/JobsContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/NameStore.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Platforms/COM_NET.pm
-lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Platforms/NAME.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Platforms/NameStore.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/PollLowBalance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/PollRGP.pm
@@ -547,7 +545,6 @@ lib/Net/DRI/Protocol/Whois/Domain/EU.pm
 lib/Net/DRI/Protocol/Whois/Domain/INFO.pm
 lib/Net/DRI/Protocol/Whois/Domain/LU.pm
 lib/Net/DRI/Protocol/Whois/Domain/MOBI.pm
-lib/Net/DRI/Protocol/Whois/Domain/NAME.pm
 lib/Net/DRI/Protocol/Whois/Domain/NGTLD.pm
 lib/Net/DRI/Protocol/Whois/Domain/ORG.pm
 lib/Net/DRI/Protocol/Whois/Domain/PT.pm
@@ -587,7 +584,6 @@ t/Net/DRI/Data/RegistryObject.t
 t/Net/DRI/Data/StatusList.t
 t/Net/DRI/DRD/ICANN.t
 t/Net/DRI/DRD/NGTLD.t
-t/Net/DRI/DRD/VeriSign/NAME.t
 t/Net/DRI/Exception.t
 t/Net/DRI/Protocol.t
 t/Net/DRI/Protocol/AFNIC/WS/Message.t
