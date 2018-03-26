@@ -90,6 +90,16 @@ sub transport_protocol_default
 
 ####################################################################################################
 
+sub verify_name_domain
+{
+ my ( $self, $ndr, $domain, $op ) = @_;
+ return $self->_verify_name_rules($domain,$op,{check_name => 1,
+      check_name_dots   => [ 1, 2 ],
+      my_tld_not_strict => 1,          ## we need less strict checks because in X.Y.name domain names both X and Y are variables
+      icann_reserved    => 1,
+    } );
+}
+
 ####################################################################################################
 ## EmailForward methods
 
