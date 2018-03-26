@@ -243,6 +243,7 @@ sub new
      'Neustar::COInternet' => 'Neustar::Narwhal',
      'Neustar::Narwal' => 'Neustar::Narwhal', # i spelt it wrong, change before its too late!
      'Neustar::US' => 'Neustar::Narwhal',
+     'NAME' => 'VeriSign::NameStore',
      'NO' => 'NORID',
      'Nominet' => 'Nominet::UK',
      'NU' => 'IIS',
@@ -272,6 +273,7 @@ sub new
      'UA' => 'HostmasterUA',
      'US' => 'Neustar::Narwhal',
      'VC' => 'Afilias::Shared',
+     'Verisign::NAME' => 'VeriSign::NameStore',
      'VNDS' => 'VeriSign::COM_NET', # warning, this was actually split into COM_NET and NameStore!
      'WS' => 'GDI',
   };
