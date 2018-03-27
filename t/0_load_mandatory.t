@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 540;
+use Test::More tests => 538;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -89,6 +89,7 @@ use_ok('Net::DRI::DRD::DNSBelgium::BE');
 use_ok('Net::DRI::DRD::DNSBelgium::GTLD');
 use_ok('Net::DRI::DRD::DNSPT');
 use_ok('Net::DRI::DRD::Domicilium');
+use_ok('Net::DRI::DRD::Donuts');
 use_ok('Net::DRI::DRD::DotCooperation');
 use_ok('Net::DRI::DRD::ECOMLAC');
 use_ok('Net::DRI::DRD::EURid');
@@ -147,9 +148,6 @@ use_ok('Net::DRI::DRD::TELEGreenland');
 use_ok('Net::DRI::DRD::TMDB');
 use_ok('Net::DRI::DRD::TRA::AE');
 use_ok('Net::DRI::DRD::TRA::BH');
-use_ok('Net::DRI::DRD::UniRegistry');
-use_ok('Net::DRI::DRD::UnitedTLD::Donuts');
-use_ok('Net::DRI::DRD::UnitedTLD::Rightside');
 use_ok('Net::DRI::DRD::UPU');
 use_ok('Net::DRI::DRD::VeriSign::COM_NET');
 use_ok('Net::DRI::DRD::VeriSign::NameStore');

@@ -99,6 +99,7 @@ lib/Net/DRI/DRD/DNSBelgium/BE.pm
 lib/Net/DRI/DRD/DNSBelgium/GTLD.pm
 lib/Net/DRI/DRD/DNSPT.pm
 lib/Net/DRI/DRD/Domicilium.pm
+lib/Net/DRI/DRD/Donuts.pm
 lib/Net/DRI/DRD/DotCooperation.pm
 lib/Net/DRI/DRD/ECOMLAC.pm
 lib/Net/DRI/DRD/EURid.pm
@@ -160,8 +161,6 @@ lib/Net/DRI/DRD/TMDB.pm
 lib/Net/DRI/DRD/TRA/AE.pm
 lib/Net/DRI/DRD/TRA/BH.pm
 lib/Net/DRI/DRD/UniRegistry.pm
-lib/Net/DRI/DRD/UnitedTLD/Donuts.pm
-lib/Net/DRI/DRD/UnitedTLD/Rightside.pm
 lib/Net/DRI/DRD/UPU.pm
 lib/Net/DRI/DRD/VeriSign/COM_NET.pm
 lib/Net/DRI/DRD/VeriSign/NameStore.pm

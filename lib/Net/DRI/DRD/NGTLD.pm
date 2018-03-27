@@ -33,7 +33,7 @@ Net::DRI::DRD::NGTLD - Generic New gTLD Driver for Net::DRI - Aka, the SuperDRD
 
 =head1 DESCRIPTION
 
-Additional domain extension for [most?] New Generic TLDs. This extension distinguishes between back end providers to select extensions, tld lists and some other config for the DRD. The providers listed her are loosely referred to as back end providers. Some registries may have multiple providers, and most providers have multiple registries. For example, Demand Media provides the backed for Donuts and Rightside Registry, but as both of these hold multiple TLDs in a shared registry distinct fro each other, each is their own provider in this driver.
+Additional domain extension for [most?] New Generic TLDs. This extension distinguishes between back end providers to select extensions, tld lists and some other config for the DRD. The providers listed her are loosely referred to as back end providers. Some registries may have multiple providers, and most providers have multiple registries.
 
 =cut
 
@@ -517,7 +517,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android app boo cal channel chrome dad 
 
 =head3 TLDs
 
-academy accountants agency apartments architect associates bargains bike bingo boutique builders business cab cafe camera camp capital cards care careers cash casino catering center chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction contractors cool coupons credit creditcard cruises dating deals delivery dental diamonds digital direct directory discount doctor dog domains education email energy engineering enterprises equipment estate events exchange expert exposed express fail farm finance financial fish fitness flights florist football foundation fund furniture fyi gallery gifts gold golf glass gmbh graphics gratis gripe group guide guru healthcare hockey holdings holiday hospital house immo industries institute insure international investments irish jetzt jewelry kitchen land lease legal life lighting limited limo loans ltd maison management mba marketing media medical memorial money movie network partners parts pets photography photos pictures pizza place plumbing plus productions properties recipes reise reisen rentals repair report restaurant run salon sarl school schule services shoes shopping show singles soccer solar solutions sports style supplies supply support surgery systems tax taxi team technology tennis theater tienda tips tires today tools tours town toys training university vacations ventures viajes villas vin vision voyage watch wine world works wtf xn--czrs0t xn--fjq720a xn--unup4y xn--vhquv zone
+academy accountants actor agency airforce apartments architect army associates attorney auction band bargains bike bingo boutique builders business cab cafe camera camp capital cards care careers cash casino catering center chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction consulting contractors cool coupons credit creditcard cruises dance dating deals degree delivery democrat dental dentist diamonds digital direct directory discount doctor dog domains dpml.pub dpml.zone education email energy engineer engineering enterprises equipment estate events exchange expert exposed express fail family farm finance financial fish fitness flights florist football forsale foundation fund furniture futbol fyi gallery games gifts gives glass gmbh gold golf graphics gratis gripe group guide guru haus healthcare hockey holdings holiday hospital house immo immobilien industries institute insure international investments irish jetzt jewelry kaufen kitchen land lawyer lease legal life lighting limited limo live loans ltd maison management market marketing mba media medical memorial moda money mortgage movie navy network news ninja partners parts pets photography photos pictures pizza place plumbing plus productions properties pub recipes rehab reise reisen rentals repair report republican restaurant reviews rip rocks run sale salon sarl school schule services shoes shopping show singles soccer social software solar solutions sports studio style supplies supply support surgery systems tax taxi team technology tennis theater tienda tips tires today tools tours town toys training university vacations ventures vet viajes video villas vin vision voyage watch wine works world wtf xn--czrs0t xn--fjq720a xn--unup4y xn--vhquv zone
 
 =head3 Custom extensions
 
@@ -536,7 +536,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.zone','academy','accountants','agency','apartments','architect','associates','bargains','bike','bingo','boutique','builders','business','cab','cafe','camera','camp','capital','cards','care','careers','cash','casino','catering','center','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','contractors','cool','coupons','credit','creditcard','cruises','dating','deals','delivery','dental','diamonds','digital','direct','directory','discount','doctor','dog','domains','education','email','energy','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','express','fail','farm','finance','financial','fish','fitness','flights','florist','football','foundation','fund','furniture','fyi','gallery','gifts','gold','golf','glass','gmbh','graphics','gratis','gripe','group','guide','guru','healthcare','hockey','holdings','holiday','hospital','house','immo','industries','institute','insure','international','investments','irish','jetzt','jewelry','kitchen','land','lease','legal','life','lighting','limited','limo','loans','ltd','maison','management','mba','marketing','media','medical','memorial','money','movie','network','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','plus','productions','properties','recipes','reise','reisen','rentals','repair','report','restaurant','run','salon','sarl','school','schule','services','shoes','shopping','show','singles','soccer','solar','solutions','sports','style','supplies','supply','support','surgery','systems','tax','taxi','team','technology','tennis','theater','tienda','tips','tires','today','tools','tours','town','toys','training','university','vacations','ventures','viajes','villas','vin','vision','voyage','watch','wine','world','works','wtf','xn--czrs0t','xn--fjq720a','xn--unup4y','xn--vhquv','zone'],
+     tlds => ['academy','accountants','actor','agency','airforce','apartments','architect','army','associates','attorney','auction','band','bargains','bike','bingo','boutique','builders','business','cab','cafe','camera','camp','capital','cards','care','careers','cash','casino','catering','center','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','consulting','contractors','cool','coupons','credit','creditcard','cruises','dance','dating','deals','degree','delivery','democrat','dental','dentist','diamonds','digital','direct','directory','discount','doctor','dog','domains','dpml.pub','dpml.zone','education','email','energy','engineer','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','express','fail','family','farm','finance','financial','fish','fitness','flights','florist','football','forsale','foundation','fund','furniture','futbol','fyi','gallery','games','gifts','gives','glass','gmbh','gold','golf','graphics','gratis','gripe','group','guide','guru','haus','healthcare','hockey','holdings','holiday','hospital','house','immo','immobilien','industries','institute','insure','international','investments','irish','jetzt','jewelry','kaufen','kitchen','land','lawyer','lease','legal','life','lighting','limited','limo','live','loans','ltd','maison','management','market','marketing','mba','media','medical','memorial','moda','money','mortgage','movie','navy','network','news','ninja','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','plus','productions','properties','pub','recipes','rehab','reise','reisen','rentals','repair','report','republican','restaurant','reviews','rip','rocks','run','sale','salon','sarl','school','schule','services','shoes','shopping','show','singles','soccer','social','software','solar','solutions','sports','studio','style','supplies','supply','support','surgery','systems','tax','taxi','team','technology','tennis','theater','tienda','tips','tires','today','tools','tours','town','toys','training','university','vacations','ventures','vet','viajes','video','villas','vin','vision','voyage','watch','wine','works','world','wtf','xn--czrs0t','xn--fjq720a','xn--unup4y','xn--vhquv','zone'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}],
      whois_server => 'whois.donuts.co',
      check_limit => 5,
@@ -975,46 +975,6 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
      contact_i18n => 2,
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'regbox';
-
-
-
-=pod
-
-
-=head2 Rightside (UnitedTLD)
-
- $dri->add_registry('NGTLD',{provider=>'rightside'});
-
-=head3 Status: Working
-
-=head3 TLDs
-
-dpml.pub actor airforce army attorney auction band consulting dance degree democrat dentist engineer family forsale futbol games gives haus immobilien kaufen lawyer live market moda mortgage navy news ninja pub rehab republican reviews rip rocks sale social software studio vet video
-
-Contended TLD's not included
-
-=head3 Custom extensions
-
-L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
-
-L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
-
-=head3 DPML Blocks / Overrides:
-
-In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with the correct TLD (.dpml.pub for block) and the LaunchPhase extensions should contain the [Encoded] Signed Mark, along with the phase name 'dpml'
-
-  $dri->domain_create('mylabel.dpml.pub',{ ... lp => {phase->'dpml',encoded_signed_mark = [ $enc ]}   });# DPML Block
-  $dri->domain_create('mylabel.energy',{ ... lp => {phase->'dpml',encoded_signed_mark = [ $enc ]}   }); # DPML Override
-
-=cut
-
- return {
-     bep_type => 2, # shared registry
-     tlds => ['dpml.pub','actor','airforce','army','attorney','auction','band','consulting','dance','degree','democrat','dentist','engineer','family','forsale','futbol','games','gives','haus','immobilien','kaufen','lawyer','live','market','moda','mortgage','navy','news','ninja','pub','rehab','republican','reviews','rip','rocks','sale','social','software','studio','vet','video'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}],
-     whois_server => 'whois.rightside.co',
-     check_limit => 5,
-   } if $bep eq 'rightside';
 
 
 =pod
