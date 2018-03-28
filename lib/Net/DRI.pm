@@ -269,6 +269,7 @@ sub new
      'Telnic' => 'Neustar::Narwhal',
      'TRAVEL' => 'Neustar::Tralliance',
      'UNIREG' => 'UniRegistry',
+     'UNITEDTLD' => 'Donuts',
      'UA' => 'HostmasterUA',
      'US' => 'Neustar::Narwhal',
      'VC' => 'Afilias::Shared',
