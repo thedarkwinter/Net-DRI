@@ -96,7 +96,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
  # Do we (the people) prefer to use Extensions::CRR instead of NEWGTLD with custom options?
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],'disable_idn'=>1}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],'disable_idn'=>1,'brown_fee_version'=>'0.6'}) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{remote_host=>'whois.charlestonroadregistry.com'},'Net::DRI::Protocol::Whois',{'NGTLD'=>1}) if $type eq 'whois';
  return;
 }
