@@ -126,6 +126,7 @@ lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
 lib/Net/DRI/DRD/Neustar/Narwhal.pm
 lib/Net/DRI/DRD/Neustar/Tralliance.pm
+lib/Net/DRI/DRD/Neustar/TWNIC.pm
 lib/Net/DRI/DRD/NGTLD.pm
 lib/Net/DRI/DRD/NicAT/AT.pm
 lib/Net/DRI/DRD/NicAT/RegBox.pm
@@ -449,6 +450,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD/Message.pm
+lib/Net/DRI/Protocol/EPP/Extensions/TWNIC.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UA/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UA/HostDelete.pm
@@ -696,6 +698,7 @@ t/Net/DRI/Protocol/EPP/Extensions/SIDN_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/SWITCH.t
 t/Net/DRI/Protocol/EPP/Extensions/Tango.t
 t/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.t
+t/Net/DRI/Protocol/EPP/Extensions/TWNIC.t
 t/Net/DRI/Protocol/EPP/Extensions/UA.t
 t/Net/DRI/Protocol/EPP/Extensions/UniRegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Market.t
