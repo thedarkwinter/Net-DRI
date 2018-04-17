@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 5;
+use Test::More tests => 15;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -31,6 +31,20 @@ my $s;
 my $d;
 my ($dh,@c,$toc,$cs,$csadd,$csdel,$c1,$c2);
 
+####################################################################################################
+# README: test based on their OT&E greeting. Strange urn:ietf:params:xml:ns:neulevel should not be urn:ietf:params:xml:ns:neulevel-1.0 ???
+$R2=$E1.'<greeting><svID>Neustar EPP Server:tw10</svID><svDate>2018-04-17T10:03:55.0Z</svDate><svcMenu><version>1.0</version><lang>en-US</lang><objURI>urn:ietf:params:xml:ns:contact</objURI><objURI>urn:ietf:params:xml:ns:host</objURI><objURI>urn:ietf:params:xml:ns:domain</objURI><objURI>urn:ietf:params:xml:ns:svcsub</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:neulevel</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($R1,$E1.'<hello/>'.$E2,'session noop build (hello command)');
+is($rc->is_success(),1,'session noop is_success');
+is($rc->get_data('session','server','server_id'),'Neustar EPP Server:tw10','session noop get_data(session,server,server_id)');
+is($rc->get_data('session','server','date'),'2018-04-17T10:03:55','session noop get_data(session,server,date)');
+is_deeply($rc->get_data('session','server','version'),['1.0'],'session noop get_data(session,server,version)');
+is_deeply($rc->get_data('session','server','lang'),['en-US'],'session noop get_data(session,server,lang)');
+is_deeply($rc->get_data('session','server','objects'),['urn:ietf:params:xml:ns:contact','urn:ietf:params:xml:ns:host','urn:ietf:params:xml:ns:domain','urn:ietf:params:xml:ns:svcsub'],'session noop get_data(session,server,objects)');
+is_deeply($rc->get_data('session','server','extensions_announced'),['urn:ietf:params:xml:ns:neulevel','urn:ietf:params:xml:ns:secDNS-1.1'],'session noop get_data(session,server,extensions_announced)');
+is_deeply($rc->get_data('session','server','extensions_selected'),['urn:ietf:params:xml:ns:neulevel','urn:ietf:params:xml:ns:secDNS-1.1'],'session noop get_data(session,server,extensions_selected)');
+is($rc->get_data('session','server','dcp_string'),'<access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement>','session noop get_data(session,server,dcp_string)');
 ####################################################################################################
 
 # domain check multi to test new profile :)

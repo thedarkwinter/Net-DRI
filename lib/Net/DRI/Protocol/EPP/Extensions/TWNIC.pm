@@ -27,13 +27,13 @@ Net::DRI::Protocol::EPP::Extensions::TWNIC - TWNIC EPP Extensions for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional extensions for TWNIC - based on CNNIC since it's Neustar Legacy System!
+Additional extensions for TWNIC - based on Neustar Legacy System and their Greeting on OT&E!
 
 =cut
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase CNNIC::CDN CNNIC::Registry CNNIC::Contact/; }
+sub default_extensions { return qw/SecDNS NeuLevel::CO NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/; }
 
 ####################################################################################################
 1;
