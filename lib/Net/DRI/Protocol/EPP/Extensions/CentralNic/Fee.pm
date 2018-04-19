@@ -559,7 +559,23 @@ sub transform_build
   my @n;
   $rp = ref $rd->{fee} eq 'ARRAY' ? $rd->{fee}->[0] : $rd->{fee};
   push @n,['fee:currency',$rp->{currency}];
-  push @n,['fee:fee',$rp->{fee}];
+  # a single numeric field could be sent, as fee, or an array of hashes with the fee and description etc
+  if (ref $rp->{fee} eq 'ARRAY') {
+    foreach my $fee_element (@{$rp->{fee}})
+    {
+      if (ref $fee_element eq 'HASH') {
+        my $fee = delete $fee_element->{fee};
+        foreach my $k (keys %{$fee_element}) {  # delete alien keys
+            delete $fee_element->{$k} unless grep $k, qw/description refundable grace-period applied/;
+        }
+        push @n, ['fee:fee',$fee_element,$fee];
+      } else {
+        push @n, ['fee:fee',$fee_element] if defined $fee_element;
+      }
+    }
+  } else {
+    push @n,['fee:fee',$rp->{fee}];
+  }
 
   my $eid=$mes->command_extension_register('fee',$cmd);
   $mes->command_extension($eid,\@n);
