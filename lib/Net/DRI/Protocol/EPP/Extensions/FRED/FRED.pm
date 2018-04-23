@@ -81,7 +81,6 @@ sub credit_info {
   my ($epp)=@_;
   my $mes=$epp->message();
   my @d;
-  #print "hello world\n";
 
   # build xml
   push @d, [ 'fred:creditInfo' ];

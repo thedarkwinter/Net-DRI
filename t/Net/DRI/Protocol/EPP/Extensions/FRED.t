@@ -9,7 +9,9 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 136;
+use Data::Dumper; # TODO: remove me later
+
+use Test::More tests => 149;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -833,11 +835,6 @@ $rc = $dri->registrar_balance();
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:creditInfo/></fred:extcommand></extension></epp>', 'credit_info build xml');
 is($dri->get_info('balance', 'registrar', 'self'), 82640, 'getinfo balance');
 is_deeply($dri->get_info('zones', 'registrar', 'self'), [ { 'zone' => '0.2.4.e164.arpa', 'credit' => '66112'}, {'zone' => 'cz', 'credit' => '82640'} ], 'getinfo balance');
-#print Dumper $dri->get_info_all();
-
-
-exit;
-
 
 
 ####################################################################################################
@@ -872,6 +869,52 @@ is($dri->get_info('action','message',459),'transfer','poll: domain transfer out 
 is($dri->get_info('object_type','message',459),'domain','poll: domain transfer out message get_info object_type');
 is($dri->get_info('object_id','message',459),'test-transfer-dm2.cz','poll: domain transfer out message get_info object_id');
 
-# poll: fred status polls
+######
+# fred poll message types
+# https://fred.nic.cz/documentation/html/EPPReference/CommandStructure/Poll/MessageTypes.html
+# will try to cover all cases listed in previous link here
+######
+
+# 5.5.3.1. Low credit
+$R2='';
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="19681433"><qDate>2017-07-25T15:03:43+02:00</qDate><msg><fred:lowCreditData xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.0.xsd"><fred:zone>cz</fred:zone><fred:limit><fred:zone>cz</fred:zone><fred:credit>5000.00</fred:credit></fred:limit><fred:credit><fred:zone>cz</fred:zone><fred:credit>4999.00</fred:credit></fred:credit></fred:lowCreditData></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+# print Dumper($rc);
+is($dri->get_info('last_id'),19681433,'message get_info last_id 1 (5.5.3.1)');
+is(''.$dri->get_info('qdate','message',19681433),'2017-07-25T15:03:43','message get_info qdate (5.5.3.1)');
+is($dri->get_info('object_type','message','19681433'),'lowCreditData','message get_info object_type (5.5.3.1)');
+is($dri->get_info('object_id','message','19681433'),'lowCreditData','message get_info object_id (5.5.3.1)');
+is($dri->get_info('action','message','19681433'),'fred','message get_info object_type (5.5.3.1)');
+is($dri->get_info('zone','message','19681433'),'cz','message get_info zone (5.5.3.1)');
+is($dri->get_info('limit','message','19681433'),'cz5000.00','message get_info limit (5.5.3.1)');
+is($dri->get_info('credit','message','19681433'),'cz4999.00','message get_info credit (5.5.3.1)');
+# FIXME: for now only building basic structure should we display everything???
+#is($dri->get_info('limit_zone','message','19681433'),'cz','message get_info limit_zone (5.5.3.1)');
+#is($dri->get_info('limit_credit','message','19681433'),'5000.00','message get_info limit_credit (5.5.3.1)');
+#is($dri->get_info('credit_zone','message','19681433'),'cz','message get_info limit_zone (5.5.3.1)');
+#is($dri->get_info('credit_credit','message','19681433'),'4999.00','message get_info limit_credit (5.5.3.1)');
+
+# # 5.5.1.2 response element structure
+# $R2='';
+# $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="7" id="19596173"><qDate>2017-07-15T01:18:13+02:00</qDate><msg><fred:requestFeeInfoData xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5"><fred:periodFrom>2017-07-01T00:00:00+02:00</fred:periodFrom><fred:periodTo>2017-07-14T23:59:59+02:00</fred:periodTo><fred:totalFreeCount>25000</fred:totalFreeCount><fred:usedCount>120</fred:usedCount><fred:price>0.00</fred:price></fred:requestFeeInfoData></msg></msgQ>'.$TRID.'</response>'.$E2;
+# $rc=$dri->message_retrieve();
+# # print Dumper($rc);
+# is($dri->get_info('last_id'),19596173,'message get_info last_id 1 (5.5.1.2)');
+# # is($dri->get_info('last_id','19596173','session'),19596173,'message get_info last_id 2 (5.5.1.2)');
+# is($dri->get_info('id','message',19596173),19596173,'message get_info id (5.5.1.2)');
+# is(''.$dri->get_info('qdate','message',19596173),'2017-07-15T01:18:13','message get_info qdate (5.5.1.2)');
+# is($dri->get_info('content','message',19596173),'Pending action completed successfully.','message get_info msg (5.5.1.2)');
+# is($dri->get_info('lang','message',19596173),'en','message get_info lang (5.5.1.2)');
+# is($dri->get_info('object_type','message','19596173'),'domain','message get_info object_type (5.5.1.2)');
+# is($dri->get_info('object_id','message','19596173'),'example.com','message get_info id (5.5.1.2)');
+# is($dri->get_info('action','message','19596173'),'review','message get_info action (5.5.1.2)'); ## with this, we know what action has triggered this delayed message
+# is($dri->get_info('result','message','19596173'),1,'message get_info result (5.5.1.2)');
+# is($dri->get_info('trid','message','19596173'),'ABC-12345','message get_info trid (5.5.1.2)');
+# is($dri->get_info('svtrid','message','19596173'),'54321-XYZ','message get_info svtrid (5.5.1.2)');
+# is(''.$dri->get_info('date','message','19596173'),'1999-04-04T22:00:00','message get_info date (5.5.1.2)');
+#
+#
+# # poll: dnsOutageData
+
 
 exit 0;
