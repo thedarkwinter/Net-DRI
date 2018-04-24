@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: remove me later
 
-use Test::More tests => 161;
+use Test::More tests => 163;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -884,6 +884,7 @@ is(''.$dri->get_info('qdate','message',19681433),'2017-07-25T15:03:43','message 
 is($dri->get_info('object_type','message','19681433'),'message','message get_info object_type (5.5.3.1)');
 is($dri->get_info('object_id','message','19681433'),'19681433','message get_info object_id (5.5.3.1)');
 is($dri->get_info('action','message','19681433'),'fred_lowCreditData','message get_info object_action (5.5.3.1)');
+is($dri->get_info('content','message',19681433),'<msg><fred:lowCreditData xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.0.xsd"><fred:zone>cz</fred:zone><fred:limit><fred:zone>cz</fred:zone><fred:credit>5000.00</fred:credit></fred:limit><fred:credit><fred:zone>cz</fred:zone><fred:credit>4999.00</fred:credit></fred:credit></fred:lowCreditData></msg>','message get_info content (5.5.3.1)');
 my $fred_low_credit_data = $dri->get_info('lowCreditData','message','19681433');
 is($fred_low_credit_data->{zone},'cz','message get_info lowCreditData zone (5.5.3.1)');
 is($fred_low_credit_data->{limit}->{zone},'cz','message get_info lowCreditData limit_zone (5.5.3.1)');
@@ -900,6 +901,7 @@ is(''.$dri->get_info('qdate','message',19690926),'2017-07-27T01:15:10','message 
 is($dri->get_info('object_type','message','19690926'),'message','message get_info object_type (5.5.3.2)');
 is($dri->get_info('object_id','message','19690926'),'19690926','message get_info object_id (5.5.3.2)');
 is($dri->get_info('action','message','19690926'),'fred_requestFeeInfoData','message get_info object_action (5.5.3.2)');
+is($dri->get_info('content','message',19690926),'<msg><fred:requestFeeInfoData xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5"><fred:periodFrom>2017-07-01T00:00:00+02:00</fred:periodFrom><fred:periodTo>2017-07-26T23:59:59+02:00</fred:periodTo><fred:totalFreeCount>25000</fred:totalFreeCount><fred:usedCount>243</fred:usedCount><fred:price>0.00</fred:price></fred:requestFeeInfoData></msg>','message get_info content (5.5.3.2)');
 my $fred_request_usage = $dri->get_info('requestFeeInfoData','message','19690926');
 is($fred_request_usage->{periodFrom},'2017-07-01T00:00:00','message get_info requestFeeInfoData periodFrom (5.5.3.2)');
 is($fred_request_usage->{periodTo},'2017-07-26T23:59:59','message get_info requestFeeInfoData periodTo (5.5.3.2)');
