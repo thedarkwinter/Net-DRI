@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: remove me later
 
-use Test::More tests => 163;
+use Test::More tests => 179;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -909,30 +909,33 @@ is($fred_request_usage->{totalFreeCount},'25000','message get_info requestFeeInf
 is($fred_request_usage->{usedCount},'243','message get_info requestFeeInfoData usedCount (5.5.3.2)');
 is($fred_request_usage->{price},'0.00','message get_info requestFeeInfoData price (5.5.3.2)');
 
+# 5.5.3.3. Domain life cycle
+$R2='';
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="19690946"><qDate>2017-07-27T12:13:55+02:00</qDate><msg><domain:impendingExpData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:name>somedomain.cz</domain:name><domain:exDate>2017-08-26</domain:exDate></domain:impendingExpData></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),19690946,'message get_info last_id 1 (5.5.3.3)');
+is(''.$dri->get_info('qdate','message',19690946),'2017-07-27T12:13:55','message get_info qdate (5.5.3.3)');
+is($dri->get_info('object_type','message','19690946'),'message','message get_info object_type (5.5.3.3)');
+is($dri->get_info('object_id','message','19690946'),'19690946','message get_info object_id (5.5.3.3)');
+is($dri->get_info('action','message','19690946'),'fred_impendingExpData','message get_info object_action (5.5.3.3)');
+is($dri->get_info('content','message',19690946),'<msg><domain:impendingExpData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:name>somedomain.cz</domain:name><domain:exDate>2017-08-26</domain:exDate></domain:impendingExpData></msg>','message get_info content (5.5.3.3)');
+my $fred_domain_life_cycle = $dri->get_info('impendingExpData','message','19690946');
+is($fred_domain_life_cycle->{name},'somedomain.cz','message get_info impendingExpData name (5.5.3.3)');
+is($fred_domain_life_cycle->{exDate},'2017-08-26','message get_info impendingExpData exDate (5.5.3.3)');
+# 5.5.3.3. Domain life cycle - dnsOutageData
+$R2='';
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="13690946"><qDate>2017-07-27T12:13:55+02:00</qDate><msg><domain:dnsOutageData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:name>somednsoutagedomain.cz</domain:name><domain:exDate>2018-04-24</domain:exDate></domain:dnsOutageData></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),13690946,'message get_info last_id 1 (5.5.3.3 - dnsOutageData)');
+is(''.$dri->get_info('qdate','message',13690946),'2017-07-27T12:13:55','message get_info qdate (5.5.3.3 - dnsOutageData)');
+is($dri->get_info('object_type','message','13690946'),'message','message get_info object_type (5.5.3.3 - dnsOutageData)');
+is($dri->get_info('object_id','message','13690946'),'13690946','message get_info object_id (5.5.3.3 - dnsOutageData)');
+is($dri->get_info('action','message','13690946'),'fred_dnsOutageData','message get_info object_action (5.5.3.3 - dnsOutageData)');
+is($dri->get_info('content','message',13690946),'<msg><domain:dnsOutageData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:name>somednsoutagedomain.cz</domain:name><domain:exDate>2018-04-24</domain:exDate></domain:dnsOutageData></msg>','message get_info content (5.5.3.3 - dnsOutageData)');
+my $fred_domain_life_cycle2 = $dri->get_info('dnsOutageData','message','13690946');
+is($fred_domain_life_cycle2->{name},'somednsoutagedomain.cz','message get_info dnsOutageData name (5.5.3.3 - dnsOutageData)');
+is($fred_domain_life_cycle2->{exDate},'2018-04-24','message get_info dnsOutageData exDate (5.5.3.3 - dnsOutageData)');
 
-
-
-# # 5.5.1.2 response element structure
-# $R2='';
-# $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="7" id="19596173"><qDate>2017-07-15T01:18:13+02:00</qDate><msg><fred:requestFeeInfoData xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5"><fred:periodFrom>2017-07-01T00:00:00+02:00</fred:periodFrom><fred:periodTo>2017-07-14T23:59:59+02:00</fred:periodTo><fred:totalFreeCount>25000</fred:totalFreeCount><fred:usedCount>120</fred:usedCount><fred:price>0.00</fred:price></fred:requestFeeInfoData></msg></msgQ>'.$TRID.'</response>'.$E2;
-# $rc=$dri->message_retrieve();
-# # print Dumper($rc);
-# is($dri->get_info('last_id'),19596173,'message get_info last_id 1 (5.5.1.2)');
-# # is($dri->get_info('last_id','19596173','session'),19596173,'message get_info last_id 2 (5.5.1.2)');
-# is($dri->get_info('id','message',19596173),19596173,'message get_info id (5.5.1.2)');
-# is(''.$dri->get_info('qdate','message',19596173),'2017-07-15T01:18:13','message get_info qdate (5.5.1.2)');
-# is($dri->get_info('content','message',19596173),'Pending action completed successfully.','message get_info msg (5.5.1.2)');
-# is($dri->get_info('lang','message',19596173),'en','message get_info lang (5.5.1.2)');
-# is($dri->get_info('object_type','message','19596173'),'domain','message get_info object_type (5.5.1.2)');
-# is($dri->get_info('object_id','message','19596173'),'example.com','message get_info id (5.5.1.2)');
-# is($dri->get_info('action','message','19596173'),'review','message get_info action (5.5.1.2)'); ## with this, we know what action has triggered this delayed message
-# is($dri->get_info('result','message','19596173'),1,'message get_info result (5.5.1.2)');
-# is($dri->get_info('trid','message','19596173'),'ABC-12345','message get_info trid (5.5.1.2)');
-# is($dri->get_info('svtrid','message','19596173'),'54321-XYZ','message get_info svtrid (5.5.1.2)');
-# is(''.$dri->get_info('date','message','19596173'),'1999-04-04T22:00:00','message get_info date (5.5.1.2)');
-#
-#
-# # poll: dnsOutageData
 
 
 exit 0;

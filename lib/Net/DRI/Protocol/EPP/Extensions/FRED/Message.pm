@@ -98,9 +98,7 @@ sub parse_poll {
         $rinfo->{$otype}->{$oname}->{$n} = $c->textContent() ? $c->textContent() : '' if ($n);
       }
     } else {
-      # TODO: send inside content or $n?
-      if ( $n && lc($n) =~ m/^(lowcreditdata|requestfeeinfodata|impendingexpdata|impendingvalexpdata|updatedata|idledeldata|testdata)$/ ) {
-        # $rinfo->{$otype}->{$oname}->{content} = message_types(@$el);
+      if ( $n && lc($n) =~ m/^(lowcreditdata|requestfeeinfodata|impendingexpdata|expdata|dnsoutagedata|deldata|valexpdata|updatedata|idledeldata|testdata)$/ ) {
         $rinfo->{$otype}->{$oname}->{$n} = message_types(@$el);
         $rinfo->{$otype}->{$oname}->{action} = 'fred_' . $n;
         # $rinfo->{$otype}->{$oname}->{object_type} = 'fred_' . $n;
@@ -122,11 +120,13 @@ sub message_types {
   my @fredData = Net::DRI::Util::xml_list_children($content);
   $fred = __low_credit(@fredData) if ($name eq 'lowCreditData');
   $fred = __request_usage(@fredData) if ($name eq 'requestFeeInfoData');
+  $fred = __domain_life_cycle(@fredData) if ($name=~m/^(impendingExpData|expData|dnsOutageData|delData)$/);
 
   # print Dumper($fred);
 
   return $fred;
 }
+
 
 # Event: Client’s credit has dropped below the stated limit.
 sub __low_credit {
@@ -146,6 +146,7 @@ sub __low_credit {
   return $fred_low_credit;
 }
 
+
 # Event: Daily report of how many free requests have been made this month so far, and how much the client will be charged for the requests that exceed the limit.
 sub __request_usage {
   my $fred_request_usage;
@@ -162,10 +163,25 @@ sub __request_usage {
 }
 
 
+# There are several notifications concerning the life cycle of domains that have the same content but are issued on different events:
+# * <domain:impendingExpData> – the domain is going to expire (by default 30 days before expiration),
+# * <domain:expData> – the domain has expired (on the date of expiration),
+# * <domain:dnsOutageData> – the domain has been excluded from the zone (by default 30 days after expiration),
+# * <domain:delData> – the domain has been deleted (by default 61 days after expiration or deleted by the Registry for another reason).
+sub __domain_life_cycle {
+  my $fred_domain_life_cycle;
+  foreach my $el_fred(@_) {
+    my ($n_fred, $c_fred)=@$el_fred;
+    $fred_domain_life_cycle->{name} = $c_fred->textContent() if $n_fred eq 'name';
+    # <domain:exDate>: the expiration date of the domain name as xs:date
+    $fred_domain_life_cycle->{exDate} = $c_fred->textContent() if $n_fred eq 'exDate';
+  }
 
-# sub __domain_life_cycle {
-#
-# }
+  return $fred_domain_life_cycle;
+}
+
+
+
 # sub __enum_domain_validation {
 #
 # }
