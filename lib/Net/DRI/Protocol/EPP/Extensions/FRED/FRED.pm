@@ -77,6 +77,14 @@ sub register_commands {
 
 ################################################################################
 
+################################################################################
+# Custom FRED commands:
+# - Credit info: https://fred.nic.cz/documentation/html/EPPReference/CommandStructure/CreditInfo.html
+# - Send auth.info: https://fred.nic.cz/documentation/html/EPPReference/CommandStructure/SendAuthInfo/index.html
+# - Test nsset: https://fred.nic.cz/documentation/html/EPPReference/CommandStructure/TestNsset.html
+# - Listing: https://fred.nic.cz/documentation/html/EPPReference/CommandStructure/List/index.html
+################################################################################
+
 sub credit_info {
   my ($epp)=@_;
   my $mes=$epp->message();

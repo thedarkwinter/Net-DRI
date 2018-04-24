@@ -17,6 +17,7 @@ package Net::DRI::Protocol::EPP::Extensions::FRED::Message;
 use strict;
 use warnings;
 use POSIX qw(strftime);
+use DateTime::Format::ISO8601;
 use Data::Dumper; # TODO: remove me later
 
 =pod
@@ -97,8 +98,13 @@ sub parse_poll {
         $rinfo->{$otype}->{$oname}->{$n} = $c->textContent() ? $c->textContent() : '' if ($n);
       }
     } else {
-      # print Dumper($n);
-      $rinfo->{$otype}->{$oname} = message_types(@$el) if ( $n && lc($n) =~ m/^(lowcreditdata|requestfeeinfodata|impendingexpdata|impendingvalexpdata|updatedata|idledeldata|testdata)$/ );
+      # TODO: send inside content or $n?
+      if ( $n && lc($n) =~ m/^(lowcreditdata|requestfeeinfodata|impendingexpdata|impendingvalexpdata|updatedata|idledeldata|testdata)$/ ) {
+        # $rinfo->{$otype}->{$oname}->{content} = message_types(@$el);
+        $rinfo->{$otype}->{$oname}->{$n} = message_types(@$el);
+        $rinfo->{$otype}->{$oname}->{action} = 'fred_' . $n;
+        # $rinfo->{$otype}->{$oname}->{object_type} = 'fred_' . $n;
+      }
     }
   }
 
@@ -110,26 +116,53 @@ sub parse_poll {
 # more info here: https://fred.nic.cz/documentation/html/EPPReference/CommandStructure/Poll/MessageTypes.html
 sub message_types {
   my ($name, $content)=@_;
+  # print Dumper($name);
+  # print Dumper($content->textContent());
   my $fred;
-  $fred->{action} = 'fred';
-  $fred->{object_type} = $name;
-  $fred->{object_id} = $name;
   my @fredData = Net::DRI::Util::xml_list_children($content);
-  foreach my $el_fred(@fredData) {
-    my ($n_fred, $c_fred)=@$el_fred;
-    $fred->{$n_fred} = $c_fred->textContent() ? $c_fred->textContent() : '' if ($n_fred);
-  }
+  $fred = __low_credit(@fredData) if ($name eq 'lowCreditData');
+  $fred = __request_usage(@fredData) if ($name eq 'requestFeeInfoData');
+
+  # print Dumper($fred);
 
   return $fred;
 }
 
-# # FIXME: create function per message types?
-# sub __low_credit {
-#
-# }
-# sub __request_usage {
-#
-# }
+# Event: Client’s credit has dropped below the stated limit.
+sub __low_credit {
+  my $fred_low_credit;
+  foreach my $el_fred(@_) {
+    my ($n_fred, $c_fred)=@$el_fred;
+    if ($n_fred eq 'zone') {
+      $fred_low_credit->{$n_fred} = $c_fred->textContent();
+    } elsif ($n_fred=~m/^(limit|credit)$/) {
+      foreach my $el_limit(Net::DRI::Util::xml_list_children($c_fred)) {
+        my ($n_limit, $c_limit)=@$el_limit;
+        $fred_low_credit->{$n_fred}->{$n_limit} = $c_limit->textContent() if $n_limit=~m/^(zone|credit)$/;
+      }
+    }
+  }
+
+  return $fred_low_credit;
+}
+
+# Event: Daily report of how many free requests have been made this month so far, and how much the client will be charged for the requests that exceed the limit.
+sub __request_usage {
+  my $fred_request_usage;
+  foreach my $el_fred(@_) {
+    my ($n_fred, $c_fred)=@$el_fred;
+    if ($n_fred=~m/^(periodFrom|periodTo)$/) {
+      $fred_request_usage->{$n_fred} = new DateTime::Format::ISO8601->new()->parse_datetime($c_fred->textContent());
+    } elsif ($n_fred=~m/^(totalFreeCount|usedCount|price)$/) {
+      $fred_request_usage->{$n_fred} = $c_fred->textContent();
+    }
+  }
+
+  return $fred_request_usage;
+}
+
+
+
 # sub __domain_life_cycle {
 #
 # }
@@ -150,7 +183,6 @@ sub message_types {
 # sub __technical_check_results {
 #
 # }
-# # FIXME: create function per message types?
 
 
 1;

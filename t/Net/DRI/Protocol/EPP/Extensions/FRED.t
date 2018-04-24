@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: remove me later
 
-use Test::More tests => 149;
+use Test::More tests => 161;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -879,20 +879,36 @@ is($dri->get_info('object_id','message',459),'test-transfer-dm2.cz','poll: domai
 $R2='';
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="19681433"><qDate>2017-07-25T15:03:43+02:00</qDate><msg><fred:lowCreditData xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.0.xsd"><fred:zone>cz</fred:zone><fred:limit><fred:zone>cz</fred:zone><fred:credit>5000.00</fred:credit></fred:limit><fred:credit><fred:zone>cz</fred:zone><fred:credit>4999.00</fred:credit></fred:credit></fred:lowCreditData></msg></msgQ>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
-# print Dumper($rc);
 is($dri->get_info('last_id'),19681433,'message get_info last_id 1 (5.5.3.1)');
 is(''.$dri->get_info('qdate','message',19681433),'2017-07-25T15:03:43','message get_info qdate (5.5.3.1)');
-is($dri->get_info('object_type','message','19681433'),'lowCreditData','message get_info object_type (5.5.3.1)');
-is($dri->get_info('object_id','message','19681433'),'lowCreditData','message get_info object_id (5.5.3.1)');
-is($dri->get_info('action','message','19681433'),'fred','message get_info object_type (5.5.3.1)');
-is($dri->get_info('zone','message','19681433'),'cz','message get_info zone (5.5.3.1)');
-is($dri->get_info('limit','message','19681433'),'cz5000.00','message get_info limit (5.5.3.1)');
-is($dri->get_info('credit','message','19681433'),'cz4999.00','message get_info credit (5.5.3.1)');
-# FIXME: for now only building basic structure should we display everything???
-#is($dri->get_info('limit_zone','message','19681433'),'cz','message get_info limit_zone (5.5.3.1)');
-#is($dri->get_info('limit_credit','message','19681433'),'5000.00','message get_info limit_credit (5.5.3.1)');
-#is($dri->get_info('credit_zone','message','19681433'),'cz','message get_info limit_zone (5.5.3.1)');
-#is($dri->get_info('credit_credit','message','19681433'),'4999.00','message get_info limit_credit (5.5.3.1)');
+is($dri->get_info('object_type','message','19681433'),'message','message get_info object_type (5.5.3.1)');
+is($dri->get_info('object_id','message','19681433'),'19681433','message get_info object_id (5.5.3.1)');
+is($dri->get_info('action','message','19681433'),'fred_lowCreditData','message get_info object_action (5.5.3.1)');
+my $fred_low_credit_data = $dri->get_info('lowCreditData','message','19681433');
+is($fred_low_credit_data->{zone},'cz','message get_info lowCreditData zone (5.5.3.1)');
+is($fred_low_credit_data->{limit}->{zone},'cz','message get_info lowCreditData limit_zone (5.5.3.1)');
+is($fred_low_credit_data->{limit}->{credit},'5000.00','message get_info lowCreditData limit_credit (5.5.3.1)');
+is($fred_low_credit_data->{credit}->{zone},'cz','message get_info lowCreditData credit_zone (5.5.3.1)');
+is($fred_low_credit_data->{credit}->{credit},'4999.00','message get_info lowCreditData credit_credit (5.5.3.1)');
+
+# 5.5.3.2. Request usage
+$R2='';
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="19690926"><qDate>2017-07-27T01:15:10+02:00</qDate><msg><fred:requestFeeInfoData xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5"><fred:periodFrom>2017-07-01T00:00:00+02:00</fred:periodFrom><fred:periodTo>2017-07-26T23:59:59+02:00</fred:periodTo><fred:totalFreeCount>25000</fred:totalFreeCount><fred:usedCount>243</fred:usedCount><fred:price>0.00</fred:price></fred:requestFeeInfoData></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),19690926,'message get_info last_id 1 (5.5.3.2)');
+is(''.$dri->get_info('qdate','message',19690926),'2017-07-27T01:15:10','message get_info qdate (5.5.3.2)');
+is($dri->get_info('object_type','message','19690926'),'message','message get_info object_type (5.5.3.2)');
+is($dri->get_info('object_id','message','19690926'),'19690926','message get_info object_id (5.5.3.2)');
+is($dri->get_info('action','message','19690926'),'fred_requestFeeInfoData','message get_info object_action (5.5.3.2)');
+my $fred_request_usage = $dri->get_info('requestFeeInfoData','message','19690926');
+is($fred_request_usage->{periodFrom},'2017-07-01T00:00:00','message get_info requestFeeInfoData periodFrom (5.5.3.2)');
+is($fred_request_usage->{periodTo},'2017-07-26T23:59:59','message get_info requestFeeInfoData periodTo (5.5.3.2)');
+is($fred_request_usage->{totalFreeCount},'25000','message get_info requestFeeInfoData totalFreeCount (5.5.3.2)');
+is($fred_request_usage->{usedCount},'243','message get_info requestFeeInfoData usedCount (5.5.3.2)');
+is($fred_request_usage->{price},'0.00','message get_info requestFeeInfoData price (5.5.3.2)');
+
+
+
 
 # # 5.5.1.2 response element structure
 # $R2='';
