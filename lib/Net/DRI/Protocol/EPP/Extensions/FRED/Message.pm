@@ -98,7 +98,7 @@ sub parse_poll {
         $rinfo->{$otype}->{$oname}->{$n} = $c->textContent() ? $c->textContent() : '' if ($n);
       }
     } else {
-      if ( $n && lc($n) =~ m/^(lowcreditdata|requestfeeinfodata|impendingexpdata|expdata|dnsoutagedata|deldata|valexpdata|updatedata|idledeldata|testdata)$/ ) {
+      if ( $n && lc($n) =~ m/^(lowcreditdata|requestfeeinfodata|impendingexpdata|expdata|dnsoutagedata|deldata|impendingvalexpdata|valexpdata|updatedata|idledeldata|testdata)$/ ) {
         $rinfo->{$otype}->{$oname}->{$n} = message_types(@$el);
         $rinfo->{$otype}->{$oname}->{action} = 'fred_' . $n;
         # $rinfo->{$otype}->{$oname}->{object_type} = 'fred_' . $n;
@@ -121,7 +121,12 @@ sub message_types {
   $fred = __low_credit(@fredData) if ($name eq 'lowCreditData');
   $fred = __request_usage(@fredData) if ($name eq 'requestFeeInfoData');
   $fred = __domain_life_cycle(@fredData) if ($name=~m/^(impendingExpData|expData|dnsOutageData|delData)$/);
-
+  $fred = __enum_domain_validation(@fredData) if ($name=~m/^(impendingValExpData|valExpData)$/);
+  # README: next one was already done under parse_poll() - leaving this in case we want to clean in the future!
+  # $fred = __object_transfer(@fredData) if ($name=~m/^(trnData)$/);
+  $fred = __object_update(@fredData) if ($name=~m/^(updateData)$/);
+  $fred = __idle_object_deletion(@fredData) if ($name=~m/^(idleDelData)$/);
+  $fred = __technical_check_results(@fredData) if ($name=~m/^(testData)$/);
   # print Dumper($fred);
 
   return $fred;
@@ -181,24 +186,99 @@ sub __domain_life_cycle {
 }
 
 
+# Notifications concerning the validation of ENUM domains for events:
+# * <enumval:impendingValExpData> – domain’s validation is going to expire (by default 30 days before validation expiration),
+# * <enumval:valExpData> – domain’s validation has expired (on the day of validation expiration).
+sub __enum_domain_validation {
+  my $fred_enum_domain_validation;
+  foreach my $el_fred(@_) {
+    my ($n_fred, $c_fred)=@$el_fred;
+    $fred_enum_domain_validation->{name} = $c_fred->textContent() if $n_fred eq 'name';
+    # <enumval:valExDate>: the expiration date of domain validation as xs:date.
+    $fred_enum_domain_validation->{valExDate} = $c_fred->textContent() if $n_fred eq 'valExDate';
+  }
 
-# sub __enum_domain_validation {
-#
-# }
-# sub __object_transer {
-#   # ALREADY DONE UNDER parse_poll() !
-# }
-# sub __object_update {
-#
-# }
-#
-# sub __idle_object_deletion {
-#
-# }
-#
-# sub __technical_check_results {
-#
-# }
+  return $fred_enum_domain_validation;
+}
+
+
+# Event: An object has been transferred to another registrar.
+# TODO: they don't have more example but might need to improve this because:
+# This message type appears in all 4 object namespaces: domain, contact, nsset, keyset.
+sub __object_transfer {
+  my $fred_object_transfer;
+  foreach my $el_fred(@_) {
+    my ($n_fred, $c_fred)=@$el_fred;
+    $fred_object_transfer->{name} = $c_fred->textContent() if $n_fred eq 'name';
+    $fred_object_transfer->{id} = $c_fred->textContent() if $n_fred eq 'id';
+    $fred_object_transfer->{trDate} = $c_fred->textContent() if $n_fred eq 'trDate';
+    $fred_object_transfer->{clID} = $c_fred->textContent() if $n_fred eq 'clID';
+  }
+
+  return $fred_object_transfer;
+}
+
+
+# Event: An object has been updated (in consequence of a server-side operation).
+sub __object_update {
+  my $fred_object_update;
+  foreach my $el_fred(@_) {
+    my ($n_fred, $c_fred)=@$el_fred;
+    $fred_object_update->{opTRID} = $c_fred->textContent() if $n_fred eq 'opTRID';
+    if ($n_fred=~m/^(oldData|newData)$/) {
+      foreach my $el_infdata(Net::DRI::Util::xml_list_children($c_fred)) {
+        my ($n_infdata, $c_infdata)=@$el_infdata;
+        if ($n_infdata eq 'infData') {
+          foreach my $el_data(Net::DRI::Util::xml_list_children($c_infdata)) {
+            my ($n_data, $c_data)=@$el_data;
+            $fred_object_update->{$n_fred}->{$n_data} = $c_data->textContent() if ($n_data=~m/^(name|roid|status|registrant|admin|nsset|keyset|clID|crID|crDate|upID|upDate|exDate|trDate|authInfo|tempcontact|id|ns|tech|reportlevel)$/);
+          }
+        }
+      }
+    }
+  }
+
+  return $fred_object_update;
+}
+
+
+# Event: An object has been deleted because it had not been used for a long time.
+# This message type appears in the following object namespaces: contact, nsset, keyset.
+sub __idle_object_deletion {
+  my $fred_idle_object_deletion;
+  foreach my $el_fred(@_) {
+    my ($n_fred, $c_fred)=@$el_fred;
+    $fred_idle_object_deletion->{id} = $c_fred->textContent() if $n_fred eq 'id';
+  }
+
+  return $fred_idle_object_deletion;
+}
+
+
+# Event: A technical check that the client had requested, has finished.
+sub __technical_check_results {
+  my $fred_technical_check_results;
+  foreach my $el_fred(@_) {
+    my ($n_fred, $c_fred)=@$el_fred;
+    $fred_technical_check_results->{id} = $c_fred->textContent() if $n_fred eq 'id';
+    if ($n_fred eq 'name') {
+      # <nsset:name> (0..n)
+      push @{$fred_technical_check_results->{$n_fred}}, $c_fred->textContent();
+    } elsif ($n_fred eq 'result') {
+      my $result = {};
+      foreach my $el_result(Net::DRI::Util::xml_list_children($c_fred)) {
+        my ($n_result, $c_result)=@$el_result;
+        $result->{$n_result} = $c_result->textContent() if $n_result eq 'testname';
+        $result->{$n_result} = $c_result->textContent() if $n_result eq 'status';
+        $result->{$n_result} = $c_result->textContent() if $n_result eq 'note';
+      }
+      # <nsset:result> (0..n)
+      push @{$fred_technical_check_results->{$n_fred}}, $result;
+    }
+  }
+
+  return $fred_technical_check_results;
+}
 
 
 1;

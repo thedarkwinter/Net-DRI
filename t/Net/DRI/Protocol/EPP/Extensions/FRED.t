@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: remove me later
 
-use Test::More tests => 179;
+use Test::More tests => 227;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -909,7 +909,7 @@ is($fred_request_usage->{totalFreeCount},'25000','message get_info requestFeeInf
 is($fred_request_usage->{usedCount},'243','message get_info requestFeeInfoData usedCount (5.5.3.2)');
 is($fred_request_usage->{price},'0.00','message get_info requestFeeInfoData price (5.5.3.2)');
 
-# 5.5.3.3. Domain life cycle
+# 5.5.3.3. Domain life cycle - impendingExpData
 $R2='';
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="19690946"><qDate>2017-07-27T12:13:55+02:00</qDate><msg><domain:impendingExpData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:name>somedomain.cz</domain:name><domain:exDate>2017-08-26</domain:exDate></domain:impendingExpData></msg></msgQ>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
@@ -936,6 +936,87 @@ my $fred_domain_life_cycle2 = $dri->get_info('dnsOutageData','message','13690946
 is($fred_domain_life_cycle2->{name},'somednsoutagedomain.cz','message get_info dnsOutageData name (5.5.3.3 - dnsOutageData)');
 is($fred_domain_life_cycle2->{exDate},'2018-04-24','message get_info dnsOutageData exDate (5.5.3.3 - dnsOutageData)');
 
+# 5.5.3.4. ENUM domain validation
+$R2='';
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="19847350"><qDate>2017-08-14T13:19:29+02:00</qDate><msg><enumval:impendingValExpData xmlns:enumval="http://www.nic.cz/xml/epp/enumval-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/enumval-1.2 enumval-1.2.0.xsd"><enumval:name>1.1.1.7.4.5.2.2.2.0.2.4.e164.arpa</enumval:name><enumval:valExDate>2017-08-15</enumval:valExDate></enumval:impendingValExpData></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),19847350,'message get_info last_id 1 (5.5.3.4 - ENUM domain validation)');
+is(''.$dri->get_info('qdate','message',19847350),'2017-08-14T13:19:29','message get_info qdate (5.5.3.4 - ENUM domain validation)');
+is($dri->get_info('object_type','message','19847350'),'message','message get_info object_type (5.5.3.4 - ENUM domain validation)');
+is($dri->get_info('object_id','message','19847350'),'19847350','message get_info object_id (5.5.3.4 - ENUM domain validation)');
+is($dri->get_info('action','message','19847350'),'fred_impendingValExpData','message get_info object_action (5.5.3.4 - ENUM domain validation)');
+is($dri->get_info('content','message',19847350),'<msg><enumval:impendingValExpData xmlns:enumval="http://www.nic.cz/xml/epp/enumval-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/enumval-1.2 enumval-1.2.0.xsd"><enumval:name>1.1.1.7.4.5.2.2.2.0.2.4.e164.arpa</enumval:name><enumval:valExDate>2017-08-15</enumval:valExDate></enumval:impendingValExpData></msg>','message get_info content (5.5.3.4 - ENUM domain validation)');
+my $fred_enum_domain_validation = $dri->get_info('impendingValExpData','message','19847350');
+is($fred_enum_domain_validation->{name},'1.1.1.7.4.5.2.2.2.0.2.4.e164.arpa','message get_info impendingValExpData name (5.5.3.4 - ENUM domain validation)');
+is($fred_enum_domain_validation->{valExDate},'2017-08-15','message get_info impendingValExpData valExDate (5.5.3.4 - ENUM domain validation)');
+
+# 5.5.3.5. Object transfer
+# README: test already added - first message_retrieve()
+
+# 5.5.3.6. Object update
+$R2='';
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="19852593"><qDate>2017-08-14T13:29:06+02:00</qDate><msg><domain:updateData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:opTRID>ReqID-0000141228</domain:opTRID><domain:oldData><domain:infData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:name>mydomain.cz</domain:name><domain:roid>D0009907597-CZ</domain:roid><domain:status s="serverBlocked">Domain blocked</domain:status><domain:status s="serverDeleteProhibited">Deletion forbidden</domain:status><domain:status s="serverRenewProhibited">Registration renewal forbidden</domain:status><domain:status s="serverRegistrantChangeProhibited">Registrant change forbidden</domain:status><domain:status s="serverTransferProhibited">Sponsoring registrar change forbidden</domain:status><domain:status s="serverUpdateProhibited">Update forbidden</domain:status><domain:registrant>CID-MYOWN</domain:registrant><domain:admin>CID-ADMIN1</domain:admin><domain:admin>CID-ADMIN2</domain:admin><domain:nsset>NID-MYNSSET</domain:nsset><domain:clID>REG-MYREG</domain:clID><domain:crID>REG-MYREG</domain:crID><domain:crDate>2017-07-11T13:28:48+02:00</domain:crDate><domain:upID>REG-FRED_C</domain:upID><domain:upDate>2017-08-11T10:46:14+02:00</domain:upDate><domain:exDate>2020-07-11</domain:exDate><domain:authInfo>rvBcaTVq</domain:authInfo></domain:infData></domain:oldData><domain:newData><domain:infData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:name>mydomain.cz</domain:name><domain:roid>D0009907597-CZ</domain:roid><domain:status s="serverBlocked">Domain blocked</domain:status><domain:status s="serverDeleteProhibited">Deletion forbidden</domain:status><domain:status s="serverRenewProhibited">Registration renewal forbidden</domain:status><domain:status s="serverRegistrantChangeProhibited">Registrant change forbidden</domain:status><domain:status s="serverTransferProhibited">Sponsoring registrar change forbidden</domain:status><domain:status s="serverUpdateProhibited">Update forbidden</domain:status><domain:registrant>CID-MYCONTACT</domain:registrant><domain:admin>CID-ADMIN1</domain:admin><domain:admin>CID-ADMIN2</domain:admin><domain:nsset>NID-MYNSSET</domain:nsset><domain:clID>REG-MYREG</domain:clID><domain:crID>REG-MYREG</domain:crID><domain:crDate>2017-07-11T13:28:48+02:00</domain:crDate><domain:upID>REG-CZNIC</domain:upID><domain:upDate>2017-08-14T13:29:06+02:00</domain:upDate><domain:exDate>2020-07-11</domain:exDate><domain:authInfo>rvBcaTVq</domain:authInfo></domain:infData></domain:newData></domain:updateData></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),19852593,'message get_info last_id 1 (5.5.3.6. Object update)');
+is(''.$dri->get_info('qdate','message',19852593),'2017-08-14T13:29:06','message get_info qdate (5.5.3.6. Object update)');
+is($dri->get_info('object_type','message','19852593'),'message','message get_info object_type (5.5.3.6. Object update)');
+is($dri->get_info('object_id','message','19852593'),'19852593','message get_info object_id (5.5.3.6. Object update)');
+is($dri->get_info('action','message','19852593'),'fred_updateData','message get_info object_action (5.5.3.6. Object update)');
+is($dri->get_info('content','message',19852593),'<msg><domain:updateData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:opTRID>ReqID-0000141228</domain:opTRID><domain:oldData><domain:infData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:name>mydomain.cz</domain:name><domain:roid>D0009907597-CZ</domain:roid><domain:status s="serverBlocked">Domain blocked</domain:status><domain:status s="serverDeleteProhibited">Deletion forbidden</domain:status><domain:status s="serverRenewProhibited">Registration renewal forbidden</domain:status><domain:status s="serverRegistrantChangeProhibited">Registrant change forbidden</domain:status><domain:status s="serverTransferProhibited">Sponsoring registrar change forbidden</domain:status><domain:status s="serverUpdateProhibited">Update forbidden</domain:status><domain:registrant>CID-MYOWN</domain:registrant><domain:admin>CID-ADMIN1</domain:admin><domain:admin>CID-ADMIN2</domain:admin><domain:nsset>NID-MYNSSET</domain:nsset><domain:clID>REG-MYREG</domain:clID><domain:crID>REG-MYREG</domain:crID><domain:crDate>2017-07-11T13:28:48+02:00</domain:crDate><domain:upID>REG-FRED_C</domain:upID><domain:upDate>2017-08-11T10:46:14+02:00</domain:upDate><domain:exDate>2020-07-11</domain:exDate><domain:authInfo>rvBcaTVq</domain:authInfo></domain:infData></domain:oldData><domain:newData><domain:infData xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.2.xsd"><domain:name>mydomain.cz</domain:name><domain:roid>D0009907597-CZ</domain:roid><domain:status s="serverBlocked">Domain blocked</domain:status><domain:status s="serverDeleteProhibited">Deletion forbidden</domain:status><domain:status s="serverRenewProhibited">Registration renewal forbidden</domain:status><domain:status s="serverRegistrantChangeProhibited">Registrant change forbidden</domain:status><domain:status s="serverTransferProhibited">Sponsoring registrar change forbidden</domain:status><domain:status s="serverUpdateProhibited">Update forbidden</domain:status><domain:registrant>CID-MYCONTACT</domain:registrant><domain:admin>CID-ADMIN1</domain:admin><domain:admin>CID-ADMIN2</domain:admin><domain:nsset>NID-MYNSSET</domain:nsset><domain:clID>REG-MYREG</domain:clID><domain:crID>REG-MYREG</domain:crID><domain:crDate>2017-07-11T13:28:48+02:00</domain:crDate><domain:upID>REG-CZNIC</domain:upID><domain:upDate>2017-08-14T13:29:06+02:00</domain:upDate><domain:exDate>2020-07-11</domain:exDate><domain:authInfo>rvBcaTVq</domain:authInfo></domain:infData></domain:newData></domain:updateData></msg>','message get_info content (5.5.3.6. Object update)');
+my $fred_object_update = $dri->get_info('updateData','message','19852593');
+is($fred_object_update->{opTRID},'ReqID-0000141228','message get_info updateData opTRID (5.5.3.6. Object update)');
+# oldData - perform only some tests!
+is($fred_object_update->{oldData}->{registrant},'CID-MYOWN','message get_info updateData oldData->Registrant (5.5.3.6. Object update)');
+is($fred_object_update->{oldData}->{upID},'REG-FRED_C','message get_info updateData oldData->upID (5.5.3.6. Object update)');
+# new - perform only some tests!
+is($fred_object_update->{newData}->{registrant},'CID-MYCONTACT','message get_info updateData newData->Registrant (5.5.3.6. Object update)');
+is($fred_object_update->{newData}->{upID},'REG-CZNIC','message get_info updateData newData->upID (5.5.3.6. Object update)');
+
+# 5.5.3.7. Idle object deletion
+$R2='';
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="19689674"><qDate>2017-07-26T18:28:55+02:00</qDate><msg><contact:idleDelData xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.2.xsd"><contact:id>CID-IDLE</contact:id></contact:idleDelData></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),19689674,'message get_info last_id 1 (5.5.3.7. Idle object deletion)');
+is(''.$dri->get_info('qdate','message',19689674),'2017-07-26T18:28:55','message get_info qdate (5.5.3.7. Idle object deletion)');
+is($dri->get_info('object_type','message','19689674'),'message','message get_info object_type (5.5.3.7. Idle object deletion)');
+is($dri->get_info('object_id','message','19689674'),'19689674','message get_info object_id (5.5.3.7. Idle object deletion)');
+is($dri->get_info('action','message','19689674'),'fred_idleDelData','message get_info object_action (5.5.3.7. Idle object deletion)');
+is($dri->get_info('content','message',19689674),'<msg><contact:idleDelData xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.2.xsd"><contact:id>CID-IDLE</contact:id></contact:idleDelData></msg>','message get_info content (5.5.3.7. Idle object deletion)');
+my $fred_idle_object_deletion = $dri->get_info('idleDelData','message','19689674');
+is($fred_idle_object_deletion->{id},'CID-IDLE','message get_info idleDelData id (5.5.3.7. Idle object deletion)');
+
+# 5.5.3.8. Technical check results
+$R2='';
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="19673434"><qDate>2017-07-24T17:33:43+02:00</qDate><msg><nsset:testData xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:name>mydomain.cz</nsset:name><nsset:result><nsset:testname>glue_ok</nsset:testname><nsset:status>true</nsset:status></nsset:result><nsset:result><nsset:testname>existence</nsset:testname><nsset:status>false</nsset:status></nsset:result></nsset:testData></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),19673434,'message get_info last_id 1 (5.5.3.8. Technical check results)');
+is(''.$dri->get_info('qdate','message',19673434),'2017-07-24T17:33:43','message get_info qdate (5.5.3.8. Technical check results)');
+is($dri->get_info('object_type','message','19673434'),'message','message get_info object_type (5.5.3.8. Technical check results)');
+is($dri->get_info('object_id','message','19673434'),'19673434','message get_info object_id (5.5.3.8. Technical check results)');
+is($dri->get_info('action','message','19673434'),'fred_testData','message get_info object_action (5.5.3.8. Technical check results)');
+is($dri->get_info('content','message',19673434),'<msg><nsset:testData xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:name>mydomain.cz</nsset:name><nsset:result><nsset:testname>glue_ok</nsset:testname><nsset:status>true</nsset:status></nsset:result><nsset:result><nsset:testname>existence</nsset:testname><nsset:status>false</nsset:status></nsset:result></nsset:testData></msg>','message get_info content (5.5.3.8. Technical check results)');
+my $fred_technical_check_results = $dri->get_info('testData','message','19673434');
+is($fred_technical_check_results->{id},'NID-MYNSSET','message get_info testData id (5.5.3.8. Technical check results)');
+is($fred_technical_check_results->{name}[0],'mydomain.cz','message get_info testData name (5.5.3.8. Technical check results)');
+is($fred_technical_check_results->{result}[0]->{testname},'glue_ok','message get_info testData result->testname 1 (5.5.3.8. Technical check results)');
+is($fred_technical_check_results->{result}[0]->{status},'true','message get_info testData result->status 1 (5.5.3.8. Technical check results)');
+is($fred_technical_check_results->{result}[1]->{testname},'existence','message get_info testData result->testname 2 (5.5.3.8. Technical check results)');
+is($fred_technical_check_results->{result}[1]->{status},'false','message get_info testData result->status 2 (5.5.3.8. Technical check results)');
+# multiple <nsset:name> - not in documentation but assume is like this from the spec!
+$R2='';
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="19673435"><qDate>2017-07-24T17:33:43+02:00</qDate><msg><nsset:testData xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:name>mydomain101.cz</nsset:name><nsset:name>mydomain102.cz</nsset:name><nsset:name>mydomain103.cz</nsset:name><nsset:result><nsset:testname>glue_ok</nsset:testname><nsset:status>true</nsset:status></nsset:result><nsset:result><nsset:testname>existence</nsset:testname><nsset:status>false</nsset:status></nsset:result></nsset:testData></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),19673435,'message get_info last_id 1 (5.5.3.8. Technical check results)');
+is(''.$dri->get_info('qdate','message',19673435),'2017-07-24T17:33:43','message get_info qdate (5.5.3.8. Technical check results)');
+is($dri->get_info('object_type','message','19673435'),'message','message get_info object_type (5.5.3.8. Technical check results)');
+is($dri->get_info('object_id','message','19673435'),'19673435','message get_info object_id (5.5.3.8. Technical check results)');
+is($dri->get_info('action','message','19673435'),'fred_testData','message get_info object_action (5.5.3.8. Technical check results)');
+is($dri->get_info('content','message',19673435),'<msg><nsset:testData xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:name>mydomain101.cz</nsset:name><nsset:name>mydomain102.cz</nsset:name><nsset:name>mydomain103.cz</nsset:name><nsset:result><nsset:testname>glue_ok</nsset:testname><nsset:status>true</nsset:status></nsset:result><nsset:result><nsset:testname>existence</nsset:testname><nsset:status>false</nsset:status></nsset:result></nsset:testData></msg>','message get_info content (5.5.3.8. Technical check results - multiple name element)');
+my $fred_technical_check_results2 = $dri->get_info('testData','message','19673435');
+is($fred_technical_check_results2->{id},'NID-MYNSSET','message get_info testData id (5.5.3.8. Technical check results)');
+is($fred_technical_check_results2->{name}[0],'mydomain101.cz','message get_info testData name (5.5.3.8. Technical check results)');
+is($fred_technical_check_results2->{name}[1],'mydomain102.cz','message get_info testData name (5.5.3.8. Technical check results)');
+is($fred_technical_check_results2->{name}[2],'mydomain103.cz','message get_info testData name (5.5.3.8. Technical check results)');
 
 
 exit 0;
