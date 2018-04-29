@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 29;
+use Test::More tests => 38;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -28,7 +28,7 @@ $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv}, {exten
 my $rc;
 my $s;
 my $d;
-my ($dh, @c, $fee);
+my ($dh, @c, $fee, $cs, $c1, $c2);
 
 ####################################################################################################
 ## Fee extension version 0.6 http://tools.ietf.org/html/draft-brown-epp-fees-03
@@ -81,5 +81,34 @@ is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency
 is($dri->get_info('create_price'),7000,'domain_check get_info (create_price)');
 is($dri->get_info('renew_price'),20,'domain_check get_info (renew_price) undef');
 
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.co</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee><fee:balance>-5.00</fee:balance><fee:creditLimit>1000.00</fee:creditLimit></fee:creData></extension>'.$TRID.'</response>'.$E2;
+$cs=$dri->local_object('contactset');
+$c1=$dri->local_object('contact')->srid('jd1234');
+$c2=$dri->local_object('contact')->srid('sh8013');
+$cs->set($c1,'registrant');
+$cs->set($c2,'admin');
+$cs->set($c2,'tech');
+$fee = {currency=>'USD',fee=>'5.00'};
+$rc=$dri->domain_create('exdomain.co',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.example.bar'],['ns2.example.bar']),contact=>$cs,auth=>{pw=>'2fooBAR'},fee=>$fee});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.co</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.bar</domain:hostObj><domain:hostObj>ns2.example.bar</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build');
+is($rc->is_success(),1,'domain_create is is_success');
+is($dri->get_info('action'),'create','domain_create get_info (action)');
+$d=$rc->get_data('fee');
+is($d->{currency},'USD','Fee extension: domain_create parse currency');
+is($d->{fee},5.00,'Fee extension: domain_create parse fee');
+is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
+is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
+
+# create with multiple fees and 'description', 'refundable', 'grace-period', 'applied'attributes
+# couldn't find a example on rfc but should be something like this!
+
+$R2='';
+$fee = {currency=>'USD',fee=>['5.00', {fee=>'100.00', 'description'=>'Early Access Period', 'refundable'=>'1', 'grace-period'=>'P0D', 'applied'=>'immediate'}]};
+$rc=$dri->domain_create('exdomain.co',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.example.bar'],['ns2.example.bar']),contact=>$cs,auth=>{pw=>'2fooBAR'},fee=>$fee});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.co</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.bar</domain:hostObj><domain:hostObj>ns2.example.bar</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee><fee:fee applied="immediate" description="Early Access Period" grace-period="P0D" refundable="1">100.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build (all attributes)');
+
+$fee = {currency=>'USD',fee=>[{fee=>'5.00', description=>'create'}, {fee=>'100.00', 'description'=>'Early Access Period'}]};
+$rc=$dri->domain_create('exdomain.co',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.example.bar'],['ns2.example.bar']),contact=>$cs,auth=>{pw=>'2fooBAR'},fee=>$fee});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.co</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.bar</domain:hostObj><domain:hostObj>ns2.example.bar</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:currency>USD</fee:currency><fee:fee description="create">5.00</fee:fee><fee:fee description="Early Access Period">100.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build (all attributes)');
 
 exit 0;
