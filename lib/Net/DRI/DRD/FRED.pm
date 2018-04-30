@@ -145,6 +145,18 @@ sub credit_info {
 }
 
 ####################################################################################################
+
+sub send_auth_info {
+  my ($self,$ndr,$name_id,$rd)=@_;
+  return $ndr->process('fred','send_auth_info',[$name_id,$rd]);
+}
+
+sub test_nsset {
+  my ($self,$ndr,$id,$rd)=@_;
+  return $ndr->process('fred','test_nsset',[$id,$rd]);
+}
+
+####################################################################################################
 ## NSSET Commands
 
 sub nsset_check {

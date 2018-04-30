@@ -20,6 +20,7 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
+use Data::Dumper; # FIXME: delete me!
 
 =pod
 
@@ -66,8 +67,8 @@ sub register_commands {
   my ($class,$version)=@_;
   my %fred=(
     credit_info     => [ \&credit_info, \&credit_info_parse ],
-    send_auth_info  => [ \&send_auth_info, undef ], # unimplemented
-    dns_test     => [ \&dns_test, undef ], # unimplemented
+    send_auth_info  => [ \&send_auth_info, undef ],
+    test_nsset      => [ \&test_nsset, undef ],
   );
   my %registrar=(
     balance         => [ \&credit_info, \&credit_info_parse ], # this is more compatible with other registries
@@ -127,6 +128,79 @@ sub credit_info_parse {
         push @{$rinfo->{$otype}->{$oname}->{zones}}, { 'zone' => $zone, 'credit' => $credit };
     }
   }
+
+  return;
+}
+
+sub send_auth_info {
+  my ($epp,$name_id,$rd)=@_;
+  my $mes=$epp->message();
+  my @d;
+  my @name_id;
+
+  # print Dumper($name_id);
+  # print Dumper($rd);
+
+  Net::DRI::Exception::usererr_insufficient_parameters(
+    "Need to send a name for domain or id for contact, nsset or keyset."
+  ) unless (defined($name_id));
+
+  Net::DRI::Exception::usererr_invalid_parameters(
+    "Unknown object. Should be domain, contact, nsset or keyset."
+  ) unless (defined($rd->{'object'}) && $rd->{'object'}=~m/^(domain|contact|nsset|keyset)$/);
+
+  # domain object = name all other ones = id
+  if ($rd->{object} eq 'domain') {
+    push @name_id, ["$rd->{object}:name", $name_id];
+  } else {
+    push @name_id, ["$rd->{object}:id", $name_id];01#17-03-06at1
+  }
+
+  # push @d, [ 'fred:sendAuthInfo', [ $rd->{object}.":sendAuthInfo" , @name_id ] ];
+  push @d, [ 'fred:sendAuthInfo', [ $rd->{object}.":sendAuthInfo " . sprintf($mes->nsattrs($rd->{object})) , @name_id ] ];
+
+
+  # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
+  push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
+
+  # print Dumper(\@object_info);
+  # print Dumper(\@d);
+
+  my $ext = $mes->command_extension_register('fred', 'extcommand');
+  $mes->command_extension( $ext, \@d );
+
+  return;
+}
+
+sub test_nsset {
+  my ($epp,$id,$rd)=@_;
+
+  Net::DRI::Exception::usererr_insufficient_parameters('NSSET handle mandatory') unless (defined($id));
+  Net::DRI::Exception::usererr_invalid_parameters("Level need to be between: 0-10 (inclusive)") if ($rd->{level} > 10 || $rd->{level} < 0);
+
+  my $mes=$epp->message();
+  my @d;
+  my @nsset;
+
+  push @nsset, [ 'nsset:id', $id ] if $id;
+  push @nsset, [ 'nsset:level', $rd->{level} ] if $rd->{level};
+  if ($rd->{name}) {
+    if (ref $rd->{name} eq 'ARRAY') {
+      foreach my $name(@{$rd->{name}}) {
+        push @nsset, [ 'nsset:name', $name ] if $name;
+      }
+    } else {
+      push @nsset, [ 'nsset:name', $rd->{name} ];
+    }
+  }
+
+  push @d, [ 'fred:test', [ "nsset:test " . sprintf($mes->nsattrs('nsset')) , @nsset ] ];
+
+  # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
+  push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
+
+  my $ext = $mes->command_extension_register('fred', 'extcommand');
+  $mes->command_extension( $ext, \@d );
 
   return;
 }

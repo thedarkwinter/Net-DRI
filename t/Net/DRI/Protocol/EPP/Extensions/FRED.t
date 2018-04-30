@@ -12,6 +12,7 @@ use DateTime::Duration;
 use Data::Dumper; # TODO: remove me later
 
 use Test::More tests => 227;
+use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -835,6 +836,50 @@ $rc = $dri->registrar_balance();
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:creditInfo/></fred:extcommand></extension></epp>', 'credit_info build xml');
 is($dri->get_info('balance', 'registrar', 'self'), 82640, 'getinfo balance');
 is_deeply($dri->get_info('zones', 'registrar', 'self'), [ { 'zone' => '0.2.4.e164.arpa', 'credit' => '66112'}, {'zone' => 'cz', 'credit' => '82640'} ], 'getinfo balance');
+
+
+# ## 5.12.1. SEND AUTH.INFO FOR DOMAIN
+# $R2='';
+# $rc = $dri->send_auth_info('mydomain.cz',{object=>'domain', cltrid=>'chsu002#17-08-08at16:33:10'});
+# is_string($R1, '<?xml version="1.0" encoding="utf-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:sendAuthInfo><domain:sendAuthInfo xmlns:domain="http://www.nic.cz/xml/epp/domain-1.4" xsi:schemaLocation="http://www.nic.cz/xml/epp/domain-1.4 domain-1.4.xsd"><domain:name>mydomain.cz</domain:name></domain:sendAuthInfo></fred:sendAuthInfo><fred:clTRID>chsu002#17-08-08at16:33:10</fred:clTRID></fred:extcommand></extension></epp>', 'send_auth_info for domain build xml');
+#
+# ## 5.12.2. Send auth.info for contact
+# $R2='';
+# $rc = $dri->send_auth_info('CID-MYOWN',{object=>'contact', cltrid=>'rhgo002#17-08-08at17:10:00'});
+# is_string($R1, '<?xml version="1.0" encoding="utf-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:sendAuthInfo><contact:sendAuthInfo xmlns:contact="http://www.nic.cz/xml/epp/contact-1.6" xsi:schemaLocation="http://www.nic.cz/xml/epp/contact-1.6 contact-1.6.1.xsd"><contact:id>CID-MYOWN</contact:id></contact:sendAuthInfo></fred:sendAuthInfo><fred:clTRID>rhgo002#17-08-08at17:10:00</fred:clTRID></fred:extcommand></extension></epp>', 'send_auth_info for contact build xml');
+#
+# ## 5.12.3. Send auth.info for nsset
+# $R2='';
+# $rc = $dri->send_auth_info('NID-MYNSSET',{object=>'nsset', cltrid=>'rhgo003#17-08-08at17:13:13'});
+# is_string($R1, '<?xml version="1.0" encoding="utf-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:sendAuthInfo><nsset:sendAuthInfo xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.2.xsd"><nsset:id>NID-MYNSSET</nsset:id></nsset:sendAuthInfo></fred:sendAuthInfo><fred:clTRID>rhgo003#17-08-08at17:13:13</fred:clTRID></fred:extcommand></extension></epp>', 'send_auth_info for nsset build xml');
+#
+# ## 5.12.4. Send auth.info for keyset
+# $R2='';
+# $rc = $dri->send_auth_info('NID-MYNSSET',{object=>'keyset', cltrid=>'nuhe002#17-08-08at17:20:11'});
+# is_string($R1, '<?xml version="1.0" encoding="utf-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:sendAuthInfo><keyset:sendAuthInfo xmlns:keyset="http://www.nic.cz/xml/epp/keyset-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/keyset-1.3 keyset-1.3.xsd"><keyset:id>KID-MYKEYSET</keyset:id></keyset:sendAuthInfo></fred:sendAuthInfo><fred:clTRID>nuhe002#17-08-08at17:20:11</fred:clTRID></fred:extcommand></extension></epp>', 'send_auth_info for keyset build xml');
+# ###
+# # TODO: add tests for exceptions! object=dom and no name or id
+# ###
+
+## 5.13. Test nsset
+$R2='';
+$rc = $dri->test_nsset('NID-MYNSSET',{level=>'5', name=>['mydomain.cz', 'somedomain.cz'], cltrid=>'loxj006#17-08-01at14:51:33'});
+is_string($R1, '<?xml version="1.0" encoding="utf-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:test><nsset:test xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:level>5</nsset:level><nsset:name>mydomain.cz</nsset:name><nsset:name>somedomain.cz</nsset:name></nsset:test></fred:test><fred:clTRID>loxj006#17-08-01at14:51:33</fred:clTRID></fred:extcommand></extension></epp>', 'test_nsset build xml');
+# test exception for level
+# print Dumper($dri->test_nsset());
+throws_ok { $dri->test_nsset('NID-MYNSSET1',{level=>'11', name=>'mydomain.cz' }) } qr/need to be between: 0-10/, 'test_nsset - parse invalid param level: 11';
+
+# ## 5.14.1. Prepare a list
+# $R2='';
+# $rc = $dri->test_nsset('NID-MYNSSET',{level=>'5', name=>['mydomain.cz', 'somedomain.cz'], cltrid=>'loxj006#17-08-01at14:51:33'});
+# is_string($R1, '<?xml version="1.0" encoding="utf-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:test><nsset:test xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:level>5</nsset:level><nsset:name>mydomain.cz</nsset:name><nsset:name>somedomain.cz</nsset:name></nsset:test></fred:test><fred:clTRID>loxj006#17-08-01at14:51:33</fred:clTRID></fred:extcommand></extension></epp>', 'test_nsset build xml');
+#
+# ## 5.14.2. Get the results
+# $R2='';
+# $rc = $dri->test_nsset('NID-MYNSSET',{level=>'5', name=>['mydomain.cz', 'somedomain.cz'], cltrid=>'loxj006#17-08-01at14:51:33'});
+# is_string($R1, '<?xml version="1.0" encoding="utf-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:test><nsset:test xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:level>5</nsset:level><nsset:name>mydomain.cz</nsset:name><nsset:name>somedomain.cz</nsset:name></nsset:test></fred:test><fred:clTRID>loxj006#17-08-01at14:51:33</fred:clTRID></fred:extcommand></extension></epp>', 'test_nsset build xml');
+
+exit 0;
 
 
 ####################################################################################################

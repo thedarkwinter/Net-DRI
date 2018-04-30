@@ -73,6 +73,7 @@ sub setup {
               contact   => ['http://www.nic.cz/xml/epp/contact-1.6','contact-1.6.1.xsd'],
               keyset    => ['http://www.nic.cz/xml/epp/keyset-1.3','keyset-1.3.xsd'],
               fred      => ['http://www.nic.cz/xml/epp/fred-1.5','fred-1.5.xsd'],
+              nsset     => ['http://www.nic.cz/xml/epp/nsset-1.2','nsset-1.2.xsd']
            });
 
   $self->capabilities('domain_update','status',undef);
