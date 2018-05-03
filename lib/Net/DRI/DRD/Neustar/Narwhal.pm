@@ -36,8 +36,6 @@ ngTLDs that Neustar operated on its legacy platform, as well as older gTLDs and 
 Neustar utilises the following standard, and custom extensions, in many cases supporting two versions for the same functionallity.
 Please see the test files for more examples.
 
-Note: biz, tel, co, us, travel are all likely to be migrated into this platform during 2017, so they are already in this DRD
-
 =head2 Standard extensions:
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
@@ -122,7 +120,6 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 
 sub name     { return 'Neustar::Narwhal'; }
 
-# The following TLD is not *yet* migrated to Narwhal: .travel (early 2018)
 sub tlds     { return qw/aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta audible auspost author aws axa baby banamex bananarepublic barclaycard barclays baseball best bible bid biz bond book booking boots bot box build buzz call calvinklein cancerresearch caravan cartier catholic cba cbn cbre ceo chase chintai chloe circle cisco citadel citi cloud club co com.co net.co nom.co commbank compare coupon courses cricket cuisinella date deal dealer dell discover doha download duns dupont earth everbank faith farmers fast ferrero film fire flickr flir ford fox free frontier ftr gap giving got grainger gucci hbo health homegoods homesense honeywell hot hoteles hotels hsbc htc hyatt ibm icu ieee imdb intel intuit ipiranga iselect itau iwc jlc jmp jnj jot joy jpmorgan kinder kindle kpmg krd kred lanxess latrobe lifeinsurance like lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe moi monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual now nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pay pfizer pharmacy philips physio piaget pin ping pramerica praxi prime pru prudential qpon quest qvc racing read review rmit rocher room safe safety sandvik sandvikcoromant sas save saxo schmidt science scor secure seek select seven silk skype smile song spot staples starhub statefarm stream study sucks swiftcover sydney tab taipei talk taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade travel trust tube tunes tushu uno us virgin vista vistaprint vivo vuelos walter wanggou watches weather weatherchannel webcam whoswho williamhill win winners woodside wow wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--nyqy26a xn--pbt977c xn--rhqv96g xn--rovu88b xn--tiq49xqyj yahoo yamaxun yandex you zappos zero zippo/; }
 
 sub object_types { return ('domain','contact','ns'); }

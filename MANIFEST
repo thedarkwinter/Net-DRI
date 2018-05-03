@@ -125,7 +125,6 @@ lib/Net/DRI/DRD/KSRegistry.pm
 lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
 lib/Net/DRI/DRD/Neustar/Narwhal.pm
-lib/Net/DRI/DRD/Neustar/Tralliance.pm
 lib/Net/DRI/DRD/Neustar/TWNIC.pm
 lib/Net/DRI/DRD/NGTLD.pm
 lib/Net/DRI/DRD/NicAT/AT.pm
