@@ -6,7 +6,7 @@ use warnings;
 
 use Net::DRI;
 
-use Test::More tests => 6;
+use Test::More tests => 11;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -50,5 +50,15 @@ $toc=$dri->local_object('changes');
 $toc->set('keyvalue',$kv);
 $rc=$dri->domain_update('example3.menu',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.menu</domain:name></domain:update></update><extension><kv:update xmlns:kv="urn:X-ar:params:xml:ns:kv-1.0" xsi:schemaLocation="urn:X-ar:params:xml:ns:kv-1.0 kv-1.0.xsd"><kv:kvlist name="bn"><kv:item key="abn">18 092 242 209</kv:item><kv:item key="entityType">Australian Private Company</kv:item></kv:kvlist></kv:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update variants build_xml');
+
+# domain renew
+$R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>test.travel</domain:name><domain:exDate>2019-10-24T00:13:53.26Z</domain:exDate></domain:renData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_renew('test.travel',{duration => DateTime::Duration->new(years=>1), current_expiration => DateTime->new(year=>2018,month=>10,day=>24), keyvalue => { 'UIN' => { 'UIN' => '1111'} } });
+is($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.travel</domain:name><domain:curExpDate>2018-10-24</domain:curExpDate><domain:period unit="y">1</domain:period></domain:renew></renew><extension><kv:renew xmlns:kv="urn:X-ar:params:xml:ns:kv-1.0" xsi:schemaLocation="urn:X-ar:params:xml:ns:kv-1.0 kv-1.0.xsd"><kv:kvlist name="UIN"><kv:item key="UIN">1111</kv:item></kv:kvlist></kv:renew></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build_xml');
+is($dri->get_info('action'),'renew','domain_renew get_info(action)');
+is($dri->get_info('exist'),1,'domain_renew get_info(exist)');
+my $d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_renew get_info(exDate)');
+is("".$d,'2019-10-24T00:13:53','domain_renew get_info(exDate) value');
 
 exit 0;
