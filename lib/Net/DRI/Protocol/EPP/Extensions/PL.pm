@@ -82,7 +82,7 @@ sub setup
   $self->factories('contact',sub { return Net::DRI::Data::Contact::PL->new(); });
   return;
 }
-
+sub core_contact_types { return (); } ## Since GDPR, they only use registrant
 sub default_extensions { return qw/PL::Domain PL::Contact PL::Message PL::Future PL::Report/; }
 
 ####################################################################################################
