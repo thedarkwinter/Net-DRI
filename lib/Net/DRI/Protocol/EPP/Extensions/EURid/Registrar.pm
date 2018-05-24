@@ -39,7 +39,7 @@ sub setup
   my ($class,$po,$version)=@_;
   $po->ns({ 'registrar_finance'    => [ 'http://www.eurid.eu/xml/epp/registrarFinance-1.0','registrarFinance-1.0' ] });
   $po->ns({ 'registrar_hit_points' => [ 'http://www.eurid.eu/xml/epp/registrarHitPoints-1.0','registrarHitPoints-1.0' ] });
-  $po->ns({ 'registration_limit'   => [ 'http://www.eurid.eu/xml/epp/registrationLimit-1.0','registrationLimit-1.0' ] });
+  $po->ns({ 'registration_limit'   => [ 'http://www.eurid.eu/xml/epp/registrationLimit-1.1','registrationLimit-1.1' ] });
   return;
 }
 
