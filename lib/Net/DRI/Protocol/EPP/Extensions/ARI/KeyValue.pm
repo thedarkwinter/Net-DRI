@@ -30,7 +30,7 @@ Net::DRI::Protocol::EPP::Extensions::ARI::KeyValue - EPP ARI Key Value commands 
 
 =head1 DESCRIPTION
 
-Adds the KeyValue Extension (urn:X-ar:params:xml:ns:kv-1.0) to domain commands. The extension is built by adding the following data to the create, and update commands. This information is also returned from an info command. 
+Adds the KeyValue Extension (urn:X-ar:params:xml:ns:kv-1.0) to domain commands. The extension is built by adding the following data to the create, and update commands. This information is also returned from an info command.
 
   $kv = { bn => { 'entityType' => 'Australian Private Company', 'abn' => '18 092 242 209' } };
   $rc = $dri->domain_create('domain.tld',{... keyvalue => $kv});
@@ -73,6 +73,7 @@ sub register_commands
            info   => [ undef         , \&info_parse ],
            create => [ \&create_build, undef ],
            update => [ \&update_build, undef ],
+           renew  => [ \&renew_build, undef ],
          );
 
  return { 'domain' => \%tmp };
@@ -167,6 +168,19 @@ sub update_build
 
  my $eid=$mes->command_extension_register('kv','update');
  $mes->command_extension($eid,[build_kvlists($toset)]);
+
+ return;
+}
+
+sub renew_build
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+
+ return unless Net::DRI::Util::has_key($rd,'keyvalue');
+
+ my $eid=$mes->command_extension_register('kv','renew');
+ $mes->command_extension($eid,[build_kvlists($rd->{keyvalue})]);
 
  return;
 }

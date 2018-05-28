@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .PL Domain EPP extension commands
 ##
-## Copyright (c) 2006,2008-2011,2013 Patrick Mevzek <netdri@dotandco.com> and Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. 
+## Copyright (c) 2006,2008-2011,2013 Patrick Mevzek <netdri@dotandco.com> and Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
 ## Copyright (c) 2014-15 Michael Holloway <michael@thedarkwinter.com>
 ## All rights reserved.
 ##
@@ -72,7 +72,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
           create => [ \&create ],
           renew  => [ \&renew  ],
          );
@@ -88,7 +88,7 @@ sub create
 
  return unless exists($rd->{reason}) || exists($rd->{book});
  my @e;
- push @e,['extdom:reason',$rd->{reason}] if (exists($rd->{reason}) && $rd->{reason});
+ #push @e,['extdom:reason',$rd->{reason}] if (exists($rd->{reason}) && $rd->{reason}); # as of 6.1, no longer used
  push @e,['extdom:book']                 if (exists($rd->{book}) && $rd->{book});
 
  my $eid=$mes->command_extension_register('extdom:create',sprintf('xmlns:extdom="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('pl_domain')));
