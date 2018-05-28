@@ -277,7 +277,7 @@ Afilias has extended the .INFO plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afilias'}); # own tlds
 
-info mobi pro xn--5tzm5g xn--6frz82g archi bet bio black blue green kim lgbt lotto meet organic pet pink poker promo red shiksha ski vote voto
+info mobi pro xn--5tzm5g xn--6frz82g archi bet bio black blue green kim lgbt llc lotto meet organic pet pink poker promo red shiksha ski vote voto
 
 Contended TLD's not included
 
@@ -286,7 +286,7 @@ Contended TLD's not included
  return {
      bep_type => 2, # shared registry
      tlds => ['info','mobi','pro','law.pro','jur.pro','bar.pro','med.pro','cpa.pro','aca.pro','eng.pro','io','sh','ac',
-              'xn--5tzm5g', 'xn--6frz82g','archi','bet','bio','black','blue','green','kim','lgbt','lotto','meet','organic','pet','pink','poker','promo','red','shiksha','ski','vote','voto'],
+              'xn--5tzm5g', 'xn--6frz82g','archi','bet','bio','black','blue','green','kim','lgbt','llc','lotto','meet','organic','pet','pink','poker','promo','red','shiksha','ski','vote','voto'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.8'}],
      whois_server => 'whois.afilias.net',
    } if $bep eq 'afilias';
@@ -360,7 +360,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl/;
     my @ngtlds = qw/art bar basketball best budapest ceo college contact design fan fans feedback forum fun gent host icu ink love luxe observer online ooo pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
-    my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
+    my @ngtlds_contested = qw/hotel gay mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
     return {

@@ -108,7 +108,7 @@ sub tlds {
   my @orgs = (map { $_.'.org' } qw/us ae/);
   my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am/;
   my @ngtlds = qw/art bar basketball best budapest ceo college contact design fan fans feedback forum fun gent host icu ink love luxe observer online ooo pid press protection realty reit rent rest rugby security site space storage store tech theatre tickets website wiki wme xyz/;
-  my @ngtlds_contested = qw/hotel gay mail llc/; # some of these might go to other registries
+  my @ngtlds_contested = qw/hotel gay mail/; # some of these might go to other registries
   return (@coms,@nets,@orgs,@others,@ngtlds);
 }
 
