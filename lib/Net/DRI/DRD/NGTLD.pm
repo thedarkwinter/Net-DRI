@@ -707,10 +707,10 @@ cam desi saarland
 
 =head3 TLDs
 
-Legacy (use 'neustar') or DRD::Neustar::Tralliance (for .travel)
+Legacy (use 'neustar')
 Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD.
 
-biz hotels htc ipiranga itau travel
+biz hotels htc ipiranga itau
 
 Narwhal (use 'ari' or 'narwhal') or DRD::Narwhal
 
