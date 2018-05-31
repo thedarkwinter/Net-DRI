@@ -76,11 +76,6 @@ $rc=$dri->target('NicAT')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();
 display('stare.at',$dri);
 
-$dri->add_registry('Tralliance',{});
-$rc=$dri->target('Tralliance')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
-display('paris.travel',$dri);
-
 $dri->add_registry('DNSPT',{});
 $rc=$dri->target('DNSPT')->add_current_profile('profile1','whois');
 die($rc) unless $rc->is_success();

@@ -70,7 +70,9 @@ sub setup
  return;
 }
 
+sub core_contact_types { return ('tech'); } ## Since GDPR, no admin contact
 sub default_extensions { return qw/AT::Domain AT::Contact AT::ATResult AT::Message SecDNS GracePeriod/; }
+
 
 ####################################################################################################
 1;

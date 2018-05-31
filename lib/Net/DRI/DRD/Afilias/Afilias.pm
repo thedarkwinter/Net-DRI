@@ -107,7 +107,7 @@ sub tlds     {
     'info', 'mobi',
     'pro',(map { $_.'.pro'} qw/law jur bar med cpa aca eng/)
     );
- my @newgTLDs = qw/xn--5tzm5g xn--6frz82g archi bet bio black blue green kim lgbt lotto meet organic pet pink poker promo red shiksha ski vote voto/;
+ my @newgTLDs = qw/xn--5tzm5g xn--6frz82g archi bet bio black blue green kim lgbt llc lotto meet organic pet pink poker promo red shiksha ski vote voto/;
  my @ccTLDs = qw/io sh ac/;
  return (@legacygTLDs, @newgTLDs, @ccTLDs);
 }

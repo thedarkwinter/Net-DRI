@@ -19,13 +19,13 @@ use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
 
-sub default_extensions { 
+sub default_extensions {
  my ($self,$pp) = @_;
     $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
 	return qw/GracePeriod SecDNS LaunchPhase RegBox::ServiceMessage CentralNic::Fee/;
 }
 
-sub core_contact_types { return ('admin','tech'); }
+sub core_contact_types { return ('tech'); } ## Since GDPR, no admin contact
 
 ####################################################################################################
 

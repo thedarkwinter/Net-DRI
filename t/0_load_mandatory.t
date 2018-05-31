@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 541;
+use Test::More tests => 540;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -113,7 +113,6 @@ use_ok('Net::DRI::DRD::KSRegistry');
 use_ok('Net::DRI::DRD::LVRegistry');
 use_ok('Net::DRI::DRD::NASK');
 use_ok('Net::DRI::DRD::Neustar::Narwhal');
-use_ok('Net::DRI::DRD::Neustar::Tralliance');
 use_ok('Net::DRI::DRD::Neustar::TWNIC');
 use_ok('Net::DRI::DRD::NGTLD');
 use_ok('Net::DRI::DRD::NicAT::AT');
