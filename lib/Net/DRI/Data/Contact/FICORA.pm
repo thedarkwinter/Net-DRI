@@ -43,6 +43,8 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 contact role: (2=>'admin', 3=>'reseller', 4=>'tecnicalContact', 5=>'Registrant/Holder')
 
+Note regarding GDPR changes: admin role was removed but from last tests in FICORA OT&E we can create a domain object using role=2 (why decided to keep it on Net-DRI)
+
 =head2 type()
 
 contact type: (0=>'Private person', 1=>'Company', 2=>'Assocation', 3=>'Institution', 4=>'Political party', 5=>'Municipality', 6=>'Government', 7=>'Public community')
