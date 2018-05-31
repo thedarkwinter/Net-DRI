@@ -1,7 +1,8 @@
-## Domain Registry Interface, EURid DNSQuality EPP extension commands
+## Domain Registry Interface, EURid DNSSECEligibility EPP extension commands
 ##
-## Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>.
-##               2017 Michael Holloway <michael@thedarkwinter.com>.
+## Copyright (c) 2018 Patrick Mevzek <netdri@dotandco.com>.
+##               2018 Michael Holloway <michael@thedarkwinter.com>.
+##               2018 Paulo Jorge <paullojorgge@gmail>.
 ##               All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -14,7 +15,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::EURid::DNSQuality;
+package Net::DRI::Protocol::EPP::Extensions::EURid::DNSSECEligibility;
 
 use strict;
 use warnings;
@@ -29,7 +30,7 @@ sub register_commands
 {
   my ($class,$version)=@_;
   my %tmp=(
-          dns_quality_info   => [ \&info, \&parse_info ],
+          dnssec_eligibility_info   => [ \&info, \&parse_info ],
          );
   return { 'domain' => \%tmp };
 }
@@ -37,7 +38,7 @@ sub register_commands
 sub setup
 {
   my ($class,$po,$version)=@_;
-  $po->ns({ 'dns_quality' => [ 'http://www.eurid.eu/xml/epp/dnsQuality-2.0','dnsQuality-2.0.xsd' ] });
+  $po->ns({ 'dnssec_eligibility' => [ 'http://www.eurid.eu/xml/epp/dnssecEligibility-1.0','dnssecEligibility-1.0.xsd' ] });
   return;
 }
 
@@ -48,7 +49,7 @@ sub parse_info
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- return unless my $infdata=$mes->get_response('dns_quality','infData');
+ return unless my $infdata=$mes->get_response('dnssec_eligibility','infData');
  my $d = {};
  $otype = $d->{object_type} = 'domain';
  $oaction = $d->{action} = 'info';
@@ -57,13 +58,10 @@ sub parse_info
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
    my ($n,$c)=@$el;
-   #print "Got finfance $name\n\n\n";
    if ($n eq 'name') {
      $oname = $d->{object_id} = $d->{name} = $c->textContent();
-   } elsif ($n eq 'checkTime') {
-    $d->{check_time} = $po->parse_iso8601($c->textContent());
-   } elsif ($n eq 'score') {
-    $d->{score} = 0+$c->textContent();
+   } elsif ($n=~m/^(eligible|msg|code)$/) {
+     $d->{$n} = $c->textContent() if $c->textContent();
    }
  }
  $rinfo->{domain}->{$oname} = $d;
@@ -76,8 +74,8 @@ sub info
  my ($epp,$dom,$rd)=@_;
  my $mes=$epp->message();
 
- $mes->command('info','dnsQuality:info',sprintf('xmlns:dnsQuality="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dns_quality')));
- my @d = ['dnsQuality:name', $dom];
+ $mes->command('info','dnssecEligibility:info',sprintf('xmlns:dnssecEligibility="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnssec_eligibility')));
+ my @d = ['dnssecEligibility:name', $dom];
  $mes->command_body(\@d);
 
  return;
@@ -92,7 +90,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::EURid::DNSQuality - EURid DNSQuality Extension for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::EURid::DNSSECEligibility - EURid DNSSECEligibility Extension for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -112,12 +110,13 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
- Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>.
-               2017 Michael Holloway <michael@thedarkwinter.com>.
+ Copyright (c) 2018 Patrick Mevzek <netdri@dotandco.com>.
+               2018 Michael Holloway <michael@thedarkwinter.com>.
+               2018 Paulo Jorge <paullojorgge@gmail>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

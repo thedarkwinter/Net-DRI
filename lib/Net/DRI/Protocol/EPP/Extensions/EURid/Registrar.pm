@@ -1,7 +1,7 @@
 ## Domain Registry Interface, EURid RegistrarFinance EPP extension commands
 ##
 ## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
-##               2016 Michael Holloway <michael.holloway@comlaude.com>.
+##               2016 Michael Holloway <michael@thedarkwinter.com>.
 ##               All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -195,7 +195,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
  Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
-               2016 Michael Holloway <michael.holloway@comlaude.com>.
+               2016 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
