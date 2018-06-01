@@ -137,9 +137,7 @@ sub send_auth_info {
   my $mes=$epp->message();
   my @d;
   my @name_id;
-
-  # print Dumper($name_id);
-  # print Dumper($rd);
+  my @send_auth_info;
 
   Net::DRI::Exception::usererr_insufficient_parameters(
     "Need to send a name for domain or id for contact, nsset or keyset."
@@ -153,18 +151,16 @@ sub send_auth_info {
   if ($rd->{object} eq 'domain') {
     push @name_id, ["$rd->{object}:name", $name_id];
   } else {
-    push @name_id, ["$rd->{object}:id", $name_id];01#17-03-06at1
+    push @name_id, ["$rd->{object}:id", $name_id];
   }
 
-  # push @d, [ 'fred:sendAuthInfo', [ $rd->{object}.":sendAuthInfo" , @name_id ] ];
-  push @d, [ 'fred:sendAuthInfo', [ $rd->{object}.":sendAuthInfo " . sprintf($mes->nsattrs($rd->{object})) , @name_id ] ];
-
+  my @nsattr = $mes->nsattrs($rd->{object});
+  my $xsd = pop @nsattr if @nsattr;
+  push @send_auth_info, [ $rd->{object}.':sendAuthInfo', { 'xmlns:'. $rd->{object} .'' => $mes->ns($rd->{object}), 'xsi:schemaLocation' => $mes->ns($rd->{object}) . ' ' . $xsd }, @name_id] if @name_id;
+  push @d, [ 'fred:sendAuthInfo', @send_auth_info ] if @send_auth_info;
 
   # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
   push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
-
-  # print Dumper(\@object_info);
-  # print Dumper(\@d);
 
   my $ext = $mes->command_extension_register('fred', 'extcommand');
   $mes->command_extension( $ext, \@d );
@@ -181,6 +177,7 @@ sub test_nsset {
   my $mes=$epp->message();
   my @d;
   my @nsset;
+  my @nsset_test;
 
   push @nsset, [ 'nsset:id', $id ] if $id;
   push @nsset, [ 'nsset:level', $rd->{level} ] if $rd->{level};
@@ -194,7 +191,10 @@ sub test_nsset {
     }
   }
 
-  push @d, [ 'fred:test', [ "nsset:test " . sprintf($mes->nsattrs('nsset')) , @nsset ] ];
+  my @nsattr = $mes->nsattrs('nsset');
+  my $xsd = pop @nsattr if @nsattr;
+  push @nsset_test, [ 'nsset:test', {'xmlns:nsset' => $mes->ns('nsset'), 'xsi:schemaLocation' => $mes->ns('nsset') . ' ' . $xsd}, @nsset] if @nsset;
+  push @d, [ 'fred:test', @nsset_test ] if @nsset_test;
 
   # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
   push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
