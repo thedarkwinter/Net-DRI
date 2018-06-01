@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 154;
+use Test::More tests => 171;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -32,7 +32,7 @@ my ($rc,$s,$d,$co,$toc,$cs,$h,$dh,$e,@c,@d);
 
 ## Process greetings to select namespace versions
 # We need secDNS and domain-ext to select correct versions in the test file
-$R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2016-11-17T14:30:12.230Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarFinance-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarHitPoints-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrationLimit-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/nsgroup-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/keygroup-1.1</objURI><svcExtension><extURI>http://www.eurid.eu/xml/epp/contact-ext-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.0</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.1</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/idn-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dnsQuality-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/authInfo-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.2</extURI><extURI>http://www.eurid.eu/xml/epp/homoglyph-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2016-11-17T14:30:12.230Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarFinance-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarHitPoints-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrationLimit-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/nsgroup-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/keygroup-1.1</objURI><svcExtension><extURI>http://www.eurid.eu/xml/epp/contact-ext-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.0</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.1</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/idn-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dnsQuality-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/authInfo-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.2</extURI><extURI>http://www.eurid.eu/xml/epp/homoglyph-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{'secDNS'}->[0],'urn:ietf:params:xml:ns:secDNS-1.1','secDNS 1.1 for server announcing 1.0 + 1.1');
 is($dri->protocol()->ns()->{'domain-ext'}->[0],'http://www.eurid.eu/xml/epp/domain-ext-2.1','domain-ext 2.1 for server announcing 2.1');
@@ -402,5 +402,35 @@ is($dri->get_info('exist'),1,'domain_info get_info(exist)');
 is($dri->get_info('name'),'dnsq_domain.eu','domain_info get_info(name)');
 is($dri->get_info('check_time'),'2017-08-17T11:23:44','domain_info get_info(name)');
 is($dri->get_info('score'),1000,'domain_info get_info(name)');
+
+
+########################################################################################################
+## GDPR context updates
+# This was taken off Release releasenotes_may2018.pdf
+
+# chapter 3: change for EPP contact info domain: details are not available if a transfer auth code is provided (in case domain not under Registrar portfolio)
+$R2=$E1.'<response>'.r().'<resData><domain:infData  xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>somedomain.eu</domain:name><domain:roid>somedomain_eu-EURID</domain:roid><domain:status s="ok"/><domain:clID>#non-disclosed#</domain:clID><domain:crID>#non-disclosed#</domain:crID><domain:crDate>2018-03-23T10:03:49.428Z</domain:crDate><domain:upID>#non-disclosed#</domain:upID><domain:upDate>2018-03-23T10:03:49.000Z</domain:upDate><domain:exDate>2019-03-23T22:59:59.999Z</domain:exDate></domain:infData></resData><extension xmlns:domain-ext-2.1="http://www.eurid.eu/xml/epp/domain-ext-2.1" xmlns:idn="http://www.eurid.eu/xml/epp/idn-1.0"><domain-ext-2.1:infData><domain-ext-2.1:onHold>false</domain-ext-2.1:onHold><domain-ext-2.1:quarantined>false</domain-ext-2.1:quarantined><domain-ext-2.1:suspended>false</domain-ext-2.1:suspended><domain-ext-2.1:seized>false</domain-ext-2.1:seized><domain-ext-2.1:delayed>false</domain-ext-2.1:delayed></domain-ext-2.1:infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('somedomain.eu',{auth=>{pw=>'XXXX-393Y-DCZA-7XNS'}});
+is($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">somedomain.eu</domain:name><domain:authInfo><domain:pw>XXXX-393Y-DCZA-7XNS</domain:pw></domain:authInfo></domain:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info build with auth - GDPR');
+is($dri->get_info('action'),'info','domain_info get_info(action)');
+is($dri->get_info('exist'),1,'domain_info get_info(exist)');
+is($dri->get_info('name'),'somedomain.eu','domain_info get_info(name)');
+is($dri->get_info('roid'),'somedomain_eu-EURID','domain_info get_info(roid)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list');
+is($s->is_active(),1,'domain_info get_info(status) is_active');
+is($dri->get_info('clID'),'#non-disclosed#','domain_info get_info(clID)');
+is($dri->get_info('crID'),'#non-disclosed#','domain_info get_info(crID)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','domain_info get_info(crDate)');
+is("".$d,'2018-03-23T10:03:49','domain_info get_info(crDate) value');
+is($dri->get_info('upID'),'#non-disclosed#','domain_info get_info(upID)');
+$d=$dri->get_info('upDate');
+isa_ok($d,'DateTime','domain_info get_info(upDate)');
+is("".$d,'2018-03-23T10:03:49','domain_info get_info(upDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_info get_info(exDate)');
+is("".$d,'2019-03-23T22:59:59','domain_info get_info(exDate) value');
 
 exit 0;

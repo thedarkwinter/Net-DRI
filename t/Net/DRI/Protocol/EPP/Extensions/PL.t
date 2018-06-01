@@ -43,8 +43,8 @@ $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="http://www.dns.
 $dh=$dri->local_object('hosts');
 $dh->add('ns.przyklad2.pl');
 $dh->add('ns5.przyklad.pl');
-$rc=$dri->domain_create('przyklad44.pl',{pure_create=>1,ns=>$dh,auth=>{pw=>'authinfo_of_d97'},book=>1,reason=>'nice name'});
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.dns.pl/nask-epp-schema/epp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><command><create><domain:create xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>przyklad44.pl</domain:name><domain:ns>ns.przyklad2.pl</domain:ns><domain:ns>ns5.przyklad.pl</domain:ns><domain:authInfo><domain:pw>authinfo_of_d97</domain:pw></domain:authInfo></domain:create></create><extension><extdom:create xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:reason>nice name</extdom:reason><extdom:book/></extdom:create></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_create build with book');
+$rc=$dri->domain_create('przyklad44.pl',{pure_create=>1,ns=>$dh,auth=>{pw=>'authinfo_of_d97'},book=>1});
+is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.dns.pl/nask-epp-schema/epp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><command><create><domain:create xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>przyklad44.pl</domain:name><domain:ns>ns.przyklad2.pl</domain:ns><domain:ns>ns5.przyklad.pl</domain:ns><domain:authInfo><domain:pw>authinfo_of_d97</domain:pw></domain:authInfo></domain:create></create><extension><extdom:create xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.0 extdom-2.0.xsd"><extdom:book/></extdom:create></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_create build with book');
 is($rc->is_success(),1,'domain_create is_success');
 $d=$dri->get_info('crDate');
 is(''.$d,'1999-04-03T22:00:00','domain_create get_info(crDate)');
@@ -53,15 +53,9 @@ is(''.$d,'2000-04-03T22:00:00','domain_create get_info(exDate)');
 
 # domain_update test added by MH while cleaning up PL Domain Extension
 my $changes = $dri->local_object('changes');
-$cs = $dri->local_object('contactset');
-$cs->add($dri->local_object('contact')->srid('98765'), 'tech');
-$changes->add('contact', $cs);
-$cs = $dri->local_object('contactset');
-$cs->add($dri->local_object('contact')->srid('12347'), 'tech');
-$changes->del('contact', $cs);
 $changes->add('ns',$dri->local_object('hosts')->set(['ns3.example.info']));
 $rc = $dri->domain_update('uptest.pl', $changes);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>uptest.pl</domain:name><domain:add><domain:ns>ns3.example.info</domain:ns><domain:contact type="tech">98765</domain:contact></domain:add><domain:rem><domain:contact type="tech">12347</domain:contact></domain:rem></domain:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update build');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>uptest.pl</domain:name><domain:add><domain:ns>ns3.example.info</domain:ns></domain:add></domain:update></update><clTRID>ABC-12345</clTRID></command></epp>', 'domain_update build');
 is($rc->is_success(), 1, 'domain_update is success');
 
 # domain_info test added by MH while cleaning up PL Domain Extension
