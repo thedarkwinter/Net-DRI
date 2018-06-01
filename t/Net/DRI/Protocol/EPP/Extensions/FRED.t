@@ -9,9 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Data::Dumper; # TODO: remove me later
-
-use Test::More tests => 227;
+use Test::More tests => 239;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -863,17 +861,32 @@ $R2='';
 $rc = $dri->test_nsset('NID-MYNSSET',{level=>'5', name=>['mydomain.cz', 'somedomain.cz'], cltrid=>'loxj006#17-08-01at14:51:33'});
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:test><nsset:test xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:level>5</nsset:level><nsset:name>mydomain.cz</nsset:name><nsset:name>somedomain.cz</nsset:name></nsset:test></fred:test><fred:clTRID>loxj006#17-08-01at14:51:33</fred:clTRID></fred:extcommand></extension></epp>', 'test_nsset build xml');
 
-# ## 5.14.1. Prepare a list
-# $R2='';
-# $rc = $dri->test_nsset('NID-MYNSSET',{level=>'5', name=>['mydomain.cz', 'somedomain.cz'], cltrid=>'loxj006#17-08-01at14:51:33'});
-# is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:test><nsset:test xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:level>5</nsset:level><nsset:name>mydomain.cz</nsset:name><nsset:name>somedomain.cz</nsset:name></nsset:test></fred:test><fred:clTRID>loxj006#17-08-01at14:51:33</fred:clTRID></fred:extcommand></extension></epp>', 'test_nsset build xml');
-#
-# ## 5.14.2. Get the results
-# $R2='';
-# $rc = $dri->test_nsset('NID-MYNSSET',{level=>'5', name=>['mydomain.cz', 'somedomain.cz'], cltrid=>'loxj006#17-08-01at14:51:33'});
-# is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:test><nsset:test xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:level>5</nsset:level><nsset:name>mydomain.cz</nsset:name><nsset:name>somedomain.cz</nsset:name></nsset:test></fred:test><fred:clTRID>loxj006#17-08-01at14:51:33</fred:clTRID></fred:extcommand></extension></epp>', 'test_nsset build xml');
+## 5.14.1. Prepare a list
+$R2=$E1.'<response>'.r().'<resData><fred:infoResponse xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.0.xsd"><fred:count>4</fred:count></fred:infoResponse></resData>'.$TRID.'</response>'.$E2;
+$rc = $dri->prep_list('domainsByContact', {id=>'CID-ADMIN1', cltrid=>'ovcu002#17-08-11at12:26:39'});
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:domainsByContact><fred:id>CID-ADMIN1</fred:id></fred:domainsByContact><fred:clTRID>ovcu002#17-08-11at12:26:39</fred:clTRID></fred:extcommand></extension></epp>', 'prep_list build xml - domainsByContact');
+is($dri->get_info('count'),4,'prep_list get_info(count)');
 
-exit 0;
+# test listContacts as in the example
+$R2='';
+$rc = $dri->prep_list('listContacts', {cltrid=>'egrx002#17-08-30at18:49:12'});
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:listContacts/><fred:clTRID>egrx002#17-08-30at18:49:12</fred:clTRID></fred:extcommand></extension></epp>', 'prep_list build xml - listContacts');
+
+# test listContacts without cltrid
+$R2='';
+$rc = $dri->prep_list('listContacts');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:listContacts/></fred:extcommand></extension></epp>', 'prep_list build xml - listContacts (without cltrid)');
+
+## 5.14.2. Get the results - as per documentation
+$R2=$E1.'<response>'.r().'<resData><fred:resultsList xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.0.xsd"><fred:item>1.1.1.7.4.5.2.2.2.0.2.4.e164.arpa</fred:item><fred:item>mydomain.cz</fred:item><fred:item>thisdomain.cz</fred:item><fred:item>trdomain.cz</fred:item></fred:resultsList></resData>'.$TRID.'</response>'.$E2;
+$rc = $dri->get_results({cltrid=>'ovcu003#17-08-11at12:27:01'});
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:getResults/><fred:clTRID>ovcu003#17-08-11at12:27:01</fred:clTRID></fred:extcommand></extension></epp>', 'get_results build xml');
+is_deeply($dri->get_info('item'),['1.1.1.7.4.5.2.2.2.0.2.4.e164.arpa', 'mydomain.cz', 'thisdomain.cz', 'trdomain.cz'],'get_results get_info(item) array');
+
+## 5.14.2.2 Get the results - without cltrid
+$R2='';
+$rc = $dri->get_results();
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:getResults/></fred:extcommand></extension></epp>', 'get_results build xml (without cltrid)');
 
 
 ####################################################################################################

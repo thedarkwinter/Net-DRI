@@ -20,7 +20,6 @@ use warnings;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 use Net::DRI::Protocol::EPP::Util;
-use Data::Dumper; # FIXME: delete me!
 
 =pod
 
@@ -69,6 +68,8 @@ sub register_commands {
     credit_info     => [ \&credit_info, \&credit_info_parse ],
     send_auth_info  => [ \&send_auth_info, undef ],
     test_nsset      => [ \&test_nsset, undef ],
+    prep_list       => [ \&prep_list, \&prep_list_parse ],
+    get_results     => [ \&get_results, \&get_results_parse ],
   );
   my %registrar=(
     balance         => [ \&credit_info, \&credit_info_parse ], # this is more compatible with other registries
@@ -201,6 +202,98 @@ sub test_nsset {
 
   my $ext = $mes->command_extension_register('fred', 'extcommand');
   $mes->command_extension( $ext, \@d );
+
+  return;
+}
+
+sub prep_list {
+  my ($epp,$id,$rd)=@_;
+
+  Net::DRI::Exception::usererr_insufficient_parameters('listing action is mandatory') unless (defined($id));
+  Net::DRI::Exception::usererr_invalid_parameters('listing action not recognized. Must be: listDomains|listContacts|listNssets|listKeysets|domainsByContact|domainsByNsset|domainsByKeyset|nssetsByContact|keysetsByContact|nssetsByNs') if (defined($id) && $id!~m/^(listDomains|listContacts|listNssets|listKeysets|domainsByContact|domainsByNsset|domainsByKeyset|nssetsByContact|keysetsByContact|nssetsByNs)$/);
+  Net::DRI::Exception::usererr_insufficient_parameters('this action requires a handle or nameserver!') if (!defined($rd->{id}) && $id=~m/^(domainsByContact|domainsByNsset|domainsByKeyset|nssetsByContact|keysetsByContact|nssetsByNs)$/);
+
+  my $mes=$epp->message();
+  my @d;
+  my @list_id;
+
+  if ($rd->{id}) {
+    if ($id eq 'nssetsByNs') {
+      push @list_id, [ 'fred:name', $rd->{id} ];
+    } else {
+      push @list_id, [ 'fred:id', $rd->{id} ];
+    }
+  }
+
+  if (@list_id) {
+    push @d, [ 'fred:'.$id, @list_id ] if @list_id;
+  } else {
+    push @d, [ 'fred:'.$id ];
+  }
+
+  # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
+  push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
+
+  my $ext = $mes->command_extension_register('fred', 'extcommand');
+  $mes->command_extension( $ext, \@d );
+
+  return;
+}
+
+sub prep_list_parse {
+  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+  my $mes=$po->message();
+  return unless $mes->is_success();
+
+  # get response
+  my $infdata = $mes->get_response('fred','infoResponse');
+  return unless $infdata;
+
+  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+  {
+    my ($n,$c)=@$el;
+    if ($n eq 'count') {
+      $rinfo->{$otype}->{$oname}->{$n} = $c->textContent();
+    }
+  }
+
+  return;
+}
+
+sub get_results {
+  my ($epp,$rd)=@_;
+
+  my $mes=$epp->message();
+  my @d;
+
+  # The <fred:getResults/> element does not contain any child elements.
+  push @d, [ 'fred:getResults' ];
+
+  # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
+  push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
+
+  my $ext = $mes->command_extension_register('fred', 'extcommand');
+  $mes->command_extension( $ext, \@d );
+
+  return;
+}
+
+sub get_results_parse {
+  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+  my $mes=$po->message();
+  return unless $mes->is_success();
+
+  # get response
+  my $infdata = $mes->get_response('fred','resultsList');
+  return unless $infdata;
+
+  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
+  {
+    my ($n,$c)=@$el;
+    if ($n eq 'item') {
+      push @{$rinfo->{$otype}->{$oname}->{$n}}, $c->textContent();
+    }
+  }
 
   return;
 }

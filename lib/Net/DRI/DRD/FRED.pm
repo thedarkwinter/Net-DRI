@@ -156,6 +156,16 @@ sub test_nsset {
   return $ndr->process('fred','test_nsset',[$id,$rd]);
 }
 
+sub prep_list {
+  my ($self,$ndr,$id,$rd)=@_;
+  return $ndr->process('fred','prep_list',[$id,$rd]);
+}
+
+sub get_results {
+  my ($self,$ndr,$rd)=@_;
+  return $ndr->process('fred','get_results',[$rd]);
+}
+
 ####################################################################################################
 ## NSSET Commands
 
