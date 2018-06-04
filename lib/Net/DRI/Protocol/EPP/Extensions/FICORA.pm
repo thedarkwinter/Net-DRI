@@ -74,6 +74,7 @@ sub setup {
   return;
 }
 
+sub core_contact_types { return ('billing', 'tech'); } ## Since GDPR, no admin contact - FICORA permit the creation of a domain object with admin type but its not listed on any EPP response
 sub default_extensions { return qw/FICORA::Balance FICORA::Contact FICORA::Domain FICORA::Message SecDNS/; }
 
 ####################################################################################################
