@@ -129,4 +129,12 @@ sub dns_quality_info
  return $reg->process('domain', 'dns_quality_info', [$dom, $rd]);
 }
 
+## DNSSEC Eligibility
+sub dnssec_eligibility_info
+{
+ my ($self, $reg, $dom, $rd) = @_;
+ return $reg->process('domain', 'dnssec_eligibility_info', [$dom, $rd]);
+}
+
+
 1;

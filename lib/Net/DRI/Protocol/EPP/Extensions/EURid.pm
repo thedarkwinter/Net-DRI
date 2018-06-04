@@ -81,7 +81,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/EURid::Domain EURid::Contact EURid::Notifications EURid::IDN EURid::Registrar EURid::DNSQuality NSgroup Keygroup SecDNS/; }
+sub default_extensions { return qw/EURid::Domain EURid::Contact EURid::Notifications EURid::IDN EURid::Registrar EURid::DNSQuality EURid::DNSSECEligibility NSgroup Keygroup SecDNS/; }
 
 ####################################################################################################
 1;

@@ -321,6 +321,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/ES/Tray.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid/DNSQuality.pm
+lib/Net/DRI/Protocol/EPP/Extensions/EURid/DNSSECEligibility.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid/IDN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/EURid/Notifications.pm

@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 540;
+use Test::More tests => 541;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -310,6 +310,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::EURid');
 use_ok('Net::DRI::Protocol::EPP::Extensions::EURid::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::EURid::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::EURid::DNSQuality');
+use_ok('Net::DRI::Protocol::EPP::Extensions::EURid::DNSSECEligibility');
 use_ok('Net::DRI::Protocol::EPP::Extensions::EURid::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::EURid::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::EURid::Registrar');

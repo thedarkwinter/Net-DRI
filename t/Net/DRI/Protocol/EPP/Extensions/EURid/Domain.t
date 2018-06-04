@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 171;
+use Test::More tests => 187;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -432,5 +432,33 @@ is("".$d,'2018-03-23T10:03:49','domain_info get_info(upDate) value');
 $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','domain_info get_info(exDate)');
 is("".$d,'2019-03-23T22:59:59','domain_info get_info(exDate) value');
+
+
+########################################################################################################
+## dnssecEligibility Info
+# This was taken off releasenotes_may2018.pdf (GDPR related)
+
+$R2=$E1.'<response>'.r().'<resData><dnssecEligibility:infData xmlns:dnssecEligibility="http://www.eurid.eu/xml/epp/dnssecEligibility-1.0"><dnssecEligibility:name>somedomain.eu</dnssecEligibility:name><dnssecEligibility:eligible>true</dnssecEligibility:eligible><dnssecEligibility:msg>Eligible for DNSSEC discount</dnssecEligibility:msg><dnssecEligibility:code>1001</dnssecEligibility:code></dnssecEligibility:infData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->dnssec_eligibility_info('somedomain.eu');
+is_string($R1,$E1.'<command><info><dnssecEligibility:info xmlns:dnssecEligibility="http://www.eurid.eu/xml/epp/dnssecEligibility-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/dnssecEligibility-1.0 dnssecEligibility-1.0.xsd"><dnssecEligibility:name>somedomain.eu</dnssecEligibility:name></dnssecEligibility:info></info><clTRID>ABC-12345</clTRID></command></epp>','dnssec_eligibility_info build');
+is($rc->is_success(),1,'dnssec_eligibility_info is_success');
+is($dri->get_info('action'),'info','dnssec_eligibility_info get_info(action)');
+is($dri->get_info('exist'),1,'dnssec_eligibility_info get_info(exist)');
+is($dri->get_info('name'),'somedomain.eu','dnssec_eligibility_info get_info(name)');
+is($dri->get_info('eligible'),'true','dnssec_eligibility_info get_info(eligible)');
+is($dri->get_info('msg'),'Eligible for DNSSEC discount','dnssec_eligibility_info get_info(msg)');
+is($dri->get_info('code'),'1001','dnssec_eligibility_info get_info(code)');
+
+$R2=$E1.'<response>'.r().'<resData><dnssecEligibility:infData xmlns:dnssecEligibility="http://www.eurid.eu/xml/epp/dnssecEligibility-1.0"><dnssecEligibility:name>somedomain2.eu</dnssecEligibility:name><dnssecEligibility:eligible>false</dnssecEligibility:eligible><dnssecEligibility:msg>Not eligible for DNSSEC Discount</dnssecEligibility:msg><dnssecEligibility:code>2000</dnssecEligibility:code></dnssecEligibility:infData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->dnssec_eligibility_info('somedomain2.eu');
+is_string($R1,$E1.'<command><info><dnssecEligibility:info xmlns:dnssecEligibility="http://www.eurid.eu/xml/epp/dnssecEligibility-1.0" xsi:schemaLocation="http://www.eurid.eu/xml/epp/dnssecEligibility-1.0 dnssecEligibility-1.0.xsd"><dnssecEligibility:name>somedomain2.eu</dnssecEligibility:name></dnssecEligibility:info></info><clTRID>ABC-12345</clTRID></command></epp>','dnssec_eligibility_info2 build');
+is($rc->is_success(),1,'dnssec_eligibility_info2 is_success');
+is($dri->get_info('action'),'info','dnssec_eligibility_info2 get_info(action)');
+is($dri->get_info('exist'),1,'dnssec_eligibility_info2 get_info(exist)');
+is($dri->get_info('name'),'somedomain2.eu','dnssec_eligibility_info2 get_info(name)');
+is($dri->get_info('eligible'),'false','dnssec_eligibility_info2 get_info(eligible)');
+is($dri->get_info('msg'),'Not eligible for DNSSEC Discount','dnssec_eligibility_info2 get_info(msg)');
+is($dri->get_info('code'),'2000','dnssec_eligibility_info2 get_info(code)');
+
 
 exit 0;
