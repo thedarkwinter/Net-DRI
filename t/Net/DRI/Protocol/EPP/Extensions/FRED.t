@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 239;
+use Test::More tests => 250;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -1004,6 +1004,33 @@ is($fred_enum_domain_validation->{valExDate},'2017-08-15','message get_info impe
 
 # 5.5.3.5. Object transfer
 # README: test already added - first message_retrieve()
+
+# test based on documentation but with a different object (just a guess how this looks like)
+$R2 = $E1 . '<response><result code="1301"><msg>Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="19681434"><qDate>2017-07-25T16:34:42+02:00</qDate><msg><nsset:trnData xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:name>trdomain.cz</nsset:name><nsset:trDate>2017-07-25</nsset:trDate><nsset:clID>REG-FRED_A</nsset:clID></nsset:trnData></msg></msgQ><trID><clTRID>qfja002#17-07-25at16:39:03</clTRID><svTRID>ReqID-0000140900</svTRID></trID></response>' . $E2;
+$ok=eval {
+  $rc = $dri->message_retrieve();
+  1;
+};
+if (! $ok) {
+  my $err=$@;
+  if (ref $err eq 'Net::DRI::Exception') {
+    die $err->as_string();
+  } else {
+    die $err;
+  }
+}
+is($dri->get_info('last_id'),19681434,'poll: nsset transfer out message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),19681434,'poll: nsset transfer out message get_info last_id 2');
+is($dri->get_info('id','message',19681434),19681434,'poll: nsset transfer out message get_info id');
+is($dri->get_info('qdate','message',19681434),'2017-07-25T16:34:42','poll: nsset transfer out message get_info qdate');
+is($dri->get_info('name','message',19681434),'trdomain.cz','poll: nsset transfer out message get_info name');
+is($dri->get_info('nsset_id','message',19681434),'NID-MYNSSET','poll: nsset transfer out message get_info nsset_id');
+is($dri->get_info('trDate','message',19681434),'2017-07-25','poll: nsset transfer out message get_info trDate');
+is($dri->get_info('content','message',19681434),'<msg><nsset:trnData xmlns:nsset="http://www.nic.cz/xml/epp/nsset-1.2" xsi:schemaLocation="http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.2.xsd"><nsset:id>NID-MYNSSET</nsset:id><nsset:name>trdomain.cz</nsset:name><nsset:trDate>2017-07-25</nsset:trDate><nsset:clID>REG-FRED_A</nsset:clID></nsset:trnData></msg>','poll: nsset transfer out message get_info content');
+is($dri->get_info('action','message',19681434),'transfer','poll: nsset transfer out message get_info action');
+is($dri->get_info('object_type','message',19681434),'nsset','poll: nsset transfer out message get_info object_type');
+is($dri->get_info('object_id','message',19681434),'NID-MYNSSET','poll: domain transfer out message get_info object_id');
+
 
 # 5.5.3.6. Object update
 $R2='';

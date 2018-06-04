@@ -18,7 +18,6 @@ use strict;
 use warnings;
 use POSIX qw(strftime);
 use DateTime::Format::ISO8601;
-use Data::Dumper; # TODO: remove me later
 
 =pod
 
@@ -79,29 +78,27 @@ sub parse_poll {
   $otype = $otype ? $otype : 'message';
 
   my @res_children = Net::DRI::Util::xml_list_children($msg_content);
-  # print Dumper(\@res_children);
   foreach my $el(@res_children) {
     my ($n,$c)=@$el;
-    if ($n eq 'trnData') {
-      my @trnData = Net::DRI::Util::xml_list_children($c);
-      foreach my $el(@trnData) {
-        my ($n,$c)=@$el;
-        if ($n eq 'trDate') {
-          $rinfo->{$otype}->{$oname}->{action} = 'transfer';
-          $rinfo->{$otype}->{$oname}->{object_type} = 'domain';
-          $rinfo->{$otype}->{$oname}->{object_id} = $rinfo->{$otype}->{$oname}->{name}
-            if ($rinfo->{$otype}->{$oname}->{name});
+    if ( $n && lc($n) =~ m/^(lowcreditdata|requestfeeinfodata|impendingexpdata|expdata|dnsoutagedata|deldata|impendingvalexpdata|valexpdata|trndata|updatedata|idledeldata|testdata)$/ ) {
+      $rinfo->{$otype}->{$oname}->{$n} = message_types(@$el);
+      $rinfo->{$otype}->{$oname}->{action} = 'fred_' . $n;
+      # tweak trnData
+      if ( lc($n) eq 'trndata' ) {
+        my $node_object = substr($c->nodeName(), 0, -8); # remove ':trnData' in order to get object only!
+        $rinfo->{$otype}->{$oname}->{action} = 'transfer';
+        $rinfo->{$otype}->{$oname}->{object_type} = $node_object if ( $node_object && lc ($node_object) =~ m/^(domain|contact|nsset|keyset)$/ );
+        $rinfo->{$otype}->{$oname}->{object_id} = $rinfo->{$otype}->{$oname}->{'trnData'}->{'name'} if $rinfo->{$otype}->{$oname}->{'trnData'}->{'name'};
+        if ( $rinfo->{$otype}->{$oname}->{'trnData'}->{'id'} && lc ($node_object) =~ m/^(contact|nsset|keyset)$/ ) {
+          $rinfo->{$otype}->{$oname}->{object_id} = $rinfo->{$otype}->{$oname}->{'trnData'}->{'id'};
+          $rinfo->{$otype}->{$oname}->{$node_object.'_id'} = $rinfo->{$otype}->{$oname}->{'trnData'}->{'id'};
         }
-        if ($n eq 'clID') {
-          $rinfo->{$otype}->{$oname}->{reID} = $c->textContent() ? $c->textContent() : '' if ($n);
+        if ( $rinfo->{$otype}->{$oname}->{'trnData'}->{'clID'} ) {
+          $rinfo->{$otype}->{$oname}->{reID} = $rinfo->{$otype}->{$oname}->{'trnData'}->{'clID'};
+          $rinfo->{$otype}->{$oname}->{clID} = $rinfo->{$otype}->{$oname}->{'trnData'}->{'clID'};
         }
-        $rinfo->{$otype}->{$oname}->{$n} = $c->textContent() ? $c->textContent() : '' if ($n);
-      }
-    } else {
-      if ( $n && lc($n) =~ m/^(lowcreditdata|requestfeeinfodata|impendingexpdata|expdata|dnsoutagedata|deldata|impendingvalexpdata|valexpdata|updatedata|idledeldata|testdata)$/ ) {
-        $rinfo->{$otype}->{$oname}->{$n} = message_types(@$el);
-        $rinfo->{$otype}->{$oname}->{action} = 'fred_' . $n;
-        # $rinfo->{$otype}->{$oname}->{object_type} = 'fred_' . $n;
+        $rinfo->{$otype}->{$oname}->{name} = $rinfo->{$otype}->{$oname}->{'trnData'}->{'name'} if ( $rinfo->{$otype}->{$oname}->{'trnData'}->{'name'} );
+        $rinfo->{$otype}->{$oname}->{trDate} = $rinfo->{$otype}->{$oname}->{'trnData'}->{'trDate'} if ( $rinfo->{$otype}->{$oname}->{'trnData'}->{'trDate'} );
       }
     }
   }
@@ -114,20 +111,16 @@ sub parse_poll {
 # more info here: https://fred.nic.cz/documentation/html/EPPReference/CommandStructure/Poll/MessageTypes.html
 sub message_types {
   my ($name, $content)=@_;
-  # print Dumper($name);
-  # print Dumper($content->textContent());
   my $fred;
   my @fredData = Net::DRI::Util::xml_list_children($content);
   $fred = __low_credit(@fredData) if ($name eq 'lowCreditData');
   $fred = __request_usage(@fredData) if ($name eq 'requestFeeInfoData');
   $fred = __domain_life_cycle(@fredData) if ($name=~m/^(impendingExpData|expData|dnsOutageData|delData)$/);
   $fred = __enum_domain_validation(@fredData) if ($name=~m/^(impendingValExpData|valExpData)$/);
-  # README: next one was already done under parse_poll() - leaving this in case we want to clean in the future!
-  # $fred = __object_transfer(@fredData) if ($name=~m/^(trnData)$/);
+  $fred = __object_transfer(@fredData) if ($name=~m/^(trnData)$/);
   $fred = __object_update(@fredData) if ($name=~m/^(updateData)$/);
   $fred = __idle_object_deletion(@fredData) if ($name=~m/^(idleDelData)$/);
   $fred = __technical_check_results(@fredData) if ($name=~m/^(testData)$/);
-  # print Dumper($fred);
 
   return $fred;
 }
@@ -203,10 +196,10 @@ sub __enum_domain_validation {
 
 
 # Event: An object has been transferred to another registrar.
-# TODO: they don't have more example but might need to improve this because:
 # This message type appears in all 4 object namespaces: domain, contact, nsset, keyset.
 sub __object_transfer {
   my $fred_object_transfer;
+
   foreach my $el_fred(@_) {
     my ($n_fred, $c_fred)=@$el_fred;
     $fred_object_transfer->{name} = $c_fred->textContent() if $n_fred eq 'name';
