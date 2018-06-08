@@ -66,7 +66,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
           create => [ \&create, \&create_parse ],
           info   => [ \&info, \&info_parse ],
           update => [ \&update ],
@@ -108,6 +108,7 @@ sub create
  push @n,['ptdomain:legitimacy',{type => $rd->{legitimacy}}];
  push @n,['ptdomain:registration_basis',{type => $rd->{registration_basis}}];
  push @n,['ptdomain:autoRenew',$rd->{auto_renew}];
+ push @n,['ptdomain:ownerVisible',$rd->{owner_visible}] if $rd->{owner_visible}; # field is not mandatory
  my $eid=build_command_extension($mes,$epp,'ptdomain:create');
  $mes->command_extension($eid,\@n);
  return;
@@ -176,7 +177,7 @@ sub info_parse
   } elsif ($name=~m/^(?:nextPossibleRegistration|addPeriod|waitingRemoval)$/) # most are not used anymore but let's keep it :)
   {
    $rinfo->{domain}->{$oname}->{Net::DRI::Util::remcam($name)}=Net::DRI::Util::xml_parse_boolean($c->getFirstChild()->getData());
-  } elsif  ($name=~m/^(?:autoRenew|notRenew)$/)
+  } elsif  ($name=~m/^(?:autoRenew|notRenew|ownerVisible)$/)
   {
    $rinfo->{domain}->{$oname}->{Net::DRI::Util::remcam($name)}=$c->textContent();
   } elsif ($name eq 'renew')
