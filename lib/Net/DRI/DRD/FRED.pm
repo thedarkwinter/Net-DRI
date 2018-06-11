@@ -139,6 +139,33 @@ sub set_factories {
 
 ####################################################################################################
 
+sub credit_info {
+  my ($self,$ndr)=@_;
+  return $ndr->process('fred','credit_info');
+}
+
+####################################################################################################
+
+sub send_auth_info {
+  my ($self,$ndr,$name_id,$rd)=@_;
+  return $ndr->process('fred','send_auth_info',[$name_id,$rd]);
+}
+
+sub test_nsset {
+  my ($self,$ndr,$id,$rd)=@_;
+  return $ndr->process('fred','test_nsset',[$id,$rd]);
+}
+
+sub prep_list {
+  my ($self,$ndr,$id,$rd)=@_;
+  return $ndr->process('fred','prep_list',[$id,$rd]);
+}
+
+sub get_results {
+  my ($self,$ndr,$rd)=@_;
+  return $ndr->process('fred','get_results',[$rd]);
+}
+
 ####################################################################################################
 ## NSSET Commands
 
