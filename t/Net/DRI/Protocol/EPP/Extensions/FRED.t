@@ -818,6 +818,29 @@ is($rc->is_success(), 1, 'keyset transfer is_success');
 is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer><keyset:transfer xmlns:keyset="http://www.nic.cz/xml/epp/keyset-1.3" xsi:schemaLocation="http://www.nic.cz/xml/epp/keyset-1.3 keyset-1.3.xsd"><keyset:id>342301</keyset:id><keyset:authInfo>gnagnagna</keyset:authInfo></keyset:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>', 'keyset transfer build xml');
 
 ####################################################################################################
+###### FRED operations
+## NO clTIRD ??
+
+# credit info
+$R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><fred:resCreditInfo xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.0.xsd"><fred:zoneCredit><fred:zone>0.2.4.e164.arpa</fred:zone><fred:credit>66112.00</fred:credit></fred:zoneCredit><fred:zoneCredit><fred:zone>cz</fred:zone><fred:credit>82640.00</fred:credit></fred:zoneCredit></fred:resCreditInfo></resData>'.$TRID.'</response>'.$E2;
+
+$rc = $dri->credit_info();
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:creditInfo/></fred:extcommand></extension></epp>', 'credit_info build xml');
+is($dri->get_info('balance', 'registrar', 'self'), 82640, 'getinfo balance');
+
+# registrar_balance is more common!
+$rc = $dri->registrar_balance();
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><fred:extcommand xmlns:fred="http://www.nic.cz/xml/epp/fred-1.5" xsi:schemaLocation="http://www.nic.cz/xml/epp/fred-1.5 fred-1.5.xsd"><fred:creditInfo/></fred:extcommand></extension></epp>', 'credit_info build xml');
+is($dri->get_info('balance', 'registrar', 'self'), 82640, 'getinfo balance');
+is_deeply($dri->get_info('zones', 'registrar', 'self'), [ { 'zone' => '0.2.4.e164.arpa', 'credit' => '66112'}, {'zone' => 'cz', 'credit' => '82640'} ], 'getinfo balance');
+#print Dumper $dri->get_info_all();
+
+
+exit;
+
+
+
+####################################################################################################
 ###### Poll operations
 
 # poll: domain transfer out successfully
