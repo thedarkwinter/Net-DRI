@@ -26,7 +26,7 @@ use Net::DRI::Util;
 use Net::DRI::Data::Contact::IIS;
 
 ## Only transfer requests and queries are possible, the rest is handled "off line".
-__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_stop domain_transfer_accept domain_transfer_refuse domain_delete/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_stop domain_transfer_accept domain_transfer_refuse/);
 
 =pod
 

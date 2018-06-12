@@ -656,6 +656,7 @@ t/Net/DRI/Protocol/EPP/Extensions/GracePeriod.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate.t
 t/Net/DRI/Protocol/EPP/Extensions/IDN.t
+t/Net/DRI/Protocol/EPP/Extensions/IIS.t
 t/Net/DRI/Protocol/EPP/Extensions/IN.t
 t/Net/DRI/Protocol/EPP/Extensions/IT.t
 t/Net/DRI/Protocol/EPP/Extensions/Keygroup.t
