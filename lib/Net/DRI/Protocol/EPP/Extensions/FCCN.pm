@@ -70,6 +70,7 @@ sub setup
              ptcontact => ["$namespace_base/ptcontact-1.0",'ptcontact-1.0.xsd'],
            });
  $self->capabilities('contact_update','status',undef);
+ $self->capabilities('domain_update','owner_visible',['set']);
  $self->default_parameters({domain_create => { auth => { pw => '' } } }); ## domain:authInfo is not used by FCCN
  return;
 }

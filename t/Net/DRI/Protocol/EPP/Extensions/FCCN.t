@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 22;
+use Test::More tests => 24;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -37,23 +37,24 @@ my $cs=$dri->local_object('contactset');
 my $c1=$dri->local_object('contact')->srid('FCZA-142520-FCCN');
 $cs->set($c1,'registrant');
 $cs->set($c1,'tech');
-$rc=$dri->domain_create('mytestdomain.pt',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,legitimacy=>1,registration_basis=>'090',add_period=>1,next_possible_registration=>0,auto_renew=>'true'});
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain.pt</domain:name><domain:period unit="y">1</domain:period><domain:registrant>FCZA-142520-FCCN</domain:registrant><domain:contact type="tech">FCZA-142520-FCCN</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><ptdomain:create xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy type="1"/><ptdomain:registration_basis type="090"/><ptdomain:autoRenew>true</ptdomain:autoRenew></ptdomain:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+$rc=$dri->domain_create('mytestdomain.pt',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,legitimacy=>1,registration_basis=>'090',add_period=>1,next_possible_registration=>0,auto_renew=>'true',owner_visible=>'true'});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain.pt</domain:name><domain:period unit="y">1</domain:period><domain:registrant>FCZA-142520-FCCN</domain:registrant><domain:contact type="tech">FCZA-142520-FCCN</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><ptdomain:create xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy type="1"/><ptdomain:registration_basis type="090"/><ptdomain:autoRenew>true</ptdomain:autoRenew><ptdomain:ownerVisible>true</ptdomain:ownerVisible></ptdomain:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($dri->get_info('roid'),'4569356','domain_create get_info(roid)');
 
 ## Example corrected, domain:name needs a namespace
 $R2=$E1.'<response><result code="2302"><msg>Object exists</msg><extValue><value><domain:name xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">mytestdomain2.pt</domain:name></value><reason>There was a previous submission for the same domain name that is still in pending create. To put a new submission into the next-possible-registration queue resend this command with the next-possible-registration extension element set to true</reason></extValue></result>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_create('mytestdomain2.pt',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,legitimacy=>1,registration_basis=>'090',add_period=>1,next_possible_registration=>0,auto_renew=>'true'});
+$rc=$dri->domain_create('mytestdomain2.pt',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,legitimacy=>1,registration_basis=>'090',add_period=>1,next_possible_registration=>0,auto_renew=>'true',owner_visible=>'true'});
 is($rc->is_success(),0,'domain_create is_success');
 is($rc->code(),2302,'domain_create code');
 is_deeply([$rc->get_extended_results()],[{from=>'eppcom:extValue',type=>'rawxml',message=>'<domain:name xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">mytestdomain2.pt</domain:name>',reason=>'There was a previous submission for the same domain name that is still in pending create. To put a new submission into the next-possible-registration queue resend this command with the next-possible-registration extension element set to true',lang=>'en'}],'domain_create extra info');
 
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain3.pt</domain:name><domain:roid>2221881-FCCN</domain:roid><domain:status s="inactive"/><domain:status s="pendingUpdate"/><domain:registrant>FCZA-142520-FCCN</domain:registrant><domain:contact type="tech">FCZA-142520-FCCN</domain:contact><domain:ns><domain:hostAttr><domain:hostName>ns1.anything.pt</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.everything.pt</domain:hostName></domain:hostAttr></domain:ns><domain:clID>FCZA-142520-FCCN</domain:clID><domain:crID>FCZA-142520-FCCN</domain:crID><domain:crDate>2006-03-21T12:19:25.000Z</domain:crDate><domain:upID>FCZA-142520-FCCN</domain:upID><domain:upDate>2006-03-21T12:19:25.000Z</domain:upDate><domain:exDate>2007-03-21T12:19:25.000Z</domain:exDate></domain:infData></resData><extension><ptdomain:infData xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy type="1"/><ptdomain:registration_basis type="30"/><ptdomain:autoRenew>true</ptdomain:autoRenew></ptdomain:infData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain3.pt</domain:name><domain:roid>2221881-FCCN</domain:roid><domain:status s="inactive"/><domain:status s="pendingUpdate"/><domain:registrant>FCZA-142520-FCCN</domain:registrant><domain:contact type="tech">FCZA-142520-FCCN</domain:contact><domain:ns><domain:hostAttr><domain:hostName>ns1.anything.pt</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.everything.pt</domain:hostName></domain:hostAttr></domain:ns><domain:clID>FCZA-142520-FCCN</domain:clID><domain:crID>FCZA-142520-FCCN</domain:crID><domain:crDate>2006-03-21T12:19:25.000Z</domain:crDate><domain:upID>FCZA-142520-FCCN</domain:upID><domain:upDate>2006-03-21T12:19:25.000Z</domain:upDate><domain:exDate>2007-03-21T12:19:25.000Z</domain:exDate></domain:infData></resData><extension><ptdomain:infData xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy type="1"/><ptdomain:registration_basis type="30"/><ptdomain:autoRenew>true</ptdomain:autoRenew><ptdomain:ownerVisible>true</ptdomain:ownerVisible></ptdomain:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('mytestdomain3.pt');
 is($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">mytestdomain3.pt</domain:name></domain:info></info><extension><ptdomain:info xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:roid/></ptdomain:info></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info');
 is($dri->get_info('legitimacy'),1,'domain_info get_info(legitimacy)');
 is($dri->get_info('registration_basis'),30,'domain_info get_info(registration_basis)');
 is($dri->get_info('auto_renew'),'true','domain_info get_info(auto_renew)');
+is($dri->get_info('owner_visible'),'true','domain_info get_info(owner_visible)');
 
 $R2='';
 my $toc=$dri->local_object('changes');
@@ -61,8 +62,9 @@ $toc->add('ns',$dri->local_object('hosts')->add('ns.mytestdomain3.pt',['19.0.2.2
 $cs=$dri->local_object('contactset');
 $cs->set($dri->local_object('contact')->srid('c112574'),'tech');
 $toc->add('contact',$cs);
+$toc->set('owner_visible','false');
 $rc=$dri->domain_update('mytestdomain3.pt',$toc);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain3.pt</domain:name><domain:add><domain:ns><domain:hostAttr><domain:hostName>ns.mytestdomain3.pt</domain:hostName><domain:hostAddr ip="v4">19.0.2.2</domain:hostAddr></domain:hostAttr></domain:ns><domain:contact type="tech">c112574</domain:contact></domain:add></domain:update></update><extension><ptdomain:update xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:roid/></ptdomain:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain3.pt</domain:name><domain:add><domain:ns><domain:hostAttr><domain:hostName>ns.mytestdomain3.pt</domain:hostName><domain:hostAddr ip="v4">19.0.2.2</domain:hostAddr></domain:hostAttr></domain:ns><domain:contact type="tech">c112574</domain:contact></domain:add></domain:update></update><extension><ptdomain:update xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:roid/><ptdomain:ownerVisible>false</ptdomain:ownerVisible></ptdomain:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
 
 $R2='';
 $rc=$dri->domain_renew('example.pt',{duration => DateTime::Duration->new(years=>5), current_expiration => DateTime->new(year=>2008,month=>4,day=>3),auto_renew=>'no',not_renew=>0}); # test xml_parse_auto_renew();
@@ -112,5 +114,16 @@ $R2='';
 $rc=$dri->contact_info($dri->local_object('contact')->srid('sh8013')->auth({pw=>'2fooBAR'}));
 is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo></contact:info></info><clTRID>ABC-12345</clTRID></command></epp>','contact_info build');
 is($rc->is_success(),1,'contact_info is_success');
+
+#########################################################################################################
+## GDPR changes
+$R2='';
+$cs=$dri->local_object('contactset');
+$c1=$dri->local_object('contact')->srid('FCZA-142520-FCCN');
+$cs->set($c1,'registrant');
+$cs->set($c1,'tech');
+$rc=$dri->domain_create('teste-12052018-2.pt',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,legitimacy=>1,registration_basis=>'090',add_period=>1,next_possible_registration=>0,auto_renew=>'false',owner_visible=>'false'});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>teste-12052018-2.pt</domain:name><domain:period unit="y">1</domain:period><domain:registrant>FCZA-142520-FCCN</domain:registrant><domain:contact type="tech">FCZA-142520-FCCN</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><ptdomain:create xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy type="1"/><ptdomain:registration_basis type="090"/><ptdomain:autoRenew>false</ptdomain:autoRenew><ptdomain:ownerVisible>false</ptdomain:ownerVisible></ptdomain:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build GDPR changes - ownerVisible');
+
 
 exit 0;
