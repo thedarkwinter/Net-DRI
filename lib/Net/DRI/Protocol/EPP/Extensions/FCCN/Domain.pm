@@ -95,7 +95,7 @@ sub create
  Net::DRI::Exception::usererr_insufficient_parameters('Registrant contact required for .PT domain name creation') unless (Net::DRI::Util::has_contact($rd) && $rd->{contact}->has_type('registrant'));
  Net::DRI::Exception::usererr_insufficient_parameters('Tech contact required for .PT domain name creation') unless (Net::DRI::Util::has_contact($rd) && $rd->{contact}->has_type('tech'));
 
- foreach my $d (qw/legitimacy registration_basis auto_renew/)
+ foreach my $d (qw/legitimacy registration_basis auto_renew owner_visible/)
  {
   Net::DRI::Exception::usererr_insufficient_parameters($d.' attribute is mandatory for .PT domain name creation') unless Net::DRI::Util::has_key($rd,$d);
  }
@@ -108,7 +108,7 @@ sub create
  push @n,['ptdomain:legitimacy',{type => $rd->{legitimacy}}];
  push @n,['ptdomain:registration_basis',{type => $rd->{registration_basis}}];
  push @n,['ptdomain:autoRenew',$rd->{auto_renew}];
- push @n,['ptdomain:ownerVisible',$rd->{owner_visible}] if $rd->{owner_visible}; # field is not mandatory
+ push @n,['ptdomain:ownerVisible',$rd->{owner_visible}];
  my $eid=build_command_extension($mes,$epp,'ptdomain:create');
  $mes->command_extension($eid,\@n);
  return;
@@ -194,9 +194,11 @@ sub update
  my $mes=$epp->message();
 
  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
+ Net::DRI::Exception::usererr_insufficient_parameters('owner_visible attribute is mandatory for .PT domain name update') unless $toc->{'owner_visible'}; # mandatory due GDPR changes
 
  my $eid=build_command_extension($mes,$epp,'ptdomain:update');
  my @n=add_roid($rd->{roid});
+ push @n,['ptdomain:ownerVisible',$toc->set('owner_visible')];
  $mes->command_extension($eid,\@n);
  return;
 }
