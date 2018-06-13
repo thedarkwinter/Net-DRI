@@ -1044,7 +1044,7 @@ L<NET::DRI::Protocol::EPP::Extensions::MX::IDN>
 
 =head3 TLDs
 
-ruhr cologne gmx ifm koeln nrw
+ruhr gmx ifm nrw
 
 pay is in contention
 
@@ -1064,7 +1064,7 @@ Fee extension is currently only used in .NRW and for domain_check command only.
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['ruhr','cologne','gmx','ifm','koeln','nrw'],
+     tlds => ['ruhr','gmx','ifm','nrw'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version => ($tld eq 'nrw' ? '0.21': undef)}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'tango' || $bep eq 'tangors';
@@ -1225,7 +1225,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 =head3 TLDs
 
-africa capetown durban joburg wien
+africa capetown cologne durban joburg koeln wien
 
 =head3 Custom extensions:
 
@@ -1240,7 +1240,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ZACR::Contact> http://co.za/epp/extension
 
  return {
      bep_type => 1, # dedicated
-     tlds => ['africa','durban','capetown','joburg','wien'],
+     tlds => ['africa','capetown','cologne','durban','joburg','koeln','wien'],
      host_as_attr => 1,
      object_types => ['domain','contact'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],
