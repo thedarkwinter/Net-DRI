@@ -40,7 +40,7 @@ This registry uses only localized data with characters in US-ASCII and ISO-LATIN
 
 The following accessors/mutators can be called in chain, as they all return the object itself.
 
-=head2 type() 
+=head2 type()
 
 type of contact : holder_org, holder_pers (for contact objects used as holders) or contact
 
@@ -90,16 +90,16 @@ sub validate
  }
 
  push @errs,'sp' if $self->sp(); ## not allowed
- push @errs,'type' if ($self->type() && $self->type()!~m/^(?:holder_org|holder_pers|contact)/);
- Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
+ # push @errs,'type' if ($self->type() && $self->type()!~m/^(?:holder_org|holder_pers|contact)/);
+ # Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
 
- if ($self->type() && ($self->type() ne 'contact'))
- {
-  push @errs,'voice' if $self->voice();
-  push @errs,'fax'   if $self->fax();
-  push @errs,'org'   if $self->org();
-  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information (not allowed for holders): '.join('/',@errs)) if @errs;
- }
+ # if ($self->type() && ($self->type() ne 'contact'))
+ # {
+ #  push @errs,'voice' if $self->voice();
+ #  push @errs,'fax'   if $self->fax();
+ #  push @errs,'org'   if $self->org();
+ #  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information (not allowed for holders): '.join('/',@errs)) if @errs;
+ # }
 
  return 1; ## everything ok.
 }

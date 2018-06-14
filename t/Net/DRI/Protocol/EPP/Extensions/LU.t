@@ -8,7 +8,8 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use Net::DRI::Protocol::EPP::Connection;
 use DateTime;
-use Test::More tests => 65;
+use Test::More tests => 79;
+use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -29,6 +30,35 @@ my $rc;
 my $s;
 my $d;
 my ($dh,@c);
+
+####################################################################################################
+## Hello
+$R2=$E1.'<greeting><svID>DNS-LU EPP test server (version 1.2.10)</svID><svDate>2018-03-06T12:48:36.269Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.dns.lu/xml/epp/dnslu-1.0</extURI></svcExtension></svcMenu><dcp><access><none/></access><statement><purpose><prov/></purpose><recipient><ours/></recipient><retention><indefinite/></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($R1,$E1.'<hello/>'.$E2,'session noop build (hello command)');
+is($rc->is_success(),1,'session noop is_success');
+is($rc->get_data('session','server','server_id'),'DNS-LU EPP test server (version 1.2.10)','session noop get_data(session,server,server_id)');
+is($rc->get_data('session','server','date'),'2018-03-06T12:48:36','session noop get_data(session,server,date)');
+is_deeply($rc->get_data('session','server','version'),['1.0'],'session noop get_data(session,server,version)');
+is_deeply($rc->get_data('session','server','lang'),['en'],'session noop get_data(session,server,lang)');
+is_deeply($rc->get_data('session','server','objects'),['urn:ietf:params:xml:ns:domain-1.0','urn:ietf:params:xml:ns:contact-1.0','urn:ietf:params:xml:ns:host-1.0'],'session noop get_data(session,server,objects)');
+is_deeply($rc->get_data('session','server','extensions_announced'),['urn:ietf:params:xml:ns:secDNS-1.1','http://www.dns.lu/xml/epp/dnslu-1.0'],'session noop get_data(session,server,extensions_announced)');
+is_deeply($rc->get_data('session','server','extensions_selected'),['urn:ietf:params:xml:ns:secDNS-1.1','http://www.dns.lu/xml/epp/dnslu-1.0'],'session noop get_data(session,server,extensions_selected)');
+is($rc->get_data('session','server','dcp_string'),'<access><none/></access><statement><purpose><prov/></purpose><recipient><ours/></recipient><retention><indefinite/></retention></statement>','session noop get_data(session,server,dcp_string)');
+
+####################################################################################################
+## Login
+$R2='';
+$rc=$dri->process('session','login',['username','password',{client_newpassword => 'newPassword'}]);
+is($R1,$E1.'<command><login><clID>username</clID><pw>password</pw><newPW>newPassword</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.dns.lu/xml/epp/dnslu-1.0</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build');
+is($rc->is_success(),1,'session login is_success');
+
+####################################################################################################
+## Logout
+$R2=$E1.'<response>'.r(1500).$TRID.'</response>'.$E2;
+$rc=$dri->process('session','logout',[]);
+is($R1,$E1.'<command><logout/><clTRID>ABC-12345</clTRID></command>'.$E2,'session logout build');
+is($rc->is_success(),1,'session logout is_success');
 
 ####################################################################################################
 ## Registry Messages
@@ -53,7 +83,7 @@ is_deeply($dri->get_info('extra','message',1),{'field'=>'some extra information'
 ###################################################################################################
 ## Contact commands
 
-$R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>H0008</contact:id><contact:roid>H3-DNSLU</contact:roid><contact:status s="ok"/><contact:status s="linked"/><contact:postalInfo type="loc"><contact:name>Fondation RESTENA</contact:name><contact:addr><contact:street>6, rue Coudenhove -Kalergi</contact:street><contact:city>Luxembourg</contact:city><contact:pc>1359</contact:pc><contact:cc>LU</contact:cc></contact:addr></contact:postalInfo><contact:email>dummy@dns.lu</contact:email><contact:clID>restena-id</contact:clID><contact:crID>restena-id</contact:crID><contact:crDate>2005-10-05T07:37:10Z</contact:crDate><contact:upID>restena-id</contact:upID><contact:upDate>2005-11-17T12:59:11Z</contact:upDate></contact:infData></resData><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xmlns:xsi="http://www.w3.org/200/10/XMLSchema-instance" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0.xsd"><dnslu:resData><dnslu:infData><dnslu:contact><dnslu:type>holder_org</dnslu:type><dnslu:disclose><dnslu:name flag="1"/><dnslu:addr flag="0"/></dnslu:disclose></dnslu:contact></dnslu:infData></dnslu:resData></dnslu:ext></extension>'.$TRID.'</response>'.$E2; 
+$R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>H0008</contact:id><contact:roid>H3-DNSLU</contact:roid><contact:status s="ok"/><contact:status s="linked"/><contact:postalInfo type="loc"><contact:name>Fondation RESTENA</contact:name><contact:addr><contact:street>6, rue Coudenhove -Kalergi</contact:street><contact:city>Luxembourg</contact:city><contact:pc>1359</contact:pc><contact:cc>LU</contact:cc></contact:addr></contact:postalInfo><contact:email>dummy@dns.lu</contact:email><contact:clID>restena-id</contact:clID><contact:crID>restena-id</contact:crID><contact:crDate>2005-10-05T07:37:10Z</contact:crDate><contact:upID>restena-id</contact:upID><contact:upDate>2005-11-17T12:59:11Z</contact:upDate></contact:infData></resData><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xmlns:xsi="http://www.w3.org/200/10/XMLSchema-instance" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0.xsd"><dnslu:resData><dnslu:infData><dnslu:contact><dnslu:type>holder_org</dnslu:type><dnslu:disclose><dnslu:name flag="1"/><dnslu:addr flag="0"/></dnslu:disclose></dnslu:contact></dnslu:infData></dnslu:resData></dnslu:ext></extension>'.$TRID.'</response>'.$E2;
 
 my $co=$dri->local_object('contact')->srid('H0008');
 $rc=$dri->contact_info($co);
@@ -94,7 +124,7 @@ $co->auth({pw=>'dummy'});
 $co->type('contact');
 $co->disclose({name_loc=>1,addr_loc=>0,voice=>0,email=>0});
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>C100</contact:id><contact:postalInfo type="loc"><contact:name>Bruno PrÃ©mont</contact:name><contact:org>Fondation RESTENA</contact:org><contact:addr><contact:street>6, rue Coudenhove -Kalergi</contact:street><contact:city>Luxembourg</contact:city><contact:pc>1359</contact:pc><contact:cc>LU</contact:cc></contact:addr></contact:postalInfo><contact:voice>+352.42440928</contact:voice><contact:fax>+352.42440928</contact:fax><contact:email>bruno.premont@restena.lu</contact:email><contact:authInfo><contact:pw>dummy</contact:pw></contact:authInfo></contact:create></create><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:create><dnslu:contact><dnslu:type>contact</dnslu:type><dnslu:disclose><dnslu:name flag="1"/><dnslu:addr flag="0"/><dnslu:voice flag="0"/><dnslu:email flag="0"/></dnslu:disclose></dnslu:contact></dnslu:create></dnslu:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build 2'); 
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>C100</contact:id><contact:postalInfo type="loc"><contact:name>Bruno PrÃ©mont</contact:name><contact:org>Fondation RESTENA</contact:org><contact:addr><contact:street>6, rue Coudenhove -Kalergi</contact:street><contact:city>Luxembourg</contact:city><contact:pc>1359</contact:pc><contact:cc>LU</contact:cc></contact:addr></contact:postalInfo><contact:voice>+352.42440928</contact:voice><contact:fax>+352.42440928</contact:fax><contact:email>bruno.premont@restena.lu</contact:email><contact:authInfo><contact:pw>dummy</contact:pw></contact:authInfo></contact:create></create><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:create><dnslu:contact><dnslu:type>contact</dnslu:type><dnslu:disclose><dnslu:name flag="1"/><dnslu:addr flag="0"/><dnslu:voice flag="0"/><dnslu:email flag="0"/></dnslu:disclose></dnslu:contact></dnslu:create></dnslu:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build 2');
 
 $R2='';
 $co=$dri->local_object('contact')->srid('H100');
@@ -130,7 +160,7 @@ $cs->set($dri->local_object('contact')->srid('H_rest'),'registrant');
 $cs->set($dri->local_object('contact')->srid('CA_rest'),'admin');
 $cs->set($dri->local_object('contact')->srid('CT_rest'),'tech');
 $rc=$dri->domain_create('lycee.lu',{pure_create=>1,ns=>$dri->local_object('hosts')->set(['ns1.restena.lu'],['ns2.restena.lu']),contact=>$cs,auth=>{pw=>'dummy'},status=>$dri->local_object('status')->add('inactive','clientTradeProhibited')});
-is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>lycee.lu</domain:name><domain:ns><domain:hostObj>ns1.restena.lu</domain:hostObj><domain:hostObj>ns2.restena.lu</domain:hostObj></domain:ns><domain:registrant>H_rest</domain:registrant><domain:contact type="admin">CA_rest</domain:contact><domain:contact type="tech">CT_rest</domain:contact><domain:authInfo><domain:pw>dummy</domain:pw></domain:authInfo></domain:create></create><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:create><dnslu:domain><dnslu:status s="clientTradeProhibited"/><dnslu:status s="inactive"/></dnslu:domain></dnslu:create></dnslu:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build'); 
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>lycee.lu</domain:name><domain:ns><domain:hostObj>ns1.restena.lu</domain:hostObj><domain:hostObj>ns2.restena.lu</domain:hostObj></domain:ns><domain:registrant>H_rest</domain:registrant><domain:contact type="admin">CA_rest</domain:contact><domain:contact type="tech">CT_rest</domain:contact><domain:authInfo><domain:pw>dummy</domain:pw></domain:authInfo></domain:create></create><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:create><dnslu:domain><dnslu:status s="clientTradeProhibited"/><dnslu:status s="inactive"/></dnslu:domain></dnslu:create></dnslu:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 
 
 $R2='';
@@ -171,7 +201,7 @@ $cs->set($dri->local_object('contact')->srid('H100'),'registrant');
 $cs->set($dri->local_object('contact')->srid('C100'),'admin');
 $cs->set($dri->local_object('contact')->srid('C100'),'tech');
 $rc=$dri->domain_transfer_start('cafe.lu',{ns=>$dri->local_object('hosts')->set(['ns1.restena.lu'],['ns2.restena.lu'],['ns3.restena.lu']),contact=>$cs,status=>$dri->local_object('status')->no('publish'),trDate=>DateTime->new(year=>2004,month=>6,day=>30)});
-is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>cafe.lu</domain:name></domain:transfer></transfer><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:transfer><dnslu:domain><dnslu:ns><dnslu:hostObj>ns1.restena.lu</dnslu:hostObj><dnslu:hostObj>ns2.restena.lu</dnslu:hostObj><dnslu:hostObj>ns3.restena.lu</dnslu:hostObj></dnslu:ns><dnslu:registrant>H100</dnslu:registrant><dnslu:contact type="admin">C100</dnslu:contact><dnslu:contact type="tech">C100</dnslu:contact><dnslu:status s="clientHold"/><dnslu:trDate>2004-06-30</dnslu:trDate></dnslu:domain></dnslu:transfer></dnslu:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build'); 
+is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>cafe.lu</domain:name></domain:transfer></transfer><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:transfer><dnslu:domain><dnslu:ns><dnslu:hostObj>ns1.restena.lu</dnslu:hostObj><dnslu:hostObj>ns2.restena.lu</dnslu:hostObj><dnslu:hostObj>ns3.restena.lu</dnslu:hostObj></dnslu:ns><dnslu:registrant>H100</dnslu:registrant><dnslu:contact type="admin">C100</dnslu:contact><dnslu:contact type="tech">C100</dnslu:contact><dnslu:status s="clientHold"/><dnslu:trDate>2004-06-30</dnslu:trDate></dnslu:domain></dnslu:transfer></dnslu:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
 is(''.$dri->get_info('trDate'),'2004-09-18T10:00:00','domain_transfer_request get_info(trDate)');
 
 $R2='';
