@@ -25,7 +25,7 @@ sub default_extensions {
 	return qw/GracePeriod SecDNS LaunchPhase RegBox::ServiceMessage CentralNic::Fee/;
 }
 
-sub core_contact_types { return ('tech'); } ## Since GDPR, no admin contact
+sub core_contact_types { return ('admin','tech'); }
 
 ####################################################################################################
 
