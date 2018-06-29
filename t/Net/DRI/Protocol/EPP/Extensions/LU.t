@@ -8,7 +8,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use Net::DRI::Protocol::EPP::Connection;
 use DateTime;
-use Test::More tests => 79;
+use Test::More tests => 80;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -151,7 +151,11 @@ is($dri->get_info('crReqID'),'restena-id','domain_info get_info(crReqID)');
 is(''.$dri->get_info('crReqDate'),'2005-10-03T11:37:22','domain_info get_info(crReqDate)');
 is(''.$dri->get_info('delReqDate'),'2006-07-03T11:12:12','domain_info get_info(delReqDate)');
 is(''.$dri->get_info('delDate'),'2006-07-21T17:37:54','domain_info get_info(delDate)');
-
+$R2='';
+# another test but now as in OT&E - <dnslu:status> as attribute!
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>test-trade-001.lu</domain:name><domain:roid>D64434-DNSLU</domain:roid><domain:status s="inactive"/><domain:registrant>FOOBAR046088</domain:registrant><domain:contact type="admin">FOOBAR046089</domain:contact><domain:contact type="tech">FOOBAR046061</domain:contact><domain:ns><domain:hostObj>ns1.digitalocean.com</domain:hostObj><domain:hostObj>ns2.digitalocean.com</domain:hostObj></domain:ns><domain:clID>foobar1</domain:clID><domain:crID>foobar1</domain:crID><domain:crDate>2018-06-28T12:31:05.000Z</domain:crDate><domain:exDate>2019-06-28T12:31:05.000Z</domain:exDate></domain:infData></resData><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0"><dnslu:resData><dnslu:infData><dnslu:domain><dnslu:status s="pendingTrade"/></dnslu:domain></dnslu:infData></dnslu:resData></dnslu:ext></extension><trID><clTRID>NET-DRI-0.12-TDW-RESTENA-139-1530271291491179</clTRID><svTRID>59683FDD:0004-DNSLU</svTRID></trID></response></epp>';
+$rc=$dri->domain_info("test-trade-001.lu");
+is_deeply([$dri->get_info('status')->list_status()],['inactive','pendingTrade'],'domain_info get_info(status) attribute');
 
 ## (we do not handle idn for now)
 $R2='';

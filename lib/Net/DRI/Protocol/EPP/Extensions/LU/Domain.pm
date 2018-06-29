@@ -67,7 +67,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
           info    => [ undef, \&info_parse ],
           create  => [ \&create,  undef    ],
           update  => [ \&update,  undef    ],
@@ -126,10 +126,15 @@ sub info_parse
    ## currently not used
   } elsif ($name eq 'status')
   {
-   $rinfo->{domain}->{$oname}->{status}->add($c->getFirstChild()->getData());
+    # lets keep original implementation AND get status value case is an attribute
+    if ($c->textContent() ne '') {
+      $rinfo->{domain}->{$oname}->{status}->add($c->getFirstChild()->getData());
+    } elsif ($c->getAttribute('s')) {
+      $rinfo->{domain}->{$oname}->{status}->add($c->getAttribute('s'));
+    }
   } elsif ($name eq 'crReqID')
   {
-   $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();  
+   $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();
   } elsif ($name=~m/^(crReqDate|delReqDate|delDate)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$pd->parse_datetime($c->getFirstChild()->getData());
@@ -239,7 +244,7 @@ sub build_transfer_trade_restore
  my @n;
 
  verify_contacts($rd);
- 
+
  push @n,['dnslu:ns',map { ['dnslu:hostObj',$_] } $rd->{ns}->get_names() ] if Net::DRI::Util::has_ns($rd);
  my $cs=$rd->{contact};
  push @n,['dnslu:registrant',$cs->get('registrant')->srid()];
