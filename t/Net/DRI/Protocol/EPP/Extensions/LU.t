@@ -8,7 +8,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use Net::DRI::Protocol::EPP::Connection;
 use DateTime;
-use Test::More tests => 80;
+use Test::More tests => 81;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -157,7 +157,7 @@ $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params
 $rc=$dri->domain_info("test-trade-001.lu");
 is_deeply([$dri->get_info('status')->list_status()],['inactive','pendingTrade'],'domain_info get_info(status) attribute');
 
-## (we do not handle idn for now)
+## domain create (without IDN)
 $R2='';
 my $cs=$dri->local_object('contactset');
 $cs->set($dri->local_object('contact')->srid('H_rest'),'registrant');
@@ -165,6 +165,15 @@ $cs->set($dri->local_object('contact')->srid('CA_rest'),'admin');
 $cs->set($dri->local_object('contact')->srid('CT_rest'),'tech');
 $rc=$dri->domain_create('lycee.lu',{pure_create=>1,ns=>$dri->local_object('hosts')->set(['ns1.restena.lu'],['ns2.restena.lu']),contact=>$cs,auth=>{pw=>'dummy'},status=>$dri->local_object('status')->add('inactive','clientTradeProhibited')});
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>lycee.lu</domain:name><domain:ns><domain:hostObj>ns1.restena.lu</domain:hostObj><domain:hostObj>ns2.restena.lu</domain:hostObj></domain:ns><domain:registrant>H_rest</domain:registrant><domain:contact type="admin">CA_rest</domain:contact><domain:contact type="tech">CT_rest</domain:contact><domain:authInfo><domain:pw>dummy</domain:pw></domain:authInfo></domain:create></create><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:create><dnslu:domain><dnslu:status s="clientTradeProhibited"/><dnslu:status s="inactive"/></dnslu:domain></dnslu:create></dnslu:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+
+## domain create (IDN)
+$R2='';
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('H_rest'),'registrant');
+$cs->set($dri->local_object('contact')->srid('CA_rest'),'admin');
+$cs->set($dri->local_object('contact')->srid('CT_rest'),'tech');
+$rc=$dri->domain_create('xn--lyce-dpa.lu',{pure_create=>1,ns=>$dri->local_object('hosts')->set(['ns1.restena.lu'],['ns2.restena.lu']),contact=>$cs,auth=>{pw=>'dummy'},status=>$dri->local_object('status')->add('inactive','clientTradeProhibited'),idn=>'xn--lyce-dpa.lu'});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>xn--lyce-dpa.lu</domain:name><domain:ns><domain:hostObj>ns1.restena.lu</domain:hostObj><domain:hostObj>ns2.restena.lu</domain:hostObj></domain:ns><domain:registrant>H_rest</domain:registrant><domain:contact type="admin">CA_rest</domain:contact><domain:contact type="tech">CT_rest</domain:contact><domain:authInfo><domain:pw>dummy</domain:pw></domain:authInfo></domain:create></create><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:create><dnslu:domain><dnslu:idn>xn--lyce-dpa.lu</dnslu:idn><dnslu:status s="clientTradeProhibited"/><dnslu:status s="inactive"/></dnslu:domain></dnslu:create></dnslu:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create idn build');
 
 
 $R2='';

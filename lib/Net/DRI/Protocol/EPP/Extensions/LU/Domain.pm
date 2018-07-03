@@ -165,10 +165,10 @@ sub create
 
  verify_contacts($rd);
 
- ## idn is not handled
-
  return unless Net::DRI::Util::has_key($rd,'status');
- my @n=map { ['dnslu:status',{ s => $_ }] } (Net::DRI::Util::isa_statuslist($rd->{status})? $rd->{status}->list_status() : @{$rd->{status}});
+ my @n;
+ push(@n, ['dnslu:idn', $rd->{idn}]) if (Net::DRI::Util::has_key($rd, 'idn')); # by technical documentation only for create() - not used on update()
+ push(@n, map { ['dnslu:status',{ s => $_ }] } (Net::DRI::Util::isa_statuslist($rd->{status})? $rd->{status}->list_status() : @{$rd->{status}}));
 
  my $eid=build_command_extension($mes,$epp,'dnslu:ext');
  $mes->command_extension($eid,['dnslu:create',['dnslu:domain',@n]]);
