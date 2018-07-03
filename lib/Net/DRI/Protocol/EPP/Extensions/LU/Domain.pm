@@ -165,7 +165,7 @@ sub create
 
  verify_contacts($rd);
 
- return unless Net::DRI::Util::has_key($rd,'status');
+ return unless Net::DRI::Util::has_key($rd,'status') || Net::DRI::Util::has_key($rd,'idn');
  my @n;
  push(@n, ['dnslu:idn', $rd->{idn}]) if (Net::DRI::Util::has_key($rd, 'idn')); # by technical documentation only for create() - not used on update()
  push(@n, map { ['dnslu:status',{ s => $_ }] } (Net::DRI::Util::isa_statuslist($rd->{status})? $rd->{status}->list_status() : @{$rd->{status}}));
