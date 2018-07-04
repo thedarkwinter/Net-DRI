@@ -21,7 +21,7 @@ our ($R1,$R2);
 sub mysend { my ($transport,$count,$msg)=@_; $R1=substr(Net::DRI::Protocol::EPP::Connection->write_message(undef,$msg),4); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 
-my $dri=Net::DRI->new({cache_ttle => 10});
+my $dri=Net::DRI->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_registry('RESTENA');
 $dri->target('RESTENA')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
@@ -288,7 +288,7 @@ $R2='';
 $toc=$dri->local_object('changes');
 $toc->del('status',$dri->local_object('status')->no('active'));
 $rc=$dri->domain_update('registryviolatingepp.lu',$toc);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>registryviolatingepp.lu</domain:name></domain:update></update><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:update><dnslu:domain><dnslu:rem><dnslu:status s="inactive"/></dnslu:rem></dnslu:domain></dnslu:update></dnslu:ext></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_update with status inactive (registry specific not in EPP)');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>registryviolatingepp.lu</domain:name><domain:rem><domain:status s="inactive"/></domain:rem></domain:update></update><clTRID>ABC-12345</clTRID></command></epp>','domain_update with status inactive (registry specific not in EPP)');
 
 
 ## From http://www.bsdprojects.net/cgi-bin/archzoom.cgi/tonnerre@bsdprojects.net--2006/Net-DRI--tonnerre--0.81.1--patch-34/t/999epp_bugs.t.diff?diff

@@ -83,7 +83,27 @@ sub is_core_status
  return (shift=~m/^(?:client(?:Hold|(?:Delete|Renew|Update|Transfer)Prohibited)|inactive)$/);
 }
 
-sub is_active { return shift->has_not('inactive'); }
+sub build_xml
+{
+ my ($self,$name,$range)=@_;
+ $range='core' unless defined($range);
+ my @d;
+ my $rd=$self->status_details();
+ while(my ($k,$v)=each(%$rd))
+ {
+  next if (($range eq 'core') xor is_core_status($k));
+  if ($v && ref $v eq 'HASH' && keys %$v)
+  {
+   my %tmp=(s => $k);
+   $tmp{lang}=$v->{lang} if exists $v->{lang};
+   push @d,[$name,$v->{msg} || '',\%tmp];
+  } else
+  {
+   push @d,[$name,{s=>$k}];
+  }
+ }
+ return @d;
+}
 
 ####################################################################################################
 1;
