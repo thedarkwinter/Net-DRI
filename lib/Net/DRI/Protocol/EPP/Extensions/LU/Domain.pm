@@ -123,7 +123,7 @@ sub info_parse
 
   if ($name eq 'idn')
   {
-   ## currently not used
+   $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();
   } elsif ($name eq 'status')
   {
     # lets keep original implementation AND get status value case is an attribute
@@ -167,7 +167,7 @@ sub create
 
  return unless Net::DRI::Util::has_key($rd,'status') || Net::DRI::Util::has_key($rd,'idn');
  my @n;
- push(@n, ['dnslu:idn', $rd->{idn}]) if (Net::DRI::Util::has_key($rd, 'idn')); # by technical documentation only for create() - not used on update()
+ push(@n, ['dnslu:idn', $rd->{idn}]) if (Net::DRI::Util::has_key($rd, 'idn')); # by technical documentation only for create and trasfer/trade - not used on update
  push(@n, map { ['dnslu:status',{ s => $_ }] } (Net::DRI::Util::isa_statuslist($rd->{status})? $rd->{status}->list_status() : @{$rd->{status}}));
 
  my $eid=build_command_extension($mes,$epp,'dnslu:ext');
@@ -251,7 +251,7 @@ sub build_transfer_trade_restore
  push @n,['dnslu:contact',{type => 'admin'},$cs->get('admin')->srid()];
  push @n,['dnslu:contact',{type => 'tech'},$cs->get('tech')->srid()];
  push @n,map { ['dnslu:status',{ s => $_ }] } (Net::DRI::Util::isa_statuslist($rd->{status})? $rd->{status}->list_status() : @{$rd->{status}}) if Net::DRI::Util::has_key($rd,'status');
- ## IDN not used
+ push(@n, ['dnslu:idn', $rd->{idn}]) if (Net::DRI::Util::has_key($rd, 'idn')); # by technical documentation only for create and trasfer/trade - not used on update
  push @n,['dnslu:trDate',$rd->{trDate}->set_time_zone('UTC')->strftime('%Y-%m-%d')] if (exists($rd->{trDate}) && defined($rd->{trDate}) && Net::DRI::Util::check_isa($rd->{trDate},'DateTime'));
  return @n;
 }

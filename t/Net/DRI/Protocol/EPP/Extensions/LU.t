@@ -8,7 +8,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use Net::DRI::Protocol::EPP::Connection;
 use DateTime;
-use Test::More tests => 81;
+use Test::More tests => 83;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -151,6 +151,7 @@ is($dri->get_info('crReqID'),'restena-id','domain_info get_info(crReqID)');
 is(''.$dri->get_info('crReqDate'),'2005-10-03T11:37:22','domain_info get_info(crReqDate)');
 is(''.$dri->get_info('delReqDate'),'2006-07-03T11:12:12','domain_info get_info(delReqDate)');
 is(''.$dri->get_info('delDate'),'2006-07-21T17:37:54','domain_info get_info(delDate)');
+is(''.$dri->get_info('idn'),'lycÃ©e.lu','domain_info get_info(idn)');
 $R2='';
 # another test but now as in OT&E - <dnslu:status> as attribute!
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>test-trade-001.lu</domain:name><domain:roid>D64434-DNSLU</domain:roid><domain:status s="inactive"/><domain:registrant>FOOBAR046088</domain:registrant><domain:contact type="admin">FOOBAR046089</domain:contact><domain:contact type="tech">FOOBAR046061</domain:contact><domain:ns><domain:hostObj>ns1.digitalocean.com</domain:hostObj><domain:hostObj>ns2.digitalocean.com</domain:hostObj></domain:ns><domain:clID>foobar1</domain:clID><domain:crID>foobar1</domain:crID><domain:crDate>2018-06-28T12:31:05.000Z</domain:crDate><domain:exDate>2019-06-28T12:31:05.000Z</domain:exDate></domain:infData></resData><extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0"><dnslu:resData><dnslu:infData><dnslu:domain><dnslu:status s="pendingTrade"/></dnslu:domain></dnslu:infData></dnslu:resData></dnslu:ext></extension><trID><clTRID>NET-DRI-0.12-TDW-RESTENA-139-1530271291491179</clTRID><svTRID>59683FDD:0004-DNSLU</svTRID></trID></response></epp>';
@@ -247,6 +248,17 @@ $cs->set($dri->local_object('contact')->srid('C100'),'admin');
 $cs->set($dri->local_object('contact')->srid('C100'),'tech');
 $rc=$dri->domain_transfer_trade_start('cafe.lu',{ns=>$dri->local_object('hosts')->set(['ns1.restena.lu'],['ns2.restena.lu'],['ns3.restena.lu']),contact=>$cs,status=>$dri->local_object('status')->no('publish'),trDate=>DateTime->new(year=>2004,month=>6,day=>30)});
 is_string($R1,$E1.'<extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:command><dnslu:transferTrade op="request"><dnslu:domain><dnslu:name>cafe.lu</dnslu:name><dnslu:ns><dnslu:hostObj>ns1.restena.lu</dnslu:hostObj><dnslu:hostObj>ns2.restena.lu</dnslu:hostObj><dnslu:hostObj>ns3.restena.lu</dnslu:hostObj></dnslu:ns><dnslu:registrant>H100</dnslu:registrant><dnslu:contact type="admin">C100</dnslu:contact><dnslu:contact type="tech">C100</dnslu:contact><dnslu:status s="clientHold"/><dnslu:trDate>2004-06-30</dnslu:trDate></dnslu:domain></dnslu:transferTrade></dnslu:command></dnslu:ext></extension>'.$E2,'domain_transfer_trade_request build');
+
+
+# IDN
+$R2='';
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('H100'),'registrant');
+$cs->set($dri->local_object('contact')->srid('C100'),'admin');
+$cs->set($dri->local_object('contact')->srid('C100'),'tech');
+$rc=$dri->domain_transfer_trade_start('xn--caf-dma.lu',{ns=>$dri->local_object('hosts')->set(['ns1.restena.lu'],['ns2.restena.lu'],['ns3.restena.lu']),contact=>$cs,status=>$dri->local_object('status')->no('publish'),trDate=>DateTime->new(year=>2004,month=>6,day=>30),idn=>'xn--caf-dma.lu'});
+is_string($R1,$E1.'<extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:command><dnslu:transferTrade op="request"><dnslu:domain><dnslu:name>xn--caf-dma.lu</dnslu:name><dnslu:ns><dnslu:hostObj>ns1.restena.lu</dnslu:hostObj><dnslu:hostObj>ns2.restena.lu</dnslu:hostObj><dnslu:hostObj>ns3.restena.lu</dnslu:hostObj></dnslu:ns><dnslu:registrant>H100</dnslu:registrant><dnslu:contact type="admin">C100</dnslu:contact><dnslu:contact type="tech">C100</dnslu:contact><dnslu:status s="clientHold"/><dnslu:idn>xn--caf-dma.lu</dnslu:idn><dnslu:trDate>2004-06-30</dnslu:trDate></dnslu:domain></dnslu:transferTrade></dnslu:command></dnslu:ext></extension>'.$E2,'domain_transfer_trade_request build');
+
 
 $R2=$E1.'<response>'.r().'<extension><dnslu:ext xmlns:dnslu="http://www.dns.lu/xml/epp/dnslu-1.0" xsi:schemaLocation ="http://www.dns.lu/xml/epp/dnslu-1.0 dnslu-1.0.xsd"><dnslu:resData><dnslu:trnTraData><dnslu:domain><dnslu:name>cafe.lu</dnslu:name><dnslu:trStatus>pending</dnslu:trStatus><dnslu:reID>restena-id</dnslu:reID><dnslu:reDate>2004-09-08T11:39:41Z</dnslu:reDate><dnslu:acDate>2004-09-15T11:39:41Z</dnslu:acDate><dnslu:trDate>2004-09-18T10:00:00Z</dnslu:trDate></dnslu:domain></dnslu:trnTraData></dnslu:resData></dnslu:ext></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_transfer_trade_query('cafe.lu');
