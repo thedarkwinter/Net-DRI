@@ -301,7 +301,7 @@ sub parse_transfer_trade_restore
 
   if ($name eq 'idn')
   {
-   ## currently not used
+   $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();
   } elsif ($name=~m/^(trStatus|reID)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();
