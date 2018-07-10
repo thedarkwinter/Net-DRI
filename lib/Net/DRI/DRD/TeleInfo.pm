@@ -90,7 +90,7 @@ sub new
 
 sub periods      { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name         { return 'TeleInfo'; }
-sub tlds         { return (qw/xn--3ds443g xn--fiq228c5hs xn--vuq861b/); }
+sub tlds         { return (qw/xn--3ds443g xn--fiq228c5hs xn--nyqy26a xn--rhqv96g xn--vuq861b/); }
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }
 
