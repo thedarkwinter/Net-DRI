@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-request xmlns="http://registry.denic.de/global/2.1" xmlns:dnsentry="http://registry.denic.de/dnsentry/2.1" xmlns:domain="http://registry.denic.de/domain/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <domain:chholder>
+    <domain:handle>de-example.de</domain:handle>
+    <domain:ace>de-example.de</domain:ace>
+    <domain:contact role="holder">DENIC-1000002-MAX</domain:contact>
+    <dnsentry:dnsentry xsi:type="dnsentry:NS">
+      <dnsentry:owner>de-example.de.</dnsentry:owner>
+      <dnsentry:rdata>
+        <dnsentry:nameserver>ns1.provider.de.</dnsentry:nameserver>
+      </dnsentry:rdata>
+    </dnsentry:dnsentry>
+    <dnsentry:dnsentry xsi:type="dnsentry:NS">
+      <dnsentry:owner>de-example.de.</dnsentry:owner>
+      <dnsentry:rdata>
+        <dnsentry:nameserver>ns2.provider.de.</dnsentry:nameserver>
+      </dnsentry:rdata>
+    </dnsentry:dnsentry>
+  </domain:chholder>
+  <ctid>ABC-12345</ctid>
+</registry-request>

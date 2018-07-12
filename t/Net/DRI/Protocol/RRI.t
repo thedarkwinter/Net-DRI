@@ -370,6 +370,19 @@ isa_ok( $rc, 'Net::DRI::Protocol::ResultStatus' );
 is( $rc->is_success(), 1, 'Domain successfully traded' );
 is_string($R1, read_xml_file($test_name . '_command.xml'), 'Trade Domain XML correct');
 
+$test_name = 'domain_trade_02';
+$R2 = read_xml_file($test_name . '_response.xml');
+
+$cs = $dri->local_object('contactset');
+$cs->add( $dri->local_object('contact')->srid('DENIC-1000002-MAX'), 'registrant' );
+$rc = $dri->domain_trade( 'de-example.de', {
+            contact => $cs,
+            ns      => $dri->local_object('hosts')->add( 'ns1.provider.de' )->add( 'ns2.provider.de' )
+        } );
+isa_ok( $rc, 'Net::DRI::Protocol::ResultStatus' );
+is( $rc->is_success(), 1, 'Domain successfully traded' );
+is_string($R1, read_xml_file($test_name . '_command.xml'), 'Trade Domain XML correct');
+
 # Domain update
 $test_name = 'domain_update_01';
 $R2 = read_xml_file('domain_update_01_seed_info' . '_response.xml');
