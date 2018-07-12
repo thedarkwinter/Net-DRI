@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-request xmlns="http://registry.denic.de/global/2.1" xmlns:contact="http://registry.denic.de/contact/2.1">
+  <contact:create>
+    <contact:handle>DENIC-99990-10240-BSP</contact:handle>
+    <contact:type>PERSON</contact:type>
+    <contact:name>Theobald Tester</contact:name>
+    <contact:organisation>Test-Org</contact:organisation>
+    <contact:postal>
+      <contact:address>Kleiner Dienstweg 17</contact:address>
+      <contact:postalCode>09538</contact:postalCode>
+      <contact:city>Gipsnich</contact:city>
+      <contact:countryCode>DE</contact:countryCode>
+    </contact:postal>
+    <contact:phone disclose="true">+49.123456</contact:phone>
+    <contact:fax>+49.123457</contact:fax>
+    <contact:email>email@denic.de</contact:email>
+    <contact:sip>sip:benutzer@denic.de</contact:sip>
+    <contact:remarks>Interesting remark</contact:remarks>
+  </contact:create>
+  <ctid>ABC-12345</ctid>
+</registry-request>

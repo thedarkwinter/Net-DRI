@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-response xmlns="http://registry.denic.de/global/2.1" xmlns:tr="http://registry.denic.de/transaction/2.1" xmlns:domain="http://registry.denic.de/domain/2.1" xmlns:contact="http://registry.denic.de/contact/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dnsentry="http://registry.denic.de/dnsentry/2.1">
+  <tr:transaction>
+    <tr:stid>
+      <tr:ctid>ABC-12345</tr:ctid>
+      <tr:stid>54322-XYZ</tr:stid>
+    </tr:stid>
+    <tr:result>success</tr:result>
+    <tr:data>
+      <contact:checkData>
+        <contact:handle>DENIC-99990-10240-BSP</contact:handle>
+        <contact:status>failed</contact:status>
+      </contact:checkData>
+    </tr:data>
+  </tr:transaction>
+</registry-response>

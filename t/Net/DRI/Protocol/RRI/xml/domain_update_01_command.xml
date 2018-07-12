@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-request xmlns="http://registry.denic.de/global/2.1" xmlns:dnsentry="http://registry.denic.de/dnsentry/2.1" xmlns:domain="http://registry.denic.de/domain/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <domain:update>
+    <domain:handle>rritestdomain.de</domain:handle>
+    <domain:ace>rritestdomain.de</domain:ace>
+    <domain:contact role="admin-c">DENIC-1000006-SD</domain:contact>
+    <domain:contact role="holder">DENIC-1000006-1</domain:contact>
+    <domain:contact role="holder">DENIC-1000006-2</domain:contact>
+    <domain:contact role="tech-c">ALFRED-RIPE</domain:contact>
+    <domain:contact role="zone-c">DENIC-1000006-OPS</domain:contact>
+    <dnsentry:dnsentry xsi:type="dnsentry:NS">
+      <dnsentry:owner>rritestdomain.de.</dnsentry:owner>
+      <dnsentry:rdata>
+        <dnsentry:nameserver>dns1.syhosting.ch.</dnsentry:nameserver>
+        <dnsentry:address>193.219.115.46</dnsentry:address>
+      </dnsentry:rdata>
+    </dnsentry:dnsentry>
+  </domain:update>
+  <ctid>ABC-12345</ctid>
+</registry-request>

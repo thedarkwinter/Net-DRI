@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-request xmlns="http://registry.denic.de/global/2.1" xmlns:dnsentry="http://registry.denic.de/dnsentry/2.1" xmlns:domain="http://registry.denic.de/domain/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <domain:create>
+    <domain:handle>rriüberdomain.de</domain:handle>
+    <domain:ace>xn--rriberdomain-flb.de</domain:ace>
+    <domain:contact role="admin-c">DENIC-99990-10240-BSP1</domain:contact>
+    <domain:contact role="holder">DENIC-99990-10240-BSP</domain:contact>
+    <domain:contact role="tech-c">DENIC-99990-10240-BSP2</domain:contact>
+    <dnsentry:dnsentry xsi:type="dnsentry:NS">
+      <dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner>
+      <dnsentry:rdata>
+        <dnsentry:nameserver>dns1.syhosting.ch.</dnsentry:nameserver>
+        <dnsentry:address>193.219.115.46</dnsentry:address>
+      </dnsentry:rdata>
+    </dnsentry:dnsentry>
+    <dnsentry:dnsentry xsi:type="dnsentry:DNSKEY">
+      <dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner>
+      <dnsentry:rdata>
+        <dnsentry:flags>257</dnsentry:flags>
+        <dnsentry:protocol>3</dnsentry:protocol>
+        <dnsentry:algorithm>5</dnsentry:algorithm>
+        <dnsentry:publicKey>AwEAAdDECajHaTjfSoNTY58WcBah1BxPKVIHBz4IfLjfqMvium4lgKtKZLe97DgJ5/NQrNEGGQmr6fKvUj67cfrZUojZ2cGRizVhgkOqZ9scaTVXNuXLM5Tw7VWOVIceeXAuuH2mPIiEV6MhJYUsW6dvmNsJ4XwCgNgroAmXhoMEiWEjBB+wjYZQ5GtZHBFKVXACSWTiCtddHcueOeSVPi5WH94VlubhHfiytNPZLrObhUCHT6k0tNE6phLoHnXWU+6vpsYpz6GhMw/R9BFxW5PdPFIWBgoWk2/XFVRSKG9Lr61b2z1R126xeUwvw46RVy3h anV3vNO7LM5H niqaYclBbhk=</dnsentry:publicKey>
+      </dnsentry:rdata>
+    </dnsentry:dnsentry>
+  </domain:create>
+  <ctid>ABC-12345</ctid>
+</registry-request>

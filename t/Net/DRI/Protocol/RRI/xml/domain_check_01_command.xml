@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-request xmlns="http://registry.denic.de/global/2.1" xmlns:domain="http://registry.denic.de/domain/2.1">
+  <domain:check>
+    <domain:handle>rritestdomain.de</domain:handle>
+    <domain:ace>rritestdomain.de</domain:ace>
+  </domain:check>
+</registry-request>

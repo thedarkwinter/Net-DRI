@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-response xmlns="http://registry.denic.de/global/2.1" xmlns:tr="http://registry.denic.de/transaction/2.1" xmlns:domain="http://registry.denic.de/domain/2.1" xmlns:contact="http://registry.denic.de/contact/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dnsentry="http://registry.denic.de/dnsentry/2.1">
+  <tr:transaction>
+    <tr:stid>
+      <tr:ctid>ABC-12345</tr:ctid>
+      <tr:stid>54322-XYZ</tr:stid>
+    </tr:stid>
+    <tr:result>success</tr:result>
+    <tr:data>
+      <domain:infoData>
+        <domain:handle>rritestdomain2.de</domain:handle>
+        <domain:ace>rritestdomain2.de</domain:ace>
+        <domain:status>connect</domain:status>
+        <domain:regAccId>DENIC-1000006</domain:regAccId>
+        <domain:contact role="holder">
+          <contact:handle>DENIC-1000006-1</contact:handle>
+        </domain:contact>
+        <domain:contact role="holder">
+          <contact:handle>DENIC-1000006-2</contact:handle>
+        </domain:contact>
+        <domain:contact role="admin-c">
+          <contact:handle>DENIC-1000006-SD</contact:handle>
+        </domain:contact>
+        <domain:contact role="tech-c">
+          <contact:handle>DENIC-1000006-OPS</contact:handle>
+        </domain:contact>
+        <domain:contact role="zone-c">
+          <contact:handle>DENIC-1000006-OPS</contact:handle>
+        </domain:contact>
+        <dnsentry:dnsentry xsi:type="dnsentry:NS">
+          <dnsentry:owner>rritestdomain2.de</dnsentry:owner>
+          <dnsentry:rdata>
+            <dnsentry:nameserver>dns1.rritestdomain2.de</dnsentry:nameserver>
+            <dnsentry:address>194.25.2.129</dnsentry:address>
+            <dnsentry:address>2001:4d88:ffff:ffff:2:b345:af62:2</dnsentry:address>
+          </dnsentry:rdata>
+        </dnsentry:dnsentry>
+        <domain:chprovData>
+          <domain:chprovTo>DENIC-1000002</domain:chprovTo>
+          <domain:chprovStart>2005-11-20T00:00:00+01:00</domain:chprovStart>
+          <domain:chprovReminder>2005-11-23T00:00:00+01:00</domain:chprovReminder>
+          <domain:chprovEnd>2005-11-25T00:00:00+01:00</domain:chprovEnd>
+          <domain:chprovStatus>ACTIVE</domain:chprovStatus>
+        </domain:chprovData>
+        <domain:changed>2001-09-11T11:45:23-07:00</domain:changed>
+      </domain:infoData>
+    </tr:data>
+  </tr:transaction>
+</registry-response>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-request xmlns="http://registry.denic.de/global/2.1">
+  <login>
+    <user>user</user>
+    <password>password</password>
+  </login>
+</registry-request>

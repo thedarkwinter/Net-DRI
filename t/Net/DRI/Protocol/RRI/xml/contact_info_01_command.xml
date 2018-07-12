@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-request xmlns="http://registry.denic.de/global/2.1" xmlns:contact="http://registry.denic.de/contact/2.1">
+  <contact:info>
+    <contact:handle>DENIC-99989-BSP</contact:handle>
+  </contact:info>
+</registry-request>

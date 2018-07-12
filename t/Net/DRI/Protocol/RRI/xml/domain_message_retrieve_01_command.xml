@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-request xmlns="http://registry.denic.de/global/2.1" xmlns:msg="http://registry.denic.de/msg/2.1">
+  <msg:queue-read/>
+</registry-request>

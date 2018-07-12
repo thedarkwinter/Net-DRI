@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-response xmlns="http://registry.denic.de/global/2.1" xmlns:tr="http://registry.denic.de/transaction/2.1" xmlns:domain="http://registry.denic.de/domain/2.1" xmlns:contact="http://registry.denic.de/contact/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dnsentry="http://registry.denic.de/dnsentry/2.1">
+  <tr:transaction>
+    <tr:stid>
+      <tr:ctid>ABC-12345</tr:ctid>
+      <tr:stid>54322-XYZ</tr:stid>
+    </tr:stid>
+    <tr:result>success</tr:result>
+    <tr:data>
+      <contact:infoData>
+        <contact:handle>DENIC-99989-BSP</contact:handle>
+        <contact:type>ROLE</contact:type>
+        <contact:name>SyGroup GmbH</contact:name>
+        <contact:organisation>SyGroup GmbH</contact:organisation>
+        <contact:postal>
+          <contact:address>Gueterstrasse 86</contact:address>
+          <contact:city>Basel</contact:city>
+          <contact:postalCode>4053</contact:postalCode>
+          <contact:countryCode>CH</contact:countryCode>
+        </contact:postal>
+        <contact:phone>+41.613338033</contact:phone>
+        <contact:fax>+41.613831467</contact:fax>
+        <contact:email>info@sygroup.ch</contact:email>
+        <contact:sip>sip:secretary@sygroup.ch</contact:sip>
+        <contact:remarks>Live penguins in the office</contact:remarks>
+        <contact:changed>2007-05-23T22:55:33+02:00</contact:changed>
+      </contact:infoData>
+    </tr:data>
+  </tr:transaction>
+</registry-response>

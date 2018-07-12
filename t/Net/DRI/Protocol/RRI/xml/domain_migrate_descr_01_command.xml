@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry-request xmlns="http://registry.denic.de/global/2.1" xmlns:dnsentry="http://registry.denic.de/dnsentry/2.1" xmlns:domain="http://registry.denic.de/domain/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <domain:migrate-descr>
+    <domain:handle>rritestdomain.de</domain:handle>
+    <domain:ace>rritestdomain.de</domain:ace>
+    <domain:contact role="holder">DENIC-99990-10240-BSP5</domain:contact>
+  </domain:migrate-descr>
+  <ctid>ABC-12345</ctid>
+</registry-request>
