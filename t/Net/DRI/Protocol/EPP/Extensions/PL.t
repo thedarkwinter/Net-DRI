@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 474;
+use Test::More tests => 487;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -539,6 +539,23 @@ is($dri->get_info('object_id','message',89025),'ppr13.pl','message get_info obje
 is($dri->get_info('action','message',89025),'domain_auto_renew_failed','message get_info action');
 is($dri->get_info('name','message',89025),'ppr13.pl','message get_info name');
 is(''.$dri->get_info('date','message',89025),'2009-11-09T09:07:23','message get_info date');
+
+## Adding new one that was breaking Net-DRI message_retrieve() - pl_contact => extcon-2.0.xsd
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="20" id="24504834"><qDate>2018-06-28T00:38:22.385Z</qDate><msg lang="en">contacts deleted from system</msg></msgQ><resData><extcon:delData xmlns:extcon="http://www.dns.pl/nask-epp-schema/extcon-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extcon-2.0 extcon-2.0.xsd"><extcon:id>foobar_028528</extcon:id><extcon:executionDate>2018-06-28T00:38:22.380Z</extcon:executionDate></extcon:delData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve');
+is($dri->get_info('last_id'),24504834,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),24504834,'message get_info last_id 2');
+is($dri->get_info('id','message',24504834),24504834,'message get_info id');
+is(''.$dri->get_info('qdate','message',24504834),'2018-06-28T00:38:22','message get_info qdate');
+is($dri->get_info('content','message',24504834),'contacts deleted from system','message get_info content');
+is($dri->get_info('lang','message',24504834),'en','message get_info lang');
+is($dri->get_info('object_type','message',24504834),'extcon','message get_info object_type');
+is($dri->get_info('object_id','message',24504834),'extcon','message get_info object_id');
+is($dri->get_info('action','message',24504834),'del_data','message get_info action');
+is($dri->get_info('name','message',24504834),'extcon','message get_info name');
+is($dri->get_info('id_extcon','message',24504834),'foobar_028528','message get_info id_extcon');
+is(''.$dri->get_info('execution_date','message',24504834),'2018-06-28T00:38:22','message get_info execution_date');
 
 ## Multiple level domain registration
 
