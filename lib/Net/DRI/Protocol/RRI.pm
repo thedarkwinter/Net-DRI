@@ -73,7 +73,7 @@ sub new
  my ($c,$ctx,$rp)=@_;
  my $self=$c->SUPER::new($ctx);
  $self->name('RRI');
- my $version=Net::DRI::Util::check_equal($rp->{version},['2.1'],'2.1');
+ my $version=Net::DRI::Util::check_equal($rp->{version},['1.0'],'1.0');
  $self->version($version);
 
  foreach my $o (qw/ip status/) { $self->capabilities('host_update',$o,['set']); }
@@ -82,12 +82,12 @@ sub new
  foreach my $o (qw/ns status contact/) { $self->capabilities('domain_update',$o,['add','del']); }
  foreach my $o (qw/registrant auth/)   { $self->capabilities('domain_update',$o,['set']); }
 
- $self->{ns}={ _main	=> ['http://registry.denic.de/global/2.1'],
-		tr	=> ['http://registry.denic.de/transaction/2.1'],
-		contact	=> ['http://registry.denic.de/contact/2.1'],
-		domain	=> ['http://registry.denic.de/domain/2.1'],
-		dnsentry=> ['http://registry.denic.de/dnsentry/2.1'],
-                msg	=> ['http://registry.denic.de/msg/2.1'],
+ $self->{ns}={ _main	=> ['http://registry.denic.de/global/1.0'],
+		tr	=> ['http://registry.denic.de/transaction/1.0'],
+		contact	=> ['http://registry.denic.de/contact/1.0'],
+		domain	=> ['http://registry.denic.de/domain/1.0'],
+		dnsentry=> ['http://registry.denic.de/dnsentry/1.0'],
+                msg	=> ['http://registry.denic.de/msg/1.0'],
 		xsi	=> ['http://www.w3.org/2001/XMLSchema-instance'],
              };
 

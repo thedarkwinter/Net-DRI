@@ -197,6 +197,27 @@ sub parse
   }
 
 
+  # extcon => extcon-2.0
+  foreach my $tmp_extcon (qw/create update infData info delData/)
+  {
+    if (my $data=$mes->get_response('pl_contact',$tmp_extcon))
+    {
+      $oaction = Net::DRI::Util::xml2perl($tmp_extcon);
+      $otype = $oname = 'extcon';
+      foreach my $el_extcon (Net::DRI::Util::xml_list_children($data))
+      {
+        my ($n_extcon,$c_extcon)=@$el_extcon;
+        $rinfo->{$otype}->{$oname}->{individual} = $c_extcon->textContent() if $n_extcon eq 'individual';
+        $rinfo->{$otype}->{$oname}->{consent_for_publishing} = $c_extcon->textContent() if $n_extcon eq 'consentForPublishing';
+        $rinfo->{$otype}->{$oname}->{auth_info} = $c_extcon->textContent() if $n_extcon eq 'authInfo';
+        $rinfo->{$otype}->{$oname}->{id_extcon} = $c_extcon->textContent() if $n_extcon eq 'id'; # should be id but lets not mess with the id from poll!
+        $rinfo->{$otype}->{$oname}->{execution_date} = DateTime::Format::ISO8601->new()->parse_datetime($c_extcon->textContent()) if $n_extcon eq 'executionDate';
+        $rinfo->{$otype}->{$oname}->{action}=$oaction;
+      }
+    }
+  }
+
+
  return;
 }
 
