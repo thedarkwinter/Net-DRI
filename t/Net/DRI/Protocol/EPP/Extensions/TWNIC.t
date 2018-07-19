@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 15;
+use Test::More tests => 20;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -55,6 +55,15 @@ is($rc->is_success(),1,'domain_check multi is_success');
 is($dri->get_info('exist','domain','example22.tw'),0,'domain_check multi get_info(exist) 1/2');
 is($dri->get_info('exist','domain','example22.com.tw'),1,'domain_check multi get_info(exist) 2/2');
 is($dri->get_info('exist_reason','domain','example22.com.tw'),'In use','domain_check multi get_info(exist_reason)');
+
+# domain check multi (to check if idn tlds work)
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">xn--kpry57d.xn--kpry57d</domain:name></domain:cd><domain:cd><domain:name avail="0">xn--kprw13d.xn--kprw13d</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('xn--kpry57d.xn--kpry57d','xn--kprw13d.xn--kprw13d');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>xn--kpry57d.xn--kpry57d</domain:name><domain:name>xn--kprw13d.xn--kprw13d</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multi build');
+is($rc->is_success(),1,'domain_check multi is_success');
+is($dri->get_info('exist','domain','xn--kpry57d.xn--kpry57d'),0,'domain_check multi get_info(exist) 1/2');
+is($dri->get_info('exist','domain','xn--kprw13d.xn--kprw13d'),1,'domain_check multi get_info(exist) 2/2');
+is($dri->get_info('exist_reason','domain','xn--kprw13d.xn--kprw13d'),'In use','domain_check multi get_info(exist_reason)');
 
 
 ####################################################################################################

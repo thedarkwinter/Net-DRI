@@ -26,7 +26,7 @@ use DateTime::Duration;
 =head1 NAME
 
 Net::DRI::DRD::Neustar::TWNIC - Neustar (TWNIC) policies for Net::DRI
-Supported TLDs: .tw, .club.tw, .com.tw, .ebiz.tw, .game.tw, .net.tw, .org.tw
+Supported TLDs: .tw, .club.tw, .com.tw, .ebiz.tw, .game.tw, .net.tw, .org.tw, .xn--kpry57d, .xn--kprw13d
 
 =head1 DESCRIPTION
 
@@ -75,7 +75,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Neustar::TWNIC'; }
-sub tlds     { return ('tw', map { $_.'.tw'} qw/club com ebiz game net org/ ); }
+sub tlds     { return ('tw', 'xn--kpry57d', 'xn--kprw13d', map { $_.'.tw'} qw/club com ebiz game net org/ ); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
