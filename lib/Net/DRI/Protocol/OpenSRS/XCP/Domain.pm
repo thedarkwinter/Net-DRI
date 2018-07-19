@@ -84,10 +84,10 @@ sub register_commands
  return { 'domain' => \%tmp };
 }
 
-sub build_msg_cookie
+sub build_msg_base
 {
- my ($msg,$action,$cookie,$regip)=@_;
- my %r=(action=>$action,object=>'domain',cookie=>$cookie);
+ my ($msg,$action,$regip)=@_;
+ my %r=(action=>$action,object=>'domain');
  $r{registrant_ip}=$regip if defined($regip);
  $msg->command(\%r);
  return;
@@ -97,10 +97,9 @@ sub info
 {
  my ($xcp,$domain,$rd)=@_;
  my $msg=$xcp->message();
- Net::DRI::Exception::usererr_insufficient_parameters('A cookie is needed for domain_info') unless Net::DRI::Util::has_key($rd,'cookie');
- build_msg_cookie($msg,'get',$rd->{cookie},$rd->{registrant_ip});
+ build_msg_base($msg,'get',$rd->{registrant_ip});
  my $info_type=exists $rd->{type} ? $rd->{type} : 'all_info';
- $msg->command_attributes({type => $info_type});
+ $msg->command_attributes({domain => $domain, type => $info_type});
  return;
 }
 
@@ -301,7 +300,6 @@ sub update
  $msg->command_attributes($attr);
 
  Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a non empty Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
- Net::DRI::Exception::usererr_insufficient_parameters('A cookie is needed for domain_info') unless Net::DRI::Util::has_key($rd,'cookie');
 
  my $nsset=$todo->set('ns');
  my $contactset=$todo->set('contact');
@@ -312,15 +310,16 @@ sub update
   Net::DRI::Exception::usererr_invalid_parameters('change of nameservers and contacts is not supported in the same operation') if defined $contactset;
   Net::DRI::Exception::usererr_insufficient_parameters('at least 2 nameservers are mandatory') unless ($nsset->count()>=2);
 
-  build_msg_cookie($msg,'advanced_update_nameservers',$rd->{cookie},$rd->{registrant_ip});
+  build_msg_base($msg,'advanced_update_nameservers',$rd->{registrant_ip});
   $attr->{op_type}='assign';
+  $attr->{domain} = $domain;
   $attr->{assign_ns}=[ $nsset->get_names() ];
  }
- else 
+ else
  {
   Net::DRI::Exception::usererr_invalid_parameters('contact changes for set must be a Net::DRI::Data::ContactSet') unless defined($contactset) && Net::DRI::Util::isa_contactset($contactset);
 
-  build_msg_cookie($msg,'update_contacts',$rd->{cookie},$rd->{registrant_ip});
+  build_msg_base($msg,'update_contacts',$rd->{registrant_ip});
   my %contact_set = ();
   my $types = [];
   foreach my $t (qw/registrant admin billing tech/)
@@ -334,6 +333,7 @@ sub update
    $contact_set{$registry_type}=add_contact_info($msg,$co);
    push @$types, $registry_type;
   }
+  $attr->{domain} = $domain;
   $attr->{contact_set} = \%contact_set;
   $attr->{types} = $types;
  }
@@ -466,7 +466,7 @@ sub renew
  Net::DRI::Exception::usererr_insufficient_parameters('auto_renew setting is mandatory') unless (Net::DRI::Util::has_key($rd, 'auto_renew'));
 
  Net::DRI::Exception::usererr_insufficient_parameters('duration is mandatory') unless Net::DRI::Util::has_duration($rd);
- Net::DRI::Exception::usererr_insufficient_parameters('current expiration is mandatory') unless (Net::DRI::Util::has_key($rd, 'current_expiration') && Net::DRI::Util::check_isa($rd->{current_expiration}, 'DateTime')); # Can get this from set_cookie response.
+ Net::DRI::Exception::usererr_insufficient_parameters('current expiration is mandatory') unless (Net::DRI::Util::has_key($rd, 'current_expiration') && Net::DRI::Util::check_isa($rd->{current_expiration}, 'DateTime'));
 
  my $attr = {domain => $domain, period => $rd->{duration}->years(), currentexpirationyear => $rd->{current_expiration}->year()};
 
@@ -584,8 +584,6 @@ sub is_mine
  my ($xcp,$domain,$rd)=@_;
  my $msg=$xcp->message();
 
- # Cookie isn't used with belongs_to_rsp
-
  $msg->command ({ action => 'belongs_to_rsp' });
  $msg->command_attributes ({ domain => $domain });
  return;
@@ -606,7 +604,7 @@ sub is_mine_parse
  $rinfo->{domain}->{$oname}->{mine}=($ra->{belongs_to_rsp})? 1 : 0;
  if (exists $ra->{domain_expdate} && defined $ra->{domain_expdate}) ## only here if belongs_to_rsp=1
  {
-  my $d=$ra->{domain_expdate}; 
+  my $d=$ra->{domain_expdate};
   $d=~s/\s+/T/; ## with a little effort we become ISO8601
   $rinfo->{domain}->{$oname}->{exDate}=$xcp->parse_iso8601($d);
  }

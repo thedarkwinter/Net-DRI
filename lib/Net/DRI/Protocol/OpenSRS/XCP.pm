@@ -83,7 +83,7 @@ sub new
 sub _load
 {
  my ($self,$rp)=@_;
- my @class=map { 'Net::DRI::Protocol::OpenSRS::XCP::'.$_ } (qw/Account Domain Host Session/);
+ my @class=map { 'Net::DRI::Protocol::OpenSRS::XCP::'.$_ } (qw/Account Domain Host/);
  return $self->SUPER::_load(@class);
 }
 

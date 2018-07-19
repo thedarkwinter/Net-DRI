@@ -121,17 +121,8 @@ sub domain_info
  my $rc=$ndr->try_restore_from_cache('domain',$domain,'info');
  if (! defined $rc)
  {
-  ## First grab a cookie, if needed
-  unless (Net::DRI::Util::has_key($rd,'cookie'))
-  {
-   $rd=Net::DRI::Util::create_params('domain_info',$rd); ## will fail in set_cookie because other params needed, but at least this will be ok for next line ; otherwise do true checks of value needed
-   $rd->{domain}=$domain;
-   $rc=$ndr->process('session','set_cookie',[$rd]);
-   return $rc unless $rc->is_success();
-   $rd->{cookie}=$ndr->get_info('value','session','cookie'); ## Store cookie somewhere (taking into account date of expiry or some TTLs) ?
-  }
   ## Now do the real info
-  $rc=$ndr->process('domain','info',[$domain,$rd]); ## the $domain is not really used here, as it was used during set_cookie above
+  $rc=$ndr->process('domain','info',[$domain,$rd]);
  }
  return $rc;
 }
@@ -141,17 +132,8 @@ sub domain_update
  my ($self,$ndr,$domain,$changes,$rd)=@_;
  $self->enforce_domain_name_constraints($ndr,$domain,'update');
 
- ## First grab a cookie, if needed
- unless (Net::DRI::Util::has_key($rd,'cookie'))
- {
-  $rd=Net::DRI::Util::create_params('domain_update',$rd); ## will fail in set_cookie because other params needed, but at least this will be ok for next line ; otherwise do true checks of value needed
-  $rd->{domain}=$domain;
-  my $rc=$ndr->process('session','set_cookie',[$rd]);
-  return $rc unless $rc->is_success();
-  $rd->{cookie}=$ndr->get_info('value','session','cookie'); ## Store cookie somewhere (taking into account date of expiry or some TTLs) ?
- }
  ## Now do the real update
- my $rc=$ndr->process('domain','update',[$domain,$changes,$rd]); ## the $domain is not really used here, as it was used during set_cookie above
+ my $rc=$ndr->process('domain','update',[$domain,$changes,$rd]);
  return $rc;
 }
 

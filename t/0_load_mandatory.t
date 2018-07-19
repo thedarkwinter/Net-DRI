@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 541;
+use Test::More tests => 540;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -488,7 +488,6 @@ use_ok('Net::DRI::Protocol::OpenSRS::XCP::Connection');
 use_ok('Net::DRI::Protocol::OpenSRS::XCP::Domain');
 use_ok('Net::DRI::Protocol::OpenSRS::XCP::Host');
 use_ok('Net::DRI::Protocol::OpenSRS::XCP::Message');
-use_ok('Net::DRI::Protocol::OpenSRS::XCP::Session');
 use_ok('Net::DRI::Protocol::OVH::WS');
 use_ok('Net::DRI::Protocol::OVH::WS::Account');
 use_ok('Net::DRI::Protocol::OVH::WS::Connection');
