@@ -155,7 +155,7 @@ sub update
  {
   foreach $ctype ($todel->types)
   {
-   next if $ctype =~ m/^(registrant|admin|bill|tech)$/;
+   next if $ctype =~ m/^(registrant|admin|billing|tech)$/;
    $cont = $todel->get($ctype);
    push @del, ['auxcontact:contact',{type => $ctype},$cont->srid()];
   }
