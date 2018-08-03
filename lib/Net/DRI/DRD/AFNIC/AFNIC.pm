@@ -76,7 +76,7 @@ sub new
  return $self;
 }
 
-sub periods      { return map { DateTime::Duration->new(years => $_) } (1); }
+sub periods      { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name         { return 'AFNIC::AFNIC'; }
 sub tlds         { return (qw/fr re tf wf pm yt asso.fr com.fr tm.fr gouv.fr/); } ## see http://www.afnic.fr/doc/autres-nic/dom-tom
 sub object_types { return ('domain','contact'); }
