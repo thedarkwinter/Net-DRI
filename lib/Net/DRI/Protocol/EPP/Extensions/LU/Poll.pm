@@ -1,4 +1,4 @@
-## Domain Registry Interface, EPP DNS-LU Poll extensions 
+## Domain Registry Interface, EPP DNS-LU Poll extensions
 ##
 ## Copyright (c) 2007,2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -18,8 +18,8 @@ use strict;
 use warnings;
 
 use Net::DRI::Util;
-
 use DateTime::Format::ISO8601;
+
 
 =pod
 
@@ -83,33 +83,32 @@ sub parse
  my $infdata=$mes->node_msg();
  return unless $infdata;
 
- my $pollmsg=$infdata->getFirstChild();
- my %w=(action => 'dnslu_notification', type => $infdata->getAttribute('type')); ## list of types p.36
- $w{type}=$pollmsg->getAttribute('type') if (!defined($w{type}) && $pollmsg->localname() eq 'pollmsg'); 
+ my (%w,%ns,%e);
 
- my (%ns,%e);
- my $c=$pollmsg->getFirstChild();
- while ($c)
+ # something very wrong is happening. Even if the test file work with legacy code while
+ # testing on OT&E can't get any of <dnslu:pollmsg> elements - problem related with type attribute!
+ # this solve the problem!
+ foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
-  next unless ($c->nodeType() == 1); ## only for element nodes
-  my $name=$c->localname() || $c->nodeName();
-  next unless $name;
+   my ($n,$c)=@$el;
+   $w{action} = 'dnslu_notification';
+   $w{type} = $c->getAttribute("type") if $c->getAttribute("type"); ## list of types p.36
+   if ($n && $n eq 'pollmsg') {
+     foreach my $el_pollmsg (Net::DRI::Util::xml_list_children($c)) {
+       my ($n_pollmsg,$c_pollmsg)=@$el_pollmsg;
+       if ($n_pollmsg=~m/^(roid|object|clTRID|svTRID|reason)$/) {
+         $w{$n_pollmsg}=$c_pollmsg->textContent() if $c_pollmsg->textContent();
+       } elsif ($n_pollmsg eq 'exDate') {
+         $w{$n_pollmsg}=DateTime::Format::ISO8601->new()->parse_datetime($c_pollmsg->textContent()) if $c_pollmsg->textContent();
+       } elsif ($n_pollmsg eq 'ns') {
+         $ns{$c_pollmsg->getAttribute("name")}=$c_pollmsg->textContent() if $c_pollmsg->textContent() && $c_pollmsg->getAttribute("name");
+       } elsif ($n_pollmsg eq 'extra') {
+         $e{$c_pollmsg->getAttribute("name")}=$c_pollmsg->textContent() if $c_pollmsg->textContent() && $c_pollmsg->getAttribute("name");
+       }
+     }
+   }
+ }
 
-  if ($name=~m/^(roid|object|clTRID|svTRID|reason)$/)
-  {
-   $w{$name}=$c->getFirstChild()->getData();
-  } elsif ($name eq 'exDate')
-  {
-   $w{$name}=DateTime::Format::ISO8601->new()->parse_datetime($c->getFirstChild()->getData());
-  } elsif ($name eq 'ns')
-  {
-   $ns{$c->getAttribute('name')}=$c->getFirstChild()->getData();
-  } elsif ($name eq 'extra')
-  {
-   $e{$c->getAttribute('name')}=$c->getFirstChild()->getData();
-  }
-
- } continue { $c=$c->getNextSibling(); }
  $w{ns}=\%ns if %ns;
  $w{extra}=\%e if %e;
 

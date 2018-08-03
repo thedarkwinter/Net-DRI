@@ -67,7 +67,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
           info    => [ undef, \&info_parse ],
           create  => [ \&create,  undef    ],
           update  => [ \&update,  undef    ],
@@ -123,13 +123,18 @@ sub info_parse
 
   if ($name eq 'idn')
   {
-   ## currently not used
+   $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();
   } elsif ($name eq 'status')
   {
-   $rinfo->{domain}->{$oname}->{status}->add($c->getFirstChild()->getData());
+    # lets keep original implementation AND get status value case is an attribute
+    if ($c->textContent() ne '') {
+      $rinfo->{domain}->{$oname}->{status}->add($c->getFirstChild()->getData());
+    } elsif ($c->getAttribute('s')) {
+      $rinfo->{domain}->{$oname}->{status}->add($c->getAttribute('s'));
+    }
   } elsif ($name eq 'crReqID')
   {
-   $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();  
+   $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();
   } elsif ($name=~m/^(crReqDate|delReqDate|delDate)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$pd->parse_datetime($c->getFirstChild()->getData());
@@ -160,10 +165,10 @@ sub create
 
  verify_contacts($rd);
 
- ## idn is not handled
-
- return unless Net::DRI::Util::has_key($rd,'status');
- my @n=map { ['dnslu:status',{ s => $_ }] } (Net::DRI::Util::isa_statuslist($rd->{status})? $rd->{status}->list_status() : @{$rd->{status}});
+ return unless Net::DRI::Util::has_key($rd,'status') || Net::DRI::Util::has_key($rd,'idn');
+ my @n;
+ push(@n, ['dnslu:idn', $rd->{idn}]) if (Net::DRI::Util::has_key($rd, 'idn')); # by technical documentation only for create and trasfer/trade - not used on update
+ push(@n, map { ['dnslu:status',{ s => $_ }] } (Net::DRI::Util::isa_statuslist($rd->{status})? $rd->{status}->list_status() : @{$rd->{status}}));
 
  my $eid=build_command_extension($mes,$epp,'dnslu:ext');
  $mes->command_extension($eid,['dnslu:create',['dnslu:domain',@n]]);
@@ -239,14 +244,14 @@ sub build_transfer_trade_restore
  my @n;
 
  verify_contacts($rd);
- 
+
  push @n,['dnslu:ns',map { ['dnslu:hostObj',$_] } $rd->{ns}->get_names() ] if Net::DRI::Util::has_ns($rd);
  my $cs=$rd->{contact};
  push @n,['dnslu:registrant',$cs->get('registrant')->srid()];
  push @n,['dnslu:contact',{type => 'admin'},$cs->get('admin')->srid()];
  push @n,['dnslu:contact',{type => 'tech'},$cs->get('tech')->srid()];
  push @n,map { ['dnslu:status',{ s => $_ }] } (Net::DRI::Util::isa_statuslist($rd->{status})? $rd->{status}->list_status() : @{$rd->{status}}) if Net::DRI::Util::has_key($rd,'status');
- ## IDN not used
+ push(@n, ['dnslu:idn', $rd->{idn}]) if (Net::DRI::Util::has_key($rd, 'idn')); # by technical documentation only for create and trasfer/trade - not used on update
  push @n,['dnslu:trDate',$rd->{trDate}->set_time_zone('UTC')->strftime('%Y-%m-%d')] if (exists($rd->{trDate}) && defined($rd->{trDate}) && Net::DRI::Util::check_isa($rd->{trDate},'DateTime'));
  return @n;
 }
@@ -296,7 +301,7 @@ sub parse_transfer_trade_restore
 
   if ($name eq 'idn')
   {
-   ## currently not used
+   $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();
   } elsif ($name=~m/^(trStatus|reID)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$c->getFirstChild()->getData();

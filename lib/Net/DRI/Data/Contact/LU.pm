@@ -40,7 +40,7 @@ This registry uses only localized data with characters in US-ASCII and ISO-LATIN
 
 The following accessors/mutators can be called in chain, as they all return the object itself.
 
-=head2 type() 
+=head2 type()
 
 type of contact : holder_org, holder_pers (for contact objects used as holders) or contact
 
