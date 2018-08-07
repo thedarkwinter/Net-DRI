@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 541;
+use Test::More tests => 542;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -401,6 +401,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Future');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Report');
+use_ok('Net::DRI::Protocol::EPP::Extensions::PL::SecDNS');
 use_ok('Net::DRI::Protocol::EPP::Extensions::RegBox');
 use_ok('Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ResellerInfo');

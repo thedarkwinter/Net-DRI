@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 487;
+use Test::More tests => 498;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -874,5 +874,34 @@ is($dri->get_info('exist'),1,'domain_renew get_info(exist)');
 $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','domain_renew get_info(exDate)');
 is("".$d,'2005-04-03T22:00:00','domain_renew get_info(exDate) value');
+
+
+####################################################################################################
+## domain update - to test dnssec (5.9.5.3 Example III – addition of the DS records)
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->add('secdns',
+  [
+    {keyTag=>'346',alg=>'3',digestType=>'1',digest=>'9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC5'},
+    {keyTag=>'23',alg=>'3',digestType=>'1',digest=>'9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC6'},
+    {keyTag=>'45',alg=>'3',digestType=>'1',digest=>'9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC7'},
+  ]);
+$rc=$dri->domain_update('example3.pl',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example3.pl</domain:name></domain:update></update><extension><secDNS:update xmlns:secDNS="http://www.dns.pl/nask-epp-schema/secDNS-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/secDNS-2.0 secDNS-2.0.xsd"><secDNS:add><secDNS:dsData><secDNS:keyTag>346</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC5</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>23</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC6</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>45</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC7</secDNS:digest></secDNS:dsData></secDNS:add></secDNS:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update (addition of DS records) build');
+is($rc->is_success(),1,'domain_update (addition of DS records) is_success');
+
+# EPP Session just to test if dns schema is fine
+$R2=$E1.'<greeting><svID>NASK EPP Registry</svID><svDate>2013-07-25T13:39:35.970Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>pl</lang><objURI>http://www.dns.pl/nask-epp-schema/contact-2.0</objURI><objURI>http://www.dns.pl/nask-epp-schema/host-2.0</objURI><objURI>http://www.dns.pl/nask-epp-schema/domain-2.0</objURI><objURI>http://www.dns.pl/nask-epp-schema/future-2.0</objURI><svcExtension><extURI>http://www.dns.pl/nask-epp-schema/extcon-2.0</extURI><extURI>http://www.dns.pl/nask-epp-schema/extdom-2.0</extURI><extURI>http://www.dns.pl/nask-epp-schema/secDNS-2.0</extURI></svcExtension></svcMenu></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($R1,$E1.'<hello/>'.$E2,'session noop build (hello command)');
+is($rc->is_success(),1,'session noop is_success');
+is($rc->get_data('session','server','server_id'),'NASK EPP Registry','session noop get_data(session,server,server_id)');
+is($rc->get_data('session','server','date'),'2013-07-25T13:39:35','session noop get_data(session,server,date)');
+is_deeply($rc->get_data('session','server','version'),['1.0'],'session noop get_data(session,server,version)');
+is_deeply($rc->get_data('session','server','lang'),['en','pl'],'session noop get_data(session,server,lang)');
+is_deeply($rc->get_data('session','server','objects'),['http://www.dns.pl/nask-epp-schema/contact-2.0','http://www.dns.pl/nask-epp-schema/host-2.0','http://www.dns.pl/nask-epp-schema/domain-2.0','http://www.dns.pl/nask-epp-schema/future-2.0'],'session noop get_data(session,server,objects)');
+is_deeply($rc->get_data('session','server','extensions_announced'),['http://www.dns.pl/nask-epp-schema/extcon-2.0','http://www.dns.pl/nask-epp-schema/extdom-2.0','http://www.dns.pl/nask-epp-schema/secDNS-2.0'],'session noop get_data(session,server,extensions_announced)');
+is_deeply($rc->get_data('session','server','extensions_selected'),['http://www.dns.pl/nask-epp-schema/extcon-2.0','http://www.dns.pl/nask-epp-schema/extdom-2.0','http://www.dns.pl/nask-epp-schema/secDNS-2.0'],'session noop get_data(session,server,extensions_selected)');
+####################################################################################################
 
 exit 0;

@@ -412,6 +412,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/PL/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Future.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Report.pm
+lib/Net/DRI/Protocol/EPP/Extensions/PL/SecDNS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RegBox.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RegBox/ServiceMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ResellerInfo.pm
