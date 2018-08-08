@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 498;
+use Test::More tests => 504;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -26,7 +26,7 @@ $dri->add_registry('NASK');
 $dri->target('NASK')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my ($rc,$s,$d,$co,$dh,@c);
-my ($c,$cs,$ns);
+my ($c,$cs,$ns,$secdns);
 
 ####################################################################################################
 ## Examples taken from draft-zygmuntowicz-epp-pltld-02.txt §4
@@ -877,6 +877,29 @@ is("".$d,'2005-04-03T22:00:00','domain_renew get_info(exDate) value');
 
 
 ####################################################################################################
+### NASK secDNS-2.0 tests
+
+## domain create - 5.7.5.3 Example III – domain name registration with the DS record
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd">
+  <domain:name>example3.pl</domain:name>
+  <domain:crDate>2013-07-25T15:15:40.0Z</domain:crDate>
+  <domain:exDate>2014-07-25T15:15:40.0Z</domain:exDate>
+  </domain:creData>
+  </resData>'.$TRID.'</response>'.$E2;
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('k11'),'registrant');
+$dh=$dri->local_object('hosts');
+$dh->add('ns1.example.pl');
+$dh->add('ns2.example.pl');
+$secdns = [{keyTag=>'12345',alg=>'3',digestType=>'1',digest=>'9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC5'}];
+$rc=$dri->domain_create('example3.pl',{pure_create=>1,contact=>$cs,ns=>$dh,auth=>{pw=>'2fooBAR'},secdns=>$secdns});
+is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.dns.pl/nask-epp-schema/epp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><command><create><domain:create xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example3.pl</domain:name><domain:ns>ns1.example.pl</domain:ns><domain:ns>ns2.example.pl</domain:ns><domain:registrant>k11</domain:registrant><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><secDNS:create xmlns:secDNS="http://www.dns.pl/nask-epp-schema/secDNS-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/secDNS-2.0 secDNS-2.0.xsd"><secDNS:dsData><secDNS:keyTag>12345</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC5</secDNS:digest></secDNS:dsData></secDNS:create></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_create (with DS record) build');
+is($rc->is_success(),1,'domain_create (with DS record) is_success');
+$d=$dri->get_info('crDate');
+is(''.$d,'2013-07-25T15:15:40','domain_create (with DS record) get_info(crDate)');
+$d=$dri->get_info('exDate');
+is(''.$d,'2014-07-25T15:15:40','domain_create (with DS record) get_info(exDate)');
+
 ## domain update - to test dnssec (5.9.5.3 Example III – addition of the DS records)
 $R2='';
 $toc=$dri->local_object('changes');
@@ -890,7 +913,19 @@ $rc=$dri->domain_update('example3.pl',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example3.pl</domain:name></domain:update></update><extension><secDNS:update xmlns:secDNS="http://www.dns.pl/nask-epp-schema/secDNS-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/secDNS-2.0 secDNS-2.0.xsd"><secDNS:add><secDNS:dsData><secDNS:keyTag>346</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC5</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>23</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC6</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>45</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC7</secDNS:digest></secDNS:dsData></secDNS:add></secDNS:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update (addition of DS records) build');
 is($rc->is_success(),1,'domain_update (addition of DS records) is_success');
 
-# EPP Session just to test if dns schema is fine
+## domain update - to test dnssec (5.9.5.4 Example IV – deletion of listed DS records)
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->del('secdns',
+  [
+    {keyTag=>'346',alg=>'3',digestType=>'1',digest=>'9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC5'},
+    {keyTag=>'23',alg=>'3',digestType=>'1',digest=>'9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC6'}
+  ]);
+$rc=$dri->domain_update('example4.pl',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="http://www.dns.pl/nask-epp-schema/domain-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/domain-2.0 domain-2.0.xsd"><domain:name>example4.pl</domain:name></domain:update></update><extension><secDNS:update xmlns:secDNS="http://www.dns.pl/nask-epp-schema/secDNS-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/secDNS-2.0 secDNS-2.0.xsd"><secDNS:rem><secDNS:dsData><secDNS:keyTag>346</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC5</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>23</secDNS:keyTag><secDNS:alg>3</secDNS:alg><secDNS:digestType>1</secDNS:digestType><secDNS:digest>9908AF46F00D3F5CE2283CF99B9E50F1CA1DCAC6</secDNS:digest></secDNS:dsData></secDNS:rem></secDNS:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update (deletion of DS records) build');
+is($rc->is_success(),1,'domain_update (deletion of DS records) is_success');
+
+## EPP Session just to test if DS record schema is fine :)
 $R2=$E1.'<greeting><svID>NASK EPP Registry</svID><svDate>2013-07-25T13:39:35.970Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>pl</lang><objURI>http://www.dns.pl/nask-epp-schema/contact-2.0</objURI><objURI>http://www.dns.pl/nask-epp-schema/host-2.0</objURI><objURI>http://www.dns.pl/nask-epp-schema/domain-2.0</objURI><objURI>http://www.dns.pl/nask-epp-schema/future-2.0</objURI><svcExtension><extURI>http://www.dns.pl/nask-epp-schema/extcon-2.0</extURI><extURI>http://www.dns.pl/nask-epp-schema/extdom-2.0</extURI><extURI>http://www.dns.pl/nask-epp-schema/secDNS-2.0</extURI></svcExtension></svcMenu></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build (hello command)');
