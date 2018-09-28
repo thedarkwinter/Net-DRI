@@ -500,7 +500,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android app boo cal channel chrome dad 
       host_as_attr => 1,
       contact_i18n => 2, #  ## They accept LOC *or* INT, but only one of them. Forcing INT!
       tlds => ['brussels', 'dnsbelgium', 'vlaanderen'], # README: dnsbelgium used on their OT&E only!
-      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],
+      transport_protocol_default => ['Net::DRI::Transport::Socket',{ 'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],
       whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
     } if $bep eq 'dnsbelgium';
 
