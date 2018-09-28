@@ -40,7 +40,7 @@ $rc = $dri->add_registry('NGTLD',{provider => 'dnsbelgium'});
 is($rc->{last_registry},'dnsbelgium','dnsbelgium: add_registry');
 $rc = $dri->target('dnsbelgium')->add_current_profile('p1-dnsbelgium','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{dnsbelgium}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'dnsbelgium: epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ 'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{}],'dnsbelgium: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules_no_host, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN/],'dnsbelgium: loaded_modules');
 is($drd->{bep}->{bep_type},1,'dnsbelgium: bep_type');
 is($drd->{info}->{check_limit},13,'dnsbelgium: check_limit');
