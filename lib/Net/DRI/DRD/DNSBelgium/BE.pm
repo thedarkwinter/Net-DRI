@@ -89,7 +89,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::DNSBE',{})                  if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{ 'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::DNSBE',{}) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{remote_host=>'whois.dns.be'},'Net::DRI::Protocol::DAS',{no_tld=>1}) if $type eq 'das';
  return;
 }
