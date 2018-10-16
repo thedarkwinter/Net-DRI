@@ -950,7 +950,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Validation> urn:ietf:params:xml:
 
 =head3 TLDs
 
-bh berlin hamburg tirol versicherung voting ikano
+bh berlin hamburg versicherung voting ikano
 
 Contended TLD's not included
 
@@ -968,7 +968,7 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['bh','berlin','hamburg','tirol','versicherung','voting','ikano'],
+     tlds => ['bh','berlin','hamburg','versicherung','voting','ikano'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{'brown_fee_version' => '0.9'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::RegBox->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::RegBox'],
@@ -1225,7 +1225,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 =head3 TLDs
 
-africa capetown cologne durban joburg koeln wien
+africa capetown cologne durban joburg koeln tirol wien
 
 =head3 Custom extensions:
 
@@ -1240,7 +1240,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ZACR::Contact> http://co.za/epp/extension
 
  return {
      bep_type => 1, # dedicated
-     tlds => ['africa','capetown','cologne','durban','joburg','koeln','wien'],
+     tlds => ['africa','capetown','cologne','durban','joburg','koeln','tirol','wien'],
      host_as_attr => 1,
      object_types => ['domain','contact'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],
