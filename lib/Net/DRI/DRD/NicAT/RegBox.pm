@@ -99,7 +99,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'NicAT::RegBox'; }
-sub tlds     { return (qw/bh berlin gmbh hamburg tirol versicherung voting ikano/); }
+sub tlds     { return (qw/bh berlin gmbh hamburg versicherung voting ikano/); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }
 
