@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 542;
+use Test::More tests => 541;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -360,7 +360,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::LU::Status');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LV');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LV::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LV::Domain');
-use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::QualifiedLawyer');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ME');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MSKIX');
 use_ok('Net::DRI::Protocol::EPP::Extensions::MX');

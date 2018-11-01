@@ -50,8 +50,6 @@ Nominet-MMX utilises the following standard extensions. Please see the test file
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::Nominet::QualifiedLawyer> urn:ietf:params:xml:ns:qualifiedLawyer-1.0 (for .law and .abogado)
-
 =head1 SUPPORT
 
 For now, support questions should be sent to:
@@ -104,7 +102,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken','Nominet::QualifiedLawyer'], 'brown_fee_version' => '0.5' }) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }) if $type eq 'epp';
  return;
 }
 
