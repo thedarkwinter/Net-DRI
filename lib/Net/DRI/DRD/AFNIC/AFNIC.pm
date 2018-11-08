@@ -70,6 +70,7 @@ sub new
 {
  my $class=shift;
  my $self=$class->SUPER::new(@_);
+ $self->{info}->{host_as_attr}=0; ## from last changes they only support host objects - no more use of host attributes
  $self->{info}->{contact_i18n}=1; ## LOC only
  $self->{info}->{check_limit}=7;
  return $self;
