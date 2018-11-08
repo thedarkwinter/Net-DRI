@@ -97,7 +97,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{remote_host=>'epp.tryout.registry.eu',remote_port=>700},'Net::DRI::Protocol::EPP::Extensions::EURid',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host=>'epp.tryout.registry.eu',remote_port=>700,ssl_version=>'TLSv12',ssl_cipher_list=> undef},'Net::DRI::Protocol::EPP::Extensions::EURid',{}) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{remote_host=>'das.eu'},'Net::DRI::Protocol::DAS',{no_tld=>1,version=>'2.0'})                             if $type eq 'das';
  return ('Net::DRI::Transport::Socket',{remote_host=>'whois.eu'},'Net::DRI::Protocol::Whois',{})                                                 if $type eq 'whois';
  return ('Net::DRI::Transport::Socket',{remote_host=>'das.registry.eu'},'Net::DRI::Protocol::DAS',{no_tld=>1,version=>'2.0'})                    if $type eq 'das-registrar';
