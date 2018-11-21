@@ -22,7 +22,7 @@ use base qw/Net::DRI::DRD/;
 use DateTime::Duration;
 use Net::DRI::Util;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/host_update host_current_status host_check host_exist host_delete host_create host_info contact_delete contact_check/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete contact_check/);
 
 =pod
 
@@ -70,7 +70,7 @@ sub new
 {
  my $class=shift;
  my $self=$class->SUPER::new(@_);
- $self->{info}->{host_as_attr}=1;
+ $self->{info}->{host_as_attr}=0; ## from last changes they only support host objects - no more use of host attributes
  $self->{info}->{contact_i18n}=1; ## LOC only
  $self->{info}->{check_limit}=7;
  return $self;

@@ -7,7 +7,7 @@ use utf8;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
-use Test::More tests => 104;
+use Test::More tests => 136;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -26,7 +26,7 @@ $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('AFNIC::AFNIC');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-my ($rc,$cs,$s,$toc);
+my ($rc,$cs,$s,$toc,$d);
 
 ####################################################################################################
 ## §2.2.4
@@ -300,6 +300,70 @@ is($co->legal_form(),'association','qualification notification contact legal_for
 is($co->legal_id_type(),'siren','qualification notification contact legal_id_type');
 is($co->legal_id(),'493020995','qualification notification contact legal_id');
 is_deeply($q->{reachable},{status=>'pending',voice=>'+33.123456789',email=>'toto@nic.fr'},'qualification notification contact qualification reachable');
+
+####################################################################################################
+## Technical-specifications-objet-host-EN.pdf
+
+$R2=$E1.'<response>'.r().'<resData><host:creData xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-create-host.fr</host:name><host:crDate>2018-06-10T22:00:00.0Z</host:crDate></host:creData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->host_create($dri->local_object('hosts')->add('ns1.test-create-host.fr',['192.0.2.2','192.0.2.29'],['2001:DB8:0:0:8:800:200C:417A'],1));
+is($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-create-host.fr</host:name><host:addr ip="v4">192.0.2.2</host:addr><host:addr ip="v4">192.0.2.29</host:addr><host:addr ip="v6">2001:DB8:0:0:8:800:200C:417A</host:addr></host:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'host_create build');
+is($dri->get_info('action'),'create','host_create get_info(action)');
+is($dri->get_info('exist'),1,'host_create get_info(exist)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','host_create get_info(crDate)');
+is($d.'','2018-06-10T22:00:00','host_create get_info(crDate) value');
+
+
+$R2=$E1.'<response>'.r().'<resData><host:infData xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-info-host.fr</host:name><host:roid>NS1_EXAMPLE1-REP</host:roid><host:status s="linked"/><host:addr ip="v4">192.0.2.2</host:addr><host:addr ip="v4">192.0.2.29</host:addr><host:addr ip="v6">1080:0:0:0:8:800:200C:417A</host:addr><host:clID>-dzjhvdujaqe54-.fr</host:clID><host:crID>-dzjhvdujare78-.fr</host:crID><host:crDate>2016-04-03T22:00:00.0Z</host:crDate><host:upID>-dzjhvdujajy77-.fr</host:upID><host:upDate>2017-12-03T09:00:00.0Z</host:upDate></host:infData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->host_info('ns1.test-info-host.fr');
+is($R1,$E1.'<command><info><host:info xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-info-host.fr</host:name></host:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'host_info build');
+is($dri->get_info('action'),'info','host_info get_info(action)');
+is($dri->get_info('exist'),1,'host_info get_info(exist)');
+is($dri->get_info('roid'),'NS1_EXAMPLE1-REP','host_info get_info(roid)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','host_info get_info(status)');
+is_deeply([$s->list_status()],['linked'],'host_info get_info(status) list');
+is($s->is_linked(),1,'host_info get_info(status) is_linked');
+$s=$dri->get_info('self');
+isa_ok($s,'Net::DRI::Data::Hosts','host_info get_info(self)');
+my ($name,$ip4,$ip6)=$s->get_details(1);
+is($name,'ns1.test-info-host.fr','host_info self name');
+is_deeply($ip4,['192.0.2.2','192.0.2.29'],'host_info self ip4');
+is_deeply($ip6,['1080:0:0:0:8:800:200C:417A'],'host_info self ip6');
+is($dri->get_info('clID'),'-dzjhvdujaqe54-.fr','host_info get_info(clID)');
+is($dri->get_info('crID'),'-dzjhvdujare78-.fr','host_info get_info(crID)');
+is($dri->get_info('upID'),'-dzjhvdujajy77-.fr','host_info get_info(upID)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','host_info get_info(crDate)');
+is($d.'','2016-04-03T22:00:00','host_info get_info(crDate) value');
+$d=$dri->get_info('upDate');
+isa_ok($d,'DateTime','host_info get_info(upDate)');
+is($d.'','2017-12-03T09:00:00','host_info get_info(upDate) value');
+
+
+$R2=$E1.'<response>'.r().'<resData><host:chkData xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:cd><host:name avail="1">ns1.test-afnic.fr</host:name></host:cd><host:cd><host:name avail="0">ns2.test-afnic.fr</host:name><host:reason>In use</host:reason></host:cd></host:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->host_check('ns1.test-afnic.fr','ns2.test-afnic.fr');
+is($R1,$E1.'<command><check><host:check xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-afnic.fr</host:name><host:name>ns2.test-afnic.fr</host:name></host:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'host_check multi build');
+is($rc->is_success(),1,'host_check multi is_success');
+is($dri->get_info('exist','host','ns1.test-afnic.fr'),0,'host_check multi get_info(exist) 1/2');
+is($dri->get_info('exist','host','ns2.test-afnic.fr'),1,'host_check multi get_info(exist) 2/2');
+is($dri->get_info('exist_reason','host',,'ns2.test-afnic.fr'),'In use','host_check multi get_info(exist_reason)');
+
+
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$rc=$dri->host_delete('ns1.test-afnic-host.fr');
+is($R1,$E1.'<command><delete><host:delete xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-afnic-host.fr</host:name></host:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'host_delete build');
+is($rc->is_success(),1,'host_delete is_success');
+
+
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$toc=$dri->local_object('changes');
+$toc->add('ip',$dri->local_object('hosts')->add('ns1.test-host.fr',['192.0.2.22'],[],1));
+$toc->del('ip',$dri->local_object('hosts')->add('ns1.test-host.fr',[],['2001:DB8:0:0:8:800:200C:417A'],1));
+$toc->set('name','ns2.test-host.fr');
+$rc=$dri->host_update('ns1.test-host.fr',$toc);
+is($R1,$E1.'<command><update><host:update xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-host.fr</host:name><host:add><host:addr ip="v4">192.0.2.22</host:addr></host:add><host:rem><host:addr ip="v6">2001:DB8:0:0:8:800:200C:417A</host:addr></host:rem><host:chg><host:name>ns2.test-host.fr</host:name></host:chg></host:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'host_update build');
+is($rc->is_success(),1,'host_update is_success');
 
 
 exit 0;
