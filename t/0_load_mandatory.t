@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 541;
+use Test::More tests => 536;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -80,7 +80,6 @@ use_ok('Net::DRI::DRD::CNNIC::CN');
 use_ok('Net::DRI::DRD::CNNIC::GTLD');
 use_ok('Net::DRI::DRD::CoCCA::CoCCA');
 use_ok('Net::DRI::DRD::CoCCA::GTLD');
-use_ok('Net::DRI::DRD::CoCCA::PH');
 use_ok('Net::DRI::DRD::CRR');
 use_ok('Net::DRI::DRD::Deloitte');
 use_ok('Net::DRI::DRD::DENIC');
@@ -133,7 +132,6 @@ use_ok('Net::DRI::DRD::RESTENA');
 use_ok('Net::DRI::DRD::SIDN::GTLD');
 use_ok('Net::DRI::DRD::SIDN::NL');
 use_ok('Net::DRI::DRD::SITA');
-use_ok('Net::DRI::DRD::SONIC');
 use_ok('Net::DRI::DRD::SWITCH');
 use_ok('Net::DRI::DRD::TangoRS::CORE');
 use_ok('Net::DRI::DRD::TangoRS::TangoRS');
@@ -270,8 +268,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CL');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CL::Message');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CloudRegistry');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CloudRegistry::LaunchPhase');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Bundling');
@@ -392,7 +388,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::Session');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NO::Result');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NSgroup');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NZ');
-use_ok('Net::DRI::Protocol::EPP::Extensions::PH');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PIR');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Contact');
