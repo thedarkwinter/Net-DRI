@@ -86,7 +86,6 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
-#  return ('Net::DRI::Transport::Socket',{remote_host => 'ote.epp.cocca.cx'},'Net::DRI::Protocol::EPP',{custom => ['CoCCA::Notifications']}) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CoCCA::Notifications', 'CentralNic::Fee'], 'brown_fee_version' => '0.8'}) if $type eq 'epp';
  return;
 }
