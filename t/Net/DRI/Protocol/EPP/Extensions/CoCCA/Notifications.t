@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 43;
+use Test::More tests => 49;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -108,5 +108,15 @@ is($dri->get_info('change','message',596),'RENEWAL','message get_info change');
 is($dri->get_info('change'),'RENEWAL','message get_info change');
 is($dri->get_info('details','message',596),'Domain renewed for 1y','message get_info details');
 is($dri->get_info('details'),'Domain renewed for 1y','message get_info details');
+
+### balance
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="47981"><qDate>2018-11-15T00:00:07.134Z</qDate><msg lang="en"><![CDATA[<tld name="so"><balance>-2167.25</balance><credit-limit>0.00</credit-limit></tld>]]></msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),47981,'message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),47981,'message get_info last_id 2');
+is($dri->get_info('id','message',47981),47981,'message get_info id');
+is(''.$dri->get_info('qdate','message',47981),'2018-11-15T00:00:07','message get_info qdate');
+is($dri->get_info('content','message',47981),'<tld name="so"><balance>-2167.25</balance><credit-limit>0.00</credit-limit></tld>','message get_info msg');
+is($dri->get_info('lang','message',47981),'en','message get_info lang');
 
 exit 0;

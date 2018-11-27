@@ -68,9 +68,17 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub periods      { return map { DateTime::Duration->new(years => $_) } (1..5); }
+sub periods      { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name         { return 'CoCCA::CoCCA'; }
-sub tlds         { return (qw/cx gs tl ki mu nf ht na ng cc cm sb mg/); }
+
+# README: this is not a shared platform!
+sub tlds         {
+    my @others = qw/cx gs tl ki mu nf ht na ng cc cm sb mg/;
+    my @ph = (map { $_.'.ph' } qw/com net org/);
+    my @so = qw/so com.so edu.so gov.so me.so net.so org.so/;
+    return (@others,@ph,@so);
+}
+
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }
 
@@ -78,7 +86,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{remote_host => 'ote.epp.cocca.cx'},'Net::DRI::Protocol::EPP',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host => 'ote.epp.cocca.cx'},'Net::DRI::Protocol::EPP',{custom => ['CoCCA::Notifications']}) if $type eq 'epp';
  return;
 }
 
