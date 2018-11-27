@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 49;
+use Test::More tests => 55;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -109,6 +109,13 @@ is($dri->get_info('change'),'RENEWAL','message get_info change');
 is($dri->get_info('details','message',596),'Domain renewed for 1y','message get_info details');
 is($dri->get_info('details'),'Domain renewed for 1y','message get_info details');
 
+
+###some tests for CoCCa::CoCCa
+$dri=Net::DRI::TrapExceptions->new(10);
+$dri->{trid_factory}=sub { return 'ABC-12345'; };
+$dri->add_current_registry('CoCCA::CoCCA');
+$dri->target('CoCCA::CoCCA')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
+
 ### balance
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="47981"><qDate>2018-11-15T00:00:07.134Z</qDate><msg lang="en"><![CDATA[<tld name="so"><balance>-2167.25</balance><credit-limit>0.00</credit-limit></tld>]]></msg></msgQ>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
@@ -118,5 +125,16 @@ is($dri->get_info('id','message',47981),47981,'message get_info id');
 is(''.$dri->get_info('qdate','message',47981),'2018-11-15T00:00:07','message get_info qdate');
 is($dri->get_info('content','message',47981),'<tld name="so"><balance>-2167.25</balance><credit-limit>0.00</credit-limit></tld>','message get_info msg');
 is($dri->get_info('lang','message',47981),'en','message get_info lang');
+
+### poll message id: 207
+$R2 = $E1 . '<response><result code="1301"><msg>Command completed successfully; ack to dequeue</msg></result><msgQ count="331" id="207"><qDate>2015-07-09T07:20:15.186Z</qDate><msg lang="en"><![CDATA[<offlineUpdate><domain><name>domain1.com.so</name><change>UNKNOWN</change><details></details></domain></offlineUpdate>]]></msg></msgQ>' . $TRID . '</response>' . $E2;
+$rc=$dri->message_retrieve();
+is($rc->is_success(),1,'message_retrieve is_success [207]');
+$last_id = $dri->get_info('last_id');
+is($last_id,'207','message_retrieve get_info(last_id) - 207');
+is($dri->get_info('action'),'offline_update','message_poll get_info(action)');
+is($dri->get_info('name'),'domain1.com.so','message_poll get_info(name)');
+is($dri->get_info('change'),'UNKNOWN','message_poll get_info(change)');
+is($dri->get_info('details'),'','message_poll get_info(details)');
 
 exit 0;
