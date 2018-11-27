@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 536;
+use Test::More tests => 538;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -268,6 +268,8 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CL');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CL::Message');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CloudRegistry');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CloudRegistry::LaunchPhase');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Bundling');
