@@ -105,9 +105,25 @@ sub register_commands
            update       => [ \&add_namestore_ext, undef ],
          );
 
+ # defreg functions
+ my %tmpDefReg = (
+           create           => [ \&add_namestore_ext, undef ],
+           check            => [ \&add_namestore_ext, undef ],
+           check_multi      => [ \&add_namestore_ext, undef ],
+           info             => [ \&add_namestore_ext, undef ],
+           delete           => [ \&add_namestore_ext, undef ],
+           update           => [ \&add_namestore_ext, undef ],
+           renew            => [ \&add_namestore_ext, undef ],
+           transfer_query   => [ \&add_namestore_ext, undef ],
+           transfer_request => [ \&add_namestore_ext, undef ],
+           transfer_cancel  => [ \&add_namestore_ext, undef ],
+           transfer_answer  => [ \&add_namestore_ext, undef ],
+         );
+
  return { 'domain' => \%tmpDomain,
           'host'   => \%tmpHost,
           'contact'=> \%tmpContact,
+          'defreg' => \%tmpDefReg,
           'message' => { result => [ undef, \&parse_error ] },
         };
 }
