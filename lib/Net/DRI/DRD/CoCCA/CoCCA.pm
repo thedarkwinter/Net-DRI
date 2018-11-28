@@ -74,7 +74,7 @@ sub name         { return 'CoCCA::CoCCA'; }
 # README: this is not a shared platform!
 sub tlds         {
     my @others = qw/cx gs tl ki mu nf ht na ng cc cm sb mg/;
-    my @ph = (map { $_.'.ph' } qw/com net org/);
+    my @ph = ('ph', map { $_.'.ph' } qw/com net org/);
     my @so = qw/so com.so edu.so gov.so me.so net.so org.so/;
     return (@others,@ph,@so);
 }
