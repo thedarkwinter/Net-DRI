@@ -168,13 +168,15 @@ sub add_namestore_ext
 
  ## Determine object type so we can fall back to current_product if need be
  my $cmd = join ',',@{$mes->{command}};
- $cmd =~ m/xmlns\:(host|contact|domain)?/;
+ $cmd =~ m/xmlns\:(host|contact|domain|defReg)?/;
  my $object = $1 || 'domain';
 
  ## Use detected product if its a domain OR a host in a valid product
  unless ($object eq 'domain')
  {
   $ext = $epp->{current_product} || 'dotCOM';
+  # for defensive registrations is mandatory to use `name` instead of `dotNAME` (dont ask me why) lets force it
+  $ext = 'name' if lc($object) eq 'defreg';
  }
  $epp->{current_product} = $ext;
  $mes->command_extension($eid,['namestoreExt:subProduct',$ext]);
