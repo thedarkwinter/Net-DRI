@@ -158,7 +158,7 @@ sub add_namestore_ext
  ## We do not know what will happen in case of check_multi with multiple TLDs
  my $ext;
  $domain=$domain->[0] if (ref($domain) eq 'ARRAY');
- if ($domain =~ m/\.(com|net|cc|tv|jobs|name)$/)
+ if ($domain =~ m/\.(com|net|cc|tv|jobs)$/)
  {
   $ext = 'dot' . uc $1;
 } elsif ($domain =~ m/\.(.*)$/)
@@ -176,7 +176,7 @@ sub add_namestore_ext
  {
   $ext = $epp->{current_product} || 'dotCOM';
   # for defensive registrations is mandatory to use `name` instead of `dotNAME` (dont ask me why) lets force it
-  $ext = 'name' if lc($object) eq 'defreg';
+  $ext = 'name' if $object eq 'defReg';
  }
  $epp->{current_product} = $ext;
  $mes->command_extension($eid,['namestoreExt:subProduct',$ext]);
