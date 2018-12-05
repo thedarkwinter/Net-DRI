@@ -105,9 +105,25 @@ sub register_commands
            update       => [ \&add_namestore_ext, undef ],
          );
 
+ # defreg functions
+ my %tmpDefReg = (
+           create           => [ \&add_namestore_ext, undef ],
+           check            => [ \&add_namestore_ext, undef ],
+           check_multi      => [ \&add_namestore_ext, undef ],
+           info             => [ \&add_namestore_ext, undef ],
+           delete           => [ \&add_namestore_ext, undef ],
+           update           => [ \&add_namestore_ext, undef ],
+           renew            => [ \&add_namestore_ext, undef ],
+           transfer_query   => [ \&add_namestore_ext, undef ],
+           transfer_request => [ \&add_namestore_ext, undef ],
+           transfer_cancel  => [ \&add_namestore_ext, undef ],
+           transfer_answer  => [ \&add_namestore_ext, undef ],
+         );
+
  return { 'domain' => \%tmpDomain,
           'host'   => \%tmpHost,
           'contact'=> \%tmpContact,
+          'defreg' => \%tmpDefReg,
           'message' => { result => [ undef, \&parse_error ] },
         };
 }
@@ -142,7 +158,7 @@ sub add_namestore_ext
  ## We do not know what will happen in case of check_multi with multiple TLDs
  my $ext;
  $domain=$domain->[0] if (ref($domain) eq 'ARRAY');
- if ($domain =~ m/\.(com|net|cc|tv|jobs|name)$/)
+ if ($domain =~ m/\.(com|net|cc|tv|jobs)$/)
  {
   $ext = 'dot' . uc $1;
 } elsif ($domain =~ m/\.(.*)$/)
@@ -152,13 +168,15 @@ sub add_namestore_ext
 
  ## Determine object type so we can fall back to current_product if need be
  my $cmd = join ',',@{$mes->{command}};
- $cmd =~ m/xmlns\:(host|contact|domain)?/;
+ $cmd =~ m/xmlns\:(host|contact|domain|defReg)?/;
  my $object = $1 || 'domain';
 
  ## Use detected product if its a domain OR a host in a valid product
  unless ($object eq 'domain')
  {
   $ext = $epp->{current_product} || 'dotCOM';
+  # for defensive registrations is mandatory to use `name` instead of `dotNAME` (dont ask me why) lets force it
+  $ext = 'name' if $object eq 'defReg';
  }
  $epp->{current_product} = $ext;
  $mes->command_extension($eid,['namestoreExt:subProduct',$ext]);
