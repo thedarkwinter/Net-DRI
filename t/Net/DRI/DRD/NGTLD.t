@@ -174,7 +174,7 @@ $rc = $dri->add_registry('NGTLD',{provider => 'nominet',name=>'wales'});
 is($rc->{last_registry},'wales','nominet regional: add_registry');
 $rc = $dri->target('wales')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'nominet regional: add_current_profile');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase/],'nominet regional: loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase CentralNic::Fee AllocationToken/],'nominet regional: loaded_modules');
 
 # Nominet-MMX
 $rc = $dri->add_registry('NGTLD',{provider => 'nominet-mmx',name=>'blog'});
