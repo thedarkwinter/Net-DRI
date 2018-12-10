@@ -84,7 +84,7 @@ sub profile_types { return qw/tmdb/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::HTTP',{},'Net::DRI::Protocol::TMDB',{}) if $type eq 'tmdb';
+ return ('Net::DRI::Transport::HTTP',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef},'Net::DRI::Protocol::TMDB',{}) if $type eq 'tmdb';
  return;
 }
 
