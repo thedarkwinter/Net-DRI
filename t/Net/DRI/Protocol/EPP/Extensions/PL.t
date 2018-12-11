@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 504;
+use Test::More tests => 503;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -99,9 +99,8 @@ $co->fax('+1.7035555556');
 $co->email('jdoe@example.tld');
 $co->auth({pw=>'2fooBAR'});
 $co->individual(1);
-$co->consent_for_publishing(1);
 $rc=$dri->contact_create($co);
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.dns.pl/nask-epp-schema/epp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><command><create><contact:create xmlns:contact="http://www.dns.pl/nask-epp-schema/contact-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/contact-2.0 contact-2.0.xsd"><contact:id>sh8013</contact:id><contact:postalInfo type="loc"><contact:name>11John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.tld</contact:email><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo></contact:create></create><extension><extcon:create xmlns:extcon="http://www.dns.pl/nask-epp-schema/extcon-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extcon-2.0 extcon-2.0.xsd"><extcon:individual>1</extcon:individual><extcon:consentForPublishing>1</extcon:consentForPublishing></extcon:create></extension><clTRID>ABC-12345</clTRID></command></epp>','contact_create build');
+is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.dns.pl/nask-epp-schema/epp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><command><create><contact:create xmlns:contact="http://www.dns.pl/nask-epp-schema/contact-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/contact-2.0 contact-2.0.xsd"><contact:id>sh8013</contact:id><contact:postalInfo type="loc"><contact:name>11John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.tld</contact:email><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo></contact:create></create><extension><extcon:create xmlns:extcon="http://www.dns.pl/nask-epp-schema/extcon-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extcon-2.0 extcon-2.0.xsd"><extcon:individual>1</extcon:individual></extcon:create></extension><clTRID>ABC-12345</clTRID></command></epp>','contact_create build');
 is($rc->is_success(),1,'contact_create is_success');
 $d=$dri->get_info('id');
 is($d,'sh8013','contact_create get_info(id)');
@@ -127,12 +126,12 @@ $co2->sp('VA');
 $co2->pc('20166-6503');
 $co2->cc('US');
 $co2->voice('+1.7034444444');
-$co2->fax('');
-$co2->consent_for_publishing(1);
+$co2->fax('+1.7045555555');
+$co2->auth({pw=>'2fooBAR'});
 $toc->set('info',$co2);
 $toc->add('status',$dri->local_object('status')->no('delete'));
 $rc=$dri->contact_update($co,$toc);
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.dns.pl/nask-epp-schema/epp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><command><update><contact:update xmlns:contact="http://www.dns.pl/nask-epp-schema/contact-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/contact-2.0 contact-2.0.xsd"><contact:id>sh8013</contact:id><contact:add><contact:status s="clientDeleteProhibited"/></contact:add><contact:chg><contact:postalInfo type="loc"><contact:org/><contact:addr><contact:street>124 Example Dr.</contact:street><contact:street>Suite 200</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.7034444444</contact:voice><contact:fax/></contact:chg></contact:update></update><extension><extcon:update xmlns:extcon="http://www.dns.pl/nask-epp-schema/extcon-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extcon-2.0 extcon-2.0.xsd"><extcon:consentForPublishing>1</extcon:consentForPublishing></extcon:update></extension><clTRID>ABC-12345</clTRID></command></epp>','contact_update build');
+is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.dns.pl/nask-epp-schema/epp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><command><update><contact:update xmlns:contact="http://www.dns.pl/nask-epp-schema/contact-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/contact-2.0 contact-2.0.xsd"><contact:id>sh8013</contact:id><contact:add><contact:status s="clientDeleteProhibited"/></contact:add><contact:chg><contact:postalInfo type="loc"><contact:org/><contact:addr><contact:street>124 Example Dr.</contact:street><contact:street>Suite 200</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.7034444444</contact:voice><contact:fax>+1.7045555555</contact:fax><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command></epp>','contact_update build');
 is($rc->is_success(),1,'contact_update is_success');
 
 ## Example 14 is standard EPP, thus not tested here
@@ -566,7 +565,7 @@ is($dri->verify_name_domain('sygroup.net.pl', 'info'), '',
 
 
 ## Parsing contact:info
-$R2=$E1.'<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><resData><contact:infData xmlns:contact="http://www.dns.pl/nask-epp-schema/contact-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><contact:id>A0001</contact:id><contact:roid>478522-NASK</contact:roid><contact:status s="ok" lang="en" /><contact:postalInfo type="loc"><contact:name>B G</contact:name><contact:org>B G</contact:org><contact:addr><contact:street>RN 20</contact:street><contact:street /><contact:street /><contact:city>THECITY</contact:city><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.12345678</contact:voice><contact:email>here@there.com</contact:email><contact:clID>A2</contact:clID><contact:crID>A2</contact:crID><contact:crDate>2011-08-23T14:08:27.0Z</contact:crDate><contact:authInfo><contact:pw>pass</contact:pw></contact:authInfo></contact:infData></resData><extension><extcon:infData xmlns:extcon="http://www.dns.pl/nask-epp-schema/extcon-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extcon-2.0 extcon-2.0.xsd"><extcon:individual>false</extcon:individual><extcon:consentForPublishing>true</extcon:consentForPublishing></extcon:infData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><resData><contact:infData xmlns:contact="http://www.dns.pl/nask-epp-schema/contact-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><contact:id>A0001</contact:id><contact:roid>478522-NASK</contact:roid><contact:status s="ok" lang="en" /><contact:postalInfo type="loc"><contact:name>B G</contact:name><contact:org>B G</contact:org><contact:addr><contact:street>RN 20</contact:street><contact:street /><contact:street /><contact:city>THECITY</contact:city><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.12345678</contact:voice><contact:email>here@there.com</contact:email><contact:clID>A2</contact:clID><contact:crID>A2</contact:crID><contact:crDate>2011-08-23T14:08:27.0Z</contact:crDate><contact:authInfo><contact:pw>pass</contact:pw></contact:authInfo></contact:infData></resData><extension><extcon:infData xmlns:extcon="http://www.dns.pl/nask-epp-schema/extcon-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extcon-2.0 extcon-2.0.xsd"><extcon:individual>false</extcon:individual></extcon:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->contact_info($dri->local_object('contact')->srid('A0001'));
 my $c1=$dri->get_info('self');
 my $c2=$dri->get_info('self','contact','A0001');
@@ -575,7 +574,6 @@ isa_ok($c1,'Net::DRI::Data::Contact::PL','contact_info get_info(self) isa Net::D
 is_deeply($c1,$c2,'contact_info get_info(self)=get_info(self,contact,id)');
 is_deeply($c1,$c3,'contact_info get_info(self)=get_data(contact,id,self)');
 is($c1->individual(),0,'get_info(self)->is_individual()');
-is($c1->consent_for_publishing(),1,'get_info(self)->consent_for_publishing()');
 
 ####################################################################################################
 ## Reports

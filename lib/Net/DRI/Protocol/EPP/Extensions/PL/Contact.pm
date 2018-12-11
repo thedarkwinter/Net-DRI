@@ -88,13 +88,11 @@ sub add_individual_and_consent
 
  ## validate() has already been called
  my $ind=$contact->individual();
- my $cfp=$contact->consent_for_publishing();
 
- return unless (defined($ind) || defined($cfp));
+ return unless (defined($ind));
  my $eid=build_command_extension($mes,$epp,'extcon:'.$op);
  my @e;
  push @e,['extcon:individual',$ind]           if defined($ind) && lc($op) eq 'create';
- push @e,['extcon:consentForPublishing',$cfp] if defined($cfp);
 
  $mes->command_extension($eid,\@e);
  return;
@@ -148,9 +146,6 @@ sub info_parse
   if ($name eq 'individual')
   {
    $contact->individual(Net::DRI::Util::xml_parse_boolean($c->textContent()));
-  } elsif ($name eq 'consentForPublishing')
-  {
-   $contact->consent_for_publishing(Net::DRI::Util::xml_parse_boolean($c->textContent()));
   }
  }
  return;
