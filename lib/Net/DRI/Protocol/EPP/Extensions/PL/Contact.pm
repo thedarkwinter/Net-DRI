@@ -81,7 +81,7 @@ sub build_command_extension
  return $mes->command_extension_register($tag,sprintf('xmlns:extcon="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('pl_contact')));
 }
 
-sub add_individual_and_consent
+sub add_individual_element
 {
  my ($epp,$contact,$op)=@_;
  my $mes=$epp->message();
@@ -92,7 +92,7 @@ sub add_individual_and_consent
  return unless (defined($ind));
  my $eid=build_command_extension($mes,$epp,'extcon:'.$op);
  my @e;
- push @e,['extcon:individual',$ind]           if defined($ind) && lc($op) eq 'create';
+ push @e,['extcon:individual',$ind]           if defined($ind);
 
  $mes->command_extension($eid,\@e);
  return;
@@ -101,7 +101,7 @@ sub add_individual_and_consent
 sub create
 {
  my ($epp,$contact)=@_;
- return add_individual_and_consent($epp,$contact,'create');
+ return add_individual_element($epp,$contact,'create');
 }
 
 sub update
@@ -109,7 +109,7 @@ sub update
  my ($epp,$contact,$todo)=@_;
  my $newc=$todo->set('info');
  return unless $newc;
- return add_individual_and_consent($epp,$newc,'update');
+ return add_individual_element($epp,$newc,'update');
 }
 
 sub info

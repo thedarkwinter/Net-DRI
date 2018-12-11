@@ -39,7 +39,8 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 =head2 individual()
 
-1 if the object represents a private person, 0 otherwise
+1 if the object represents a private person, 0 otherwise. It is not allowed to amend a contact type
+and other data (e.g. name, address) at the same time
 
 =head1 SUPPORT
 

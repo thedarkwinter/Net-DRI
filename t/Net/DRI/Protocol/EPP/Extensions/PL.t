@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 503;
+use Test::More tests => 505;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -116,6 +116,7 @@ is($rc->is_success(),1,'contact_info is_success');
 ## Example 12 is standard EPP, thus not tested here
 
 ## Example 13, CORRECTED (type=loc instead of type=int)
+## Example 1 - update other elements then <extcon:individual> (NASK_EPP_en_draft.pdf, page 80)
 $co=$dri->local_object('contact')->srid('sh8013');
 my $toc=$dri->local_object('changes');
 my $co2=$dri->local_object('contact');
@@ -133,6 +134,17 @@ $toc->add('status',$dri->local_object('status')->no('delete'));
 $rc=$dri->contact_update($co,$toc);
 is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.dns.pl/nask-epp-schema/epp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><command><update><contact:update xmlns:contact="http://www.dns.pl/nask-epp-schema/contact-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/contact-2.0 contact-2.0.xsd"><contact:id>sh8013</contact:id><contact:add><contact:status s="clientDeleteProhibited"/></contact:add><contact:chg><contact:postalInfo type="loc"><contact:org/><contact:addr><contact:street>124 Example Dr.</contact:street><contact:street>Suite 200</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.7034444444</contact:voice><contact:fax>+1.7045555555</contact:fax><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command></epp>','contact_update build');
 is($rc->is_success(),1,'contact_update is_success');
+
+## Example 2 - update only <extcon:individual> element (NASK_EPP_en_draft.pdf, page 81)
+$co=$dri->local_object('contact')->srid('1234');
+my $toc=$dri->local_object('changes');
+my $co2=$dri->local_object('contact');
+$co2->individual(1);
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="http://www.dns.pl/nask-epp-schema/epp-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/epp-2.0 epp-2.0.xsd"><command><update><contact:update xmlns:contact="http://www.dns.pl/nask-epp-schema/contact-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/contact-2.0 contact-2.0.xsd"><contact:id>1234</contact:id></contact:update></update><extension><extcon:update xmlns:extcon="http://www.dns.pl/nask-epp-schema/extcon-2.0" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extcon-2.0 extcon-2.0.xsd"><extcon:individual>1</extcon:individual></extcon:update></extension><clTRID>ABC-12345</clTRID></command></epp>','contact_update build - update only extcon individual');
+is($rc->is_success(),1,'contact_update is_success - update only extcon individual');
+
 
 ## Example 14 is standard EPP, thus not tested here
 
