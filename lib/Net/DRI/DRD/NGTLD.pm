@@ -889,7 +889,7 @@ abogado bayern beer blog boston bradesco broadway casa cooking dds fashion fishi
  return {
      bep_type => 1, # dedicated registry
      tlds => ['cymru','wales','bbc'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1, custom => ['CentralNic::Fee','AllocationToken']}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet';
 
