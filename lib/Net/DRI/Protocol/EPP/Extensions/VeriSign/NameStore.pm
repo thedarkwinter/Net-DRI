@@ -161,7 +161,10 @@ sub add_namestore_ext
  if ($domain =~ m/\.(com|net|cc|tv|jobs)$/)
  {
   $ext = 'dot' . uc $1;
-} elsif ($domain =~ m/\.(.*)$/)
+ } elsif ($domain =~ m/\.(name)$/)
+ {
+  $ext = 'name'; # the below regex breaks with third levels!
+ } elsif ($domain =~ m/\.(.*)$/)
  {
   $ext = uc $1;
  }
