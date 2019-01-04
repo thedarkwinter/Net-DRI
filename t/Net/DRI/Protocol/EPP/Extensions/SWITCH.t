@@ -167,7 +167,7 @@ is($dri->get_info('clID','message','46533743'),'D1234568-SWITCH','message 4 get_
 is($dri->get_info('upDate','message','46533743'),'2018-11-20T15:55:16','message 4 get_info upDate');
 is_deeply($rc->get_data('message','46533743','secdns'),
 [
-	{
+    {
         'alg' => '13',
         'digest' => 'AAAA54840FBBB6F4270F8B6D8C06C6A2B3152E55D2E9F81132130E507829B6D24FA56A4E074B4692DDC46F512B048AAC',
         'digestType' => '4',
@@ -178,7 +178,7 @@ is_deeply($rc->get_data('message','46533743','secdns'),
         'digest' => 'AAAA9AB3E7D203FF7923B8773599E248717F1DC79A9BEF09D8981B13AB7A049E',
         'keyTag' => '1337',
         'digestType' => '2'
-	}
+    }
 ],'message 4 secdns');
 
 # Example of Delete poll response with the following extensions configured at Login: secDNS-1.1 => yes, changePoll-1.0 => no
