@@ -7,9 +7,8 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
-use Data::Dumper;
 
-use Test::More tests => 62;
+use Test::More tests => 77;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context = 50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -169,24 +168,39 @@ is($dri->get_info('upDate','message','46533743'),'2018-11-20T15:55:16','message 
 is_deeply($rc->get_data('message','46533743','secdns'),
 [
 	{
-		'alg' => '13',
+        'alg' => '13',
         'digest' => 'AAAA54840FBBB6F4270F8B6D8C06C6A2B3152E55D2E9F81132130E507829B6D24FA56A4E074B4692DDC46F512B048AAC',
         'digestType' => '4',
         'keyTag' => '1337'
-	},
+    },
     {
-		'alg' => '13',
-		'digest' => 'AAAA9AB3E7D203FF7923B8773599E248717F1DC79A9BEF09D8981B13AB7A049E',
-		'keyTag' => '1337',
-		'digestType' => '2'
+        'alg' => '13',
+        'digest' => 'AAAA9AB3E7D203FF7923B8773599E248717F1DC79A9BEF09D8981B13AB7A049E',
+        'keyTag' => '1337',
+        'digestType' => '2'
 	}
 ],'message 4 secdns');
 
-# FIXME: TODO!!!!
 # Example of Delete poll response with the following extensions configured at Login: secDNS-1.1 => yes, changePoll-1.0 => no
-# $R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg><extValue><value><changePoll:changeData xmlns:changePoll="urn:ietf:params:xml:ns:changePoll-1.0"><changePoll:operation>update</changePoll:operation><changePoll:date>2018-11-20T15:55:16+01:00</changePoll:date><changePoll:svTRID>20181120.123456</changePoll:svTRID><changePoll:who>SWITCH CDS: see https://www.nic.ch/faqs/dnssec/cds/</changePoll:who><changePoll:reason>Rollover of DNSSEC Digest</changePoll:reason></changePoll:changeData></value><reason lang="en">urn:ietf:params:xml:ns:changePoll-1.0 not in login services</reason></extValue></result><msgQ count="1" id="46533743"><qDate>2018-11-20T15:55:16+01:00</qDate></msgQ><resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>polltest-cds-rollover.ch</domain:name><domain:roid>D123456-SWITCH</domain:roid><domain:status s="inactive" lang="en"/><domain:registrant>D1234567-SWITCH</domain:registrant><domain:clID>D1234568-SWITCH</domain:clID><domain:upDate>2018-11-20T15:55:16+01:00</domain:upDate></domain:infData></resData><extension><secDNS:infData xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1"><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>4</secDNS:digestType><secDNS:digest>AAAA54840FBBB6F4270F8B6D8C06C6A2B3152E55D2E9F81132130E507829B6D24FA56A4E074B4692DDC46F512B048AAC</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>AAAA9AB3E7D203FF7923B8773599E248717F1DC79A9BEF09D8981B13AB7A049E</secDNS:digest></secDNS:dsData></secDNS:infData></extension>'.$TRID.'</response>'.$E2;
-# $rc=$dri->message_retrieve();
-# is($dri->get_info('id','message','46533743'),'46533743','message 4 get_info id');
+$R2=$E1.'<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="1" id="46533742"><qDate>2018-11-20T15:12:41+01:00</qDate></msgQ><resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>polltest-cds-delete.ch</domain:name><domain:roid>D123456-SWITCH</domain:roid><domain:status s="inactive" lang="en"/><domain:registrant>D1234567-SWITCH</domain:registrant><domain:clID>D1234568-SWITCH</domain:clID><domain:upDate>2018-11-20T15:12:41+01:00</domain:upDate></domain:infData></resData><extension><changePoll:changeData xmlns:changePoll="urn:ietf:params:xml:ns:changePoll-1.0" state="after"><changePoll:operation>update</changePoll:operation><changePoll:date>2018-11-20T15:12:41+01:00</changePoll:date><changePoll:svTRID>20181120.123456</changePoll:svTRID><changePoll:who>SWITCH CDS: see https://www.nic.ch/faqs/dnssec/cds/</changePoll:who><changePoll:reason>DNSSEC deactivated</changePoll:reason></changePoll:changeData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('id','message','46533742'),'46533742','message 5 get_info id');
+is(''.$dri->get_info('qdate','message','46533742'),'2018-11-20T15:12:41','message 5 get_info qdate');
+is($dri->get_info('object_type','message','46533742'),'domain','message 5 get_info object_type');
+is($dri->get_info('object_id','message','46533742'),'polltest-cds-delete.ch','message 5 get_info id');
+is($dri->get_info('action','message','46533742'),'info','message 5 get_info action');
+is($dri->get_info('name','message','46533742'),'polltest-cds-delete.ch','message 5 get_info name');
+is($dri->get_info('roid','message','46533742'),'D123456-SWITCH','message 5 get_info roid');
+is($dri->get_info('clID','message','46533742'),'D1234568-SWITCH','message 5 get_info clID');
+is($dri->get_info('upDate','message','46533742'),'2018-11-20T15:12:41','message 5 get_info upDate');
+$lastid=$dri->get_info('last_id');
+$data=$rc->get_data('message',$lastid,'change');
+is($data->{state},'after','example 5 state');
+is($data->{operation},'update','example 5 operation');
+is($data->{date}->iso8601(),'2018-11-20T15:12:41','example 5 date');
+is($data->{svTRID},'20181120.123456','example 5 svtrid');
+is($data->{who},'SWITCH CDS: see https://www.nic.ch/faqs/dnssec/cds/','example 5 who');
+is($data->{reason},'DNSSEC deactivated','example 5 reason');
 
 
 # END: Based on "SWITCH_CDS_Manual_en.pdf"
