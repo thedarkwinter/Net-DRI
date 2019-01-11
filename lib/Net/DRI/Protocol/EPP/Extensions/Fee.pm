@@ -1,6 +1,6 @@
 ## Domain Registry Interface, CentralNic EPP Fee extension
 ##
-## Copyright (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2014-2019 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
@@ -33,11 +33,17 @@ Net::DRI::Protocol::EPP::Extensions::Fee - RegExt EPP Fee extension commands for
 
 =head1 DESCRIPTION
 
-Adds the Regext EPP Fee Extension. Previously, this was CentralNIC::Fee (draft-brown-epp-fees-07), but this this module is for draft-ietf-regext-epp-fees-XX
+Adds the Regext EPP Fee Extension. Previously, this was CentralNIC::Fee (draft-brown-epp-fees-07),
+but this this module is for draft-ietf-regext-epp-fees-XX
 
-Fee extension is defined in https://tools.ietf.org/html/draft-ietf-regext-epp-fees-00
+Fee extension is defined in https://tools.ietf.org/html/draft-ietf-regext-epp-fees-15
 
-This extension supports fee-0.11 (legacy format), and fee-0.21+0.23 (current format). All versions between are not supported, and not used in the wild.
+This extension supports fee-1.0, fee-0.23, fee-0.21, and the legacy format of fee-0.11.
+All versions between 0.11 and 0.21 are not supported, and not used in the wild.
+For versions prior to 0.11, see CentralNIC::Fee
+
+It may be a good idea to rebuild / replace this extension once all the regisrties implement 1.0
+as this extension has become quite messy over the various iterations.
 
 =item command* (create, renew, delete, update, transfer, restore)
 
@@ -148,7 +154,7 @@ sub setup
   my ($class,$po,$version)=@_;
   # This means any commands called before greeting will use that version until its bumped to highest version
   my $v = $po->{brown_fee_version} // $po->{fee_version};
-  $v = '0.11' unless defined $v && $v =~ m/^\d.(\d+)$/;
+  $v = '1.0' unless defined $v && $v =~ m/^\d.(\d+)$/;
   $po->ns({ 'fee' => [ 'urn:ietf:params:xml:ns:fee-'.$v,'fee-'.$v.'.xsd' ] });
   $po->capabilities('domain_update','fee',['set']);
   return;
@@ -156,7 +162,8 @@ sub setup
 
 ####################################################################################################
 ### DEVELOPING
-## Please run fee-0.11.t, fee-0.21.t, fee-0.23.t as they use different versions of the extension!
+## Please run fee-1.0, as well as the older fee-0.11.t, fee-0.21.t, fee-0.23.t
+## as they use different versions of the extension!
 ####################################################################################################
 
 ## parse_greeting to determine extension version from server
@@ -172,11 +179,12 @@ sub parse_greeting
 sub ver {
  my ($mes)= @_;
  my ($ver)=($mes->ns('fee')=~m/-\d.(\d+)$/);
+ $ver = 100 unless $ver; # 100 is bigger than 21, and more or less reprents version 1.0, for now, and can be cleared up when we drop legacy supprt
  return $ver;
 }
 
 ####################################################################################################
-## Build / Parse helpers for fee-0.11
+## Build / Parse helpers for fee-0.11+
 
 sub fee_set_build
 {

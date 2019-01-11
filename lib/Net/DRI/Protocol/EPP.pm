@@ -140,7 +140,6 @@ sub ns
 sub switch_to_highest_namespace_version
 {
  my ($self,$nsalias)=@_;
-
  my ($basens)=($self->message()->ns($nsalias)=~m/^(\S+)-[\d.]+$/);
  my $rs=$self->default_parameters()->{server};
  my @ns=grep { m/^${basens}-\S+$/ } @{$rs->{extensions_selected}};
@@ -151,9 +150,13 @@ sub switch_to_highest_namespace_version
  {
   my ($v)=($ns=~m/^\S+-([\d.]+)$/);
   $version=0+$v if ! defined $version || 0+$v > $version;
+  # if 1.0 is the highest version, it currently sents to integer 1, so the blow fixes This
+  # and doesn't seem appear to break other tests
+  $version="1.0" if $version eq "1";
  }
 
  my $fullns=$basens.'-'.$version;
+ print "switching $nsalias $fullns...\n";
  if (@ns > 1)
  {
   $self->log_output('info','protocol',{action=>'greeting',direction=>'in',trid=>$self->message()->cltrid(),message=>sprintf('More than one "%s" extension announced by server, selecting "%s"',$nsalias,$fullns)});
