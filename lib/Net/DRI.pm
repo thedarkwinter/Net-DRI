@@ -250,7 +250,7 @@ sub new
      'NU' => 'IIS',
      'NZ' => 'InternetNZ',
      'ORG' => 'Afilias::PIR',
-     'PH' => 'CoCCA::CoCCA',
+     'PH' => 'CoCCA::PH',
      'PL' => 'NASK',
      'PRO' => 'Afilias::Afilias',
      'PT' => 'DNSPT',
