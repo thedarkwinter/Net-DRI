@@ -32,15 +32,14 @@ my $d;
 my ($dh,@c,$toc,$cs,$c1,$c2,@fees);
 
 ####################################################################################################
-## Fee extension version 0.23 https://tools.ietf.org/html/draft-ietf-regext-epp-fees-06
-## We use a greeting here to switch the namespace version here to -0.23 testing
+## Fee extension version 1.0 https://tools.ietf.org/html/draft-ietf-regext-epp-fees-15
+## We use a greeting here to switch the namespace version here to 1.0 testing
 $R2=$E1.'<greeting><svID>fee-1.0-server</svID><svDate>2014-11-21T10:10:46.0751Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:fee-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-1.0','Fee-1.0 loaded correctly');
 
 ####################################################################################################
 
-## The implementation has not changed since 0.21, so see 0.21 test file for all tests.
 
 ###################
 ###### domain_check (single)
@@ -69,10 +68,8 @@ is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency
 is($dri->get_info('create_price'),10.00,'domain_check get_info (create_price)');
 
 
-
 ###################
-###### These more comprehensive tests were copied from Fee-0.21.t
-
+###### These more comprehensive tests were copied from Fee-0.21.t, those there is not real change
 
 # for backwards compatibility, action is still accepted
 $rc=$dri->domain_check('explore-1.space',{fee=>{currency => 'USD',action=>'create'}});
