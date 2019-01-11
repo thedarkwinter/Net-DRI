@@ -1,4 +1,4 @@
-## Domain Registry Interface, CoCCA Registry Driver for multiple TLDs
+## Domain Registry Interface, CoCCA .PH Platform
 ##
 ## Copyright (c) 2008-2010 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2019 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::DRD::CoCCA::CoCCA;
+package Net::DRI::DRD::CoCCA::PH;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::CoCCA::GTLD - CoCCA Registry driver for Net::DRI
+Net::DRI::DRD::PH - CoCCA .PH Registry driver for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -74,25 +74,19 @@ sub new
 	return $self;
 }
 
-sub periods	{ return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name    { return 'CoCCA::CoCCA'; }
-
-# README: this is not a shared platform!
-sub tlds
-{
-  my @others = qw/cx gs tl ki mu nf ht na ng cc cm sb mg/;
-  my @so = qw/so com.so edu.so gov.so me.so net.so org.so/;
-  return (@others,@so);
-}
+sub periods      { return map { DateTime::Duration->new(years => $_) } (1..10); }
+sub name         { return 'CoCCA::PH'; }
+sub tlds         { return ('ph',map { $_.'.ph'} qw/com net org/ ); }
 
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
 {
-  my ($self,$type)=@_;
-  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CoCCA::Notifications', 'Fee']}) if $type eq 'epp';
-  return;
+ my ($self,$type)=@_;
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::PH',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CoCCA::Notifications', 'CentralNic::Fee'], 'brown_fee_version' => '0.8'}) if $type eq 'epp';
+ return;
 }
 
 ####################################################################################################
