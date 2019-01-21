@@ -208,7 +208,6 @@ sub parse
       {
         my ($n_extcon,$c_extcon)=@$el_extcon;
         $rinfo->{$otype}->{$oname}->{individual} = $c_extcon->textContent() if $n_extcon eq 'individual';
-        $rinfo->{$otype}->{$oname}->{consent_for_publishing} = $c_extcon->textContent() if $n_extcon eq 'consentForPublishing';
         $rinfo->{$otype}->{$oname}->{auth_info} = $c_extcon->textContent() if $n_extcon eq 'authInfo';
         $rinfo->{$otype}->{$oname}->{id_extcon} = $c_extcon->textContent() if $n_extcon eq 'id'; # should be id but lets not mess with the id from poll!
         $rinfo->{$otype}->{$oname}->{execution_date} = DateTime::Format::ISO8601->new()->parse_datetime($c_extcon->textContent()) if $n_extcon eq 'executionDate';
