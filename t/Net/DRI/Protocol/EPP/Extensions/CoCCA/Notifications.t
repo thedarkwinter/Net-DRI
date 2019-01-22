@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 55;
+use Test::More tests => 57;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -115,6 +115,10 @@ $dri=Net::DRI::TrapExceptions->new(10);
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('CoCCA::CoCCA');
 $dri->target('CoCCA::CoCCA')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
+$drd = $dri->driver();
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA',{'brown_fee_version' => '0.8'}],'CoCCA - epp transport_protocol_default');
+is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.8','Cocca Brown-Fee 0.8 loaded correctly');
+
 
 ### balance
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="47981"><qDate>2018-11-15T00:00:07.134Z</qDate><msg lang="en"><![CDATA[<tld name="so"><balance>-2167.25</balance><credit-limit>0.00</credit-limit></tld>]]></msg></msgQ>'.$TRID.'</response>'.$E2;
