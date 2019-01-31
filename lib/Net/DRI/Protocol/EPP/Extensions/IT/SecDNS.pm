@@ -68,25 +68,41 @@ sub register_commands {
 sub parse_extdomain
 {
   my ($po, $otype, $oaction, $oname, $rinfo) = @_;
-  my $msg = $po->message;
-  my $ns = $msg->ns('it_secdns');
-  my $infds = $msg->get_extension('it_secdns', 'infDsOrKeyToValidateData');
+  my $mes = $po->message;
+  my $ns = $mes->ns('it_secdns');
+  my $infds = $mes->get_extension('it_secdns', 'infDsOrKeyToValidateData');
+  return unless defined $infds;
+  my @d;
+  my $msl;
 
-  if (defined($infds)) {
-    foreach ($infds->findnodes('./extsecDNS:dsOrKeysToValidate/*/*')) {
-      push (@{$rinfo->{'domain'}{$oname}{'ds_or_keys_to_validate'}{'keyTag'}}, $_->textContent) if  $_->getName eq 'secDNS:keyTag';
-      push (@{$rinfo->{'domain'}{$oname}{'ds_or_keys_to_validate'}{'alg'}}, $_->textContent) if $_->getName eq 'secDNS:alg';
-      push (@{$rinfo->{'domain'}{$oname}{'ds_or_keys_to_validate'}{'digest'}}, $_->textContent) if $_->getName eq 'secDNS:digest';
-      push (@{$rinfo->{'domain'}{$oname}{'ds_or_keys_to_validate'}{'digestType'}}, $_->textContent) if $_->getName eq 'secDNS:digestType';
-      
-
+  foreach my $el (Net::DRI::Util::xml_list_children($infds)) {
+    my ($name,$c)=@$el;
+    if ($name eq 'dsOrKeysToValidate') {
+      foreach my $el2 (Net::DRI::Util::xml_list_children($c)) {
+        my ($name2,$c2)=@$el2;
+        if ($name2 eq 'maxSigLife') {
+          $msl=0+$c2->textContent();
+        } elsif ($name2 eq 'dsData') {
+          my $rn=Net::DRI::Protocol::EPP::Extensions::SecDNS::parse_dsdata($c2);
+          $rn->{maxSigLife}=$msl if defined $msl;
+          push @d,$rn;
+        } elsif ($name2 eq 'keyData') {
+          my %n;
+          Net::DRI::Protocol::EPP::Extensions::SecDNS::parse_keydata($c2 ,\%n);
+          $n{maxSigLife}=$msl if defined $msl;
+          push @d,\%n;
+        }
+      }
+      $rinfo->{'domain'}->{$oname}->{ds_or_keys_to_validate}=\@d;
+    } elsif ($name eq 'remAll') {
+      # lets get as well removal on all records on a domain info
+      $rinfo->{'domain'}{$oname}{'ds_or_keys_to_validate'}{'remAll'} = 'remAll';
     }
-    # lets get as well removal on all records on a domain info
-    $rinfo->{'domain'}{$oname}{'ds_or_keys_to_validate'}{'remAll'} = 'remAll' if ($infds->findnodes('//extsecDNS:remAll'));
   }
 
   return;
 }
+
 
 sub parse_extmessage
 {
