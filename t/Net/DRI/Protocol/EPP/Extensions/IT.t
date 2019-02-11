@@ -9,7 +9,9 @@ use Net::DRI::Data::Raw;
 use Data::Dumper; # TODO: remove me later!
 
 
-use Test::More tests => 132;
+use Test::More tests => 142;
+use Test::Exception;
+
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -368,5 +370,312 @@ is_deeply($e,[{keyTag=>'12345',alg=>3,digestType=>1,digest=>'4347d0f8ba661234a8e
 # <extsecDNS:infDsOrKeyToValidateData>
 $ext_ds_validate=$dri->get_info('ds_or_keys_to_validate');
 is_deeply($ext_ds_validate,{remAll=>'remAll'},'domain_info get_info(extsecDNS) extsecDNS remAll');
+
+# epp poll - dns check wit extsecdns ended unsuccessfully
+my $extdomsecpoll = <<'EOF';
+  <response>
+    <result code="1301">
+      <msg lang="en">Command completed successfully; ack to dequeue</msg>
+    </result>
+    <msgQ count="1" id="6369665">
+      <qDate>2019-02-07T17:55:15.000+01:00</qDate>
+      <msg lang="en">DNS check ended unsuccessfully</msg>
+    </msgQ>
+    <extension xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xmlns:extdom="http://www.nic.it/ITNIC-EPP/extdom-2.0" xmlns:extepp="http://www.nic.it/ITNIC-EPP/extepp-2.0" xmlns:extsecDNS="http://www.nic.it/ITNIC-EPP/extsecDNS-1.0" xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1">
+      <extdom:dnsErrorMsgData version="2.1">
+        <extdom:domain>esenpio-extsecdns-poll-fail.it</extdom:domain>
+        <extdom:status>FAILED</extdom:status>
+        <extdom:validationId>cd84a3c4-1e50-4d74-aac6-1ee1183d811d</extdom:validationId>
+        <extdom:validationDate>2019-02-07T17:55:14.695+01:00</extdom:validationDate>
+        <extdom:nameservers>
+          <extdom:nameserver name="x.dns.it">
+            <extdom:address type="IPv4">192.12.192.23</extdom:address>
+          </extdom:nameserver>
+          <extdom:nameserver name="y.dns.it">
+            <extdom:address type="IPv4">192.12.192.24</extdom:address>
+          </extdom:nameserver>
+        </extdom:nameservers>
+        <extdom:tests>
+          <extdom:test name="NameserversResolvableTest" status="SUCCEEDED">
+            <extdom:nameserver name="x.dns.it" status="SUCCEEDED"/>
+            <extdom:nameserver name="y.dns.it" status="SUCCEEDED"/>
+          </extdom:test>
+          <extdom:test name="IPCompareTest" skipped="true"/>
+          <extdom:test name="SOAQueryAnswerTest" status="SUCCEEDED">
+            <extdom:nameserver name="x.dns.it" status="SUCCEEDED"/>
+            <extdom:nameserver name="y.dns.it" status="SUCCEEDED"/>
+          </extdom:test>
+          <extdom:test name="SOAMasterCompareTest" status="SUCCEEDED">
+            <extdom:nameserver name="x.dns.it" status="SUCCEEDED"/>
+            <extdom:nameserver name="y.dns.it" status="SUCCEEDED"/>
+          </extdom:test>
+          <extdom:test name="IPSoaTest" skipped="true"/>
+          <extdom:test name="NSQueryAnswerTest" status="SUCCEEDED">
+            <extdom:nameserver name="x.dns.it" status="SUCCEEDED"/>
+            <extdom:nameserver name="y.dns.it" status="SUCCEEDED"/>
+          </extdom:test>
+          <extdom:test name="NSCompareTest" status="SUCCEEDED">
+            <extdom:nameserver name="x.dns.it" status="SUCCEEDED"/>
+            <extdom:nameserver name="y.dns.it" status="SUCCEEDED"/>
+          </extdom:test>
+          <extdom:test name="NSCountTest" status="SUCCEEDED">
+            <extdom:nameserver name="x.dns.it" status="SUCCEEDED"/>
+tests            <extdom:nameserver name="y.dns.it" status="SUCCEEDED"/>
+          </extdom:test>
+          <extdom:test name="MXQueryAnswerTest" status="SUCCEEDED">
+            <extdom:nameserver name="x.dns.it" status="SUCCEEDED"/>
+            <extdom:nameserver name="y.dns.it" status="SUCCEEDED"/>
+          </extdom:test>
+          <extdom:test name="MXCompareTest" status="SUCCEEDED">
+            <extdom:nameserver name="x.dns.it" status="SUCCEEDED"/>
+            <extdom:nameserver name="y.dns.it" status="SUCCEEDED"/>
+          </extdom:test>
+          <extdom:test name="MXRecordIsPresentTest" status="WARNING">
+            <extdom:nameserver name="x.dns.it" status="WARNING">
+              <extdom:detail queryId="13">No MX Records found</extdom:detail>
+            </extdom:nameserver>
+            <extdom:nameserver name="y.dns.it" status="WARNING">
+              <extdom:detail queryId="14">No MX Records found</extdom:detail>
+            </extdom:nameserver>
+tests          </extdom:test>
+          <extdom:test name="CNAMEHostTest" status="SUCCEEDED">
+            <extdom:detail name="x.dns.it" status="SUCCEEDED">
+      </extdom:detail>
+            <extdom:detail name="y.dns.it" status="SUCCEEDED">
+      </extdom:detail>
+          </extdom:test>
+        </extdom:tests>
+        <extdom:queries>
+          <extdom:query id="1">
+            <extdom:queryFor>x.dns.it</extdom:queryFor>
+            <extdom:type>A</extdom:type>
+            <extdom:destination>local resolver</extdom:destination>
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 36016
+       ;; flags: qr rd ra ; qd: 1 an: 1 au: 3 ad: 2
+       ;; QUESTIONS:
+       ;;	x.dns.it, type = A, class = IN
+       ;; ANSWERS:
+       x.dns.it	30960	IN	A	192.12.192.23
+       ;; Message size: 163 bytes
+      </extdom:result>
+          </extdom:query>
+          <extdom:query id="2">
+            <extdom:queryFor>x.dns.it</extdom:queryFor>
+            <extdom:type>AAAA</extdom:type>
+            <extdom:destination>local resolver</extdom:destination>
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 16166
+       ;; flags: qr rd ra ; qd: 1 an: 0 au: 1 ad: 0
+       ;; QUESTIONS:
+       ;;	x.dns.it, type = AAAA, class = IN
+       ;; ANSWERS:
+       ;; Message size: 97 bytes
+      </extdom:result>
+          </extdom:query>
+          <extdom:query id="3">
+            <extdom:queryFor>y.dns.it</extdom:queryFor>
+            <extdom:type>A</extdom:type>
+            <extdom:destination>local resolver</extdom:destination>
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 3993
+       ;; flags: qr rd ra ; qd: 1 an: 1 au: 3 ad: 2
+       ;; QUESTIONS:
+       ;;	y.dns.it, type = A, class = IN
+       ;; ANSWERS:
+       y.dns.it	261	IN	A	192.12.192.24
+       ;; Message size: 163 bytes
+      </extdom:result>
+          </extdom:query>
+          <extdom:query id="4">
+            <extdom:queryFor>y.dns.it</extdom:queryFor>
+            <extdom:type>AAAA</extdom:type>
+            <extdom:destination>local resolver</extdom:destination>
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 41179
+       ;; flags: qr rd ra ; qd: 1 an: 0 au: 1 ad: 0
+       ;; QUESTIONS:
+       ;;	y.dns.it, type = AAAA, class = IN
+       ;; ANSWERS:
+       ;; Message size: 94 bytes
+      </extdom:result>
+          </extdom:query>
+          <extdom:query id="7"><extdom:queryFor>esempio-poll-extsecdns.it</extdom:queryFor><extdom:type>SOA</extdom:type><extdom:destination>x.dns.it/[192.12.192.23]</extdom:destination>4
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 12860
+       ;; flags: qr aa ; qd: 1 an: 1 au: 3 ad: 4
+       ;; QUESTIONS:
+       ;;	esempio-poll-extsecdns.it, type = SOA, class = IN
+       ;; ANSWERS:
+       esempio-poll-extsecdns.it	86400	IN	SOA	x.dns.it hostmaster.foobar.com. 2019020702 86400 7200 2419200 3600
+       ;; Message size: 268 bytes
+      </extdom:result></extdom:query>
+          <extdom:query id="8">
+            <extdom:queryFor>esempio-poll-extsecdns.it</extdom:queryFor>
+            <extdom:type>SOA</extdom:type>
+            <extdom:destination>y.dns.it/[192.12.192.24]</extdom:destination>
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 37985
+       ;; flags: qr aa ; qd: 1 an: 1 au: 3 ad: 4
+       ;; QUESTIONS:
+       ;;	esempio-poll-extsecdns.it, type = SOA, class = IN
+       ;; ANSWERS:
+tests       esempio-poll-extsecdns.it	86400	IN	SOA	x.dns.it hostmaster.foobar.com. 2019020702 86400 7200 2419200 3600
+       ;; Message size: 268 bytes
+      </extdom:result>
+          </extdom:query>
+          <extdom:query id="10">
+            <extdom:queryFor>esempio-poll-extsecdns.it</extdom:queryFor>
+            <extdom:type>NS</extdom:type>
+            <extdom:destination>x.dns.it/[192.12.192.23]</extdom:destination>
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 42974
+       ;; flags: qr aa ; qd: 1 an: 3 au: 0 ad: 4
+       ;; QUESTIONS:
+       ;;	esempio-poll-extsecdns.it, type = NS, class = IN
+       ;; ANSWERS:
+       esempio-poll-extsecdns.it	86400	IN	NS	x.dns.it
+       esempio-poll-extsecdns.it	86400	IN	NS	y.dns.it
+       ;; Message size: 209 bytes
+tests      </extdom:result>
+          </extdom:query>
+          <extdom:query id="11">
+            <extdom:queryFor>esempio-poll-extsecdns.it</extdom:queryFor>
+            <extdom:type>NS</extdom:type>
+            <extdom:destination>y.dns.it/[192.12.192.24]</extdom:destination>
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 12413
+       ;; flags: qr aa ; qd: 1 an: 3 au: 0 ad: 4
+       ;; QUESTIONS:
+       ;;	esempio-poll-extsecdns.it, type = NS, class = IN
+       ;; ANSWERS:
+       esempio-poll-extsecdns.it	86400	IN	NS	y.dns.it
+       esempio-poll-extsecdns.it	86400	IN	NS	x.dns.it
+       ;; Message size: 209 bytes
+      </extdom:result>
+          </extdom:query>
+          <extdom:query id="13">
+            <extdom:queryFor>esempio-poll-extsecdns.it</extdom:queryFor>
+            <extdom:type>MX</extdom:type>
+            <extdom:destination>x.dns.it/[192.12.192.23]</extdom:destination>
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 40625
+       ;; flags: qr aa ; qd: 1 an: 0 au: 1 ad: 1
+       ;; QUESTIONS:
+       ;;	esempio-poll-extsecdns.it, type = MX, class = IN
+       ;; ANSWERS:
+       ;; Message size: 143 bytes
+      </extdom:result>
+          </extdom:query>
+          <extdom:query id="14">
+            <extdom:queryFor>esempio-poll-extsecdns.it</extdom:queryFor>
+            <extdom:type>MX</extdom:type>
+            <extdom:destination>y.dns.it/[192.12.192.24]</extdom:destination>
+            <extdom:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 13527
+       ;; flags: qr aa ; qd: 1 an: 0 au: 1 ad: 1
+       ;; QUESTIONS:
+       ;;	esempio-poll-extsecdns.it, type = MX, class = IN
+       ;; ANSWERS:
+       ;; Message size: 143 bytes
+      </extdom:result>
+          </extdom:query>
+        </extdom:queries>
+      </extdom:dnsErrorMsgData>
+      <extsecDNS:secDnsErrorMsgData>
+        <extsecDNS:dsOrKeys>
+          <secDNS:dsData>
+            <secDNS:keyTag>45063</secDNS:keyTag>
+            <secDNS:alg>3</secDNS:alg>
+            <secDNS:digestType>2</secDNS:digestType>
+            <secDNS:digest>E9B696C3AC8644735BF0A6409BE6D77BBFB4142D667E0EB0D41AD75BCC9D0D43</secDNS:digest>
+          </secDNS:dsData>
+        </extsecDNS:dsOrKeys>
+        <extsecDNS:tests>
+          <extsecDNS:test name="DNSKEYQueryAnswerTest" status="SUCCEEDED">
+            <extsecDNS:nameserver name="x.dns.it" status="SUCCEEDED"/>
+            <extsecDNS:nameserver name="y.dns.it" status="SUCCEEDED"/>
+          </extsecDNS:test>
+          <extsecDNS:test name="DSRecordValidationTest" status="FAILED">
+            <extsecDNS:nameserver name="x.dns.it" status="FAILED">
+              <extsecDNS:detail status="FAILED" queryId="16">Cannot find DNSKey records for KSK</extsecDNS:detail>
+            </extsecDNS:nameserver>
+            <extsecDNS:nameserver name="y.dns.it" status="FAILED">
+              <extsecDNS:detail status="FAILED" queryId="17">Cannot find DNSKey records for KSK</extsecDNS:detail>
+            </extsecDNS:nameserver>
+          </extsecDNS:test>
+          <extsecDNS:test name="DNSKEYSignatureValidationTest" status="FAILED">
+            <extsecDNS:nameserver name="x.dns.it" status="FAILED">
+              <extsecDNS:detail status="FAILED" queryId="16">DNSKEY record set is empty</extsecDNS:detail>
+            </extsecDNS:nameserver>
+            <extsecDNS:nameserver name="y.dns.it" status="FAILED">
+              <extsecDNS:detail status="FAILED" queryId="17">DNSKEY record set is empty</extsecDNS:detail>
+            </extsecDNS:nameserver>
+          </extsecDNS:test>
+          <extsecDNS:test name="SOASignatureValidationTest" status="FAILED">
+            <extsecDNS:nameserver name="x.dns.it" status="FAILED">
+              <extsecDNS:detail status="FAILED" queryId="7">Cannot find RRSIG record for SOA record set </extsecDNS:detail>
+            </extsecDNS:nameserver>
+            <extsecDNS:nameserver name="y.dns.it" status="FAILED">
+              <extsecDNS:detail status="FAILED" queryId="8">Cannot find RRSIG record for SOA record set </extsecDNS:detail>
+            </extsecDNS:nameserver>
+          </extsecDNS:test>
+          <extsecDNS:test name="NSSignatureValidationTest" status="FAILED">
+            <extsecDNS:nameserver name="x.dns.it" status="FAILED">
+              <extsecDNS:detail status="FAILED" queryId="10">Cannot find RRSIG record for NS record set </extsecDNS:detail>
+            </extsecDNS:nameserver>
+            <extsecDNS:nameserver name="y.dns.it" status="FAILED">
+              <extsecDNS:detail status="FAILED" queryId="11">Cannot find RRSIG record for NS record set </extsecDNS:detail>
+            </extsecDNS:nameserver>
+          </extsecDNS:test>
+        </extsecDNS:tests>
+        <extsecDNS:queries>
+          <extsecDNS:query id="16">
+            <extsecDNS:queryFor>esempio-poll-extsecdns.it</extsecDNS:queryFor>
+            <extsecDNS:type>DNSKEY</extsecDNS:type>
+            <extsecDNS:destination>x.dns.it/[192.12.192.23]</extsecDNS:destination>
+$test            <extsecDNS:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 21848
+       ;; flags: qr aa ; qd: 1 an: 0 au: 1 ad: 1
+       ;; QUESTIONS:
+       ;;	esempio-poll-extsecdns.it, type = DNSKEY, class = IN
+       ;; ANSWERS:
+       ;; Message size: 143 bytes
+      </extsecDNS:result>
+          </extsecDNS:query>
+          <extsecDNS:query id="17">
+            <extsecDNS:queryFor>esempio-poll-extsecdns.it</extsecDNS:queryFor>
+            <extsecDNS:type>DNSKEY</extsecDNS:type>
+            <extsecDNS:destination>y.dns.it/[192.12.192.24]</extsecDNS:destination>
+            <extsecDNS:result>
+       ;; - HEADER - opcode: QUERY, status: NOERROR, id: 12740
+$test       ;; flags: qr aa ; qd: 1 an: 0 au: 1 ad: 1
+       ;; QUESTIONS:
+       ;;	esempio-poll-extsecdns.it, type = DNSKEY, class = IN
+       ;; ANSWERS:
+       ;; Message size: 143 bytes
+      </extsecDNS:result>
+          </extsecDNS:query>
+        </extsecDNS:queries>
+      </extsecDNS:secDnsErrorMsgData>
+    </extension>
+EOF
+chomp $extdomsecpoll;
+my ($extsecdns_dsokeys, $extsecdns_tests, $extsecdns_queries);
+$R2=$E1 . "$extdomsecpoll" . $TRID . '</response>' . $E2;
+$rc = $dri->message_retrieve();
+is($dri->get_info('last_id'),6369665,'dns check with extsecdns failed message');
+is($dri->get_info('action','message',6369665),'dns_error','dns check with extsecdns failed message get_info(action)');
+is($dri->get_info('validation_id','message',6369665),'cd84a3c4-1e50-4d74-aac6-1ee1183d811d','dns check with extsecdns failed message get_info(validation_id)');
+is($dri->get_info('validation_date','message',6369665),'2019-02-07T17:55:14.695+01:00','dns check with extsecdns failed message get_info(validation_date)');
+$extsecdns_dsokeys = $dri->get_info('extsecdns','message',6369665)->{'dsorkeys'};
+is_deeply($extsecdns_dsokeys,[{keyTag=>'45063',alg=>3,digestType=>2,digest=>'E9B696C3AC8644735BF0A6409BE6D77BBFB4142D667E0EB0D41AD75BCC9D0D43'}],'dns check with extsecdns failed message get_info(extsecdns - dsOrKeys)');
+$extsecdns_tests = $dri->get_info('extsecdns','message',6369665)->{'tests'};
+is($extsecdns_tests->{'DNSKEYQueryAnswerTest'}->{'status'}, 'SUCCEEDED','dns check with extsecdns failed message get_info(extsecdns - tests DNSKEYQueryAnswerTest status');
+is_deeply($extsecdns_tests->{'DNSKEYQueryAnswerTest'}->{'dns'}, {'y.dns.it' => 'SUCCEEDED', 'x.dns.it' => 'SUCCEEDED'},'dns check with extsecdns failed message get_info(extsecdns - tests DNSKEYQueryAnswerTest dns');
+$extsecdns_queries = $dri->get_info('extsecdns','message',6369665)->{'queries'};
+is($extsecdns_queries->{'17'}->{'queryFor'}, 'esempio-poll-extsecdns.it','dns check with extsecdns failed message get_info(extsecdns - query 17 queryFor value');
+is($extsecdns_queries->{'17'}->{'destination'}, "y.dns.it/[192.12.192.24]",'dns check with extsecdns failed message get_info(extsecdns - query 17 destination value');
+is($extsecdns_queries->{'16'}->{'destination'}, "x.dns.it/[192.12.192.23]",'dns check with extsecdns failed message get_info(extsecdns - query 16 destination value');
 
 exit 0;

@@ -11,7 +11,7 @@ package Net::DRI::Protocol::EPP::Extensions::IT::SecDNS;
 use strict;
 use warnings;
 
-use Data::Dumper; # TODO: remove me later!
+use Data::Dumper;
 
 =pod
 
@@ -51,15 +51,15 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands {
   my ($class, $version) = @_;
   my $ops_domain = {
-        'info'       => [ undef, \&parse_extdomain ]
+        'info'          => [ undef, \&parse_extdomain ]
   };
-  my $ops_message = {
-        'result'     => [ undef, \&parse_extmessage ]
+  my $ops_notification = {
+        'notification'  => [ undef, \&parse_extnotification ]
   };
 
   return {
         'domain'     => $ops_domain,
-        'message'    => $ops_message
+        'message'    => $ops_notification
   };
 }
 
@@ -103,34 +103,104 @@ sub parse_extdomain
   return;
 }
 
-
-sub parse_extmessage
+sub parse_extnotification
 {
-  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+  my ($po, $otype, $oaction, $oname, $rinfo) = @_;
   my $mes=$po->message();
-  my @r=$mes->results_extra_info();
-  return unless @r;
+  return unless $mes->is_success();
+  my $msgid=$oname=$mes->msg_id();
+  return unless (defined($msgid) && $msgid);
 
- foreach my $r (@r)
- {
-  foreach my $rinfo (@$r)
-  {
-   if ($rinfo->{from} eq 'eppcom:value' && $rinfo->{type} eq 'rawxml' && $rinfo->{message}=~m!<extepp:wrongValue><extepp:element>(.+?)</extepp:element><extepp:namespace>(.+?)</extepp:namespace><extepp:value>(.+?)</extepp:value></extepp:wrongValue>!)
-   {
-    $rinfo->{message}="wrongValue $3 for $1";
-    $rinfo->{from}='extepp';
-    $rinfo->{type}='text';
-   }
+  my $infds = $mes->get_extension('it_secdns', 'secDnsErrorMsgData');
+  return unless defined $infds;
 
-   if ($rinfo->{from} eq 'eppcom:extValue' && $rinfo->{type} eq 'rawxml' && $rinfo->{message}=~m!<extepp:reasonCode>(.+?)</extepp:reasonCode>!)
-   {
-    $rinfo->{message}="Reasoncode $1";
-    $rinfo->{from}='extepp';
-    $rinfo->{type}='text';
-   }
+  foreach my $el (Net::DRI::Util::xml_list_children($infds)) {
+    my ($name,$content)=@$el;
+    if ($name eq 'dsOrKeys') {
+      $rinfo->{$otype}->{$oname}->{extsecdns}->{dsorkeys} = _parse_dsorkeys($po, $content);
+    } elsif ($name eq 'tests') {
+      $rinfo->{$otype}->{$oname}->{extsecdns}->{tests} = _parse_tests($po, $content);
+    } elsif ($name eq 'queries') {
+      $rinfo->{$otype}->{$oname}->{extsecdns}->{queries} = _parse_queries($po, $content);
+    }
   }
- }
- return;
+
+  return;
+}
+
+####################################################################################################
+####################################################################################################
+####################################################################################################
+
+sub _parse_dsorkeys
+{
+  my ( $po, $node_dsorkeys ) = @_;
+  return unless $node_dsorkeys;
+
+  my $set_dsorkeys = {};
+  my @d;
+  my $msl;
+
+  foreach my $el_dsorkeys (Net::DRI::Util::xml_list_children($node_dsorkeys)) {
+    my ( $name_dsorkeys, $content_dsorkeys ) = @$el_dsorkeys;
+    if ($name_dsorkeys eq 'maxSigLife') {
+      $msl=0+$content_dsorkeys->textContent();
+    } elsif ($name_dsorkeys eq 'dsData') {
+      my $rn=Net::DRI::Protocol::EPP::Extensions::SecDNS::parse_dsdata($content_dsorkeys);
+      $rn->{maxSigLife}=$msl if defined $msl;
+      push @d,$rn;
+    } elsif ($name_dsorkeys eq 'keyData') {
+      my %n;
+      Net::DRI::Protocol::EPP::Extensions::SecDNS::parse_keydata($content_dsorkeys ,\%n);
+      $n{maxSigLife}=$msl if defined $msl;
+      push @d,\%n;
+    }
+    $set_dsorkeys = \@d;
+  }
+
+  return $set_dsorkeys;
+}
+
+
+sub _parse_tests
+{
+  my ( $po, $node_tests) = @_;
+  return unless $node_tests;
+
+  my $set_tests = {};
+
+  foreach my $el_tests (Net::DRI::Util::xml_list_children($node_tests)) {
+    my ( $name_tests, $content_tests ) = @$el_tests;
+    my $tname = $content_tests->getAttribute('name');
+    $set_tests->{$tname}->{status} = $content_tests->getAttribute('status');
+    foreach my $el_tests2 (Net::DRI::Util::xml_list_children($content_tests)) {
+      my ( $name_tests2, $content_tests2 ) = @$el_tests2;
+      $set_tests->{$tname}->{dns}->{$content_tests2->getAttribute('name')} = $content_tests2->getAttribute('status') if $content_tests2->getAttribute('status') eq 'SUCCEEDED';
+      $set_tests->{$tname}->{dns}->{$content_tests2->getAttribute('name')} = { $content_tests2->getAttribute('status'), $content_tests2->textContent } unless $content_tests2->getAttribute('status') eq 'SUCCEEDED';
+    }
+  }
+
+  return $set_tests;
+}
+
+
+sub _parse_queries
+{
+  my ( $po, $node_queries ) = @_;
+  return unless $node_queries;
+
+  my $set_queries = {};
+
+  foreach my $el_queries (Net::DRI::Util::xml_list_children($node_queries)) {
+    my ( $name_queries, $content_queries ) = @$el_queries;
+    my $qid = $content_queries->getAttribute('id');
+    foreach my $el_queries2 (Net::DRI::Util::xml_list_children($content_queries)) {
+      my ( $name_queries2, $content_queries2 ) = @$el_queries2;
+      $set_queries->{$qid}->{$name_queries2} = $content_queries2->textContent;
+    }
+  }
+
+  return $set_queries;
 }
 
 1;
