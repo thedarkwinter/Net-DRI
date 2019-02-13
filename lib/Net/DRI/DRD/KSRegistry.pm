@@ -94,7 +94,7 @@ sub new
 
 sub periods      { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name         { return 'KSRegistry'; }
-sub tlds         { return (qw/cam desi saarland/); }
+sub tlds         { return (qw/cam/); }
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }
 
