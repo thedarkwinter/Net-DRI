@@ -11,8 +11,6 @@ package Net::DRI::Protocol::EPP::Extensions::IT::SecDNS;
 use strict;
 use warnings;
 
-use Data::Dumper;
-
 =pod
 
 =head1 NAME
