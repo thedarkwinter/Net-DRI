@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 542;
+use Test::More tests => 541;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -70,7 +70,6 @@ use_ok('Net::DRI::DRD::ARNES');
 use_ok('Net::DRI::DRD::auDA');
 use_ok('Net::DRI::DRD::BookMyName');
 use_ok('Net::DRI::DRD::CentralNic::CentralNic');
-use_ok('Net::DRI::DRD::CentralNic::Gateway');
 use_ok('Net::DRI::DRD::CentralNic::SKNIC');
 use_ok('Net::DRI::DRD::CGIBR::BR');
 use_ok('Net::DRI::DRD::CGIBR::GTLD');
