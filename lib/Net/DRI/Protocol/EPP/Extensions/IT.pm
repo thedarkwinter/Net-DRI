@@ -71,13 +71,14 @@ sub setup
                'it_epp'        => [ 'http://www.nic.it/ITNIC-EPP/extepp-2.0', 'extepp-2.0.xsd' ],
                'it_contact'    => [ 'http://www.nic.it/ITNIC-EPP/extcon-1.0', 'extcon-1.0.xsd' ],
                'it_domain'     => [ 'http://www.nic.it/ITNIC-EPP/extdom-2.0', 'extdom-2.0.xsd' ],
+               'it_secdns'     => [ 'http://www.nic.it/ITNIC-EPP/extsecDNS-1.0', 'extsecDNS-1.0.xsd' ]
        });
 
  $self->factories('contact', sub { return Net::DRI::Data::Contact::IT->new(); });
  return;
 }
 
-sub default_extensions { return qw/GracePeriod IT::Message IT::Contact IT::Domain IT::Notifications/; }
+sub default_extensions { return qw/GracePeriod IT::Message IT::Contact IT::Domain IT::Notifications IT::SecDNS SecDNS/; }
 
 ####################################################################################################
 1;
