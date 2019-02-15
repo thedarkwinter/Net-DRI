@@ -20,7 +20,7 @@ use warnings;
 use base qw/Net::DRI::Data::Contact/;
 use Net::DRI::Exception;
 
-__PACKAGE__->register_attributes(qw(individual consent_for_publishing));
+__PACKAGE__->register_attributes(qw(individual));
 
 =pod
 
@@ -39,12 +39,8 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 =head2 individual()
 
-1 if the object represents a private person, 0 otherwise
-
-=head2 consent_for_publishing()
-
-1 if this person gave its assent for publishing personal details in WHOIS database, 0 otherwise.
-This element has no meaning for a contact which does not represent a private person.
+1 if the object represents a private person, 0 otherwise. It is not allowed to amend a contact type
+and other data (e.g. name, address) at the same time
 
 =head1 SUPPORT
 
@@ -87,7 +83,6 @@ sub validate
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
  push @errs,'individual'             if (defined($self->individual()) && $self->individual()!~m/^(?:0|1)$/);
- push @errs,'consent_for_publishing' if (defined($self->consent_for_publishing()) && $self->consent_for_publishing()!~m/^(?:0|1)$/);
 
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
 
