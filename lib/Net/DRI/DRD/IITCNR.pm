@@ -94,8 +94,8 @@ sub verify_name_domain
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
-
- return ('Net::DRI::Transport::HTTP',{protocol_connection=>'Net::DRI::Protocol::EPP::Extensions::HTTP'},'Net::DRI::Protocol::EPP::Extensions::IT',{}) if $type eq 'epp'; ## EPP is over HTTPS here
+ # enforce only_local_extensions to check if need to parse SecDNS and IT::SecDNS
+ return ('Net::DRI::Transport::HTTP',{protocol_connection=>'Net::DRI::Protocol::EPP::Extensions::HTTP', 'only_local_extensions' => 1},'Net::DRI::Protocol::EPP::Extensions::IT',{}) if $type eq 'epp'; ## EPP is over HTTPS here
  return;
 }
 

@@ -90,6 +90,10 @@ see example in file t/live/opensrs_xcp.t
 
 (optional) the local address (hostname or IP) you want to use to connect (if you are multihomed)
 
+=head2 only_local_extensions
+
+(optional) to announce to server only what we enabled locally as extensions
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
@@ -149,6 +153,7 @@ sub new
  $t{client_login}=$opts{client_login};
  $t{client_password}=$opts{client_password};
  $t{client_newpassword}=$opts{client_newpassword} if (exists($opts{client_newpassword}) && $opts{client_newpassword});
+ $t{only_local_extensions}=$opts{only_local_extensions} if (exists($opts{only_local_extensions}) && $opts{only_local_extensions});
 
  $t{protocol_data}=$opts{protocol_data} if (exists($opts{protocol_data}) && $opts{protocol_data});
  my @need=qw/read_data write_message/;
@@ -218,7 +223,7 @@ sub send_login
  }
 
  $cltrid=$self->generate_trid($self->{logging_ctx}->{registry}); ## not used for greeting (<hello> has no clTRID), but used in logging
- my $login=$ctx->{protocol}->action('session','login',$cltrid,$t->{client_login},$t->{client_password},{ client_newpassword => $t->{client_newpassword}, %{$t->{protocol_data} || {}}});
+ my $login=$ctx->{protocol}->action('session','login',$cltrid,$t->{client_login},$t->{client_password},{ client_newpassword => $t->{client_newpassword}, %{$t->{protocol_data} || {}}, only_local_extensions => $t->{only_local_extensions}});
  $self->log_output('notice','transport',$ctx,{trid=>$cltrid,phase=>'opening',direction=>'out',message=>$login});
  Net::DRI::Exception->die(0,'transport/http',4,'Unable to send login message to '.$t->{remote_uri}) unless $self->_http_send(1,$login,1);
  $t1=Time::HiRes::time();

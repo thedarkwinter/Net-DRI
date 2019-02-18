@@ -71,14 +71,21 @@ sub setup
                'it_epp'        => [ 'http://www.nic.it/ITNIC-EPP/extepp-2.0', 'extepp-2.0.xsd' ],
                'it_contact'    => [ 'http://www.nic.it/ITNIC-EPP/extcon-1.0', 'extcon-1.0.xsd' ],
                'it_domain'     => [ 'http://www.nic.it/ITNIC-EPP/extdom-2.0', 'extdom-2.0.xsd' ],
-               'it_secdns'     => [ 'http://www.nic.it/ITNIC-EPP/extsecDNS-1.0', 'extsecDNS-1.0.xsd' ]
        });
 
  $self->factories('contact', sub { return Net::DRI::Data::Contact::IT->new(); });
  return;
 }
 
-sub default_extensions { return qw/GracePeriod IT::Message IT::Contact IT::Domain IT::Notifications IT::SecDNS SecDNS/; }
+sub default_extensions {
+ my ($self,$rp) = @_;
+ $rp->{secdns_accredited}=1; ## TODO: if not SecDNS accredited set to 0 in order to not load SecDNS and IT::SecDNS - otherwise login fail :)
+ if ($rp->{secdns_accredited} && $rp->{secdns_accredited} == 1) {
+  return qw(GracePeriod IT::Message IT::Contact IT::Domain IT::Notifications IT::SecDNS SecDNS);
+ } else {
+  return qw(GracePeriod IT::Message IT::Contact IT::Domain IT::Notifications);
+ }
+}
 
 ####################################################################################################
 1;
