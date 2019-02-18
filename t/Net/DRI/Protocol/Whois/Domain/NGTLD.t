@@ -5,7 +5,7 @@ use warnings;
 use Net::DRI;
 use Data::Dumper;
 
-use Test::More tests => 456;
+use Test::More tests => 431;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -1078,126 +1078,6 @@ $r = $c->get('registrant');
 isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
 is($r->name(),'Eugene Li','domain_info get_info (contact) registrant name');
 is($r->org(),'Zodiac','domain_info get_info (contact) registrant org');
-
-####################################################################################################
-# Key Systems (KS / StartingDot)
-$R2='Domain Name: NIC.DESI
-Domain ID: 537911537_DOMAIN-DESI
-WHOIS Server: whois.nic.desi
-Updated Date: 2013-12-03T13:43:11Z
-Creation Date: 2013-12-03T11:25:25Z
-Registry Expiry Date: 2023-12-03T11:25:25Z
-Sponsoring registrar: Desi Networks LLC
-Sponsoring registrar IANA ID: 9999
-Domain Status: ok
-Registrant ID: P-RNO22
-Registrant Title: Mr.
-Registrant Name: Ravin Ohri
-Registrant Organization: Desi Networks LLC
-Registrant Street: 6813 Marbury Road
-Registrant City: Bethesda
-Registrant State/Province: MD
-Registrant Postal Code: 20817
-Registrant Country: US
-Registrant Phone: +1.3014529028
-Registrant Fax: +1.3016567111
-Registrant Email: rohri@desinetwork.in
-Admin ID: P-RNO22
-Admin Title: Mr.
-Admin Name: Ravin Ohri
-Admin Organization: Desi Networks LLC
-Admin Street: 6813 Marbury Road
-Admin City: Bethesda
-Admin State/Province: MD
-Admin Postal Code: 20817
-Admin Country: US
-Admin Phone: +1.3014529028
-Admin Fax: +1.3016567111
-Admin Email: rohri@desinetwork.in
-Tech ID: P-RNO22
-Tech Title: Mr.
-Tech Name: Ravin Ohri
-Tech Organization: Desi Networks LLC
-Tech Street: 6813 Marbury Road
-Tech City: Bethesda
-Tech State/Province: MD
-Tech Postal Code: 20817
-Tech Country: US
-Tech Phone: +1.3014529028
-Tech Fax: +1.3016567111
-Tech Email: rohri@desinetwork.in
-Billing ID: P-RNO22
-Billing Title: Mr.
-Billing Name: Ravin Ohri
-Billing Organization: Desi Networks LLC
-Billing Street: 6813 Marbury Road
-Billing City: Bethesda
-Billing State/Province: MD
-Billing Postal Code: 20817
-Billing Country: US
-Billing Phone: +1.3014529028
-Billing Fax: +1.3016567111
-Billing Email: rohri@desinetwork.in
-Name Server: ns1.key-systems.net
-Name Server: ns2.key-systems.net
-Name Server: ns3.key-systems.net
-DNSSEC: signedDelegation
->>> Last update of WHOIS database: 2014-06-19T12:26:09Z <<<
-
-; This data is provided by DESI REGISTRY for information purposes only in
-; accordance with the DESI REGISTRY TLD Privacy Policy. It is intended to
-; assist persons to obtain information about or related to domain name
-; registration records. DESI REGISTRY does not guarantee its accuracy.
-; By submitting this query, you agree to abide as follows:
-;
-; You agree to use this data only for lawful purposes and that under no
-; circumstances will you permit this data to
-; 1) allow, enable, or otherwise support the transmission of mass
-;    unsolicited, commercial advertising or solicitations via e-mail,
-;    telephone or fax (spam); nor
-; 2) enable high volume, automated, electronic processes to the systems
-;    of DESI REGISTRY or Registrars, except as reasonably required to
-;    register new domain names or modify existing registrations; nor
-; 3) will you generate a database of registered domain names and
-;    registrant data.
-;
-; These terms may be changed without prior notice.
-; By submitting this query, you agree to abide by this policy.
-';
-
-$dri->add_registry('NGTLD',{provider=>'ks','name'=>'desi'});
-$dri->target('desi')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.desi');
-is($rc->is_success(),1,'KS/StartingDot domain_info is_success');
-is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.desi','domain_info get_info (name)');
-is($dri->get_info('id'),'537911537_DOMAIN-DESI','domain_info get_info (id)');
-is($dri->get_info('clName'),'Desi Networks LLC','domain_info get_info (clName)');
-is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?
-is($dri->get_info('clWhois'),'whois.nic.desi','domain_info get_info (clWhois)');
-is($dri->get_info('clWebsite'),undef,'domain_info get_info (clWebsite)');
-$s=$dri->get_info('status');
-isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
-is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list');
-is($dri->get_info('crDate'),'2013-12-03T11:25:25','domain_info get_info (crDate)');
-is($dri->get_info('upDate'),'2013-12-03T13:43:11','domain_info get_info (upDate)');
-is($dri->get_info('exDate'),'2023-12-03T11:25:25','domain_info get_info (exDate)');
-is($dri->get_info('wuDate'),'2014-06-19T12:26:09','domain_info get_info (wuDate)');
-$h=$dri->get_info('ns');
-isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
-@hs=$h->get_names();
-is_deeply(\@hs,['ns1.key-systems.net','ns2.key-systems.net','ns3.key-systems.net'],'domain_info get_info (ns) get_names');
-$c=$dri->get_info('contact');
-isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
-is_deeply([$c->types()],['admin','billing','registrant','tech'],'domain_info get_info (contactSet) types');
-is($c->get('registrant')->srid(),'P-RNO22','domain_info get_info (contact) registrant srid');
-is($c->get('admin')->srid(),'P-RNO22','domain_info get_info (contact) admin srid');
-is($c->get('tech')->srid(),'P-RNO22','domain_info get_info (contact) tech srid');
-is($c->get('billing')->srid(),'P-RNO22','domain_info get_info (contact) tech srid');
-$r = $c->get('registrant');
-isa_ok($r,'Net::DRI::Data::Contact','domain_info get_info (contact) registrant contact');
-is($r->name(),'Ravin Ohri','domain_info get_info (contact) registrant name');
-is($r->org(),'Desi Networks LLC','domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # NIC.BR
