@@ -359,6 +359,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/IT/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/Notifications.pm
+lib/Net/DRI/Protocol/EPP/Extensions/IT/SecDNS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Keygroup.pm
 lib/Net/DRI/Protocol/EPP/Extensions/KeyRelay.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LaunchPhase.pm

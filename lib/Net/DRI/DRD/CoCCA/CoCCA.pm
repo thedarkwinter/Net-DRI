@@ -1,7 +1,7 @@
 ## Domain Registry Interface, CoCCA Registry Driver for multiple TLDs
 ##
 ## Copyright (c) 2008-2010 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2017,2019 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -32,9 +32,6 @@ Net::DRI::DRD::CoCCA::GTLD - CoCCA Registry driver for Net::DRI
 
 Please see the README file for details.
 
-This is only a prototype for testing purpose. Each TLD registry should have its own DRD module
-implementing local policies.
-
 =head1 SUPPORT
 
 For now, support questions should be sent to:
@@ -54,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008-2010 Patrick Mevzek <netdri@dotandco.com>.
-Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>
+Copyright (c) 2017,2019 Michael Holloway <michael@thedarkwinter.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -68,18 +65,35 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub periods      { return map { DateTime::Duration->new(years => $_) } (1..5); }
-sub name         { return 'CoCCA::CoCCA'; }
-sub tlds         { return (qw/cx gs tl ki mu nf ht na ng cc cm sb mg/); }
+sub new
+{
+	my $class=shift;
+	my $self=$class->SUPER::new(@_);
+	$self->{info}->{host_as_attr}=0;
+	$self->{info}->{contact_i18n}=4;
+	return $self;
+}
+
+sub periods	{ return map { DateTime::Duration->new(years => $_) } (1..10); }
+sub name    { return 'CoCCA::CoCCA'; }
+
+# README: this is not a shared platform!
+sub tlds
+{
+  my @others = qw/cx gs tl ki mu nf ht na ng cc cm sb mg/;
+  my @so = qw/so com.so edu.so gov.so me.so net.so org.so/;
+  return (@others,@so);
+}
+
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
 {
- my ($self,$type)=@_;
-
- return ('Net::DRI::Transport::Socket',{remote_host => 'ote.epp.cocca.cx'},'Net::DRI::Protocol::EPP',{}) if $type eq 'epp';
- return;
+  my ($self,$type)=@_;
+  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA', {'brown_fee_version' => '0.8'}) if $type eq 'epp';
+  #FIXME: Currently the server is reporting fee-1.0, but with format of fee-0.8. In short, its currently broken.
+  return;
 }
 
 ####################################################################################################

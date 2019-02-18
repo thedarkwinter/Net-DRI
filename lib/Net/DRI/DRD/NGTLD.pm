@@ -340,7 +340,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art bar basketball best budapest ceo college contact desi design fans feedback forum fun gent host icu ink love observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz
+art bar basketball best budapest ceo college contact desi design fans feedback forum fun gent host icu ink love monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art bar basketball best budapest ceo college contact desi design fans feedback forum fun gent host icu ink love observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds = qw/art bar basketball best budapest ceo college contact desi design fans feedback forum fun gent host icu ink love monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
