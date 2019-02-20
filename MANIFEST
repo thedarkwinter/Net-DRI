@@ -159,7 +159,8 @@ lib/Net/DRI/DRD/TeleInfo.pm
 lib/Net/DRI/DRD/TMDB.pm
 lib/Net/DRI/DRD/TRA/AE.pm
 lib/Net/DRI/DRD/TRA/BH.pm
-lib/Net/DRI/DRD/UniRegistry.pm
+lib/Net/DRI/DRD/UniRegistry/UniRegistry.pm
+lib/Net/DRI/DRD/UniRegistry/INC.pm
 lib/Net/DRI/DRD/UPU.pm
 lib/Net/DRI/DRD/VeriSign/COM_NET.pm
 lib/Net/DRI/DRD/VeriSign/NameStore.pm

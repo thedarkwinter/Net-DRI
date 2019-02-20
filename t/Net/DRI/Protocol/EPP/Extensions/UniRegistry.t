@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 12;
+use Test::More tests => 17;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -22,7 +22,7 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_current_registry('UniRegistry');
+$dri->add_current_registry('UniRegistry::UniRegistry');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
@@ -83,5 +83,21 @@ $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),'124','message_retrieve get_info(last_id)');
 is($dri->get_info('reID','message',124),'registrar_a','message_retrieve get_info(reID)');
+
+
+
+#####################
+## Test .inc profile
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
+$dri->add_current_registry('UniRegistry::INC');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example22.inc</domain:name></domain:cd><domain:cd><domain:name avail="0">examexample2.inc</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example22.inc','examexample2.inc');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example22.inc</domain:name><domain:name>examexample2.inc</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check .inc multi build');
+is($rc->is_success(),1,'domain_check .inc multi is_success');
+is($dri->get_info('exist','domain','example22.inc'),0,'domain_check .inc multi get_info(exist) 1/2');
+is($dri->get_info('exist','domain','examexample2.inc'),1,'domain_check .inc multi get_info(exist) 2/2');
+is($dri->get_info('exist_reason','domain','examexample2.inc'),'In use','domain_check .inc multi get_info(exist_reason)');
 
 exit 0;

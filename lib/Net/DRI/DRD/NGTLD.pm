@@ -1173,6 +1173,48 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =pod
 
+=head3 TLDs
+
+inc
+
+UniRegistry use a distrinc server for this TLD
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric> http://ns.uniregistry.net/centric-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> http://ns.uniregistry.net/market-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> (poll parser suppliment)
+
+=head3 Other extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/epp/sync-1.0
+
+=cut
+
+ if ($bep eq 'unireg_inc') {
+  # These methods are in the DRD
+  require Net::DRI::DRD::UniRegistry;
+  *market_check = sub { return Net::DRI::DRD::UniRegistry::market_check(@_); };
+  *market_info= sub { return Net::DRI::DRD::UniRegistry::market_info(@_); };
+  *market_create= sub { return Net::DRI::DRD::UniRegistry::market_create(@_); };
+  *market_update= sub { return Net::DRI::DRD::UniRegistry::market_update(@_); };
+ }
+
+ return {
+     bep_type => 1, # dedicated
+     tlds => ['inc'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
+     whois_server => 'whois.nic.inc',
+   } if $bep eq 'unireg_inc';
+
+=pod
+
 
 =head2 Verisign
 
