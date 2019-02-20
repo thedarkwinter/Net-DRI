@@ -1155,11 +1155,11 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  if ($bep eq 'unireg') {
   # These methods are in the DRD
-  require Net::DRI::DRD::UniRegistry;
-  *market_check = sub { return Net::DRI::DRD::UniRegistry::market_check(@_); };
-  *market_info= sub { return Net::DRI::DRD::UniRegistry::market_info(@_); };
-  *market_create= sub { return Net::DRI::DRD::UniRegistry::market_create(@_); };
-  *market_update= sub { return Net::DRI::DRD::UniRegistry::market_update(@_); };
+  require Net::DRI::DRD::UniRegistry::UniRegistry;
+  *market_check = sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_check(@_); };
+  *market_info= sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_info(@_); };
+  *market_create= sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_create(@_); };
+  *market_update= sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_update(@_); };
  }
 
  return {
@@ -1197,11 +1197,11 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  if ($bep eq 'unireg_inc') {
   # These methods are in the DRD
-  require Net::DRI::DRD::UniRegistry;
-  *market_check = sub { return Net::DRI::DRD::UniRegistry::market_check(@_); };
-  *market_info= sub { return Net::DRI::DRD::UniRegistry::market_info(@_); };
-  *market_create= sub { return Net::DRI::DRD::UniRegistry::market_create(@_); };
-  *market_update= sub { return Net::DRI::DRD::UniRegistry::market_update(@_); };
+  require Net::DRI::DRD::UniRegistry::INC;
+  *market_check = sub { return Net::DRI::DRD::UniRegistry::INC::market_check(@_); };
+  *market_info= sub { return Net::DRI::DRD::UniRegistry::INC::market_info(@_); };
+  *market_create= sub { return Net::DRI::DRD::UniRegistry::INC::market_create(@_); };
+  *market_update= sub { return Net::DRI::DRD::UniRegistry::INC::market_update(@_); };
  }
 
  return {
