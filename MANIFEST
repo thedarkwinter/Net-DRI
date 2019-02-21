@@ -457,7 +457,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/UA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UA/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UA/HostDelete.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry.pm
-lib/Net/DRI/Protocol/EPP/Extensions/UniRegistryINC.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Centric.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Market.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/RegistryMessage.pm
