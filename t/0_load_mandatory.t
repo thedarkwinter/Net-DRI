@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 540;
+use Test::More tests => 538;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -61,7 +61,6 @@ use_ok('Net::DRI::Data::StatusList');
 use_ok('Net::DRI::DRD');
 use_ok('Net::DRI::DRD::AdamsNames');
 use_ok('Net::DRI::DRD::Afilias::Afilias');
-use_ok('Net::DRI::DRD::Afilias::IN');
 use_ok('Net::DRI::DRD::Afilias::PIR');
 use_ok('Net::DRI::DRD::Afilias::Shared');
 use_ok('Net::DRI::DRD::AFNIC::AFNIC');
@@ -111,6 +110,7 @@ use_ok('Net::DRI::DRD::KNET');
 use_ok('Net::DRI::DRD::KSRegistry');
 use_ok('Net::DRI::DRD::LVRegistry');
 use_ok('Net::DRI::DRD::NASK');
+use_ok('Net::DRI::DRD::Neustar::IN');
 use_ok('Net::DRI::DRD::Neustar::Narwhal');
 use_ok('Net::DRI::DRD::Neustar::TWNIC');
 use_ok('Net::DRI::DRD::NGTLD');
@@ -338,8 +338,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::IDN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::IENUMAT');
 use_ok('Net::DRI::Protocol::EPP::Extensions::IIS');
 use_ok('Net::DRI::Protocol::EPP::Extensions::IIS::Extensions');
-use_ok('Net::DRI::Protocol::EPP::Extensions::IN');
-use_ok('Net::DRI::Protocol::EPP::Extensions::IN::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::IRegistry');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ISPAPI');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ISPAPI::KeyValue');
