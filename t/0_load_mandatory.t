@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 539;
+use Test::More tests => 538;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -132,7 +132,6 @@ use_ok('Net::DRI::DRD::RESTENA');
 use_ok('Net::DRI::DRD::SIDN::GTLD');
 use_ok('Net::DRI::DRD::SIDN::NL');
 use_ok('Net::DRI::DRD::SITA');
-use_ok('Net::DRI::DRD::SONIC');
 use_ok('Net::DRI::DRD::SWITCH');
 use_ok('Net::DRI::DRD::TangoRS::CORE');
 use_ok('Net::DRI::DRD::TangoRS::TangoRS');
@@ -280,6 +279,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Host');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CNNIC::Registry');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CoCCA');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CoCCA::IPVerification');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CoCCA::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ContactVerification');
@@ -390,7 +390,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::Nominet::Session');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NO::Result');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NSgroup');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NZ');
-use_ok('Net::DRI::Protocol::EPP::Extensions::PH');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PIR');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL');
 use_ok('Net::DRI::Protocol::EPP::Extensions::PL::Contact');
