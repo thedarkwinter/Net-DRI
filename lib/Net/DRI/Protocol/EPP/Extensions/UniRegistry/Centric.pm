@@ -154,6 +154,13 @@ sub create
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
  my $urc;
+
+ # urc is optional for .inc
+ if ($domain && $domain =~ m/\.(inc)$/) {
+  return unless ( Net::DRI::Util::has_key($rd,'contact')) && (Net::DRI::Util::check_isa($rd->{'contact'},'Net::DRI::Data::ContactSet')) && ($urc = $rd->{'contact'}->get('urc') );
+
+ }
+
  Net::DRI::Exception::usererr_insufficient_parameters('URC contact required') unless ( (Net::DRI::Util::has_key($rd,'contact')) && (Net::DRI::Util::check_isa($rd->{'contact'},'Net::DRI::Data::ContactSet')) && ($urc = $rd->{'contact'}->get('urc')) );
 
  my @n = build_centric($urc,$epp->{contacti18n});

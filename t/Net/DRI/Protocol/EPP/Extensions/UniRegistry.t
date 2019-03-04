@@ -8,7 +8,8 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 17;
+use Test::More tests => 20;
+use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -99,5 +100,22 @@ is($rc->is_success(),1,'domain_check .inc multi is_success');
 is($dri->get_info('exist','domain','example22.inc'),0,'domain_check .inc multi get_info(exist) 1/2');
 is($dri->get_info('exist','domain','examexample2.inc'),1,'domain_check .inc multi get_info(exist) 2/2');
 is($dri->get_info('exist_reason','domain','examexample2.inc'),'In use','domain_check .inc multi get_info(exist_reason)');
+
+# urc is optional for .inc (mandatory for all other TLDs under Uniregistry!)
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.inc</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+# .inc create with urc
+$rc=$dri->domain_create('example3-with-urc.inc',{pure_create=>1,auth=>{pw=>'2fooBAR'},contact=>$cs} );
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3-with-urc.inc</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create>'.'<extension><urc:registrant xmlns:urc="http://ns.uniregistry.net/centric-1.0" xsi:schemaLocation="http://ns.uniregistry.net/centric-1.0 centric-1.0.xsd"><urc:postalInfo type="loc"><urc:name>Juan Ordonez</urc:name><urc:org>Ejemplo Compania An6nima</urc:org><urc:addr><urc:street>123 Calle Ejemplo</urc:street><urc:street>Local numero 60</urc:street><urc:city>Caracas</urc:city><urc:sp>DC</urc:sp><urc:pc>1010</urc:pc><urc:cc>VE</urc:cc></urc:addr></urc:postalInfo><urc:postalInfo type="int"><urc:name>John Doe</urc:name><urc:org>Example Inc.</urc:org><urc:addr><urc:street>123 Example Dr.</urc:street><urc:street>Suite 100</urc:street><urc:city>Dulles</urc:city><urc:sp>VA</urc:sp><urc:pc>20166-6503</urc:pc><urc:cc>US</urc:cc></urc:addr></urc:postalInfo><urc:voice x="1234">+1.7035555555</urc:voice><urc:fax x="4321">+1.7035555556</urc:fax><urc:email>jdoe@example.com</urc:email><urc:emailAlt>jdoe2@foobar.net</urc:emailAlt><urc:mobile>+1.6504231234</urc:mobile><urc:security><urc:challenge><urc:question>Question 1</urc:question><urc:answer>Answer 1</urc:answer></urc:challenge><urc:challenge><urc:question>Question 2</urc:question><urc:answer>Answer 2</urc:answer></urc:challenge><urc:challenge><urc:question>Question 3</urc:question><urc:answer>Answer 3</urc:answer></urc:challenge></urc:security></urc:registrant></extension>'.'<clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create .inc with urc build_xml');
+# .inc create without urc
+$cs = delete $cs->{'challenge'};
+$rc=$dri->domain_create('example3-without-urc.inc',{pure_create=>1,auth=>{pw=>'2fooBAR'},contact=>$cs} );
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3-without-urc.inc</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create>'.'<clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create .inc without urc build_xml');
+
+# lets add an extra test - create a non .inc domain object without mandatory urc
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
+$dri->add_current_registry('UniRegistry::UniRegistry');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.inc</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+throws_ok { $dri->domain_create('example3-without-urc.audio',{pure_create=>1,auth=>{pw=>'2fooBAR'},contact=>$cs} ) } qr/URC contact required/, 'domain_create non .inc without urc build_xml';
 
 exit 0;
