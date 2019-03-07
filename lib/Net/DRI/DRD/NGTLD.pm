@@ -1133,7 +1133,7 @@ xn--3ds443g xn--fiq228c5hs xn--nyqy26a xn--rhqv96g xn--vuq861b
 
 =head3 TLDs
 
-audio auto blackfriday car cars christmas click country diet flowers game gift guitars help hiphop hiv hosting inc juegos link lol mom photo pics property sexy tattoo
+audio auto blackfriday car cars christmas click country diet flowers game gift guitars help hiphop hiv hosting juegos link lol mom photo pics property sexy tattoo
 
 Contended TLD's not included
 
@@ -1164,7 +1164,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['audio','auto','blackfriday','car','cars','christmas','click','country','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','sexy','tattoo'],
+     tlds => ['audio','auto','blackfriday','car','cars','christmas','click','country','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
