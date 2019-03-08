@@ -270,7 +270,7 @@ sub new
      'Telnic' => 'Neustar::Narwhal',
      'TRAVEL' => 'Neustar::Narwhal',
      'UNIREG' => 'UniRegistry::UniRegistry',
-     'UNIREG_INC' => 'UniRegistry::INC',
+     'UniRegistry' => 'UniRegistry::UniRegistry',
      'UNITEDTLD' => 'Donuts',
      'UnitedTLD::Donuts' => 'Donuts',
      'UnitedTLD::Rightside' => 'Donuts',
