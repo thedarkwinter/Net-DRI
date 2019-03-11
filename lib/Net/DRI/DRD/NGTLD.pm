@@ -1133,7 +1133,7 @@ xn--3ds443g xn--fiq228c5hs xn--nyqy26a xn--rhqv96g xn--vuq861b
 
 =head3 TLDs
 
-audio auto blackfriday car cars christmas click country diet flowers game gift guitars help hiphop hiv hosting inc juegos link lol mom photo pics property sexy tattoo
+audio auto blackfriday car cars christmas click country diet flowers game gift guitars help hiphop hiv hosting juegos link lol mom photo pics property sexy tattoo
 
 Contended TLD's not included
 
@@ -1155,21 +1155,63 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  if ($bep eq 'unireg') {
   # These methods are in the DRD
-  require Net::DRI::DRD::UniRegistry;
-  *market_check = sub { return Net::DRI::DRD::UniRegistry::market_check(@_); };
-  *market_info= sub { return Net::DRI::DRD::UniRegistry::market_info(@_); };
-  *market_create= sub { return Net::DRI::DRD::UniRegistry::market_create(@_); };
-  *market_update= sub { return Net::DRI::DRD::UniRegistry::market_update(@_); };
+  require Net::DRI::DRD::UniRegistry::UniRegistry;
+  *market_check = sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_check(@_); };
+  *market_info= sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_info(@_); };
+  *market_create= sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_create(@_); };
+  *market_update= sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_update(@_); };
  }
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['audio','auto','blackfriday','car','cars','christmas','click','country','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','inc','juegos','link','lol','mom','photo','pics','property','sexy','tattoo'],
+     tlds => ['audio','auto','blackfriday','car','cars','christmas','click','country','deal','diet','flowers','free','game','gift','guitars','help','hiphop','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
      whois_server => 'whois.uniregistry.net',
    } if $bep eq 'unireg';
+
+=pod
+
+=head3 TLDs
+
+inc
+
+UniRegistry use a distrinc server for this TLD
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric> http://ns.uniregistry.net/centric-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> http://ns.uniregistry.net/market-1.0
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> (poll parser suppliment)
+
+=head3 Other extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/epp/sync-1.0
+
+=cut
+
+ if ($bep eq 'unireg_inc') {
+  # These methods are in the DRD
+  require Net::DRI::DRD::UniRegistry::INC;
+  *market_check = sub { return Net::DRI::DRD::UniRegistry::INC::market_check(@_); };
+  *market_info= sub { return Net::DRI::DRD::UniRegistry::INC::market_info(@_); };
+  *market_create= sub { return Net::DRI::DRD::UniRegistry::INC::market_create(@_); };
+  *market_update= sub { return Net::DRI::DRD::UniRegistry::INC::market_update(@_); };
+ }
+
+ return {
+     bep_type => 1, # dedicated
+     tlds => ['inc'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
+     whois_server => 'whois.nic.inc',
+   } if $bep eq 'unireg_inc';
 
 =pod
 

@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 89;
+use Test::More tests => 100;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -22,7 +22,7 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_current_registry('UniRegistry');
+$dri->add_current_registry('UniRegistry::UniRegistry');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
@@ -186,6 +186,32 @@ is_string($R1,$E1.'<command><update><market:update xmlns:market="http://ns.unire
 is($rc->is_success(),1,'market_update acknowledge order is_success');
 
 ## END: Market - EPP Transform Commands
+##########################################
+
+
+
+##########################################
+## Market - simple market create test for new UniRegistry::INC DRD
+my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
+$dri->add_current_registry('UniRegistry::INC');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+## market create for an order of type "offer"
+$R2=$E1.'<response>'.r().'<resData><market:creData xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_6fc-UR</market:orderID><market:name type="domain">example.com</market:name><market:amount>15000.00</market:amount><market:status>received</market:status><market:crDate>2015-02-18T11:49:18Z</market:crDate></market:creData></resData>'.$TRID.'</response>'.$E2;
+$contact = { 'fname'=>'John', 'lname'=>'Doe', 'email'=>'jdoe@example.com', 'voice'=>'+1.5552223344' };
+$rc=$dri->market_create('example.com', { 'order_type'=>'offer', 'amount'=>15000, 'contact'=>$contact });
+is_string($R1,$E1.'<command><create><market:create xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd" type="offer"><market:name type="domain">example.com</market:name><market:amount>15000</market:amount><market:contact><market:firstName>John</market:firstName><market:lastName>Doe</market:lastName><market:email>jdoe@example.com</market:email><market:phone>+1.5552223344</market:phone></market:contact></market:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'market_create of type "offer" build');
+is($rc->is_success(),1,'market_create of type "offer" is_success');
+is($dri->get_info('action'),'create','market_create get_info(action)');
+is($dri->get_info('type'),'market','market_create get_info(type)');
+is($dri->get_info('order_id'),'MA_6fc-UR','market_create get_info(orderID)');
+is($dri->get_info('name'),'example.com','market_create get_info(name)');
+is($dri->get_info('type_attr'),'domain','market_create get_info(type_attr)');
+is($dri->get_info('amount'),'15000.00','market_create get_info(amount)');
+is($dri->get_info('status'),'received','market_create get_info(status)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','market_create get_info(crDate)');
+is("".$d,'2015-02-18T11:49:18','market_create get_info(crDate) value');
+## END: Market - simple market create test for new UniRegistry::INC DRD
 ##########################################
 
 exit 0;

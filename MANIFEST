@@ -123,6 +123,7 @@ lib/Net/DRI/DRD/KNET.pm
 lib/Net/DRI/DRD/KSRegistry.pm
 lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
+lib/Net/DRI/DRD/Neustar/IN.pm
 lib/Net/DRI/DRD/Neustar/Narwhal.pm
 lib/Net/DRI/DRD/Neustar/TWNIC.pm
 lib/Net/DRI/DRD/NGTLD.pm
@@ -159,7 +160,8 @@ lib/Net/DRI/DRD/TeleInfo.pm
 lib/Net/DRI/DRD/TMDB.pm
 lib/Net/DRI/DRD/TRA/AE.pm
 lib/Net/DRI/DRD/TRA/BH.pm
-lib/Net/DRI/DRD/UniRegistry.pm
+lib/Net/DRI/DRD/UniRegistry/INC.pm
+lib/Net/DRI/DRD/UniRegistry/UniRegistry.pm
 lib/Net/DRI/DRD/UPU.pm
 lib/Net/DRI/DRD/VeriSign/COM_NET.pm
 lib/Net/DRI/DRD/VeriSign/NameStore.pm
@@ -292,6 +294,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Host.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CNNIC/Registry.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CoCCA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/IPVerification.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CoCCA/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ContactVerification.pm
@@ -329,14 +332,16 @@ lib/Net/DRI/Protocol/EPP/Extensions/EURid/Sunrise.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FCCN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FCCN/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FCCN/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/Fee.pm
+lib/Net/DRI/Protocol/EPP/Extensions/FICORA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Balance.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FICORA/Message.pm
-lib/Net/DRI/Protocol/EPP/Extensions/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/FRED/FRED.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/KeySET.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/FRED/NSSET.pm
@@ -647,10 +652,11 @@ t/Net/DRI/Protocol/EPP/Extensions/EURid/Notifications.t
 t/Net/DRI/Protocol/EPP/Extensions/EURid/Registrar.t
 t/Net/DRI/Protocol/EPP/Extensions/EURid/Sunrise.t
 t/Net/DRI/Protocol/EPP/Extensions/FCCN.t
-t/Net/DRI/Protocol/EPP/Extensions/FICORA.t
 t/Net/DRI/Protocol/EPP/Extensions/Fee/Fee-0.11.t
 t/Net/DRI/Protocol/EPP/Extensions/Fee/Fee-0.21.t
 t/Net/DRI/Protocol/EPP/Extensions/Fee/Fee-0.23.t
+t/Net/DRI/Protocol/EPP/Extensions/Fee/Fee-1.0.t
+t/Net/DRI/Protocol/EPP/Extensions/FICORA.t
 t/Net/DRI/Protocol/EPP/Extensions/FRED.t
 t/Net/DRI/Protocol/EPP/Extensions/GMORegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/GracePeriod.t
