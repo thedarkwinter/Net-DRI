@@ -79,8 +79,7 @@ sub setup
 
 sub default_extensions {
  my ($self,$rp) = @_;
- $rp->{secdns_accredited}=1; ## TODO: if not SecDNS accredited set to 0 in order to not load SecDNS and IT::SecDNS - otherwise login fail :)
- if ($rp->{secdns_accredited} && $rp->{secdns_accredited} == 1) {
+ if ( exists( $rp->{custom}->{secdns_accredited} ) && $rp->{custom}->{secdns_accredited} == 1 ) {
   return qw(GracePeriod IT::Message IT::Contact IT::Domain IT::Notifications IT::SecDNS SecDNS);
  } else {
   return qw(GracePeriod IT::Message IT::Contact IT::Domain IT::Notifications);

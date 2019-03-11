@@ -95,7 +95,8 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
  # enforce only_local_extensions to check if need to parse SecDNS and IT::SecDNS
- return ('Net::DRI::Transport::HTTP',{protocol_connection=>'Net::DRI::Protocol::EPP::Extensions::HTTP', 'only_local_extensions' => 1},'Net::DRI::Protocol::EPP::Extensions::IT',{}) if $type eq 'epp'; ## EPP is over HTTPS here
+ my $secdns_accredited = 0; ## TODO: if SecDNS accredited set variable to 1 in order to parse SecDNS and IT::SecDNS in EPP login command :)
+ return ('Net::DRI::Transport::HTTP',{protocol_connection=>'Net::DRI::Protocol::EPP::Extensions::HTTP', 'only_local_extensions' => 1},'Net::DRI::Protocol::EPP::Extensions::IT',{custom=>{secdns_accredited=>$secdns_accredited}}) if $type eq 'epp'; ## EPP is over HTTPS here
  return;
 }
 

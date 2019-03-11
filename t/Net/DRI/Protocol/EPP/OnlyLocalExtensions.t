@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 31;
+use Test::More tests => 32;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -37,11 +37,20 @@ $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('IITCNR');
 $dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv});
-# test using only_local_extensions set to true (1)
+# test using only_local_extensions set to true (1) AND default secdns_accredited (0 - no)
+$R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>http://www.nic.it/ITNIC-EPP/extcon-2.0</extURI>http://www.nic.it/ITNIC-EPP/extdom-2.0<extURI></extURI><extURI>http://www.nic.it/ITNIC-EPP/extepp-2.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+$rc=$dri->process('session','login',['ClientX','foo-BAR2',{only_local_extensions => 1}]);
+is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>http://www.nic.it/ITNIC-EPP/extcon-1.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extdom-2.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extepp-2.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'IITCNR - session login build only_local_extensions = 1 and SECDNS not accredited');
+# test using only_local_extensions set to true (1) NON default secdns_accredited (1 - yes)
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
+$dri->{trid_factory}=sub { return 'ABC-12345'; };
+$dri->add_current_registry('IITCNR');
+$dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv},{ custom => { secdns_accredited => 1 } });
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.nic.it/ITNIC-EPP/extcon-2.0</extURI>http://www.nic.it/ITNIC-EPP/extdom-2.0<extURI></extURI><extURI>http://www.nic.it/ITNIC-EPP/extsecDNS-1.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extepp-2.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 $rc=$dri->process('session','login',['ClientX','foo-BAR2',{only_local_extensions => 1}]);
-is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>http://www.nic.it/ITNIC-EPP/extcon-1.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extdom-2.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extepp-2.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extsecDNS-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'IITCNR - session login build only_local_extensions = 1');
+is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>http://www.nic.it/ITNIC-EPP/extcon-1.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extdom-2.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extepp-2.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extsecDNS-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'IITCNR - session login build only_local_extensions = 1 and SECDNS accredited');
 # test based on Core.t and forcing IITCNR profile only_local_extensions set to false (0) - so login will be based/built on <greeting>
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://custom/obj1ext-1.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
