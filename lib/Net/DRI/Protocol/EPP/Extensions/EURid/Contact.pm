@@ -1,5 +1,5 @@
 ## Domain Registry Interface, EURid Contact EPP extension commands
-## (based on EURid registration_guidelines_v1_0E-epp.pdf)
+## (based on EURid Release Notes_11October2017_v1.0.pdf)
 ##
 ## Copyright (c) 2005,2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
@@ -81,7 +81,7 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/contact-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.1',$ns.'-1.1.xsd' ] });
+  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.2',$ns.'-1.2.xsd' ] });
  }
  return;
 }
