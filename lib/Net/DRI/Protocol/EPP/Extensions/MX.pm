@@ -77,7 +77,7 @@ sub setup
   return;
 }
 
-sub default_extensions { return qw/MX::Message MX::Rar MX::Domain/; }
+sub default_extensions { return qw/MX::Message MX::Rar MX::Domain SecDNS/; }
 
 ####################################################################################################
 1;
