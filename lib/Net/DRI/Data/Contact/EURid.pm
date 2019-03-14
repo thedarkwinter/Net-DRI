@@ -23,7 +23,7 @@ use Net::DRI::DRD::EURid;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-__PACKAGE__->register_attributes(qw(type vat lang));
+__PACKAGE__->register_attributes(qw(type vat lang whois_email));
 
 =pod
 
@@ -47,6 +47,14 @@ type of contact : billing, tech, registrant or onsite (mandatory)
 =head2 vat()
 
 vat number of contact
+
+=head2 lang()
+
+language of contact
+
+=head2 whois_email()
+
+to create, view and update the WHOIS email address (optional)
 
 =head1 SUPPORT
 

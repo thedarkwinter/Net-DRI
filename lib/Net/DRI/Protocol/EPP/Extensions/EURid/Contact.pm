@@ -98,6 +98,7 @@ sub create
  push @n,['contact-ext:type',$contact->type()];
  push @n,['contact-ext:vat',$contact->vat()] if $contact->vat();
  push @n,['contact-ext:lang',$contact->lang()];
+ push @n,['contact-ext:whoisEmail',$contact->whois_email()] if defined($contact->whois_email); # optional element
 
  my $eid=$mes->command_extension_register('contact-ext','create');
  $mes->command_extension($eid,\@n);
@@ -115,6 +116,7 @@ sub update
  my @n;
  push @n,['contact-ext:vat',$newc->vat()]   if defined($newc->vat());
  push @n,['contact-ext:lang',$newc->lang()] if defined($newc->lang());
+ push @n,['contact-ext:whoisEmail',$newc->whois_email()] if defined($newc->whois_email());
 
  my $eid=$mes->command_extension_register('contact-ext','update');
  $mes->command_extension($eid,['contact-ext:chg',@n]);
