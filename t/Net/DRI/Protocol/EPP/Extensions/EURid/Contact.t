@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Encode;
 
-use Test::More tests => 48;
+use Test::More tests => 55;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -93,6 +93,32 @@ is($rc->get_data('contact',$id,'id'),'c16212472','contact_create 3 get_info(id)'
 is(''.$rc->get_data('contact',$id,'crDate'),'2012-10-03T12:14:04','contact_create 3 get_info(crdate)');
 
 
+## contact create release_notes_march_2019.pdf - whoisEmail
+$R2=$E1.'<response>'.r().'<resData><contact:creData><contact:id>c16212472</contact:id><contact:crDate>2012-10-03T12:14:04.747Z</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
+$co=$dri->local_object('contact')->srid('client_id004');
+$co->name('Ann Ployee');
+$co->org('ACME Intercontinental');
+$co->street(['Main Street 122','Building 5','P.O. Box 123']);
+$co->city('Nowhere City');
+$co->pc('1234');
+$co->cc('BE');
+$co->voice('+32.123456789');
+$co->fax('+32.123456790');
+$co->email('nobody@example.com');
+$co->type('registrant');
+$co->vat('VAT1234567890');
+$co->lang('en');
+$co->whois_email('foo@bar.com');
+$rc=$dri->contact_create($co);
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>client_id004</contact:id><contact:postalInfo type="loc"><contact:name>Ann Ployee</contact:name><contact:org>ACME Intercontinental</contact:org><contact:addr><contact:street>Main Street 122</contact:street><contact:street>Building 5</contact:street><contact:street>P.O. Box 123</contact:street><contact:city>Nowhere City</contact:city><contact:pc>1234</contact:pc><contact:cc>BE</contact:cc></contact:addr></contact:postalInfo><contact:voice>+32.123456789</contact:voice><contact:fax>+32.123456790</contact:fax><contact:email>nobody@example.com</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><extension><contact-ext:create xmlns:contact-ext="http://www.eurid.eu/xml/epp/contact-ext-1.2" xsi:schemaLocation="http://www.eurid.eu/xml/epp/contact-ext-1.2 contact-ext-1.2.xsd"><contact-ext:type>registrant</contact-ext:type><contact-ext:vat>VAT1234567890</contact-ext:vat><contact-ext:lang>en</contact-ext:lang><contact-ext:whoisEmail>foo@bar.com</contact-ext:whoisEmail></contact-ext:create></extension><clTRID>TRID-0001</clTRID></command></epp>','contact_create build 4');
+is($rc->is_success(),1,'contact_create 4 is_success');
+$id=$rc->get_data('contact','client_id004','id');
+is($rc->get_data('contact',$id,'exist'),1,'contact_create 4 get_info(exist)');
+is($rc->get_data('contact',$id,'id'),'c16212472','contact_create 4 get_info(id)');
+is(''.$rc->get_data('contact',$id,'crDate'),'2012-10-03T12:14:04','contact_create 4 get_info(crdate)');
+is($rc->get_data('contact',$id,'id'),'c16212472','contact_create 4 get_info(id)');
+
+
 ## p.39
 $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
 $rc=$dri->contact_delete($dri->local_object('contact')->srid('c16212481'));
@@ -152,7 +178,7 @@ is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns=
 is($rc->is_success(),1,'contact_update is_success 4');
 
 ## p.45
-$R2=$E1.'<response>'.r().'<resData><contact:infData><contact:id>c16212587</contact:id><contact:roid>16212587-EURID</contact:roid><contact:status s="ok"/><contact:postalInfo type="loc"><contact:name>Ann Ployee</contact:name><contact:org>ACME Intercontinental</contact:org><contact:addr><contact:street>Main Street 122</contact:street><contact:street>Building 5</contact:street><contact:street>P.O. Box 123</contact:street><contact:city>Nowhere City</contact:city><contact:pc>1234</contact:pc><contact:cc>BE</contact:cc></contact:addr></contact:postalInfo><contact:voice>+32.123456789</contact:voice><contact:fax>+32.123456790</contact:fax><contact:email>nobody@example.com</contact:email><contact:clID>a123456</contact:clID><contact:crID>a123456</contact:crID><contact:crDate>2012-10-04T10:11:30.000Z</contact:crDate><contact:upDate>2012-10-04T10:11:30.000Z</contact:upDate></contact:infData></resData><extension><contact-ext:infData><contact-ext:type>registrant</contact-ext:type><contact-ext:vat>VAT1234567890</contact-ext:vat><contact-ext:lang>en</contact-ext:lang></contact-ext:infData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><contact:infData><contact:id>c16212587</contact:id><contact:roid>16212587-EURID</contact:roid><contact:status s="ok"/><contact:postalInfo type="loc"><contact:name>Ann Ployee</contact:name><contact:org>ACME Intercontinental</contact:org><contact:addr><contact:street>Main Street 122</contact:street><contact:street>Building 5</contact:street><contact:street>P.O. Box 123</contact:street><contact:city>Nowhere City</contact:city><contact:pc>1234</contact:pc><contact:cc>BE</contact:cc></contact:addr></contact:postalInfo><contact:voice>+32.123456789</contact:voice><contact:fax>+32.123456790</contact:fax><contact:email>nobody@example.com</contact:email><contact:clID>a123456</contact:clID><contact:crID>a123456</contact:crID><contact:crDate>2012-10-04T10:11:30.000Z</contact:crDate><contact:upDate>2012-10-04T10:11:30.000Z</contact:upDate></contact:infData></resData><extension><contact-ext:infData><contact-ext:type>registrant</contact-ext:type><contact-ext:vat>VAT1234567890</contact-ext:vat><contact-ext:lang>en</contact-ext:lang><contact-ext:whoisEmail>foo@bar.com</contact-ext:whoisEmail></contact-ext:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->contact_info($dri->local_object('contact')->srid('c16212587'));
 is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>c16212587</contact:id></contact:info></info><clTRID>TRID-0001</clTRID></command></epp>','contact_info build 3');
 is($rc->is_success(),1,'contact_info is_success');
@@ -185,5 +211,6 @@ is(''.$d,'2012-10-04T10:11:30','contact_info get_info(upDate) value');
 is($co->type(),'registrant','contact_info get_info(self) type');
 is($co->vat(),'VAT1234567890','contact_info get_info(self) vat');
 is($co->lang(),'en','contact_info get_info(self) lang');
+is($co->whois_email(),'foo@bar.com','contact_info get_info(self) whois_email');
 
 exit 0;

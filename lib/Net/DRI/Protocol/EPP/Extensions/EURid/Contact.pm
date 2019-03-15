@@ -136,9 +136,13 @@ sub info_parse
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
-  if ($name=~m/^(type|vat|lang)$/)
+  if ($name=~m/^(type|vat|lang|whoisEmail)$/)
   {
-   $s->$1($c->textContent());
+   if ($name eq 'whoisEmail') {
+    $s->whois_email($c->textContent());
+   } else {
+    $s->$1($c->textContent());
+   }
   }
  }
  return;
