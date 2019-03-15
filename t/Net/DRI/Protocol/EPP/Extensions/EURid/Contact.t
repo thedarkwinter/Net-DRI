@@ -10,7 +10,8 @@ use DateTime;
 use DateTime::Duration;
 use Encode;
 
-use Test::More tests => 55;
+use Test::More tests => 56;
+use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -117,6 +118,10 @@ is($rc->get_data('contact',$id,'exist'),1,'contact_create 4 get_info(exist)');
 is($rc->get_data('contact',$id,'id'),'c16212472','contact_create 4 get_info(id)');
 is(''.$rc->get_data('contact',$id,'crDate'),'2012-10-03T12:14:04','contact_create 4 get_info(crdate)');
 is($rc->get_data('contact',$id,'id'),'c16212472','contact_create 4 get_info(id)');
+
+# test error in case whois_email is sent for contact type != registrant
+$co->type('onsite');
+throws_ok { $dri->contact_create($co) } qr/Invalid parameters: whoisEmail is only supported for registrant contacts/, 'contact_create - whoisEmail only supported for type Registrant';
 
 
 ## p.39
