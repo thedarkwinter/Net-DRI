@@ -120,7 +120,6 @@ lib/Net/DRI/DRD/InternetNZ.pm
 lib/Net/DRI/DRD/IRegistry.pm
 lib/Net/DRI/DRD/ISPAPI.pm
 lib/Net/DRI/DRD/KNET.pm
-lib/Net/DRI/DRD/KSRegistry.pm
 lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
 lib/Net/DRI/DRD/Neustar/IN.pm
