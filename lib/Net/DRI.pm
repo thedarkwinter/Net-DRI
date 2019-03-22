@@ -228,6 +228,7 @@ sub new
      'IN' => 'Afilias::IN',
      'INFO' => 'Afilias::Afilias',
      'IT' => 'IITCNR',
+     'KSRegistry' => 'CentralNic::CentralNic',
      'LC' => 'Afilias::Shared',
      'LU' => 'RESTENA',
      'LV' => 'LVRegistry',
