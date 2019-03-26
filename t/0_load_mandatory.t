@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 539;
+use Test::More tests => 538;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -107,7 +107,6 @@ use_ok('Net::DRI::DRD::InternetNZ');
 use_ok('Net::DRI::DRD::IRegistry');
 use_ok('Net::DRI::DRD::ISPAPI');
 use_ok('Net::DRI::DRD::KNET');
-use_ok('Net::DRI::DRD::KSRegistry');
 use_ok('Net::DRI::DRD::LVRegistry');
 use_ok('Net::DRI::DRD::NASK');
 use_ok('Net::DRI::DRD::Neustar::IN');
