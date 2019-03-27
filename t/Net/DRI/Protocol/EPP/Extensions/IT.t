@@ -216,6 +216,10 @@ is($dri->get_info('idn_created','message',92),'ᾀᾀᾀᾀ.it','idn remapped me
 
 
 # tests based on: DNSSEC in the ccTLD-IT-ENG.pdf (Last update: August 1, 2017)
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 0});
+$dri->{trid_factory}=sub { return 'ABC-12345'; };
+$dri->add_current_registry('IITCNR');
+$dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv},{ custom => { secdns_accredited => 1 } });
 
 # force secDNS-1.1
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.nic.it/ITNIC-EPP/extcon-2.0</extURI>http://www.nic.it/ITNIC-EPP/extdom-2.0<extURI></extURI><extURI>http://www.nic.it/ITNIC-EPP/extsecDNS-1.0</extURI><extURI>http://www.nic.it/ITNIC-EPP/extepp-2.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
