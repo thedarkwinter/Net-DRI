@@ -280,7 +280,7 @@ sub info_parse
     $rinfo->{domain}->{$oname}->{registrantCountry}=$c->textContent();
   } elsif ($name eq 'reason') {
     # this is only used for transfers - maybe we should break this function in the future! at the moment handles: infDataType and trnDataType :)
-    $rinfo->{domain}->{$oname}->{registrantCountry}=$c->textContent();
+    $rinfo->{domain}->{$oname}->{reason}=$c->textContent();
   }
  }
  $rinfo->{domain}->{$oname}->{nsgroup}=\@nsg if @nsg;
