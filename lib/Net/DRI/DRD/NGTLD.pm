@@ -340,7 +340,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art baby bar basketball best budapest ceo college contact desi design fans feedback forum fun gent host icu ink love monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz
+art baby bar basketball best budapest cam ceo college contact desi design fans feedback forum fun gent host icu ink love monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art baby bar basketball best budapest ceo college contact desi design fans feedback forum fun gent host icu ink love monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds = qw/art baby bar basketball best budapest cam ceo college contact desi design fans feedback forum fun gent host icu ink love monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -664,34 +664,6 @@ Contended TLD's not included
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.8' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'knet';
-
-=pod
-
-
-=head2 KS Registry (Key Sytems)
-
- $dri->add_registry('NGTLD',{provider=>'ks'});
-
-=head3 Status: Working
-
-=head3 Custom extensions
-
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
-
-=head3 TLDs
-
-cam
-
-=cut
-
- return {
-     bep_type => 1, # dedicated
-     tlds => ['cam'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','VeriSign::PollLowBalance'], 'brown_fee_version' => '0.7' }],
-     contact_i18n => 1,
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'ks';
-
 
 =pod
 

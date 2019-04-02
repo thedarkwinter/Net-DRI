@@ -120,7 +120,6 @@ lib/Net/DRI/DRD/InternetNZ.pm
 lib/Net/DRI/DRD/IRegistry.pm
 lib/Net/DRI/DRD/ISPAPI.pm
 lib/Net/DRI/DRD/KNET.pm
-lib/Net/DRI/DRD/KSRegistry.pm
 lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
 lib/Net/DRI/DRD/Neustar/IN.pm
@@ -729,6 +728,7 @@ t/Net/DRI/Protocol/EPP/Extensions/VeriSign/WhoisInfo.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/WhoWas.t
 t/Net/DRI/Protocol/EPP/Extensions/ZACR.t
 t/Net/DRI/Protocol/EPP/Message.t
+t/Net/DRI/Protocol/EPP/OnlyLocalExtensions.t
 t/Net/DRI/Protocol/Message.t
 t/Net/DRI/Protocol/OpenSRS/XCP.t
 t/Net/DRI/Protocol/ResultStatus.t

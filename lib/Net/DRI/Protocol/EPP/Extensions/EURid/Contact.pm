@@ -1,5 +1,5 @@
 ## Domain Registry Interface, EURid Contact EPP extension commands
-## (based on EURid registration_guidelines_v1_0E-epp.pdf)
+## (based on EURid Release Notes_11October2017_v1.0.pdf)
 ##
 ## Copyright (c) 2005,2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
@@ -81,7 +81,7 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/contact-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.1',$ns.'-1.1.xsd' ] });
+  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.2',$ns.'-1.2.xsd' ] });
  }
  return;
 }
@@ -98,6 +98,7 @@ sub create
  push @n,['contact-ext:type',$contact->type()];
  push @n,['contact-ext:vat',$contact->vat()] if $contact->vat();
  push @n,['contact-ext:lang',$contact->lang()];
+ push @n,['contact-ext:whoisEmail',$contact->whois_email()] if defined($contact->whois_email); # optional element
 
  my $eid=$mes->command_extension_register('contact-ext','create');
  $mes->command_extension($eid,\@n);
@@ -115,6 +116,7 @@ sub update
  my @n;
  push @n,['contact-ext:vat',$newc->vat()]   if defined($newc->vat());
  push @n,['contact-ext:lang',$newc->lang()] if defined($newc->lang());
+ push @n,['contact-ext:whoisEmail',$newc->whois_email()] if defined($newc->whois_email());
 
  my $eid=$mes->command_extension_register('contact-ext','update');
  $mes->command_extension($eid,['contact-ext:chg',@n]);
@@ -134,9 +136,13 @@ sub info_parse
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
-  if ($name=~m/^(type|vat|lang)$/)
+  if ($name=~m/^(type|vat|lang|whoisEmail)$/)
   {
-   $s->$1($c->textContent());
+   if ($name eq 'whoisEmail') {
+    $s->whois_email($c->textContent());
+   } else {
+    $s->$1($c->textContent());
+   }
   }
  }
  return;

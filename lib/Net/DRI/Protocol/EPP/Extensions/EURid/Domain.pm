@@ -92,7 +92,7 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/domain-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.1',$ns.'-2.1.xsd' ] });
+  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.2',$ns.'-2.2.xsd' ] });
  }
  foreach my $ns (qw/homoglyph/)
  {
@@ -274,6 +274,13 @@ sub info_parse
    }
    $p{contact}=$cs;
    $rinfo->{domain}->{$oname}->{pending_transaction}=\%p;
+  } elsif ($name eq 'maxExtensionPeriod') {
+    $rinfo->{domain}->{$oname}->{maxExtensionPeriod}=$c->textContent();
+  } elsif ($name eq 'registrantCountry') {
+    $rinfo->{domain}->{$oname}->{registrantCountry}=$c->textContent();
+  } elsif ($name eq 'reason') {
+    # this is only used for transfers - maybe we should break this function in the future! at the moment handles: infDataType and trnDataType :)
+    $rinfo->{domain}->{$oname}->{reason}=$c->textContent();
   }
  }
  $rinfo->{domain}->{$oname}->{nsgroup}=\@nsg if @nsg;

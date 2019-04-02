@@ -23,7 +23,7 @@ use Net::DRI::DRD::EURid;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-__PACKAGE__->register_attributes(qw(type vat lang));
+__PACKAGE__->register_attributes(qw(type vat lang whois_email));
 
 =pod
 
@@ -47,6 +47,14 @@ type of contact : billing, tech, registrant or onsite (mandatory)
 =head2 vat()
 
 vat number of contact
+
+=head2 lang()
+
+language of contact
+
+=head2 whois_email()
+
+to create, view and update the WHOIS email address (optional)
 
 =head1 SUPPORT
 
@@ -111,6 +119,9 @@ sub validate
 
  ## For registrants, country must be in EU
  Net::DRI::Exception::usererr_invalid_parameters('Registrant contact must be in EU') if ($self->type() && ($self->type() eq 'registrant') && !exists($Net::DRI::DRD::EURid::CCA2_EU{uc($self->cc())}));
+
+ ## whois_email can only be used for type registrant (optional)
+ Net::DRI::Exception::usererr_invalid_parameters('whoisEmail is only supported for registrant contacts') if ($self->type() && ($self->type() ne 'registrant') && $self->whois_email);
 
  return 1; ## everything ok.
 }

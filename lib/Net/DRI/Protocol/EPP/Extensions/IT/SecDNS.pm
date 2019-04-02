@@ -61,6 +61,12 @@ sub register_commands {
   };
 }
 
+sub setup {
+  my ($class, $po, $version)=@_;
+  $po->ns({ 'it_secdns' => [ 'http://www.nic.it/ITNIC-EPP/extsecDNS-1.0', 'extsecDNS-1.0.xsd' ] });
+  return;
+}
+
 ####################################################################################################
 
 sub parse_extdomain
