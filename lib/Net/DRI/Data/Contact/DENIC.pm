@@ -22,7 +22,7 @@ use Net::DRI::Exception;
 use Net::DRI::Util;
 use Email::Valid;
 
-__PACKAGE__->register_attributes(qw(type sip remarks));
+__PACKAGE__->register_attributes(qw(type uri_template));
 
 =pod
 
@@ -43,13 +43,10 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 The type of the contact (Person, Organization, whatever).
 
-=head2 sip()
+=head2 uri-template()
 
-The SIP telephone number of the contact.
+URL in the URI-Template format
 
-=head2 remarks()
-
-Remarks regarding the contact.
 
 =head1 SUPPORT
 
@@ -83,7 +80,7 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub validate ## See DENIC-11
+sub validate
 {
 	my ($self, $change) = @_;
 	$change ||= 0;
@@ -91,9 +88,6 @@ sub validate ## See DENIC-11
 
 	if (!$change)
 	{
-		Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: name/city/cc/srid mandatory')
-			unless (scalar($self->name()) && scalar($self->city())
-                                && scalar($self->cc()) && $self->srid());
 		push @errs,'srid'
 			unless Net::DRI::Util::xml_is_token($self->srid(),
 				3, 32);

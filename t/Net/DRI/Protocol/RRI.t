@@ -8,12 +8,12 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use Data::Dumper;
 
-use Test::More tests => 107;
+use Test::More tests => 37;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-response xmlns="http://registry.denic.de/global/1.0" xmlns:tr="http://registry.denic.de/transaction/1.0" xmlns:domain="http://registry.denic.de/domain/1.0" xmlns:contact="http://registry.denic.de/contact/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dnsentry="http://registry.denic.de/dnsentry/1.0">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-response xmlns="http://registry.denic.de/global/3.0" xmlns:tr="http://registry.denic.de/transaction/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:contact="http://registry.denic.de/contact/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0">';
 our $E2='</registry-response>';
 our $TRID='<tr:ctid>ABC-12345</tr:ctid><tr:stid>54322-XYZ</tr:stid>';
 
@@ -39,7 +39,7 @@ $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success<
 $rc = $dri->process('session', 'login', ['user','password']);
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Login successful');
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0"><login><user>user</user><password>password</password></login></registry-request>', 'Login XML correct');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0"><login><user>user</user><password>password</password></login></registry-request>', 'Login XML correct');
 
 ####################################################################################################
 ## Contact Operations
@@ -48,64 +48,97 @@ $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success<
 $rc = $dri->contact_check($dri->local_object('contact')->srid('DENIC-12345-BSP'));
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is(defined($rc) && $rc->is_success(), 1, 'Contact successfully checked');
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:contact="http://registry.denic.de/contact/1.0"><contact:check><contact:handle>DENIC-12345-BSP</contact:handle></contact:check></registry-request>', 'Check Contact XML correct');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:check><contact:handle>DENIC-12345-BSP</contact:handle></contact:check></registry-request>', 'Check Contact XML correct');
 is($dri->get_info('exist', 'contact', 'DENIC-12345-BSP'), 0, 'Contact does not exist');
 
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
 
 my $c = $dri->local_object('contact');
-$c->srid('DENIC-99990-10240-BSP');
+$c->srid('DENIC-1000002-MAX');
 $c->type('PERSON');
-$c->name('Theobald Tester');
-$c->org('Test-Org');
-$c->street(['Kleiner Dienstweg 17']);
-$c->pc('09538');
-$c->city('Gipsnich');
+$c->name('Max Mustermann');
+$c->org('DENIC eG');
+$c->street(['Abteilung Business Services - dies ist ein Text um die maximale Anzahl von Zeichen darzustellen, die in einem Adressfeld vorkommen können, die Anzahl der Zeichen ist auf zweihundertfünfundfünfzig begrenzt- Kaiserstrasse fünfundsiebzig bis siebenundsiebzig']);
+$c->pc('60329');
+$c->city('Frankfurt am Main');
 $c->cc('DE');
-$c->voice('+49.123456');
-$c->fax('+49.123457');
 $c->email('email@denic.de');
-$c->sip('sip:benutzer@denic.de');
-$c->remarks('Interesting remark');
-$c->disclose({voice =>1});
 
-# Contact create
+# Contact create (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7279&token=c5ea0100484bd1c67f535dc0fef2a7d6e318db53)
 $rc = $dri->contact_create($c);
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
-is($rc->is_success(), 1, 'Contact successfully created');
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:contact="http://registry.denic.de/contact/1.0"><contact:create><contact:handle>DENIC-99990-10240-BSP</contact:handle><contact:type>PERSON</contact:type><contact:name>Theobald Tester</contact:name><contact:organisation>Test-Org</contact:organisation><contact:postal><contact:address>Kleiner Dienstweg 17</contact:address><contact:postalCode>09538</contact:postalCode><contact:city>Gipsnich</contact:city><contact:countryCode>DE</contact:countryCode></contact:postal><contact:phone disclose="true">+49.123456</contact:phone><contact:fax>+49.123457</contact:fax><contact:email>email@denic.de</contact:email><contact:sip>sip:benutzer@denic.de</contact:sip><contact:remarks>Interesting remark</contact:remarks></contact:create><ctid>ABC-12345</ctid></registry-request>', 'Create Contact XML correct');
+is($rc->is_success(), 1, 'Contact successfully created (version 3.0)');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:create><contact:handle>DENIC-1000002-MAX</contact:handle><contact:type>PERSON</contact:type><contact:name>Max Mustermann</contact:name><contact:organisation>DENIC eG</contact:organisation><contact:postal><contact:address>Abteilung Business Services - dies ist ein Text um die maximale Anzahl von Zeichen darzustellen, die in einem Adressfeld vorkommen können, die Anzahl der Zeichen ist auf zweihundertfünfundfünfzig begrenzt- Kaiserstrasse fünfundsiebzig bis siebenundsiebzig</contact:address><contact:postalCode>60329</contact:postalCode><contact:city>Frankfurt am Main</contact:city><contact:countryCode>DE</contact:countryCode></contact:postal><contact:email>email@denic.de</contact:email></contact:create><ctid>ABC-12345</ctid></registry-request>', 'Create Contact XML correct (version 3.0)');
 
-# Contact update
+# Contact request (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7276&token=2455c5224f226dbc5aad5111c9c322ea6c46578b)
+my $c2 = $dri->local_object('contact');
+$c2->srid('DENIC-99995-GENREQ');
+$c2->type('REQUEST');
+$c2->uri_template('https://denic.de/contact/form{?Alabel,Ulabel}');
+$rc = $dri->contact_create($c2);
+isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
+is($rc->is_success(), 1, 'Contact successfully requested (version 3.0)');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:create><contact:handle>DENIC-99995-GENREQ</contact:handle><contact:type>REQUEST</contact:type><contact:uri-template>https://denic.de/contact/form{?Alabel,Ulabel}</contact:uri-template></contact:create><ctid>ABC-12345</ctid></registry-request>', 'Request Contact XML correct (version 3.0)');
+
+# Contact check (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7267&token=233fe9660085db3d25ff4f0b03374570065ac85d)
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><contact:checkData><contact:handle>DENIC-1000002-MAX</contact:handle><contact:status>exist</contact:status></contact:checkData></tr:data></tr:transaction>' . $E2;
+$rc = $dri->contact_check($c);
+isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
+is(defined($rc) && $rc->is_success(), 1, 'Contact successfully checked (version 3.0)');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:check><contact:handle>DENIC-1000002-MAX</contact:handle></contact:check></registry-request>', 'Check Contact XML correct (version 3.0)');
+is($dri->get_info('exist', 'contact', 'DENIC-1000002-MAX'), 1, 'Contact exists');
+
+# Contact update (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7291&token=65f46677cede396f7b8ff4beddd75bd39365d950)
 my $todo = $dri->local_object('changes');
+$todo->set('info', $c2);
+$rc = $dri->contact_update($c2, $todo);
+isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
+is($rc->is_success(), 1, 'Contact successfully updated (version 3.0)');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:update><contact:handle>DENIC-99995-GENREQ</contact:handle><contact:type>REQUEST</contact:type><contact:uri-template>https://denic.de/contact/form{?Alabel,Ulabel}</contact:uri-template></contact:update><ctid>ABC-12345</ctid></registry-request>', 'Update Contact XML correct (version 3.0)');
+
+# Contact update (original test tweaked)
+$todo = $dri->local_object('changes');
 $todo->set('info', $c);
 $rc = $dri->contact_update($c, $todo);
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Contact successfully updated');
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:contact="http://registry.denic.de/contact/1.0"><contact:update><contact:handle>DENIC-99990-10240-BSP</contact:handle><contact:type>PERSON</contact:type><contact:name>Theobald Tester</contact:name><contact:organisation>Test-Org</contact:organisation><contact:postal><contact:address>Kleiner Dienstweg 17</contact:address><contact:postalCode>09538</contact:postalCode><contact:city>Gipsnich</contact:city><contact:countryCode>DE</contact:countryCode></contact:postal><contact:phone disclose="true">+49.123456</contact:phone><contact:fax>+49.123457</contact:fax><contact:email>email@denic.de</contact:email><contact:sip>sip:benutzer@denic.de</contact:sip><contact:remarks>Interesting remark</contact:remarks></contact:update><ctid>ABC-12345</ctid></registry-request>', 'Update Contact XML correct');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:update><contact:handle>DENIC-1000002-MAX</contact:handle><contact:type>PERSON</contact:type><contact:name>Max Mustermann</contact:name><contact:organisation>DENIC eG</contact:organisation><contact:postal><contact:address>Abteilung Business Services - dies ist ein Text um die maximale Anzahl von Zeichen darzustellen, die in einem Adressfeld vorkommen können, die Anzahl der Zeichen ist auf zweihundertfünfundfünfzig begrenzt- Kaiserstrasse fünfundsiebzig bis siebenundsiebzig</contact:address><contact:postalCode>60329</contact:postalCode><contact:city>Frankfurt am Main</contact:city><contact:countryCode>DE</contact:countryCode></contact:postal><contact:email>email@denic.de</contact:email></contact:update><ctid>ABC-12345</ctid></registry-request>', 'Update Contact XML correct');
 
-# Contact check
-$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><contact:checkData><contact:handle>DENIC-99990-10240-BSP</contact:handle><contact:status>failed</contact:status></contact:checkData></tr:data></tr:transaction>' . $E2;
-$rc = $dri->contact_check($c);
+# Contact info (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7282&token=9f9392f2d7dc61d8286afb772603e6c2f53adde2)
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><contact:infoData><contact:handle>DENIC-99995-GENREQ</contact:handle><contact:type>REQUEST</contact:type><contact:uri-template>http://denic.de/contact/{Ulabel}</contact:uri-template><contact:changed>2010-03-31T15:51:08+02:00</contact:changed></contact:infoData></tr:data></tr:transaction>' . $E2;
+$rc = $dri->contact_info($dri->local_object('contact')->srid('DENIC-99995-GENREQ'));
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
-is(defined($rc) && $rc->is_success(), 1, 'Contact successfully checked');
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:contact="http://registry.denic.de/contact/1.0"><contact:check><contact:handle>DENIC-99990-10240-BSP</contact:handle></contact:check></registry-request>', 'Check Contact XML correct');
-is($dri->get_info('exist', 'contact', 'DENIC-99990-10240-BSP'), 1, 'Contact exists');
+is($rc->is_success(), 1, 'Contact successfully queried (version 3.0)');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:info><contact:handle>DENIC-99995-GENREQ</contact:handle></contact:info></registry-request>', 'Query Contact XML correct (version 3.0)');
+$c = $dri->get_info('self', 'contact', 'DENIC-99995-GENREQ');
+isa_ok($c, 'Net::DRI::Data::Contact::DENIC');
+is($c->type() . '|' . $c->uri_template(),
+	'REQUEST|http://denic.de/contact/{Ulabel}',
+	'Selected info from contact (version 3.0)');
+my $mod = $dri->get_info('upDate', 'contact', 'DENIC-99995-GENREQ');
+isa_ok($mod, 'DateTime');
+is($mod->ymd . 'T' . $mod->hms, '2010-03-31T15:51:08', 'Update Date (version 3.0)');
 
-# Contact info
-$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><contact:infoData><contact:handle>DENIC-99989-BSP</contact:handle><contact:type>ROLE</contact:type><contact:name>SyGroup GmbH</contact:name><contact:organisation>SyGroup GmbH</contact:organisation><contact:postal><contact:address>Gueterstrasse 86</contact:address><contact:city>Basel</contact:city><contact:postalCode>4053</contact:postalCode><contact:countryCode>CH</contact:countryCode></contact:postal><contact:phone>+41.613338033</contact:phone><contact:fax>+41.613831467</contact:fax><contact:email>info@sygroup.ch</contact:email><contact:sip>sip:secretary@sygroup.ch</contact:sip><contact:remarks>Live penguins in the office</contact:remarks><contact:changed>2007-05-23T22:55:33+02:00</contact:changed></contact:infoData></tr:data></tr:transaction>' . $E2;
+# Contact info (original test tweaked)
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><contact:infoData><contact:handle>DENIC-99989-BSP</contact:handle><contact:type>ROLE</contact:type><contact:name>SyGroup GmbH</contact:name><contact:organisation>SyGroup GmbH</contact:organisation><contact:postal><contact:address>Gueterstrasse 86</contact:address><contact:city>Basel</contact:city><contact:postalCode>4053</contact:postalCode><contact:countryCode>CH</contact:countryCode></contact:postal><contact:email>info@sygroup.ch</contact:email><contact:changed>2007-05-23T22:55:33+02:00</contact:changed></contact:infoData></tr:data></tr:transaction>' . $E2;
 $rc = $dri->contact_info($dri->local_object('contact')->srid('DENIC-99989-BSP'));
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Contact successfully queried');
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:contact="http://registry.denic.de/contact/1.0"><contact:info><contact:handle>DENIC-99989-BSP</contact:handle></contact:info></registry-request>', 'Query Contact XML correct');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:info><contact:handle>DENIC-99989-BSP</contact:handle></contact:info></registry-request>', 'Query Contact XML correct');
 $c = $dri->get_info('self', 'contact', 'DENIC-99989-BSP');
 isa_ok($c, 'Net::DRI::Data::Contact::DENIC');
-is($c->name() . '|' . $c->org() . '|' . $c->sip() . '|' . $c->type(),
-	'SyGroup GmbH|SyGroup GmbH|sip:secretary@sygroup.ch|ROLE',
+is($c->name() . '|' . $c->org() . '|' . $c->type(),
+	'SyGroup GmbH|SyGroup GmbH|ROLE',
 	'Selected info from contact');
-
-my $mod = $dri->get_info('upDate', 'contact', 'DENIC-99989-BSP');
+$mod = $dri->get_info('upDate', 'contact', 'DENIC-99989-BSP');
 isa_ok($mod, 'DateTime');
 is($mod->ymd . 'T' . $mod->hms, '2007-05-23T22:55:33', 'Update Date');
+
+exit 0;
+
+
+
+
 
 
 ####################################################################################################

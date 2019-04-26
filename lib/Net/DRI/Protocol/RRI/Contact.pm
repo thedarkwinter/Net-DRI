@@ -27,11 +27,13 @@ use DateTime::Format::ISO8601 ();
 
 =head1 NAME
 
-Net::DRI::Protocol::RRI::Contact - RRI Contact commands (DENIC-11) for Net::DRI
+Net::DRI::Protocol::RRI::Contact - RRI Contact commands (DENIC-22-EN_3.0) for Net::DRI
 
 =head1 DESCRIPTION
 
-Please see the README file for details.
+This was updated to represent changes listed under DENIC version 3.0.
+
+The fields Phone, Fax, Sip, Remarks and Disclose are no longer available
 
 =head1 SUPPORT
 
@@ -200,26 +202,13 @@ sub info_parse
   {
    my $el = $c->getFirstChild();
    $contact->org($el->getData()) if (defined($el));
-  } elsif ($name eq 'sip')
-  {
-   my $el = $c->getFirstChild();
-   $contact->sip($el->getData()) if (defined($el));
-  } elsif ($name eq 'remarks')
-  {
-   my $el = $c->getFirstChild();
-   $contact->remarks($el->getData()) if (defined($el));
-  } elsif ($name eq 'phone')
-  {
-   $contact->voice(parse_tel($c));
-  } elsif ($name eq 'fax')
-  {
-   $contact->fax(parse_tel($c));
   } elsif ($name eq 'postal')
   {
    parse_postalinfo($c,\%cd);
-  } elsif ($name eq 'disclose')
+  } elsif ($name eq 'uri-template')
   {
-   $contact->disclose(parse_disclose($c));
+    my $el = $c->getFirstChild();
+    $contact->uri_template($el->getData()) if (defined($el));
   }
  } continue { $c=$c->getNextSibling(); }
 
@@ -277,29 +266,6 @@ sub parse_postalinfo
  return;
 }
 
-sub parse_disclose
-{
- my $c=shift;
- my $flag=Net::DRI::Util::xml_parse_boolean($c->getAttribute('flag'));
- my %tmp;
- my $n=$c->getFirstChild();
- while($n)
- {
-  next unless ($n->nodeType() == 1);
-  my $name=$n->localname() || $n->nodeName();
-  next unless $name;
-  if ($name=~m/^(name|org|addr)$/)
-  {
-   my $t=$n->getAttribute('type');
-   $tmp{$1.'_'.$t}=$flag;
-  } elsif ($name=~m/^(voice|fax|email)$/)
-  {
-   $tmp{$1}=$flag;
-  }
- } continue { $n=$n->getNextSibling(); }
- return \%tmp;
-}
-
 ############ Transform commands
 
 sub build_tel
@@ -312,21 +278,6 @@ sub build_tel
  {
   return [$name,$tel];
  }
-}
-
-sub build_disclose
-{
- my $contact=shift;
- my $ref = shift;
- my @d = @$ref;
- my $ds=$contact->disclose();
- return () unless ($ds && ref($ds));
- foreach (@d) {
-  my ($c,$key) = split /:/, @{$_}[0];
-  $key = 'voice' if $key eq 'phone';
-  push @{$_}, { disclose => 'true'} if (defined($ds->{$key}) && $ds->{$key}==1);
- }
- return;
 }
 
 sub build_cdata
@@ -342,16 +293,12 @@ sub build_cdata
  _do_locint(\@addr,$contact,'postalCode','pc');
  _do_locint(\@addr,$contact,'city','city');
  _do_locint(\@addr,$contact,'countryCode','cc');
+ _do_locint(\@post,$contact,'uri-template','uri_template');
  push @post,['contact:postal',@addr] if @addr;
 
  push (@d,@post) if @post;
 
- push @d,build_tel('contact:phone',$contact->voice()) if defined($contact->voice());
- push @d,build_tel('contact:fax',$contact->fax()) if defined($contact->fax());
  push @d,['contact:email',$contact->email()] if defined($contact->email());
- push @d,['contact:sip',$contact->sip()] if defined($contact->sip());
- push @d,['contact:remarks', $contact->remarks()] if defined($contact->remarks());
- build_disclose($contact,\@d);
 
  return @d;
 }
