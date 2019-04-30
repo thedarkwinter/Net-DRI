@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 538;
+use Test::More tests => 539;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -119,6 +119,7 @@ use_ok('Net::DRI::DRD::NICChile');
 use_ok('Net::DRI::DRD::NICEC');
 use_ok('Net::DRI::DRD::NICMexico');
 use_ok('Net::DRI::DRD::NICRO');
+use_ok('Net::DRI::DRD::Nominet::Amazon');
 use_ok('Net::DRI::DRD::Nominet::GTLD');
 use_ok('Net::DRI::DRD::Nominet::MMX');
 use_ok('Net::DRI::DRD::Nominet::UK');
