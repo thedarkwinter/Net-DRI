@@ -8,7 +8,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use Data::Dumper;
 
-use Test::More tests => 37;
+use Test::More tests => 88;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -134,12 +134,6 @@ $mod = $dri->get_info('upDate', 'contact', 'DENIC-99989-BSP');
 isa_ok($mod, 'DateTime');
 is($mod->ymd . 'T' . $mod->hms, '2007-05-23T22:55:33', 'Update Date');
 
-exit 0;
-
-
-
-
-
 
 ####################################################################################################
 ## Domain Operations
@@ -148,7 +142,7 @@ exit 0;
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><domain:checkData><domain:handle>rritestdomain.de</domain:handle><domain:ace>rritestdomain.de</domain:ace><domain:status>free</domain:status></domain:checkData></tr:data></tr:transaction>' . $E2;
 $rc = $dri->domain_check('rritestdomain.de');
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:domain="http://registry.denic.de/domain/1.0"><domain:check><domain:handle>rritestdomain.de</domain:handle><domain:ace>rritestdomain.de</domain:ace></domain:check></registry-request>', 'Check Domain XML correct');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:domain="http://registry.denic.de/domain/3.0"><domain:check><domain:handle>rritestdomain.de</domain:handle><domain:ace>rritestdomain.de</domain:ace></domain:check></registry-request>', 'Check Domain XML correct');
 is($dri->get_info('exist', 'domain', 'rritestdomain.de'), 0, 'Domain does not exist');
 
 # Domain check using IDN (ace)
@@ -156,7 +150,7 @@ $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success<
 $rc = $dri->domain_check('xn--rriberdomain-flb.de');
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 utf8::encode($R1); # this encoding is normally done at transport so we have to encode it manually for this test to pass
-my $command = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:domain="http://registry.denic.de/domain/1.0"><domain:check><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace></domain:check></registry-request>';
+my $command = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:domain="http://registry.denic.de/domain/3.0"><domain:check><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace></domain:check></registry-request>';
 utf8::encode($command);
 is($R1, $command, 'Check Domain XML correct');
 is($dri->get_info('exist'), 0, 'domain get_info(exist)');
@@ -172,7 +166,7 @@ $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success<
 $rc = $dri->domain_check('rriüberdomain.de');
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 utf8::encode($R1); # this encoding is normally done at transport so we have to encode it manually for this test to pass
-$command = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:domain="http://registry.denic.de/domain/1.0"><domain:check><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace></domain:check></registry-request>';
+$command = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:domain="http://registry.denic.de/domain/3.0"><domain:check><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace></domain:check></registry-request>';
 utf8::encode($command);
 is($R1, $command, 'Check Domain XML correct');
 is($dri->get_info('exist'), 0, 'domain get_info(exist)');
@@ -187,8 +181,6 @@ $dri->cache_clear();
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
 my $cs = $dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('DENIC-99990-10240-BSP'), 'registrant');
-$cs->add($dri->local_object('contact')->srid('DENIC-99990-10240-BSP1'), 'admin');
-$cs->add($dri->local_object('contact')->srid('DENIC-99990-10240-BSP2'), 'tech');
 
 my @secdns = ({key_flags=>257,key_protocol=>3,key_alg=>5,key_pubKey=>'AwEAAdDECajHaTjfSoNTY58WcBah1BxPKVIHBz4IfLjfqMvium4lgKtKZLe97DgJ5/NQrNEGGQmr6fKvUj67cfrZUojZ2cGRizVhgkOqZ9scaTVXNuXLM5Tw7VWOVIceeXAuuH2mPIiEV6MhJYUsW6dvmNsJ4XwCgNgroAmXhoMEiWEjBB+wjYZQ5GtZHBFKVXACSWTiCtddHcueOeSVPi5WH94VlubhHfiytNPZLrObhUCHT6k0tNE6phLoHnXWU+6vpsYpz6GhMw/R9BFxW5PdPFIWBgoWk2/XFVRSKG9Lr61b2z1R126xeUwvw46RVy3h anV3vNO7LM5H niqaYclBbhk='});
 $rc = $dri->domain_create('rritestdomain.de', {
@@ -201,7 +193,7 @@ $rc = $dri->domain_create('rritestdomain.de', {
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully created');
 
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/1.0" xmlns:domain="http://registry.denic.de/domain/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:create><domain:handle>rritestdomain.de</domain:handle><domain:ace>rritestdomain.de</domain:ace><domain:contact role="admin-c">DENIC-99990-10240-BSP1</domain:contact><domain:contact role="holder">DENIC-99990-10240-BSP</domain:contact><domain:contact role="tech-c">DENIC-99990-10240-BSP2</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>rritestdomain.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>dns1.syhosting.ch.</dnsentry:nameserver><dnsentry:address>193.219.115.46</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:DNSKEY"><dnsentry:owner>rritestdomain.de.</dnsentry:owner><dnsentry:rdata><dnsentry:flags>257</dnsentry:flags><dnsentry:protocol>3</dnsentry:protocol><dnsentry:algorithm>5</dnsentry:algorithm><dnsentry:publicKey>AwEAAdDECajHaTjfSoNTY58WcBah1BxPKVIHBz4IfLjfqMvium4lgKtKZLe97DgJ5/NQrNEGGQmr6fKvUj67cfrZUojZ2cGRizVhgkOqZ9scaTVXNuXLM5Tw7VWOVIceeXAuuH2mPIiEV6MhJYUsW6dvmNsJ4XwCgNgroAmXhoMEiWEjBB+wjYZQ5GtZHBFKVXACSWTiCtddHcueOeSVPi5WH94VlubhHfiytNPZLrObhUCHT6k0tNE6phLoHnXWU+6vpsYpz6GhMw/R9BFxW5PdPFIWBgoWk2/XFVRSKG9Lr61b2z1R126xeUwvw46RVy3h anV3vNO7LM5H niqaYclBbhk=</dnsentry:publicKey></dnsentry:rdata></dnsentry:dnsentry></domain:create><ctid>ABC-12345</ctid></registry-request>', 'Create Domain XML correct');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:create><domain:handle>rritestdomain.de</domain:handle><domain:ace>rritestdomain.de</domain:ace><domain:contact role="holder">DENIC-99990-10240-BSP</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>rritestdomain.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>dns1.syhosting.ch.</dnsentry:nameserver><dnsentry:address>193.219.115.46</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:DNSKEY"><dnsentry:owner>rritestdomain.de.</dnsentry:owner><dnsentry:rdata><dnsentry:flags>257</dnsentry:flags><dnsentry:protocol>3</dnsentry:protocol><dnsentry:algorithm>5</dnsentry:algorithm><dnsentry:publicKey>AwEAAdDECajHaTjfSoNTY58WcBah1BxPKVIHBz4IfLjfqMvium4lgKtKZLe97DgJ5/NQrNEGGQmr6fKvUj67cfrZUojZ2cGRizVhgkOqZ9scaTVXNuXLM5Tw7VWOVIceeXAuuH2mPIiEV6MhJYUsW6dvmNsJ4XwCgNgroAmXhoMEiWEjBB+wjYZQ5GtZHBFKVXACSWTiCtddHcueOeSVPi5WH94VlubhHfiytNPZLrObhUCHT6k0tNE6phLoHnXWU+6vpsYpz6GhMw/R9BFxW5PdPFIWBgoWk2/XFVRSKG9Lr61b2z1R126xeUwvw46RVy3h anV3vNO7LM5H niqaYclBbhk=</dnsentry:publicKey></dnsentry:rdata></dnsentry:dnsentry></domain:create><ctid>ABC-12345</ctid></registry-request>', 'Create Domain XML correct');
 
 # Domain create idn (ace)
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
@@ -214,7 +206,7 @@ $rc = $dri->domain_create('xn--rriberdomain-flb.de', {
 	});
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully created');
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/1.0" xmlns:domain="http://registry.denic.de/domain/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:create><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace><domain:contact role="admin-c">DENIC-99990-10240-BSP1</domain:contact><domain:contact role="holder">DENIC-99990-10240-BSP</domain:contact><domain:contact role="tech-c">DENIC-99990-10240-BSP2</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>dns1.syhosting.ch.</dnsentry:nameserver><dnsentry:address>193.219.115.46</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:DNSKEY"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:flags>257</dnsentry:flags><dnsentry:protocol>3</dnsentry:protocol><dnsentry:algorithm>5</dnsentry:algorithm><dnsentry:publicKey>AwEAAdDECajHaTjfSoNTY58WcBah1BxPKVIHBz4IfLjfqMvium4lgKtKZLe97DgJ5/NQrNEGGQmr6fKvUj67cfrZUojZ2cGRizVhgkOqZ9scaTVXNuXLM5Tw7VWOVIceeXAuuH2mPIiEV6MhJYUsW6dvmNsJ4XwCgNgroAmXhoMEiWEjBB+wjYZQ5GtZHBFKVXACSWTiCtddHcueOeSVPi5WH94VlubhHfiytNPZLrObhUCHT6k0tNE6phLoHnXWU+6vpsYpz6GhMw/R9BFxW5PdPFIWBgoWk2/XFVRSKG9Lr61b2z1R126xeUwvw46RVy3h anV3vNO7LM5H niqaYclBbhk=</dnsentry:publicKey></dnsentry:rdata></dnsentry:dnsentry></domain:create><ctid>ABC-12345</ctid></registry-request>', 'Create Domain IDN (ace)	XML correct');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:create><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace><domain:contact role="holder">DENIC-99990-10240-BSP</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>dns1.syhosting.ch.</dnsentry:nameserver><dnsentry:address>193.219.115.46</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:DNSKEY"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:flags>257</dnsentry:flags><dnsentry:protocol>3</dnsentry:protocol><dnsentry:algorithm>5</dnsentry:algorithm><dnsentry:publicKey>AwEAAdDECajHaTjfSoNTY58WcBah1BxPKVIHBz4IfLjfqMvium4lgKtKZLe97DgJ5/NQrNEGGQmr6fKvUj67cfrZUojZ2cGRizVhgkOqZ9scaTVXNuXLM5Tw7VWOVIceeXAuuH2mPIiEV6MhJYUsW6dvmNsJ4XwCgNgroAmXhoMEiWEjBB+wjYZQ5GtZHBFKVXACSWTiCtddHcueOeSVPi5WH94VlubhHfiytNPZLrObhUCHT6k0tNE6phLoHnXWU+6vpsYpz6GhMw/R9BFxW5PdPFIWBgoWk2/XFVRSKG9Lr61b2z1R126xeUwvw46RVy3h anV3vNO7LM5H niqaYclBbhk=</dnsentry:publicKey></dnsentry:rdata></dnsentry:dnsentry></domain:create><ctid>ABC-12345</ctid></registry-request>', 'Create Domain IDN (ace)	XML correct');
 
 # Domain create idn (native)
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
@@ -227,13 +219,30 @@ $rc = $dri->domain_create('rriüberdomain.de', {
 	});
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully created');
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/1.0" xmlns:domain="http://registry.denic.de/domain/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:create><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace><domain:contact role="admin-c">DENIC-99990-10240-BSP1</domain:contact><domain:contact role="holder">DENIC-99990-10240-BSP</domain:contact><domain:contact role="tech-c">DENIC-99990-10240-BSP2</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>dns1.syhosting.ch.</dnsentry:nameserver><dnsentry:address>193.219.115.46</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:DNSKEY"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:flags>257</dnsentry:flags><dnsentry:protocol>3</dnsentry:protocol><dnsentry:algorithm>5</dnsentry:algorithm><dnsentry:publicKey>AwEAAdDECajHaTjfSoNTY58WcBah1BxPKVIHBz4IfLjfqMvium4lgKtKZLe97DgJ5/NQrNEGGQmr6fKvUj67cfrZUojZ2cGRizVhgkOqZ9scaTVXNuXLM5Tw7VWOVIceeXAuuH2mPIiEV6MhJYUsW6dvmNsJ4XwCgNgroAmXhoMEiWEjBB+wjYZQ5GtZHBFKVXACSWTiCtddHcueOeSVPi5WH94VlubhHfiytNPZLrObhUCHT6k0tNE6phLoHnXWU+6vpsYpz6GhMw/R9BFxW5PdPFIWBgoWk2/XFVRSKG9Lr61b2z1R126xeUwvw46RVy3h anV3vNO7LM5H niqaYclBbhk=</dnsentry:publicKey></dnsentry:rdata></dnsentry:dnsentry></domain:create><ctid>ABC-12345</ctid></registry-request>', 'Create Domain IDN (native) XML correct');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:create><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace><domain:contact role="holder">DENIC-99990-10240-BSP</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>dns1.syhosting.ch.</dnsentry:nameserver><dnsentry:address>193.219.115.46</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:DNSKEY"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:flags>257</dnsentry:flags><dnsentry:protocol>3</dnsentry:protocol><dnsentry:algorithm>5</dnsentry:algorithm><dnsentry:publicKey>AwEAAdDECajHaTjfSoNTY58WcBah1BxPKVIHBz4IfLjfqMvium4lgKtKZLe97DgJ5/NQrNEGGQmr6fKvUj67cfrZUojZ2cGRizVhgkOqZ9scaTVXNuXLM5Tw7VWOVIceeXAuuH2mPIiEV6MhJYUsW6dvmNsJ4XwCgNgroAmXhoMEiWEjBB+wjYZQ5GtZHBFKVXACSWTiCtddHcueOeSVPi5WH94VlubhHfiytNPZLrObhUCHT6k0tNE6phLoHnXWU+6vpsYpz6GhMw/R9BFxW5PdPFIWBgoWk2/XFVRSKG9Lr61b2z1R126xeUwvw46RVy3h anV3vNO7LM5H niqaYclBbhk=</dnsentry:publicKey></dnsentry:rdata></dnsentry:dnsentry></domain:create><ctid>ABC-12345</ctid></registry-request>', 'Create Domain IDN (native) XML correct');
 
+# Domain create (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7315&token=f05142261ead445b522e1700195c0655b830777e)
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
+$cs = $dri->local_object('contactset');
+$cs->add($dri->local_object('contact')->srid('DENIC-1000002-ABUSE'), 'abuse');
+$cs->add($dri->local_object('contact')->srid('DENIC-1000002-GENERAL'), 'general');
+$cs->add($dri->local_object('contact')->srid('DENIC-1000002-MAX'), 'registrant');
+$rc = $dri->domain_create('de-example.de', {
+	pure_create =>  1,
+	contact =>	$cs,
+	ns => $dri->local_object('hosts')->set(
+		['ns1.xn--de-xample-x2a.de'],
+		['ns2.de-example.de',['81.91.170.12']])
+	});
+isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
+is($rc->is_success(), 1, 'Domain successfully created');
+
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:create><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace><domain:contact role="abusecontact">DENIC-1000002-ABUSE</domain:contact><domain:contact role="generalrequest">DENIC-1000002-GENERAL</domain:contact><domain:contact role="holder">DENIC-1000002-MAX</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns1.xn--de-xample-x2a.de.</dnsentry:nameserver></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns2.de-example.de.</dnsentry:nameserver><dnsentry:address>81.91.170.12</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry></domain:create><ctid>ABC-12345</ctid></registry-request>', 'Create Domain XML correct (version 3.0)');
 
 # Domain info
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><domain:infoData><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace><domain:status>connect</domain:status><domain:regAccId>DENIC-1000006</domain:regAccId><domain:contact role="holder"><contact:handle>DENIC-1000006-1</contact:handle></domain:contact><domain:contact role="holder"><contact:handle>DENIC-1000006-2</contact:handle></domain:contact><domain:contact role="admin-c"><contact:handle>DENIC-1000006-SD</contact:handle></domain:contact><domain:contact role="tech-c"><contact:handle>DENIC-1000006-OPS</contact:handle></domain:contact><domain:contact role="zone-c"><contact:handle>DENIC-1000006-OPS</contact:handle></domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>rritestdomain.de</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>dns1.rritestdomain.de</dnsentry:nameserver><dnsentry:address>194.25.1.029</dnsentry:address><dnsentry:address>2001:4d88:ffff:ffff:2:b345:af62:2</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><domain:changed>2001-09-11T11:45:23-07:00</domain:changed></domain:infoData></tr:data></tr:transaction>' . $E2;
-$rc = $dri->domain_info('xn--rriberdomain-flb.de',{withProvider=>1});
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/1.0" xmlns:domain="http://registry.denic.de/domain/1.0"><domain:info recursive="false" withProvider="true"><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace></domain:info></registry-request>', 'Query Domain XML correct');
+$rc = $dri->domain_info('xn--rriberdomain-flb.de');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:domain="http://registry.denic.de/domain/3.0"><domain:info recursive="false"><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace></domain:info></registry-request>', 'Query Domain XML correct');
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully queried with withProvider');
 
@@ -248,6 +257,96 @@ is(join(',', map { my ($name, $v4, $v6) = $ns->get_details($_); $v4->[0] }
 is(join(',', map { my ($name, $v4, $v6) = $ns->get_details($_); $v6->[0] }
 	$ns->get_names()), '2001:4d88:ffff:ffff:2:b345:af62:2',
 	'Name server v6 IPs');
+
+# Domain info own domain (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7237&token=c9393f736cf1130cb1fbdce02bcbb54a76a7c02c)
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data>
+      <domain:infoData xmlns:domain="http://registry.denic.de/domain/3.0">
+        <domain:handle>denic.de</domain:handle>
+        <domain:ace>denic.de</domain:ace>
+        <domain:status>connect</domain:status>
+        <domain:regAccId>DENIC-1000006</domain:regAccId>
+        <domain:regAccName>DENIC eG</domain:regAccName>
+        <domain:contact role="generalrequest">
+          <contact:handle xmlns:contact="http://registry.denic.de/contact/3.0">DENIC-1000006-GENERAL-REQUEST</contact:handle>
+          <contact:type xmlns:contact="http://registry.denic.de/contact/3.0">REQUEST</contact:type>
+          <contact:uri-template xmlns:contact="http://registry.denic.de/contact/3.0">mailto:dbs@denic.de</contact:uri-template>
+          <contact:changed xmlns:contact="http://registry.denic.de/contact/3.0">2018-08-13T14:14:18+02:00</contact:changed>
+        </domain:contact>
+        <domain:contact role="abusecontact">
+          <contact:handle xmlns:contact="http://registry.denic.de/contact/3.0">DENIC-1000006-ABUSE-CONTACT</contact:handle>
+          <contact:type xmlns:contact="http://registry.denic.de/contact/3.0">REQUEST</contact:type>
+          <contact:uri-template xmlns:contact="http://registry.denic.de/contact/3.0">mailto:abuse@denic.de?subject=domain:{Ulabel}</contact:uri-template>
+          <contact:changed xmlns:contact="http://registry.denic.de/contact/3.0">2018-08-13T14:14:18+02:00</contact:changed>
+        </domain:contact>
+        <domain:contact role="holder">
+          <contact:handle xmlns:contact="http://registry.denic.de/contact/3.0">DENIC-1000006-DENIC</contact:handle>
+          <contact:type xmlns:contact="http://registry.denic.de/contact/3.0">ORG</contact:type>
+          <contact:name xmlns:contact="http://registry.denic.de/contact/3.0">DENIC eG</contact:name>
+          <contact:postal xmlns:contact="http://registry.denic.de/contact/3.0">
+            <contact:address>Kaiserstraße 75 - 77</contact:address>
+            <contact:postalCode>60329</contact:postalCode>
+            <contact:city>Frankfurt am Main</contact:city>
+            <contact:countryCode>DE</contact:countryCode>
+          </contact:postal>
+          <contact:email xmlns:contact="http://registry.denic.de/contact/3.0">info@denic.de</contact:email>
+          <contact:changed xmlns:contact="http://registry.denic.de/contact/3.0">2017-01-06T15:51:08+02:00</contact:changed>
+        </domain:contact>
+        <dnsentry:dnsentry xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="dnsentry:NS">
+          <dnsentry:owner>denic.de.</dnsentry:owner>
+          <dnsentry:rdata>
+            <dnsentry:nameserver>ns1.denic.de.</dnsentry:nameserver>
+			<dnsentry:address>2a02:568:121:6:2:0:0:2</dnsentry:address>
+          </dnsentry:rdata>
+        </dnsentry:dnsentry>
+        <dnsentry:dnsentry xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="dnsentry:NS">
+          <dnsentry:owner>denic.de.</dnsentry:owner>
+          <dnsentry:rdata>
+            <dnsentry:nameserver>ns1.denic.de.</dnsentry:nameserver>
+			<dnsentry:address>181.91.170.1</dnsentry:address>
+          </dnsentry:rdata>
+        </dnsentry:dnsentry>
+        <dnsentry:dnsentry xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="dnsentry:NS">
+          <dnsentry:owner>denic.de.</dnsentry:owner>
+recursive          <dnsentry:rdata>
+            <dnsentry:nameserver>ns2.denic.de.</dnsentry:nameserver>
+			<dnsentry:address>193.171.255.36</dnsentry:address>
+          </dnsentry:rdata>
+        </dnsentry:dnsentry>
+        <dnsentry:dnsentry xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="dnsentry:NS">
+          <dnsentry:owner>denic.de.</dnsentry:owner>
+recursive          <dnsentry:rdata>
+            <dnsentry:nameserver>ns3.denic.de.</dnsentry:nameserver>
+			<dnsentry:address>87.233.175.19</dnsentry:address>
+          </dnsentry:rdata>
+        </dnsentry:dnsentry>
+        <domain:changed>2018-08-13T14:24:38+02:00</domain:changed>
+      </domain:infoData>
+    </tr:data>
+  </tr:transaction>' . $E2;
+$rc = $dri->domain_info('denic.de',{recursive=>1});
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:domain="http://registry.denic.de/domain/3.0"><domain:info recursive="true"><domain:handle>denic.de</domain:handle><domain:ace>denic.de</domain:ace></domain:info></registry-request>', 'Query Domain XML correct (version 3.0)');
+isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
+is($rc->is_success(), 1, 'Domain successfully queried (version 3.0)');
+
+$mod = $dri->get_info('upDate');
+isa_ok($mod, 'DateTime');
+is($mod->ymd . 'T' . $mod->hms, '2018-08-13T14:24:38', 'Update Date');
+is($dri->get_info('contact')->get('registrant')->srid(), 'DENIC-1000006-DENIC',	'Holder handle is correct');
+# FIXME: need to tweak Domain.pm :(
+# print Dumper($dri->get_info('contact')->get('registrant'));
+# is($dri->get_info('contact')->get('registrant')->type(), 'ORG',	'Holder type is correct');
+# is($dri->get_info('contact')->get('registrant')->name(), 'DENIC eG',	'Holder name is correct');
+is($dri->get_info('contact')->get('abusecontact')->srid(), 'DENIC-1000006-ABUSE-CONTACT',	'Abuse handle is correct');
+is($dri->get_info('contact')->get('generalrequest')->srid(), 'DENIC-1000006-GENERAL-REQUEST',	'General handle is correct');
+$ns = $dri->get_info('ns', 'domain', 'denic.de');
+is_deeply([$ns->get_names()],['ns1.denic.de','ns2.denic.de','ns3.denic.de'],'Name server records');
+is(join(',', map { my ($name, $v4, $v6) = $ns->get_details($_); $v4->[0] }
+	$ns->get_names()), '181.91.170.1,193.171.255.36,87.233.175.19', 'Name server v4 IPs');
+is(join(',', map { my ($name, $v4, $v6) = $ns->get_details($_); $v6->[0] }
+	$ns->get_names(1)), '2a02:568:121:6:2:0:0:2',
+	'Name server v6 IPs');
+
+exit 0;
 
 # Domain transfer query
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><domain:infoData><domain:handle>rritestdomain2.de</domain:handle><domain:ace>rritestdomain2.de</domain:ace><domain:status>connect</domain:status><domain:regAccId>DENIC-1000006</domain:regAccId><domain:contact role="holder"><contact:handle>DENIC-1000006-1</contact:handle></domain:contact><domain:contact role="holder"><contact:handle>DENIC-1000006-2</contact:handle></domain:contact><domain:contact role="admin-c"><contact:handle>DENIC-1000006-SD</contact:handle></domain:contact><domain:contact role="tech-c"><contact:handle>DENIC-1000006-OPS</contact:handle></domain:contact><domain:contact role="zone-c"><contact:handle>DENIC-1000006-OPS</contact:handle></domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>rritestdomain2.de</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>dns1.rritestdomain2.de</dnsentry:nameserver><dnsentry:address>194.25.1.029</dnsentry:address><dnsentry:address>2001:4d88:ffff:ffff:2:b345:af62:2</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><domain:chprovData><domain:chprovTo>DENIC-1000002</domain:chprovTo><domain:chprovStart>2005-11-20T00:00:00+01:00</domain:chprovStart><domain:chprovReminder>2005-11-23T00:00:00+01:00</domain:chprovReminder><domain:chprovEnd>2005-11-25T00:00:00+01:00</domain:chprovEnd><domain:chprovStatus>ACTIVE</domain:chprovStatus></domain:chprovData><domain:changed>2001-09-11T11:45:23-07:00</domain:changed></domain:infoData></tr:data></tr:transaction>' . $E2;

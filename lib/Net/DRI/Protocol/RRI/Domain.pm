@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2007,2008 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ##           (c) 2012,2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2019 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -30,11 +31,11 @@ use Net::DRI::Data::ContactSet;
 
 =head1 NAME
 
-Net::DRI::Protocol::RRI::Domain - RRI Domain commands (DENIC-11) for Net::DRI
+Net::DRI::Protocol::RRI::Domain - RRI Domain commands (DENIC-22-EN_3.0) for Net::DRI
 
 =head1 DESCRIPTION
 
-Please see the README file for details.
+This was updated to represent changes listed under DENIC version 3.0.
 
 =head1 SUPPORT
 
@@ -56,6 +57,7 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 
 Copyright (c) 2007,2008 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
           (c) 2012,2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2019 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -151,9 +153,8 @@ sub info
 {
  my ($rri, $domain, $rd)=@_;
  my $mes = $rri->message();
- my $wp = (defined($rd->{'withProvider'} && $rd->{'withProvider'})) ? 'true' : 'false';
- my @d = build_command($mes, 'info', $domain,
-	{recursive => 'false', withProvider => $wp});
+ my $r = (defined($rd->{'recursive'} && $rd->{'recursive'})) ? 'true' : 'false';
+ my @d = build_command($mes, 'info', $domain, {recursive => $r});
  $mes->command_body(\@d);
  $mes->cltrid(undef);
  return;
@@ -190,8 +191,7 @@ sub info_parse
   elsif ($name eq 'contact')
   {
    my $role = $c->getAttribute('role');
-   my %rmap = ('holder' => 'registrant', 'admin-c' => 'admin',
-	'tech-c' => 'tech', 'zone-c' => 'zone');
+   my %rmap = ('holder' => 'registrant', 'abuse' => 'abusecontact', 'general' => 'generalrequest');
    my @hndl_tags = $c->getElementsByTagNameNS($mes->ns('contact'),'handle');
    my $hndl_tag = $hndl_tags[0];
    $role = $rmap{$role} if (defined($rmap{$role}));
@@ -278,8 +278,8 @@ sub transfer_query
 {
  my ($rri, $domain, $rd)=@_;
  my $mes = $rri->message();
- my @d = build_command($mes, 'info', $domain,
-	{recursive => 'true', withProvider => 'false'});
+ my $r = (defined($rd->{'recursive'} && $rd->{'recursive'})) ? 'true' : 'false';
+ my @d = build_command($mes, 'info', $domain, {recursive => $r});
  $mes->command_body(\@d);
  return;
 }
@@ -371,8 +371,7 @@ sub build_contact
  my $cs = shift;
  my @d;
 
- my %trans = ('registrant' => 'holder', 'admin' => 'admin-c',
-	'tech' => 'tech-c', 'zone' => 'zone-c');
+ my %trans = ('registrant' => 'holder', 'abuse' => 'abusecontact', 'general' => 'generalrequest');
 
  # All nonstandard contacts go into the extension section
  foreach my $t (sort($cs->types()))
@@ -381,6 +380,7 @@ sub build_contact
   my $c = (defined($trans{$t}) ? $trans{$t} : $t);
   push @d, map { ['domain:contact', $_->srid(), {'role' => $c}] } @o;
  }
+ 
  return @d;
 }
 

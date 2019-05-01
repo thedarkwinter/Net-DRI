@@ -29,7 +29,7 @@ use Net::DRI::Data::Contact::DENIC;
 
 =head1 NAME
 
-Net::DRI::Protocol::RRI - RRI Protocol (DENIC-11) for Net::DRI
+Net::DRI::Protocol::RRI - RRI Protocol (DENIC-22-EN_3.0) for Net::DRI
 
 =head1 DESCRIPTION
 
