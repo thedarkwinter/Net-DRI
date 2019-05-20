@@ -94,7 +94,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Nominet::Amazon'; }
-sub tlds     { return qw/moi/; }
+sub tlds     { return qw/audible author aws book bot buy call circle deal fast fire free got hot imdb jot joy kindle like moi now pay pin prime read room safe save secure silk smile spot talk tunes tushu wanggou wow yamaxun you zappos/; }
 sub object_types { return qw/domain contact ns/; }
 sub profile_types { return qw/epp/; }
 
