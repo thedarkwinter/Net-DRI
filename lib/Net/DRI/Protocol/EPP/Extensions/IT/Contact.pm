@@ -48,7 +48,8 @@ sub register_commands
 
        my $ops = {
                'create' => [ \&create, undef ],
-               'info' => [undef,\&info_parse],
+               'info' => [ undef, \&info_parse ],
+               'update' => [ \&update, undef ],
        };
 
        return { 'contact' => $ops };
@@ -101,6 +102,22 @@ sub create
        my ($epp, $contact) = @_;
 
        return fix_contact($epp, $contact, 'create');
+}
+
+sub update
+{
+        my ($epp,$contact,$todo)=@_;
+        my $mes=$epp->message();
+        my $newc=$todo->set('info');
+        return unless defined($newc->consent_for_publishing());
+
+        my @n;
+        push @n, [ 'extcon:consentForPublishing',$newc->consent_for_publishing() ];
+
+        my $eid=build_command_extension($mes,$epp,'extcon:update');
+        $mes->command_extension($eid,\@n);
+
+        return;
 }
 
 sub info_parse

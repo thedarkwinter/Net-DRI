@@ -7,7 +7,7 @@ use utf8;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 159;
+use Test::More tests => 168;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -22,7 +22,7 @@ sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 sub r { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>';  }
 
-my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 0});
+my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('IITCNR');
 $dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv});
@@ -30,7 +30,7 @@ $dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv});
 my $rc;
 my $s;
 my $d;
-my ($dh, @c, $c1, $c2, $toc, $e, $ext_ns_validate, $ext_ds_validate);
+my ($dh, @c, $c1, $c2, $co, $co2, $toc, $e, $ext_ns_validate, $ext_ds_validate);
 
 ####################################################################################################
 
@@ -252,7 +252,7 @@ is($dri->get_info('idn_created','message',92),'ᾀᾀᾀᾀ.it','idn remapped me
 
 
 # tests based on: DNSSEC in the ccTLD-IT-ENG.pdf (Last update: August 1, 2017)
-$dri=Net::DRI::TrapExceptions->new({cache_ttl => 0});
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('IITCNR');
 $dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv},{ custom => { secdns_accredited => 1 } });
@@ -711,5 +711,73 @@ $extsecdns_queries = $dri->get_info('extsecdns','message',6369665)->{'queries'};
 is($extsecdns_queries->{'17'}->{'queryFor'}, 'esempio-poll-extsecdns.it','dns check with extsecdns failed message get_info(extsecdns - query 17 queryFor value');
 is($extsecdns_queries->{'17'}->{'destination'}, "y.dns.it/[192.12.192.24]",'dns check with extsecdns failed message get_info(extsecdns - query 17 destination value');
 is($extsecdns_queries->{'16'}->{'destination'}, "x.dns.it/[192.12.192.23]",'dns check with extsecdns failed message get_info(extsecdns - query 16 destination value');
+
+####################################################################################################
+## Tests related with changes introduced on "Synchronous_Technical_Guidelines_v2.5_0.pdf
+
+# 3.1.1.3 Examples of a Create Contact request - Example 1
+# Create Contact command for registering an administrative or technical contact. In the request for
+# Create Contact below, the section on data from the Registrant is missing:
+$R2='';
+$co=$dri->local_object('contact')->srid('mr0001');
+$co->name('Mario Rossi');
+$co->street(['Via Moruzzi 1']);
+$co->city('Pisa');
+$co->sp('PI');
+$co->pc('56124');
+$co->cc('IT');
+$co->voice('+39.050315x2111');
+$co->fax('+39.0503152593');
+$co->email('mario.rossi@example.it');
+$co->auth({pw=>''});
+$co->consent_for_publishing('true');
+$rc=$dri->contact_create($co);
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>mr0001</contact:id><contact:postalInfo type="loc"><contact:name>Mario Rossi</contact:name><contact:addr><contact:street>Via Moruzzi 1</contact:street><contact:city>Pisa</contact:city><contact:sp>PI</contact:sp><contact:pc>56124</contact:pc><contact:cc>IT</contact:cc></contact:addr></contact:postalInfo><contact:voice x="2111">+39.050315</contact:voice><contact:fax>+39.0503152593</contact:fax><contact:email>mario.rossi@example.it</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><extension><extcon:create xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extcon-1.0 extcon-1.0.xsd"><extcon:consentForPublishing>true</extcon:consentForPublishing></extcon:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+# test non boolean values
+$co->consent_for_publishing('truee');
+throws_ok { $dri->contact_create($co) } qr/Invalid contact information: consent_for_publishing/, 'contact_create - parse invalid consent_for_publishing (not boolean - truee)';
+$co->consent_for_publishing('fals');
+throws_ok { $dri->contact_create($co) } qr/Invalid contact information: consent_for_publishing/, 'contact_create - parse invalid consent_for_publishing (not boolean - fals)';
+$co->consent_for_publishing('2');
+throws_ok { $dri->contact_create($co) } qr/Invalid contact information: consent_for_publishing/, 'contact_create - parse invalid consent_for_publishing (not boolean - 2)';
+
+# 3.2.1.2 Examples of an Update Contact request - Example 1
+# Update Contact for changing phone number and email address, and for the addition of the
+# clientDeleteProhibited to prevent the cancellation of the contact:
+$R2='';
+$co=$dri->local_object('contact')->srid('mr0001');
+$toc=$dri->local_object('changes');
+$toc->add('status',$dri->local_object('status')->no('delete'));
+$co2=$dri->local_object('contact');
+$co2->voice('+39.05863152111');
+$co2->email('info@example.it');
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>mr0001</contact:id><contact:add><contact:status s="clientDeleteProhibited"/></contact:add><contact:chg><contact:voice>+39.05863152111</contact:voice><contact:email>info@example.it</contact:email></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
+is($rc->is_success(),1,'contact_update is_success');
+
+# 3.2.1.2 Examples of an Update Contact request - Example 2
+# Update Contact to change the data relating to consent for publication of personal data (in case of
+# Registrants other than natural persons, the ConsentForPublishing field cannot be set to false / 0):
+$R2='';
+$co=$dri->local_object('contact')->srid('mm001');
+$toc=$dri->local_object('changes');
+$co2=$dri->local_object('contact');
+$co2->consent_for_publishing('false');
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+# is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>mm001</contact:id><contact:chg></contact:chg></contact:update></update><extension><extcon:update xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extcon-1.0 extcon-1.0.xsd"><extcon:consentForPublishing>false</extcon:consentForPublishing></extcon:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
+# TODO: check if this is valid in their OT&E!
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>mm001</contact:id></contact:update></update><extension><extcon:update xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extcon-1.0 extcon-1.0.xsd"><extcon:consentForPublishing>false</extcon:consentForPublishing></extcon:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update extcon build');
+is($rc->is_success(),1,'contact_update extcon is_success');
+# test invalid consent_for_publishing value - must be a boolean
+$co=$dri->local_object('contact')->srid('mm001');
+$toc=$dri->local_object('changes');
+$co2=$dri->local_object('contact');
+$co2->consent_for_publishing('foobar');
+$toc->set('info',$co2);
+throws_ok { $dri->contact_update($co,$toc) } qr/Invalid contact information: consent_for_publishing/, 'contact_update - parse invalid consent_for_publishing (not boolean - foobar)';
+
+
 
 exit 0;
