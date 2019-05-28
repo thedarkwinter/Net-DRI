@@ -766,8 +766,6 @@ $co2=$dri->local_object('contact');
 $co2->consent_for_publishing('false');
 $toc->set('info',$co2);
 $rc=$dri->contact_update($co,$toc);
-# is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>mm001</contact:id><contact:chg></contact:chg></contact:update></update><extension><extcon:update xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extcon-1.0 extcon-1.0.xsd"><extcon:consentForPublishing>false</extcon:consentForPublishing></extcon:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
-# TODO: check if this is valid in their OT&E!
 is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>mm001</contact:id></contact:update></update><extension><extcon:update xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extcon-1.0 extcon-1.0.xsd"><extcon:consentForPublishing>false</extcon:consentForPublishing></extcon:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update extcon build');
 is($rc->is_success(),1,'contact_update extcon is_success');
 # test invalid consent_for_publishing value - must be a boolean
