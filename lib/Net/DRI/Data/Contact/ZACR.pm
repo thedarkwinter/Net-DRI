@@ -59,7 +59,7 @@ sub init
  if ($what eq 'create' || $what eq 'update')
  {
   my $a=$self->auth();
-  ## authInfo is not used for some tlds (please check ZACR.t for more details)
+  # auth is not used for some tlds (please check ZACR.t for more details)
   $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw}));
  }
 
