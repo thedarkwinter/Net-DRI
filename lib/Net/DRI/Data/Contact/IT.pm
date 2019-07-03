@@ -61,7 +61,7 @@ sub validate
 
        push @errs, 'consent_for_publishing'
                if defined $self->consent_for_publishing
-               and $self->consent_for_publishing !~m/^(?:0|1)$/;
+               and $self->consent_for_publishing !~m/^(?:0|1|true|false)$/;
  
        push @errs, 'nationality_code'
                if defined $self->nationality_code
