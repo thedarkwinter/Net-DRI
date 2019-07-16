@@ -37,7 +37,63 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 =head2 type()
 
-One of YYZZ,ZZJGDMZ,SFZ,JGZ,HZ,QT,ORG
+IDType can be one of the following:
+
+# SFZ: ID
+
+# ORG: Organization Code Certificate
+
+# YYZZ: Business License
+
+# TYDM: Certificate for Uniform Social Credit Code
+
+# HZ:	Passport
+
+# GAJMTX: Exit-Entry Permit for Travelling to and from Hong Kong and Macao
+
+# QT: Others
+
+# BDDM: Military Code Designation
+
+# JDDWFW: Military Paid External Service License
+
+# SYDWFR: Public Institution Legal Person Certificate
+
+# WGCZJG: Resident Representative Offices of Foreign Enterprises Registration Form
+
+# TWJMTX: Travel passes for Taiwan Residents to Enter or Leave the Mainland
+
+# WJLSFZ: Foreign Permanent Resident ID Card
+
+# SHTTFR: Social Organization Legal Person Registration Certificate
+
+# ZJCS: Religion Activity Site Registration Certificate
+
+# MBFQY: Private Non-Enterprise Entity Registration Certificate
+
+# JJHFR: Fund Legal Person Registration Certificate
+
+# LSZY: Practicing License of Law Firm
+
+# WGZHWH: Registration Certificate of Foreign Cultural Center in China
+
+# WLCZJG: Resident Representative Office of Tourism Departments of Foreign Government Approval Registration Certificate
+
+# SFJD: Judicial Expertise License
+
+# JWJG: Overseas Organization Certificate
+
+# SHFWJG: Social Service Agency Registration Certificate
+
+# MBXXBX: Private School Permit
+
+# YLJGZY: Medical Institution Practicing License
+
+# GZJGZY: Notary Organization Practicing License
+
+# BJWSXX: Beijing School for Children of Foreign Embassy Staff in China Permit
+
+# GATJZZ: Residence permit for Hong Kong, Macao and Taiwan residents
 
 =head2 code()
 
@@ -79,9 +135,15 @@ sub validate
 {
  my ($self,$change)=@_;
  $change||=0;
+ my @id_type = (
+  "SFZ", "ORG", "YYZZ", "TYDM", "HZ", "GAJMTX", "QT", "BDDM", "JDDWFW", "SYDWFR",
+  "WGCZJG", "TWJMTX", "WJLSFZ", "SHTTFR", "ZJCS", "MBFQY", "JJHFR", "LSZY",
+  "WGZHWH", "WLCZJG", "SFJD", "JWJG", "SHFWJG", "MBXXBX", "YLJGZY", "GZJGZY",
+  "BJWSXX", "GATJZZ"
+ );
  $self->SUPER::validate($change); ## will trigger an Exception if problem
  if ($self->type() || $self->code()) {
-  Net::DRI::Exception::usererr_invalid_parameters('contact type should be one of YYZZ,ZZJGDMZ,SFZ,JGZ,HZ,QT,ORG') unless $self->type() =~ m/^(?:YYZZ|ZZJGDMZ|SFZ|JGZ|HZ|QT|ORG)$/;
+  Net::DRI::Exception::usererr_invalid_parameters('contact type should be one of: ' . join(' ', @id_type) ) unless ( grep { $self->type() =~ m/^(?:$_)$/ } @id_type );
   Net::DRI::Exception::usererr_invalid_parameters('contact code should be a string between 1 and 20 characters') unless Net::DRI::Util::xml_is_token($self->code(),1,20);
  }
  return 1;
