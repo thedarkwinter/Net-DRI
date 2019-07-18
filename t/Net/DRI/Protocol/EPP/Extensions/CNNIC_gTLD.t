@@ -9,8 +9,9 @@ use Net::DRI::Data::Raw;
 use DateTime::Duration;
 use Data::Dumper;
 
+use Test::More tests => 49;
+use Test::Exception;
 
-use Test::More tests => 48;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -29,7 +30,7 @@ $dri->add_registry('NGTLD',{provider=>'cnnic',tlds=>['xn--fiqs8s']}); # This TLD
 $dri->target('cnnic')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
-my ($dh,$command,$cdn,@c,$toc,$c1,$c2,$cr,$h);
+my ($dh,$command,$cdn,@c,$toc,$c1,$c2,$c3,$cr,$h);
 
 ################################################################################
 ### Registry And Contact Extensions
@@ -44,12 +45,17 @@ is($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:
 
 # Contact update
 $c2 = $c1->clone();
-$c2->type('JGZ');
+$c2->type('YLJGZY');
 $c2->code('55555555');
 $toc = $dri->local_object('changes');
 $toc->set('info',$c2);
 $rc=$dri->contact_update($c1,$toc);
-is($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>abcde</contact:id><contact:chg><contact:postalInfo type="loc"><contact:name>abc</contact:name><contact:org>abc.org</contact:org><contact:addr><contact:street>123 d street</contact:street><contact:city>reston</contact:city><contact:sp>NY</contact:sp><contact:pc>20194</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:postalInfo type="int"><contact:name>abc</contact:name><contact:org>abc.org</contact:org><contact:addr><contact:street>123 d street</contact:street><contact:city>reston</contact:city><contact:sp>NY</contact:sp><contact:pc>20194</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:fax x="1234">+1.2345678901</contact:fax><contact:email>xxx@yyy.com</contact:email><contact:authInfo><contact:pw>123456</contact:pw></contact:authInfo></contact:chg></contact:update></update><extension><cnnic-contact:update xmlns:cnnic-contact="urn:ietf:params:xml:ns:cnnic-contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-contact-1.0 cnnic-contact-1.0.xsd"><cnnic-contact:chg><cnnic-contact:contact type="JGZ">55555555</cnnic-contact:contact></cnnic-contact:chg></cnnic-contact:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_updatre nexus build_xml');
+is($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>abcde</contact:id><contact:chg><contact:postalInfo type="loc"><contact:name>abc</contact:name><contact:org>abc.org</contact:org><contact:addr><contact:street>123 d street</contact:street><contact:city>reston</contact:city><contact:sp>NY</contact:sp><contact:pc>20194</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:postalInfo type="int"><contact:name>abc</contact:name><contact:org>abc.org</contact:org><contact:addr><contact:street>123 d street</contact:street><contact:city>reston</contact:city><contact:sp>NY</contact:sp><contact:pc>20194</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:fax x="1234">+1.2345678901</contact:fax><contact:email>xxx@yyy.com</contact:email><contact:authInfo><contact:pw>123456</contact:pw></contact:authInfo></contact:chg></contact:update></update><extension><cnnic-contact:update xmlns:cnnic-contact="urn:ietf:params:xml:ns:cnnic-contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-contact-1.0 cnnic-contact-1.0.xsd"><cnnic-contact:chg><cnnic-contact:contact type="YLJGZY">55555555</cnnic-contact:contact></cnnic-contact:chg></cnnic-contact:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_updatre nexus build_xml');
+
+# invalid IDType
+$c3 = $c1->clone();
+$c3->type('FOOBAR');
+throws_ok { $dri->contact_create($c3,{registry=>'cnnic'}) } qr/Invalid parameters: contact type should be one of:/, 'contact_create - parse invalid type value';
 
 # Contact info
 $R2 = $E1 . '<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>abcde</contact:id></contact:infData></resData><extension><cnnic-registry:infData xmlns:cnnic-registry="urn:ietf:params:xml:ns:cnnic-registry-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-registry-1.0 cnnic-registry-1.0.xsd"><cnnic-registry:registry>cnnic</cnnic-registry:registry></cnnic-registry:infData><cnnic-contact:infData xmlns:cnnic-contact="urn:ietf:params:xml:ns:cnnic-contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cnnic-contact-1.0 cnnic-contact-1.0.xsd"><cnnic-contact:contact type="SFZ">110101190001010001</cnnic-contact:contact></cnnic-contact:infData></extension>' . $TRID . '</response>' . $E2;
