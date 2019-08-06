@@ -68,7 +68,7 @@ sub register_commands
  my ($class,$version)=@_;
  my %tmp=(
           create => [ \&create, \&create_parse ],
-          info   => [ \&info, \&info_parse ],
+          info   => [ undef, \&info_parse ],
           update => [ \&update ],
           renew  => [ \&renew ],
           renounce => [ \&renounce ],
@@ -142,19 +142,6 @@ sub add_roid
  return ['ptdomain:roid',$roid];
 }
 
-sub info
-{
- my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
-
- $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
-
- my $eid=build_command_extension($mes,$epp,'ptdomain:info');
- my @n=add_roid($rd->{roid});
- $mes->command_extension($eid,\@n);
- return;
-}
-
 sub info_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
@@ -171,18 +158,9 @@ sub info_parse
   my $name=$c->localname() || $c->nodeName();
   next unless $name;
 
-  if ($name=~m/^(?:legitimacy|registration_basis)$/)
-  {
-   $rinfo->{domain}->{$oname}->{$name}=$c->getAttribute('type');
-  } elsif ($name=~m/^(?:nextPossibleRegistration|addPeriod|waitingRemoval)$/) # most are not used anymore but let's keep it :)
-  {
-   $rinfo->{domain}->{$oname}->{Net::DRI::Util::remcam($name)}=Net::DRI::Util::xml_parse_boolean($c->getFirstChild()->getData());
-  } elsif  ($name=~m/^(?:autoRenew|notRenew|ownerVisible)$/)
+  if  ($name=~m/^(?:legitimacy|registration_basis|autoRenew|Arbitration|ownerConf|rl)$/)
   {
    $rinfo->{domain}->{$oname}->{Net::DRI::Util::remcam($name)}=$c->textContent();
-  } elsif ($name eq 'renew')
-  {
-   $rinfo->{domain}->{$oname}->{renew_period}=DateTime::Duration->new(years => $c->getAttribute('period'));
   }
  } continue { $c=$c->getNextSibling(); }
  return;

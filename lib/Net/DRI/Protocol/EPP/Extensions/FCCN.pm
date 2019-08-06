@@ -75,7 +75,7 @@ sub setup
  return;
 }
 
-sub default_extensions { return qw/FCCN::Contact FCCN::Domain/; }
+sub default_extensions { return qw/FCCN::Contact FCCN::Domain SecDNS/; }
 
 ####################################################################################################
 1;

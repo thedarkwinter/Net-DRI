@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 24;
+use Test::More tests => 45;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -29,8 +29,47 @@ print $@->as_string() if $@;
 
 my ($rc,$s,$d,$dh,@c,$co);
 
+## Session commands
+$R2='';
+$rc=$dri->process('session','noop',[]);
+is($R1,$E1.'<hello/>'.$E2,'session noop build');
+is($rc->is_success(),1,'session noop is_success');
+
+
+$R2=$E1.'<response>'.r(1500).$TRID.'</response>'.$E2;
+$rc=$dri->process('session','logout',[]);
+is($R1,$E1.'<command><logout/><clTRID>ABC-12345</clTRID></command>'.$E2,'session logout build');
+is($rc->is_success(),1,'session logout is_success');
+
+
+$R2=$E1.'<greeting><svID>DNS.PT EPP Server</svID><svDate>2019-08-06T15:02:52Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>http://eppdev.dns.pt/schemas/ptcontact-1.0</extURI><extURI>http://eppdev.dns.pt/schemas/ptdomain-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($R1,$E1.'<hello/>'.$E2,'session noop build (hello command)');
+is($rc->is_success(),1,'session noop is_success');
+is($rc->get_data('session','server','server_id'),'DNS.PT EPP Server','session noop get_data(session,server,server_id)');
+is($rc->get_data('session','server','date'),'2019-08-06T15:02:52','session noop get_data(session,server,date)');
+is_deeply($rc->get_data('session','server','version'),['1.0'],'session noop get_data(session,server,version)');
+is_deeply($rc->get_data('session','server','lang'),['en'],'session noop get_data(session,server,lang)');
+is_deeply($rc->get_data('session','server','objects'),['urn:ietf:params:xml:ns:contact-1.0','urn:ietf:params:xml:ns:domain-1.0','urn:ietf:params:xml:ns:host-1.0'],'session noop get_data(session,server,objects)');
+is_deeply($rc->get_data('session','server','extensions_announced'),['http://eppdev.dns.pt/schemas/ptcontact-1.0','http://eppdev.dns.pt/schemas/ptdomain-1.0','urn:ietf:params:xml:ns:secDNS-1.1'],'session noop get_data(session,server,extensions_announced)');
+is_deeply($rc->get_data('session','server','extensions_selected'),['http://eppdev.dns.pt/schemas/ptcontact-1.0','http://eppdev.dns.pt/schemas/ptdomain-1.0','urn:ietf:params:xml:ns:secDNS-1.1'],'session noop get_data(session,server,extensions_selected)');
+is($rc->get_data('session','server','dcp_string'),'<access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement>','session noop get_data(session,server,dcp_string)');
+
+$R2='';
+$rc=$dri->process('session','login',['foobar','Passw0123',{client_newpassword => 'Password'}]);
+is($R1,$E1.'<command><login><clID>foobar</clID><pw>Passw0123</pw><newPW>Password</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>http://eppdev.dns.pt/schemas/ptcontact-1.0</extURI><extURI>http://eppdev.dns.pt/schemas/ptdomain-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build');
+is($rc->is_success(),1,'session login is_success');
+
 ####################################################################################################
 ## Domain commands
+
+$R2=$E1.'<response>'.r().'<resdata><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain"><domain:cd><domain:name avail="0"> notavailable.pt</domain:name><domain:reason>Domain name already exists.</domain:reason></domain:cd><domain:cd><domain:name avail="1"> available.pt</domain:name></domain:cd></domain:chkData></resdata>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('notavailable.pt','available.pt');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>notavailable.pt</domain:name><domain:name>available.pt</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multi build');
+is($rc->is_success(),1,'domain_check multi is_success');
+is($dri->get_info('exist','domain','notavailable .pt'),1,'domain_check multi get_info(exist) 1/2');
+is($dri->get_info('exist_reason','domain','notavailable .pt'),'Domain name already exists.','domain_check multi get_info(exist_reason)');
+is($dri->get_info('exist','domain','available.pt'),0,'domain_check multi get_info(exist) 2/2');
 
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain.pt</domain:name><domain:crDate>2006-03-21T11:58:50.6Z</domain:crDate></domain:creData></resData><extension><ptdomain:creData xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:roid>4569356</ptdomain:roid></ptdomain:creData></extension>'.$TRID.'</response>'.$E2;
 my $cs=$dri->local_object('contactset');
@@ -48,13 +87,13 @@ is($rc->is_success(),0,'domain_create is_success');
 is($rc->code(),2302,'domain_create code');
 is_deeply([$rc->get_extended_results()],[{from=>'eppcom:extValue',type=>'rawxml',message=>'<domain:name xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">mytestdomain2.pt</domain:name>',reason=>'There was a previous submission for the same domain name that is still in pending create. To put a new submission into the next-possible-registration queue resend this command with the next-possible-registration extension element set to true',lang=>'en'}],'domain_create extra info');
 
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>mytestdomain3.pt</domain:name><domain:roid>2221881-FCCN</domain:roid><domain:status s="inactive"/><domain:status s="pendingUpdate"/><domain:registrant>FCZA-142520-FCCN</domain:registrant><domain:contact type="tech">FCZA-142520-FCCN</domain:contact><domain:ns><domain:hostAttr><domain:hostName>ns1.anything.pt</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.everything.pt</domain:hostName></domain:hostAttr></domain:ns><domain:clID>FCZA-142520-FCCN</domain:clID><domain:crID>FCZA-142520-FCCN</domain:crID><domain:crDate>2006-03-21T12:19:25.000Z</domain:crDate><domain:upID>FCZA-142520-FCCN</domain:upID><domain:upDate>2006-03-21T12:19:25.000Z</domain:upDate><domain:exDate>2007-03-21T12:19:25.000Z</domain:exDate></domain:infData></resData><extension><ptdomain:infData xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy type="1"/><ptdomain:registration_basis type="30"/><ptdomain:autoRenew>true</ptdomain:autoRenew><ptdomain:ownerVisible>true</ptdomain:ownerVisible></ptdomain:infData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_info('mytestdomain3.pt');
-is($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">mytestdomain3.pt</domain:name></domain:info></info><extension><ptdomain:info xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:roid/></ptdomain:info></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info');
-is($dri->get_info('legitimacy'),1,'domain_info get_info(legitimacy)');
-is($dri->get_info('registration_basis'),30,'domain_info get_info(registration_basis)');
-is($dri->get_info('auto_renew'),'true','domain_info get_info(auto_renew)');
-is($dri->get_info('owner_visible'),'true','domain_info get_info(owner_visible)');
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.pt</domain:name><domain:roid>2134454</domain:roid><domain:status s="ok" /><domain:registrant>GCAA-111111-ADNS</domain:registrant><domain:contact type="tech">UABC-111111-FCCN</domain:contact><domain:ns><domain:hostAttr><domain:hostName>dns01.registred.pt</domain:hostName><domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr><domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>dns02.dns.pt</domain:hostName></domain:hostAttr></domain:ns><domain:clID>UABC-111111-FCCN</domain:clID><domain:crID>UABC-111111-FCCN</domain:crID><domain:crDate>2013-09-11T01:00:00.000Z</domain:crDate><domain:upID>UABC-111111-FCCN</domain:upID><domain:upDate>2018-09-09T01:00:00.000Z</domain:upDate><domain:exDate>2019-09-10T00:00:00.000Z</domain:exDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><ptdomain:infData xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy>X</ptdomain:legitimacy><ptdomain:registration_basis>X</ptdomain:registration_basis><ptdomain:autoRenew>false</ptdomain:autoRenew><ptdomain:Arbitration>true</ptdomain:Arbitration><ptdomain:ownerConf>false</ptdomain:ownerConf><ptdomain:rl>false</ptdomain:rl></ptdomain:infData><secDNS:infData xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:dsData><secDNS:keyTag>46146</secDNS:keyTag><secDNS:alg>7</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>CE5E330AEA4AC9D9951A14153A0F6122EF4DE2F640434A116424F00495F8C994</secDNS:digest></secDNS:dsData></secDNS:infData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('foobar.pt');
+is($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">foobar.pt</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info');
+is($dri->get_info('legitimacy'),'X','domain_info get_info(legitimacy)');
+is($dri->get_info('auto_renew'),'false','domain_info get_info(auto_renew)');
+is($dri->get_info('owner_conf'),'false','domain_info get_info(owner_conf)');
+is($dri->get_info('rl'),'false','domain_info get_info(rl)');
 
 $R2='';
 my $toc=$dri->local_object('changes');
