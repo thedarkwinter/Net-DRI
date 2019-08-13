@@ -23,7 +23,7 @@ use DateTime::Duration;
 use Net::DRI::Util;
 use Net::DRI::Data::Contact::FCCN;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete contact_update contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse domain_delete message_retrieve message_delete message_waiting message_count/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete contact_update contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse message_retrieve message_delete message_waiting message_count/);
 
 =pod
 
@@ -97,16 +97,6 @@ sub set_factories
  my ($self,$po)=@_;
  $po->factories('contact',sub { return Net::DRI::Data::Contact::FCCN->new(@_); });
  return;
-}
-
-####################################################################################################
-
-sub domain_renounce
-{
- my ($self,$ndr,$domain,$rd)=@_;
- $self->enforce_domain_name_constraints($ndr,$domain,'renounce');
-
- return $ndr->process('domain','renounce',[$domain,$rd]);
 }
 
 ####################################################################################################
