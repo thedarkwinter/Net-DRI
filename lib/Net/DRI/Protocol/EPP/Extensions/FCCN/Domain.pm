@@ -103,7 +103,7 @@ sub create
  push @n,['ptdomain:registration_basis',$rd->{registration_basis}] if $rd->{registration_basis};
  push @n,['ptdomain:autoRenew',$rd->{auto_renew}] if $rd->{auto_renew};
  push @n,['ptdomain:Arbitration',$rd->{arbitration}] if $rd->{arbitration};
- push @n,['ptdomain:ownerConf',$rd->{owner_conf}] if $rd->{arbitration};
+ push @n,['ptdomain:ownerConf',$rd->{owner_conf}] if $rd->{owner_conf};
  my $eid=build_command_extension($mes,$epp,'ptdomain:create');
  $mes->command_extension($eid,\@n);
  return;
