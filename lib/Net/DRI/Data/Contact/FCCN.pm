@@ -21,7 +21,7 @@ use base qw/Net::DRI::Data::Contact/;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-__PACKAGE__->register_attributes(qw(type identification mobile));
+__PACKAGE__->register_attributes(qw(vat mobile));
 
 =pod
 
@@ -38,13 +38,9 @@ This subclass of Net::DRI::Data::Contact adds accessors and validation for
 
 The following mutators can be called in chain, as they all return the object itself.
 
-=head2 type()
+=head2 vat()
 
-type of contact (individual or organization)
-
-=head2 identification()
-
-formal identification of the contact
+customer VAT number or other contact identifier
 
 =head2 mobile()
 
@@ -92,11 +88,9 @@ sub validate
 
  if (!$change)
  {
-  Net::DRI::Exception::usererr_insufficient_parameters('identification is mandatory') unless ($self->identification() && Net::DRI::Util::has_key($self->identification(),'value'));
+  Net::DRI::Exception::usererr_insufficient_parameters('vat is mandatory') unless ($self->vat());
  }
 
- push @errs,'type' if ($self->type() && $self->type()!~m/^(?:individual|organization)$/);
- push @errs,'identification' if ($self->identification() && (($self->identification()->{type} && $self->identification()->{type}!~m/^(?:010|020|030|040|110)$/) || (! Net::DRI::Util::xml_is_token($self->identification()->{value},1,20))));
  push @errs,'mobile' if ($self->mobile() && !Net::DRI::Util::xml_is_token($self->mobile(),undef,17) && $self->mobile()!~m/^\+[0-9]{1,3}\.[0-9]{1,14}(?:x\d+)?$/);
 
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
@@ -107,8 +101,11 @@ sub validate
 sub init
 {
  my ($self,$what,$ndr)=@_;
- my $a=$self->auth();
- $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); ## Mandatory but can be empty for create and info commands
+ if ($what eq 'create' || $what eq 'update')
+ {
+  my $a=$self->auth();
+  $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw})); ## authInfo is not used
+ }
  return;
 }
 

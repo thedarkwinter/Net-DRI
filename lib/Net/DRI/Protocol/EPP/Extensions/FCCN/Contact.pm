@@ -86,9 +86,9 @@ sub create
  my ($epp,$contact)=@_;
  my $mes=$epp->message();
 
-# validate() has been called
+ # validate() has been called
  my @n;
- push @n,['ptcontact:identification',$contact->identification()->{value}];
+ push @n,['ptcontact:vat',$contact->vat()];
  push @n,['ptcontact:mobile',$contact->mobile()] if $contact->mobile();
 
  my $eid=build_command_extension($mes,$epp,'ptcontact:create');
@@ -102,9 +102,6 @@ sub update
  my $mes=$epp->message();
 
  my @n;
- my $auth=$contact->auth();
- Net::DRI::Exception::usererr_insufficient_parameters('Contact password is mandatory for .PT contact update') unless (defined($auth) && (ref($auth) eq 'HASH') && exists($auth->{pw}) && Net::DRI::Util::xml_is_normalizedstring($auth->{pw}));
- push @n,['ptcontact:pw',$auth->{pw}];
 
  my $newc=$todo->set('info');
  if ($newc)
@@ -136,12 +133,9 @@ sub info_parse
   my $name=$c->localname() || $c->nodeName();
   next unless $name;
 
-  if ($name eq 'type')
+  if ($name eq 'vat')
   {
-   $co->type($c->getFirstChild()->getData());
-  } elsif ($name eq 'identification')
-  {
-   $co->identification({type=>$c->getAttribute('type'),value=>$c->getFirstChild()->getData()});
+   $co->vat($c->getFirstChild()->getData());
   } elsif ($name eq 'mobile')
   {
    $co->mobile($c->getFirstChild()->getData());

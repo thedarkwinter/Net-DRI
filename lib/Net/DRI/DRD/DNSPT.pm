@@ -23,7 +23,7 @@ use DateTime::Duration;
 use Net::DRI::Util;
 use Net::DRI::Data::Contact::FCCN;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete contact_update contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse message_retrieve message_delete message_waiting message_count/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete contact_transfer contact_transfer_start contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse message_retrieve message_delete message_waiting message_count/);
 
 =pod
 

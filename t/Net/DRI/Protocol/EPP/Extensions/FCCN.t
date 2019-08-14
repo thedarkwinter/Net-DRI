@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 45;
+use Test::More tests => 106;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -222,57 +222,77 @@ $R2='';
 $rc=$dri->domain_delete('domainregistrar.pt',{pure_delete=>1});
 is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domainregistrar.pt</domain:name></domain:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete build');
 is($rc->is_success(),1,'domain_delete is_success');
-exit 0;
 
 #########################################################################################################
 ## Contact commands
 
-$R2=$E1.'<response>'.r().'<resData><contact:creData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>c1006441</contact:id><contact:crDate>2007-03-21T10:02:45Z</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
-$co=$dri->local_object('contact')->srid('NIC-Handle');
-$co->name('Smith Bill');
-$co->street(['Blue Tower']);
+$R2=$E1.'<response>'.r().'<resData><contact:chkData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:cd><contact:id avail="1">SSIO-933460-ADNC</contact:id></contact:cd><contact:cd><contact:id avail="0">SSIO-933460-ADNS</contact:id><contact:reason>The Nic-Handle is already in use in the system.</contact:reason></contact:cd></contact:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->contact_check(map { $dri->local_object('contact')->srid($_) } ('SSIO-933460-ADNC','SSIO-933460-ADNS'));
+is($R1,$E1.'<command><check><contact:check xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>SSIO-933460-ADNC</contact:id><contact:id>SSIO-933460-ADNS</contact:id></contact:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_check multi build');
+is($rc->is_success(),1,'contact_check multi is_success');
+is($dri->get_info('exist','contact','SSIO-933460-ADNC'),0,'contact_check multi get_info(exist) 1/1');
+is($dri->get_info('exist','contact','SSIO-933460-ADNS'),1,'contact_check multi get_info(exist) 2/2');
+is($dri->get_info('exist_reason','contact','SSIO-933460-ADNS'),'The Nic-Handle is already in use in the system.','contact_check multi get_info(exist_reason)');
+
+$R2=$E1.'<response>'.r().'<resData><contact:creData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>AAAAA</contact:id><contact:crDate>2018-12-27T19:40:32Z</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
+$co=$dri->local_object('contact')->srid('AAAAA');
+$co->name('RegistrarTeste');
+$co->org('Registrar Teste1');
+$co->street(['Rua Latino Coelho, 13']);
 $co->city('Lisboa');
-$co->pc('1900');
+$co->pc('1050-132');
 $co->cc('PT');
-$co->voice('+351.963456569');
-$co->fax('+351.213456569');
-$co->email('noreply@dns.pt');
-$co->auth({pw=>'pA55w0rD'});
-$co->identification({value=>'234561728'});
-$co->mobile('+351.916589304');
+$co->voice('+351.211111111');
+$co->email('JSP1Ldrr@registrarteste.pt');
+$co->auth({pw=>'JSP1Ldrr'});
+$co->vat('PT510222222');
+$co->mobile('+351.922222222');
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>NIC-Handle</contact:id><contact:postalInfo type="int"><contact:name>Smith Bill</contact:name><contact:addr><contact:street>Blue Tower</contact:street><contact:city>Lisboa</contact:city><contact:pc>1900</contact:pc><contact:cc>PT</contact:cc></contact:addr></contact:postalInfo><contact:voice>+351.963456569</contact:voice><contact:fax>+351.213456569</contact:fax><contact:email>noreply@dns.pt</contact:email><contact:authInfo><contact:pw>pA55w0rD</contact:pw></contact:authInfo></contact:create></create><extension><ptcontact:create xmlns:ptcontact="http://eppdev.dns.pt/schemas/ptcontact-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptcontact-1.0 ptcontact-1.0.xsd"><ptcontact:identification>234561728</ptcontact:identification><ptcontact:mobile>+351.916589304</ptcontact:mobile></ptcontact:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>AAAAA</contact:id><contact:postalInfo type="int"><contact:name>RegistrarTeste</contact:name><contact:org>Registrar Teste1</contact:org><contact:addr><contact:street>Rua Latino Coelho, 13</contact:street><contact:city>Lisboa</contact:city><contact:pc>1050-132</contact:pc><contact:cc>PT</contact:cc></contact:addr></contact:postalInfo><contact:voice>+351.211111111</contact:voice><contact:email>JSP1Ldrr@registrarteste.pt</contact:email><contact:authInfo><contact:pw>JSP1Ldrr</contact:pw></contact:authInfo></contact:create></create><extension><ptcontact:create xmlns:ptcontact="http://eppdev.dns.pt/schemas/ptcontact-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptcontact-1.0 ptcontact-1.0.xsd"><ptcontact:vat>PT510222222</ptcontact:vat><ptcontact:mobile>+351.922222222</ptcontact:mobile></ptcontact:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
 is($rc->is_success(),1,'contact_create is_success');
-is($dri->get_info('id'),'c1006441','contact_create get_info(id)');
-is($dri->get_info('action','contact','c1006441'),'create','contact_create get_info(action)');
-is($dri->get_info('exist','contact','c1006441'),1,'contact_create get_info(exist)');
+is($dri->get_info('id'),'AAAAA','contact_create get_info(id)');
+is($dri->get_info('action','contact','AAAAA'),'create','contact_create get_info(action)');
+is($dri->get_info('exist','contact','AAAAA'),1,'contact_create get_info(exist)');
+$d=$dri->get_info('crDate','contact','AAAAA');
+isa_ok($d,'DateTime','contact_create get_info(crDate)');
+is("".$d,'2018-12-27T19:40:32','contact_create get_info(crDate) value');
 
-
-$R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>c1006449</contact:id><contact:roid>1006449-FCCN</contact:roid><contact:postalInfo type="int"><contact:name>Smith Bill</contact:name><contact:addr><contact:street>Blue Tower</contact:street><contact:city>Paris</contact:city><contact:pc>571234</contact:pc><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.16345656</contact:voice><contact:fax>+33.16345656</contact:fax><contact:email>noreply@dns.pt</contact:email><contact:crID>t000005</contact:crID><contact:crDate>2006-03-21T10:04:54.000Z</contact:crDate><contact:upDate>2006-03-21T10:04:54.000Z</contact:upDate></contact:infData></resData><extension><ptcontact:infData xmlns:ptcontact="http://eppdev.dns.pt/schemas/ptcontact-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptcontact-1.0 ptcontact-1.0.xsd"><ptcontact:identification>234561728</ptcontact:identification><ptcontact:mobile>+33.9689304</ptcontact:mobile></ptcontact:infData></extension>'.$TRID.'</response>'.$E2;
-$co->srid('c1006449');
-$co2=$dri->local_object('contact')->srid('c1006449');
-$rc=$dri->contact_info($co2);
-is_string($R1,$E1.'<command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>c1006449</contact:id><contact:authInfo><contact:pw/></contact:authInfo></contact:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info');
-
-
-$co2=$dri->get_info('self');
-is_deeply($co2->identification(),{type => undef, value=>'234561728'},'contact_info get_info(self) identification');
-is($co2->mobile(),'+33.9689304','contact_info get_info(self) mobile');
-
-$R2='';
-$rc=$dri->contact_info($dri->local_object('contact')->srid('sh8013')->auth({pw=>'2fooBAR'}));
-is($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo></contact:info></info><clTRID>ABC-12345</clTRID></command></epp>','contact_info build');
+$R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>AAAA-999999-AAAA</contact:id><contact:postalInfo type="int"><contact:name>Registrar Teste</contact:name><contact:org> Registrar Teste </contact:org><contact:addr><contact:street>Rua Latino Coelho, 13</contact:street><contact:city>Lisboa</contact:city><contact:pc>1050-132</contact:pc><contact:cc>PT</contact:cc></contact:addr></contact:postalInfo><contact:voice>+351.912345678</contact:voice><contact:email>registrar.teste@registrar.pt</contact:email><contact:crDate>2018-09-18T12:58:24Z</contact:crDate><contact:upDate>2018-10-25T09:36:41Z</contact:upDate></contact:infData></resData><extension><ptcontact:infData xmlns:ptcontact="http://eppdev.dns.pt/schemas/ptcontact-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptcontact:vat>PT255555555</ptcontact:vat><ptcontact:mobile>+351.213908258</ptcontact:mobile></ptcontact:infData></extension>'.$TRID.'</response>'.$E2;
+$co=$dri->local_object('contact')->srid('AAAA-999999-AAAA');
+$rc=$dri->contact_info($co);
+is($R1,$E1.'<command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>AAAA-999999-AAAA</contact:id></contact:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_info build');
 is($rc->is_success(),1,'contact_info is_success');
+is($dri->get_info('action'),'info','contact_info get_info(action)');
+is($dri->get_info('exist'),1,'contact_info get_info(exist)');
+$co=$dri->get_info('self');
+isa_ok($co,'Net::DRI::Data::Contact','contact_info get_info(self)');
+is($co->srid(),'AAAA-999999-AAAA','contact_info get_info(self) srid');
+is($co->voice(),'+351.912345678','contact_info get_info(self) voice');
+is($co->email(),'registrar.teste@registrar.pt','contact_info get_info(self) email');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','contact_info get_info(crDate)');
+is("".$d,'2018-09-18T12:58:24','contact_info get_info(crDate) value');
+$d=$dri->get_info('upDate');
+isa_ok($d,'DateTime','contact_info get_info(upDate)');
+is("".$d,'2018-10-25T09:36:41','contact_info get_info(upDate) value');
+# ptcontact extension
+is($co->vat(),'PT255555555','contact_info get_info(self) vat');
+is($co->mobile(),'+351.213908258','contact_info get_info(self) mobile');
 
-#########################################################################################################
-## GDPR changes
 $R2='';
-$cs=$dri->local_object('contactset');
-$c1=$dri->local_object('contact')->srid('FCZA-142520-FCCN');
-$cs->set($c1,'registrant');
-$cs->set($c1,'tech');
-$rc=$dri->domain_create('teste-12052018-2.pt',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,legitimacy=>1,registration_basis=>'090',add_period=>1,next_possible_registration=>0,auto_renew=>'false',owner_visible=>'false'});
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>teste-12052018-2.pt</domain:name><domain:period unit="y">1</domain:period><domain:registrant>FCZA-142520-FCCN</domain:registrant><domain:contact type="tech">FCZA-142520-FCCN</domain:contact><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><ptdomain:create xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy type="1"/><ptdomain:registration_basis type="090"/><ptdomain:autoRenew>false</ptdomain:autoRenew><ptdomain:ownerVisible>false</ptdomain:ownerVisible></ptdomain:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build GDPR changes - ownerVisible');
-
+$co=$dri->local_object('contact')->srid('AAAA-999999-AAAA');
+$toc=$dri->local_object('changes');
+$co2=$dri->local_object('contact');
+$co2->street(['124 Example Dr.','Suite 200']);
+$co2->city('Dulles');
+$co2->pc('20166-6503');
+$co2->cc('US');
+$co2->voice('+1.7034444444');
+$co2->email('adsdd@registarteste.pt');
+$co2->mobile('+351.922222222');
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>AAAA-999999-AAAA</contact:id><contact:chg><contact:postalInfo type="int"><contact:addr><contact:street>124 Example Dr.</contact:street><contact:street>Suite 200</contact:street><contact:city>Dulles</contact:city><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.7034444444</contact:voice><contact:email>adsdd@registarteste.pt</contact:email></contact:chg></contact:update></update><extension><ptcontact:update xmlns:ptcontact="http://eppdev.dns.pt/schemas/ptcontact-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptcontact-1.0 ptcontact-1.0.xsd"><ptcontact:mobile>+351.922222222</ptcontact:mobile></ptcontact:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
+is($rc->is_success(),1,'contact_update is_success');
 
 exit 0;
