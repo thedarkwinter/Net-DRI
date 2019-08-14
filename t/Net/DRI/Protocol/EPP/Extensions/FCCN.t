@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 106;
+use Test::More tests => 103;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -103,13 +103,6 @@ is("".$d,'2018-12-12T11:31:40','domain_create get_info(crDate) value');
 $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','domain_create get_info(exDate)');
 is("".$d,'2019-12-12T11:31:40','domain_create get_info(exDate) value');
-
-## Example corrected, domain:name needs a namespace
-$R2=$E1.'<response><result code="2302"><msg>Object exists</msg><extValue><value><domain:name xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">mytestdomain2.pt</domain:name></value><reason>There was a previous submission for the same domain name that is still in pending create. To put a new submission into the next-possible-registration queue resend this command with the next-possible-registration extension element set to true</reason></extValue></result>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_create('mytestdomain2.pt',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,legitimacy=>1,registration_basis=>'090',add_period=>1,next_possible_registration=>0,auto_renew=>'true',owner_visible=>'true'});
-is($rc->is_success(),0,'domain_create is_success');
-is($rc->code(),2302,'domain_create code');
-is_deeply([$rc->get_extended_results()],[{from=>'eppcom:extValue',type=>'rawxml',message=>'<domain:name xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">mytestdomain2.pt</domain:name>',reason=>'There was a previous submission for the same domain name that is still in pending create. To put a new submission into the next-possible-registration queue resend this command with the next-possible-registration extension element set to true',lang=>'en'}],'domain_create extra info');
 
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.pt</domain:name><domain:roid>2134454</domain:roid><domain:status s="ok" /><domain:registrant>GCAA-111111-ADNS</domain:registrant><domain:contact type="tech">UABC-111111-FCCN</domain:contact><domain:ns><domain:hostAttr><domain:hostName>dns01.registred.pt</domain:hostName><domain:hostAddr ip="v4">192.0.2.2</domain:hostAddr><domain:hostAddr ip="v6">1080:0:0:0:8:800:200C:417A</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>dns02.dns.pt</domain:hostName></domain:hostAttr></domain:ns><domain:clID>UABC-111111-FCCN</domain:clID><domain:crID>UABC-111111-FCCN</domain:crID><domain:crDate>2013-09-11T01:00:00.000Z</domain:crDate><domain:upID>UABC-111111-FCCN</domain:upID><domain:upDate>2018-09-09T01:00:00.000Z</domain:upDate><domain:exDate>2019-09-10T00:00:00.000Z</domain:exDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><ptdomain:infData xmlns:ptdomain="http://eppdev.dns.pt/schemas/ptdomain-1.0" xsi:schemaLocation="http://eppdev.dns.pt/schemas/ptdomain-1.0 ptdomain-1.0.xsd"><ptdomain:legitimacy>X</ptdomain:legitimacy><ptdomain:registration_basis>X</ptdomain:registration_basis><ptdomain:autoRenew>false</ptdomain:autoRenew><ptdomain:Arbitration>true</ptdomain:Arbitration><ptdomain:ownerConf>false</ptdomain:ownerConf><ptdomain:rl>false</ptdomain:rl></ptdomain:infData><secDNS:infData xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:dsData><secDNS:keyTag>46146</secDNS:keyTag><secDNS:alg>7</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>CE5E330AEA4AC9D9951A14153A0F6122EF4DE2F640434A116424F00495F8C994</secDNS:digest></secDNS:dsData></secDNS:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('foobar.pt');
