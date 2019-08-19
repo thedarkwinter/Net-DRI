@@ -7,7 +7,7 @@ use utf8;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 142;
+use Test::More tests => 168;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -22,7 +22,7 @@ sub mysend { my ($transport,$count,$msg)=@_; $R1=$msg->as_string(); return 1; }
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<response>'.r().$TRID.'</response>'.$E2); }
 sub r { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>';  }
 
-my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 0});
+my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('IITCNR');
 $dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv});
@@ -30,7 +30,7 @@ $dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv});
 my $rc;
 my $s;
 my $d;
-my ($dh, @c, $c1, $c2, $toc, $e, $ext_ns_validate, $ext_ds_validate);
+my ($dh, @c, $c1, $c2, $co, $co2, $toc, $e, $ext_ns_validate, $ext_ds_validate);
 
 ####################################################################################################
 
@@ -86,7 +86,7 @@ is($dri->get_info('idn_created'),'ᾀᾀᾀᾀ.it','domain_create get_info (idn_
 
 ####################################################################################################
 
-# domain info with inf_contacts
+# domain info with inf_contacts (reg, tech and admin)
 $R2 = $E1 . '<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>esempio.it</domain:name><domain:roid>ITNIC-162761</domain:roid><domain:status lang="en" s="ok" /><domain:registrant>MR0001</domain:registrant><domain:contact type="admin">MR0001</domain:contact><domain:contact type="tech">TECH001</domain:contact><domain:contact type="tech">TECH002</domain:contact><domain:ns><domain:hostAttr><domain:hostName>ns1.esempio.it</domain:hostName><domain:hostAddr ip="v4">193.205.245.6</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.esempio.it</domain:hostName><domain:hostAddr ip="v4">193.205.245.7</domain:hostAddr></domain:hostAttr></domain:ns><domain:host>ns1.esempio.it</domain:host><domain:host>ns2.esempio.it</domain:host><domain:clID>DEMO-REG</domain:clID><domain:crID>DEMO-REG</domain:crID><domain:crDate>2013-01-24T16:41:53.000+01:00</domain:crDate><domain:exDate>2014-01-24T16:41:53.000+01:00</domain:exDate><domain:authInfo><domain:pw>22fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xmlns:extdom="http://www.nic.it/ITNIC-EPP/extdom-2.0"><extdom:infContactsData><extdom:registrant><extdom:infContact><contact:id>MR0001</contact:id><contact:roid>ITNIC-326982</contact:roid><contact:status lang="en" s="ok" /><contact:status lang="en" s="linked" /><contact:postalInfo type="loc"><contact:name>Mario Rossi</contact:name><contact:org>Mario Rossi</contact:org><contact:addr><contact:street>Via Moruzzi, 1</contact:street><contact:city>Pisa</contact:city><contact:sp>PI</contact:sp><contact:pc>56100</contact:pc><contact:cc>IT</contact:cc></contact:addr></contact:postalInfo><contact:voice x="">+39.050315111</contact:voice><contact:fax x="">+39.050315111</contact:fax><contact:email>mario.rossi@esempio.it</contact:email><contact:clID>DEMO-REG</contact:clID><contact:crID>DEMO-REG</contact:crID><contact:crDate>2013-01-24T16:41:53.000+01:00</contact:crDate></extdom:infContact><extdom:extInfo><extcon:consentForPublishing>true</extcon:consentForPublishing><extcon:registrant><extcon:nationalityCode>IT</extcon:nationalityCode><extcon:entityType>1</extcon:entityType><extcon:regCode>RSSMRA64C14G702Q</extcon:regCode></extcon:registrant></extdom:extInfo></extdom:registrant><extdom:contact type="admin"><extdom:infContact><contact:id>MR0001</contact:id><contact:roid>ITNIC-326982</contact:roid><contact:status lang="en" s="ok" /><contact:status lang="en" s="linked" /><contact:postalInfo type="loc"><contact:name>Mario Rossi</contact:name><contact:org>Mario Rossi</contact:org><contact:addr><contact:street>Via Moruzzi, 1</contact:street><contact:city>Pisa</contact:city><contact:sp>PI</contact:sp><contact:pc>56100</contact:pc><contact:cc>IT</contact:cc></contact:addr></contact:postalInfo><contact:voice x="">+39.050315111</contact:voice><contact:fax x="">+39.050315111</contact:fax><contact:email>mario.rossi@esempio.it</contact:email><contact:clID>DEMO-REG</contact:clID><contact:crID>DEMO-REG</contact:crID><contact:crDate>2013-01-24T16:41:53.000+01:00</contact:crDate></extdom:infContact><extdom:extInfo><extcon:consentForPublishing>true</extcon:consentForPublishing><extcon:registrant><extcon:nationalityCode>IT</extcon:nationalityCode><extcon:entityType>1</extcon:entityType><extcon:regCode>RSSMRA64C14G702Q</extcon:regCode></extcon:registrant></extdom:extInfo></extdom:contact><extdom:contact type="tech"><extdom:infContact><contact:id>TECH001</contact:id><contact:roid>ITNIC-326980</contact:roid><contact:status lang="en" s="ok" /><contact:status lang="en" s="linked" /><contact:postalInfo type="loc"><contact:name>Mirco Bartolini</contact:name><contact:org>Demo Registrar Srl</contact:org><contact:addr><contact:street>via 4 Novembre, 12</contact:street><contact:city>Barga</contact:city><contact:sp>LU</contact:sp><contact:pc>55052</contact:pc><contact:cc>IT</contact:cc></contact:addr></contact:postalInfo><contact:voice x="">+39.0583123456</contact:voice><contact:fax x="">+39.058375124</contact:fax><contact:email>mirco.bartolini@demoreg.it</contact:email><contact:clID>DEMO-REG</contact:clID><contact:crID>DEMO-REG</contact:crID><contact:crDate>2013-01-24T16:41:53.000+01:00</contact:crDate></extdom:infContact><extdom:extInfo><extcon:consentForPublishing>true</extcon:consentForPublishing></extdom:extInfo></extdom:contact><extdom:contact type="tech"><extdom:infContact><contact:id>TECH002</contact:id><contact:roid>ITNIC-326982</contact:roid><contact:status lang="en" s="ok" /><contact:status lang="en" s="linked" /><contact:postalInfo type="loc"><contact:name>Andrea Bianchi</contact:name><contact:org>Demo Registrar Srl</contact:org><contact:addr><contact:street>via 4 Novembre, 12</contact:street><contact:city>Barga</contact:city><contact:sp>LU</contact:sp><contact:pc>55052</contact:pc><contact:cc>IT</contact:cc></contact:addr></contact:postalInfo><contact:voice x="">+39.0583123458</contact:voice><contact:fax x="">+39.058375124</contact:fax><contact:email>andrea.bianchi@demoreg.it</contact:email><contact:clID>DEMO-REG</contact:clID><contact:crID>DEMO-REG</contact:crID><contact:crDate>2013-01-24T16:41:53.000+01:00</contact:crDate></extdom:infContact><extdom:extInfo><extcon:consentForPublishing>true</extcon:consentForPublishing></extdom:extInfo></extdom:contact></extdom:infContactsData></extension>' . $TRID . '</response>' . $E2;
 $rc = $dri->domain_info('esempio.it', {'inf_contacts' => 'all'});
 is_string($R1,$E1 . '<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">esempio.it</domain:name></domain:info></info><extension><extdom:infContacts op="all" xmlns:extdom="http://www.nic.it/ITNIC-EPP/extdom-2.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extdom-2.0 extdom-2.0.xsd"/></extension><clTRID>ABC-12345</clTRID></command>' . $E2,'domain_info build');
@@ -97,6 +97,26 @@ my $reg = $cs->get('registrant');
 isa_ok($reg,'Net::DRI::Data::Contact::IT','domain_info get registrant');
 is($reg->name(),'Mario Rossi','domain_info get registrant name');
 my $reg2 = $dri->get_info('self','contact','MR0001');
+is($reg2->name(),'Mario Rossi','domain_info get_info self/contact/srid registrant name');
+my $tech = $cs->get('tech');
+isa_ok($reg,'Net::DRI::Data::Contact::IT','domain_info get tech');
+is($tech->name(),'Andrea Bianchi','domain_info get tech name');
+my $tech2 = $dri->get_info('self','contact','TECH001');
+is($tech2->name(),'Mirco Bartolini','domain_info get_info self/contact/srid tech name');
+is($tech2->sp(),'LU','domain_info get_info tech sp');
+is($tech2->cc(),'IT','domain_info get_info tech cc');
+
+# domain info with inf_contacts - op registrant only
+$R2 = $E1 . '<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>esempio2.it</domain:name><domain:roid>ITNIC-162761</domain:roid><domain:status lang="en" s="ok" /><domain:registrant>MR0001</domain:registrant><domain:contact type="admin">MR0001</domain:contact><domain:contact type="tech">TECH001</domain:contact><domain:contact type="tech">TECH002</domain:contact><domain:ns><domain:hostAttr><domain:hostName>ns1.esempio.it</domain:hostName><domain:hostAddr ip="v4">193.205.245.6</domain:hostAddr></domain:hostAttr><domain:hostAttr><domain:hostName>ns2.esempio.it</domain:hostName><domain:hostAddr ip="v4">193.205.245.7</domain:hostAddr></domain:hostAttr></domain:ns><domain:host>ns1.esempio.it</domain:host><domain:host>ns2.esempio.it</domain:host><domain:clID>DEMO-REG</domain:clID><domain:crID>DEMO-REG</domain:crID><domain:crDate>2013-01-24T16:41:53.000+01:00</domain:crDate><domain:exDate>2014-01-24T16:41:53.000+01:00</domain:exDate><domain:authInfo><domain:pw>22fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xmlns:extdom="http://www.nic.it/ITNIC-EPP/extdom-2.0"><extdom:infContactsData><extdom:registrant><extdom:infContact><contact:id>MR0001</contact:id><contact:roid>ITNIC-326982</contact:roid><contact:status lang="en" s="ok" /><contact:status lang="en" s="linked" /><contact:postalInfo type="loc"><contact:name>Mario Rossi</contact:name><contact:org>Mario Rossi</contact:org><contact:addr><contact:street>Via Moruzzi, 1</contact:street><contact:city>Pisa</contact:city><contact:sp>PI</contact:sp><contact:pc>56100</contact:pc><contact:cc>IT</contact:cc></contact:addr></contact:postalInfo><contact:voice x="">+39.050315111</contact:voice><contact:fax x="">+39.050315111</contact:fax><contact:email>mario.rossi@esempio.it</contact:email><contact:clID>DEMO-REG</contact:clID><contact:crID>DEMO-REG</contact:crID><contact:crDate>2013-01-24T16:41:53.000+01:00</contact:crDate></extdom:infContact><extdom:extInfo><extcon:consentForPublishing>true</extcon:consentForPublishing><extcon:registrant><extcon:nationalityCode>IT</extcon:nationalityCode><extcon:entityType>1</extcon:entityType><extcon:regCode>RSSMRA64C14G702Q</extcon:regCode></extcon:registrant></extdom:extInfo></extdom:registrant></extdom:infContactsData></extension>' . $TRID . '</response>' . $E2;
+$rc = $dri->domain_info('esempio2.it', {'inf_contacts' => 'registrant'});
+is_string($R1,$E1 . '<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">esempio2.it</domain:name></domain:info></info><extension><extdom:infContacts op="registrant" xmlns:extdom="http://www.nic.it/ITNIC-EPP/extdom-2.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extdom-2.0 extdom-2.0.xsd"/></extension><clTRID>ABC-12345</clTRID></command>' . $E2,'domain_info build');
+is($dri->get_info('exist'),1,'domain_info get_info(exist)');
+is($dri->get_info('name'),'esempio2.it','domain_info get_info(name)');
+$cs = $dri->get_info('contact');
+$reg = $cs->get('registrant');
+isa_ok($reg,'Net::DRI::Data::Contact::IT','domain_info get registrant');
+is($reg->name(),'Mario Rossi','domain_info get registrant name');
+$reg2 = $dri->get_info('self','contact','MR0001');
 is($reg2->name(),'Mario Rossi','domain_info get_info self/contact/srid registrant name');
 
 # domain transfer+trade
@@ -110,6 +130,22 @@ $rc = $dri->contact_info($dri->local_object('contact')->srid('ABC-123'));
 is_string($R1,$E1 . '<command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>ABC-123</contact:id></contact:info></info><clTRID>ABC-12345</clTRID></command>' . $E2,'contact_info build');
 my $c = $dri->get_info('self');
 is ($c->entity_type(),'7','contact_info get_info(entity_type)');
+
+# contact info get additional elements regarding a "tech" contact (based on "Synchronous_Technical_Guidelines_v2.4.pdf", 4.1.2.2, example 3)
+$R2 = $E1 . '<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>TECH001</contact:id><contact:roid>ITNIC-8</contact:roid><contact:status s="ok" lang="en" /><contact:status s="linked" lang="en" /><contact:postalInfo type="loc"><contact:name>Mirco Bartolini</contact:name><contact:org>Demo Registrar Srl</contact:org><contact:addr><contact:street>via 4 Novembre,12</contact:street><contact:city>Barga</contact:city><contact:sp>LU</contact:sp><contact:pc>55052</contact:pc><contact:cc>IT</contact:cc></contact:addr></contact:postalInfo><contact:voice x="">+39.0583123456</contact:voice><contact:fax x="">+39.058375124</contact:fax><contact:email>mirco.bartolini@hotmail.it</contact:email><contact:clID>DEMO-REGISTRAR</contact:clID><contact:crID>DEMO-REGISTRAR</contact:crID><contact:crDate>2013-02-19T14:46:35+01:00</contact:crDate><contact:upID>DEMO-REGISTRAR</contact:upID><contact:upDate>2013-03-21T12:35:51+01:00</contact:upDate></contact:infData></resData><extension xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0"><extcon:infData><extcon:consentForPublishing>true</extcon:consentForPublishing></extcon:infData></extension>' . $TRID . '</response>' . $E2;
+$rc = $dri->contact_info($dri->local_object('contact')->srid('TECH001'));
+is_string($R1,$E1 . '<command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>TECH001</contact:id></contact:info></info><clTRID>ABC-12345</clTRID></command>' . $E2,'contact_info build');
+$c = $dri->get_info('self');
+is ($c->consent_for_publishing(),'1','contact_info tech get_info(consent_for_publishing)');
+
+# contact info get additional elements regarding a "registrant" contact (based on "Synchronous_Technical_Guidelines_v2.4.pdf", 4.1.2.2, example 4)
+$R2 = $E1 . '<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>MR0001</contact:id><contact:roid>ITNIC-24</contact:roid><contact:status s="ok" lang="en" /><contact:status s="linked" lang="en" /><contact:postalInfo type="loc"><contact:name>Mario Rossi</contact:name><contact:org>NIC-IT Inc.</contact:org><contact:addr><contact:street>via Moruzzi,1</contact:street><contact:city>Pisa</contact:city><contact:sp>PI</contact:sp><contact:pc>56124</contact:pc><contact:cc>IT</contact:cc></contact:addr></contact:postalInfo><contact:voice x="2111">+39.050315</contact:voice><contact:fax x="">+39.0503152593</contact:fax><contact:email>mario.rossi@esempio.it</contact:email><contact:clID>DEMO-REGISTRAR</contact:clID><contact:crID>DEMO-REGISTRAR</contact:crID><contact:crDate>2013-02-19T14:46:35+01:00</contact:crDate><contact:upID>DEMO-REGISTRAR</contact:upID><contact:upDate>2013-03-21T12:35:51+01:00</contact:upDate></contact:infData></resData><extension xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0"><extcon:infData><extcon:consentForPublishing>true</extcon:consentForPublishing><extcon:registrant><extcon:nationalityCode>IT</extcon:nationalityCode><extcon:entityType>1</extcon:entityType><extcon:regCode>RSSMRA64C14G702Q</extcon:regCode></extcon:registrant></extcon:infData></extension>' . $TRID . '</response>' . $E2;
+$rc = $dri->contact_info($dri->local_object('contact')->srid('MR0001'));
+is_string($R1,$E1 . '<command><info><contact:info xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>MR0001</contact:id></contact:info></info><clTRID>ABC-12345</clTRID></command>' . $E2,'contact_info build');
+$c = $dri->get_info('self');
+is ($c->nationality_code(),'IT','contact_info registrant get_info(nationality_code)');
+is ($c->entity_type(),'1','contact_info registrant get_info(entity_type)');
+is ($c->reg_code(),'RSSMRA64C14G702Q','contact_info registrant get_info(reg_code)');
 
 # extvalue parsing
 $R2 = $E1 . '<response xmlns:extepp="http://www.nic.it/ITNIC-EPP/extepp-2.0"><result code="2302"><msg lang="en">Object exists</msg><value><extepp:wrongValue><extepp:element>id</extepp:element><extepp:namespace>urn:ietf:params:xml:ns:contact-1.0</extepp:namespace><extepp:value>ABC-124</extepp:value></extepp:wrongValue></value><extValue><value><extepp:reasonCode>8058</extepp:reasonCode></value><reason lang="en">Contact already exists</reason></extValue></result>' . $TRID . '</response>' . $E2;
@@ -216,7 +252,7 @@ is($dri->get_info('idn_created','message',92),'ᾀᾀᾀᾀ.it','idn remapped me
 
 
 # tests based on: DNSSEC in the ccTLD-IT-ENG.pdf (Last update: August 1, 2017)
-$dri=Net::DRI::TrapExceptions->new({cache_ttl => 0});
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('IITCNR');
 $dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv},{ custom => { secdns_accredited => 1 } });
@@ -675,5 +711,71 @@ $extsecdns_queries = $dri->get_info('extsecdns','message',6369665)->{'queries'};
 is($extsecdns_queries->{'17'}->{'queryFor'}, 'esempio-poll-extsecdns.it','dns check with extsecdns failed message get_info(extsecdns - query 17 queryFor value');
 is($extsecdns_queries->{'17'}->{'destination'}, "y.dns.it/[192.12.192.24]",'dns check with extsecdns failed message get_info(extsecdns - query 17 destination value');
 is($extsecdns_queries->{'16'}->{'destination'}, "x.dns.it/[192.12.192.23]",'dns check with extsecdns failed message get_info(extsecdns - query 16 destination value');
+
+####################################################################################################
+## Tests related with changes introduced on "Synchronous_Technical_Guidelines_v2.5_0.pdf
+
+# 3.1.1.3 Examples of a Create Contact request - Example 1
+# Create Contact command for registering an administrative or technical contact. In the request for
+# Create Contact below, the section on data from the Registrant is missing:
+$R2='';
+$co=$dri->local_object('contact')->srid('mr0001');
+$co->name('Mario Rossi');
+$co->street(['Via Moruzzi 1']);
+$co->city('Pisa');
+$co->sp('PI');
+$co->pc('56124');
+$co->cc('IT');
+$co->voice('+39.050315x2111');
+$co->fax('+39.0503152593');
+$co->email('mario.rossi@example.it');
+$co->auth({pw=>''});
+$co->consent_for_publishing('true');
+$rc=$dri->contact_create($co);
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>mr0001</contact:id><contact:postalInfo type="loc"><contact:name>Mario Rossi</contact:name><contact:addr><contact:street>Via Moruzzi 1</contact:street><contact:city>Pisa</contact:city><contact:sp>PI</contact:sp><contact:pc>56124</contact:pc><contact:cc>IT</contact:cc></contact:addr></contact:postalInfo><contact:voice x="2111">+39.050315</contact:voice><contact:fax>+39.0503152593</contact:fax><contact:email>mario.rossi@example.it</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><extension><extcon:create xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extcon-1.0 extcon-1.0.xsd"><extcon:consentForPublishing>true</extcon:consentForPublishing></extcon:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+# test non boolean values
+$co->consent_for_publishing('truee');
+throws_ok { $dri->contact_create($co) } qr/Invalid contact information: consent_for_publishing/, 'contact_create - parse invalid consent_for_publishing (not boolean - truee)';
+$co->consent_for_publishing('fals');
+throws_ok { $dri->contact_create($co) } qr/Invalid contact information: consent_for_publishing/, 'contact_create - parse invalid consent_for_publishing (not boolean - fals)';
+$co->consent_for_publishing('2');
+throws_ok { $dri->contact_create($co) } qr/Invalid contact information: consent_for_publishing/, 'contact_create - parse invalid consent_for_publishing (not boolean - 2)';
+
+# 3.2.1.2 Examples of an Update Contact request - Example 1
+# Update Contact for changing phone number and email address, and for the addition of the
+# clientDeleteProhibited to prevent the cancellation of the contact:
+$R2='';
+$co=$dri->local_object('contact')->srid('mr0001');
+$toc=$dri->local_object('changes');
+$toc->add('status',$dri->local_object('status')->no('delete'));
+$co2=$dri->local_object('contact');
+$co2->voice('+39.05863152111');
+$co2->email('info@example.it');
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>mr0001</contact:id><contact:add><contact:status s="clientDeleteProhibited"/></contact:add><contact:chg><contact:voice>+39.05863152111</contact:voice><contact:email>info@example.it</contact:email></contact:chg></contact:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
+is($rc->is_success(),1,'contact_update is_success');
+
+# 3.2.1.2 Examples of an Update Contact request - Example 2
+# Update Contact to change the data relating to consent for publication of personal data (in case of
+# Registrants other than natural persons, the ConsentForPublishing field cannot be set to false / 0):
+$R2='';
+$co=$dri->local_object('contact')->srid('mm001');
+$toc=$dri->local_object('changes');
+$co2=$dri->local_object('contact');
+$co2->consent_for_publishing('false');
+$toc->set('info',$co2);
+$rc=$dri->contact_update($co,$toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>mm001</contact:id></contact:update></update><extension><extcon:update xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extcon-1.0 extcon-1.0.xsd"><extcon:consentForPublishing>false</extcon:consentForPublishing></extcon:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update extcon build');
+is($rc->is_success(),1,'contact_update extcon is_success');
+# test invalid consent_for_publishing value - must be a boolean
+$co=$dri->local_object('contact')->srid('mm001');
+$toc=$dri->local_object('changes');
+$co2=$dri->local_object('contact');
+$co2->consent_for_publishing('foobar');
+$toc->set('info',$co2);
+throws_ok { $dri->contact_update($co,$toc) } qr/Invalid contact information: consent_for_publishing/, 'contact_update - parse invalid consent_for_publishing (not boolean - foobar)';
+
+
 
 exit 0;

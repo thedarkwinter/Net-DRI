@@ -53,6 +53,19 @@ sub validate ## See http://registry.coza.net.za/doku.php?id=eppcontactconstraint
  return 1; ## everything ok.
 }
 
+sub init
+{
+ my ($self,$what,$ndr)=@_;
+ if ($what eq 'create' || $what eq 'update')
+ {
+  my $a=$self->auth();
+  # auth is not used for some tlds (please check ZACR.t for more details)
+  $self->auth({pw=>''}) unless ($a && (ref($a) eq 'HASH') && exists($a->{pw}));
+ }
+
+ return;
+}
+
 ####################################################################################################
 1;
 

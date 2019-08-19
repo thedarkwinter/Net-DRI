@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Net::DRI;
-use Test::More tests => 66;
+use Test::More tests => 74;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -26,7 +26,7 @@ eval { Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::setup(undef,$
 my $parser=XML::LibXML->new();
 my ($doc,$root,$rh,$lp,$enc);
 
-my ($rc,$dh,$cs,$ch1,$ch2);
+my ($rc,$dh,$cs,$ch1,$ch2,$co);
 
 
 ####################################################################################################
@@ -280,5 +280,33 @@ is($ch2->{type},'price','domain_create get_info (Landrush charge premium type)')
 $lp = $dri->get_info('lp');
 is($lp->{phase},'claims','domain_create get_info (lp phase)');
 is($lp->{application_id},'0123456','domain_create get_info (lp application_id)');
+
+# contact create tests
+$R2=$E1.'<response>'.r().'<resData><contact:creData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8015</contact:id><contact:crDate>1999-04-03T22:00:00.0Z</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
+$co=$dri->local_object('contact')->srid('sh8015');
+$co->name('John Doe');
+$co->org('Example Inc.');
+$co->street(['123 Example Dr.','Suite 100']);
+$co->city('Dulles');
+$co->sp('VA');
+$co->pc('20166-6503');
+$co->cc('US');
+$co->voice('+1.7035555555x1234');
+$co->fax('+1.7035555556');
+$co->email('jdoe@example.com');
+$co->auth({pw=>'2fooBAR'});
+$rc=$dri->contact_create($co);
+# zacr tlds that accept auth: co.za net.za org.za web.za joburg durban capetown africa
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8015</contact:id><contact:postalInfo type="loc"><contact:name>John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:postalInfo type="int"><contact:name>John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.com</contact:email><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo></contact:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create with auth build');
+is($rc->is_success(),1,'contact_create with auth is_success');
+is($dri->get_info('action'),'create','contact_create with auth get_info(action)');
+is($dri->get_info('exist'),1,'contact_create with auth get_info(exist)');
+# zacr tlds that don't accept auth: wien cologne koeln tirol
+delete $co->{'auth'};
+$rc=$dri->contact_create($co);
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8015</contact:id><contact:postalInfo type="loc"><contact:name>John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:postalInfo type="int"><contact:name>John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>123 Example Dr.</contact:street><contact:street>Suite 100</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.com</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create with no auth build');
+is($rc->is_success(),1,'contact_create with no auth is_success');
+is($dri->get_info('action'),'create','contact_create with no auth get_info(action)');
+is($dri->get_info('exist'),1,'contact_create with no auth get_info(exist)');
 
 exit 0;
