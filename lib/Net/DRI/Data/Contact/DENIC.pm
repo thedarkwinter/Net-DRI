@@ -22,7 +22,7 @@ use Net::DRI::Exception;
 use Net::DRI::Util;
 use Email::Valid;
 
-__PACKAGE__->register_attributes(qw(type uri_template));
+__PACKAGE__->register_attributes(qw(type uri_template dispute_reference));
 
 =pod
 
@@ -41,7 +41,13 @@ The following accessors/mutators can be called in chain, as they all return the 
 
 =head2 type()
 
-The type of the contact (Person, Organization, whatever).
+The type of the contact: PERSON, ROLE, ORG, REQUEST.
+
+Once set the contact type cannot be changed any more.
+
+For Holder you may only use types PERSON or ORG.
+
+For General Request and Abuse Contact you may only use the type REQUEST.
 
 =head2 uri-template()
 

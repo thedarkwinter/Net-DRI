@@ -1,4 +1,4 @@
-## Domain Registry Interface, RRI Domain commands (DENIC-11)
+## Domain Registry Interface, RRI Domain commands (DENIC-29)
 ##
 ## Copyright (c) 2007,2008 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ##           (c) 2012,2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -31,7 +31,7 @@ use Net::DRI::Data::ContactSet;
 
 =head1 NAME
 
-Net::DRI::Protocol::RRI::Domain - RRI Domain commands (DENIC-22-EN_3.0) for Net::DRI
+Net::DRI::Protocol::RRI::Domain - RRI Domain commands (DENIC-29-EN_3.0) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -85,9 +85,10 @@ sub register_commands
            trade => [ \&trade ],
            update => [ \&update],
            transit => [ \&transit],
-           migrate_descr => [ \&migrate_descr],
-           create_authinfo => [ \&create_authinfo],
+           create_authinfo1 => [ \&create_authinfo1],
+           create_authinfo2 => [ \&create_authinfo2],
            delete_authinfo => [ \&delete_authinfo],
+           restore => [ \&restore, undef ]
          );
 
  return { 'domain' => \%tmp };
@@ -541,7 +542,7 @@ sub trade
 sub transit {
  my ($rri, $domain, $rd) = @_;
  my $mes = $rri->message();
- my $disconnect = ( exists($rd->{disconnect}) && $rd->{disconnect} eq 'true' ) ? { disconnect => 'true'} : undef;
+ my $disconnect = ( exists($rd->{disconnect}) && $rd->{disconnect} eq 'true' ) ? { disconnect => 'true' } : { disconnect => 'false' };
  my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
  my @d = build_command($mes, 'transit', $domain, $disconnect, \%ns);
 
@@ -549,20 +550,7 @@ sub transit {
  return;
 }
 
-sub migrate_descr {
- my ($rri, $domain, $rd) = @_;
- my $mes = $rri->message();
- my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
- my @d = build_command($mes, 'migrate-descr', $domain, undef, \%ns);
-
- ## Contacts, Holder is required
- push @d,build_contact($rd->{contact}) if Net::DRI::Util::has_contact($rd);
-
- $mes->command_body(\@d);
- return;
-}
-
-sub create_authinfo {
+sub create_authinfo1 {
  my ($rri, $domain, $rd) = @_;
  my $mes = $rri->message();
  my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
@@ -570,6 +558,15 @@ sub create_authinfo {
  $hash->{'expire'} = $rd->{'authinfoexpire'} if ($hash && exists($rd->{'authinfoexpire'}));
  my $cmd = ($hash) ? 'createAuthInfo1' : 'createAuthInfo2';
  my @d = build_command($mes, $cmd, $domain, $hash, \%ns);
+ $mes->command_body(\@d);
+ return;
+}
+
+sub create_authinfo2 {
+ my ($rri, $domain, $rd) = @_;
+ my $mes = $rri->message();
+ my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
+ my @d = build_command($mes, 'createAuthInfo2', $domain, undef, \%ns);
  $mes->command_body(\@d);
  return;
 }
@@ -645,6 +642,15 @@ sub update
  push @d, build_contact($cs);
  push @d, build_ns($rri, $ns, $domain);
 
+ $mes->command_body(\@d);
+ return;
+}
+
+sub restore {
+ my ($rri, $domain, $rd) = @_;
+ my $mes = $rri->message();
+ my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
+ my @d = build_command($mes, 'restore', $domain, undef, \%ns);
  $mes->command_body(\@d);
  return;
 }

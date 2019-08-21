@@ -1,4 +1,4 @@
-## Domain Registry Interface, RRI Protocol (DENIC-11)
+## Domain Registry Interface, RRI Protocol (DENIC-29)
 ##
 ## Copyright (c) 2007,2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ##           (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
@@ -29,7 +29,7 @@ use Net::DRI::Data::Contact::DENIC;
 
 =head1 NAME
 
-Net::DRI::Protocol::RRI - RRI Protocol (DENIC-22-EN_3.0) for Net::DRI
+Net::DRI::Protocol::RRI - RRI Protocol (DENIC-29-EN_3.0) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -82,14 +82,16 @@ sub new
  foreach my $o (qw/ns status contact/) { $self->capabilities('domain_update',$o,['add','del']); }
  foreach my $o (qw/registrant auth/)   { $self->capabilities('domain_update',$o,['set']); }
 
- $self->{ns}={ _main	=> ['http://registry.denic.de/global/3.0'],
-		tr	=> ['http://registry.denic.de/transaction/3.0'],
-		contact	=> ['http://registry.denic.de/contact/3.0'],
-		domain	=> ['http://registry.denic.de/domain/3.0'],
-		dnsentry=> ['http://registry.denic.de/dnsentry/3.0'],
-                msg	=> ['http://registry.denic.de/msg/3.0'],
-		xsi	=> ['http://www.w3.org/2001/XMLSchema-instance'],
-             };
+ $self->{ns}={
+  _main		=> ['http://registry.denic.de/global/3.0'],
+  tr		=> ['http://registry.denic.de/transaction/3.0'],
+  contact	=> ['http://registry.denic.de/contact/3.0'],
+  domain	=> ['http://registry.denic.de/domain/3.0'],
+  dnsentry	=> ['http://registry.denic.de/dnsentry/3.0'],
+  msg		=> ['http://registry.denic.de/msg/3.0'],
+  regacc	=> ['http://registry.denic.de/regacc/3.0'],
+  xsi		=> ['http://www.w3.org/2001/XMLSchema-instance'],  
+ };
 
  $self->factories('message',sub { my $m=Net::DRI::Protocol::RRI::Message->new(@_); $m->ns($self->{ns}); $m->version($version); return $m; });
  $self->factories('status',sub { return Net::DRI::Data::StatusList->new(); });
@@ -102,7 +104,7 @@ sub _load
 {
  my ($self,$rp)=@_;
 
- my @core=('Session','RegistryMessage','Domain','Contact');
+ my @core=('Session','RegistryMessage','Domain','Contact','RegAcc');
  my @class=map { 'Net::DRI::Protocol::RRI::'.$_ } @core;
 
  return $self->SUPER::_load(@class);
@@ -111,7 +113,7 @@ sub _load
 sub transport_default
 {
  my ($self)=@_;
- return (protocol_connection => 'Net::DRI::Protocol::RRI::Connection', protocol_version => '2.1');
+ return (protocol_connection => 'Net::DRI::Protocol::RRI::Connection', protocol_version => '3.0');
 }
 
 ####################################################################################################

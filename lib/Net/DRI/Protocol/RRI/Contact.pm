@@ -1,4 +1,4 @@
-## Domain Registry Interface, RRI Contact commands (DENIC-11)
+## Domain Registry Interface, RRI Contact commands (DENIC-29)
 ##
 ## Copyright (c) 2007,2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ##           (c) 2012,2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
@@ -28,7 +28,7 @@ use DateTime::Format::ISO8601 ();
 
 =head1 NAME
 
-Net::DRI::Protocol::RRI::Contact - RRI Contact commands (DENIC-22-EN_3.0) for Net::DRI
+Net::DRI::Protocol::RRI::Contact - RRI Contact commands (DENIC-29-EN_3.0) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -211,6 +211,10 @@ sub info_parse
   {
     my $el = $c->getFirstChild();
     $contact->uri_template($el->getData()) if (defined($el));
+  } elsif ($name eq 'disputeReference')
+  {
+    my $el = $c->getFirstChild();
+    $contact->dispute_reference($el->getData()) if (defined($el));
   }
  } continue { $c=$c->getNextSibling(); }
 

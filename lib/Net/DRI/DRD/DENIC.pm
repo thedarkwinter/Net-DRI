@@ -153,22 +153,36 @@ sub domain_transit
  return $reg->process('domain', 'transit', [$dom, $rd]);
 }
 
-sub domain_migrate_descr
+sub domain_create_authinfo1
 {
  my ($self, $reg, $dom, $rd) = @_;
- return $reg->process('domain', 'migrate_descr', [$dom, $rd]);
+ return $reg->process('domain', 'create_authinfo1', [$dom, $rd]);
 }
 
-sub domain_create_authinfo
+sub domain_create_authinfo2
 {
  my ($self, $reg, $dom, $rd) = @_;
- return $reg->process('domain', 'create_authinfo', [$dom, $rd]);
+ return $reg->process('domain', 'create_authinfo2', [$dom, $rd]);
 }
 
 sub domain_delete_authinfo
 {
  my ($self, $reg, $dom, $rd) = @_;
  return $reg->process('domain', 'delete_authinfo', [$dom, $rd]);
+}
+
+sub domain_restore
+{
+ my ($self, $reg, $dom, $rd) = @_;
+ return $reg->process('domain', 'restore', [$dom, $rd]);
+}
+
+# no need to create a new object (not even listed in their XSD only on their technical documentation)
+# RegAcc INFO request you can query your own public registrar contact details or those of others
+sub regacc_info
+{
+  my ($self, $reg, $regacc, $rd) = @_;
+  return $reg->process('regacc', 'info', [$regacc, $rd]);
 }
 
 ####################################################################################################
