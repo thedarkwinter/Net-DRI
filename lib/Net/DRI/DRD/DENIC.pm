@@ -25,6 +25,8 @@ use base qw/Net::DRI::DRD/;
 use DateTime::Duration;
 use Net::DRI::Util;
 
+__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete/);
+
 =pod
 
 =head1 NAME

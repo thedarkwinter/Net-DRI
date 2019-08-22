@@ -7,7 +7,8 @@ use utf8;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 156;
+use Test::More tests => 157;
+use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -133,6 +134,8 @@ $mod = $dri->get_info('upDate', 'contact', 'DENIC-99989-BSP');
 isa_ok($mod, 'DateTime');
 is($mod->ymd . 'T' . $mod->hms, '2007-05-23T22:55:33', 'Update Date');
 
+# Contact delete - operation doesn't exist
+throws_ok { $dri->contact_delete($c) } qr/No operation contact delete available for registry DENIC/, 'contact_delete not possible';
 
 ####################################################################################################
 ## Domain Operations
