@@ -374,7 +374,7 @@ is($rc->is_success(), 1, 'Domain successfully restored');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:restore><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace></domain:restore><ctid>ABC-12345</ctid></registry-request>', 'Domain restore XML correct');
 
 # Domain create authinfo1 (based on RRI v3.0 sample)
-$rc = $dri->domain_create_authinfo1('de-example.de', {
+$rc = $dri->domain_create_authinfo('de-example.de', {
   authinfohash => '4213d924230224fd719218b4acbd92f96ebe4344f3d5d1478dede1aa44e4cf4b',
   authinfoexpire => '20100815'
 });
@@ -383,7 +383,7 @@ is($rc->is_success(), 1, 'Domain successfully created authinfo1');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:createAuthInfo1 expire="20100815" hash="4213d924230224fd719218b4acbd92f96ebe4344f3d5d1478dede1aa44e4cf4b"><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace></domain:createAuthInfo1><ctid>ABC-12345</ctid></registry-request>', 'Domain Create Authinfo1 XML correct');
 
 # Domain create authinfo2 (based on RRI v3.0 sample)
-$rc = $dri->domain_create_authinfo2('de-example.de');
+$rc = $dri->domain_create_authinfo('de-example.de');
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully created authinfo2');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:createAuthInfo2><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace></domain:createAuthInfo2><ctid>ABC-12345</ctid></registry-request>', 'Domain Create Authinfo2 XML correct');

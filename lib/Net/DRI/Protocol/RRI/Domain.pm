@@ -85,8 +85,7 @@ sub register_commands
            trade => [ \&trade ],
            update => [ \&update],
            transit => [ \&transit],
-           create_authinfo1 => [ \&create_authinfo1],
-           create_authinfo2 => [ \&create_authinfo2],
+           create_authinfo => [ \&create_authinfo],
            delete_authinfo => [ \&delete_authinfo],
            restore => [ \&restore, undef ]
          );
@@ -550,7 +549,7 @@ sub transit {
  return;
 }
 
-sub create_authinfo1 {
+sub create_authinfo {
  my ($rri, $domain, $rd) = @_;
  my $mes = $rri->message();
  my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
@@ -558,15 +557,6 @@ sub create_authinfo1 {
  $hash->{'expire'} = $rd->{'authinfoexpire'} if ($hash && exists($rd->{'authinfoexpire'}));
  my $cmd = ($hash) ? 'createAuthInfo1' : 'createAuthInfo2';
  my @d = build_command($mes, $cmd, $domain, $hash, \%ns);
- $mes->command_body(\@d);
- return;
-}
-
-sub create_authinfo2 {
- my ($rri, $domain, $rd) = @_;
- my $mes = $rri->message();
- my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
- my @d = build_command($mes, 'createAuthInfo2', $domain, undef, \%ns);
  $mes->command_body(\@d);
  return;
 }

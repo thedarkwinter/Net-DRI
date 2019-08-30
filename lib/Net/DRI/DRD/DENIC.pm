@@ -155,16 +155,10 @@ sub domain_transit
  return $reg->process('domain', 'transit', [$dom, $rd]);
 }
 
-sub domain_create_authinfo1
+sub domain_create_authinfo
 {
  my ($self, $reg, $dom, $rd) = @_;
- return $reg->process('domain', 'create_authinfo1', [$dom, $rd]);
-}
-
-sub domain_create_authinfo2
-{
- my ($self, $reg, $dom, $rd) = @_;
- return $reg->process('domain', 'create_authinfo2', [$dom, $rd]);
+ return $reg->process('domain', 'create_authinfo', [$dom, $rd]);
 }
 
 sub domain_delete_authinfo
