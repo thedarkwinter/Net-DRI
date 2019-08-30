@@ -173,12 +173,17 @@ sub domain_restore
  return $reg->process('domain', 'restore', [$dom, $rd]);
 }
 
-# no need to create a new object (not even listed in their XSD only on their technical documentation)
 # RegAcc INFO request you can query your own public registrar contact details or those of others
 sub regacc_info
 {
   my ($self, $reg, $regacc, $rd) = @_;
   return $reg->process('regacc', 'info', [$regacc, $rd]);
+}
+
+# lets also enable command used to other profiles and similar to regacc_info
+sub registrar_info
+{
+  return regacc_info(@_);
 }
 
 ####################################################################################################

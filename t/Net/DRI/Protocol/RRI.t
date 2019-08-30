@@ -7,7 +7,7 @@ use utf8;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 157;
+use Test::More tests => 161;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -592,8 +592,14 @@ is_string($c->{'abusecontact'}->{'type'},'REQUEST','regacc_info get_info(contact
 is_string($c->{'abusecontact'}->{'uri-template'},'mailto:abuse@denic.de?subject=domain:{Ulabel}','regacc_info get_info(contact) abusecontact uri-template');
 is_string($c->{'abusecontact'}->{'changed'},'2019-01-01T01:00:00+01:00','regacc_info get_info(contact) abusecontact changed');
 $d=$dri->get_info('changed');
-isa_ok($d,'DateTime','domain_info get_info(changed)');
-is("".$d,'2019-05-17T10:48:29','domain_info get_info(changed) value');
+isa_ok($d,'DateTime','regacc_info get_info(changed)');
+is("".$d,'2019-05-17T10:48:29','regacc_info get_info(changed) value');
+# similar as previous test but calling registrar_info() instead of regacc_info() - does the same (try to standardize command on Net-DRI)
+$rc = $dri->registrar_info('DENIC-99995');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:regacc="http://registry.denic.de/regacc/3.0"><regacc:info><regacc:handle>DENIC-99995</regacc:handle></regacc:info></registry-request>', 'Query RegAcc XML correct (version 3.0)');
+is($rc->is_success(), 1, 'RegAcc successfully queried (version 3.0)');
+is($dri->get_info('handle'),'DENIC-99995','regacc_info get_info(handle)');
+is($dri->get_info('name'),'DENIC eG - Business Services','regacc_info get_info(name)');
 
 ####################################################################################################
 
