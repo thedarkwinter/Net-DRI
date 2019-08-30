@@ -64,13 +64,13 @@ $c->city('Frankfurt am Main');
 $c->cc('DE');
 $c->email('email@denic.de');
 
-# Contact create (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7279&token=c5ea0100484bd1c67f535dc0fef2a7d6e318db53)
+# Contact create (based on RRI v3.0 sample)
 $rc = $dri->contact_create($c);
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Contact successfully created (version 3.0)');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:create><contact:handle>DENIC-1000002-MAX</contact:handle><contact:type>PERSON</contact:type><contact:name>Max Mustermann</contact:name><contact:organisation>DENIC eG</contact:organisation><contact:postal><contact:address>Abteilung Business Services - dies ist ein Text um die maximale Anzahl von Zeichen darzustellen, die in einem Adressfeld vorkommen können, die Anzahl der Zeichen ist auf zweihundertfünfundfünfzig begrenzt- Kaiserstrasse fünfundsiebzig bis siebenundsiebzig</contact:address><contact:postalCode>60329</contact:postalCode><contact:city>Frankfurt am Main</contact:city><contact:countryCode>DE</contact:countryCode></contact:postal><contact:email>email@denic.de</contact:email></contact:create><ctid>ABC-12345</ctid></registry-request>', 'Create Contact XML correct (version 3.0)');
 
-# Contact request (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7276&token=2455c5224f226dbc5aad5111c9c322ea6c46578b)
+# Contact request (based on RRI v3.0 sample)
 my $c2 = $dri->local_object('contact');
 $c2->srid('DENIC-99995-GENREQ');
 $c2->type('REQUEST');
@@ -80,7 +80,7 @@ isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Contact successfully requested (version 3.0)');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:create><contact:handle>DENIC-99995-GENREQ</contact:handle><contact:type>REQUEST</contact:type><contact:uri-template>https://denic.de/contact/form{?Alabel,Ulabel}</contact:uri-template></contact:create><ctid>ABC-12345</ctid></registry-request>', 'Request Contact XML correct (version 3.0)');
 
-# Contact check (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7267&token=233fe9660085db3d25ff4f0b03374570065ac85d)
+# Contact check (based on RRI v3.0 sample)
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><contact:checkData><contact:handle>DENIC-1000002-MAX</contact:handle><contact:status>exist</contact:status></contact:checkData></tr:data></tr:transaction>' . $E2;
 $rc = $dri->contact_check($c);
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
@@ -88,7 +88,7 @@ is(defined($rc) && $rc->is_success(), 1, 'Contact successfully checked (version 
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:check><contact:handle>DENIC-1000002-MAX</contact:handle></contact:check></registry-request>', 'Check Contact XML correct (version 3.0)');
 is($dri->get_info('exist', 'contact', 'DENIC-1000002-MAX'), 1, 'Contact exists');
 
-# Contact update (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7291&token=65f46677cede396f7b8ff4beddd75bd39365d950)
+# Contact update (based on RRI v3.0 sample)
 my $todo = $dri->local_object('changes');
 $todo->set('info', $c2);
 $rc = $dri->contact_update($c2, $todo);
@@ -104,7 +104,7 @@ isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Contact successfully updated');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:contact="http://registry.denic.de/contact/3.0"><contact:update><contact:handle>DENIC-1000002-MAX</contact:handle><contact:type>PERSON</contact:type><contact:name>Max Mustermann</contact:name><contact:organisation>DENIC eG</contact:organisation><contact:postal><contact:address>Abteilung Business Services - dies ist ein Text um die maximale Anzahl von Zeichen darzustellen, die in einem Adressfeld vorkommen können, die Anzahl der Zeichen ist auf zweihundertfünfundfünfzig begrenzt- Kaiserstrasse fünfundsiebzig bis siebenundsiebzig</contact:address><contact:postalCode>60329</contact:postalCode><contact:city>Frankfurt am Main</contact:city><contact:countryCode>DE</contact:countryCode></contact:postal><contact:email>email@denic.de</contact:email></contact:update><ctid>ABC-12345</ctid></registry-request>', 'Update Contact XML correct');
 
-# Contact info (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7282&token=9f9392f2d7dc61d8286afb772603e6c2f53adde2)
+# Contact info (based on RRI v3.0 sample)
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data><contact:infoData><contact:handle>DENIC-99995-GENREQ</contact:handle><contact:type>REQUEST</contact:type><contact:uri-template>http://denic.de/contact/{Ulabel}</contact:uri-template><contact:changed>2010-03-31T15:51:08+02:00</contact:changed></contact:infoData></tr:data></tr:transaction>' . $E2;
 $rc = $dri->contact_info($dri->local_object('contact')->srid('DENIC-99995-GENREQ'));
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
@@ -223,7 +223,7 @@ isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully created');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:create><domain:handle>rriüberdomain.de</domain:handle><domain:ace>xn--rriberdomain-flb.de</domain:ace><domain:contact role="holder">DENIC-99990-10240-BSP</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>dns1.syhosting.ch.</dnsentry:nameserver><dnsentry:address>193.219.115.46</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:DNSKEY"><dnsentry:owner>xn--rriberdomain-flb.de.</dnsentry:owner><dnsentry:rdata><dnsentry:flags>257</dnsentry:flags><dnsentry:protocol>3</dnsentry:protocol><dnsentry:algorithm>5</dnsentry:algorithm><dnsentry:publicKey>AwEAAdDECajHaTjfSoNTY58WcBah1BxPKVIHBz4IfLjfqMvium4lgKtKZLe97DgJ5/NQrNEGGQmr6fKvUj67cfrZUojZ2cGRizVhgkOqZ9scaTVXNuXLM5Tw7VWOVIceeXAuuH2mPIiEV6MhJYUsW6dvmNsJ4XwCgNgroAmXhoMEiWEjBB+wjYZQ5GtZHBFKVXACSWTiCtddHcueOeSVPi5WH94VlubhHfiytNPZLrObhUCHT6k0tNE6phLoHnXWU+6vpsYpz6GhMw/R9BFxW5PdPFIWBgoWk2/XFVRSKG9Lr61b2z1R126xeUwvw46RVy3h anV3vNO7LM5H niqaYclBbhk=</dnsentry:publicKey></dnsentry:rdata></dnsentry:dnsentry></domain:create><ctid>ABC-12345</ctid></registry-request>', 'Create Domain IDN (native) XML correct');
 
-# Domain create (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7315&token=f05142261ead445b522e1700195c0655b830777e)
+# Domain create (based on RRI v3.0 sample)
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
 $cs = $dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('DENIC-1000002-ABUSE'), 'abuse');
@@ -241,7 +241,7 @@ is($rc->is_success(), 1, 'Domain successfully created');
 
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:create><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace><domain:contact role="abusecontact">DENIC-1000002-ABUSE</domain:contact><domain:contact role="generalrequest">DENIC-1000002-GENERAL</domain:contact><domain:contact role="holder">DENIC-1000002-MAX</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns1.xn--de-xample-x2a.de.</dnsentry:nameserver></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns2.de-example.de.</dnsentry:nameserver><dnsentry:address>81.91.170.12</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry></domain:create><ctid>ABC-12345</ctid></registry-request>', 'Create Domain XML correct (version 3.0)');
 
-# Domain info own domain (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7237&token=c9393f736cf1130cb1fbdce02bcbb54a76a7c02c)
+# Domain info own domain (based on RRI v3.0 sample)
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data>
       <domain:infoData xmlns:domain="http://registry.denic.de/domain/3.0">
         <domain:handle>denic.de</domain:handle>
@@ -323,7 +323,7 @@ is(join(',', map { my ($name, $v4, $v6) = $ns->get_details($_); $v4->[0] }
 is(join(',', map { my ($name, $v4, $v6) = $ns->get_details($_); $v6->[0] }
 	$ns->get_names(1)), '2a02:568:121:6:2:0:0:2', 'Name server v6 IPs');
 
-# domain:CHPROV (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7309&token=7d32afbdd7395284ed427cd16c7f627d448134b2)
+# domain:CHPROV (based on RRI v3.0 sample)
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
 $rc = $dri->domain_transfer_start('de-example.de', {
 	contact =>	$cs,
@@ -355,25 +355,25 @@ isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully deleted');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:domain="http://registry.denic.de/domain/3.0"><domain:delete><domain:handle>rritestdomain3.de</domain:handle><domain:ace>rritestdomain3.de</domain:ace><domain:contact role="holder">DENIC-1000002-MAX</domain:contact></domain:delete><ctid>ABC-12345</ctid></registry-request>', 'Delete Domain XML correct');
 
-# Domain delete (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7339&token=f148a01d67f523bb98cccac7e94a98b03d5d654c)
+# Domain delete (based on RRI v3.0 sample)
 $rc = $dri->domain_delete('de-example.de', { contact => $cs });
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully deleted (version 3.0 sample)');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:domain="http://registry.denic.de/domain/3.0"><domain:delete><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace><domain:contact role="holder">DENIC-1000002-MAX</domain:contact></domain:delete><ctid>ABC-12345</ctid></registry-request>', 'Delete Domain XML correct (version 3.0 sample)');
 
-# Domain delete authinfo (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7333&token=ebb07c44b53e35c7a715ec711ba06f0ba401b0dc)
+# Domain delete authinfo (based on RRI v3.0 sample)
 $rc = $dri->domain_delete_authinfo('de-example.de');
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully deleted authinfo');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:deleteAuthInfo1><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace></domain:deleteAuthInfo1><ctid>ABC-12345</ctid></registry-request>', 'Domain Delete Authinfo XML correct');
 
-# Domain restore (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7234&token=b53da79870894091e14a08a0c1bc12859fb7567a)
+# Domain restore (based on RRI v3.0 sample)
 $rc = $dri->domain_restore('de-example.de');
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully restored');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:restore><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace></domain:restore><ctid>ABC-12345</ctid></registry-request>', 'Domain restore XML correct');
 
-# Domain create authinfo1 (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7321&token=2b9d70a80990bfbd4b440a8107ba9c5cb8e1f951)
+# Domain create authinfo1 (based on RRI v3.0 sample)
 $rc = $dri->domain_create_authinfo1('de-example.de', {
   authinfohash => '4213d924230224fd719218b4acbd92f96ebe4344f3d5d1478dede1aa44e4cf4b',
   authinfoexpire => '20100815'
@@ -382,7 +382,7 @@ isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully created authinfo1');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:createAuthInfo1 expire="20100815" hash="4213d924230224fd719218b4acbd92f96ebe4344f3d5d1478dede1aa44e4cf4b"><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace></domain:createAuthInfo1><ctid>ABC-12345</ctid></registry-request>', 'Domain Create Authinfo1 XML correct');
 
-# Domain create authinfo2 (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7327&token=48941967ea08c7bf2b24b863113fa1b5a32d2e12)
+# Domain create authinfo2 (based on RRI v3.0 sample)
 $rc = $dri->domain_create_authinfo2('de-example.de');
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully created authinfo2');
@@ -396,7 +396,7 @@ isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully traded');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:chholder><domain:handle>rritestdomain2.de</domain:handle><domain:ace>rritestdomain2.de</domain:ace><domain:contact role="holder">DENIC-99990-10240-BSP5</domain:contact></domain:chholder><ctid>ABC-12345</ctid></registry-request>', 'Trade Domain XML correct');
 
-# Domain trade | domain:CHHOLDER (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7303&token=acfde46747d18d7de2c8e114f8fc0999f70f27ec)
+# Domain trade | domain:CHHOLDER (based on RRI v3.0 sample)
 $cs = $dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('DENIC-1000002-MAX'), 'registrant');
 $cs->add($dri->local_object('contact')->srid('DENIC-1000002-ABUSE'), 'abuse');
@@ -415,7 +415,7 @@ isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully transitted');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:transit disconnect="true"><domain:handle>rritestdomain.de</domain:handle><domain:ace>rritestdomain.de</domain:ace></domain:transit><ctid>ABC-12345</ctid></registry-request>', 'Transit Domain XML correct');
 
-# Domain transit (based on: https://member.secure.denic.de/index.php?eID=dumpFile&t=f&f=7243&token=8007e6add9fa10bcc94ad8e69eff51266d4129b3)
+# Domain transit (based on RRI v3.0 sample)
 $rc = $dri->domain_transit('de-example.de', {disconnect => 'true'});
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully transitted');
