@@ -86,7 +86,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Nominet::GTLD'; }
-sub tlds     { return qw/bbc blog cymru wales/; }
+sub tlds     { return qw/bbc cymru wales/; }
 sub object_types { return qw/domain contact ns/; }
 sub profile_types { return qw/epp/; }
 
