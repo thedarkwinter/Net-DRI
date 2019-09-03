@@ -99,7 +99,7 @@ sub info_parse
 
  foreach my $el ($infdata->getChildrenByTagNameNS($ns,'rgpStatus'))
  {
-  $cs->add($el->getAttribute('s'));
+  $cs->add($el->getAttribute('s')) if defined($el->getAttribute('s'));
  }
  return;
 }
