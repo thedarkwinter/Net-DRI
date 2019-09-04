@@ -95,11 +95,12 @@ sub info_parse
  my $infdata=$mes->get_extension($ns,'infData');
  return unless defined $infdata;
 
- my $cs=$rinfo->{domain}->{$oname}->{status}; ## a Net::DRI::Protocol::EPP::Core::Status object
+ my $cs;
+ $cs = $rinfo->{domain}->{$oname}->{status}; ## a Net::DRI::Protocol::EPP::Core::Status object
 
  foreach my $el ($infdata->getChildrenByTagNameNS($ns,'rgpStatus'))
  {
-  $cs->add($el->getAttribute('s')) if defined($el->getAttribute('s'));
+  $cs->add(Net::DRI::Protocol::EPP::Util::parse_node_status($el)) if defined($el);
  }
  return;
 }
