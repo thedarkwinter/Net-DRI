@@ -96,6 +96,7 @@ sub info_parse
  return unless defined $infdata;
 
  my $cs=$rinfo->{domain}->{$oname}->{status}; ## a Net::DRI::Protocol::EPP::Core::Status object
+ $cs=Net::DRI::Protocol::EPP::Core::Status->new() unless $cs;
 
  foreach my $el ($infdata->getChildrenByTagNameNS($ns,'rgpStatus'))
  {
