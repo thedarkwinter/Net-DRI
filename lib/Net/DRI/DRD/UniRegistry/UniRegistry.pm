@@ -197,5 +197,65 @@ sub market_update
   return $reg->process('market','update',[$rd,$todo]);
 }
 
+sub eps_check
+{
+ my ($self,$ndr,@p)=@_;
+ my (@names,$rd);
+ foreach my $p (@p)
+ {
+  if (defined $p && ref $p eq 'HASH')
+  {
+   Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in eps_check') if defined $rd;
+   $rd=Net::DRI::Util::create_params('eps_check',$p);
+  }
+  push @names,$p;
+ }
+ Net::DRI::Exception::usererr_insufficient_parameters('eps_check needs at least one label to check') unless @names;
+ $rd={} unless defined $rd;
+
+ my (@rs,@todo);
+ my (%seenlab,%seenrc);
+ foreach my $label (@names)
+ {
+  next if exists $seenlab{$label};
+  $seenlab{$label}=1;
+  my $rs=$ndr->try_restore_from_cache('eps',$label,'check');
+  if (! defined $rs)
+  {
+   push @todo,$label;
+  } else
+  {
+   push @rs,$rs unless exists $seenrc{''.$rs}; ## Some ResultStatus may relate to multiple labels (this is why we are doing this anyway !), so make sure not to use the same ResultStatus multiple times
+   $seenrc{''.$rs}=1;
+  }
+ }
+ return Net::DRI::Util::link_rs(@rs) unless @todo;
+
+ if (@todo > 1 && $ndr->protocol()->has_action('eps','check_multi'))
+ {
+  my $l=$self->info('check_limit');
+  if (! defined $l)
+  {
+   $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for eps_check action. Please report if you know the correct value');
+   $l=10;
+  }
+  while (@todo)
+  {
+   my @lt=splice(@todo,0,$l);
+   push @rs,$ndr->process('eps','check_multi',[\@lt,$rd]);
+  }
+ } else ## either one label only, or more than one but no check_multi available at protocol level
+ {
+  push @rs,map { $ndr->process('eps','check',[$_,$rd]); } @todo;
+ }
+ return Net::DRI::Util::link_rs(@rs);
+}
+
+sub eps_info
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('eps','info',[$id,$rd]);
+}
+
 ####################################################################################################
 1;

@@ -22,7 +22,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase UniRegistry::Centric UniRegistry::RegistryMessage UniRegistry::Market VeriSign::Sync CentralNic::Fee/; }
+sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase UniRegistry::Centric UniRegistry::EPS UniRegistry::RegistryMessage UniRegistry::Market VeriSign::Sync CentralNic::Fee/; }
 
 ####################################################################################################
 1;

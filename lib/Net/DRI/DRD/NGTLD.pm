@@ -1158,7 +1158,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 inc
 
-UniRegistry use a distrinc server for this TLD
+UniRegistry use a distinct server for this TLD
 
 =head3 Custom extensions:
 
@@ -1196,6 +1196,33 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =pod
 
+=head3 TLDs
+
+adultblock adultblock+
+
+UniRegistry EPS ICM AdultBlock/AdultBlock+
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS> (Extended Protection Service)
+
+=cut
+
+ if ($bep eq 'unireg_eps') {
+  # These methods are in the DRD
+  require Net::DRI::DRD::UniRegistry::AdultBlock;
+ }
+
+ return {
+     bep_type => 1, # dedicated
+     tlds => ['adultblock', 'adultblock+'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS',{}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
+    #  whois_server => 'whois.nic.inc', # do they use whois server for AdultBlock (?)
+   } if $bep eq 'unireg_eps';
+
+=pod
 
 =head2 Verisign
 
