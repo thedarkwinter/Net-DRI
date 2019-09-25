@@ -96,6 +96,7 @@ sub register_commands
             transfer => [ \&transfer, \&rtransfer_parse]
          );
   $tmp{check_multi}=$tmp{check};
+  $tmp{exempt_multi}=$tmp{exempt};
   return { 'eps' => \%tmp };
 }
 
@@ -179,14 +180,55 @@ sub info_parse
       $rinfo->{eps}->{$oname}->{$name}=$po->parse_iso8601($content->textContent()) if $name =~ m/^(crDate|upDate|exDate|trDate)$/; # date fields
       if ($name eq 'labels')
       {
-        foreach my $el_label (Net::DRI::Util::xml_list_children($content)) {
-          my ($name_label,$content_label)=@$el_label;
-          push @{$rinfo->{eps}->{$oname}->{labels}}, $content_label->textContent() if $name_label eq 'label';
-        }
+        $rinfo->{eps}->{$oname}->{labels}=_m_label_type($content);
+        # TODO: remove next lines after testing/checking if _m_label_type() work
+        # foreach my $el_label (Net::DRI::Util::xml_list_children($content)) {
+        #   my ($name_label,$content_label)=@$el_label;
+        #   push @{$rinfo->{eps}->{$oname}->{labels}}, $content_label->textContent() if $name_label eq 'label';
+        # }
       } elsif ($name eq 'releases') {
         $rinfo->{eps}->{$oname}->{releases}=_releases_inf_type($content);
       } elsif ($name eq 'authInfo') {
         $rinfo->{eps}->{$oname}->{auth}={pw => Net::DRI::Util::xml_child_content($content,$mes->ns('eps'),'pw')};
+      }
+    }
+    $rinfo->{eps}->{$oname}->{action}=$oaction;
+    $rinfo->{eps}->{$oname}->{type}='eps';
+  }
+
+  return;
+}
+
+sub exempt
+{
+  my ($epp,$eps,$rd)=@_;
+  my $mes=$epp->message();
+  my @e=eps_build_command($mes,'exempt',$eps,$rd);
+  $mes->command_body(\@e);
+
+  return;
+}
+
+
+sub exempt_parse
+{
+  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+  my $mes=$po->message();
+  my $resdata;
+  return unless $mes->is_success();
+
+  foreach my $res (qw/empData/)
+  {
+    next unless $resdata=$mes->get_response($mes->ns('eps'),$res);
+    $oname = 'eps' unless defined $oname;
+    foreach my $el (Net::DRI::Util::xml_list_children($resdata))
+    {
+      my ($name,$content)=@$el;
+      if ($name eq 'ed')
+      {
+        $rinfo->{eps}->{$oname}=_ed_type($content);
+        # TODO: fix exempt_multi. following its not elegant!
+        # push @{$rinfo}->{eps}->{$oname}->{$name}, _ed_type($content);
       }
     }
     $rinfo->{eps}->{$oname}->{action}=$oaction;
@@ -209,16 +251,16 @@ sub info_parse
 #   return;
 # }
 
-sub update
-{
-  my ($epp,$eps,$rd)=@_;
-  my $mes=$epp->message();
-  my @e=eps_build_command($mes,'update',$eps);
-  Net::DRI::Exception::usererr_invalid_parameters('Invalid eps order. Should be: "acknowledge", "cancel" or "complete" ') unless $rd->{order}=~m/^(acknowledge|cancel|complete)$/;
-  push @e, ['eps:'.$rd->{order}];
-  $mes->command_body(\@e);
-  return;
-}
+# sub update
+# {
+#   my ($epp,$eps,$rd)=@_;
+#   my $mes=$epp->message();
+#   my @e=eps_build_command($mes,'update',$eps);
+#   Net::DRI::Exception::usererr_invalid_parameters('Invalid eps order. Should be: "acknowledge", "cancel" or "complete" ') unless $rd->{order}=~m/^(acknowledge|cancel|complete)$/;
+#   push @e, ['eps:'.$rd->{order}];
+#   $mes->command_body(\@e);
+#   return;
+# }
 
 sub eps_build_command
 {
@@ -251,6 +293,14 @@ sub eps_build_command
       push @eps, ['eps:label', $_] unless ref $_ eq 'HASH';
     }
     $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('eps'))]);
+  } elsif ($command eq 'exempt')
+  {
+    Net::DRI::Exception->die(1,'protocol/EPP',2,'Label needed') unless @e;
+    foreach (@e)
+    {
+      push @eps, ['eps:label', $_] unless ref $_ eq 'HASH';
+    }
+    $msg->command(['check','eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('eps'))]);
   }
   return @eps;
 }
@@ -270,7 +320,7 @@ sub _releases_inf_type
     }
   }
 
-  return $releases_build unless $releases_build;
+  return $releases_build;
 }
 
 sub _release_inf_type
@@ -287,7 +337,65 @@ sub _release_inf_type
     $release_build->{crDate}=$content->textContent() if ($name eq 'crDate');
   }
 
-  return $release_build unless $release_build;
+  return $release_build;
+}
+
+sub _ed_type
+{
+  my ($emp_data_type)=@_;
+  return unless $emp_data_type;
+  my $exempt_build={};
+
+  foreach my $exempt_element (Net::DRI::Util::xml_list_children($emp_data_type))
+  {
+    my ($name,$content)=@$exempt_element;
+    $exempt_build->{label}=$content->textContent() if ($name eq 'label');
+    $exempt_build->{exemptions}=_exemptions_type($content) if ($name eq 'exemptions');
+  }
+
+  return $exempt_build;
+}
+
+sub _exemptions_type
+{
+  my ($exemptions_type)=@_;
+  return unless $exemptions_type;
+  my $exemptions_build={};
+
+  foreach my $exemptions_element (Net::DRI::Util::xml_list_children($exemptions_type))
+  {
+    my ($name,$content)=@$exemptions_element;
+    if ($name eq 'exemption')
+    {
+      foreach my $exemption_element (Net::DRI::Util::xml_list_children($content))
+      {
+        my ($name2,$content2)=@$exemption_element;
+        $exemptions_build->{iprID}=$content2->textContent() if ($name2 eq 'iprID');
+        $exemptions_build->{labels}=_m_label_type($content2) if ($name2 eq 'labels');
+      }
+    }
+  }
+
+  return $exemptions_build;
+}
+
+# get multiple labels and parse into a array
+sub _m_label_type
+{
+  my ($labels)=@_;
+  return unless $labels;
+  my @labels_build;
+
+  foreach my $label (Net::DRI::Util::xml_list_children($labels))
+  {
+    my ($name,$content)=@$label;
+    if ($name eq 'label')
+    {
+      push @labels_build, $content->textContent();
+    }
+  }
+
+  return \@labels_build;
 }
 
 ####################################################################################################
