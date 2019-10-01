@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper; # TODO: remove me
 
-use Test::More tests => 53;
+use Test::More tests => 61;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -118,20 +118,21 @@ is($dri->get_info('label'),'test-validate','eps_exempt get_info(label)');
 $e=$dri->get_info('exemptions');
 is($e->{iprID},'3111246','eps_exempt get_exemptions(iprID)');
 is_deeply($e->{labels},['test-andvalidate','test-validate'],'eps_exempt get_exemptions(labels)');
-exit 0;
+# exit 0;
 
 # eps exempt - multi (they don't have a sample but let create one based on their doc specs)
-$R2=$E1.'<response>'.r().'<resData><eps:empData xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:ed><eps:label>test-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>3111246</eps:iprID><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed><eps:ed><eps:label>foobar-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>20190925</eps:iprID><eps:labels><eps:label>foobar-andvalidate</eps:label><eps:label>foobar-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed>
-</eps:empData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><eps:empData xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:ed><eps:label>test-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>3111246</eps:iprID><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed><eps:ed><eps:label>foobar-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>20190925</eps:iprID><eps:labels><eps:label>foobar-andvalidate</eps:label><eps:label>foobar-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed></eps:empData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_exempt(qw/test-validate foobar-validate/);
-is_string($R1,$E1.'<command><check><eps:exempt xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:label>test-validate</eps:label><eps:label>foobar-validate</eps:label></eps:exempt></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_exempt build (single label)');
+is_string($R1,$E1.'<command><check><eps:exempt xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:label>test-validate</eps:label><eps:label>foobar-validate</eps:label></eps:exempt></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_exempt build (multi label)');
 is($rc->is_success(),1,'eps_exempt multi is_success');
 is($dri->get_info('action'),'exempt_multi','eps_exempt multi get_info(action)');
 is($dri->get_info('type'),'eps','eps_exempt multi get_info(type)');
-is($dri->get_info('label'),'test-validate','eps_exempt multi get_info(label)');
-$e=$dri->get_info('exemptions');
-is($e->{iprID},'3111246','eps_exempt multi get_exemptions(iprID)');
-is_deeply($e->{labels},['test-andvalidate','test-validate'],'eps_exempt multi get_exemptions(labels)');
+$e=$dri->get_info('exemptions','eps','test-validate');
+is($e->{iprID},'3111246','eps_exempt multi get_exemptions(iprID) - test-validate label');
+is_deeply($e->{labels},['test-andvalidate','test-validate'],'eps_exempt multi get_exemptions(labels) - test-validate label');
+$e=$dri->get_info('exemptions','eps','foobar-validate');
+is($e->{iprID},'20190925','eps_exempt multi get_exemptions(iprID) - foobar-validate label');
+is_deeply($e->{labels},['foobar-andvalidate','foobar-validate'],'eps_exempt multi get_exemptions(labels) - foobar-validate label');
 
 
 exit 0;
