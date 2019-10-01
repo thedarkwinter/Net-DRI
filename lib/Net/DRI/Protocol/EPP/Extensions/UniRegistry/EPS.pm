@@ -88,12 +88,12 @@ sub register_commands
             check    => [ \&check, \&check_parse],
             exempt   => [ \&exempt, \&exempt_parse],
             create   => [ \&create, \&info_parse],            
-            release  => [ \&release, \&release_parse],
-            renew    => [ \&renew, \&renew_parse],
-            delete   => [ \&delete, \&delete_parse],
+            # release  => [ \&release, \&release_parse],
+            # renew    => [ \&renew, \&renew_parse],
+            # delete   => [ \&delete, \&delete_parse],
             update   => [ \&update, \&info_parse ],
             info     => [ \&info, \&info_parse ],
-            transfer => [ \&transfer, \&rtransfer_parse]
+            # transfer => [ \&transfer, \&transfer_parse]
          );
   $tmp{check_multi}=$tmp{check};
   $tmp{exempt_multi}=$tmp{exempt};
