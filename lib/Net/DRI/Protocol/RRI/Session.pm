@@ -67,6 +67,8 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
+           # lets not call hello, not supported by RRI, but yes message_retrieve to keep session alive
+           noop    => [ \&Net::DRI::Protocol::RRI::RegistryMessage::pollreq ],
            logout  => [ \&logout ],
            login   => [ \&login ],
          );
