@@ -144,6 +144,10 @@ sub info_parse
   {
    if ($name eq 'whoisEmail') {
     $s->whois_email($c->textContent());
+   } elsif ($name eq 'naturalPerson') {
+    $s->natural_person($c->textContent());
+   } elsif ($name eq 'countryOfCitizenship') {
+    $s->country_of_citizenship($c->textContent());
    } else {
     $s->$1($c->textContent());
    }
