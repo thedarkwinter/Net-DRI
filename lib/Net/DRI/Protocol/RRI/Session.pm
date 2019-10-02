@@ -66,21 +66,12 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
-           noop    => [ \&hello ],
+ my %tmp=(
            logout  => [ \&logout ],
            login   => [ \&login ],
          );
 
  return { 'session' => \%tmp };
-}
-
-sub hello ## should trigger a greeting from server, allowed at any time
-{
- my ($rri)=@_;
- my $mes=$rri->message();
- $mes->command(['hello']);
- return;
 }
 
 sub logout
