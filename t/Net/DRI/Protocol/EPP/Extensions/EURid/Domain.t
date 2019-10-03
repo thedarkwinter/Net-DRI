@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 191;
+use Test::More tests => 192;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -212,12 +212,13 @@ is($dri->get_info('keygroup'), 'keygroup-1350898304165', 'domain_info get_info(n
 
 
 # <domain:info> with registrantCountry and maxExtensionPeriod - release_notes_march_2019.pdf
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>20190315-test001.eu</domain:name><domain:roid>foobar-EURID</domain:roid><domain:status s="ok"/><domain:registrant>c160</domain:registrant></domain:infData></resData><extension><domain-ext:infData xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-2.3"><domain-ext:onHold>false</domain-ext:onHold><domain-ext:quarantined>true</domain-ext:quarantined><domain-ext:suspended>false</domain-ext:suspended><domain-ext:seized>false</domain-ext:seized><domain-ext:availableDate>2014-10-23T16:11:55.109Z</domain-ext:availableDate><domain-ext:deletionDate>2014-09-13T16:11:55.109Z</domain-ext:deletionDate><domain-ext:contact type="onsite">c163</domain-ext:contact><domain-ext:delayed>true</domain-ext:delayed><domain-ext:onHold>false</domain-ext:onHold><domain-ext:quarantined>false</domain-ext:quarantined><domain-ext:suspended>false</domain-ext:suspended><domain-ext:seized>false</domain-ext:seized><domain-ext:delayed>false</domain-ext:delayed><domain-ext:maxExtensionPeriod>9</domain-ext:maxExtensionPeriod><domain-ext:registrantCountry>PT</domain-ext:registrantCountry></domain-ext:infData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>20190315-test001.eu</domain:name><domain:roid>foobar-EURID</domain:roid><domain:status s="ok"/><domain:registrant>c160</domain:registrant></domain:infData></resData><extension><domain-ext:infData xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-2.3"><domain-ext:onHold>false</domain-ext:onHold><domain-ext:quarantined>true</domain-ext:quarantined><domain-ext:suspended>false</domain-ext:suspended><domain-ext:seized>false</domain-ext:seized><domain-ext:availableDate>2014-10-23T16:11:55.109Z</domain-ext:availableDate><domain-ext:deletionDate>2014-09-13T16:11:55.109Z</domain-ext:deletionDate><domain-ext:contact type="onsite">c163</domain-ext:contact><domain-ext:delayed>true</domain-ext:delayed><domain-ext:onHold>false</domain-ext:onHold><domain-ext:quarantined>false</domain-ext:quarantined><domain-ext:suspended>false</domain-ext:suspended><domain-ext:seized>false</domain-ext:seized><domain-ext:delayed>false</domain-ext:delayed><domain-ext:maxExtensionPeriod>9</domain-ext:maxExtensionPeriod><domain-ext:registrantCountry>PT</domain-ext:registrantCountry><domain-ext:registrantCountryOfCitizenship>PT</domain-ext:registrantCountryOfCitizenship></domain-ext:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('20190315-test001.eu');
 is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">20190315-test001.eu</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command></epp>','domain_info build');
 is($rc->is_success(),1,'domain_info is_success');
 is_deeply($dri->get_info('maxExtensionPeriod'),'9','domain_info get_info(maxExtensionPeriod) value');
 is_deeply($dri->get_info('registrantCountry'),'PT','domain_info get_info(registrantCountry) value');
+is_deeply($dri->get_info('registrantCountryOfCitizenship'),'PT','domain_info get_info(registrantCountryOfCitizenship) value');
 
 ########################################################################################################
 ### DOMAIN_CREATE
