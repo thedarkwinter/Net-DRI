@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 192;
+use Test::More tests => 194;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -268,6 +268,16 @@ is($dri->get_info('exDate'),'2015-09-13T21:59:59','domain_create get_info(exDate
 ## 2.1.09/domains/domain-create/domain-create04-cmd.xml
 # Domain create with 1 tech contact, 1 name server (1 glue IPv4), DNSSEC with 2 keys (KSK, ZSK) and for a period of 1 year
 # See SecDNS
+
+# Domain create Greek TLD extension
+$R2='';
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('z789'),'registrant');
+$cs->set($dri->local_object('contact')->srid('z345'),'billing');
+$cs->set($dri->local_object('contact')->srid('z123'),'tech');
+$rc=$dri->domain_create('xn--mxafcslcjjd9a.xn--qxa6a',{pure_create=>1,contact=>$cs,auth=>{pw=>'foobar'}});
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>σομεδομαιν.ευ</domain:name><domain:registrant>z789</domain:registrant><domain:contact type="billing">z345</domain:contact><domain:contact type="tech">z123</domain:contact><domain:authInfo><domain:pw>foobar</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command></epp>','domain_create Greek TLD extension build');
+is($rc->is_success(),1,'domain_create (Greek TLD extension) is_success');
 
 ########################################################################################################
 ### DOMAIN_UPDATE
