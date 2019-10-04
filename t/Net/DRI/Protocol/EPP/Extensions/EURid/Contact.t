@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Encode;
 
-use Test::More tests => 61;
+use Test::More tests => 64;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -136,6 +136,20 @@ throws_ok { $dri->contact_create($co) } qr/Invalid contact information: voice\/t
 # test error in case natural_person is not a boolean
 $co->natural_person('foobar');
 throws_ok { $dri->contact_create($co) } qr/natural_person need to be a boolean/, 'contact_create - naturalPerson only support booleans';
+
+# test error in case organization but not in EU
+$co->type('registrant');
+$co->cc('US');
+$co->natural_person('false');
+throws_ok { $dri->contact_create($co) } qr/Registrant contact must be in EU/, 'contact_create - org holder not part of EU';
+
+# natural person living in US but EU citizen (countryOfCitizenship = PT)
+delete $co->{org};
+$co->natural_person('true');
+$co->country_of_citizenship('PT');
+$rc=$dri->contact_create($co);
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>client_id004</contact:id><contact:postalInfo type="loc"><contact:name>Ann Ployee</contact:name><contact:addr><contact:street>Main Street 122</contact:street><contact:street>Building 5</contact:street><contact:street>P.O. Box 123</contact:street><contact:city>Nowhere City</contact:city><contact:pc>1234</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice>+32.123456789</contact:voice><contact:fax>+32.123456790</contact:fax><contact:email>nobody@example.com</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><extension><contact-ext:create xmlns:contact-ext="http://www.eurid.eu/xml/epp/contact-ext-1.3" xsi:schemaLocation="http://www.eurid.eu/xml/epp/contact-ext-1.3 contact-ext-1.3.xsd"><contact-ext:type>registrant</contact-ext:type><contact-ext:vat>VAT1234567890</contact-ext:vat><contact-ext:lang>en</contact-ext:lang><contact-ext:whoisEmail>foo@bar.com</contact-ext:whoisEmail><contact-ext:naturalPerson>true</contact-ext:naturalPerson><contact-ext:countryOfCitizenship>PT</contact-ext:countryOfCitizenship></contact-ext:create></extension><clTRID>TRID-0001</clTRID></command></epp>','contact_create build - natural person living in US but EU citizen');
+is($rc->is_success(),1,'contact_create natural person living in US but EU citizen is_success');
 
 ## p.39
 $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;

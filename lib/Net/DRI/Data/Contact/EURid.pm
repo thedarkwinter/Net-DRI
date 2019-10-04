@@ -86,7 +86,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2011 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2009,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
 
               2019 Paulo Jorge <paullojorgge@gmail.com>.
 
@@ -133,8 +133,8 @@ sub validate
 
  Net::DRI::Exception::usererr_insufficient_parameters('Fax is mandatory for billing contacts') if (defined($self->type()) && ($self->type() eq 'billing') && !$self->fax());
 
- ## For registrants, country must be in EU
- Net::DRI::Exception::usererr_invalid_parameters('Registrant contact must be in EU') if ($self->type() && ($self->type() eq 'registrant') && !exists($Net::DRI::DRD::EURid::CCA2_EU{uc($self->cc())}));
+ ## For registrants, country must be in EU (for ORGs). Individuals are able to order domains if countryOfCitizenship part of EEA
+ Net::DRI::Exception::usererr_invalid_parameters('Registrant contact must be in EU (if is a organization)') if ($self->type() && ($self->type() eq 'registrant') && !exists($Net::DRI::DRD::EURid::CCA2_EU{uc($self->cc())}) && $self->natural_person() eq 'false');
 
  ## whois_email can only be used for type registrant (optional)
  Net::DRI::Exception::usererr_invalid_parameters('whoisEmail is only supported for registrant contacts') if ($self->type() && ($self->type() ne 'registrant') && $self->whois_email);
