@@ -7,7 +7,7 @@ use utf8;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 161;
+use Test::More tests => 163;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -35,7 +35,11 @@ my ($dh,@c,$ns);
 ####################################################################################################
 ## Session Management
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
+$rc=$dri->process('session','noop',[]);
+is($rc->is_success(),1,'session noop is_success');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:msg="http://registry.denic.de/msg/3.0"><msg:queue-read/></registry-request>', 'Noop XML correct (sending message_retrieve)');
 
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
 $rc = $dri->process('session', 'login', ['user','password']);
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Login successful');
