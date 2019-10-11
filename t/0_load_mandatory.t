@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 539;
+use Test::More tests => 540;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -498,6 +498,7 @@ use_ok('Net::DRI::Protocol::RRI::Connection');
 use_ok('Net::DRI::Protocol::RRI::Contact');
 use_ok('Net::DRI::Protocol::RRI::Domain');
 use_ok('Net::DRI::Protocol::RRI::Message');
+use_ok('Net::DRI::Protocol::RRI::RegAcc');
 use_ok('Net::DRI::Protocol::RRI::RegistryMessage');
 use_ok('Net::DRI::Protocol::RRI::Session');
 use_ok('Net::DRI::Protocol::RRP');

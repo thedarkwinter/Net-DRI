@@ -521,6 +521,7 @@ lib/Net/DRI/Protocol/RRI/Connection.pm
 lib/Net/DRI/Protocol/RRI/Contact.pm
 lib/Net/DRI/Protocol/RRI/Domain.pm
 lib/Net/DRI/Protocol/RRI/Message.pm
+lib/Net/DRI/Protocol/RRI/RegAcc.pm
 lib/Net/DRI/Protocol/RRI/RegistryMessage.pm
 lib/Net/DRI/Protocol/RRI/Session.pm
 lib/Net/DRI/Protocol/RRP.pm
