@@ -1,6 +1,7 @@
 ## Domain Registry Interface, Handling of contact data for EURid
 ##
 ## Copyright (c) 2005-2009,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2019 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -23,7 +24,7 @@ use Net::DRI::DRD::EURid;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-__PACKAGE__->register_attributes(qw(type vat lang whois_email));
+__PACKAGE__->register_attributes(qw(type vat lang whois_email natural_person country_of_citizenship));
 
 =pod
 
@@ -56,6 +57,17 @@ language of contact
 
 to create, view and update the WHOIS email address (optional)
 
+=head2 natural_person()
+
+check if person vs organization - true/false (mandatory)
+
+=head2 country_of_citizenship()
+
+created in order to implement the new eligibility criteria for EU citizenship (optional).
+
+country_of_citizenship is mandatory if: 1) <contact-ext:naturalPerson> is set to true; 2) registrant's place of residence is
+not located in one of the EAA/EU countries or in one of the EU territories
+
 =head1 SUPPORT
 
 For now, support questions should be sent to:
@@ -75,6 +87,9 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2005-2009,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+
+              2019 Paulo Jorge <paullojorgge@gmail.com>.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -98,7 +113,7 @@ sub validate
 
  if (!$change)
  {
-  Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: voice/type/lang mandatory') unless ($self->voice() && $self->type() && $self->lang());
+  Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: voice/type/lang/natural_person mandatory') unless ($self->voice() && $self->type() && $self->lang() && $self->natural_person());
  }
 
  ## Lower limits than in EPP (other checks already done in superclass)
@@ -109,6 +124,7 @@ sub validate
  push @errs,'type' if ($self->type() && $self->type()!~m/^(?:billing|tech|registrant|onsite|reseller)$/);
  push @errs,'vat'  if ($self->vat()  && !Net::DRI::Util::xml_is_token($self->vat(),1,20));
  push @errs,'lang' if ($self->lang() && !exists($Net::DRI::DRD::EURid::LANGA2_EU{lc($self->lang())}));
+ push @errs,'natural_person need to be a boolean' if ($self->natural_person() && !Net::DRI::Util::xml_is_boolean($self->natural_person()));
 
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
 
@@ -117,11 +133,14 @@ sub validate
 
  Net::DRI::Exception::usererr_insufficient_parameters('Fax is mandatory for billing contacts') if (defined($self->type()) && ($self->type() eq 'billing') && !$self->fax());
 
- ## For registrants, country must be in EU
- Net::DRI::Exception::usererr_invalid_parameters('Registrant contact must be in EU') if ($self->type() && ($self->type() eq 'registrant') && !exists($Net::DRI::DRD::EURid::CCA2_EU{uc($self->cc())}));
+ ## For registrants, country must be in EU (for ORGs). Individuals are able to order domains if countryOfCitizenship part of EEA
+ Net::DRI::Exception::usererr_invalid_parameters('Registrant contact must be in EU (if is a organization)') if ($self->type() && ($self->type() eq 'registrant') && !exists($Net::DRI::DRD::EURid::CCA2_EU{uc($self->cc())}) && $self->natural_person() eq 'false');
 
  ## whois_email can only be used for type registrant (optional)
  Net::DRI::Exception::usererr_invalid_parameters('whoisEmail is only supported for registrant contacts') if ($self->type() && ($self->type() ne 'registrant') && $self->whois_email);
+
+ # country_of_citizenship is mandatory if natural_person is true
+ Net::DRI::Exception::usererr_insufficient_parameters('countryOfCitizenship is mandatory if naturalPerson is true') if (defined($self->natural_person()) && ($self->natural_person() eq 'true') && !$self->country_of_citizenship());
 
  return 1; ## everything ok.
 }
