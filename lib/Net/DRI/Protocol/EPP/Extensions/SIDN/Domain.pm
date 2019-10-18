@@ -28,6 +28,7 @@ sub register_commands
  my %tmp=(
            info             => [ undef, \&info_parse],
            create           => [ \&create, undef ],
+           update           => [ \&update, undef ],
            delete_cancel    => [ \&delete_cancel, undef ],
            transfer_request => [ undef, \&transfer_parse ],
          );
@@ -68,6 +69,9 @@ sub info_parse
   } elsif ($name eq 'period')
   {
    $rinfo->{domain}->{$oname}->{period}=$c->textContent();
+  } elsif ($name eq 'scheduledDeleteDate')
+  {
+   $rinfo->{domain}->{$oname}->{schedule_delete_date}=$po->parse_iso8601($c->textContent());
   }
  }
  return;
@@ -80,6 +84,32 @@ sub create
  Net::DRI::Exception::usererr_insufficient_parameters('one registrant is mandatory in .NL for domain_create') unless ($rd->{contact}->has_type('registrant'));
  Net::DRI::Exception::usererr_insufficient_parameters('one admin is mandatory in .NL for domain_create') unless ($rd->{contact}->has_type('admin'));
  Net::DRI::Exception::usererr_insufficient_parameters('at least one tech contact is mandatory in .NL for domain_create') unless ($rd->{contact}->has_type('tech'));
+
+ return;
+}
+
+sub update
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ return unless $rd->{operation} || $rd->{date};
+
+ my ($operation,$date);
+ $operation = $rd->set('operation') if defined $rd->set('operation');
+ $date = $rd->set('date') if defined $rd->set('date');
+
+ my @ext;
+ Net::DRI::Exception::usererr_invalid_parameters('Only following operations supported: setDate, setDateToEndOfSubscriptionPeriod or cancel') unless $operation=~m/^(?:setDate|setDateToEndOfSubscriptionPeriod|cancel)$/;
+ push @ext, ['scheduledDelete:operation', $operation] if $operation;
+ if ($date && $operation eq 'setDate')
+ {
+  Net::DRI::Exception::usererr_invalid_parameters('date must be YYYY-MM-DD') unless $date=~m/^\d{4}-\d{2}-\d{2}$/;
+  push @ext, ['scheduledDelete:date', $date] if $date && $operation eq 'setDate';
+ }
+
+ my $eid;
+ $eid=$mes->command_extension_register('scheduledDelete:update',sprintf('xmlns:scheduledDelete="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('scheduled_delete')));
+ $mes->command_extension($eid, \@ext);
 
  return;
 }
