@@ -20,6 +20,7 @@ use warnings;
 
 use base qw/Net::DRI::DRD/;
 use Net::DRI::Data::Contact::UniRegistry;
+use Data::Dumper;
 
 use DateTime::Duration;
 
@@ -309,6 +310,12 @@ sub eps_exempt
   push @rs,map { $ndr->process('eps','exempt',[$_,$rd]); } @todo;
  }
  return Net::DRI::Util::link_rs(@rs);
+}
+
+sub eps_create
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('eps','create',[$id,$rd]);
 }
 
 ####################################################################################################

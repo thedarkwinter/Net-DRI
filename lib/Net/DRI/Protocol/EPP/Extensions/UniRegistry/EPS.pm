@@ -42,9 +42,8 @@ Adds the Uniregistry EPS extension. Uniregistry EPS is a Uniregistry service des
  # eps exempt => is used to check if a label is exempt of validation
  my $rc = $dri->eps_exempt(qw/test-validate foobar-validate/);
 
- #TODO: fix this!!!
- # eps create => used in the Uniregistry EPS to create an instance of an EPS object
- $rc = $dri->eps_create('test-andvalidate', { 'order_type'=>'offer', 'amount'=>15000, 'contact'=>$contact });
+ # eps create => used in the Uniregistry EPS to create an instance of an EPS object (iprid is optional)
+ $rc = $dri->eps_create(qw/test-andvalidate test-validate/, { {duration => DateTime::Duration->new(years=>1), registrant => ("lm39"), iprid => ("foobar"), auth=>{pw=>"abcd1234"}} });
 
  # eps update => is used to complete an order that has "accepted" on the Uniregistry eps
  $rc=$dri->eps_update('my_order_id', { 'order'=>'complete' });
@@ -238,18 +237,36 @@ sub exempt_parse
   return;
 }
 
-# sub create
-# {
-#   my ($epp,$eps,$rd)=@_;
-#   my $mes=$epp->message();
-#   my @e=eps_build_command($mes,'create',$eps,$rd);
-#   Net::DRI::Exception::usererr_invalid_parameters('Invalid order_type. Should be: "offer", "bin" or "hold" ') unless $rd->{order_type}=~m/^(offer|bin|hold)$/;
-#   Net::DRI::Exception::usererr_insufficient_parameters('Amount is mandatory for type "bin"') if !($rd->{amount}) && $rd->{order_type} eq 'bin';
-#   push @e, ['eps:amount',$rd->{amount}] if defined $rd->{amount};
-#   push @e, _build_contact($rd->{contact}) if defined $rd->{contact};
-#   $mes->command_body(\@e);
-#   return;
-# }
+
+sub create
+{
+  my ($epp,$eps,$rd)=@_;
+  my $mes=$epp->message();
+  my @d=eps_build_command($mes,'create',$eps,$rd);
+
+  ## Period
+  Net::DRI::Exception::usererr_insufficient_parameters('period/duration is mandatory') unless $rd->{duration};
+  push @d,_build_period_eps($rd->{duration}) if Net::DRI::Util::has_duration($rd);
+
+  ## Registrant
+  Net::DRI::Exception::usererr_insufficient_parameters('registrant is mandatory') unless $rd->{registrant};
+  push @d, ['eps:registrant',$rd->{registrant}];
+
+  ## iprID (optional) - intellectual property rights identifier for the provided labels
+  push @d, ['eps:iprID',$rd->{iprid}] if $rd->{iprid};
+
+  ## AuthInfo
+  Net::DRI::Exception::usererr_insufficient_parameters('authInfo is mandatory') unless Net::DRI::Util::has_auth($rd);
+  push @d,_build_authinfo_eps($epp,$rd->{auth});
+
+  ## LaunchPhase extension: if the specified labels are not exempt of a SMD file validation the
+  # extension draft-ietf-eppext-launchphase MUST be included in the command
+  push @d, Net::DRI::Protocol::EPP::Extensions::LaunchPhase::create($epp,$eps,$rd) if Net::DRI::Util::has_key($rd,'lp');
+
+  $mes->command_body(\@d);
+
+  return;
+}
 
 # sub update
 # {
@@ -273,14 +290,15 @@ sub eps_build_command
   if ($command eq 'create')
   {
     Net::DRI::Exception->die(1,'protocol/EPP',2,'Label needed') unless @e;
-    if ($epsattr->{name_type})
+    my @labels;
+    foreach (@e)
     {
-      @eps=map { ['eps:name',$_,{'type'=>$epsattr->{name_type}}] } @e;
-    } else
-    {
-      @eps=map { ['eps:name',$_,{'type'=>'domain'}] } @e;
+      push @labels, ['eps:label', $_] unless ref $_ eq 'HASH';
     }
-    $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s" type="'.$epsattr->{order_type}.'"',$msg->nsattrs('eps'))]);
+    ## Type is mandatory: standard or plus
+    Net::DRI::Exception::usererr_invalid_parameters('type must be standard or plus') unless $epsattr->{product_type} && $epsattr->{product_type}  =~ m/^(standard|plus)$/;
+    $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s" type="'.$epsattr->{product_type}.'"',$msg->nsattrs('eps'))]);
+    push @eps, ['eps:labels', @labels];
   } elsif ($command =~ m/^(?:info|update)$/)
   {
     @eps=map { ['eps:roid',$_] } @e;
@@ -396,6 +414,33 @@ sub _m_label_type
   }
 
   return \@labels_build;
+}
+
+sub _build_period_eps
+{
+  my $dtd=shift; ## DateTime::Duration
+  my ($y,$m)=$dtd->in_units('years','months'); ## all values are integral, but may be negative
+  ($y,$m)=(0,$m+12*$y) if ($y && $m);
+  my ($v,$u);
+  if ($y)
+  {
+    Net::DRI::Exception::usererr_invalid_parameters('years must be between 1 and 99') unless ($y >= 1 && $y <= 99);
+    $v=$y;
+    $u='y';
+  } else
+  {
+    Net::DRI::Exception::usererr_invalid_parameters('months must be between 1 and 99') unless ($m >= 1 && $m <= 99);
+    $v=$m;
+    $u='m';
+  }
+  return ['eps:period',$v,{}];
+}
+
+sub _build_authinfo_eps
+{
+  my ($epp,$rauth,$isupdate)=@_;
+  return ['eps:authInfo',['eps:null']] if ((! defined $rauth->{pw} || $rauth->{pw} eq '') && $epp->{usenullauth} && (defined($isupdate) && $isupdate));
+  return ['eps:authInfo',['eps:pw',$rauth->{pw},exists($rauth->{roid})? { 'roid' => $rauth->{roid} } : undef]];
 }
 
 ####################################################################################################
