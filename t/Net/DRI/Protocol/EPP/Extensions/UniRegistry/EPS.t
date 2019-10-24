@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper; # TODO: remove me
 
-use Test::More tests => 83;
+use Test::More tests => 95;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -271,5 +271,28 @@ is("".$d,'2019-02-22T14:14:10','eps_create get_info(crDate) value');
 $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','eps_create get_info(exDate) with SMD file validation');
 is("".$d,'2020-02-22T14:14:10','eps_create get_info(exDate) value');
+
+# eps delete
+$R2=$E1.'<response>'.r().'<msgQ count="2" id="1"/>'.$TRID.'</response>'.$E2;
+$rc=$dri->eps_delete('EP_e726f81a44c5c4bd00d160973808825c-UR');
+is_string($R1,$E1.'<command><delete><eps:delete xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid></eps:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_delete build');
+is($rc->is_success(),1,'eps_delete is_success');
+
+# eps renew
+$R2=$E1.'<response>'.r().'<resData><eps:renData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:exDate>2022-02-22T14:14:10</eps:exDate></eps:renData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->eps_renew('EP_e726f81a44c5c4bd00d160973808825c-UR',{duration => DateTime::Duration->new(years=>2), current_expiration => DateTime->new(year=>2020,month=>2,day=>22)});
+is($R1,$E1.'<command><renew><eps:renew xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:curExpDate>2020-02-22</eps:curExpDate><eps:period>2</eps:period></eps:renew></renew><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_renew build');
+is($dri->get_info('action'),'renew','eps_renew get_info(action)');
+is($dri->get_info('type'),'eps','eps_renew get_info(type)');
+is($dri->get_info('roid'),'EP_e726f81a44c5c4bd00d160973808825c-UR','eps_renew get_info(roid)');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','eps_renew get_info(exDate)');
+is("".$d,'2022-02-22T14:14:10','eps_renew get_info(exDate) value');
+# test mandatory fields
+throws_ok { $dri->eps_renew('',{duration => DateTime::Duration->new(years=>2), current_expiration => DateTime->new(year=>2020,month=>2,day=>22)}) } qr/roid missing/, 'eps_renew build error check - no roid';
+throws_ok { $dri->eps_renew('EP_e726f81a44c5c4bd00d160973808825c-UR',{current_expiration => DateTime->new(year=>2020,month=>2,day=>22)}) } qr/period\/duration is mandatory/, 'eps_renew build error check - no period';
+throws_ok { $dri->eps_renew('EP_e726f81a44c5c4bd00d160973808825c-UR',{duration => DateTime::Duration->new(years=>2)}) } qr/current expiration date/, 'eps_renew build error check - no current_expiration';
+throws_ok { $dri->eps_renew('EP_e726f81a44c5c4bd00d160973808825c-UR',{duration => DateTime::Duration->new(years=>2), current_expiration => "2022-02-22T14:14:10"}) } qr/current expiration date must be YYYY-MM-DD/, 'eps_renew build error check - incorrect date format';
+
 
 exit 0;

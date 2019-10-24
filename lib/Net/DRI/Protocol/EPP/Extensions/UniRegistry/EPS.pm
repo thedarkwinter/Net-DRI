@@ -86,10 +86,10 @@ sub register_commands
   my %tmp=(
             check    => [ \&check, \&check_parse],
             exempt   => [ \&exempt, \&exempt_parse],
-            create   => [ \&create, \&info_parse],            
+            create   => [ \&create, \&info_parse],
+            delete   => [ \&delete, undef],
+            renew    => [ \&renew, \&info_parse],
             # release  => [ \&release, \&release_parse],
-            # renew    => [ \&renew, \&renew_parse],
-            # delete   => [ \&delete, \&delete_parse],
             update   => [ \&update, \&info_parse ],
             info     => [ \&info, \&info_parse ],
             # transfer => [ \&transfer, \&transfer_parse]
@@ -168,7 +168,7 @@ sub info_parse
   my $resdata;
   return unless $mes->is_success();
 
-  foreach my $res (qw/creData upData infData/)
+  foreach my $res (qw/creData upData infData renData/)
   {
     next unless $resdata=$mes->get_response($mes->ns('eps'),$res);
     $oname = 'eps' unless defined $oname;
@@ -268,6 +268,38 @@ sub create
   return;
 }
 
+sub delete
+{
+  my ($epp,$eps,$rd)=@_;
+  my $mes=$epp->message();
+  my @e=eps_build_command($mes,'delete',$eps,$rd);
+  $mes->command_body(\@e);
+
+  return;
+}
+
+sub renew
+{
+  my ($epp,$eps,$rd)=@_;
+  my $mes=$epp->message();
+  my @e=eps_build_command($mes,'renew',$eps,$rd);
+
+  ## curExpDate
+  my $curexp=Net::DRI::Util::has_key($rd,'current_expiration') ? $rd->{current_expiration} : undef;
+  Net::DRI::Exception::usererr_insufficient_parameters('current expiration date') unless defined($curexp);
+  $curexp=$curexp->clone()->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($curexp) && Net::DRI::Util::check_isa($curexp,'DateTime'));
+  Net::DRI::Exception::usererr_invalid_parameters('current expiration date must be YYYY-MM-DD') unless $curexp=~m/^\d{4}-\d{2}-\d{2}$/;
+  push @e,['eps:curExpDate',$curexp];
+
+  ## Period
+  Net::DRI::Exception::usererr_insufficient_parameters('period/duration is mandatory') unless $rd->{duration};
+  push @e,_build_period_eps($rd->{duration}) if Net::DRI::Util::has_duration($rd);
+
+  $mes->command_body(\@e);
+
+  return;
+}
+
 # sub update
 # {
 #   my ($epp,$eps,$rd)=@_;
@@ -299,8 +331,9 @@ sub eps_build_command
     Net::DRI::Exception::usererr_invalid_parameters('type must be standard or plus') unless $epsattr->{product_type} && $epsattr->{product_type}  =~ m/^(standard|plus)$/;
     $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s" type="'.$epsattr->{product_type}.'"',$msg->nsattrs('eps'))]);
     push @eps, ['eps:labels', @labels];
-  } elsif ($command =~ m/^(?:info|update)$/)
+  } elsif ($command =~ m/^(?:info|update|delete|renew)$/)
   {
+    Net::DRI::Exception::usererr_insufficient_parameters('roid missing') if $eps eq '';
     @eps=map { ['eps:roid',$_] } @e;
     $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('eps'))]);
   } elsif ($command eq 'check')

@@ -318,5 +318,17 @@ sub eps_create
  return $reg->process('eps','create',[$id,$rd]);
 }
 
+sub eps_delete
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('eps','delete',[$id,$rd]);
+}
+
+sub eps_renew
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('eps','renew',[$id,$rd]);
+}
+
 ####################################################################################################
 1;
