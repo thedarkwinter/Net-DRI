@@ -33,7 +33,7 @@ Net::DRI::DRD::Afilias::Shared - Afilias (Shared) Driver for Net::DRI
 
 Additional domain extensions Afilias Shared Registry Platform
 
-Afilias has extended the .XXX plaform to include these TLDs in a Shared Registry System
+Afilias has extended their plaform to include these TLDs in a Shared Registry System
 
 Afilias utilises the following standard extensions. Please see the test files for more examples.
 
@@ -103,8 +103,8 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Afilias::Shared'; }
 
 sub tlds     {
- my @legacygTLDs = qw/xxx asia/;
- my @newgTLDs = qw/xn--4gbrim xn--kput3i adult autos bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl porn rich sex srl vegas yachts zara/;
+ my @legacygTLDs = qw/asia/;
+ my @newgTLDs = qw/xn--4gbrim xn--kput3i autos bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl rich srl vegas yachts zara/;
  my @ccTLDs = (
      'ag',(map { $_.'.ag'} qw/co com net nom org/),
      'bz',(map { $_.'.bz'} qw/co com net org/),
