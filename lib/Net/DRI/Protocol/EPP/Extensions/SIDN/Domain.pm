@@ -71,7 +71,7 @@ sub info_parse
    $rinfo->{domain}->{$oname}->{period}=$c->textContent();
   } elsif ($name eq 'scheduledDeleteDate')
   {
-   $rinfo->{domain}->{$oname}->{schedule_delete_date}=$po->parse_iso8601($c->textContent());
+   $rinfo->{domain}->{$oname}->{schedule_delete_date}=$po->parse_iso8601($c->textContent()) if $c->textContent();
   }
  }
  return;
