@@ -97,6 +97,7 @@ sub update
  my ($operation,$date);
  $operation = $rd->set('operation') if defined $rd->set('operation');
  $date = $rd->set('date') if defined $rd->set('date');
+ $date = $date->clone()->set_time_zone('UTC')->strftime('%Y-%m-%d') if (ref($date) && Net::DRI::Util::check_isa($date,'DateTime'));
 
  my @ext;
  Net::DRI::Exception::usererr_invalid_parameters('Only following operations supported: setDate, setDateToEndOfSubscriptionPeriod or cancel') unless $operation=~m/^(?:setDate|setDateToEndOfSubscriptionPeriod|cancel)$/;

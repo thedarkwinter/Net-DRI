@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 33;
+use Test::More tests => 34;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -83,6 +83,13 @@ $toc->set('operation','setDate');
 $toc->set('date','2030-01-01');
 $rc=$dri->domain_update('domeinnaam.nl',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>setDate</scheduledDelete:operation><scheduledDelete:date>2030-01-01</scheduledDelete:date></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete on a specified date');
+# scheduled delete on a specified date (using DateTime object)
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->set('operation','setDate');
+$toc->set('date',DateTime->new(year=>2020,month=>1,day=>1));
+$rc=$dri->domain_update('domeinnaam2.nl',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam2.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>setDate</scheduledDelete:operation><scheduledDelete:date>2020-01-01</scheduledDelete:date></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete on a specified date - DateTime object');
 # test invalid operation
 $toc=$dri->local_object('changes');
 $toc->set('operation','setdate');
