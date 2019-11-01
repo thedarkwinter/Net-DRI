@@ -337,5 +337,11 @@ sub eps_transfer_request
  return $reg->process('eps','transfer_request',[$id,$rd]);
 }
 
+sub eps_update
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('eps','update',[$id,$rd]);
+}
+
 ####################################################################################################
 1;

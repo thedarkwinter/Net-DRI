@@ -7,9 +7,8 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
-use Data::Dumper; # TODO: remove me
 
-use Test::More tests => 107;
+use Test::More tests => 109;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -28,7 +27,7 @@ $dri->add_current_registry('UniRegistry::EPS');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
-my ($d,$e,$enc,$lp);
+my ($d,$e,$enc,$lp,$todo);
 my (@labels);
 
 ##########################################
@@ -312,5 +311,13 @@ $d=$dri->get_info('acDate');
 isa_ok($d,'DateTime','eps_transfer_request get_info(acDate)');
 is($d,'2019-02-22T14:15:00','eps_transfer_request get_info(acDate) value=>"2019-02-22T14:15:00"');
 
+# eps update
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$todo = $dri->local_object('changes');
+$todo->set('registrant',$dri->local_object('contact')->srid('reg_a_cntct'));
+$todo->set('auth',{pw=>'password'});
+$rc=$dri->eps_update('EP_e726f81a44c5c4bd00d160973808825c-UR', $todo);
+is_string($R1,$E1.'<command><update><eps:update xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:chg><eps:registrant>reg_a_cntct</eps:registrant><eps:authInfo><eps:pw>password</eps:pw></eps:authInfo></eps:chg></eps:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_update build');
+is($rc->is_success(),1,'eps_update is_success');
 
 exit 0;

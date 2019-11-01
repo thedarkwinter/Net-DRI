@@ -19,7 +19,6 @@ use warnings;
 use Net::DRI::Protocol;
 use Net::DRI::Util;
 use Net::DRI::Exception;
-use Data::Dumper; # TODO: remove me
 
 =pod
 
@@ -45,8 +44,11 @@ Adds the Uniregistry EPS extension. Uniregistry EPS is a Uniregistry service des
  # eps create => used in the Uniregistry EPS to create an instance of an EPS object (iprid is optional)
  $rc = $dri->eps_create(qw/test-andvalidate test-validate/, { {duration => DateTime::Duration->new(years=>1), registrant => ("lm39"), iprid => ("foobar"), auth=>{pw=>"abcd1234"}} });
 
- # eps update => is used to complete an order that has "accepted" on the Uniregistry eps
- $rc=$dri->eps_update('my_order_id', { 'order'=>'complete' });
+ # eps update => is used to update registrant/pw linked to a Repository Object IDentifier (roid) assigned to the EPS object when it was created
+ $todo = $dri->local_object('changes');
+ $todo->set('registrant',$dri->local_object('contact')->srid('reg_a_cntct'));
+ $todo->set('auth',{pw=>'password'});
+ $rc=$dri->eps_update('my_roid', $todo);
 
 =head1 SUPPORT
 
@@ -221,8 +223,6 @@ sub exempt_parse
       if ($name eq 'ed')
       {
         $rinfo->{eps}->{$oname}=_ed_type($content);
-        # TODO: fix exempt_multi. following its not elegant!
-        # push @{$rinfo}->{eps}->{$oname}->{$name}, _ed_type($content);
       }
     }
     $rinfo->{eps}->{$oname}->{action}=$oaction;
@@ -309,16 +309,26 @@ sub transfer_request
   return;
 }
 
-# sub update
-# {
-#   my ($epp,$eps,$rd)=@_;
-#   my $mes=$epp->message();
-#   my @e=eps_build_command($mes,'update',$eps);
-#   Net::DRI::Exception::usererr_invalid_parameters('Invalid eps order. Should be: "acknowledge", "cancel" or "complete" ') unless $rd->{order}=~m/^(acknowledge|cancel|complete)$/;
-#   push @e, ['eps:'.$rd->{order}];
-#   $mes->command_body(\@e);
-#   return;
-# }
+sub update
+{
+  my ($epp,$eps,$todo)=@_;
+  my $mes=$epp->message();
+
+  Net::DRI::Exception::usererr_insufficient_parameters($todo.' must be a non empty Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
+  my @e=eps_build_command($mes,'update',$eps);
+
+  # chg elements
+  my @chg;
+  my $chg=$todo->set('registrant');
+  push @chg,['eps:registrant',$chg->srid()] if Net::DRI::Util::isa_contact($chg);
+  $chg=$todo->set('auth');
+  push @chg,_build_authinfo_eps($epp,$chg) if ($chg && (ref $chg eq 'HASH') && exists $chg->{pw});
+  push @e,['eps:chg',@chg] if @chg;
+
+  $mes->command_body(\@e);
+
+  return;
+}
 
 sub eps_build_command
 {
