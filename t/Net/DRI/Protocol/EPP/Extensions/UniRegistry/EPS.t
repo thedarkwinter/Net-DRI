@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 109;
+use Test::More tests => 113;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -319,5 +319,17 @@ $todo->set('auth',{pw=>'password'});
 $rc=$dri->eps_update('EP_e726f81a44c5c4bd00d160973808825c-UR', $todo);
 is_string($R1,$E1.'<command><update><eps:update xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:chg><eps:registrant>reg_a_cntct</eps:registrant><eps:authInfo><eps:pw>password</eps:pw></eps:authInfo></eps:chg></eps:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_update build');
 is($rc->is_success(),1,'eps_update is_success');
+
+# eps release create
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$rc=$dri->eps_release_create('EP_e726f81a44c5c4bd00d160973808825c-UR', { name=>("test-andvalidate.isc"), auth=>{pw=>"uniregistry"} });
+is_string($R1,$E1.'<command><create><eps:release xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:name>test-andvalidate.isc</eps:name><eps:authInfo><eps:pw>uniregistry</eps:pw></eps:authInfo></eps:release></create><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_release_create build');
+is($rc->is_success(),1,'eps_release_create is_success');
+
+# eps release delete
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$rc=$dri->eps_release_delete('EP_e726f81a44c5c4bd00d160973808825c-UR', { name=>("test-andvalidate.isc") });
+is_string($R1,$E1.'<command><delete><eps:release xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:name>test-andvalidate.isc</eps:name></eps:release></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_release_delete build');
+is($rc->is_success(),1,'eps_release_delete is_success');
 
 exit 0;

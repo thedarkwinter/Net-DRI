@@ -91,10 +91,11 @@ sub register_commands
             create   => [ \&create, \&info_parse],
             delete   => [ \&delete, undef],
             renew    => [ \&renew, \&info_parse],
-            # release  => [ \&release, \&release_parse],
             update   => [ \&update, \&info_parse ],
             info     => [ \&info, \&info_parse ],
-            transfer_request => [ \&transfer_request, \&info_parse] # only op="request" is supported for EPS objects
+            transfer_request => [ \&transfer_request, \&info_parse], # only op="request" is supported for EPS objects
+            release_create  => [ \&release_create, \&info_parse],
+            release_delete  => [ \&release_delete, \&info_parse],
          );
   $tmp{check_multi}=$tmp{check};
   $tmp{exempt_multi}=$tmp{exempt};
@@ -330,6 +331,40 @@ sub update
   return;
 }
 
+sub release_create
+{
+  my ($epp,$eps,$rd)=@_;
+  my $mes=$epp->message();
+  my @d=eps_build_command($mes,'release_create',$eps,$rd);
+
+  ## Name: element that contains the fully qualified name of the domain object for which the password will be set
+  Net::DRI::Exception::usererr_insufficient_parameters('name is mandatory') unless $rd->{name};
+  push @d, ['eps:name',$rd->{name}];
+
+  ## AuthInfo
+  Net::DRI::Exception::usererr_insufficient_parameters('authInfo is mandatory') unless Net::DRI::Util::has_auth($rd);
+  push @d,_build_authinfo_eps($epp,$rd->{auth});
+
+  $mes->command_body(\@d);
+
+  return;
+}
+
+sub release_delete
+{
+  my ($epp,$eps,$rd)=@_;
+  my $mes=$epp->message();
+  my @d=eps_build_command($mes,'release_delete',$eps,$rd);
+
+  ## Name: element that contains the fully qualified name of the domain object for which the password will be set
+  Net::DRI::Exception::usererr_insufficient_parameters('name is mandatory') unless $rd->{name};
+  push @d, ['eps:name',$rd->{name}];
+
+  $mes->command_body(\@d);
+
+  return;
+}
+
 sub eps_build_command
 {
   my ($msg,$command,$eps,$epsattr)=@_;
@@ -350,10 +385,16 @@ sub eps_build_command
     Net::DRI::Exception::usererr_invalid_parameters('type must be standard or plus') unless $epsattr->{product_type} && $epsattr->{product_type}  =~ m/^(standard|plus)$/;
     $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s" type="'.$epsattr->{product_type}.'"',$msg->nsattrs('eps'))]);
     push @eps, ['eps:labels', @labels];
-  } elsif ($tcommand =~ m/^(?:info|update|delete|renew|transfer)$/)
+  } elsif ($tcommand =~ m/^(?:info|update|delete|renew|transfer|release_create|release_delete)$/)
   {
     Net::DRI::Exception::usererr_insufficient_parameters('roid missing') if $eps eq '';
     @eps=map { ['eps:roid',$_] } @e;
+
+    # tweak for release create|delete actions - ugly but does the job
+    $tcommand='release' if ($tcommand =~ m/^(?:release_create|release_delete)$/);
+    $command='create' if $command eq 'release_create';
+    $command='delete' if $command eq 'release_delete';
+
     $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('eps'))]);
   } elsif ($tcommand eq 'check')
   {

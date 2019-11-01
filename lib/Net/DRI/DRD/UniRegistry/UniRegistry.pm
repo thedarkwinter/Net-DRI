@@ -342,5 +342,19 @@ sub eps_update
  return $reg->process('eps','update',[$id,$rd]);
 }
 
+# used to set a password to permit the registration of a domain object blocked by an EPS object
+sub eps_release_create
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('eps','release_create',[$id,$rd]);
+}
+
+# used to delete a password set to permit the registration of a domain object blocked by an EPS object
+sub eps_release_delete
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('eps','release_delete',[$id,$rd]);
+}
+
 ####################################################################################################
 1;
