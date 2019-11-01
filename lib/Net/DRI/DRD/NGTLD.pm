@@ -1245,6 +1245,40 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =pod
 
+=head2 EPS
+
+ $dri->add_registry('NGTLD',{provider=>'unireg_eps'});
+
+=head3 Status: Work in progess
+
+=head3 TLDs
+
+adultblock adultblock+
+
+UniRegistry EPS ICM AdultBlock/AdultBlock+
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS> (Extended Protection Service)
+
+=cut
+
+ if ($bep eq 'unireg_eps') {
+  # These methods are in the DRD
+  require Net::DRI::DRD::UniRegistry::EPS;
+ }
+
+ return {
+     bep_type => 1, # dedicated
+     tlds => ['adultblock', 'adultblock+'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS',{}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
+    #  whois_server => 'whois.nic.adult', # do they use whois server for AdultBlock (?)
+   } if $bep eq 'unireg_eps';
+
+=pod
+
 
 =head2 Verisign
 
