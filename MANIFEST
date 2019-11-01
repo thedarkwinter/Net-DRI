@@ -159,6 +159,8 @@ lib/Net/DRI/DRD/TeleInfo.pm
 lib/Net/DRI/DRD/TMDB.pm
 lib/Net/DRI/DRD/TRA/AE.pm
 lib/Net/DRI/DRD/TRA/BH.pm
+lib/Net/DRI/DRD/UniRegistry/EPS.pm
+lib/Net/DRI/DRD/UniRegistry/ICM.pm
 lib/Net/DRI/DRD/UniRegistry/INC.pm
 lib/Net/DRI/DRD/UniRegistry/UniRegistry.pm
 lib/Net/DRI/DRD/UPU.pm
@@ -461,6 +463,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/UA/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UA/HostDelete.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Centric.pm
+lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/EPS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Market.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UniRegistry/RegistryMessage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.pm
@@ -521,6 +524,7 @@ lib/Net/DRI/Protocol/RRI/Connection.pm
 lib/Net/DRI/Protocol/RRI/Contact.pm
 lib/Net/DRI/Protocol/RRI/Domain.pm
 lib/Net/DRI/Protocol/RRI/Message.pm
+lib/Net/DRI/Protocol/RRI/RegAcc.pm
 lib/Net/DRI/Protocol/RRI/RegistryMessage.pm
 lib/Net/DRI/Protocol/RRI/Session.pm
 lib/Net/DRI/Protocol/RRP.pm
@@ -708,6 +712,7 @@ t/Net/DRI/Protocol/EPP/Extensions/TCI_gTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/TWNIC.t
 t/Net/DRI/Protocol/EPP/Extensions/UA.t
 t/Net/DRI/Protocol/EPP/Extensions/UniRegistry.t
+t/Net/DRI/Protocol/EPP/Extensions/UniRegistry/EPS.t
 t/Net/DRI/Protocol/EPP/Extensions/UniRegistry/Market.t
 t/Net/DRI/Protocol/EPP/Extensions/UnitedTLD.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/Balance.t

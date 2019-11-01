@@ -25,6 +25,8 @@ use base qw/Net::DRI::DRD/;
 use DateTime::Duration;
 use Net::DRI::Util;
 
+__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete/);
+
 =pod
 
 =head1 NAME
@@ -153,12 +155,6 @@ sub domain_transit
  return $reg->process('domain', 'transit', [$dom, $rd]);
 }
 
-sub domain_migrate_descr
-{
- my ($self, $reg, $dom, $rd) = @_;
- return $reg->process('domain', 'migrate_descr', [$dom, $rd]);
-}
-
 sub domain_create_authinfo
 {
  my ($self, $reg, $dom, $rd) = @_;
@@ -169,6 +165,25 @@ sub domain_delete_authinfo
 {
  my ($self, $reg, $dom, $rd) = @_;
  return $reg->process('domain', 'delete_authinfo', [$dom, $rd]);
+}
+
+sub domain_restore
+{
+ my ($self, $reg, $dom, $rd) = @_;
+ return $reg->process('domain', 'restore', [$dom, $rd]);
+}
+
+# RegAcc INFO request you can query your own public registrar contact details or those of others
+sub regacc_info
+{
+  my ($self, $reg, $regacc, $rd) = @_;
+  return $reg->process('regacc', 'info', [$regacc, $rd]);
+}
+
+# lets also enable command used to other profiles and similar to regacc_info
+sub registrar_info
+{
+  return regacc_info(@_);
 }
 
 ####################################################################################################

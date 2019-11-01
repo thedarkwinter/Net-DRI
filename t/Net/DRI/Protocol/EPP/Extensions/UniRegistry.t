@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 20;
+use Test::More tests => 25;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -117,5 +117,22 @@ $dri->add_current_registry('UniRegistry::UniRegistry');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.inc</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
 throws_ok { $dri->domain_create('example3-without-urc.audio',{pure_create=>1,auth=>{pw=>'2fooBAR'},contact=>$cs} ) } qr/URC contact required/, 'domain_create non .inc without urc build_xml';
+
+
+
+#####################
+## Test unireg_icm profile
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
+$dri->add_current_registry('UniRegistry::ICM');
+$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example22.adult</domain:name></domain:cd><domain:cd><domain:name avail="0">examexample2.sex</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example22.adult','examexample2.sex');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example22.adult</domain:name><domain:name>examexample2.sex</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check unireg_icm multi build');
+is($rc->is_success(),1,'domain_check unireg_icm multi is_success');
+is($dri->get_info('exist','domain','example22.adult'),0,'domain_check unireg_icm multi get_info(exist) 1/2');
+is($dri->get_info('exist','domain','examexample2.sex'),1,'domain_check unireg_icm multi get_info(exist) 2/2');
+is($dri->get_info('exist_reason','domain','examexample2.sex'),'In use','domain_check unireg_icm multi get_info(exist_reason)');
+
 
 exit 0;
