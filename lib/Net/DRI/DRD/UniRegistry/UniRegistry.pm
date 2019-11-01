@@ -330,5 +330,12 @@ sub eps_renew
  return $reg->process('eps','renew',[$id,$rd]);
 }
 
+# by documentation only op="request" is supported for EPS objects
+sub eps_transfer_request
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('eps','transfer_request',[$id,$rd]);
+}
+
 ####################################################################################################
 1;

@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper; # TODO: remove me
 
-use Test::More tests => 95;
+use Test::More tests => 107;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -293,6 +293,24 @@ throws_ok { $dri->eps_renew('',{duration => DateTime::Duration->new(years=>2), c
 throws_ok { $dri->eps_renew('EP_e726f81a44c5c4bd00d160973808825c-UR',{current_expiration => DateTime->new(year=>2020,month=>2,day=>22)}) } qr/period\/duration is mandatory/, 'eps_renew build error check - no period';
 throws_ok { $dri->eps_renew('EP_e726f81a44c5c4bd00d160973808825c-UR',{duration => DateTime::Duration->new(years=>2)}) } qr/current expiration date/, 'eps_renew build error check - no current_expiration';
 throws_ok { $dri->eps_renew('EP_e726f81a44c5c4bd00d160973808825c-UR',{duration => DateTime::Duration->new(years=>2), current_expiration => "2022-02-22T14:14:10"}) } qr/current expiration date must be YYYY-MM-DD/, 'eps_renew build error check - incorrect date format';
+
+# eps transfer (only op="request" is supported for EPS objects)
+$R2=$E1.'<response>'.r().'<resData><eps:trnData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:trStatus>serverApproved</eps:trStatus><eps:reID>registry_a</eps:reID><eps:reDate>2019-02-22T14:15:00</eps:reDate><eps:acID>uniregistry</eps:acID><eps:acDate>2019-02-22T14:15:00</eps:acDate></eps:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc = $dri->eps_transfer_request('EP_e726f81a44c5c4bd00d160973808825c-UR', {auth=>{pw=>'abc1234'}});
+is($R1,$E1.'<command><transfer op="request"><eps:transfer xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:authInfo><eps:pw>abc1234</eps:pw></eps:authInfo></eps:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>', 'eps_transfer_request build');
+is($rc->is_success(),1,'eps_transfer_request is_success');
+is($dri->get_info('action'),'transfer_request','eps_transfer_request get_info(action)');
+is($dri->get_info('type'),'eps','eps_transfer_request get_info(type)');
+is($dri->get_info('roid'),'EP_e726f81a44c5c4bd00d160973808825c-UR','eps_transfer_request get_info(roid)');
+is($dri->get_info('trStatus'),'serverApproved','eps_transfer_request get_info(trStatus)');
+is($dri->get_info('reID'),'registry_a','eps_transfer_request get_info(reID)');
+is($dri->get_info('acID'),'uniregistry','eps_transfer_request get_info(acID)');
+$d=$dri->get_info('reDate');
+isa_ok($d,'DateTime','eps_transfer_request get_info(reDate)');
+is($d,'2019-02-22T14:15:00','eps_transfer_request get_info(reDate) value=>"2019-02-22T14:15:00"');
+$d=$dri->get_info('acDate');
+isa_ok($d,'DateTime','eps_transfer_request get_info(acDate)');
+is($d,'2019-02-22T14:15:00','eps_transfer_request get_info(acDate) value=>"2019-02-22T14:15:00"');
 
 
 exit 0;

@@ -92,7 +92,7 @@ sub register_commands
             # release  => [ \&release, \&release_parse],
             update   => [ \&update, \&info_parse ],
             info     => [ \&info, \&info_parse ],
-            # transfer => [ \&transfer, \&transfer_parse]
+            transfer_request => [ \&transfer_request, \&info_parse] # only op="request" is supported for EPS objects
          );
   $tmp{check_multi}=$tmp{check};
   $tmp{exempt_multi}=$tmp{exempt};
@@ -168,23 +168,18 @@ sub info_parse
   my $resdata;
   return unless $mes->is_success();
 
-  foreach my $res (qw/creData upData infData renData/)
+  $oname = 'eps' unless defined $oname;
+  foreach my $res (qw/creData upData infData renData trnData/)
   {
     next unless $resdata=$mes->get_response($mes->ns('eps'),$res);
-    $oname = 'eps' unless defined $oname;
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
       my ($name,$content)=@$el;
-      $rinfo->{eps}->{$oname}->{$name}=$content->textContent() if $name =~ m/^(roid|registrant|status|clID|crID|upID|name)$/; # plain text
-      $rinfo->{eps}->{$oname}->{$name}=$po->parse_iso8601($content->textContent()) if $name =~ m/^(crDate|upDate|exDate|trDate)$/; # date fields
+      $rinfo->{eps}->{$oname}->{$name}=$content->textContent() if $name =~ m/^(roid|registrant|status|clID|crID|upID|reID|acID|name|trStatus)$/; # plain text
+      $rinfo->{eps}->{$oname}->{$name}=$po->parse_iso8601($content->textContent()) if $name =~ m/^(crDate|upDate|exDate|trDate|reDate|acDate)$/; # date fields
       if ($name eq 'labels')
       {
         $rinfo->{eps}->{$oname}->{labels}=_m_label_type($content);
-        # TODO: remove next lines after testing/checking if _m_label_type() work
-        # foreach my $el_label (Net::DRI::Util::xml_list_children($content)) {
-        #   my ($name_label,$content_label)=@$el_label;
-        #   push @{$rinfo->{eps}->{$oname}->{labels}}, $content_label->textContent() if $name_label eq 'label';
-        # }
       } elsif ($name eq 'releases') {
         $rinfo->{eps}->{$oname}->{releases}=_releases_inf_type($content);
       } elsif ($name eq 'authInfo') {
@@ -300,6 +295,20 @@ sub renew
   return;
 }
 
+sub transfer_request
+{
+  my ($epp,$eps,$rd)=@_;
+  my $mes=$epp->message();
+  my @e=eps_build_command($mes,['transfer',{'op'=>'request'}],$eps,$rd);
+  ## AuthInfo
+  Net::DRI::Exception::usererr_insufficient_parameters('authInfo is mandatory') unless Net::DRI::Util::has_auth($rd);
+  push @e,_build_authinfo_eps($epp,$rd->{auth});
+
+  $mes->command_body(\@e);
+
+  return;
+}
+
 # sub update
 # {
 #   my ($epp,$eps,$rd)=@_;
@@ -319,7 +328,7 @@ sub eps_build_command
 
   my $tcommand=ref $command ? $command->[0] : $command;
 
-  if ($command eq 'create')
+  if ($tcommand eq 'create')
   {
     Net::DRI::Exception->die(1,'protocol/EPP',2,'Label needed') unless @e;
     my @labels;
@@ -331,12 +340,12 @@ sub eps_build_command
     Net::DRI::Exception::usererr_invalid_parameters('type must be standard or plus') unless $epsattr->{product_type} && $epsattr->{product_type}  =~ m/^(standard|plus)$/;
     $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s" type="'.$epsattr->{product_type}.'"',$msg->nsattrs('eps'))]);
     push @eps, ['eps:labels', @labels];
-  } elsif ($command =~ m/^(?:info|update|delete|renew)$/)
+  } elsif ($tcommand =~ m/^(?:info|update|delete|renew|transfer)$/)
   {
     Net::DRI::Exception::usererr_insufficient_parameters('roid missing') if $eps eq '';
     @eps=map { ['eps:roid',$_] } @e;
     $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('eps'))]);
-  } elsif ($command eq 'check')
+  } elsif ($tcommand eq 'check')
   {
     Net::DRI::Exception->die(1,'protocol/EPP',2,'Label needed') unless @e;
     foreach (@e)
@@ -344,7 +353,7 @@ sub eps_build_command
       push @eps, ['eps:label', $_] unless ref $_ eq 'HASH';
     }
     $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('eps'))]);
-  } elsif ($command eq 'exempt')
+  } elsif ($tcommand eq 'exempt')
   {
     Net::DRI::Exception->die(1,'protocol/EPP',2,'Label needed') unless @e;
     foreach (@e)
