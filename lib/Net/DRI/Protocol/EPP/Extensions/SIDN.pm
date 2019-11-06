@@ -27,8 +27,13 @@ use Net::DRI::Data::Contact::SIDN;
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({sidn=>['http://rxsd.domain-registry.nl/sidn-ext-epp-1.0','sidn-ext-epp-1.0.xsd']});
+ $self->ns({
+     sidn=>['http://rxsd.domain-registry.nl/sidn-ext-epp-1.0','sidn-ext-epp-1.0.xsd'],
+     scheduled_delete=>['http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0','sidn-ext-epp-scheduled-delete-1.0.xsd'],
+     });
  $self->capabilities('domain_update','status',undef); ## No changes in status possible
+ $self->capabilities('domain_update','operation',['set']);
+ $self->capabilities('domain_update','date',['set']);
  $self->capabilities('contact_update','status',undef);
  $self->capabilities('contact_update','disclose',undef);
  $self->capabilities('host_update','status',undef);
