@@ -22,7 +22,15 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS IDN LaunchPhase UniRegistry::Centric UniRegistry::RegistryMessage UniRegistry::Market VeriSign::Sync CentralNic::Fee/; }
+## icm profile use 2x extra extensions - afilias association and ipr - related with migration from Afilias to Uniregistry::ICM platform
+sub default_extensions
+{
+ my ($self,$rp)=@_;
+ my @c=qw/GracePeriod SecDNS IDN LaunchPhase UniRegistry::Centric UniRegistry::RegistryMessage UniRegistry::Market VeriSign::Sync CentralNic::Fee/;
+ push @c,qw/Afilias::Association Afilias::IPR/ if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'ICM';
+
+ return @c;
+}
 
 ####################################################################################################
 1;
