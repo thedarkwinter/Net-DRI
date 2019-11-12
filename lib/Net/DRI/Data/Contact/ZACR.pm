@@ -33,13 +33,6 @@ sub validate ## See http://registry.coza.net.za/doku.php?id=eppcontactconstraint
 
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
- my @rs=($self->street());
- foreach my $i (0,1)
- {
-  next unless defined $rs[$i];
-  push @errs,'street' if ((ref($rs[$i]) ne 'ARRAY') || (@{$rs[$i]} > 3) || (grep { !Net::DRI::Util::xml_is_normalizedstring($_,8,255) } @{$rs[$i]}));
- }
-
  push @errs,'city'  if ($self->city()  && grep { !Net::DRI::Util::xml_is_normalizedstring($_,2,255) } ($self->city()));
  push @errs,'sp'    if ($self->sp()    && grep { !Net::DRI::Util::xml_is_normalizedstring($_,2,255) } ($self->sp()));
 
