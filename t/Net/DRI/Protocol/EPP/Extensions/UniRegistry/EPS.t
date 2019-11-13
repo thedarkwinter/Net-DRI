@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 113;
+use Test::More tests => 118;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -331,5 +331,20 @@ $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
 $rc=$dri->eps_release_delete('EP_e726f81a44c5c4bd00d160973808825c-UR', { name=>("test-andvalidate.isc") });
 is_string($R1,$E1.'<command><delete><eps:release xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:name>test-andvalidate.isc</eps:name></eps:release></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_release_delete build');
 is($rc->is_success(),1,'eps_release_delete is_success');
+
+
+
+#####################
+## Notifications - eps poll message
+# EPP poll message when an EPS object expires: that's the only EPP poll message for EPS and is basically a generic poll message
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ id="16" count="2"><qDate>2019-09-25T21:36:25.615Z</qDate><msg>Uni EPS block \'EP_663bcf1d1cd7cade5d164727156d916f-UR\' has expired and will be auto-renewed in 45 days.</msg></msgQ>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+is($dri->get_info('last_id'),'16','message_retrieve get_info(last_id)');
+is($dri->message_count(),2,'message_count (pure text message)');
+is(''.$dri->get_info('qdate','message','16'),'2019-09-25T21:36:25','message get_info qdate');
+is($dri->get_info('content','message','16'),"Uni EPS block \'EP_663bcf1d1cd7cade5d164727156d916f-UR\' has expired and will be auto-renewed in 45 days.",'message get_info msg');
+is($dri->get_info('lang','message','16'),'en','message get_info lang');
+
+
 
 exit 0;

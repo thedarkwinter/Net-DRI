@@ -100,7 +100,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'UniRegistry::EPS'; }
 
-sub tlds     { return ('adultblock', 'adultblock+'); }
+sub tlds     { return ('adultblock', 'adultblockplus'); }
 sub object_types { return ('eps'); }
 sub profile_types { return qw/epp/; }
 

@@ -1253,9 +1253,9 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =head3 TLDs
 
-adultblock adultblock+
+adultblock adultblockplus (not really a TLD but profile used for mapping... for now)
 
-UniRegistry EPS ICM AdultBlock/AdultBlock+
+UniRegistry EPS ICM adultblock/adultblockplus
 
 =head3 Custom extensions:
 
@@ -1269,12 +1269,11 @@ L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS> (Extended Protection Se
  }
 
  return {
-     bep_type => 1, # dedicated
-     tlds => ['adultblock', 'adultblock+'],
+     bep_type => 2, # shared
+     tlds => ['adultblock', 'adultblockplus'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
-    #  whois_server => 'whois.nic.adult', # do they use whois server for AdultBlock (?)
    } if $bep eq 'unireg_eps';
 
 =pod
