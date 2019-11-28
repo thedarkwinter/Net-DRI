@@ -8,7 +8,8 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 27;
+use Test::More tests => 34;
+use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -46,11 +47,12 @@ is_deeply([$rc->get_extended_results()],[{from=>'sidn',type=>'text',message=>'Wa
 ####################################################################################################
 ## Domain commands
 
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>doris.nl</domain:name><domain:roid>DNM_700-SIDN</domain:roid><domain:status s="ok"/><domain:registrant>TES000079-SL1SL</domain:registrant><domain:contact type="admin">TES000079-SO1SO</domain:contact><domain:contact type="tech">TES000079-SL1SL</domain:contact><domain:ns><domain:hostObj>ns1.doris.nl</domain:hostObj></domain:ns><domain:host>ns2.doris.nl</domain:host><domain:host>ns3.doris.nl</domain:host><domain:host>ns4.doris.nl</domain:host><domain:host>ns1.doris.nl</domain:host><domain:clID>SIDN0</domain:clID><domain:crID>SIDN0</domain:crID><domain:crDate>2009-08-10T00:00:00.000+02:00</domain:crDate><domain:upID>SIDN0</domain:upID><domain:upDate>2009-08-10T00:00:00.000+02:00</domain:upDate><domain:trDate>2010-08-12T00:00:00.000+02:00</domain:trDate><domain:authInfo><domain:pw>token4556</domain:pw></domain:authInfo></domain:infData></resData><extension xmlns:urn1="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0"><urn1:ext><urn1:infData><urn1:domain><urn1:optOut>false</urn1:optOut><urn1:limited>false</urn1:limited><urn1:period>3</urn1:period></urn1:domain></urn1:infData></urn1:ext></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>doris.nl</domain:name><domain:roid>DNM_700-SIDN</domain:roid><domain:status s="ok"/><domain:registrant>TES000079-SL1SL</domain:registrant><domain:contact type="admin">TES000079-SO1SO</domain:contact><domain:contact type="tech">TES000079-SL1SL</domain:contact><domain:ns><domain:hostObj>ns1.doris.nl</domain:hostObj></domain:ns><domain:host>ns2.doris.nl</domain:host><domain:host>ns3.doris.nl</domain:host><domain:host>ns4.doris.nl</domain:host><domain:host>ns1.doris.nl</domain:host><domain:clID>SIDN0</domain:clID><domain:crID>SIDN0</domain:crID><domain:crDate>2009-08-10T00:00:00.000+02:00</domain:crDate><domain:upID>SIDN0</domain:upID><domain:upDate>2009-08-10T00:00:00.000+02:00</domain:upDate><domain:trDate>2010-08-12T00:00:00.000+02:00</domain:trDate><domain:authInfo><domain:pw>token4556</domain:pw></domain:authInfo></domain:infData></resData><extension xmlns:urn1="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0"><urn1:ext><urn1:infData><urn1:domain><urn1:optOut>false</urn1:optOut><urn1:limited>false</urn1:limited><urn1:period>3</urn1:period><urn1:scheduledDeleteDate>2030-01-01T08:37:45.000Z</urn1:scheduledDeleteDate></urn1:domain></urn1:infData></urn1:ext></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('doris.nl');
 is($rc->get_data('opt_out'),0,'domain_info opt_out');
 is($rc->get_data('limited'),0,'domain_info limited');
 is($rc->get_data('period'),3,'domain_info period');
+is($rc->get_data('schedule_delete_date'),'2030-01-01T08:37:45','domain_info schedule_delete_date');
 
 $R2='';
 $rc=$dri->domain_undelete('DOMAINdelete37.nl');
@@ -74,6 +76,44 @@ $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','domain_create get_info(exDate)');
 is("".$d,'2001-04-03T22:00:00','domain_create get_info(exDate) value');
 
+# scheduled delete on a specified date
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->set('operation','setDate');
+$toc->set('date','2030-01-01');
+$rc=$dri->domain_update('domeinnaam.nl',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>setDate</scheduledDelete:operation><scheduledDelete:date>2030-01-01</scheduledDelete:date></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete on a specified date');
+# scheduled delete on a specified date (using DateTime object)
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->set('operation','setDate');
+$toc->set('date',DateTime->new(year=>2020,month=>1,day=>1));
+$rc=$dri->domain_update('domeinnaam2.nl',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam2.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>setDate</scheduledDelete:operation><scheduledDelete:date>2020-01-01</scheduledDelete:date></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete on a specified date - DateTime object');
+# test invalid operation
+$toc=$dri->local_object('changes');
+$toc->set('operation','setdate');
+$toc->set('date','2030-01-01');
+throws_ok { $dri->domain_update('domeinnaam.nl',$toc) } qr/Only following operations supported: setDate, setDateToEndOfSubscriptionPeriod or cancel/, 'domain_update build - scheduled delete with invalid operation';
+# test invalid date
+$toc=$dri->local_object('changes');
+$toc->set('operation','setDate');
+$toc->set('date','2030-01-01T22:00:00');
+throws_ok { $dri->domain_update('domeinnaam.nl',$toc) } qr/date must be YYYY-MM-DD/, 'domain_update build - scheduled delete with invalid date format';
+
+# scheduled delete at end of registration period
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->set('operation','setDateToEndOfSubscriptionPeriod');
+$rc=$dri->domain_update('domeinnaam.nl',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>setDateToEndOfSubscriptionPeriod</scheduledDelete:operation></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete at end of registration period');
+
+# cancel scheduled delete
+$R2='';
+$toc=$dri->local_object('changes');
+$toc->set('operation','cancel');
+$rc=$dri->domain_update('domeinnaam.nl',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>cancel</scheduledDelete:operation></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - cancel scheduled delete');
 
 ####################################################################################################
 ## Contact commands
