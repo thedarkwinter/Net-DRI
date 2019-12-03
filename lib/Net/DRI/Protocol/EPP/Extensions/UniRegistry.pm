@@ -22,6 +22,17 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
+## eps object not extension but yes a core module
+sub core_modules
+{
+ my ($self,$rp)=@_;
+ my @c;
+ push @c, map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Domain Host Contact/;
+ push @c, map { 'Net::DRI::Protocol::EPP::Extensions::UniRegistry::'.$_ } qw/EPS/ if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'ICM_EPS'; ;
+
+ return @c;
+}
+
 ## icm profile use 2x extra extensions - afilias association and ipr - related with migration from Afilias to Uniregistry::ICM platform
 sub default_extensions
 {
