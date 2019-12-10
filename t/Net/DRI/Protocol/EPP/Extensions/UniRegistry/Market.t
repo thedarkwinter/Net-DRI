@@ -192,7 +192,7 @@ is($rc->is_success(),1,'market_update acknowledge order is_success');
 
 ##########################################
 ## Market - simple market create test for new UniRegistry::INC DRD
-my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
+$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
 $dri->add_current_registry('UniRegistry::INC');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 ## market create for an order of type "offer"

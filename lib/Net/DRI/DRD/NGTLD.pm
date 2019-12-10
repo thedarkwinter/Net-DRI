@@ -1158,7 +1158,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 inc
 
-UniRegistry use a distrinc server for this TLD
+UniRegistry use a distinct server for this TLD
 
 =head3 Custom extensions:
 
@@ -1242,6 +1242,39 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'unireg_icm';
+
+=pod
+
+=head2 EPS
+
+ $dri->add_registry('NGTLD',{provider=>'unireg_eps'});
+
+=head3 Status: Work in progess
+
+=head3 TLDs
+
+adultblock adultblockplus (not really a TLD but profile used for mapping... for now)
+
+UniRegistry EPS ICM adultblock/adultblockplus
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS> (Extended Protection Service)
+
+=cut
+
+ if ($bep eq 'unireg_eps') {
+  # These methods are in the DRD
+  require Net::DRI::DRD::UniRegistry::EPS;
+ }
+
+ return {
+     bep_type => 2, # shared
+     tlds => ['adultblock', 'adultblockplus'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS',{'default_product'=>'ICM_EPS'}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
+   } if $bep eq 'unireg_eps';
 
 =pod
 

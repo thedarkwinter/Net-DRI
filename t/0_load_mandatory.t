@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 540;
+use Test::More tests => 543;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -146,8 +146,10 @@ use_ok('Net::DRI::DRD::TELEGreenland');
 use_ok('Net::DRI::DRD::TMDB');
 use_ok('Net::DRI::DRD::TRA::AE');
 use_ok('Net::DRI::DRD::TRA::BH');
-use_ok('Net::DRI::DRD::UniRegistry::UniRegistry');
+use_ok('Net::DRI::DRD::UniRegistry::EPS');
+use_ok('Net::DRI::DRD::UniRegistry::ICM');
 use_ok('Net::DRI::DRD::UniRegistry::INC');
+use_ok('Net::DRI::DRD::UniRegistry::UniRegistry');
 use_ok('Net::DRI::DRD::UPU');
 use_ok('Net::DRI::DRD::VeriSign::COM_NET');
 use_ok('Net::DRI::DRD::VeriSign::NameStore');
@@ -443,6 +445,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::UA::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UA::HostDelete');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric');
+use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UniRegistry::RegistryMessage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::UnitedTLD');
