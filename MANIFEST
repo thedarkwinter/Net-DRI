@@ -132,6 +132,7 @@ lib/Net/DRI/DRD/NICChile.pm
 lib/Net/DRI/DRD/NICEC.pm
 lib/Net/DRI/DRD/NICMexico.pm
 lib/Net/DRI/DRD/NICRO.pm
+lib/Net/DRI/DRD/Nominet/Amazon.pm
 lib/Net/DRI/DRD/Nominet/GTLD.pm
 lib/Net/DRI/DRD/Nominet/MMX.pm
 lib/Net/DRI/DRD/Nominet/UK.pm
@@ -692,6 +693,7 @@ t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.t
 t/Net/DRI/Protocol/EPP/Extensions/NO.t
 t/Net/DRI/Protocol/EPP/Extensions/Nominet.t
+t/Net/DRI/Protocol/EPP/Extensions/Nominet/Amazon.t
 t/Net/DRI/Protocol/EPP/Extensions/Nominet/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/NSgroup.t
 t/Net/DRI/Protocol/EPP/Extensions/NZ.t
