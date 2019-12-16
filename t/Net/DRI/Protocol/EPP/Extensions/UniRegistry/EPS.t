@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 118;
+use Test::More tests => 120;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -27,7 +27,7 @@ $dri->add_current_registry('UniRegistry::EPS');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my $rc;
-my ($d,$e,$enc,$lp,$todo);
+my ($d,$e,$enc,$lp,$todo,@exemptions);
 my (@labels);
 
 ##########################################
@@ -108,17 +108,25 @@ $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','eps_info get_info(exDate) for an unauthorized client');
 is("".$d,'2020-02-22T14:14:10','eps_info get_info(exDate) value for an unauthorized client');
 
-# eps exempt
-$R2=$E1.'<response>'.r().'<resData><eps:empData xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:ed><eps:label>test-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>3111246</eps:iprID><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed></eps:empData></resData>'.$TRID.'</response>'.$E2;
+# eps exempt with multiple exemptions in response
+$R2=$E1.'<response>'.r().'<resData><eps:empData xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:ed><eps:label>test-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>3111246</eps:iprID><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels></eps:exemption><eps:exemption><eps:iprID>3111777</eps:iprID><eps:labels><eps:label>test-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed></eps:empData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_exempt('test-validate');
 is_string($R1,$E1.'<command><check><eps:exempt xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:label>test-validate</eps:label></eps:exempt></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_exempt build (single label)');
 is($rc->is_success(),1,'eps_exempt single label is_success');
 is($dri->get_info('action'),'exempt','eps_exempt get_info(action)');
 is($dri->get_info('type'),'eps','eps_exempt get_info(type)');
 is($dri->get_info('label'),'test-validate','eps_exempt get_info(label)');
-$e=$dri->get_info('exemptions');
+@exemptions=@{$dri->get_info('exemptions')};
+$e=shift @exemptions;
 is($e->{iprID},'3111246','eps_exempt get_exemptions(iprID)');
 is_deeply($e->{labels},['test-andvalidate','test-validate'],'eps_exempt get_exemptions(labels)');
+$e = shift @exemptions;
+is($e->{iprID},'3111777','eps_exempt get_exemptions(iprID)');
+is_deeply($e->{labels},['test-validate'],'eps_exempt get_exemptions(labels)');
+
+# FIXME - this test fails is the previous test is removed, suggesting that its only passing due to caching.
+# Verified by running cache_clear. Only the second (last?) label is being returned by get_info. Will raise separately.
+#$dri->cache_clear();
 
 # eps exempt - multi (they don't have a sample but let create one based on their doc specs)
 $R2=$E1.'<response>'.r().'<resData><eps:empData xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:ed><eps:label>test-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>3111246</eps:iprID><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed><eps:ed><eps:label>foobar-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>20190925</eps:iprID><eps:labels><eps:label>foobar-andvalidate</eps:label><eps:label>foobar-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed></eps:empData></resData>'.$TRID.'</response>'.$E2;
@@ -127,10 +135,12 @@ is_string($R1,$E1.'<command><check><eps:exempt xmlns:eps="http://ns.uniregistry.
 is($rc->is_success(),1,'eps_exempt multi is_success');
 is($dri->get_info('action'),'exempt_multi','eps_exempt multi get_info(action)');
 is($dri->get_info('type'),'eps','eps_exempt multi get_info(type)');
-$e=$dri->get_info('exemptions','eps','test-validate');
+@exemptions=@{$dri->get_info('exemptions','eps','test-validate')};
+$e=shift @exemptions;
 is($e->{iprID},'3111246','eps_exempt multi get_exemptions(iprID) - test-validate label');
 is_deeply($e->{labels},['test-andvalidate','test-validate'],'eps_exempt multi get_exemptions(labels) - test-validate label');
-$e=$dri->get_info('exemptions','eps','foobar-validate');
+@exemptions=@{$dri->get_info('exemptions','eps','foobar-validate')};
+$e=shift @exemptions;
 is($e->{iprID},'20190925','eps_exempt multi get_exemptions(iprID) - foobar-validate label');
 is_deeply($e->{labels},['foobar-andvalidate','foobar-validate'],'eps_exempt multi get_exemptions(labels) - foobar-validate label');
 
