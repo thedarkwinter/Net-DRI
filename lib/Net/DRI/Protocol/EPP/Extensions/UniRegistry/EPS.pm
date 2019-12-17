@@ -418,7 +418,7 @@ sub eps_build_command
 
 sub _releases_inf_type
 {
-  my ($releases)=@_;  
+  my ($releases)=@_;
   return unless $releases;
   my $releases_build={};
 
@@ -461,7 +461,7 @@ sub _ed_type
   {
     my ($name,$content)=@$exempt_element;
     $exempt_build->{label}=$content->textContent() if ($name eq 'label');
-    $exempt_build->{exemptions}=_exemptions_type($content) if ($name eq 'exemptions');
+    @{$exempt_build->{exemptions}}=_exemptions_type($content) if ($name eq 'exemptions');
   }
 
   return $exempt_build;
@@ -471,23 +471,25 @@ sub _exemptions_type
 {
   my ($exemptions_type)=@_;
   return unless $exemptions_type;
-  my $exemptions_build={};
+  my @exemptions;
 
   foreach my $exemptions_element (Net::DRI::Util::xml_list_children($exemptions_type))
   {
     my ($name,$content)=@$exemptions_element;
     if ($name eq 'exemption')
     {
+      my $exemption = {};
       foreach my $exemption_element (Net::DRI::Util::xml_list_children($content))
       {
         my ($name2,$content2)=@$exemption_element;
-        $exemptions_build->{iprID}=$content2->textContent() if ($name2 eq 'iprID');
-        $exemptions_build->{labels}=_m_label_type($content2) if ($name2 eq 'labels');
+        $exemption->{iprID}=$content2->textContent() if ($name2 eq 'iprID');
+        $exemption->{labels}=_m_label_type($content2) if ($name2 eq 'labels');
       }
+      push @exemptions, $exemption;
     }
   }
 
-  return $exemptions_build;
+  return @exemptions;
 }
 
 # get multiple labels and parse into a array

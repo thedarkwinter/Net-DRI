@@ -340,7 +340,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art baby bar basketball best blog bond budapest cam ceo college contact desi design fans feedback forum fun gent host icu ink love monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz
+art baby bar basketball best blog bond budapest cam ceo college contact desi design fans feedback forum fun gent host icu ink love luxury monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz
 
 Contended TLD's not included
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art baby bar basketball best blog bond budapest cam ceo college contact desi design fans feedback forum fun gent host icu ink love monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz/;
+    my @ngtlds = qw/art baby bar basketball best blog bond budapest cam ceo college contact desi design fans feedback forum fun gent host icu ink love luxury monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel gay mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -755,7 +755,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'faith', 'farmers', 'ferrero', 'film', 'flickr', 'flir', 'ford', 'fox', 'frontier', 'ftr', 'gap', 'giving',
         'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm',
         'ieee', 'insurance', 'intel', 'intuit', 'ipiranga', 'iselect', 'itau', 'iwc', 'jlc', 'jmp', 'jnj', 'jpmorgan', 'kinder', 'kpmg',
-        'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'lilly', 'lincoln', 'loan', 'loft', 'luxury', 'marshalls', 'mattel', 'mcd',
+        'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'lilly', 'lincoln', 'loan', 'loft', 'marshalls', 'mattel', 'mcd',
         'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
         'netflix', 'neustar', 'nfl', 'nike', 'northwesternmutual', 'nyc', 'office', 'olayan', 'olayangroup', 'oldnavy', 'one', 'open', 'osaka',
         'pamperedchef', 'panerai', 'party', 'passagens', 'pfizer', 'pharmacy', 'philips', 'physio', 'piaget', 'ping', 'pramerica', 'praxi',
@@ -788,7 +788,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'faith', 'farmers', 'ferrero', 'film', 'flickr', 'flir', 'ford', 'fox', 'frontier', 'ftr', 'gap', 'giving',
         'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm',
         'ieee', 'insurance', 'intel', 'intuit', 'ipiranga', 'iselect', 'itau', 'iwc', 'jlc', 'jmp', 'jnj', 'jpmorgan', 'kinder', 'kpmg',
-        'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'lilly', 'lincoln', 'loan', 'loft', 'luxury', 'marshalls', 'mattel', 'mcd',
+        'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'lilly', 'lincoln', 'loan', 'loft', 'marshalls', 'mattel', 'mcd',
         'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
         'netflix', 'neustar', 'nfl', 'nike', 'northwesternmutual', 'nyc', 'office', 'olayan', 'olayangroup', 'oldnavy', 'one', 'open', 'osaka',
         'pamperedchef', 'panerai', 'party', 'passagens', 'pfizer', 'pharmacy', 'philips', 'physio', 'piaget', 'ping', 'pramerica', 'praxi',
