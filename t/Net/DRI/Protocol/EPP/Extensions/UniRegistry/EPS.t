@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 120;
+use Test::More tests => 126;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -280,6 +280,20 @@ is("".$d,'2019-02-22T14:14:10','eps_create get_info(crDate) value');
 $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','eps_create get_info(exDate) with SMD file validation');
 is("".$d,'2020-02-22T14:14:10','eps_create get_info(exDate) value');
+
+# same command with single label in array
+@labels = qw/test-and-validate/;
+$rc=$dri->eps_create(\@labels, {product_type => ("plus"), duration => DateTime::Duration->new(years=>1), registrant => ("lm39"), auth=>{pw=>"abcd1234"}, lp => $lp});
+is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd" type="plus"><eps:labels><eps:label>test-and-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="application"><launch:phase>open</launch:phase>'.$enc.'</launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build with SMD file validation');
+is($rc->is_success(),1,'eps_create is_success with SMD file validation');
+is($dri->get_info('action'),'create','eps_create get_info(action) with SMD file validation');
+
+# same command with single label in scalar
+$rc=$dri->eps_create('test-et-validate', {product_type => ("plus"), duration => DateTime::Duration->new(years=>1), registrant => ("lm39"), auth=>{pw=>"abcd1234"}, lp => $lp});
+is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd" type="plus"><eps:labels><eps:label>test-et-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="application"><launch:phase>open</launch:phase>'.$enc.'</launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build with SMD file validation');
+is($rc->is_success(),1,'eps_create is_success with SMD file validation');
+is($dri->get_info('action'),'create','eps_create get_info(action) with SMD file validation');
+
 
 # eps delete
 $R2=$E1.'<response>'.r().'<msgQ count="2" id="1"/>'.$TRID.'</response>'.$E2;

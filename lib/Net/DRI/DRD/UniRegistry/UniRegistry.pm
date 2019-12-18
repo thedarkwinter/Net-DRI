@@ -197,6 +197,7 @@ sub market_update
   return $reg->process('market','update',[$rd,$todo]);
 }
 
+####################################################################################################
 sub eps_check
 {
  my ($self,$ndr,@p)=@_;
@@ -314,6 +315,7 @@ sub eps_exempt
 sub eps_create
 {
  my ($self,$reg,$id,$rd)=@_;
+ $id = $id->[0] if ref($id) eq 'ARRAY' && scalar(@$id) eq 1;
  return $reg->process('eps','create',[$id,$rd]);
 }
 
