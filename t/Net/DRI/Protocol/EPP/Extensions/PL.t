@@ -137,8 +137,8 @@ is($rc->is_success(),1,'contact_update is_success');
 
 ## Example 2 - update only <extcon:individual> element (NASK_EPP_en_draft.pdf, page 81)
 $co=$dri->local_object('contact')->srid('1234');
-my $toc=$dri->local_object('changes');
-my $co2=$dri->local_object('contact');
+$toc=$dri->local_object('changes');
+$co2=$dri->local_object('contact');
 $co2->individual(1);
 $toc->set('info',$co2);
 $rc=$dri->contact_update($co,$toc);

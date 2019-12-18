@@ -1452,8 +1452,7 @@ sub _build_price_query
  {
    $rd->{premium_domain} = 1;
  }
-
- my $fee_version = 0+$ndr->protocol()->{brown_fee_version} // $ndr->protocol()->{fee_version};
+ my $fee_version = 0+($ndr->protocol()->{brown_fee_version} // $ndr->protocol()->{fee_version} // 0);
  # CentralNic::Fee (<=011) this extension is used in addition to premium_domain above, hense to elsif.
  if ((grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee', @{$ndr->protocol()->{loaded_modules}}) || $fee_version <= 0.11)
  {
