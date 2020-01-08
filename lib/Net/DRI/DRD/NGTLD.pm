@@ -475,7 +475,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android app boo cal channel chrome dad 
  return {
      bep_type => 2, # shared
      tlds => ['xn--flw351e','xn--q9jyb4c','xn--qcka1pmc','ads','android','app','boo','cal','channel','chrome','dad','day','dclk','dev','docs','drive','eat','esq','fly','foo','gbiz','gle','gmail','goog','google','guge','hangout','here','how','ing','kid','map','meet','meme','mov','new','nexus','page','phd','play','prod','prof','rsvp','search','soy','tour','youtube','zip'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'], 'disable_idn'=>1, 'brown_fee_version' => '0.6'}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee','AllocationToken'], 'disable_idn'=>1, 'brown_fee_version' => '0.6'}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'crr';
 
