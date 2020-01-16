@@ -33,7 +33,7 @@ Additional extensions for TWNIC - based on Neustar Legacy System and their Greet
 
 ####################################################################################################
 
-sub default_extensions { return qw/SecDNS NeuLevel::Message/; }
+sub default_extensions { return qw/IDN SecDNS NeuLevel::Message/; }
 
 ####################################################################################################
 1;
