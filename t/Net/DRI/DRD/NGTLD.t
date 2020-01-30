@@ -121,7 +121,7 @@ is($#periods,9,'zacr: periods');
 is_deeply( [$dri->object_types()],['domain','contact'],'zacr: object_types');
 is_deeply( [$dri->profile_types()],['epp','whois'],'zacr: profile_types');
 $drd = $dri->{registries}->{joburg}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],'zacr: epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],'zacr: epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules_no_host, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase ZACR::Domain ZACR::Contact UnitedTLD::Charge/],'zacr: loaded_modules');
 is($drd->{bep}->{bep_type},1,'zacr: bep_type');
 
