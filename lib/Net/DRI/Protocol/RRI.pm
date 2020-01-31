@@ -79,7 +79,7 @@ sub new
  foreach my $o (qw/ip status/) { $self->capabilities('host_update',$o,['set']); }
  $self->capabilities('host_update','name',['set']);
  $self->capabilities('contact_update','info',['set']);
- foreach my $o (qw/ns status contact/) { $self->capabilities('domain_update',$o,['add','del']); }
+ foreach my $o (qw/ns status contact secdns/) { $self->capabilities('domain_update',$o,['add','del']); }
  foreach my $o (qw/registrant auth/)   { $self->capabilities('domain_update',$o,['set']); }
 
  $self->{ns}={
