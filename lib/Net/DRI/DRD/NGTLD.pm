@@ -1348,7 +1348,7 @@ L<Net::DRI::Protocol::EPP::Extensions::ZACR::Contact> http://co.za/epp/extension
      tlds => ['africa','capetown','cologne','durban','joburg','koeln','tirol','wien'],
      host_as_attr => 1,
      object_types => ['domain','contact'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{'ssl_version'=>'TLSv12', 'ssl_cipher_list' => undef},'Net::DRI::Protocol::EPP::Extensions::ZACR',{}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'zacr';
 
