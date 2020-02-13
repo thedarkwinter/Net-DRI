@@ -71,10 +71,11 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
+          check             => [ \&check, \&check_parse ],
           create            => [ \&create, undef ],
           update            => [ \&update, undef ],
-          info              => [ undef, \&info_parse ],
+          info              => [ \&info, \&info_parse ],
           delete            => [ \&delete, undef ],
           transfer_request  => [ \&transfer_request, undef ],
           undelete          => [ \&undelete, undef ],
@@ -84,6 +85,7 @@ sub register_commands
           request_authcode  => [ \&request_authcode, undef ],
          );
 
+ $tmp{check_multi}=$tmp{check};
  return { 'domain' => \%tmp };
 }
 
@@ -135,23 +137,108 @@ sub update
  return;
 }
 
-## This is not written in the PDF document, but it should probably be there, like for .EU
+# they accept standard (v1.0) or dnsbe extension v2.0
+# always enforcing usage of dnsbe v2.0 after checking with Michael Holloway
+sub check
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ my @d;
+ push @d,['dnsbe:check',['dnsbe:domain version="2.0"']];
+ my $eid=$mes->command_extension_register('dnsbe:ext',sprintf('xmlns:dnsbe="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnsbe')));
+ $mes->command_extension($eid,\@d);
+
+ return;
+}
+
+# at the moment version 2.0 only used for infData and chkData
+sub check_parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
+
+ my $chkdata=$mes->get_extension('dnsbe','ext');
+ return unless $chkdata;
+
+ foreach my $cd ($chkdata->getElementsByLocalName('cd'))
+ {
+   my $dnsbe;
+   my @s;
+   foreach my $el (Net::DRI::Util::xml_list_children($cd))
+   {
+     my ($name,$content)=@$el;
+     if ($name eq 'name')
+     {
+       $dnsbe=$content->textContent();
+       $rinfo->{$otype}->{$dnsbe}->{action}='check';
+     }
+     if ($name eq 'reason')
+     {
+       # they list this element but not in a example. let's just name `dnsbe_reason`
+       # in case exist to be different than actual implementation `exist_reason`
+       $rinfo->{$otype}->{$dnsbe}->{dnsbe_reason}=$content->textContent();
+     } elsif ($name eq 'availableDate')
+     {
+       $rinfo->{$otype}->{$dnsbe}->{$name} = $po->parse_iso8601($content->textContent());
+     } elsif ($name eq 'status')
+     {
+       push @s,Net::DRI::Protocol::EPP::Util::parse_node_status($content);
+     }
+   }
+   $rinfo->{$otype}->{$dnsbe}->{status}=$po->create_local_object('status')->add(@s);
+ }
+
+ return;
+}
+
+# they accept standard (v1.0) or dnsbe extension v2.0
+# always enforcing usage of dnsbe v2.0 after checking with Michael Holloway
+sub info
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ my @d;
+ push @d,['dnsbe:info',['dnsbe:domain version="2.0"']];
+ my $eid=$mes->command_extension_register('dnsbe:ext',sprintf('xmlns:dnsbe="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnsbe')));
+ $mes->command_extension($eid,\@d);
+
+ return;
+}
+
+# they should only return: keygroup, onhold, quarantined and nsgroup
+# but lets get everything just in case they change the specs
+# at the moment version 2.0 only used for infData and chkData
 sub info_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension('dnsbe','infData');
+ my $infdata=$mes->get_extension('dnsbe','ext');
  return unless $infdata;
 
- my @c;
- foreach my $el ($infdata->getChildrenByTagNameNS($mes->ns('dnsbe'),'nsgroup'))
+ foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
-  push @c,Net::DRI::Data::Hosts->new()->name($el->getFirstChild()->getData());
+  my ($name,$content)=@$el;
+  if ($name eq 'infData') {
+   foreach my $el2 (Net::DRI::Util::xml_list_children($content))
+   {
+    my ($name2,$content2)=@$el2;
+    if ($name2 eq 'domain') {
+     foreach my $el3(Net::DRI::Util::xml_list_children($content2))
+     {
+      my ($name3,$content3)=@$el3;
+      if ($name3 =~ m/^(deletionDate)$/) {
+       $rinfo->{$otype}->{$oname}->{$name3} = $po->parse_iso8601($content3->textContent());
+      } else {
+       $rinfo->{$otype}->{$oname}->{$name3} = $content3->textContent() if $name3;
+      }
+     }
+    }
+   }
+  }
  }
-
- $rinfo->{domain}->{$oname}->{nsgroup}=\@c;
  return;
 }
 
