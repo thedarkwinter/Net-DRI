@@ -73,7 +73,7 @@ sub new
  my $self=$class->SUPER::new(@_);
  $self->{info}->{host_as_attr}=1;
  $self->{info}->{contact_i18n}=2; ## INT only ## FCCN only accept type "int" with UTF-8
- $self->{info}->{force_native_idn}=1;
+ $self->{info}->{force_native_idn}=0; ## will cause problems if enabled
  return $self;
 }
 
