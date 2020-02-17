@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 89;
+use Test::More tests => 95;
 
 our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
 our $E2='</epp>';
@@ -67,6 +67,18 @@ is($rc->get_data('message',$s,'action'),'REACHED','notification watermark get_da
 is($rc->get_data('message',$s,'type'),'WATERMARK','notification watermark get_data(watermark)');
 is($rc->get_data('message',$s,'returncode'),1000,'notification watermark get_data(returncode)');
 is($rc->get_data('message',$s,'level'),'1000.00','notification watermark get_data(level)');
+
+## bounced - registry can't email registrant contact
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="3" id="441"><qDate>2018-06-12T10:00:00.000Z</qDate><msg>E-mail bounced</msg></msgQ><resData><dnsbe:pollRes xmlns:dnsbe="http://www.dns.be/xml/epp/dnsbe-1.0"><dnsbe:type>EMAIL</dnsbe:type><dnsbe:action>BOUNCED</dnsbe:action><dnsbe:email>jdoe@example.com</dnsbe:email><dnsbe:returncode>2000</dnsbe:returncode><dnsbe:detailedcode>5.1.1</dnsbe:detailedcode><dnsbe:date>2018-06-12T09:00:00.000Z</dnsbe:date></dnsbe:pollRes></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+
+$s=$rc->get_data('message','session','last_id');
+is($rc->get_data('message',$s,'action'),'BOUNCED','notification bounced get_data(action)');
+is($rc->get_data('message',$s,'type'),'EMAIL','notification bounced get_data(type)');
+is($rc->get_data('message',$s,'email'),'jdoe@example.com','notification bounced get_data(email)');
+is($rc->get_data('message',$s,'returncode'),2000,'notification bounced get_data(returncode)');
+is($rc->get_data('message',$s,'detailedcode'),'5.1.1','notification bounced get_data(detailedcode)');
+is($rc->get_data('message',$s,'date'),'2018-06-12T09:00:00','notification bounced get_data(date)');
 
 ####################################################################################################
 ## request_auth
