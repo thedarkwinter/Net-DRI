@@ -94,7 +94,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'TangoRS::TangoRS'; }
-sub tlds     { return (qw/ruhr gmx ifm nrw/); }
+sub tlds     { return (qw/ruhr gmx ifm nrw whoswho/); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
