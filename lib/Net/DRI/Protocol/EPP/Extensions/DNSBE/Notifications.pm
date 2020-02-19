@@ -86,9 +86,10 @@ sub parse
  foreach my $el (Net::DRI::Util::xml_list_children($poll))
  {
   my ($name,$c)=@$el;
-  if ($name=~m/^(action|returncode|type|contact|domainname|date|email|level)$/)
+  if ($name=~m/^(action|returncode|type|contact|domainname|date|email|level|detailedcode|date)$/)
   {
    $n{$1}=$c->textContent();
+   $n{$1}=$po->parse_iso8601($c->textContent()) if $name eq 'date';
   }
  }
 
@@ -108,9 +109,10 @@ sub parse
  {
   $rinfo->{$otype}->{$oname}->{exist} = 1;
   $rinfo->{$otype}->{$oname}->{date} = $po->parse_iso8601($n{date}) if Net::DRI::Util::has_key(\%n,'date') && length $n{date};
-  foreach ('action','returncode','type','contact','email','level')
+  foreach ('action','returncode','type','contact','email','level','detailedcode','date')
   {
    $rinfo->{$otype}->{$oname}->{$_} = $n{$_} if defined $n{$_};
+   $rinfo->{$otype}->{$oname}->{$_} = $po->parse_iso8601($n{$_}) if defined $n{$_} && $_ eq 'date';
   }
  } else
  {
