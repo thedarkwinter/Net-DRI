@@ -104,19 +104,67 @@ sub result_message    { my ($self,@args)=@_; return $self->_get_result('message'
 sub result_lang       { my ($self,@args)=@_; return $self->_get_result('lang',@args); }
 sub result_extra_info { my ($self,@args)=@_; return $self->_get_result('extra_info',@args); }
 
+# sub ns
+# {
+#  my ($self,$what)=@_;
+#  return $self->{ns} unless defined $what;
+
+#  if (ref $what eq 'HASH')
+#  {
+#   $self->{ns}=$what;
+#   return $what;
+#  }
+#  return unless exists $self->{ns}->{$what};
+#  return $self->{ns}->{$what}->[0];
+# }
+
 sub ns
 {
- my ($self,$what)=@_;
- return $self->{ns} unless defined $what;
+ my ($self, $ns) = @_;
+ return $self->{ns} unless defined $ns;
 
- if (ref $what eq 'HASH')
+ if (! ref $ns)
  {
-  $self->{ns}=$what;
-  return $what;
+  return unless exists $self->{ns}->{$ns};
+  return $self->{ns}->{$ns};
  }
- return unless exists $self->{ns}->{$what};
- return $self->{ns}->{$what}->[0];
+
+ foreach my $alias (keys %$ns)
+ {
+  my $newns = ref $ns->{$alias} ? $ns->{$alias}->[0] : $ns->{$alias}; # the ref case is for old content that did not migrate to no XSD
+  Net::DRI::Exception->die(0,'protocol/EPP',1,sprintf('Duplicate namespace definition for "%s": previous="%s" new="%s"', $alias, $self->{ns}->{$alias}, $newns)) if exists $self->{ns}->{$alias};
+  $self->{ns}->{$alias} = $newns;
+ }
 }
+
+# sub nsattrs
+# {
+#  my ($self,$what)=@_;
+#  return unless defined $what;
+#  my @d=sort { $a cmp $b } grep { defined $_ && exists $self->{ns}->{$_} } (ref $what eq 'ARRAY' ? @$what : ($what));
+#  return unless @d;
+
+#  if (wantarray)
+#  {
+#   my @r;
+#   foreach my $rdd (@d)
+#   {
+#    my @dd=@{$self->{ns}->{$rdd}};
+#    push @r,$dd[0],$dd[0],$dd[1];
+#   }
+#   return @r;
+#  } else
+#  {
+#   my (@xns,@xsl);
+#   foreach my $rdd (@d)
+#   {
+#    my @dd=@{$self->{ns}->{$rdd}};
+#    push @xns,sprintf('xmlns:%s="%s"',$rdd,$dd[0]);
+#    push @xsl,sprintf('%s %s',$dd[0],$dd[1]);
+#   }
+#   return join(' ',@xns).' xsi:schemaLocation="'.join(' ',@xsl).'"';
+#  }
+# }
 
 sub nsattrs
 {
@@ -125,26 +173,12 @@ sub nsattrs
  my @d=sort { $a cmp $b } grep { defined $_ && exists $self->{ns}->{$_} } (ref $what eq 'ARRAY' ? @$what : ($what));
  return unless @d;
 
- if (wantarray)
+ my @xns;
+ foreach my $rdd (@d)
  {
-  my @r;
-  foreach my $rdd (@d)
-  {
-   my @dd=@{$self->{ns}->{$rdd}};
-   push @r,$dd[0],$dd[0],$dd[1];
-  }
-  return @r;
- } else
- {
-  my (@xns,@xsl);
-  foreach my $rdd (@d)
-  {
-   my @dd=@{$self->{ns}->{$rdd}};
-   push @xns,sprintf('xmlns:%s="%s"',$rdd,$dd[0]);
-   push @xsl,sprintf('%s %s',$dd[0],$dd[1]);
-  }
-  return join(' ',@xns).' xsi:schemaLocation="'.join(' ',@xsl).'"';
+  push @xns, $rdd eq 'epp' ? sprintf('xmlns="%s"', $self->{ns}->{$rdd}) : sprintf('xmlns:%s="%s"', $rdd, $self->{ns}->{$rdd});
  }
+ return join(' ',@xns);
 }
 
 sub is_success { return _is_success(shift->result_code()); }

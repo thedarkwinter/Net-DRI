@@ -1,4 +1,4 @@
-Net::DRI is Copyright (C) 2005-2016, Patrick Mevzek <netdri@dotandco.com>
+Net::DRI is Copyright (C) 2005-2019, Patrick Mevzek <netdri@dotandco.com>
 Official website for Net::DRI information and download:
 http://www.dotandco.com/services/software/Net-DRI/index.en
 
@@ -36,7 +36,7 @@ Currently Net::DRI ships with:
 
 - a full RRP implementation (RFC 2832 & 3632)
 - a full EPP implementation (STD 69 aka RFC 5730/5731/5732/5733/5734/3735), including registry notifications
-- many EPP extensions:
+- many EPP extensions (see the file EPP_namespaces.txt for the exhaustive list of all implemented EPP extensions):
   * GracePeriod (RFC 3915)
   * E164 for ENUM (RFC 4114)
   * Enum Validation (RFC 5076)
@@ -45,13 +45,14 @@ Currently Net::DRI ships with:
   * NSgroup and Keygroup (used by .BE and .EU)
   * VeriSign extensions: Sync, WhoisInfo, WhoWas, PremiumDomain, Suggestion, ClientAttributes, Balance
   * IDN extension (draft-ietf-eppext-idnmap-02)
-  * KeyRelay extension (draft-ietf-eppext-keyrelay-11)
-  * AllocationToken extension (draft-gould-allocation-token-02)
+  * KeyRelay extension (RFC 8063)
+  * AllocationToken extension (RFC 8495)
+  * changePoll extension (RFC 8590)
   * AusRegistry extensions: KeyValue, IDN, Variant, Sync
   * CentralNic extensions: Release, TTL, WebForwarding, Pricing
   * CloudRegistry extension: LaunchPhase
   * CoCCA extension: IPVerification
-  * ICANN extensions: MarkSignedMark (SMD for TMCH in new gTLDs, with local XML signature validation), RegistrarExpirationDate
+  * ICANN extensions: MarkSignedMark (RFC 7848 : SMD for TMCH in new gTLDs, with local XML signature validation), RegistrarExpirationDate
   * Domain/Contact/Host and other extensions needed for extra services in various TLD:
     .EU .COM .NET .MOBI .AERO .CAT .US .PL .SE .BE .AT .COOP .LU .ASIA .AU .NAME .ORG .UK
     .DE .CH .LI .HN .SC .VC .AG .BZ .LC .MN .ME .CZ .TRAVEL .NO .BR .JOBS .PRO .FR .PT
@@ -62,6 +63,7 @@ Currently Net::DRI ships with:
     * https://tools.ietf.org/html/draft-zhou-eppext-reseller-mapping-03
     * https://tools.ietf.org/html/draft-mayrhofer-eppext-servicemessage-00
     * https://tools.ietf.org/html/draft-wilcox-cira-idn-eppext-00
+    * https://tools.ietf.org/html/draft-ietf-regext-bundling-registration-08
     * https://tools.ietf.org/html/draft-gould-change-poll-03
     * https://tools.ietf.org/id/draft-kong-eppext-bundling-registration-02
     * https://ausregistry.github.io/doc/price-1.2/price-1.2.html
@@ -69,6 +71,16 @@ Currently Net::DRI ships with:
     * https://tools.ietf.org/html/draft-brown-epp-reverse-00
     * https://tools.ietf.org/html/draft-wang-eppext-contact-verification-01
     * https://tools.ietf.org/html/draft-wang-eppext-domain-verification-01
+    * https://tools.ietf.org/html/draft-ietf-regext-verificationcode-06
+    * https://gitlab.centralnic.com/centralnic/epp-auxcontact-extension/blob/1b7a0e935523b306387d236908017ea7ba72f794/draft-brown-auxcontact.txt
+    * https://gitlab.centralnic.com/centralnic/epp-registration-type-extension/blob/e210c27730c8926324e502efff4d0ad77190d7c2/draft-brown-regtype.txt
+    * https://tools.ietf.org/html/draft-lozano-ietf-regext-registrar-expiration-date-00
+    * https://tools.ietf.org/html/draft-bortzmeyer-regext-epp-dname-02
+    * https://gitlab.centralnic.com/centralnic/epp-artrecord-extension/raw/fd935a927252f4420e233adce877830782a22ba4/draft-brown-artRecord.txt
+    * Nomulus (Google) extensions from https://github.com/google/nomulus/
+    * https://tools.ietf.org/html/draft-ietf-regext-validate-04
+    * https://tools.ietf.org/html/draft-gould-casanova-regext-unhandled-namespaces-00
+    * https://tools.ietf.org/html/draft-ietf-regext-login-security-03
 - a full DAS (Domain Availability Service) implementation for .BE .EU .NL .AU
 - a full Whois implementation (RFC 3912) for thin and thick registries :
      support included for domain names in .COM .NET .ORG .BIZ .INFO .AERO

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Encapsulating result status, standardized on EPP codes
 ##
-## Copyright (c) 2005,2006,2008-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005,2006,2008-2014,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -19,6 +19,8 @@ use warnings;
 
 use base qw(Class::Accessor::Chained::Fast);
 __PACKAGE__->mk_ro_accessors(qw(native_code code message lang next count));
+
+use Carp;
 
 use Net::DRI::Exception;
 use Net::DRI::Util;
@@ -194,7 +196,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005,2006,2008-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005,2006,2008-2014,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -346,6 +348,13 @@ sub is_success
  return 1;
 }
 
+sub is_success_or_die
+{
+ my ($self) = @_;
+ croak $self unless $self->is_success();
+ return;
+}
+
 sub get_extended_results
 {
  my ($self)=@_;
@@ -416,6 +425,14 @@ sub _merge
   $r{$key}=_merge($deep+1,@{$tmp{$key}});
  }
  return \%r;
+}
+
+sub get_data_keys
+{
+ my ($self, $k1, $k2) = @_;
+ my $rh = $self->get_data_collection($k1, $k2);
+ my @k = sort { $a cmp $b } keys %$rh;
+ return wantarray ? @k : $k[0];
 }
 
 sub last { my $self=shift; while ( defined $self->next() ) { $self=$self->next(); } return $self; } ## no critic (Subroutines::ProhibitBuiltinHomonyms)
