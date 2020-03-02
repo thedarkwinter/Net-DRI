@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Host commands (RFC5732)
 ##
-## Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -71,7 +71,7 @@ sub register_commands
            check  => [ \&check, \&check_parse ],
            info   => [ \&info, \&info_parse ],
            delete => [ \&delete ],
-	   update => [ \&update ],
+           update => [ \&update ],
            review_complete => [ undef, \&pandata_parse ],
          );
 
@@ -91,7 +91,7 @@ sub build_command
   Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid host name: '.$n) unless Net::DRI::Util::is_hostname($n);
  }
 
- $msg->command([$command,'host:'.$command,sprintf('xmlns:host="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('host'))]);
+ $msg->command([$command,'host:'.$command, $msg->nsattrs('host')]);
 
  my @d=map { ['host:name',$_] } @n;
  return @d;
@@ -309,7 +309,7 @@ sub pandata_parse
    $rinfo->{host}->{$oname}->{result}=Net::DRI::Util::xml_parse_boolean($c->getAttribute('paResult'));
   } elsif ($name eq 'paTRID')
   {
-   my $ns=$mes->ns('_main');
+   my $ns=$mes->ns('epp');
    my $tmp=Net::DRI::Util::xml_child_content($c,$ns,'clTRID');
    $rinfo->{host}->{$oname}->{trid}=$tmp if defined $tmp;
    $rinfo->{host}->{$oname}->{svtrid}=Net::DRI::Util::xml_child_content($c,$ns,'svTRID');

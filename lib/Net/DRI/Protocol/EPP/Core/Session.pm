@@ -150,8 +150,10 @@ sub parse_greeting
 
  $po->log_output('info','protocol',{%ctxlog,message=>'EPP extensions announced by server: '.join(' ',@{$tmp{extensions_announced}})});
  my %ext=map { $_ => 1 } (@{$tmp{extensions_announced}},@{$tmp{objects}});
- my %ns=map { $_->[0] => 1 } values %{$mes->ns()};
- delete $ns{$mes->ns('_main')};
+#  my %ns=map { $_->[0] => 1 } values %{$mes->ns()};
+#  delete $ns{$mes->ns('_main')};
+ my %ns=map { $_ => 1 } values %{$mes->ns()};
+ delete $ns{$mes->ns('epp')};
  foreach my $ns (keys %ext)
  {
   next if exists $ns{$ns};
@@ -228,7 +230,7 @@ sub login
  {
   $po->log_output('info','protocol',{action=>'login',direction=>'out',trid=>$mes->cltrid(),message=>'Before using only local extensions, EPP extensions selected during login: '.join(' ',@exts)});
   my $rns=$po->ns();
-  @exts=sort { $a cmp $b } grep { ! /^urn:ietf:params:xml:ns:(?:epp|domain|contact|host)-1\.0$/ } map { $_->[0] } values %$rns;
+  @exts=sort { $a cmp $b } grep { ! /^urn:ietf:params:xml:ns:(?:epp|domain|contact|host)-1\.0$/ } values %$rns;
   $po->log_output('info','protocol',{action=>'login',direction=>'out',trid=>$mes->cltrid(),message=>'After using only local extensions, EPP extensions selected during login: '.join(' ',@exts)});
  }
  if (Net::DRI::Util::has_key($rdata,'extensions'))
