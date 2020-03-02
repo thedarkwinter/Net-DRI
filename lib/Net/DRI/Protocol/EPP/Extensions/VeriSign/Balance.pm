@@ -32,8 +32,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'balance' => [ 'http://www.verisign.com/epp/balance-1.0','balance-1.0.xsd' ],
-         });
+ $po->ns({ 'balance' => 'http://www.verisign.com/epp/balance-1.0' });
  return;
 }
 
@@ -44,7 +43,8 @@ sub balance_info_build
  my ($epp)=@_;
  my $mes=$epp->message();
 
- $mes->command(['info','balance:info', sprintf('xmlns:balance="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('balance'))]);
+#  $mes->command(['info','balance:info', sprintf('xmlns:balance="%s"',$mes->nsattrs('balance'))]);
+ $mes->command(['info','balance:info', $mes->nsattrs('balance')]);
  return;
 }
 

@@ -10,7 +10,7 @@ use Test::More tests => 11;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -29,7 +29,7 @@ $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extens
 
 $R2=$E1.'<response>'.r().'<resData><balance:infData xmlns:balance="http://www.verisign.com/epp/balance-1.0"><balance:creditLimit>1000.00</balance:creditLimit><balance:balance>200.00</balance:balance><balance:availableCredit>800.00</balance:availableCredit><balance:creditThreshold><balance:fixed>500.00</balance:fixed></balance:creditThreshold></balance:infData></resData>'.$TRID.'</response>'.$E2;
 my $rc=$dri->balance_info();
-is_string($R1,$E1.'<command><info><balance:info xmlns:balance="http://www.verisign.com/epp/balance-1.0" xsi:schemaLocation="http://www.verisign.com/epp/balance-1.0 balance-1.0.xsd"/></info><clTRID>ABC-12345</clTRID></command>'.$E2,'balance_info build');
+is_string($R1,$E1.'<command><info><balance:info xmlns:balance="http://www.verisign.com/epp/balance-1.0"/></info><clTRID>ABC-12345</clTRID></command>'.$E2,'balance_info build');
 is($rc->get_data('session','balance','credit_limit'),1000,'balance_info get_data(credit_limit) 1');
 is($rc->get_data('session','balance','balance'),200,'balance_info get_data(balance) 1');
 is($rc->get_data('session','balance','available_credit'),800,'balance_info get_data(available_credit) 1');
