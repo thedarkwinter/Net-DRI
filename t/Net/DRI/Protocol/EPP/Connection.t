@@ -21,7 +21,6 @@ SKIP: {
 	skip 'Unable to correctly load Net::DRI::Protocol::EPP::Message',3 if $@;
 	
 	my $msg=Net::DRI::Protocol::EPP::Message->new();
-	#$msg->ns({ _main => ['urn:ietf:params:xml:ns:epp-1.0','epp-1.0.xsd'] });
 	$msg->ns({ epp => ['urn:ietf:params:xml:ns:epp-1.0','epp-1.0.xsd'] });
 	$msg->command(['check','host:check','xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"']);
 	$msg->command_body([['host:name','ns1.example.com'],['host:name','ns2.example.com'],['host:name','ns3.example.com']]);
