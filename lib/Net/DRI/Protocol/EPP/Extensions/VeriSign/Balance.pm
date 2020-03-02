@@ -43,7 +43,6 @@ sub balance_info_build
  my ($epp)=@_;
  my $mes=$epp->message();
 
-#  $mes->command(['info','balance:info', sprintf('xmlns:balance="%s"',$mes->nsattrs('balance'))]);
  $mes->command(['info','balance:info', $mes->nsattrs('balance')]);
  return;
 }
