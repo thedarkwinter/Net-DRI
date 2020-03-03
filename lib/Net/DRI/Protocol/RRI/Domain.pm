@@ -577,8 +577,7 @@ sub update
  my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
  my $ns = $rd->{ns};
  my $cs = $rd->{contact};
-
- Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
+ my $secdns = $rd->{secdns};
 
  Net::DRI::Exception::usererr_invalid_parameters('Must specify contact set and name servers with update command (or use the proper API)') unless (Net::DRI::Util::isa_contactset($cs) && Net::DRI::Util::isa_hosts($ns));
 
@@ -594,6 +593,8 @@ sub update
  my $nsdel = $todo->del('ns');
  my $cadd = $todo->add('contact');
  my $cdel = $todo->del('contact');
+ my $sadd = $todo->add('secdns');
+ my $sdel = $todo->del('secdns');
 
  if (defined($nsadd)) { foreach my $hostname ($nsadd->get_names())
  {
@@ -631,6 +632,10 @@ sub update
 
  push @d, build_contact($cs);
  push @d, build_ns($rri, $ns, $domain);
+
+ # no idea if secdns is working... need to confirm on Production, someway :)
+ push @d, build_secdns($sadd,$domain) if defined($sadd);
+ push @d, build_secdns($sdel,$domain) if defined($sdel);
 
  $mes->command_body(\@d);
  return;
