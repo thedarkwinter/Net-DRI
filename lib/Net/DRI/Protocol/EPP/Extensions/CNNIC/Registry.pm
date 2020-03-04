@@ -83,7 +83,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({'cnnic-registry' =>['urn:ietf:params:xml:ns:cnnic-registry-1.0','cnnic-registry-1.0.xsd']});
+ $po->ns({'cnnic-registry' => 'urn:ietf:params:xml:ns:cnnic-registry-1.0'});
 }
 
 ####################################################################################################
@@ -108,11 +108,10 @@ sub build
 {
  my ($epp,$c,$rd)=@_;
  return unless $rd && exists $rd->{registry};
- my $mes=$epp->message();
  my @n;
  push @n,['cnnic-registry:registry',$rd->{registry}];
- my $eid=$mes->command_extension_register('cnnic-registry','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('cnnic-registry',['create',@n]);
+
  return;
 }
 

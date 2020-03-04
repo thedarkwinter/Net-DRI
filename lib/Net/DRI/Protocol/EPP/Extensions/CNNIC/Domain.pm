@@ -82,7 +82,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({ 'cnnic-domain' => [ 'urn:ietf:params:xml:ns:cnnic-domain-1.0','cnnic-domain-1.0.xsd' ] });
+ $po->ns({ 'cnnic-domain' => 'urn:ietf:params:xml:ns:cnnic-domain-1.0' });
 
  return;
 }
@@ -128,13 +128,11 @@ sub info_parse
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  Net::DRI::Exception::usererr_insufficient_parameters('purveyor extension field is mandatory for domain create!') unless $rd->{purveyor};
  Net::DRI::Exception::usererr_invalid_parameters('purveyor extension field must be a token between: 3-16!') unless $rd->{purveyor} && Net::DRI::Util::xml_is_token($rd->{purveyor},3,16);
  my @n=build_cnnic_domain($rd);
  return unless @n;
- my $eid=$mes->command_extension_register('cnnic-domain','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('cnnic-domain',['create',@n]);
 
  return;
 }
@@ -142,7 +140,6 @@ sub create
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
  my (@n,@nextdom);
  my @extdom=('type','purveyor');
 
@@ -165,8 +162,7 @@ sub update
  push @n,['cnnic-domain:chg',@nextdom];
  return unless @n;
 
- my $eid=$mes->command_extension_register('cnnic-domain','update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('cnnic-domain',['update',@n]);
 
  return;
 }

@@ -82,7 +82,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({ 'cnnic-host' => [ 'urn:ietf:params:xml:ns:cnnic-host-1.0','cnnic-host-1.0.xsd' ] });
+ $po->ns({ 'cnnic-host' => 'urn:ietf:params:xml:ns:cnnic-host-1.0' });
 
  return;
 }
@@ -129,14 +129,12 @@ sub info_parse
 sub create
 {
  my ($epp,$host,$rh)=@_;
- my $mes=$epp->message();
 
  return unless $rh->{'purveyor'};
  Net::DRI::Exception::usererr_invalid_parameters('purveyor extension field must be a token between: 3-16!') if !Net::DRI::Util::xml_is_token($rh->{'purveyor'},3,16);
  my @n=build_cnnic_host($rh);
  return unless @n;
- my $eid=$mes->command_extension_register('cnnic-host','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('cnnic-host',['create',@n]);
 
  return;
 }
@@ -144,7 +142,6 @@ sub create
 sub update
 {
  my ($epp,$host,$todo)=@_;
- my $mes=$epp->message();
  my (@n,@nexthost);
  my @exthost=('purveyor');
 
@@ -166,8 +163,7 @@ sub update
  push @n,['cnnic-host:chg',@nexthost];
  return unless @n;
 
- my $eid=$mes->command_extension_register('cnnic-host','update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('cnnic-host',['update',@n]);
 
  return;
 }

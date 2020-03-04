@@ -43,7 +43,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $ns = { 'b-dn' => [ 'urn:ietf:params:xml:ns:b-dn-1.0','b-dn-1.0.xsd' ] };
+ state $ns = { 'b-dn' => 'urn:ietf:params:xml:ns:b-dn-1.0' };
  $po->ns($ns);
  return;
 }
@@ -88,11 +88,9 @@ sub update_parse   { return parse(@_,'upData');  } ## no critic (Subroutines::Re
 sub create
 {
  my ($epp,$domain,$rp)=@_;
- my $mes=$epp->message();
-
- my $eid=$mes->command_extension_register('b-dn','create');
  Net::DRI::Exception::usererr_invalid_parameters('ulabel property is mandatory for create with bundling extension') unless Net::DRI::Util::has_key($rp, 'ulabel');
- $mes->command_extension($eid, [ 'b-dn:rdn', { uLabel => $rp->{ulabel} }, $domain]);
+ $epp->message()->command_extension('b-dn',['create',[ 'b-dn:rdn', { uLabel => $rp->{ulabel} }, $domain]]);
+
  return;
 }
 

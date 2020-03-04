@@ -82,7 +82,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({ 'cnnic-contact' => [ 'urn:ietf:params:xml:ns:cnnic-contact-1.0','cnnic-contact-1.0.xsd' ] });
+ $po->ns({ 'cnnic-contact' => 'urn:ietf:params:xml:ns:cnnic-contact-1.0' });
 
  return;
 }
@@ -135,11 +135,9 @@ sub info_parse
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
  my @n=build_cnnic_contact($contact);
  return unless @n;
- my $eid=$mes->command_extension_register('cnnic-contact','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('cnnic-contact', ['create', @n]);
 
  return;
 }
@@ -147,7 +145,6 @@ sub create
 sub update
 {
  my ($epp,$contact,$todo)=@_;
- my $mes=$epp->message();
  my (@n,$toadd,@add,$todel,@del,@cont,@tmpadd,@tmpdel);
  my @extcon=('type','orgno','purveyor','mobile');
 
@@ -184,8 +181,7 @@ sub update
  push @n,['cnnic-contact:chg',build_cnnic_contact($todo->set('info'))] if $todo->set('info');
 
  return unless @n;
- my $eid=$mes->command_extension_register('cnnic-contact','update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('cnnic-contact',['update', @n]);
 
  return;
 }

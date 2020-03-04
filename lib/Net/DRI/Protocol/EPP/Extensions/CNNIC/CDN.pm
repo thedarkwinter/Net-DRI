@@ -142,7 +142,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({'cdn' =>['urn:ietf:params:xml:ns:cdn-1.0','cdn-1.0.xsd']});
+ $po->ns({ 'cdn' => 'urn:ietf:params:xml:ns:cdn-1.0' });
  $po->capabilities('domain_update','cdn',['add','del','set']);
 
 }
@@ -201,7 +201,6 @@ sub parse
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'cdn') && ref $rd->{cdn} eq 'HASH';
  Net::DRI::Exception::usererr_invalid_parameters('cdn should be hash with a vcdns list of hashes containing either ace or idn key') if (exists $rd->{cdn}->{vcdns} && ref $rd->{cdn}->{vcdns} ne 'ARRAY');
  return unless exists $rd->{cdn}->{vcdns};
@@ -214,14 +213,13 @@ sub create
  }
  push @n, ['cdn:VCDNList',@v] if @v;
  return unless @n;
- my $eid=$mes->command_extension_register('cdn','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('cdn',['create',@n]);
+
  return;
 }
 
 sub update {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
  my (@n,$ace,$idn);
 
  ## add/del : vcdns
@@ -253,8 +251,8 @@ sub update {
  }
 
  return unless @n;
- my $eid=$mes->command_extension_register('cdn','update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('cdn',['update',@n]);
+
  return;
 }
 
