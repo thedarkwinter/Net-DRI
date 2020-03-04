@@ -1,6 +1,7 @@
 ## Domain Registry Interface, .JOBS contact extension
 ##
 ## Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+## Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -17,6 +18,7 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::JobsContact;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 
@@ -50,6 +52,7 @@ Tonnerre Lombard E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,16 +69,22 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %contacttmp=(
-	   create =>		[ \&create, undef ],
-	   update =>		[ \&update, undef ],
-	   info =>		[ undef, \&info_parse ]
-	 );
+ state $cmds = { 'contact' => { 'create' => [ \&create, undef ],
+                                'update' => [ \&update, undef ],
+                                'info'   => [ undef, \&info_parse ],
+                              }
+               };
 
- return { 'contact' => \%contacttmp };
+ return $cmds;
 }
 
-our @NS=('http://www.verisign.com/epp/jobsContact-1.0','http://www.verisign.com/epp/jobsContact-1.0 jobsContact-1.0.xsd');
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ state $rns = { 'jobsContact' => 'http://www.verisign.com/epp/jobsContact-1.0' };
+ $po->ns($rns);
+ return;
+}
 
 ####################################################################################################
 
@@ -84,7 +93,6 @@ our @NS=('http://www.verisign.com/epp/jobsContact-1.0','http://www.verisign.com/
 sub add_job
 {
 	my ($cmd, $epp, $contact, $rd) = @_;
-	my $mes = $epp->message();
 	my $info;
 	my @jobdata;
 
@@ -106,8 +114,7 @@ sub add_job
 
 	return unless (@jobdata);
 
-	my $eid = $mes->command_extension_register('jobsContact:' . $cmd,sprintf('xmlns:jobsContact="%s" xsi:schemaLocation="%s"',@NS));
-	$mes->command_extension($eid, \@jobdata);
+	$epp->message()->command_extension('jobsContact', [$cmd, @jobdata]);
 	return;
 }
 
@@ -127,25 +134,26 @@ sub info_parse
 {
 	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
 	my $mes = $po->message();
-	my $infdata = $mes->get_extension($NS[0],'infData');
+	my $infdata = $mes->get_extension('jobsContact', 'infData');
         return unless (defined($infdata));
 
 	my $jobinfo = {};
 	my $c;
+	my $ns = $mes->ns('jobsContact');
 
-	$c = $infdata->getChildrenByTagNameNS($NS[0], 'title');
+	$c = $infdata->getChildrenByTagNameNS($ns, 'title');
 	$jobinfo->{title} = $c->shift()->getFirstChild()->getData() if ($c);
 
-	$c = $infdata->getChildrenByTagNameNS($NS[0], 'website');
+	$c = $infdata->getChildrenByTagNameNS($ns, 'website');
 	$jobinfo->{website} = $c->shift()->getFirstChild()->getData() if ($c);
 
-	$c = $infdata->getChildrenByTagNameNS($NS[0], 'industryType');
+	$c = $infdata->getChildrenByTagNameNS($ns, 'industryType');
 	$jobinfo->{industry} = $c->shift()->getFirstChild()->getData() if ($c);
 
-	$c = $infdata->getChildrenByTagNameNS($NS[0], 'isAdminContact');
+	$c = $infdata->getChildrenByTagNameNS($ns, 'isAdminContact');
 	$jobinfo->{admin} = (lc($c->shift()->getFirstChild()->getData()) eq 'yes')? 1 : 0 if ($c);
 
-	$c = $infdata->getChildrenByTagNameNS($NS[0], 'isAssociationMember');
+	$c = $infdata->getChildrenByTagNameNS($ns, 'isAssociationMember');
 	$jobinfo->{member} = (lc($c->shift()->getFirstChild()->getData()) eq 'yes')? 1 : 0 if ($c);
 
         my $contact = $rinfo->{$otype}->{$oname}->{self};
