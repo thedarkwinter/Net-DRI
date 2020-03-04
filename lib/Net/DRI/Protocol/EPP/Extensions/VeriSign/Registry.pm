@@ -82,7 +82,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({ 'registry' => [ 'http://www.verisign.com/epp/registry-1.0','registry-1.0.xsd' ] });
+ $po->ns({ 'registry' => 'http://www.verisign.com/epp/registry-1.0' });
  $po->capabilities('domain_update','charge',['set']);
 }
 
@@ -1255,7 +1255,7 @@ sub registry_build_command
   my ($msg,$command,$registry,$registryattr)=@_;
   my @reg=ref $registry ? @$registry : ($registry);
   my $tcommand=ref $command ? $command->[0] : $command;
-  $msg->command([$command,'registry:'.$tcommand,sprintf('xmlns:registry="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('registry'))]);
+  $msg->command([$command,'registry:'.$tcommand,$msg->nsattrs('registry')]);
   my @r=();
   if (defined $registry)
   {
