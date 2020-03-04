@@ -1,6 +1,6 @@
 ## Domain Registry Interface, SIDN EPP Domain extensions
 ##
-## Copyright (c) 2009-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009-2011,2013,2016,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -41,7 +41,7 @@ sub register_commands
 sub build_command_extension
 {
  my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:sidn="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('sidn')));
+ return $mes->command_extension_register($tag,$mes->nsattrs('sidn'));
 }
 
 sub info_parse
@@ -91,7 +91,6 @@ sub create
 sub update
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless $rd->{operation} || $rd->{date};
 
  my ($operation,$date);
@@ -108,22 +107,19 @@ sub update
   push @ext, ['scheduledDelete:date', $date] if $date && $operation eq 'setDate';
  }
 
- my $eid;
- $eid=$mes->command_extension_register('scheduledDelete:update',sprintf('xmlns:scheduledDelete="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('scheduled_delete')));
- $mes->command_extension($eid, \@ext);
-
+ $epp->message()->command_extension('scheduledDelete',['update', @ext]);
  return;
 }
 
 sub delete_cancel
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless defined($domain) && $domain;
  Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid domain name: '.$domain) unless Net::DRI::Util::is_hostname($domain);
- my $eid=build_command_extension($mes,$epp,'sidn:command');
- $mes->command_extension($eid,[['sidn:domainCancelDelete',['sidn:name',$domain]],['sidn:clTRID',$mes->cltrid()]]);
+
+ my $mes=$epp->message();
+ $mes->command_extension('sidn', ['command', ['domainCancelDelete', ['name',$domain]], ['clTRID',$mes->cltrid()]]);
  return;
 }
 
@@ -177,7 +173,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009-2011,2013,2016,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

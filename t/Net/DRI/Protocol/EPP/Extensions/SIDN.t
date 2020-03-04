@@ -13,7 +13,7 @@ use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -56,9 +56,9 @@ is($rc->get_data('schedule_delete_date'),'2030-01-01T08:37:45','domain_info sche
 
 $R2='';
 $rc=$dri->domain_undelete('DOMAINdelete37.nl');
-is_string($R1,$E1.'<extension><sidn:command xmlns:sidn="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0 sidn-ext-epp-1.0.xsd"><sidn:domainCancelDelete><sidn:name>DOMAINdelete37.nl</sidn:name></sidn:domainCancelDelete><sidn:clTRID>ABC-12345</sidn:clTRID></sidn:command></extension>'.$E2,'domain_undelete build');
+is_string($R1,$E1.'<extension><sidn:command xmlns:sidn="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0"><sidn:domainCancelDelete><sidn:name>DOMAINdelete37.nl</sidn:name></sidn:domainCancelDelete><sidn:clTRID>ABC-12345</sidn:clTRID></sidn:command></extension>'.$E2,'domain_undelete build');
 
-$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example202.nl</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example202.nl</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
 my $cs=$dri->local_object('contactset');
 my $c1=$dri->local_object('contact')->srid('jd1234');
 my $c2=$dri->local_object('contact')->srid('sh8013');
@@ -66,7 +66,7 @@ $cs->set($c1,'registrant');
 $cs->set($c2,'admin');
 $cs->set($c2,'tech');
 $rc=$dri->domain_create('example202.nl',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),ns=>$dri->local_object('hosts')->set(['ns1.example.com'],['ns1.example.net']),contact=>$cs,auth=>{pw=>'2fooBAR'}});
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example202.nl</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj><domain:hostObj>ns1.example.net</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example202.nl</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj><domain:hostObj>ns1.example.net</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($dri->get_info('action'),'create','domain_create get_info(action)');
 is($dri->get_info('exist'),1,'domain_create get_info(exist)');
 $d=$dri->get_info('crDate');
@@ -82,14 +82,14 @@ $toc=$dri->local_object('changes');
 $toc->set('operation','setDate');
 $toc->set('date','2030-01-01');
 $rc=$dri->domain_update('domeinnaam.nl',$toc);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>setDate</scheduledDelete:operation><scheduledDelete:date>2030-01-01</scheduledDelete:date></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete on a specified date');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0"><scheduledDelete:operation>setDate</scheduledDelete:operation><scheduledDelete:date>2030-01-01</scheduledDelete:date></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete on a specified date');
 # scheduled delete on a specified date (using DateTime object)
 $R2='';
 $toc=$dri->local_object('changes');
 $toc->set('operation','setDate');
 $toc->set('date',DateTime->new(year=>2020,month=>1,day=>1));
 $rc=$dri->domain_update('domeinnaam2.nl',$toc);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam2.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>setDate</scheduledDelete:operation><scheduledDelete:date>2020-01-01</scheduledDelete:date></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete on a specified date - DateTime object');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domeinnaam2.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0"><scheduledDelete:operation>setDate</scheduledDelete:operation><scheduledDelete:date>2020-01-01</scheduledDelete:date></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete on a specified date - DateTime object');
 # test invalid operation
 $toc=$dri->local_object('changes');
 $toc->set('operation','setdate');
@@ -106,14 +106,14 @@ $R2='';
 $toc=$dri->local_object('changes');
 $toc->set('operation','setDateToEndOfSubscriptionPeriod');
 $rc=$dri->domain_update('domeinnaam.nl',$toc);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>setDateToEndOfSubscriptionPeriod</scheduledDelete:operation></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete at end of registration period');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0"><scheduledDelete:operation>setDateToEndOfSubscriptionPeriod</scheduledDelete:operation></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - scheduled delete at end of registration period');
 
 # cancel scheduled delete
 $R2='';
 $toc=$dri->local_object('changes');
 $toc->set('operation','cancel');
 $rc=$dri->domain_update('domeinnaam.nl',$toc);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0 sidn-ext-epp-scheduled-delete-1.0.xsd"><scheduledDelete:operation>cancel</scheduledDelete:operation></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - cancel scheduled delete');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domeinnaam.nl</domain:name></domain:update></update><extension><scheduledDelete:update xmlns:scheduledDelete="http://rxsd.domain-registry.nl/sidn-ext-epp-scheduled-delete-1.0"><scheduledDelete:operation>cancel</scheduledDelete:operation></scheduledDelete:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build - cancel scheduled delete');
 
 ####################################################################################################
 ## Contact commands
@@ -143,7 +143,7 @@ $co->legal_id('8764654.0');
 
 $R2='';
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:postalInfo type="loc"><contact:name>Harry Jansen</contact:name><contact:org>De Klusjeman BV</contact:org><contact:addr><contact:street>IJsselkade</contact:street><contact:street>100</contact:street><contact:city>Amsterdam</contact:city><contact:sp>Limburg</contact:sp><contact:pc>1234AA</contact:pc><contact:cc>NL</contact:cc></contact:addr></contact:postalInfo><contact:voice>+31.612345678</contact:voice><contact:fax>+31.204578274</contact:fax><contact:email>epptestteam@sidn.nl</contact:email><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo><contact:disclose flag="0"><contact:voice/><contact:email/></contact:disclose></contact:create></create><extension><sidn:ext xmlns:sidn="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0 sidn-ext-epp-1.0.xsd"><sidn:create><sidn:contact><sidn:legalForm>EENMANSZAAK</sidn:legalForm><sidn:legalFormRegNo>8764654.0</sidn:legalFormRegNo></sidn:contact></sidn:create></sidn:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>sh8013</contact:id><contact:postalInfo type="loc"><contact:name>Harry Jansen</contact:name><contact:org>De Klusjeman BV</contact:org><contact:addr><contact:street>IJsselkade</contact:street><contact:street>100</contact:street><contact:city>Amsterdam</contact:city><contact:sp>Limburg</contact:sp><contact:pc>1234AA</contact:pc><contact:cc>NL</contact:cc></contact:addr></contact:postalInfo><contact:voice>+31.612345678</contact:voice><contact:fax>+31.204578274</contact:fax><contact:email>epptestteam@sidn.nl</contact:email><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo><contact:disclose flag="0"><contact:voice/><contact:email/></contact:disclose></contact:create></create><extension><sidn:ext xmlns:sidn="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0"><sidn:create><sidn:contact><sidn:legalForm>EENMANSZAAK</sidn:legalForm><sidn:legalFormRegNo>8764654.0</sidn:legalFormRegNo></sidn:contact></sidn:create></sidn:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
 
 $R2='';
 $co=$dri->local_object('contact')->srid('TEA000031-GOEDA');
@@ -160,7 +160,7 @@ $co->legal_form('PERSOON');
 $toc=$dri->local_object('changes');
 $toc->set('info',$co);
 $rc=$dri->contact_update($co,$toc);
-is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>TEA000031-GOEDA</contact:id><contact:chg><contact:postalInfo type="loc"><contact:name>Herman Jansen</contact:name><contact:org>SIDN</contact:org><contact:addr><contact:street>Street 1</contact:street><contact:street>Street 2</contact:street><contact:street>Street 3</contact:street><contact:city>Arnhem</contact:city><contact:pc>1000AA</contact:pc><contact:cc>NL</contact:cc></contact:addr></contact:postalInfo><contact:voice>+31.207654321</contact:voice><contact:fax>+31.201234567</contact:fax><contact:email>herman@epptestdomein.nl</contact:email></contact:chg></contact:update></update><extension><sidn:ext xmlns:sidn="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0" xsi:schemaLocation="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0 sidn-ext-epp-1.0.xsd"><sidn:update><sidn:contact><sidn:legalForm>PERSOON</sidn:legalForm></sidn:contact></sidn:update></sidn:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>TEA000031-GOEDA</contact:id><contact:chg><contact:postalInfo type="loc"><contact:name>Herman Jansen</contact:name><contact:org>SIDN</contact:org><contact:addr><contact:street>Street 1</contact:street><contact:street>Street 2</contact:street><contact:street>Street 3</contact:street><contact:city>Arnhem</contact:city><contact:pc>1000AA</contact:pc><contact:cc>NL</contact:cc></contact:addr></contact:postalInfo><contact:voice>+31.207654321</contact:voice><contact:fax>+31.201234567</contact:fax><contact:email>herman@epptestdomein.nl</contact:email></contact:chg></contact:update></update><extension><sidn:ext xmlns:sidn="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0"><sidn:update><sidn:contact><sidn:legalForm>PERSOON</sidn:legalForm></sidn:contact></sidn:update></sidn:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
 
 ####################################################################################################
 ## Host commands
