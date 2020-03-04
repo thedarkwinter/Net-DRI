@@ -1,7 +1,7 @@
 ## Domain Registry Interface, VeriSign EPP Client Object Attribute Extension
 ## From epp-client-object-attribute.pdf
 ##
-## Copyright (c) 2011-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2011-2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -36,7 +36,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'coa' => [ 'urn:ietf:params:xml:ns:coa-1.0','coa-1.0.xsd' ] });
+ $po->ns({ 'coa' => 'urn:ietf:params:xml:ns:coa-1.0' });
  return;
 }
 
@@ -96,9 +96,7 @@ sub create
  my $rcoa=$rd->{client_attributes};
  Net::DRI::Exception::usererr_invalid_parameters('client_attributes must be a hash ref') unless ref $rcoa eq 'HASH';
 
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('coa:create',sprintf('xmlns:coa="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('coa')));
- $mes->command_extension($eid,add_coa('create',$rcoa));
+ $epp->message()->command_extension('coa', ['create', add_coa('create',$rcoa)]);
  return;
 }
 
@@ -124,9 +122,7 @@ sub update
   push @d,['coa:put',add_coa('put',$put)];
  }
 
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('coa:update',sprintf('xmlns:coa="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('coa')));
- $mes->command_extension($eid,@d);
+ $epp->message()->command_extension('coa', ['update', @d]);
  return;
 }
 
@@ -173,7 +169,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2011-2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
