@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP DNS Security Extensions (RFC4310 & RFC5910)
 ##
-## Copyright (c) 2005-2010,2012-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2010,2012-2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2010,2012-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2010,2012-2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -83,7 +83,7 @@ sub capabilities_add { return (['domain_update','secdns',['add','del','set']],['
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'secDNS' => [ 'urn:ietf:params:xml:ns:secDNS-1.0','secDNS-1.0.xsd' ] }); ## this will get bumped to secDNS-1.1 after login if server supports it, until all registry servers have been upgraded to 1.1
+ $po->ns({ 'secDNS' => 'urn:ietf:params:xml:ns:secDNS-1.0' }); ## this will get bumped to secDNS-1.1 after login if server supports it, until all registry servers have been upgraded to 1.1
  return;
 }
 
@@ -152,11 +152,11 @@ sub parse_greeting
  ## If server supports secDNS-1.1 we switch to it completely
  if (grep { m/1\.1/ } @v)
  {
-  $po->ns({ 'secDNS' => [ 'urn:ietf:params:xml:ns:secDNS-1.1','secDNS-1.1.xsd' ] });
+  $po->ns({ 'secDNS' => 'urn:ietf:params:xml:ns:secDNS-1.1' });
   $rs->{extensions_selected}=[ grep { ! m/^urn:ietf:params:xml:ns:secDNS-1.0$/ } @{$rs->{extensions_selected}} ] if grep { m/1\.0/ } @v;
  } else
  {
-  $po->ns({ 'secDNS' => [ 'urn:ietf:params:xml:ns:secDNS-1.0','secDNS-1.0.xsd' ] });
+  $po->ns({ 'secDNS' => 'urn:ietf:params:xml:ns:secDNS-1.0' });
  }
  return;
 }
@@ -204,15 +204,14 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension($mes->ns('secDNS'),'infData');
+ my $infdata=$mes->get_extension('secDNS','infData');
  return unless defined $infdata;
 
  my @d;
  my $ns=$mes->ns('secDNS');
-
  if ($ns=~m/1\.0/)
  {
-  @d=map { parse_dsdata($_) } ($infdata->getChildrenByTagNameNS($mes->ns('secDNS'),'dsData'));
+  @d=map { parse_dsdata($_) } ($infdata->getChildrenByTagNameNS($ns,'dsData'));
  } else ## secDNS-1.1
  {
   my $msl;
@@ -252,7 +251,6 @@ sub create
  Net::DRI::Exception::usererr_invalid_parameters('secdns value must be an array reference with key data') unless ref $rd->{secdns} eq 'ARRAY';
  return unless @{$rd->{secdns}};
 
- my $eid=$mes->command_extension_register('secDNS','create');
  my @n;
  if ($mes->ns('secDNS')=~m/1\.0/)
  {
@@ -262,7 +260,7 @@ sub create
   push @n,add_maxsiglife($rd->{secdns});
   push @n,add_interfaces($rd->{secdns});
  }
- $mes->command_extension($eid,\@n);
+ $mes->command_extension('secDNS',  ['create', @n]);
  return;
 }
 
@@ -306,9 +304,6 @@ sub update
  my $ver=(grep { /-1\.1$/ } $mes->ns('secDNS'))? '1.1' : '1.0';
  Net::DRI::Exception::usererr_invalid_parameters('In SecDNS-1.0, only add or del or chg is possible, not more than one of them') if ($ver eq '1.0' && @def>1);
 
- my $urg=(defined $urgent && $urgent)? 'urgent="1" ' : '';
- my $eid=$mes->command_extension_register('secDNS','update',defined $urgent && $urgent ? { urgent => 1 } : {});
-
  my @n;
 
  if ($ver eq '1.0')
@@ -343,7 +338,7 @@ sub update
   push @n,['secDNS:chg',add_maxsiglife(ref $toset eq 'ARRAY' ? $toset: (ref $toset eq 'HASH' ? [$toset] : [{ maxSigLife=>$toset }]))] if defined $toset;
  }
 
- $mes->command_extension($eid,\@n);
+ $mes->command_extension('secDNS', ['update', defined $urgent && $urgent ? { urgent => 1 } : {}, @n]);
  return;
 }
 
