@@ -1,7 +1,7 @@
 ## Domain Registry Interface, ENUM.AT Options extension
 ## Contributed by Michael Braunoeder from ENUM.AT <michael.braunoeder@enum.at>
 ##
-## Copyright (c) 2006,2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008,2013,2016,2018,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -20,8 +20,7 @@ use warnings;
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
-
-our $NS='http://www.enum.at/rxsd/ienum43-options-1.0';
+use feature 'state';
 
 =pod
 
@@ -51,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2008,2013,2016,2018,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -77,6 +76,15 @@ sub register_commands
  return { 'domain' => \%tmp };
 }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ state $ns = { 'ienum43' => 'http://www.enum.at/rxsd/ienum43-options-1.0',
+             };
+ $po->ns($ns);
+ return;
+}
+
 sub capabilities_add { return ('domain_update','options',['set']); }
 
 sub parse_options
@@ -84,12 +92,12 @@ sub parse_options
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
 
- my $condata=$mes->get_extension($NS,'options');
+ my $condata=$mes->get_extension('ienum43','options');
  return unless $condata;
 
  my @options;
 
- foreach my $el ($condata->getElementsByTagNameNS($NS,'naptr-application'))
+ foreach my $el ($condata->getElementsByTagNameNS($mes->ns('ienum43'),'naptr-application'))
  {
   my %opts;
   my $c=$el->getFirstChild();
@@ -107,7 +115,6 @@ sub parse_options
 sub set_options
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  my $roptions=$rd->set('options');
  return unless (defined($roptions) && (ref($roptions) eq 'HASH') && keys(%$roptions));
@@ -120,10 +127,9 @@ sub set_options
   $options{$d}=$roptions->{'naptr_application_'.$d};
  }
 
- return unless keys(%options);
+ return unless keys %options;
 
- my $eid=$mes->command_extension_register('ienum43:update','xmlns:ienum43="'.$NS.'" xsi:schemaLocation="'.$NS.' ienum43-options-1.0.xsd"');
- $mes->command_extension($eid,[['ienum43:options',['ienum43:naptr-application',\%options]]]);
+ $epp->message()->command_extension('ienum43',['update', ['options', ['naptr-application', \%options]]]);
  return;
 }
 

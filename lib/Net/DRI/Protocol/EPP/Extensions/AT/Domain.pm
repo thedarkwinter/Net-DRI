@@ -1,7 +1,7 @@
 ## Domain Registry Interface, nic.at domain transactions extension
 ## Contributed by Michael Braunoeder from NIC.AT <mib@nic.at>
 ##
-## Copyright (c) 2006-2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2013,2016,2018,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -22,9 +22,6 @@ use feature 'state';
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
-our $NS = 'http://www.nic.at/xsd/at-ext-domain-1.0';
-our $ExtNS = 'http://www.nic.at/xsd/at-ext-epp-1.0';
-
 ####################################################################################################
 
 sub register_commands {
@@ -35,6 +32,16 @@ sub register_commands {
                                  },
                      };
        return $rops;
+}
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ state $ns = { 'at-ext-domain' => 'http://www.nic.at/xsd/at-ext-domain-1.0',
+               'at-ext-epp'    => 'http://www.nic.at/xsd/at-ext-epp-1.0',
+             };
+ $po->ns($ns);
+ return;
 }
 
 ####################################################################################################
@@ -52,29 +59,21 @@ sub extonly {
       Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless defined($domain) && $domain;
       Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid domain name: '.$domain) unless Net::DRI::Util::is_hostname($domain);
       ##$mes->command_body([['domain:name',$domain]]); ## Useless if pure extension
- 
-       my $eid = $mes->command_extension_register( 'command',
-                   'xmlns="' . $ExtNS
-                 . '" xsi:schemaLocation="'
-                 . $ExtNS
-                 . ' at-ext-epp-1.0.xsd"' );
-
 
        my $cltrid=$mes->cltrid();
 
        if ( $transaction eq 'withdraw' ) {
 
                my %domns;
-               $domns{'xmlns:domain'}       = $NS;
-               $domns{'xsi:schemaLocation'} = $NS . ' at-ext-domain-1.0.xsd';
+               $domns{'xmlns:domain'}       = $mes->ns('at-ext-domain');
 
 			 	my %zdhash;
 				$zdhash{'value'} = $rd->{zd} ? $rd->{zd} : 0;
-				
-	           $mes->command_extension(
-               $eid,
 
-                       [
+	           $mes->command_extension(
+               'at-ext-epp',
+
+                       ['command', 
                                ['withdraw',
                                [ 'domain:withdraw',  ['domain:name', $domain], \%domns ,
                                						  ['domain:zd', \%zdhash], \%domns  ]],
@@ -94,18 +93,16 @@ sub extonly {
        return unless ( defined($token) );
 
                my %domns;
-               $domns{'xmlns:domain'}       = 'urn:ietf:params:xml:ns:domain-1.0';
-               $domns{'xsi:schemaLocation'} = 'urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd';
+               $domns{'xmlns:domain'}       = $mes->ns('domain');
 
                my %domns2;
-               $domns2{'xmlns:at-ext-domain'}       = $NS;
-               $domns2{'xsi:schemaLocation'} = $NS . ' at-ext-domain-1.0.xsd';
+               $domns2{'xmlns:at-ext-domain'} = $mes->ns('at-ext-domain');
 
 
 
                $mes->command_extension(
-               $eid,
-                       [
+               'at-ext-epp',
+                       ['command', 
                                ['transfer',
 
                                        { 'op' => 'execute' },
@@ -127,43 +124,26 @@ sub extonly {
 sub delete { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 
        my ( $epp, $domain, $rd ) = @_;
-       my $mes = $epp->message();
 
        my $scheduledate;
        $scheduledate = $rd->{scheduledate} if $rd->{scheduledate};
 
-       return unless ( defined($scheduledate) );
+       return unless defined $scheduledate;
 
-       my $eid = $mes->command_extension_register( 'at-ext-domain:delete',
-                   'xmlns:at-ext-domain="' . $NS
-                 . '" xsi:schemaLocation="'
-                 . $NS
-                 . ' at-ext-domain-1.0.xsd"' );
-
-       $mes->command_extension( $eid,
-               [ 'at-ext-domain:scheduledate', $scheduledate ] );
+       $epp->message()->command_extension( 'at-ext-domain', ['delete', [ 'ascheduledate', $scheduledate ] ] );
        return;
 }
 
 sub transfer_request {
        my ( $epp, $domain, $rd ) = @_;
-       my $mes = $epp->message();
 
        my $registrarinfo;
        $registrarinfo = $rd->{registrarinfo} if $rd->{registrarinfo};
 
        return unless ( defined($registrarinfo) );
 
-       my $eid = $mes->command_extension_register( 'at-ext-domain:clientdata',
-                   'xmlns:at-ext-domain="' . $NS
-                 . '" xsi:schemaLocation="'
-                 . $NS
-                 . ' at-ext-domain-1.0.xsd"' );
-
-       my %entryname;
-       $entryname{name} = 'Registrarinfo';
-       $mes->command_extension( $eid,
-               [ 'at-ext-domain:entry', \%entryname, $registrarinfo ] );
+       my %entryname = { name => 'Registrarinfo' };
+       $epp->message()->command_extension( 'at-ext-domain', ['clientdata', [ 'entry', \%entryname, $registrarinfo ]] );
        return;
 }
 
@@ -172,7 +152,7 @@ sub extonly_parse_result {
     my $mes=$po->message();
     return unless $mes->is_success();
 
-    my $keydatedata=$mes->get_extension($NS,'keydate');
+    my $keydatedata=$mes->get_extension('at-ext-domain', 'keydate');
     return unless defined $keydatedata;
 
     my $keydate = $keydatedata->textContent();
@@ -218,7 +198,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2013,2016,2018,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

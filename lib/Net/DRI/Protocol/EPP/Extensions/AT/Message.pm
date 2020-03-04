@@ -2,7 +2,7 @@
 ## Contributed by Michael Braunoeder from NIC.AT <mib@nic.at>
 ## Extended by Tonnerre Lombard
 ##
-## Copyright (c) 2006-2008,2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -18,10 +18,9 @@ package Net::DRI::Protocol::EPP::Extensions::AT::Message;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Exception;
-
-our $NS='http://www.nic.at/xsd/at-ext-message-1.0';
 
 =pod
 
@@ -51,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -77,6 +76,16 @@ sub register_commands
  return { 'message' => \%tmp };
 }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+
+ state $ns = { 'at-ext-message' => 'http://www.nic.at/xsd/at-ext-message-1.0' };
+ $po->ns($ns);
+ return;
+}
+
+
 sub pollack
 {
  my ($epp,$msgid)=@_;
@@ -100,8 +109,9 @@ sub parse_poll
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
- my $eppNS = $mes->ns('_main');
+ my $eppNS = $mes->ns('epp');
  my $resNS = 'http://www.nic.at/xsd/at-ext-result-1.0';
+ my $msgNS = $mes->ns('at-ext-message');
 
  return unless $mes->is_success();
  return if $mes->result_is('COMMAND_SUCCESSFUL_QUEUE_EMPTY');
@@ -109,20 +119,20 @@ sub parse_poll
  my $msgid=$mes->msg_id();
  $rinfo->{message}->{session}->{last_id}=$msgid;
 
- my $mesdata=$mes->get_response($NS,'message');
+ my $mesdata=$mes->get_response('at-ext-message','message');
  $rinfo->{$otype}->{$oname}->{message}=$mesdata;
  return unless $mesdata;
 
  my ($epp,$rep,$ext,$ctag,@conds,@tags);
  my $command=$mesdata->getAttribute('type');
- @tags = $mesdata->getElementsByTagNameNS($NS, 'desc');
+ @tags = $mesdata->getElementsByTagNameNS($msgNS, 'desc');
 
  $rinfo->{message}->{$msgid}->{content} = $tags[0]->getFirstChild()->getData() if @tags;
- @tags = $mesdata->getElementsByTagNameNS($NS, 'data');
+ @tags = $mesdata->getElementsByTagNameNS($msgNS, 'data');
  return unless @tags;
 
  my $data = $tags[0];
- @tags = $data->getElementsByTagNameNS($NS, 'entry');
+ @tags = $data->getElementsByTagNameNS($msgNS, 'entry');
 
  foreach my $entry (@tags)
  {
@@ -189,7 +199,7 @@ sub parse_poll
      }
      elsif ($cname eq 'attributes')
      {
-      foreach my $attr ($c->getChildrenByTagNameNS($NS,'attr'))
+      foreach my $attr ($c->getChildrenByTagNameNS($msgNS,'attr'))
       {
        my $attrname = $attr->getAttribute('name');
        $con{'attr ' . $attrname} = $attr->getFirstChild()->getData();
