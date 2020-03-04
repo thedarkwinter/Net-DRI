@@ -10,7 +10,7 @@ use Test::More tests => 5;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -39,7 +39,7 @@ $cs->set($c2,'tech');
 $cs->set($c2,'billing');
 $R2='';
 $rc=$dri->domain_create('reseller.com',{pure_create=>1,duration=>DateTime::Duration->new(years=>3),ns=>$dri->local_object('hosts')->set(['ns1.example.com']),contact=>$cs,auth=>{pw=>'fooBAR',roid=>'ddddd-dddd'}, reseller => 'myreseller'});
-is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>reseller.com</domain:name><domain:period unit="y">3</domain:period><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="billing">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw roid="ddddd-dddd">fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><resellerext:create xmlns:resellerext="urn:ietf:params:xml:ns:resellerext-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:resellerext-1.0 resellerext-1.0.xsd"><resellerext:id>myreseller</resellerext:id></resellerext:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>reseller.com</domain:name><domain:period unit="y">3</domain:period><domain:ns><domain:hostObj>ns1.example.com</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="billing">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw roid="ddddd-dddd">fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><resellerext:create xmlns:resellerext="urn:ietf:params:xml:ns:resellerext-1.0"><resellerext:id>myreseller</resellerext:id></resellerext:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 
 
 
@@ -47,16 +47,16 @@ $R2='';
 my $toc=$dri->local_object('changes');
 $toc->add('reseller', 'myreseller');
 $rc=$dri->domain_update('example.com',$toc);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.com</domain:name></domain:update></update><extension><resellerext:update xmlns:resellerext="urn:ietf:params:xml:ns:resellerext-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:resellerext-1.0 resellerext-1.0.xsd"><resellerext:add><resellerext:id>myreseller</resellerext:id></resellerext:add></resellerext:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update add build');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.com</domain:name></domain:update></update><extension><resellerext:update xmlns:resellerext="urn:ietf:params:xml:ns:resellerext-1.0"><resellerext:add><resellerext:id>myreseller</resellerext:id></resellerext:add></resellerext:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update add build');
 
 $toc=$dri->local_object('changes');
 $toc->del('reseller', 'myreseller');
 $rc=$dri->domain_update('example.com',$toc);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.com</domain:name></domain:update></update><extension><resellerext:update xmlns:resellerext="urn:ietf:params:xml:ns:resellerext-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:resellerext-1.0 resellerext-1.0.xsd"><resellerext:rem><resellerext:id>myreseller</resellerext:id></resellerext:rem></resellerext:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update rem build');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.com</domain:name></domain:update></update><extension><resellerext:update xmlns:resellerext="urn:ietf:params:xml:ns:resellerext-1.0"><resellerext:rem><resellerext:id>myreseller</resellerext:id></resellerext:rem></resellerext:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update rem build');
 
 $toc=$dri->local_object('changes');
 $toc->set('reseller', 'myreseller');
 $rc=$dri->domain_update('example.com',$toc);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.com</domain:name></domain:update></update><extension><resellerext:update xmlns:resellerext="urn:ietf:params:xml:ns:resellerext-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:resellerext-1.0 resellerext-1.0.xsd"><resellerext:chg><resellerext:id>myreseller</resellerext:id></resellerext:chg></resellerext:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update chg build');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example.com</domain:name></domain:update></update><extension><resellerext:update xmlns:resellerext="urn:ietf:params:xml:ns:resellerext-1.0"><resellerext:chg><resellerext:id>myreseller</resellerext:id></resellerext:chg></resellerext:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update chg build');
 
 exit 0;
