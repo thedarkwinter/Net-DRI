@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .AERO Domain EPP extension commands
 ##
-## Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2013,2016,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -47,7 +47,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2013,2016,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,16 +74,9 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:aero="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('aero')));
-}
-
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_insufficient_parameters('ens attribute is mandatory, as ref hash with keys auth_id and auth_key') 
          unless (exists($rd->{ens}) && (ref($rd->{ens}) eq 'HASH') && exists($rd->{ens}->{auth_id}) && $rd->{ens}->{auth_id} && exists($rd->{ens}->{auth_key}) && $rd->{ens}->{auth_key});
@@ -92,8 +85,7 @@ sub create
  push @n,['aero:ensAuthID',$rd->{ens}->{auth_id}];
  push @n,['aero:ensAuthKey',$rd->{ens}->{auth_key}];
 
- my $eid=build_command_extension($mes,$epp,'aero:create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('aero', ['create', @n]);
  return;
 }
 
