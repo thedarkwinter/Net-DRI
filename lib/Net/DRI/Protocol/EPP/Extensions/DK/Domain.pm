@@ -89,13 +89,8 @@ sub register_commands {
 sub _build_dkhm_domain
 {
 	my ($epp,$domain,$rd)=@_;
-	my $mes=$epp->message();
-	my $ns = $mes->ns('dkhm');
-
 	return unless Net::DRI::Util::has_key($rd,'confirmation_token');
-
-	my $eid=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="'.$ns.'"');
-	$mes->command_extension($eid,$rd->{confirmation_token});
+	$epp->message()->command_extension('dkhm',['dkhm:orderconfirmationToken',$rd->{confirmation_token}]);
 
 	return;
 }

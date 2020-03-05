@@ -72,7 +72,7 @@ sub register_commands {
 
 	my %tmp=(
 	  'create' => [ \&create, undef],
-		'update' => [ \&update, undef],
+	  'update' => [ \&update, undef],
 	);
 
 	return { 'host' => \%tmp };
@@ -83,12 +83,8 @@ sub register_commands {
 sub _build_dkhm_host
 {
 	my ($epp,$host,$rd)=@_;
-	my $mes=$epp->message();
-	my $ns = $mes->ns('dkhm');
 	return unless Net::DRI::Util::has_key($rd,'requested_ns_admin');
-
-	my $eid=$mes->command_extension_register('dkhm:requestedNsAdmin','xmlns:dkhm="'.$ns.'"');
-	$mes->command_extension($eid,$rd->{requested_ns_admin});
+	$epp->message()->command_extension('dkhm',['dkhm:requestedNsAdmin',$rd->{requested_ns_admin}]);
 
 	return;
 }
@@ -103,7 +99,7 @@ sub update {
 	my ($epp,$host,$todo)=@_;
 	my $requested_ns_admin = $todo->set('requested_ns_admin');
 	return unless $requested_ns_admin;
-  return _build_dkhm_host($epp,$host, {'requested_ns_admin' => $requested_ns_admin});
+	return _build_dkhm_host($epp,$host, {'requested_ns_admin' => $requested_ns_admin});
 }
 
 1;

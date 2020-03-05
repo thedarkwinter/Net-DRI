@@ -83,38 +83,32 @@ sub register_commands {
 ## HELPERS
 sub _build_dkhm_contact {
   my ( $epp, $c ) = @_;
-  my $mes = $epp->message;
-  my $ns = $mes->ns('dkhm');
+  my @dkhm;
 
   if (defined $c->type()) {
-		my $eid_type=$mes->command_extension_register('dkhm:userType', 'xmlns:dkhm="'.$ns.'"');
-		$mes->command_extension($eid_type,$c->type());
+		push @dkhm,['dkhm:userType',$c->type()];
 	}
 
   if (defined $c->ean()) {
-		my $eid_ean=$mes->command_extension_register('dkhm:EAN', 'xmlns:dkhm="'.$ns.'"');
-		$mes->command_extension($eid_ean,$c->ean());
+		push @dkhm,['dkhm:EAN',$c->ean()];
 	}
 
 	if (defined $c->vat()) {
-		my $eid_vat=$mes->command_extension_register('dkhm:CVR', 'xmlns:dkhm="'.$ns.'"');
-		$mes->command_extension($eid_vat,$c->vat());
+		push @dkhm,['dkhm:CVR',$c->vat()];
 	}
 
   if (defined $c->pnumber()) {
-		my $eid_pnumber=$mes->command_extension_register('dkhm:pnumber', 'xmlns:dkhm="'.$ns.'"');
-		$mes->command_extension($eid_pnumber,$c->pnumber());
+		push @dkhm,['dkhm:pnumber',$c->pnumber()];
 	}
 
   if (defined $c->alt_email()) {
-		my $eid_alt_email=$mes->command_extension_register('dkhm:secondaryEmail', 'xmlns:dkhm="'.$ns.'"');
-		$mes->command_extension($eid_alt_email,$c->alt_email());
+		push @dkhm,['dkhm:secondaryEmail',$c->alt_email()];
 	}
 
   if (defined $c->mobile()) {
-		my $eid_mobile=$mes->command_extension_register('dkhm:mobilephone', 'xmlns:dkhm="'.$ns.'"');
-		$mes->command_extension($eid_mobile,$c->mobile());
+		push @dkhm,['dkhm:mobilephone',$c->mobile()];
 	}
+  $epp->message()->command_extension('dkhm', @dkhm);
 
   return;
 }
