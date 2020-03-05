@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Message
 ##
-## Copyright (c) 2005-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2014,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -21,6 +21,7 @@ use warnings;
 use DateTime::Format::ISO8601 ();
 use DateTime ();
 use XML::LibXML ();
+use Carp;
 
 use Net::DRI::Protocol::ResultStatus;
 use Net::DRI::Exception;
@@ -59,7 +60,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2014,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -104,20 +105,6 @@ sub result_message    { my ($self,@args)=@_; return $self->_get_result('message'
 sub result_lang       { my ($self,@args)=@_; return $self->_get_result('lang',@args); }
 sub result_extra_info { my ($self,@args)=@_; return $self->_get_result('extra_info',@args); }
 
-# sub ns
-# {
-#  my ($self,$what)=@_;
-#  return $self->{ns} unless defined $what;
-
-#  if (ref $what eq 'HASH')
-#  {
-#   $self->{ns}=$what;
-#   return $what;
-#  }
-#  return unless exists $self->{ns}->{$what};
-#  return $self->{ns}->{$what}->[0];
-# }
-
 sub ns
 {
  my ($self, $ns) = @_;
@@ -135,36 +122,9 @@ sub ns
   Net::DRI::Exception->die(0,'protocol/EPP',1,sprintf('Duplicate namespace definition for "%s": previous="%s" new="%s"', $alias, $self->{ns}->{$alias}, $newns)) if exists $self->{ns}->{$alias};
   $self->{ns}->{$alias} = $newns;
  }
+
+ return $self->{ns};
 }
-
-# sub nsattrs
-# {
-#  my ($self,$what)=@_;
-#  return unless defined $what;
-#  my @d=sort { $a cmp $b } grep { defined $_ && exists $self->{ns}->{$_} } (ref $what eq 'ARRAY' ? @$what : ($what));
-#  return unless @d;
-
-#  if (wantarray)
-#  {
-#   my @r;
-#   foreach my $rdd (@d)
-#   {
-#    my @dd=@{$self->{ns}->{$rdd}};
-#    push @r,$dd[0],$dd[0],$dd[1];
-#   }
-#   return @r;
-#  } else
-#  {
-#   my (@xns,@xsl);
-#   foreach my $rdd (@d)
-#   {
-#    my @dd=@{$self->{ns}->{$rdd}};
-#    push @xns,sprintf('xmlns:%s="%s"',$rdd,$dd[0]);
-#    push @xsl,sprintf('%s %s',$dd[0],$dd[1]);
-#   }
-#   return join(' ',@xns).' xsi:schemaLocation="'.join(' ',@xsl).'"';
-#  }
-# }
 
 sub nsattrs
 {
@@ -198,33 +158,16 @@ sub result_status
  return Net::DRI::Util::link_rs(@rs);
 }
 
-sub command_extension_register
-{
- my ($self,$ocmd,$ons,$otherattrs)=@_;
-
- $self->{extension}=[] unless exists $self->{extension};
- my $eid=1+$#{$self->{extension}};
- if (defined $ons && $ons!~m/xmlns/) ## new interface, everything should switch to that (TODO)
- {
-  my ($nss,$command)=($ocmd,$ons);
-  $ocmd=(ref $nss eq 'ARRAY' ? $nss->[0] : $nss).':'.$command;
-  $ons=$self->nsattrs($nss);
-  ## This is used for other *generic* attributes, not for xmlns: ones !
-  $ons.=' '.join(' ',map { sprintf('%s="%s"',$_,$otherattrs->{$_}) } sort { $a cmp $b } keys %$otherattrs) if defined $otherattrs && ref $otherattrs eq 'HASH' && keys %$otherattrs;
- }
- $self->{extension}->[$eid]=[$ocmd,$ons,[]];
- return $eid;
-}
-
 sub command_extension
 {
- my ($self,$eid,$rdata)=@_;
+ my ($self, $ns, $rdata)=@_;
 
- if (defined $eid && $eid >= 0 && $eid <= $#{$self->{extension}} && defined $rdata && (((ref $rdata eq 'ARRAY') && @$rdata) || ($rdata ne '')))
- {
-  $self->{extension}->[$eid]->[2]=(ref($rdata) eq 'ARRAY')? [ @{$self->{extension}->[$eid]->[2]}, @$rdata ] : $rdata;
- }
- return $self->{extension};
+ $self->{extension} = {} unless exists $self->{extension};
+
+ $ns = [ $ns ] unless ref $ns eq 'ARRAY';
+ $self->{extension}->{$ns->[0]} = [ {map { 'xmlns:'.$_ => $self->{ns}->{$_} } @$ns} , @$rdata ];
+
+ return $self;
 }
 
 sub as_string
@@ -232,7 +175,7 @@ sub as_string
  my ($self,$protect)=@_;
  my @d;
  push @d,'<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
- push @d,'<epp '.sprintf('xmlns="%s" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="%s %s"',$self->nsattrs('_main')).'>';
+ push @d,'<epp '.$self->nsattrs('epp').'>';
 
  my ($cmd,$ocmd,$ons);
  my $rc=$self->command();
@@ -248,44 +191,30 @@ sub as_string
 
   if (!defined $ocmd && !defined $body)
   {
-   push @d,'<'.$cmd.$attr.'/>';
+   push @d,'<',$cmd,$attr,'/>';
   } else
   {
-   push @d,'<'.$cmd.$attr.'>';
+   push @d,'<',$cmd,$attr,'>';
    if (defined $body && length $body)
    {
-    push @d,(defined $ocmd && length $ocmd)? ('<'.$ocmd.' '.$ons.'>',Net::DRI::Util::xml_write($body),'</'.$ocmd.'>') : Net::DRI::Util::xml_write($body);
+    push @d,(defined $ocmd && length $ocmd)? ('<',$ocmd,' ',$ons,'>',Net::DRI::Util::xml_write($body),'</',$ocmd,'>') : Net::DRI::Util::xml_write($body);
    } else
    {
-    push @d,'<'.$ocmd.' '.$ons.'/>';
+    push @d,'<',$ocmd,' ',$ons,'/>';
    }
-   push @d,'</'.$cmd.'>';
+   push @d,'</',$cmd,'>';
   }
  }
 
  ## OPTIONAL extension
  my $ext=$self->{extension};
- if (defined $ext && ref $ext eq 'ARRAY' && @$ext)
+ if (defined $ext && ref $ext eq 'HASH' && keys %$ext)
  {
   push @d,'<extension>';
-  foreach my $e (@$ext)
+  foreach my $ns (sort(keys %$ext))
   {
-   my ($ecmd,$ens,$rdata)=@$e;
-   if ($ecmd && $ens)
-   {
-    if ((ref $rdata && @$rdata) || (! ref $rdata && $rdata ne ''))
-    {
-     push @d,'<'.$ecmd.' '.$ens.'>';
-     push @d,ref($rdata)? Net::DRI::Util::xml_write($rdata) : Net::DRI::Util::xml_escape($rdata);
-     push @d,'</'.$ecmd.'>';
-    } else
-    {
-     push @d,'<'.$ecmd.' '.$ens.'/>';
-    }
-   } else
-   {
-    push @d,Net::DRI::Util::xml_escape(@$rdata);
-   }
+   my $rdata = $ext->{$ns};
+   push @d, Net::DRI::Util::xml_write($rdata, $ns);
   }
   push @d,'</extension>';
  }
@@ -294,7 +223,7 @@ sub as_string
  my $cltrid=$self->cltrid();
  if (defined $cmd && $cmd ne 'hello')
  {
-  push @d,'<clTRID>'.$cltrid.'</clTRID>' if (defined $cltrid && Net::DRI::Util::xml_is_token($cltrid,3,64));
+  push @d,'<clTRID>',$cltrid,'</clTRID>' if (defined $cltrid && Net::DRI::Util::xml_is_token($cltrid,3,64));
   push @d,'</command>';
  }
  push @d,'</epp>';
@@ -318,11 +247,9 @@ sub get_extension { my ($self,@args)=@_; return $self->_get_content($self->node_
 
 sub _get_content
 {
- my ($self,$node,$nstag,$nodename)=@_;
- return unless (defined $node && defined $nstag && length $nstag && defined $nodename && length $nodename);
- my $ns=$self->ns($nstag);
- $ns=$nstag unless defined $ns && $ns;
- my @tmp=$node->getChildrenByTagNameNS($ns,$nodename);
+ my ($self, $node, $nstag, $nodename)=@_;
+ return unless defined $node && defined $nstag && length $nstag && defined $nodename && length $nodename;
+ my @tmp=$node->getChildrenByTagNameNS($self->ns($nstag), $nodename);
  return unless @tmp;
  return $tmp[0];
 }
@@ -331,7 +258,7 @@ sub parse
 {
  my ($self,$dc,$rinfo)=@_;
 
- my $NS=$self->ns('_main');
+ my $NS=$self->ns('epp');
  my $parser=XML::LibXML->new();
  my $doc=$parser->parse_string($dc->as_string());
  my $root=$doc->getDocumentElement();
