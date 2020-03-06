@@ -90,7 +90,7 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default {
     my ($self,$type)=@_;
 
-    return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NO',{}) if $type eq 'epp';
+    return ('Net::DRI::Transport::Socket',{ 'ssl_version' => 'TLSv12', 'ssl_cipher_list' => undef },'Net::DRI::Protocol::EPP::Extensions::NO',{}) if $type eq 'epp';
 # suppress until whois is supported
 #return ('Net::DRI::Transport::Socket',{remote_host=>'whois.norid.no'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
 
