@@ -97,8 +97,7 @@ sub build_command
 	}
 
 	my $tcommand = (ref($command)) ? $command->[0] : $command;
-	$msg->command([$command, 'contact:' . $tcommand,
-		sprintf('xmlns:contact="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('contact'))]);
+	$msg->command([$command, 'contact:' . $tcommand, $msg->nsattrs('contact')]);
 
 	my @d = map { ['contact:id', $_] } @c;
   # by the technical documentation auth info is not support on create and update

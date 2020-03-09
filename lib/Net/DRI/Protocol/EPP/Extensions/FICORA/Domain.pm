@@ -157,7 +157,6 @@ sub delete
   $mes->command_body(\@d);
 
   my @de; # for the extension
-  my $eid=$mes->command_extension_register('domain-ext:delete',sprintf('xmlns:domain-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain-ext'))) if ( $rd->{delDate} || $rd->{cancel} );
 
   if ($rd->{delDate})
   {
@@ -166,7 +165,7 @@ sub delete
     # beyond the current expiration time.
     Net::DRI::Util::check_isa($rd->{delDate},'DateTime');
     push @de,['domain-ext:delDate',$rd->{delDate}->strftime('%Y-%m-%dT%T.%1NZ')];
-    $mes->command_extension($eid,['domain-ext:schedule',@de]);
+    $mes->command_extension('domain-ext',['delete',['domain-ext:schedule',@de]]);
   } elsif ($rd->{cancel})
   {
     # When the Cancel tag is given, the message will be handled as domain name
@@ -174,7 +173,7 @@ sub delete
     # name should still be in patent period and in state removed or awaiting removal.
     # In the end, the domain name will return to granted state, but the expiration time
     # will not be affected.
-    $mes->command_extension($eid,['domain-ext:cancel','']);
+    $mes->command_extension('domain-ext',['delete',['domain-ext:cancel','']]);
   }
 
   return;
