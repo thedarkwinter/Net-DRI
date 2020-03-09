@@ -89,14 +89,11 @@ sub register_commands {
 
 sub credit_info {
   my ($epp)=@_;
-  my $mes=$epp->message();
   my @d;
 
   # build xml
   push @d, [ 'fred:creditInfo' ];
-
-  my $ext = $mes->command_extension_register('fred', 'extcommand');
-  $mes->command_extension( $ext, @d );
+  $epp->message()->command_extension('fred',['extcommand', @d]);
 
   return;
 }
@@ -135,7 +132,6 @@ sub credit_info_parse {
 
 sub send_auth_info {
   my ($epp,$name_id,$rd)=@_;
-  my $mes=$epp->message();
   my @d;
   my @name_id;
   my @send_auth_info;
@@ -155,16 +151,13 @@ sub send_auth_info {
     push @name_id, ["$rd->{object}:id", $name_id];
   }
 
-  my @nsattr = $mes->nsattrs($rd->{object});
-  my $xsd = pop @nsattr if @nsattr;
-  push @send_auth_info, [ $rd->{object}.':sendAuthInfo', { 'xmlns:'. $rd->{object} .'' => $mes->ns($rd->{object}), 'xsi:schemaLocation' => $mes->ns($rd->{object}) . ' ' . $xsd }, @name_id] if @name_id;
+  push @send_auth_info, [ $rd->{object}.':sendAuthInfo', { 'xmlns:'. $rd->{object} .'' => $epp->message()->ns($rd->{object}) }, @name_id] if @name_id;
   push @d, [ 'fred:sendAuthInfo', @send_auth_info ] if @send_auth_info;
 
   # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
   push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
 
-  my $ext = $mes->command_extension_register('fred', 'extcommand');
-  $mes->command_extension( $ext, \@d );
+  $epp->message()->command_extension('fred', ['extcommand', @d]);
 
   return;
 }
@@ -175,7 +168,6 @@ sub test_nsset {
   Net::DRI::Exception::usererr_insufficient_parameters('NSSET handle mandatory') unless (defined($id));
   Net::DRI::Exception::usererr_invalid_parameters("Level need to be between: 0-10 (inclusive)") if ($rd->{level} > 10 || $rd->{level} < 0);
 
-  my $mes=$epp->message();
   my @d;
   my @nsset;
   my @nsset_test;
@@ -192,16 +184,13 @@ sub test_nsset {
     }
   }
 
-  my @nsattr = $mes->nsattrs('nsset');
-  my $xsd = pop @nsattr if @nsattr;
-  push @nsset_test, [ 'nsset:test', {'xmlns:nsset' => $mes->ns('nsset'), 'xsi:schemaLocation' => $mes->ns('nsset') . ' ' . $xsd}, @nsset] if @nsset;
+  push @nsset_test, [ 'nsset:test', {'xmlns:nsset' => $epp->message()->ns('nsset')}, @nsset] if @nsset;
   push @d, [ 'fred:test', @nsset_test ] if @nsset_test;
 
   # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
   push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
 
-  my $ext = $mes->command_extension_register('fred', 'extcommand');
-  $mes->command_extension( $ext, \@d );
+  $epp->message()->command_extension('fred', ['extcommand', @d]);
 
   return;
 }
@@ -213,7 +202,6 @@ sub prep_list {
   Net::DRI::Exception::usererr_invalid_parameters('listing action not recognized. Must be: listDomains|listContacts|listNssets|listKeysets|domainsByContact|domainsByNsset|domainsByKeyset|nssetsByContact|keysetsByContact|nssetsByNs') if (defined($id) && $id!~m/^(listDomains|listContacts|listNssets|listKeysets|domainsByContact|domainsByNsset|domainsByKeyset|nssetsByContact|keysetsByContact|nssetsByNs)$/);
   Net::DRI::Exception::usererr_insufficient_parameters('this action requires a handle or nameserver!') if (!defined($rd->{id}) && $id=~m/^(domainsByContact|domainsByNsset|domainsByKeyset|nssetsByContact|keysetsByContact|nssetsByNs)$/);
 
-  my $mes=$epp->message();
   my @d;
   my @list_id;
 
@@ -234,8 +222,7 @@ sub prep_list {
   # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
   push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
 
-  my $ext = $mes->command_extension_register('fred', 'extcommand');
-  $mes->command_extension( $ext, \@d );
+  $epp->message()->command_extension('fred', ['extcommand', @d]);
 
   return;
 }
@@ -262,8 +249,6 @@ sub prep_list_parse {
 
 sub get_results {
   my ($epp,$rd)=@_;
-
-  my $mes=$epp->message();
   my @d;
 
   # The <fred:getResults/> element does not contain any child elements.
@@ -272,8 +257,7 @@ sub get_results {
   # README: example has one <fred:clTRID> but spec doesn't mention it. Adding next line just in case!
   push @d, [ 'fred:clTRID', $rd->{'cltrid'} ] if $rd->{'cltrid'};
 
-  my $ext = $mes->command_extension_register('fred', 'extcommand');
-  $mes->command_extension( $ext, \@d );
+  $epp->message()->command_extension('fred', ['extcommand', @d]);
 
   return;
 }

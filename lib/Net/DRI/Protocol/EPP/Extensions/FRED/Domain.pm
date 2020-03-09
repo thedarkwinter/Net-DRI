@@ -102,8 +102,7 @@ sub build_command {
   }
 
   my $tcommand = (ref($command)) ? $command->[0] : $command;
-  $msg->command([$command, 'domain:' . $tcommand,
-    sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('domain'))]);
+  $msg->command([$command, 'domain:' . $tcommand, $msg->nsattrs('domain')]);
   my @d = map { ['domain:name', $_, $domainattr] } @dom;
 
   return @d;

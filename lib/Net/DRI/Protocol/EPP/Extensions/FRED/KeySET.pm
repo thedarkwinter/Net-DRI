@@ -357,8 +357,7 @@ sub build_contacts {
 
 sub build_namespace {
   my ($mes,$tcommand,$nsattr)=@_;
-  $mes->command([$tcommand,'keyset:' . $tcommand,
-  sprintf('xmlns:keyset="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs($nsattr))]);
+  $mes->command([$tcommand,'keyset:' . $tcommand, $mes->nsattrs($nsattr)]);
   return;
 }
 

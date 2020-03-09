@@ -106,10 +106,7 @@ sub build_command {
 
   Net::DRI::Exception->die(1, 'protocol/EPP', 2, 'NSSET name needed') unless @gn;
 
-  my @ns=$msg->nsattrs('nsset');
-  @ns=qw(http://www.nic.cz/xml/epp/nsset-1.2 http://www.nic.cz/xml/epp/nsset-1.2 nsset-1.2.xsd) unless @ns;
-  $msg->command([$command, 'nsset:' . $tcommand,
-	  sprintf('xmlns:nsset="%s" xsi:schemaLocation="%s %s"',@ns)]);
+  $epp->message()->command([$command, 'nsset:' . $tcommand, $epp->message()->nsattrs('nsset')]);
 
   return map { ['nsset:id', $_] } @gn;
 }
@@ -178,11 +175,10 @@ sub check_parse {
   my $mes = $po->message();
   return unless $mes->is_success();
 
-  my $ns = ns($mes);
-  my $chkdata = $mes->get_response($ns,'chkData');
+  my $chkdata = $mes->get_response('nsset','chkData');
   return unless $chkdata;
 
-  foreach my $cd ($chkdata->getElementsByTagNameNS($ns, 'cd')) {
+  foreach my $cd ($chkdata->getElementsByTagNameNS($mes->ns('nsset'), 'cd')) {
     my $c = $cd->getFirstChild();
     my $nsset;
     while ($c) {
@@ -214,7 +210,7 @@ sub info_parse {
   my $mes = $po->message();
   return unless $mes->is_success();
 
-  my $infdata = $mes->get_response(ns($mes),'infData');
+  my $infdata = $mes->get_response('nsset','infData');
   return unless $infdata;
 
   my $ns = Net::DRI::Data::Hosts->new();

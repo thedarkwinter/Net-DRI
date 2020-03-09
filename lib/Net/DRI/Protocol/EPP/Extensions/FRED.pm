@@ -69,11 +69,11 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup {
   my ($self,$rp)=@_;
   $self->{defaulti18ntype}='loc'; # The registry does not provide contact postalinfo i18n type, although it is mandatory by EPP
-  $self->ns({ domain    => ['http://www.nic.cz/xml/epp/domain-1.4','domain-1.4.xsd'],
-              contact   => ['http://www.nic.cz/xml/epp/contact-1.6','contact-1.6.1.xsd'],
-              keyset    => ['http://www.nic.cz/xml/epp/keyset-1.3','keyset-1.3.xsd'],
-              fred      => ['http://www.nic.cz/xml/epp/fred-1.5','fred-1.5.xsd'],
-              nsset     => ['http://www.nic.cz/xml/epp/nsset-1.2','nsset-1.2.xsd']
+  $self->ns({ domain    => 'http://www.nic.cz/xml/epp/domain-1.4',
+              contact   => 'http://www.nic.cz/xml/epp/contact-1.6',
+              keyset    => 'http://www.nic.cz/xml/epp/keyset-1.3',
+              fred      => 'http://www.nic.cz/xml/epp/fred-1.5',
+              nsset     => 'http://www.nic.cz/xml/epp/nsset-1.2'
            });
 
   $self->capabilities('domain_update','status',undef);
