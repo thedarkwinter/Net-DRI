@@ -73,12 +73,6 @@ sub register_commands
  return { 'contact' => \%tmp };
 }
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:dnslu="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnslu')));
-}
-
 ####################################################################################################
 
 sub info_parse
@@ -139,7 +133,6 @@ sub build_disclose
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
 
  ## validate() has been called, we are sure that type exists
  my @n;
@@ -147,23 +140,22 @@ sub create
  my $rd=build_disclose($contact->disclose(),$contact->type());
  push @n,['dnslu:disclose',@$rd] if $rd;
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:create',['dnslu:contact',@n]]);
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:create',['dnslu:contact',@n]]]);
+
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my @n;
  push @n,['dnslu:add',['dnslu:disclose',@{build_disclose($todo->add('disclose'),'contact')}]] if $todo->add('disclose');
  push @n,['dnslu:rem',['dnslu:disclose',@{build_disclose($todo->del('disclose'),'contact')}]] if $todo->del('disclose');
  return unless @n;
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:update',['dnslu:contact',@n]]);
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:update',['dnslu:contact',@n]]]);
+
  return;
 }
 

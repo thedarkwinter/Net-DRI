@@ -66,7 +66,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({dnslu => ['http://www.dns.lu/xml/epp/dnslu-1.0','dnslu-1.0.xsd']});
+ $self->ns({dnslu => 'http://www.dns.lu/xml/epp/dnslu-1.0'});
  $self->capabilities('contact_update','status',undef); ## No changes in status possible for .LU contacts
  $self->capabilities('contact_update','disclose',['add','del']);
  $self->capabilities('host_update','status',undef);

@@ -89,12 +89,6 @@ sub register_commands
  return { 'domain' => \%tmp };
 }
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:dnslu="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnslu')));
-}
-
 ####################################################################################################
 
 sub info_parse
@@ -161,7 +155,6 @@ sub verify_contacts
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  verify_contacts($rd);
 
@@ -170,15 +163,14 @@ sub create
  push(@n, ['dnslu:idn', $rd->{idn}]) if (Net::DRI::Util::has_key($rd, 'idn')); # by technical documentation only for create and trasfer/trade - not used on update
  push(@n, map { ['dnslu:status',{ s => $_ }] } (Net::DRI::Util::isa_statuslist($rd->{status})? $rd->{status}->list_status() : @{$rd->{status}}));
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:create',['dnslu:domain',@n]]);
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:create',['dnslu:domain',@n]]]);
+
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my @n;
  my $sadd=$todo->add('status');
@@ -190,15 +182,14 @@ sub update
  push @n,['dnslu:rem',@del] if @del;
  return unless @n;
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:update',['dnslu:domain',@n]]);
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:update',['dnslu:domain',@n]]]);
+
  return;
 }
 
 sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  return unless (defined($rd) && ref($rd) && exists($rd->{delDate}) && ($rd->{delDate}=~m/^(?:immediate|cancel)$/ || Net::DRI::Util::is_class($rd->{delDate},'DateTime')));
 
@@ -212,8 +203,8 @@ sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
   push @n,['dnslu:delDate',$rd->{delDate}->set_time_zone('UTC')->strftime('%Y-%m-%dT%TZ')];
  }
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:delete',['dnslu:domain',@n]]);
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:delete',['dnslu:domain',@n]]]);
+
  return;
 }
 
@@ -231,10 +222,8 @@ sub build_command
 sub restore
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:restore',['dnslu:domain',build_command($domain)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:restore',['dnslu:domain',build_command($domain)]]]);
  return;
 }
 
@@ -259,10 +248,8 @@ sub build_transfer_trade_restore
 sub transfer_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:transfer',['dnslu:domain',build_transfer_trade_restore($rd)]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:transfer',['dnslu:domain',build_transfer_trade_restore($rd)]]);
  return;
 }
 
@@ -316,10 +303,8 @@ sub parse_transfer_trade_restore
 sub trade_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:trade',{op=>'request'},['dnslu:domain',build_command($domain),build_transfer_trade_restore($rd)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:trade',{op=>'request'},['dnslu:domain',build_command($domain),build_transfer_trade_restore($rd)]]]);
  return;
 }
 
@@ -336,30 +321,24 @@ sub trade_parse
 sub trade_query
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:trade',{op=>'query'},['dnslu:domain',build_command($domain)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:trade',{op=>'query'},['dnslu:domain',build_command($domain)]]]);
  return;
 }
 
 sub trade_cancel
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:trade',{op=>'cancel'},['dnslu:domain',build_command($domain)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:trade',{op=>'cancel'},['dnslu:domain',build_command($domain)]]]);
  return;
 }
 
 sub transfer_trade_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:transferTrade',{op=>'request'},['dnslu:domain',build_command($domain),build_transfer_trade_restore($rd)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:transferTrade',{op=>'request'},['dnslu:domain',build_command($domain),build_transfer_trade_restore($rd)]]]);
  return;
 }
 
@@ -376,30 +355,24 @@ sub transfer_trade_parse
 sub transfer_trade_query
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:transferTrade',{op=>'query'},['dnslu:domain',build_command($domain)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:transferTrade',{op=>'query'},['dnslu:domain',build_command($domain)]]]);
  return;
 }
 
 sub transfer_trade_cancel
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:transferTrade',{op=>'cancel'},['dnslu:domain',build_command($domain)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:transferTrade',{op=>'cancel'},['dnslu:domain',build_command($domain)]]]);
  return;
 }
 
 sub transfer_restore_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:transferRestore',{op=>'request'},['dnslu:domain',build_command($domain),build_transfer_trade_restore($rd)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:transferRestore',{op=>'request'},['dnslu:domain',build_command($domain),build_transfer_trade_restore($rd)]]]);
  return;
 }
 
@@ -416,20 +389,16 @@ sub transfer_restore_parse
 sub transfer_restore_query
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:transferRestore',{op=>'query'},['dnslu:domain',build_command($domain)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:transferRestore',{op=>'query'},['dnslu:domain',build_command($domain)]]]);
  return;
 }
 
 sub transfer_restore_cancel
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ $epp->message()->command_extension('dnslu',['dnslu:ext',['dnslu:command',['dnslu:transferRestore',{op=>'cancel'},['dnslu:domain',build_command($domain)]]]]);
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
- $mes->command_extension($eid,['dnslu:command',['dnslu:transferRestore',{op=>'cancel'},['dnslu:domain',build_command($domain)]]]);
  return;
 }
 
