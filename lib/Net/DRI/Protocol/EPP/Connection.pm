@@ -106,7 +106,7 @@ sub write_message
 sub transport_default
 {
  my ($self,$tname)=@_;
- return (defer => 0, socktype => 'ssl', ssl_version => 'TLSv1', remote_port => 700);
+ return (defer => 0, socktype => 'ssl', 'ssl_version' => 'TLSv12', 'ssl_cipher_list' => undef, remote_port => 700);
 }
 
 #  SSL_verify_callback
