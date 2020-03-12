@@ -15,7 +15,7 @@ use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -54,7 +54,7 @@ is($rc->is_success(),1,'session noop is_success');
 ########  Commands - Domain ########
 
 # Domain Name - 5.2. Creation
-$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example202.cl</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example202.cl</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
 $cs=$dri->local_object('contactset');
 $c1=$dri->local_object('contact')->srid('ClientX');
 $c2=$dri->local_object('contact')->srid('ClientY');
@@ -64,7 +64,7 @@ $cs->set($c1,'admin');
 $cs->set($c2,'billing');
 $cs->set($c3,'tech');
 $rc=$dri->domain_create('example202.cl',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),ns=>$dri->local_object('hosts')->set(['ns1.example.net'],['secundario.nic.net']),contact=>$cs,auth=>{pw=>'PLAIN::QWERTYUIOP12'}});
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example202.cl</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostAttr><domain:hostName>ns1.example.net</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>secundario.nic.net</domain:hostName></domain:hostAttr></domain:ns><domain:registrant>ClientX</domain:registrant><domain:contact type="admin">ClientX</domain:contact><domain:contact type="billing">ClientY</domain:contact><domain:contact type="tech">ClientZ</domain:contact><domain:authInfo><domain:pw>PLAIN::QWERTYUIOP12</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example202.cl</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostAttr><domain:hostName>ns1.example.net</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>secundario.nic.net</domain:hostName></domain:hostAttr></domain:ns><domain:registrant>ClientX</domain:registrant><domain:contact type="admin">ClientX</domain:contact><domain:contact type="billing">ClientY</domain:contact><domain:contact type="tech">ClientZ</domain:contact><domain:authInfo><domain:pw>PLAIN::QWERTYUIOP12</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($dri->get_info('action'),'create','domain_create get_info(action)');
 is($dri->get_info('exist'),1,'domain_create get_info(exist)');
 $d=$dri->get_info('crDate');
@@ -79,19 +79,19 @@ $R2='';
 $toc=$dri->local_object('changes');
 $toc->add('ns',$dri->local_object('hosts')->set('ns3.example.net','ns4.example.net'));
 $rc=$dri->domain_update('example206.cl',$toc);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example206.cl</domain:name><domain:add><domain:ns><domain:hostAttr><domain:hostName>ns3.example.net</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>ns4.example.net</domain:hostName></domain:hostAttr></domain:ns></domain:add></domain:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example206.cl</domain:name><domain:add><domain:ns><domain:hostAttr><domain:hostName>ns3.example.net</domain:hostName></domain:hostAttr><domain:hostAttr><domain:hostName>ns4.example.net</domain:hostName></domain:hostAttr></domain:ns></domain:add></domain:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
 is($rc->is_success(),1,'domain_update is_success');
 
 # Domain Name - 5.5. Renewal
 $R2='';
 $rc=$dri->domain_renew('example204.cl',{duration => DateTime::Duration->new(years=>1), current_expiration => DateTime->new(year=>2020,month=>8,day=>25)});
-is($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example204.cl</domain:name><domain:curExpDate>2020-08-25</domain:curExpDate><domain:period unit="y">1</domain:period></domain:renew></renew><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build');
+is($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example204.cl</domain:name><domain:curExpDate>2020-08-25</domain:curExpDate><domain:period unit="y">1</domain:period></domain:renew></renew><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_renew build');
 is($rc->is_success(),1,'domain_renew is_success');
 
 # Domain Name - 5.6. Deletion
 $R2='';
 $rc=$dri->domain_delete('example203.cl',{pure_delete=>1});
-is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example203.cl</domain:name></domain:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete build');
+is($R1,$E1.'<command><delete><domain:delete xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example203.cl</domain:name></domain:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_delete build');
 is($rc->is_success(),1,'domain_delete is_success');
 
 
@@ -111,7 +111,7 @@ $co->voice('+56.29407730');
 $co->email('john.doe@example.cl');
 $co->auth({pw=>'IUUYQWX87121Zaa'});
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>ClientX</contact:id><contact:postalInfo type="loc"><contact:name>John Doe</contact:name><contact:addr><contact:street>123 Example Dr.</contact:street><contact:city>San Diego</contact:city><contact:sp>California</contact:sp><contact:cc>us</contact:cc></contact:addr></contact:postalInfo><contact:voice>+56.29407730</contact:voice><contact:email>john.doe@example.cl</contact:email><contact:authInfo><contact:pw>IUUYQWX87121Zaa</contact:pw></contact:authInfo></contact:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>ClientX</contact:id><contact:postalInfo type="loc"><contact:name>John Doe</contact:name><contact:addr><contact:street>123 Example Dr.</contact:street><contact:city>San Diego</contact:city><contact:sp>California</contact:sp><contact:cc>us</contact:cc></contact:addr></contact:postalInfo><contact:voice>+56.29407730</contact:voice><contact:email>john.doe@example.cl</contact:email><contact:authInfo><contact:pw>IUUYQWX87121Zaa</contact:pw></contact:authInfo></contact:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
 is($rc->is_success(),1,'contact_create is_success');
 
 
@@ -207,7 +207,7 @@ is($dri->get_info('lang','message',2),'en','message get_info lang (pure text mes
 ########  Registry messages - v1.0.5 ########
 
 # 7.2.1 - Domain transfer request
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="104"><qDate>2017-03-13T20:44:00.0Z</qDate><msg>Transfer Requested.</msg></msgQ><resData><domain:trnData xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:name>domain.cl</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>registrar2</domain:reID><domain:reDate>2017-03-13T20:44:00.967Z</domain:reDate><domain:acID>registrar1</domain:acID><domain:acDate>2017-03-19T02:59:59.000Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="104"><qDate>2017-03-13T20:44:00.0Z</qDate><msg>Transfer Requested.</msg></msgQ><resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domain.cl</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>registrar2</domain:reID><domain:reDate>2017-03-13T20:44:00.967Z</domain:reDate><domain:acID>registrar1</domain:acID><domain:acDate>2017-03-19T02:59:59.000Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),104,'message get_info last_id');
 is($dri->message_count(),1,'message_count');
@@ -226,7 +226,7 @@ isa_ok($d,'DateTime','message get_info(acDate)');
 is("".$d,'2017-03-19T02:59:59','message get_info(acDate) value');
 
 # 7.2.2 - Domain transfer reject
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="74"><qDate>2017-03-03T17:47:28.000Z</qDate><msg>Transfer has been rejected.</msg></msgQ><resData><domain:trnData xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:name>domain.cl</domain:name><domain:trStatus>clientRejected</domain:trStatus><domain:reID>registrar2</domain:reID><domain:reDate>2017-03-02T14:07:57.000Z</domain:reDate><domain:acID>registar1</domain:acID><domain:acDate>2017-03-03T17:47:28.478Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="74"><qDate>2017-03-03T17:47:28.000Z</qDate><msg>Transfer has been rejected.</msg></msgQ><resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domain.cl</domain:name><domain:trStatus>clientRejected</domain:trStatus><domain:reID>registrar2</domain:reID><domain:reDate>2017-03-02T14:07:57.000Z</domain:reDate><domain:acID>registar1</domain:acID><domain:acDate>2017-03-03T17:47:28.478Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),74,'message get_info last_id');
 is($dri->message_count(),1,'message_count');
@@ -245,7 +245,7 @@ isa_ok($d,'DateTime','message get_info(acDate)');
 is("".$d,'2017-03-03T17:47:28','message get_info(acDate) value');
 
 # 7.2.3 - Domain transfer approve
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="10" id="119"><qDate>2017-03-27T15:58:14.000Z</qDate><msg>Time period to cancel Transfer has been expired.</msg></msgQ><resData><domain:trnData xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:name>domain.cl</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>registrar2</domain:reID><domain:reDate>2017-03-02T14:07:57.000Z</domain:reDate><domain:acID>registrar1</domain:acID><domain:acDate>2017-03-27T15:58:14.672Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="10" id="119"><qDate>2017-03-27T15:58:14.000Z</qDate><msg>Time period to cancel Transfer has been expired.</msg></msgQ><resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domain.cl</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>registrar2</domain:reID><domain:reDate>2017-03-02T14:07:57.000Z</domain:reDate><domain:acID>registrar1</domain:acID><domain:acDate>2017-03-27T15:58:14.672Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),119,'message get_info last_id');
 is($dri->message_count(),10,'message_count');
@@ -264,7 +264,7 @@ isa_ok($d,'DateTime','message get_info(acDate)');
 is("".$d,'2017-03-27T15:58:14','message get_info(acDate) value');
 
 # 7.2.4 - Domain awarded
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="9" id="128"><qDate>2017-03-27T15:58:14.000Z</qDate><msg>Transfer Approved.</msg></msgQ><resData><domain:trnData xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:name>domain.cl</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>registrar2</domain:reID><domain:reDate>2017-03-02T19:01:33.000Z</domain:reDate><domain:acID>registrar1</domain:acID><domain:acDate>2017-03-27T15:58:14.937Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="9" id="128"><qDate>2017-03-27T15:58:14.000Z</qDate><msg>Transfer Approved.</msg></msgQ><resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>domain.cl</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>registrar2</domain:reID><domain:reDate>2017-03-02T19:01:33.000Z</domain:reDate><domain:acID>registrar1</domain:acID><domain:acDate>2017-03-27T15:58:14.937Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),128,'message get_info last_id');
 is($dri->message_count(),9,'message_count');
@@ -283,7 +283,7 @@ isa_ok($d,'DateTime','message get_info(acDate)');
 is("".$d,'2017-03-27T15:58:14','message get_info(acDate) value');
 
 # 7.3.1 - Domain expired
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="127"><qDate>2017-04-06T15:00:55.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:clpoll-1.0 clpoll-1.0.xsd"><clpoll:domain><clpoll:roid>149-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>pendingDelete</clpoll:status><clpoll:rgpStatus>redemptionPeriod</clpoll:rgpStatus><clpoll:reason>Domain deleted.</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="127"><qDate>2017-04-06T15:00:55.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0"><clpoll:domain><clpoll:roid>149-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>pendingDelete</clpoll:status><clpoll:rgpStatus>redemptionPeriod</clpoll:rgpStatus><clpoll:reason>Domain deleted.</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),127,'message get_info last_id');
 is($dri->message_count(),1,'message_count');
@@ -298,7 +298,7 @@ is($dri->get_info('rgpStatus','message',127),'redemptionPeriod','message get_inf
 is($dri->get_info('reason','message',127),'Domain deleted.','message get_info(reason) - clpoll');
 
 # 7.3.2 - Domain Redemption Period Ended
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="127"><qDate>2017-04-06T15:00:55.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:clpoll-1.0 clpoll-1.0.xsd"><clpoll:domain><clpoll:roid>XXXXXX-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>pendingDelete</clpoll:status><clpoll:rgpStatus>pendingDelete</clpoll:rgpStatus><clpoll:reason>Closed Redemption</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="127"><qDate>2017-04-06T15:00:55.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0"><clpoll:domain><clpoll:roid>XXXXXX-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>pendingDelete</clpoll:status><clpoll:rgpStatus>pendingDelete</clpoll:rgpStatus><clpoll:reason>Closed Redemption</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),127,'message get_info last_id');
 is($dri->message_count(),1,'message_count');
@@ -313,7 +313,7 @@ is($dri->get_info('rgpStatus','message',127),'pendingDelete','message get_info(r
 is($dri->get_info('reason','message',127),'Closed Redemption','message get_info(reason) - clpoll');
 
 # 7.4.1 - Domain in Dispute
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="125"><qDate>2017-04-06T14:32:25.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:clpoll-1.0 clpoll-1.0.xsd"><clpoll:domain><clpoll:roid>YYY-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>serverDeleteProhibited</clpoll:status><clpoll:status>serverTransferProhibited</clpoll:status><clpoll:disputeStatus>inDispute</clpoll:disputeStatus><clpoll:reason>Domain in dispute. Registrant cloned. New handle: ZZZ-RCAL</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="125"><qDate>2017-04-06T14:32:25.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0"><clpoll:domain><clpoll:roid>YYY-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>serverDeleteProhibited</clpoll:status><clpoll:status>serverTransferProhibited</clpoll:status><clpoll:disputeStatus>inDispute</clpoll:disputeStatus><clpoll:reason>Domain in dispute. Registrant cloned. New handle: ZZZ-RCAL</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),125,'message get_info last_id');
 is($dri->message_count(),2,'message_count');
@@ -328,7 +328,7 @@ is($dri->get_info('disputeStatus','message',125),'inDispute','message get_info(d
 is($dri->get_info('reason','message',125),'Domain in dispute. Registrant cloned. New handle: ZZZ-RCAL','message get_info(reason) - clpoll');
 
 # 7.4.2 - Domain Dispute Withdrawed
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="125"><qDate>2017-04-06T14:32:25.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:clpoll-1.0 clpoll-1.0.xsd"><clpoll:domain><clpoll:roid>XXXXXXX-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>ok</clpoll:status><clpoll:disputeStatus causeDisputeTermination="disputeDismissed">disputeClosed</clpoll:disputeStatus><clpoll:reason>Dispute Closed</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="125"><qDate>2017-04-06T14:32:25.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0"><clpoll:domain><clpoll:roid>XXXXXXX-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>ok</clpoll:status><clpoll:disputeStatus causeDisputeTermination="disputeDismissed">disputeClosed</clpoll:disputeStatus><clpoll:reason>Dispute Closed</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),125,'message get_info last_id');
 is($dri->message_count(),2,'message_count');
@@ -344,7 +344,7 @@ is($dri->get_info('causeDisputeTermination','message',125),'disputeDismissed','m
 is($dri->get_info('reason','message',125),'Dispute Closed','message get_info(reason) - clpoll');
 
 # 7.4.3 - Domain Dispute Ended, holder keeps the domain
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="125"><qDate>2017-04-06T14:32:25.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:clpoll-1.0 clpoll-1.0.xsd"><clpoll:domain><clpoll:roid>foobar-NIC</clpoll:roid><clpoll:name>foobar.cl</clpoll:name></clpoll:domain><clpoll:status>ok</clpoll:status><clpoll:disputeStatus causeDisputeTermination="keepsDomainName">disputeClosed</clpoll:disputeStatus><clpoll:reason>Dispute Closed</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="125"><qDate>2017-04-06T14:32:25.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0"><clpoll:domain><clpoll:roid>foobar-NIC</clpoll:roid><clpoll:name>foobar.cl</clpoll:name></clpoll:domain><clpoll:status>ok</clpoll:status><clpoll:disputeStatus causeDisputeTermination="keepsDomainName">disputeClosed</clpoll:disputeStatus><clpoll:reason>Dispute Closed</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),125,'message get_info last_id');
 is($dri->message_count(),2,'message_count');
@@ -360,7 +360,7 @@ is($dri->get_info('causeDisputeTermination','message',125),'keepsDomainName','me
 is($dri->get_info('reason','message',125),'Dispute Closed','message get_info(reason) - clpoll');
 
 # 7.4.4 - Domain Dispute Ended, domain awarded to complainant
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="125"><qDate>2017-04-06T14:32:25.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:clpoll-1.0 clpoll-1.0.xsd"><clpoll:domain><clpoll:roid>XXXXXXX-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>inactive</clpoll:status><clpoll:disputeStatus causeDisputeTermination ="transferredToComplainant">disputeClosed</clpoll:disputeStatus><clpoll:reason>Domain name transferred to the complainant</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="2" id="125"><qDate>2017-04-06T14:32:25.000Z</qDate></msgQ><resData><clpoll:changeState xmlns:clpoll="urn:ietf:params:xml:ns:clpoll-1.0"><clpoll:domain><clpoll:roid>XXXXXXX-NIC</clpoll:roid><clpoll:name>domain.cl</clpoll:name></clpoll:domain><clpoll:status>inactive</clpoll:status><clpoll:disputeStatus causeDisputeTermination ="transferredToComplainant">disputeClosed</clpoll:disputeStatus><clpoll:reason>Domain name transferred to the complainant</clpoll:reason></clpoll:changeState></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),125,'message get_info last_id');
 is($dri->message_count(),2,'message_count');

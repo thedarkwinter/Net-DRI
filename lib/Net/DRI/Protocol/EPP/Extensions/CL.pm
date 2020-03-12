@@ -66,10 +66,10 @@ sub setup
 {
   my ($self,$rp)=@_;
   $self->ns({
-      clcontact   => ['urn:ietf:params:xml:ns:clcontact-1.0','clcontact-1.0.xsd'],
-      cldomain    => ['urn:ietf:params:xml:ns:cldomain-1.0','cldomain-1.0.xsd'],
-      clnic       => ['urn:ietf:params:xml:ns:clnic-1.0','clnic-1.0.xsd'],
-      pollryrr    => ['urn:ietf:params:xml:ns:pollryrr-1.0','pollryrr-1.0.xsd'],
+      clcontact   => 'urn:ietf:params:xml:ns:clcontact-1.0',
+      cldomain    => 'urn:ietf:params:xml:ns:cldomain-1.0',
+      clnic       => 'urn:ietf:params:xml:ns:clnic-1.0',
+      pollryrr    => 'urn:ietf:params:xml:ns:pollryrr-1.0'
     });
 
   return;
