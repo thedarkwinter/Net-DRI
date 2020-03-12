@@ -1,6 +1,6 @@
 ## Domain Registry Interface, AFNIC EPP Domain extensions
 ##
-## Copyright (c) 2008-2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2012,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2012,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -84,12 +84,6 @@ sub register_commands
 }
 
 ####################################################################################################
-
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:frnic="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('frnic')));
-}
 
 sub build_domain
 {
@@ -141,7 +135,7 @@ sub build_authinfo
 {
  my ($mes, $rd, $what)=@_;
  Net::DRI::Exception::usererr_invalid_parameters('authInfo is mandatory for a "'.$what.'"') unless (Net::DRI::Util::has_auth($rd) && exists($rd->{auth}->{pw}) && $rd->{auth}->{pw});
- return ['frnic:authInfo',['domain:pw',{'xmlns:domain'=>($mes->nsattrs('domain'))[0]},$rd->{auth}->{pw}]];
+ return ['frnic:authInfo',['domain:pw',{'xmlns:domain'=>$mes->ns('domain')},$rd->{auth}->{pw}]];
 }
 
 sub create
@@ -180,11 +174,9 @@ sub add_keepds
 sub transfer_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  verify_contacts($rd);
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
- $mes->command_extension($eid,['frnic:transfer',['frnic:domain',add_keepds('transfer',$rd),build_contacts($rd)]]);
+ $epp->message()->command_extension('frnic', ['ext', ['transfer', ['domain', add_keepds('transfer',$rd), build_contacts($rd)]]]);
  return;
 }
 
@@ -227,12 +219,10 @@ sub trade_request
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
  my @n=build_domain($domain);
-
  push @n,build_registrant($rd);
  push @n,build_authinfo($mes, $rd, 'trade request');
- $mes->command_extension($eid,['frnic:command',['frnic:trade',{op=>'request'},['frnic:domain',@n]],build_cltrid($mes)]);
+ $mes->command_extension('frnic', ['ext', ['command', ['trade', {op=>'request'}, ['domain', @n]], build_cltrid($mes)]]);
  return;
 }
 
@@ -241,10 +231,9 @@ sub trade_query
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
  my @n=build_domain($domain);
  push @n,build_authinfo($mes, $rd, 'trade query');
- $mes->command_extension($eid,['frnic:command',['frnic:trade',{op=>'query'},['frnic:domain',@n]],build_cltrid($mes)]);
+ $mes->command_extension('frnic', ['ext', ['command', ['trade', {op=>'query'}, ['domain', @n]], build_cltrid($mes)]]);
  return;
 }
 
@@ -253,10 +242,9 @@ sub trade_cancel
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
  my @n=build_domain($domain);
  push @n,build_authinfo($mes, $rd, 'trade cancel');
- $mes->command_extension($eid,['frnic:command',['frnic:trade',{op=>'cancel'},['frnic:domain',@n]],build_cltrid($mes)]);
+ $mes->command_extension('frnic', ['ext', ['command', ['trade', {op=>'cancel'}, ['domain', @n]], build_cltrid($mes)]]);
  return;
 }
 
@@ -275,12 +263,11 @@ sub recover_request
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
  my @n=build_domain($domain);
  push @n,build_authinfo($mes, $rd, 'recover request');
  push @n,build_registrant($rd);
  push @n,build_contacts($rd);
- $mes->command_extension($eid,['frnic:command',['frnic:recover',{op=>'request'},['frnic:domain',add_keepds('recover',$rd),@n]],build_cltrid($mes)]);
+ $mes->command_extension('frnic', ['ext', ['command', ['recover', {op=>'request'}, ['domain', add_keepds('recover', $rd), @n]], build_cltrid($mes)]]);
  return;
 }
 

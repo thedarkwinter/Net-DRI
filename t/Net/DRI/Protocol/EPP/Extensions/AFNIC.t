@@ -12,7 +12,7 @@ use Test::More tests => 136;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -59,13 +59,13 @@ is_string($dri->get_info('review_zonecheck','domain','ndd-de-test-0001.fr'),$ZC,
 
 ####################################################################################################
 ## §2.5.1
-## (clTRID changed from example + added xsiSchemaLocation)
+## (clTRID changed from example)
 
 $cs=$dri->local_object('contactset');
 $cs->set($dri->local_object('contact')->srid('R9153'),'registrant');
 $R2=$E1.'<response>'.r().'<extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:resData><frnic:trdData><frnic:domain><frnic:name>ndd-de-test-0001.fr</frnic:name><frnic:trStatus>pending</frnic:trStatus><frnic:reID>BEdemandeurID</frnic:reID><frnic:reDate>2009-01-01T00:00:00.0Z</frnic:reDate><frnic:reHldID>PR1249</frnic:reHldID><frnic:rhDate>2009-01-09T00:00:00.0Z</frnic:rhDate><frnic:acID>BEactuelID</frnic:acID><frnic:acHldID>MM4567</frnic:acHldID><frnic:ahDate>2009-01-09T00:00:00.0Z</frnic:ahDate></frnic:domain></frnic:trdData></frnic:resData></frnic:ext></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_trade_start('ndd-de-test-0001.fr',{contact=>$cs,auth=>{pw => 'blabla'}});
-is_string($R1,$E1.'<extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4" xsi:schemaLocation="http://www.afnic.fr/xml/epp/frnic-1.4 frnic-1.4.xsd"><frnic:command><frnic:trade op="request"><frnic:domain><frnic:name>ndd-de-test-0001.fr</frnic:name><frnic:registrant>R9153</frnic:registrant><frnic:authInfo><domain:pw xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">blabla</domain:pw></frnic:authInfo></frnic:domain></frnic:trade><frnic:clTRID>ABC-12345</frnic:clTRID></frnic:command></frnic:ext></extension>'.$E2,'domain_trade_start build');
+is_string($R1,$E1.'<extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:command><frnic:trade op="request"><frnic:domain><frnic:name>ndd-de-test-0001.fr</frnic:name><frnic:registrant>R9153</frnic:registrant><frnic:authInfo><domain:pw xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">blabla</domain:pw></frnic:authInfo></frnic:domain></frnic:trade><frnic:clTRID>ABC-12345</frnic:clTRID></frnic:command></frnic:ext></extension>'.$E2,'domain_trade_start build');
 is($dri->get_info('trStatus'),'pending','domain_trade_start get_info(trStatus)');
 is($dri->get_info('reID'),'BEdemandeurID','domain_trade_start get_info(reID)');
 is(''.$dri->get_info('reDate'),'2009-01-01T00:00:00','domain_trade_start get_info(reDate)');
@@ -101,7 +101,7 @@ is(''.$dri->get_info('ahDate','domain','ndd-de-test-0001.fr'),'2009-01-09T00:00:
 
 ####################################################################################################
 ## §2.6.1
-## (clTRID changed from example + added xsiSchemaLocation)
+## (clTRID changed from example)
 
 $cs=$dri->local_object('contactset');
 $cs->set($dri->local_object('contact')->srid('PR1249'),'registrant');
@@ -110,7 +110,7 @@ $cs->set($dri->local_object('contact')->srid('AI1'),'tech');
 $cs->add($dri->local_object('contact')->srid('PR1249'),'tech');
 $R2=$E1.'<response>'.r().'<extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:resData><frnic:recData><frnic:domain><frnic:name>ndd-de-test-0001.fr</frnic:name><frnic:reID>BEdemandeurID</frnic:reID><frnic:reDate>2009-01-01T00:00:00.0Z</frnic:reDate><frnic:reHldID>PR1249</frnic:reHldID><frnic:acID>BEactuelID</frnic:acID><frnic:acHldID>MM4567</frnic:acHldID></frnic:domain></frnic:recData></frnic:resData></frnic:ext></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_recover_start('ndd-de-test-0001.fr',{contact=>$cs,auth=>{pw=>'NDCR20080229T173000.123456789'},keep_ds=>1});
-is_string($R1,$E1.'<extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4" xsi:schemaLocation="http://www.afnic.fr/xml/epp/frnic-1.4 frnic-1.4.xsd"><frnic:command><frnic:recover op="request"><frnic:domain keepDS="1"><frnic:name>ndd-de-test-0001.fr</frnic:name><frnic:authInfo><domain:pw xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">NDCR20080229T173000.123456789</domain:pw></frnic:authInfo><frnic:registrant>PR1249</frnic:registrant><frnic:contact type="admin">VL</frnic:contact><frnic:contact type="tech">AI1</frnic:contact><frnic:contact type="tech">PR1249</frnic:contact></frnic:domain></frnic:recover><frnic:clTRID>ABC-12345</frnic:clTRID></frnic:command></frnic:ext></extension>'.$E2,'domain_recover_start build');
+is_string($R1,$E1.'<extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:command><frnic:recover op="request"><frnic:domain keepDS="1"><frnic:name>ndd-de-test-0001.fr</frnic:name><frnic:authInfo><domain:pw xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">NDCR20080229T173000.123456789</domain:pw></frnic:authInfo><frnic:registrant>PR1249</frnic:registrant><frnic:contact type="admin">VL</frnic:contact><frnic:contact type="tech">AI1</frnic:contact><frnic:contact type="tech">PR1249</frnic:contact></frnic:domain></frnic:recover><frnic:clTRID>ABC-12345</frnic:clTRID></frnic:command></frnic:ext></extension>'.$E2,'domain_recover_start build');
 is($dri->get_info('reID'),'BEdemandeurID','domain_recover_start get_info(reID)');
 is(''.$dri->get_info('reDate'),'2009-01-01T00:00:00','domain_recover_start get_info(reDate)');
 is($dri->get_info('reHldID'),'PR1249','domain_recover_start get_info(reHldID)');
@@ -122,7 +122,7 @@ is($dri->get_info('acHldID'),'MM4567','domain_recover_start get_info(acHldID)');
 
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="0">afnic.fr</domain:name><domain:reason>In use</domain:reason></domain:cd><domain:cd><domain:name avail="1">af-1234-nic.fr</domain:name></domain:cd><domain:cd><domain:name avail="1">bois-guillaume.fr</domain:name></domain:cd><domain:cd><domain:name avail="0">paris.fr</domain:name><domain:reason>In use</domain:reason></domain:cd><domain:cd><domain:name avail="0">trafiquants.fr</domain:name><domain:reason>Forbidden name</domain:reason></domain:cd><domain:cd><domain:name avail="0">toto.wf</domain:name><domain:reason>Zone not opened</domain:reason></domain:cd></domain:chkData></resData><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:resData><frnic:chkData><frnic:domain><frnic:cd><frnic:name reserved="0" forbidden="0">afnic.fr</frnic:name></frnic:cd><frnic:cd><frnic:name reserved="0" forbidden="0">af-1234-nic.fr</frnic:name></frnic:cd><frnic:cd><frnic:name reserved="1" forbidden="0">bois-guillaume.fr</frnic:name><frnic:rsvReason>City name</frnic:rsvReason></frnic:cd><frnic:cd><frnic:name reserved="1" forbidden="0">paris.fr</frnic:name><frnic:rsvReason>City name</frnic:rsvReason></frnic:cd><frnic:cd><frnic:name reserved="0" forbidden="1">trafiquants.fr</frnic:name><frnic:fbdReason>Legal issue</frnic:fbdReason></frnic:cd><frnic:cd><frnic:name reserved="0" forbidden="0">toto.wf</frnic:name></frnic:cd></frnic:domain></frnic:chkData></frnic:resData></frnic:ext></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check(qw/afnic.fr af-1234-nic.fr bois-guillaume.fr paris.fr trafiquants.fr toto.wf/);
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>afnic.fr</domain:name><domain:name>af-1234-nic.fr</domain:name><domain:name>bois-guillaume.fr</domain:name><domain:name>paris.fr</domain:name><domain:name>trafiquants.fr</domain:name><domain:name>toto.wf</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>afnic.fr</domain:name><domain:name>af-1234-nic.fr</domain:name><domain:name>bois-guillaume.fr</domain:name><domain:name>paris.fr</domain:name><domain:name>trafiquants.fr</domain:name><domain:name>toto.wf</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build');
 is($rc->is_success(),1,'domain_check multi is_success');
 is($dri->get_info('exist','domain','afnic.fr'),1,'domain_check multi get_info(exist,domain1)');
 is($dri->get_info('exist_reason','domain','afnic.fr'),'In use','domain_check multi get_info(exist_reason,domain1)');
@@ -171,7 +171,7 @@ $co->auth({pw=>'UnusedPassword'});
 $co->disclose('N');
 $co->birth({date=>'1968-07-20',place=>'76000, Rouen'});
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>AUTO</contact:id><contact:postalInfo type="loc"><contact:name>Levigneron</contact:name><contact:org>AFNIC</contact:org><contact:addr><contact:street>immeuble international</contact:street><contact:street>2, rue Stephenson</contact:street><contact:street>Montigny le Bretonneux</contact:street><contact:city>Saint Quentin en Yvelines Cedex</contact:city><contact:pc>78181</contact:pc><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.0139308333</contact:voice><contact:fax>+33.0139308301</contact:fax><contact:email>vincent.levigneron@nic.fr</contact:email><contact:authInfo><contact:pw>UnusedPassword</contact:pw></contact:authInfo></contact:create></create><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4" xsi:schemaLocation="http://www.afnic.fr/xml/epp/frnic-1.4 frnic-1.4.xsd"><frnic:create><frnic:contact><frnic:list>restrictedPublication</frnic:list><frnic:individualInfos><frnic:birthDate>1968-07-20</frnic:birthDate><frnic:birthCity>Rouen</frnic:birthCity><frnic:birthPc>76000</frnic:birthPc><frnic:birthCc>FR</frnic:birthCc></frnic:individualInfos><frnic:firstName>Vincent</frnic:firstName></frnic:contact></frnic:create></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create PP build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>AUTO</contact:id><contact:postalInfo type="loc"><contact:name>Levigneron</contact:name><contact:org>AFNIC</contact:org><contact:addr><contact:street>immeuble international</contact:street><contact:street>2, rue Stephenson</contact:street><contact:street>Montigny le Bretonneux</contact:street><contact:city>Saint Quentin en Yvelines Cedex</contact:city><contact:pc>78181</contact:pc><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.0139308333</contact:voice><contact:fax>+33.0139308301</contact:fax><contact:email>vincent.levigneron@nic.fr</contact:email><contact:authInfo><contact:pw>UnusedPassword</contact:pw></contact:authInfo></contact:create></create><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:create><frnic:contact><frnic:list>restrictedPublication</frnic:list><frnic:individualInfos><frnic:birthDate>1968-07-20</frnic:birthDate><frnic:birthCity>Rouen</frnic:birthCity><frnic:birthPc>76000</frnic:birthPc><frnic:birthCc>FR</frnic:birthCc></frnic:individualInfos><frnic:firstName>Vincent</frnic:firstName></frnic:contact></frnic:create></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create PP build');
 is($rc->is_success(),1,'contact_create is_success');
 is($dri->get_info('id'),'VL99999','contact_create get_info(id)');
 is($dri->get_info('action','contact','VL99999'),'create','contact_create get_info(action)');
@@ -198,7 +198,7 @@ $co->trademark('27YOUPLA2345678');
 $co->jo({date_declaration=>'1999-05-19',number=>5, page=>2, date_publication=>'1999-06-01'});
 
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>AUTO</contact:id><contact:postalInfo type="loc"><contact:name>Service des Réclamations</contact:name><contact:org>AFNIC Corp</contact:org><contact:addr><contact:street>immeuble international</contact:street><contact:street>2, rue Stephenson</contact:street><contact:street>Montigny le Bretonneux</contact:street><contact:city>Saint Quentin en Yvelines Cedex</contact:city><contact:pc>78181</contact:pc><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.0139308333</contact:voice><contact:fax>+33.0139308301</contact:fax><contact:email>vincent.levigneron@nic.fr</contact:email><contact:authInfo><contact:pw>UnusedPassword</contact:pw></contact:authInfo></contact:create></create><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4" xsi:schemaLocation="http://www.afnic.fr/xml/epp/frnic-1.4 frnic-1.4.xsd"><frnic:create><frnic:contact><frnic:legalEntityInfos><frnic:legalStatus s="company"/><frnic:siren>123456789</frnic:siren><frnic:trademark>27YOUPLA2345678</frnic:trademark><frnic:asso><frnic:decl>1999-05-19</frnic:decl><frnic:publ announce="5" page="2">1999-06-01</frnic:publ></frnic:asso></frnic:legalEntityInfos></frnic:contact></frnic:create></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create PM build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>AUTO</contact:id><contact:postalInfo type="loc"><contact:name>Service des Réclamations</contact:name><contact:org>AFNIC Corp</contact:org><contact:addr><contact:street>immeuble international</contact:street><contact:street>2, rue Stephenson</contact:street><contact:street>Montigny le Bretonneux</contact:street><contact:city>Saint Quentin en Yvelines Cedex</contact:city><contact:pc>78181</contact:pc><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.0139308333</contact:voice><contact:fax>+33.0139308301</contact:fax><contact:email>vincent.levigneron@nic.fr</contact:email><contact:authInfo><contact:pw>UnusedPassword</contact:pw></contact:authInfo></contact:create></create><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:create><frnic:contact><frnic:legalEntityInfos><frnic:legalStatus s="company"/><frnic:siren>123456789</frnic:siren><frnic:trademark>27YOUPLA2345678</frnic:trademark><frnic:asso><frnic:decl>1999-05-19</frnic:decl><frnic:publ announce="5" page="2">1999-06-01</frnic:publ></frnic:asso></frnic:legalEntityInfos></frnic:contact></frnic:create></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create PM build');
 
 
 $co=$dri->local_object('contact');
@@ -218,7 +218,7 @@ $co->legal_id_type('siren');
 $co->qualification({identification=>{status=>'ok'},reachable=>{media=>'email',value=>1}});
 
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>AUTO</contact:id><contact:postalInfo type="loc"><contact:name>Levigneron</contact:name><contact:org>AFNIC</contact:org><contact:addr><contact:street>immeuble international</contact:street><contact:street>2, rue Stephenson</contact:street><contact:street>Montigny le Bretonneux</contact:street><contact:city>Saint Quentin en Yvelines Cedex</contact:city><contact:pc>78181</contact:pc><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.0139308333</contact:voice><contact:fax>+33.0139308301</contact:fax><contact:email>vincent.levigneron@nic.fr</contact:email><contact:authInfo><contact:pw>UnusedPassword</contact:pw></contact:authInfo></contact:create></create><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4" xsi:schemaLocation="http://www.afnic.fr/xml/epp/frnic-1.4 frnic-1.4.xsd"><frnic:create><frnic:contact><frnic:legalEntityInfos><frnic:idStatus>ok</frnic:idStatus><frnic:legalStatus s="company"/><frnic:siren>123456789</frnic:siren></frnic:legalEntityInfos><frnic:reachable media="email">1</frnic:reachable></frnic:contact></frnic:create></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create PM build qualification');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>AUTO</contact:id><contact:postalInfo type="loc"><contact:name>Levigneron</contact:name><contact:org>AFNIC</contact:org><contact:addr><contact:street>immeuble international</contact:street><contact:street>2, rue Stephenson</contact:street><contact:street>Montigny le Bretonneux</contact:street><contact:city>Saint Quentin en Yvelines Cedex</contact:city><contact:pc>78181</contact:pc><contact:cc>FR</contact:cc></contact:addr></contact:postalInfo><contact:voice>+33.0139308333</contact:voice><contact:fax>+33.0139308301</contact:fax><contact:email>vincent.levigneron@nic.fr</contact:email><contact:authInfo><contact:pw>UnusedPassword</contact:pw></contact:authInfo></contact:create></create><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:create><frnic:contact><frnic:legalEntityInfos><frnic:idStatus>ok</frnic:idStatus><frnic:legalStatus s="company"/><frnic:siren>123456789</frnic:siren></frnic:legalEntityInfos><frnic:reachable media="email">1</frnic:reachable></frnic:contact></frnic:create></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create PM build qualification');
 
 ####################################################################################################
 ## §3.2
@@ -227,14 +227,14 @@ $co=$dri->local_object('contact')->srid('VL99999');
 $toc=$dri->local_object('changes');
 $toc->del('disclose','restrictedPublication');
 $dri->contact_update($co,$toc);
-is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>VL99999</contact:id></contact:update></update><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4" xsi:schemaLocation="http://www.afnic.fr/xml/epp/frnic-1.4 frnic-1.4.xsd"><frnic:update><frnic:contact><frnic:rem><frnic:list>restrictedPublication</frnic:list></frnic:rem></frnic:contact></frnic:update></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>VL99999</contact:id></contact:update></update><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:update><frnic:contact><frnic:rem><frnic:list>restrictedPublication</frnic:list></frnic:rem></frnic:contact></frnic:update></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
 
 
 $co=$dri->local_object('contact')->srid('VL99999');
 $toc=$dri->local_object('changes');
 $toc->add('qualification',{identification=>{status=>'ok'},reachable=>{media=>'email',value=>1}});
 $dri->contact_update($co,$toc);
-is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>VL99999</contact:id></contact:update></update><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4" xsi:schemaLocation="http://www.afnic.fr/xml/epp/frnic-1.4 frnic-1.4.xsd"><frnic:update><frnic:contact><frnic:add><frnic:idStatus>ok</frnic:idStatus><frnic:reachable media="email">1</frnic:reachable></frnic:add></frnic:contact></frnic:update></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build qualification');
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>VL99999</contact:id></contact:update></update><extension><frnic:ext xmlns:frnic="http://www.afnic.fr/xml/epp/frnic-1.4"><frnic:update><frnic:contact><frnic:add><frnic:idStatus>ok</frnic:idStatus><frnic:reachable media="email">1</frnic:reachable></frnic:add></frnic:contact></frnic:update></frnic:ext></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build qualification');
 
 
 ####################################################################################################
@@ -304,9 +304,9 @@ is_deeply($q->{reachable},{status=>'pending',voice=>'+33.123456789',email=>'toto
 ####################################################################################################
 ## Technical-specifications-objet-host-EN.pdf
 
-$R2=$E1.'<response>'.r().'<resData><host:creData xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-create-host.fr</host:name><host:crDate>2018-06-10T22:00:00.0Z</host:crDate></host:creData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><host:creData xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:name>ns1.test-create-host.fr</host:name><host:crDate>2018-06-10T22:00:00.0Z</host:crDate></host:creData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->host_create($dri->local_object('hosts')->add('ns1.test-create-host.fr',['192.0.2.2','192.0.2.29'],['2001:DB8:0:0:8:800:200C:417A'],1));
-is($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-create-host.fr</host:name><host:addr ip="v4">192.0.2.2</host:addr><host:addr ip="v4">192.0.2.29</host:addr><host:addr ip="v6">2001:DB8:0:0:8:800:200C:417A</host:addr></host:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'host_create build');
+is($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:name>ns1.test-create-host.fr</host:name><host:addr ip="v4">192.0.2.2</host:addr><host:addr ip="v4">192.0.2.29</host:addr><host:addr ip="v6">2001:DB8:0:0:8:800:200C:417A</host:addr></host:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'host_create build');
 is($dri->get_info('action'),'create','host_create get_info(action)');
 is($dri->get_info('exist'),1,'host_create get_info(exist)');
 $d=$dri->get_info('crDate');
@@ -314,9 +314,9 @@ isa_ok($d,'DateTime','host_create get_info(crDate)');
 is($d.'','2018-06-10T22:00:00','host_create get_info(crDate) value');
 
 
-$R2=$E1.'<response>'.r().'<resData><host:infData xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-info-host.fr</host:name><host:roid>NS1_EXAMPLE1-REP</host:roid><host:status s="linked"/><host:addr ip="v4">192.0.2.2</host:addr><host:addr ip="v4">192.0.2.29</host:addr><host:addr ip="v6">1080:0:0:0:8:800:200C:417A</host:addr><host:clID>-dzjhvdujaqe54-.fr</host:clID><host:crID>-dzjhvdujare78-.fr</host:crID><host:crDate>2016-04-03T22:00:00.0Z</host:crDate><host:upID>-dzjhvdujajy77-.fr</host:upID><host:upDate>2017-12-03T09:00:00.0Z</host:upDate></host:infData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><host:infData xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:name>ns1.test-info-host.fr</host:name><host:roid>NS1_EXAMPLE1-REP</host:roid><host:status s="linked"/><host:addr ip="v4">192.0.2.2</host:addr><host:addr ip="v4">192.0.2.29</host:addr><host:addr ip="v6">1080:0:0:0:8:800:200C:417A</host:addr><host:clID>-dzjhvdujaqe54-.fr</host:clID><host:crID>-dzjhvdujare78-.fr</host:crID><host:crDate>2016-04-03T22:00:00.0Z</host:crDate><host:upID>-dzjhvdujajy77-.fr</host:upID><host:upDate>2017-12-03T09:00:00.0Z</host:upDate></host:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->host_info('ns1.test-info-host.fr');
-is($R1,$E1.'<command><info><host:info xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-info-host.fr</host:name></host:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'host_info build');
+is($R1,$E1.'<command><info><host:info xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:name>ns1.test-info-host.fr</host:name></host:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'host_info build');
 is($dri->get_info('action'),'info','host_info get_info(action)');
 is($dri->get_info('exist'),1,'host_info get_info(exist)');
 is($dri->get_info('roid'),'NS1_EXAMPLE1-REP','host_info get_info(roid)');
@@ -341,9 +341,9 @@ isa_ok($d,'DateTime','host_info get_info(upDate)');
 is($d.'','2017-12-03T09:00:00','host_info get_info(upDate) value');
 
 
-$R2=$E1.'<response>'.r().'<resData><host:chkData xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:cd><host:name avail="1">ns1.test-afnic.fr</host:name></host:cd><host:cd><host:name avail="0">ns2.test-afnic.fr</host:name><host:reason>In use</host:reason></host:cd></host:chkData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><host:chkData xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:cd><host:name avail="1">ns1.test-afnic.fr</host:name></host:cd><host:cd><host:name avail="0">ns2.test-afnic.fr</host:name><host:reason>In use</host:reason></host:cd></host:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->host_check('ns1.test-afnic.fr','ns2.test-afnic.fr');
-is($R1,$E1.'<command><check><host:check xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-afnic.fr</host:name><host:name>ns2.test-afnic.fr</host:name></host:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'host_check multi build');
+is($R1,$E1.'<command><check><host:check xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:name>ns1.test-afnic.fr</host:name><host:name>ns2.test-afnic.fr</host:name></host:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'host_check multi build');
 is($rc->is_success(),1,'host_check multi is_success');
 is($dri->get_info('exist','host','ns1.test-afnic.fr'),0,'host_check multi get_info(exist) 1/2');
 is($dri->get_info('exist','host','ns2.test-afnic.fr'),1,'host_check multi get_info(exist) 2/2');
@@ -352,7 +352,7 @@ is($dri->get_info('exist_reason','host',,'ns2.test-afnic.fr'),'In use','host_che
 
 $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
 $rc=$dri->host_delete('ns1.test-afnic-host.fr');
-is($R1,$E1.'<command><delete><host:delete xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-afnic-host.fr</host:name></host:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'host_delete build');
+is($R1,$E1.'<command><delete><host:delete xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:name>ns1.test-afnic-host.fr</host:name></host:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'host_delete build');
 is($rc->is_success(),1,'host_delete is_success');
 
 
@@ -362,7 +362,7 @@ $toc->add('ip',$dri->local_object('hosts')->add('ns1.test-host.fr',['192.0.2.22'
 $toc->del('ip',$dri->local_object('hosts')->add('ns1.test-host.fr',[],['2001:DB8:0:0:8:800:200C:417A'],1));
 $toc->set('name','ns2.test-host.fr');
 $rc=$dri->host_update('ns1.test-host.fr',$toc);
-is($R1,$E1.'<command><update><host:update xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns1.test-host.fr</host:name><host:add><host:addr ip="v4">192.0.2.22</host:addr></host:add><host:rem><host:addr ip="v6">2001:DB8:0:0:8:800:200C:417A</host:addr></host:rem><host:chg><host:name>ns2.test-host.fr</host:name></host:chg></host:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'host_update build');
+is($R1,$E1.'<command><update><host:update xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:name>ns1.test-host.fr</host:name><host:add><host:addr ip="v4">192.0.2.22</host:addr></host:add><host:rem><host:addr ip="v6">2001:DB8:0:0:8:800:200C:417A</host:addr></host:rem><host:chg><host:name>ns2.test-host.fr</host:name></host:chg></host:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'host_update build');
 is($rc->is_success(),1,'host_update is_success');
 
 

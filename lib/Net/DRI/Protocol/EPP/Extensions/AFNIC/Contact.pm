@@ -1,6 +1,6 @@
 ## Domain Registry Interface, AFNIC (.FR/.RE/.TF/.WF/.PM/.YT) Contact EPP extension commands
 ##
-## Copyright (c) 2008,2009,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2009,2012,2013,2016,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2009,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2009,2012,2013,2016,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -76,16 +76,9 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:frnic="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('frnic')));
-}
-
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
 
 ## validate() has been called
  my @n;
@@ -151,8 +144,7 @@ sub create
 
  push @n,build_q_reachable($qual);
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
- $mes->command_extension($eid,['frnic:create',['frnic:contact',@n]]);
+ $epp->message()->command_extension('frnic', ['ext', ['create', ['contact', @n]]]);
  return;
 }
 
@@ -209,7 +201,6 @@ sub build_q_reachable
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $dadd=$todo->add('disclose');
  my $ddel=$todo->del('disclose');
@@ -236,8 +227,7 @@ sub update
  push @n,['frnic:add',@add] if @add;
  push @n,['frnic:rem',@del] if @del;
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
- $mes->command_extension($eid,['frnic:update',['frnic:contact',@n]]);
+ $epp->message()->command_extension('frnic', ['ext', ['update', ['contact', @n]]]);
  return;
 }
 

@@ -68,7 +68,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({frnic=>['http://www.afnic.fr/xml/epp/frnic-1.4','frnic-1.4.xsd']});
+ $self->ns({frnic=>'http://www.afnic.fr/xml/epp/frnic-1.4'});
  $self->capabilities('domain_update','registrant',undef); ## a trade is required
  $self->capabilities('contact_update','status',undef); ## No changes in status possible for .FR contacts
  $self->capabilities('contact_update','disclose',['add','del']);
