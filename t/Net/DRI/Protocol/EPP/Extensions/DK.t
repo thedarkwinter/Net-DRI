@@ -32,7 +32,7 @@ my ($rc,$s,$d,$co,$co_old,$dh,$cs,$ns,$toc);
 ######## Initial Commands ########
 
 my $drd = $dri->driver();
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{'ssl_version' => 'TLSv12', 'ssl_cipher_list' => undef},'Net::DRI::Protocol::EPP::Extensions::DK',{}],'DK - epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::DK',{}],'DK - epp transport_protocol_default');
 $R2=$E1.'<greeting><svID>DK Hostmaster EPP Service (production): 2.2.3</svID><svDate>2017-01-26T09:53:33.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:dkhm:params:xml:ns:dkhm-2.0</extURI></svcExtension></svcMenu><dcp><access><personalAndOther /></access><statement><purpose><admin /><prov /></purpose><recipient><other /><unrelated /></recipient><retention><legal /></retention></statement></dcp></greeting></epp>';
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build');

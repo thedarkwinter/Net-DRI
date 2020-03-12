@@ -94,7 +94,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{ssl_version => 'TLSv12'},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1, custom => ['CentralNic::Fee','AllocationToken']}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn'=>1, custom => ['CentralNic::Fee','AllocationToken']}) if $type eq 'epp';
  return;
 }
 
