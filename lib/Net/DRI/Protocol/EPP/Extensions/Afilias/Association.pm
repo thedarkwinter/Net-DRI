@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Afilias Association extension (for .XXX)
 ##
-## Copyright (c) 2010 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2018,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -26,9 +26,9 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
-           'create' =>	[ \&create, undef ],
-           'update' =>	[ \&update, undef ],
-           'info'   =>	[ undef, \&info_parse ]
+           create =>	[ \&create, undef ],
+           update =>	[ \&update, undef ],
+           info   =>	[ undef, \&info_parse ]
          );
 
  return { 'domain' => \%tmp };
@@ -37,8 +37,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({association => ['urn:afilias:params:xml:ns:association-1.0','association-1.0.xsd']});
- $po->capabilities('domain_update','association',['add','del','set']);
+ $po->ns({association => 'urn:afilias:params:xml:ns:association-1.0'});
  return;
 }
 
@@ -65,9 +64,7 @@ sub create
  my $as=$rd->{association};
  Net::DRI::Exception::usererr_invalid_parameters('Invalid Association Membership Contact ID and PW') unless Net::DRI::Util::xml_is_token($as->{'id'},1,63) && Net::DRI::Util::xml_is_token($as->{'pw'},6,16);
  my @t = build_association($as);
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('association','create');
- $mes->command_extension($eid,\@t);
+ $epp->message()->command_extension('association', ['create', @t]);
 
  return;
 }
@@ -75,14 +72,11 @@ sub create
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
  my $toadd=$todo->add('association');
  my $todel=$todo->del('association');
  my $tochg=$todo->set('association');
  my @def=grep { defined } ($toadd,$todel);
  return unless @def; ## no updates asked
-
- my $eid=$mes->command_extension_register('association','update');
 
  my @n;
  if (defined $toadd)
@@ -102,7 +96,7 @@ sub update
   push @n,['association:rem',build_association($tochg)] if (defined $tochg);
  }
 
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('association', ['update', @n]);
 
  return;
 }

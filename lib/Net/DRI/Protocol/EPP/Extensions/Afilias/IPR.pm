@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Afilias IPR extension (for .ME and .ASIA)
 ##
-## Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2013,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -68,10 +68,8 @@ sub create
  my ($epp,$domain,$rd)=@_;
  return unless Net::DRI::Util::has_key($rd,'ipr');
  my @n=build_ipr($rd->{ipr});
+ $epp->message()->command_extension('ipr', ['create', @n]);
 
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('ipr','create');
- $mes->command_extension($eid,\@n);
  return;
 }
 
@@ -84,13 +82,11 @@ sub update
  my @def=grep { defined } ($todel,$tochg);
  return unless @def; ## no updates asked
 
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('ipr','update');
-
  my @n;
  push @n,['ipr:rem',build_ipr($todel)] if defined $todel;
  push @n,['ipr:chg',build_ipr($tochg)] if defined $tochg;
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('ipr', ['update', @n]);
+
  return;
 }
 
@@ -154,7 +150,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2010,2013,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
