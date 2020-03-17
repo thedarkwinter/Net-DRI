@@ -1,7 +1,8 @@
 ## Domain Registry Interface, .NO Result extension
 ##
-## Copyright (c) 2008,2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+## Copyright (c) 2008,2010,2013,2019 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -47,8 +48,9 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+Copyright (c) 2008,2010,2013,2019 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen, E<lt>info@norid.noE<gt>
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -92,7 +94,7 @@ sub condition_parse {
     my ( $po, $otype, $oaction, $oname, $rinfo ) = @_;
     my $mes = $po->message();
 
-    my $condata = $mes->get_extension( 'no_result', 'conditions' );
+    my $condata = $mes->get_extension( 'no-ext-result', 'conditions' );
     return unless $condata;
 
     parse( $mes, $otype, $oname, $rinfo, $condata );
@@ -101,7 +103,7 @@ sub condition_parse {
 
 sub parse {
     my ( $mes, $otype, $oname, $rinfo, $node ) = @_;
-    my $NS = $mes->ns('no_result');
+    my $NS = $mes->ns('no-ext-result');
     my @conditions;
 
     foreach my $el ( $node->getElementsByTagNameNS( $NS, 'condition' ) ) {

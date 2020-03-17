@@ -1,8 +1,8 @@
 ## Domain Registry Interface, .NO Domain extensions
 ##
-## Copyright (c) 2008-2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+## Copyright (c) 2008-2010,2013-2014,2019 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
-##           (c) 2016 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
+##           (c) 2016,2018-2019 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -55,9 +55,9 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
+Copyright (c) 2008-2010,2013-2014,2019 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
-(c) 2016 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
+(c) 2016,2018-2019 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -95,27 +95,6 @@ sub register_commands {
 
 ####################################################################################################
 
-sub build_command_extension {
-    my ( $mes, $epp, $tag, $no_version ) = @_;
-
-    if ($no_version && $no_version eq "1.1") {
-       return $mes->command_extension_register(
-           $tag,
-           sprintf(
-               'xmlns:no-ext-domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('no_domain_1_1')
-           )
-           );
-    } else {
-
-    return $mes->command_extension_register(
-        $tag,
-        sprintf(
-            'xmlns:no-ext-domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('no_domain')
-        )
-    );
-    }
-}
-
 sub facet {
     my ( $epp, $o, $rd ) = @_;
 
@@ -126,7 +105,6 @@ sub applicant_dataset {
     my ( $epp, $command, $rd ) = @_;
 
     my @e;
-    my $eid;
 
     return unless ( ref $rd eq 'HASH' && defined $rd->{applicantdataset} && keys %{$rd->{applicantdataset}} );
 
@@ -146,10 +124,6 @@ sub applicant_dataset {
     my $acceptname    = $r->{acceptname};
     my $acceptdate    = $r->{acceptdate};
 
-    my $mes = $epp->message();
-
-    $eid = build_command_extension( $mes, $epp, 'no-ext-domain:' . $command, '1.1' );
-
     my @te;
     push @te, [ "no-ext-domain:versionNumber", $versionnumber ];
     push @te, [ "no-ext-domain:acceptName"   , $acceptname ];
@@ -160,7 +134,8 @@ sub applicant_dataset {
     } elsif ($command eq 'update') {
         push @e, [ 'no-ext-domain:chg', [ 'no-ext-domain:applicantDataset', @te ] ];
     }
-    return $mes->command_extension( $eid, \@e );
+    $epp->message()->command_extension( 'no-ext-domain', [ $command, @e ] );
+    return;
 }
 
 sub parse_info {
@@ -168,11 +143,11 @@ sub parse_info {
     my $mes = $po->message();
     return unless $mes->is_success();
 
-    my $NS = $mes->ns('no_domain_1_1');
+    my $NS = $mes->ns('no-ext-domain');
 
     my $c = $rinfo->{domain}->{$oname}->{self};
 
-    my $adata = $mes->get_extension('no_domain_1_1','infData');
+    my $adata = $mes->get_extension('no-ext-domain','infData');
 
     return unless $adata;
 
@@ -245,7 +220,8 @@ sub delete { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
     my $dfr = $rd->{deletefromregistry};
     my $fs  = $rd->{facets};
 
-    return unless ( ( defined($dfd) || defined($dfr) || defined($fs) ) && ( $dfd || $dfr || $fs ) );
+    return unless ( ( defined($ddate) || defined($dfd) || defined($dfr) || defined($fs) ) && (
+                        $ddate || $dfd || $dfr || $fs ) );
 
     if (defined($dfd) && ref($dfd)) { 
          Net::DRI::Util::check_isa($dfd,'DateTime');
@@ -266,12 +242,11 @@ sub delete { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 
     my $r;
     if ( $dfd || $dfr ) {
-       my $eid = build_command_extension( $mes, $epp, 'no-ext-domain:delete', '1.1' );
        my @e;
        push @e, [ 'no-ext-domain:deleteFromDNS', $dfd ] if ( defined($dfd) && $dfd );
        push @e, [ 'no-ext-domain:deleteFromRegistry', $dfr ] if ( defined($dfr) && $dfr );
 
-       $r = $mes->command_extension( $eid, \@e ) if (@e);
+       $r = $epp->message()->command_extension( 'no-ext-domain', [ 'delete', @e ] ) if @e;
     }
     if ($fs) {
        $r = facet($epp, $domain, $rd);
@@ -283,7 +258,6 @@ sub delete { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 
 sub transfer_request {
     my ( $epp, $domain, $rd ) = @_;
-    my $mes = $epp->message();
 
     my $mp = $rd->{mobilephone};
     my $em = $rd->{email};
@@ -293,7 +267,6 @@ sub transfer_request {
 
     my $r;
     if ($mp || $em) {
-       my $eid = build_command_extension( $mes, $epp, 'no-ext-domain:transfer', '1.1' );
 
        my @d;
        push @d,
@@ -304,7 +277,7 @@ sub transfer_request {
 
        my @e;
        push @e, [ 'no-ext-domain:notify', @d ];
-       $r = $mes->command_extension( $eid, \@e );
+       $r = $epp->message()->command_extension( 'no-ext-domain', [ 'transfer', @e ] );
 
     }
     if ($fs) {
@@ -333,31 +306,15 @@ sub withdraw {
 
     my $r;
 
-    my (undef,$NS,$NSX)=$mes->nsattrs('no_domain_1_1');
-    my (undef,$ExtNS,$ExtNSX)=$mes->nsattrs('no_epp');
-
-    my $eid = $mes->command_extension_register( 'command',
-              'xmlns="' 
-            . $ExtNS
-            . '" xsi:schemaLocation="'
-            . $ExtNS
-            . " $ExtNSX"
-            . '"' );
-
-    my $cltrid=$mes->cltrid();
-
-    my %domns;
-    $domns{'xmlns:domain'}       = $NS;
-    $domns{'xsi:schemaLocation'} = $NS . " $NSX";
-
     $r=$mes->command_extension(
-        $eid,
-        [   [   'withdraw',
+        'no-ext-epp',
+        [   'command',
+            [   'no-ext-epp:withdraw',
                 [   'domain:withdraw', [ 'domain:name', $domain ],
-                    \%domns, \%domns
+                    {'xmlns:domain' => $mes->nsattrs('no-ext-domain')}
                 ]
             ],
-            [ 'clTRID', $cltrid ]
+            [ 'no-ext-epp:clTRID', $mes->cltrid() ]
         ]
        );
 
@@ -377,9 +334,6 @@ sub transfer_execute {
     $transaction = $rd->{transactionname} if $rd->{transactionname};
 
     return unless ( $transaction && $transaction eq 'transfer_execute' );
-
-    my (undef,$NS,$NSX)=$mes->nsattrs('no_domain_1_1');
-    my (undef,$ExtNS,$ExtNSX)=$mes->nsattrs('no_epp');
 
     my ( $auth, $du, $token, $fs );
     $auth  = $rd->{auth}     if Net::DRI::Util::has_key($rd,'auth');
@@ -401,25 +355,9 @@ sub transfer_execute {
         $dur = Net::DRI::Protocol::EPP::Util::build_period($du);
     }
 
-    my $eid = $mes->command_extension_register( 'command',
-              'xmlns="' 
-            . $ExtNS
-            . '" xsi:schemaLocation="'
-            . $ExtNS
-            . " $ExtNSX"
-            . '"' );
-
-
     my $cltrid=$mes->cltrid();
 
-    my %domns;
-    $domns{'xmlns:domain'} = 'urn:ietf:params:xml:ns:domain-1.0';
-    $domns{'xsi:schemaLocation'}
-        = 'urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd';
-
-    my %domns2;
-    $domns2{'xmlns:no-ext-domain'} = $NS;
-    $domns2{'xsi:schemaLocation'}  = $NS . " $NSX";
+    my %domns = ('xmlns:domain' => 'urn:ietf:params:xml:ns:domain-1.0');
 
     my $r;
 
@@ -427,8 +365,9 @@ sub transfer_execute {
         && ( ref( $rd->{auth} ) eq 'HASH' ) )
     {
         $r=$mes->command_extension(
-            $eid,
-            [   [   'transfer',
+            'no-ext-epp',
+            [   'command',
+                [   'no-ext-epp:transfer',
                     { 'op' => 'execute' },
                     [   'domain:transfer',
                         \%domns,
@@ -439,36 +378,38 @@ sub transfer_execute {
                         ),
                     ],
                 ],
-                [ 'clTRID', $cltrid ]
+                [ 'no-ext-epp:clTRID', $cltrid ]
             ]
         );
     } elsif ($token) {
         $r=$mes->command_extension(
-            $eid,
-            [   [   'transfer',
+            'no-ext-epp',
+            [   'command',
+                [   'no-ext-epp:transfer',
                     { 'op' => 'execute' },
                     [   'domain:transfer', \%domns,
                         [ 'domain:name', $domain ], $dur,
                     ],
                 ],
-                [   'extension',
-                    [   'no-ext-domain:transfer', \%domns2,
+                [   'no-ext-epp:extension',
+                    [   'no-ext-domain:transfer', {'xmlns:no-ext-domain' => $mes->nsattrs('no-ext-domain')},
                         [ 'no-ext-domain:token', $token ]
                     ]
                 ],
-                [ 'clTRID', $cltrid ]
+                [ 'no-ext-epp:clTRID', $cltrid ]
             ]
         );
    } else {
        $r=$mes->command_extension(
-            $eid,
-            [   [   'transfer',
+            'no-ext-epp',
+            [   'command',
+                [   'no-ext-epp:transfer',
                     { 'op' => 'execute' },
                     [   'domain:transfer', \%domns,
                         [ 'domain:name', $domain ], $dur,
                     ],
                 ],
-                [ 'clTRID', $cltrid ]
+                [ 'no-ext-epp:clTRID', $cltrid ]
             ]
         );
     }
