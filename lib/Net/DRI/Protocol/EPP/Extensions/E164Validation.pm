@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP E.164 Validation (RFC5076)
 ##
-## Copyright (c) 2008,2009,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2009,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,11 +17,11 @@ package Net::DRI::Protocol::EPP::Extensions::E164Validation;
 use utf8;
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
-our $NS='urn:ietf:params:xml:ns:e164val-1.0';
 our @VALIDATION_MODULES=qw/RFC5076/; ## modules to handle validation information, override this variable to use other validation modules
 
 =pod
@@ -52,7 +52,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2009,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2009,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -69,17 +69,25 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           info   => [ undef, \&info_parse ],
-           create => [ \&create, undef ],
-           renew => [ \&renew, undef ],
-           transfer_request => [ \&transfer_request, undef ],
-           update => [ \&update, undef ],
-         );
+ state $domain = {
+                  info             => [ undef, \&info_parse ],
+                  create           => [ \&create, undef ],
+                  renew            => [ \&renew, undef ],
+                  transfer_request => [ \&transfer_request, undef ],
+                  update           => [ \&update, undef ],
+                 };
+ state $commands = { 'domain' => $domain };
 
  load_validation_modules();
 
- return { 'domain' => \%tmp };
+ return $commands;
+}
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ 'e164val' => 'urn:ietf:params:xml:ns:e164val-1.0' });
+ return;
 }
 
 sub capabilities_add { return ('domain_update','e164_validation_information',['add','del','set']); }
@@ -113,13 +121,11 @@ sub format_validation
 
 sub add_validation_information
 {
- my ($epp,$domain,$rd,$action,$top)=@_;
+ my ($epp,$domain,$rd,$action)=@_;
  return unless (defined($rd) && (ref($rd) eq 'HASH') && exists($rd->{e164_validation_information}) && (ref($rd->{e164_validation_information}) eq 'ARRAY') && @{$rd->{e164_validation_information}});
 
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('e164val:'.$action,'xmlns:e164val="'.$NS.'"');
- my @n=map { format_validation($_,$action,$top) } as_array($rd->{e164_validation_information});
- $mes->command_extension($eid,\@n);
+ my @n=map { format_validation($_,$action,'e164val:add') } as_array($rd->{e164_validation_information});
+ $epp->message()->command_extension('e164val', [$action, @n]);
  return;
 }
 
@@ -144,14 +150,15 @@ sub info_parse ## §5.1.2
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension($NS,'infData');
+ my $infdata=$mes->get_extension('e164val','infData');
  return unless defined $infdata;
 
+ my $ns = $mes->ns('e164val');
  my @val;
- foreach my $el ($infdata->getChildrenByTagNameNS($NS,'inf'))
+ foreach my $el ($infdata->getChildrenByTagNameNS($ns,'inf'))
  {
   my $id=$el->getAttribute('id');
-  my $r=($el->getChildrenByTagNameNS($NS,'validationInfo'))[0];
+  my $r=($el->getChildrenByTagNameNS($ns,'validationInfo'))[0];
   $r=$r->getFirstChild();
   while( $r->nodeType()!=1) { $r=$r->getNextSibling(); }
   my $uri=$r->namespaceURI();
@@ -169,28 +176,27 @@ sub info_parse ## §5.1.2
 sub create ## §5.2.1
 {
  my ($epp,$domain,$rd)=@_;
- add_validation_information($epp,$domain,$rd,'create','e164val:add');
+ add_validation_information($epp,$domain,$rd,'create');
  return;
 }
 
 sub renew ## §5.2.3
 {
  my ($epp,$domain,$rd)=@_;
- add_validation_information($epp,$domain,$rd,'renew','e164val:add');
+ add_validation_information($epp,$domain,$rd,'renew');
  return;
 }
 
 sub transfer_request ## §5.2.4
 {
  my ($epp,$domain,$rd)=@_;
- add_validation_information($epp,$domain,$rd,'transfer','e164val:add');
+ add_validation_information($epp,$domain,$rd,'transfer');
  return;
 }
 
 sub update ## §5.2.5
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $toadd=$todo->add('e164_validation_information');
  my $todel=$todo->del('e164_validation_information');
@@ -203,8 +209,7 @@ sub update ## §5.2.5
  push @n,map { format_validation($_,'update','e164val:chg') } (ref($toset) eq 'ARRAY')? @$toset : ($toset) if (defined($toset));
  return unless @n;
 
- my $eid=$mes->command_extension_register('e164val:update','xmlns:e164val="'.$NS.'"');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('e164val', ['update', @n]);
  return;
 }
 

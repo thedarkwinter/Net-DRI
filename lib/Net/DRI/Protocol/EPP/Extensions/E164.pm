@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP E.164 Number Mapping (RFC4114)
 ##
-## Copyright (c) 2005-2009,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2009,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,11 +16,10 @@ package Net::DRI::Protocol::EPP::Extensions::E164;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
-
-our $NS='urn:ietf:params:xml:ns:e164epp-1.0';
 
 =pod
 
@@ -50,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2009,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2009,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -67,13 +66,20 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           info   => [ undef, \&info_parse ],
-           create => [ \&create, undef ],
-           update => [ \&update, undef ],
-         );
+ state $domain = {
+                  info   => [ undef, \&info_parse ],
+                  create => [ \&create, undef ],
+                  update => [ \&update, undef ],
+                 };
+ state $commands = { 'domain' => $domain };
+ return $commands;
+}
 
- return { 'domain' => \%tmp };
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ 'e164' => 'urn:ietf:params:xml:ns:e164epp-1.0' });
+ return;
 }
 
 sub capabilities_add { return ('domain_update','e164',['add','del']); }
@@ -122,11 +128,11 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension($NS,'infData');
+ my $infdata=$mes->get_extension('e164', 'infData');
  return unless defined $infdata;
 
  my @naptr;
- foreach my $el ($infdata->getChildrenByTagNameNS($NS,'naptr'))
+ foreach my $el ($infdata->getChildrenByTagNameNS($mes->ns('e164'), 'naptr'))
  {
   my %n;
   foreach my $sel (Net::DRI::Util::xml_list_children($el))
@@ -149,7 +155,6 @@ sub info_parse
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  my $def=$epp->default_parameters();
 
@@ -160,29 +165,25 @@ sub create
   return;
  }
 
- my $eid=$mes->command_extension_register('e164:create','xmlns:e164="urn:ietf:params:xml:ns:e164epp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:e164epp-1.0 e164epp-1.0.xsd"');
  my @n=map { ['e164:naptr',format_naptr($_)] } (@{$rd->{e164}});
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('e164', ['create', @n]);
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $toadd=$todo->add('e164');
  my $todel=$todo->del('e164');
 
- return unless (defined($toadd) || defined($todel));
+ return unless defined $toadd || defined $todel;
 
- my $eid=$mes->command_extension_register('e164:update','xmlns:e164="urn:ietf:params:xml:ns:e164epp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:e164epp-1.0 e164epp-1.0.xsd"');
- 
  my @n;
  push @n,['e164:add',map { ['e164:naptr',format_naptr($_)] } (ref($toadd) eq 'ARRAY')? @$toadd : ($toadd)] if (defined($toadd));
  push @n,['e164:rem',map { ['e164:naptr',format_naptr($_)] } (ref($todel) eq 'ARRAY')? @$todel : ($todel)] if (defined($todel));
 
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('e164', ['update', @n]);
  return;
 }
 
