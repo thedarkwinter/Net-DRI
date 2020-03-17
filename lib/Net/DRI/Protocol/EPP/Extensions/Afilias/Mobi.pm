@@ -87,8 +87,7 @@ sub setup
 sub add_maintainer_url
 {
  my ($mes,$tag,$d)=@_;
- my $eid=$mes->command_extension_register($tag,sprintf('xmlns:mobi="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('mobi')));
- $mes->command_extension($eid,$d);
+ $mes->command_extension('mobi',[$tag,$d]);
  return;
 }
 
