@@ -1,6 +1,6 @@
-## Allocation Token Mapping for EPP (draft-gould-allocation-token-01)
+## Allocation Token Mapping for EPP (RFC8495)
 ##
-## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2015,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -43,12 +43,12 @@ sub setup
 {
  my ($class,$po,$version)=@_;
 
- state $ns = { 'allocationToken' => [ 'urn:ietf:params:xml:ns:allocationToken-1.0','allocationToken-1.0.xsd' ] };
+ state $ns = { 'allocationToken' => 'urn:ietf:params:xml:ns:allocationToken-1.0' };
  $po->ns($ns);
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-gould-allocation-token-02'; }
+sub implements { return 'https://tools.ietf.org/html/rfc8495'; }
 
 ####################################################################################################
 
@@ -66,11 +66,10 @@ sub command
  if ($operation eq 'info')
  {
   return unless $rd->{allocation_token}; ## any true value will be enough for us here
-  my $eid=$mes->command_extension_register('allocationToken','info');
+  $mes->command_extension('allocationToken',['allocationToken:info']);
  } else
  {
-  my $eid=$mes->command_extension_register('allocationToken','allocationToken');
-  $mes->command_extension($eid,$token);
+  $mes->command_extension('allocationToken',['allocationToken',$token]);
  }
  return;
 }
