@@ -71,7 +71,7 @@ sub register_commands {
     my %tmp = (
         create => [ \&create, undef ],
         update => [ \&update, undef ],
-        info   => [ undef,    \&info_parse ],
+        info   => [ undef, \&info_parse ],
     );
 
     return { 'contact' => \%tmp };
@@ -85,7 +85,7 @@ sub info_parse {
     return unless $mes->is_success();
 
     my $c     = $rinfo->{contact}->{$oname}->{self};
-    my $adata = $mes->get_extension( 'ext_contact', 'infData' );
+    my $adata = $mes->get_extension( 'lvcontact', 'infData' );
 
     return unless $adata;
 
@@ -105,7 +105,6 @@ sub info_parse {
 
 sub create {
     my ( $epp, $c ) = @_;
-    my $mes = $epp->message;
     my @e;
 
     return unless defined $c->vat() || $c->orgno();
@@ -114,20 +113,13 @@ sub create {
 
     push @e, [ 'lvcontact:vatNr', $c->vat() ]   if ( defined $c->vat() );
     push @e, [ 'lvcontact:regNr', $c->orgno() ] if ( defined $c->orgno() );
-
-    my $eid = $mes->command_extension_register(
-        'lvcontact:create',
-        sprintf( 'xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',
-            $mes->nsattrs('ext_contact') )
-    );
-    $mes->command_extension( $eid, \@e );
+    $epp->message()->command_extension('lvcontact', ['lvcontact:create', @e]);
 
     return;
 }
 
 sub update {
     my ( $epp, $c, $todo ) = @_;
-    my $mes  = $epp->message();
     my $newc = $todo->set('info');
 
     my @e;
@@ -138,12 +130,7 @@ sub update {
     push @e, [ 'lvcontact:vatNr', $c->vat() ]   if ( defined $c->vat() );
     push @e, [ 'lvcontact:regNr', $c->orgno() ] if ( defined $c->orgno() );
 
-    my $eid = $mes->command_extension_register(
-        'lvcontact:update',
-        sprintf( 'xmlns:lvcontact="%s" xsi:schemaLocation="%s %s"',
-            $mes->nsattrs('ext_contact') )
-    );
-    $mes->command_extension( $eid, \@e );
+    $epp->message()->command_extension('lvcontact', ['lvcontact:update', @e]);
 
     return;
 }

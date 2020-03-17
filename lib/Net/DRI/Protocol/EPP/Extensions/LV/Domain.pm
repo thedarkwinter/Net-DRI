@@ -87,7 +87,7 @@ sub info_parse {
 
 	return unless $mes->is_success();
 
-	my $adata = $mes->get_extension('ext_domain','infData');
+	my $adata = $mes->get_extension('lvdomain','infData');
 	return unless $oname; # don't parse unless we already know the object (for polls)
 	 
 	unless(defined($adata)) {
@@ -114,12 +114,8 @@ sub info_parse {
 
 sub update { 
 	my ($epp,$domain,$rd)=@_;
-	my $mes=$epp->message();
-
 	return unless defined $rd->set('auto_renew');
-
 	my @e;
-
 	my $user_message = $rd->set('auto_renew_message');
 	 
 	if ( $rd->set('auto_renew') eq 'false' || $rd->set('auto_renew') eq '0' || $rd->set('auto_renew') eq 'no') {
@@ -136,8 +132,7 @@ sub update {
 		 }
 	}
 
-	my $eid=$mes->command_extension_register('lvdomain:update',sprintf('xmlns:lvdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domain')));
-	$mes->command_extension($eid,\@e);
+	$epp->message()->command_extension('lvdomain', ['lvdomain:update', @e]);
 
 	return;
 }

@@ -68,8 +68,8 @@ sub setup {
     my ( $self, $rp ) = @_;
     $self->ns(
         {
-            ext_domain => ['http://www.nic.lv/epp/schema/lvdomain-ext-1.0','lvdomain-ext-1.0.xsd'],
-            ext_contact => ['http://www.nic.lv/epp/schema/lvcontact-ext-1.0','lvcontact-ext-1.0.xsd'],
+            lvdomain => 'http://www.nic.lv/epp/schema/lvdomain-ext-1.0',
+            lvcontact => 'http://www.nic.lv/epp/schema/lvcontact-ext-1.0'
         }
     );
 
