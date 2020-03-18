@@ -2,6 +2,7 @@
 ## 
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -174,6 +175,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>,
 (c) 2013-2014 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -207,7 +209,7 @@ sub capabilities_add { return (['domain_update','lp',['set']]); }
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'launch' => [ 'urn:ietf:params:xml:ns:launch-1.0','launch-1.0.xsd' ] });
+ $po->ns({ 'launch' => 'urn:ietf:params:xml:ns:launch-1.0' });
  return;
 }
 
@@ -238,7 +240,6 @@ sub _build_idContainerType
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'lp');
 
  my $lp = $rd->{'lp'};
@@ -248,11 +249,13 @@ sub check
  Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase} || $lp->{type} eq 'trademark';
  delete $lp->{application_id} if exists $lp->{application_id};
 
- my $eid = (exists $lp->{type}) ? $mes->command_extension_register('launch','check',{type => $lp->{type}}) : undef;
- $eid=$mes->command_extension_register('launch','check') unless defined $eid;
-
  my @n = _build_idContainerType($lp) unless exists $lp->{type} && $lp->{type} eq 'trademark'; # draft-ietf-eppext-launchphase-03
- $mes->command_extension($eid,\@n);
+
+ if (exists $lp->{type}) {
+  $epp->message()->command_extension('launch', ['check',{type => $lp->{type}}]);
+ } else {
+  $epp->message()->command_extension('launch', ['check', @n]);
+ }
 
  return;
 }
@@ -263,14 +266,14 @@ sub check_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $chkdata=$mes->get_extension($mes->ns('launch'),'chkData');
+ my $chkdata=$mes->get_extension('launch','chkData');
  return unless defined $chkdata;
 
- my $phaseel = $chkdata->getChildrenByTagNameNS($mes->ns('launch'),'phase')->shift();
+ my $phaseel = $chkdata->getChildrenByTagNameNS('launch','phase')->shift();
  my $phase = (defined $phaseel && $phaseel->textContent()) ? $phaseel->textContent() : 'wtf';
  my $type = ($chkdata->hasAttribute('type'))?$chkdata->getAttribute('type'):undef;
 
- foreach my $cd ($chkdata->getChildrenByTagNameNS($mes->ns('launch'),'cd'))
+ foreach my $cd ($chkdata->getChildrenByTagNameNS('launch','cd'))
  {
   my ($domain,@claims);
   foreach my $el (Net::DRI::Util::xml_list_children($cd))
@@ -313,18 +316,19 @@ sub check_parse
 sub info
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'lp');
  my $lp = $rd->{'lp'};
 
  Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase};
  Net::DRI::Exception::usererr_invalid_parameters('application_id') if (exists $lp->{application_id} && $lp->{application_id} eq '');
- 
- my $eid = (exists $lp->{include_mark} && $lp->{include_mark} && $lp->{include_mark} !~ m/^(no|false)$/) ? $mes->command_extension_register('launch','info',{includeMark => 'true'}) : undef;
- $eid=$mes->command_extension_register('launch','info') unless defined $eid;
 
  my @n = _build_idContainerType($lp);
- $mes->command_extension($eid,\@n);
+
+ if (exists $lp->{include_mark} && $lp->{include_mark} && $lp->{include_mark} !~ m/^(no|false)$/) {
+   $epp->message()->command_extension('launch', ['info',{includeMark => 'true'}]);
+ } else {
+   $epp->message()->command_extension('launch', ['info', @n]);
+ }
 
  return;
 }
@@ -335,7 +339,7 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
  
- my $infdata=$mes->get_extension($mes->ns('launch'),'infData');
+ my $infdata=$mes->get_extension('launch','infData');
  return unless defined $infdata;
  
  my @marks;
@@ -374,7 +378,6 @@ sub info_parse
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'lp');
  my $lpref = $rd->{'lp'};
  my @lps;
@@ -388,8 +391,6 @@ sub create
   Net::DRI::Exception::usererr_invalid_parameters('type') if exists $lp->{type} && $lp->{type}  !~ m/^(application|registration)$/;
   Net::DRI::Exception::usererr_invalid_parameters('For create sunrise: at least one code_marks, signed_marks, encoded_signed_marks is required') if $lp->{'phase'} eq 'sunrise' and !(exists $lp->{code_marks} || exists $lp->{signed_marks} || exists $lp->{encoded_signed_marks}); 
 
-  my $eid = (exists $lp->{type}) ? $mes->command_extension_register('launch','create',{type => $lp->{type}}) : undef;
-  $eid=$mes->command_extension_register('launch','create') unless defined $eid;
   my @n =_build_idContainerType($lp);
   
    # Code Marks
@@ -459,7 +460,11 @@ sub create
     }
    }
    
-  $mes->command_extension($eid,\@n);
+  if (exists $lp->{type}) {
+    $epp->message()->command_extension('launch', ['create',{type => $lp->{type}},@n]);
+  } else {
+    $epp->message()->command_extension('launch', ['create',@n]);
+  }  
  }
  return;
 }
@@ -469,7 +474,7 @@ sub create_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $credata=$mes->get_extension($mes->ns('launch'),'creData');
+ my $credata=$mes->get_extension('launch','creData');
  return unless defined $credata;
   
  foreach my $el (Net::DRI::Util::xml_list_children($credata))
@@ -488,7 +493,6 @@ sub create_parse
 sub update_delete
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  my ($lp,$cmd);
  if (UNIVERSAL::isa($rd,'Net::DRI::Data::Changes')) {
    $cmd = 'update';
@@ -503,11 +507,8 @@ sub update_delete
  
  Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase};
  Net::DRI::Exception::usererr_insufficient_parameters('application_id') unless exists $lp->{application_id};
-
- my $eid=$mes->command_extension_register('launch',$cmd);
  my @n =_build_idContainerType($lp);
-
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('launch', [$cmd, @n]);
 
  return;
 }

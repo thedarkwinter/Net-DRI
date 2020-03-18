@@ -120,7 +120,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({ map { $_ => ['http://www.unitedtld.com/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/charge/ });
+ $po->ns({ map { $_ => 'http://www.unitedtld.com/epp/'.$_.'-1.0' } qw/charge/ });
  $po->capabilities('domain_update','charge',['set']);
 }
 
@@ -215,7 +215,7 @@ sub check_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $chkdata=$mes->get_extension($mes->ns('charge'),'chkData');
+ my $chkdata=$mes->get_extension('charge','chkData');
  return unless defined $chkdata;
  foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
  {
@@ -240,7 +240,7 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $infdata=$mes->get_extension($mes->ns('charge'),'infData');
+ my $infdata=$mes->get_extension('charge','infData');
  return unless defined $infdata;
 
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
@@ -264,7 +264,7 @@ sub transform_parse
  my $resdata;
  foreach my $ex (qw/creData upData trnData renData/)
  {
-  next unless $resdata=$mes->get_extension($mes->ns('charge'),$ex);
+  next unless $resdata=$mes->get_extension('charge',$ex);
   foreach my $el (Net::DRI::Util::xml_list_children($resdata))
   {
     my ($n,$c)=@$el;
@@ -278,12 +278,10 @@ sub transform_parse
 sub transform_build
 {
  my ($epp,$domain,$rd,$cmd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'charge');
  my @n = charge_set_build($rd->{'charge'},$cmd);
  return unless @n;
- my $eid=$mes->command_extension_register('charge','agreement');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('charge', ['agreement', @n]);
  return;
 }
 

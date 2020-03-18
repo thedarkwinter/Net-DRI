@@ -37,7 +37,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'cozacontact' => [ 'http://co.za/epp/extensions/cozacontact-1-0','coza-contact-1.0.xsd' ] });
+ $po->ns({ 'cozacontact' => 'http://co.za/epp/extensions/cozacontact-1-0' });
  $po->capabilities('contact_update','status',undef); ## No changes in status possible for .CO.ZA contacts
  $po->capabilities('contact_update','cancel_action',['set']);
  return;
@@ -48,18 +48,15 @@ sub setup
 sub info
 {
  my ($epp,$c,$rp)=@_;
- my $mes=$epp->message();
 
  if (Net::DRI::Util::has_key($rp,'domain_listing') && $rp->{domain_listing})
  {
-  my $eid=$mes->command_extension_register('cozacontact','info');
-  $mes->command_extension($eid,[['cozacontact:domainListing','true']]);
+  $epp->message()->command_extension('cozacontact', ['info', ['cozacontact:domainListing','true']]);
  }
 
  if (Net::DRI::Util::has_key($rp,'balance') && $rp->{balance})
  {
-  my $eid=$mes->command_extension_register('cozacontact','info');
-  $mes->command_extension($eid,[['cozacontact:balance','true']]);
+  $epp->message()->command_extension('cozacontact', ['info', ['cozacontact:balance','true']]);
  }
  return;
 }
@@ -97,7 +94,7 @@ sub update
  return unless defined $cancel;
 
  Net::DRI::Exception::usererr_invalid_parameters('cancel_action parameter must be PendingUpdate') unless $cancel eq 'PendingUpdate';
- my $eid=$mes->command_extension_register('cozacontact','update',{cancelPendingAction=>$cancel});
+ $epp->message()->command_extension('cozacontact', ['update', {cancelPendingAction=>$cancel}]);
  return;
 }
 

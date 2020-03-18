@@ -37,7 +37,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'cozadomain' => [ 'http://co.za/epp/extensions/cozadomain-1-0','coza-domain-1.0.xsd' ] });
+ $po->ns({ 'cozadomain' => 'http://co.za/epp/extensions/cozadomain-1-0' });
  $po->capabilities('domain_update','cancel_action',['set']);
  $po->capabilities('domain_update','auto_renew',['set']);
  return;
@@ -49,13 +49,11 @@ sub setup
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $autorenew=$todo->set('auto_renew');
  if (defined $autorenew)
  {
-  my $eid=$mes->command_extension_register('cozadomain','update');
-  $mes->command_extension($eid,[['cozadomain:chg',['cozadomain:autorenew',$autorenew ? 'true' : 'false']]]);
+  $epp->message()->command_extension('cozadomain', ['update', ['cozadomain:chg',['cozadomain:autorenew',$autorenew ? 'true' : 'false']]]);
   return;
  }
 
@@ -64,7 +62,7 @@ sub update
  {
   my @actions = qw/PendingManualSuspension PendingUpdate PendingManualDeletion PendingGracePeriodSuspension PendingSuspension PendingDeletion PendingClosedRedemption/;
   Net::DRI::Exception::usererr_invalid_parameters("cancel_action parameter must be one of @actions") unless grep ($_ eq $cancel, @actions);
-  my $eid=$mes->command_extension_register('cozadomain','update',{cancelPendingAction=>$cancel});
+  $epp->message()->command_extension('cozadomain', ['update',{cancelPendingAction=>$cancel}]);
  }
  return;
 }
@@ -73,8 +71,7 @@ sub update
 sub info
 {
  my ($epp,$domain,$rp)=@_;
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('cozadomain','info');
+ $epp->message()->command_extension('cozadomain', ['info']);
  return;
 }
 
