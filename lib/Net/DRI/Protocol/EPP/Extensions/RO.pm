@@ -68,9 +68,9 @@ sub setup {
 	my ( $self, $rp ) = @_;
 	$self->ns(
 		{	
-		    domain      => 		['http://www.rotld.ro/xml/epp/domain-1.0','domain-1.0.xsd'],
-			idn =>       ['http://www.rotld.ro/xml/epp/idn-1.0','idn-1.0.xsd'],
-			rotld =>    ['http://www.rotld.ro/xml/epp/rotld-1.0','rotld-1.0.xsd'],
+			domain   => 'http://www.rotld.ro/xml/epp/domain-1.0',
+			idn      => 'http://www.rotld.ro/xml/epp/idn-1.0',
+			rotld    => 'http://www.rotld.ro/xml/epp/rotld-1.0'
 		}
 	);
 	$self->capabilities( 'domain_update', 'activate_domain', ['set'] );

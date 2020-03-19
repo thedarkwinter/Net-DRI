@@ -78,7 +78,6 @@ sub register_commands {
 
 sub create {
 	my ( $epp, $c ) = @_;
-	my $mes = $epp->message;
 	my (@e,@f);
 
 	return unless defined $c->vat() || $c->orgno() || $c->type();
@@ -86,11 +85,9 @@ sub create {
 	push @f,['rotld:cnp_fiscal_code', $c->vat() ];
 	push @f,['rotld:registration_number', $c->orgno() ];
 	push @f,['rotld:person_type', $c->type() ];
-
 	push @e,['rotld:create',['rotld:contact',@f]];
+	$epp->message()->command_extension('rotld', ['ext', @e]);
 
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
 	return;
 }
 

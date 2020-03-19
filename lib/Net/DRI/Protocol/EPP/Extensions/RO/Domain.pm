@@ -105,10 +105,9 @@ sub create {
 
 	push @f,['rotld:agreement',{legal_use => $rd->{'domain_terms'}->{'legal_use'}, registration_rules => $rd->{'domain_terms'}->{'reg_rules'}}];
 	if ($rd->{'reserve_domain'}->{'reserve'} == 1) {push @f,['rotld:reserve'];}
-
 	push @e,['rotld:create',['rotld:domain',@f]];
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
+	$epp->message()->command_extension('rotld', ['ext', @e]);
+
 	return;
 }
 
@@ -143,15 +142,15 @@ sub trade_request {
 
 	my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['trade',{'op'=>'request'}],$domain);
 	$mes->command_body(\@d);
-	$mes->command([['trade',{'op'=>'request'}],'domain:trade',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain'))]);
+	$mes->command([['trade',{'op'=>'request'}],'domain:trade', $mes->nsattrs('domain')]);
 
 	push @f,['rotld:authorization_key', $rd->{'trade_auth_info'}->{'authorization_key'} ] if (defined $rd->{'trade_auth_info'}->{'authorization_key'});
 	push @f,['rotld:c_registrant', $rd->{'trade_auth_info'}->{'c_registrant'} ] if (defined $rd->{'trade_auth_info'}->{'c_registrant'});
 	push @f,['rotld:domain_password', $rd->{'trade_auth_info'}->{'domain_password'} ] if (defined $rd->{'trade_auth_info'}->{'domain_password'});
 	push @e,['rotld:trade',['rotld:domain',['rotld:request',@f]]];
 
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
+	$epp->message()->command_extension('rotld', ['ext', @e]);
+
 	return;
 }
 
@@ -190,15 +189,15 @@ sub trade_approve {
 
 	my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['trade',{'op'=>'approve'}],$domain);
 	$mes->command_body(\@d);
-	$mes->command([['trade',{'op'=>'approve'}],'domain:trade',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain'))]);
+	$mes->command([['trade',{'op'=>'approve'}],'domain:trade', $mes->nsattrs('domain')]);
 
 	return unless ((defined $rd->{'tid'}));
 
 	push @f,['rotld:tid', $rd->{'tid'} ] if (defined $rd->{'tid'});
 	push @e,['rotld:trade',['rotld:domain',['rotld:approve',@f]]];
 
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
+	$mes->command_extension('rotld', ['ext', @e]);
+
 	return;
 }
 
@@ -209,15 +208,15 @@ sub trade_query {
 
 	my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['trade',{'op'=>'query'}],$domain);
 	$mes->command_body(\@d);
-	$mes->command([['trade',{'op'=>'query'}],'domain:trade',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain'))]);
+	$mes->command([['trade',{'op'=>'query'}],'domain:trade', $mes->nsattrs('domain')]);
 
 	return unless ((defined $rd->{'tid'}));
 
 	push @f,['rotld:tid', $rd->{'tid'} ] if (defined $rd->{'tid'});
 	push @e,['rotld:trade',['rotld:domain',['rotld:query',@f]]];
 
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
+	$mes->command_extension('rotld', ['ext', @e]);
+
 	return;
 }
 
@@ -253,20 +252,19 @@ sub transfer_request {
 	my ($epp,$domain,$rd)=@_;
 	my $mes=$epp->message();
 	my (@e,@f);
+	use Data::Dumper; print Dumper($rd);
 
 	return unless ((defined $rd->{'authorization_key'}));
 
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
+	$mes->command_extension('rotld', ['ext', @e]);
 
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
 	return;
 }
 
 sub transfer_answer {
 	my ($epp,$domain,$rd)=@_;
-	my $mes=$epp->message();
 	my (@e,@f,$op);
 
 	return unless ((defined $rd->{'authorization_key'}));
@@ -274,8 +272,8 @@ sub transfer_answer {
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
 
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
+	$epp->message()->command_extension('roltd', ['ext', @e]);
+
 	return;
 }
 
@@ -289,14 +287,13 @@ sub transfer_cancel {
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
 
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
+	$mes->command_extension('rotld', ['ext', @e]);
+
 	return;
 }
 
 sub transfer_query {
 	my ($epp,$domain,$rd)=@_;
-	my $mes=$epp->message();
 	my (@e,@f);
 
 	return unless ((defined $rd->{'authorization_key'}));
@@ -304,14 +301,13 @@ sub transfer_query {
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
 
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
+	$epp->message()->command_extension('rotld', ['ext', @e]);
+
 	return;
 }
 
 sub update {
 	my ($epp,$domain,$todo)=@_;
-	my $mes=$epp->message();
 	my (@e,@f);
 
 	if (!$todo->add('ns') || ($todo->add('ns') && $todo->add('ns')->is_empty()) ) {
@@ -321,8 +317,8 @@ sub update {
 	return unless ( (defined $todo->set('activate_domain')) && ($todo->set('activate_domain')=~m/^(1)$/));
 	push @e,['rotld:update',['rotld:domain',['rotld:activate']]];
 
-	my $eid = $mes->command_extension_register('rotld','ext');
-	$mes->command_extension($eid,\@e);
+	$epp->message()->command_extension('rotld', ['ext', @e]);
+
 	return;
 }
 
