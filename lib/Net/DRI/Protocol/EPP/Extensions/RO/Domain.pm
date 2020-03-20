@@ -252,12 +252,12 @@ sub transfer_request {
 	my ($epp,$domain,$rd)=@_;
 	my $mes=$epp->message();
 	my (@e,@f);
-	use Data::Dumper; print Dumper($rd);
 
 	return unless ((defined $rd->{'authorization_key'}));
 
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
+
 	$mes->command_extension('rotld', ['ext', @e]);
 
 	return;
@@ -265,6 +265,7 @@ sub transfer_request {
 
 sub transfer_answer {
 	my ($epp,$domain,$rd)=@_;
+	my $mes=$epp->message();
 	my (@e,@f,$op);
 
 	return unless ((defined $rd->{'authorization_key'}));
@@ -272,7 +273,7 @@ sub transfer_answer {
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
 
-	$epp->message()->command_extension('roltd', ['ext', @e]);
+	$mes->command_extension('rotld', ['ext', @e]);
 
 	return;
 }
@@ -282,7 +283,7 @@ sub transfer_cancel {
 	my $mes=$epp->message();
 	my (@e,@f);
 
-	return unless ((defined $rd->{'authorization_key'}));
+	return unless (defined $rd->{'authorization_key'});
 
 	push @f,['rotld:authorization_key', $rd->{'authorization_key'} ] if (defined $rd->{'authorization_key'});
 	push @e,['rotld:transfer',['rotld:domain',@f]];
