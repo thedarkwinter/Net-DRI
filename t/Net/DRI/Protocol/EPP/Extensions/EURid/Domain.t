@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 219;
+use Test::More tests => 231;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -319,8 +319,8 @@ is($dri->get_info('removedDeletionDate'),1,'domain_renew get_info(removedDeletio
 is($dri->get_info('name'),'extend-term2y-idn-café-1349786342.eu','domain_renew get_info(name)');
 is($dri->get_info('ace'),'xn--extend-term2y-idn-caf-1349786342-v3c.eu','domain_renew get_info(ace)');
 is($dri->get_info('unicode'),'extend-term2y-idn-café-1349786342.eu','domain_renew get_info(unicde)');
-is($dri->get_info('name_ace'),'xn--extend-term2y-idn-caf-1349786342-v3c.eu','domain_transfer_start get_info(name_ace)');
-is($dri->get_info('name_idn'),'extend-term2y-idn-café-1349786342.eu','domain_transfer_start  get_info(name_idn)');
+is($dri->get_info('name_ace'),'xn--extend-term2y-idn-caf-1349786342-v3c.eu','domain_renew get_info(name_ace)');
+is($dri->get_info('name_idn'),'extend-term2y-idn-café-1349786342.eu','domain_renew  get_info(name_idn)');
 
 
 ## 2.1.09/domains/domain-renew/domain-renew05-cmd.xml
@@ -523,5 +523,32 @@ is($dri->get_info('exist_reason','domain','somedomainlock.eu'),'registered','dom
 $s=$dri->get_info('status','domain','somedomainlock.eu');
 isa_ok($s,'Net::DRI::Data::StatusList','domain_check get_info(status)');
 is_deeply([$s->list_status()],['clientTransferProhibited'],'domain_check get_info(status) list');
+
+# multiyear transfer domain
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>somedomain-multiyear-transfer.eu</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>t000002</domain:reID><domain:reDate>2020-02-24T14:36:27.200Z</domain:reDate><domain:acID>t000002</domain:acID><domain:acDate>2020-02-24T14:36:27.200Z</domain:acDate><domain:exDate>2026-02-24T22:59:59.999Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('c24'),'registrant');
+$cs->set($dri->local_object('contact')->srid('c23'),'billing');
+$cs->set($dri->local_object('contact')->srid('c25'),'onsite');
+my %rd2;
+$rd2{auth}={pw=>'XXXX-3GN6-Y27V-LTYY'};
+$rd2{duration}=DateTime::Duration->new(years=>5);
+$rd2{contact}=$cs;
+$rc=$dri->domain_transfer_start('somedomain-multiyear-transfer.eu',\%rd2);
+is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>somedomain-multiyear-transfer.eu</domain:name><domain:period unit="y">5</domain:period><domain:authInfo><domain:pw>XXXX-3GN6-Y27V-LTYY</domain:pw></domain:authInfo></domain:transfer></transfer><extension><domain-ext:transfer xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-2.4" xsi:schemaLocation="http://www.eurid.eu/xml/epp/domain-ext-2.4 domain-ext-2.4.xsd" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain-ext:request><domain-ext:registrant>c24</domain-ext:registrant><domain-ext:contact type="billing">c23</domain-ext:contact><domain-ext:contact type="onsite">c25</domain-ext:contact></domain-ext:request></domain-ext:transfer></extension><clTRID>ABC-12345</clTRID></command></epp>','domain_transfer_start multi year build');
+is($rc->is_success(),1,'domain_transfer_start multiyear is_success');
+is($dri->get_info('name'),'somedomain-multiyear-transfer.eu','domain_transfer_query get_info(name)');
+is($dri->get_info('trStatus'),'serverApproved','domain_transfer_query get_info(trStatus)');
+is($dri->get_info('reID'),'t000002','domain_transfer_query get_info(reID)');
+$d=$dri->get_info('reDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(reDate)');
+is(''.$d,'2020-02-24T14:36:27','domain_transfer_query get_info(crDate) value');
+is($dri->get_info('acID'),'t000002','domain_transfer_query get_info(acID)');
+$d=$dri->get_info('acDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(acDate)');
+is(''.$d,'2020-02-24T14:36:27','domain_transfer_query get_info(acDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(exDate)');
+is(''.$d,'2026-02-24T22:59:59','domain_transfer_query get_info(exDate) value');
 
 exit 0;
