@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP IDN (draft-ietf-eppext-idnmap-02)
 ##
-## Copyright (c) 2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2015,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -36,8 +36,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'idn' => [ 'urn:ietf:params:xml:ns:idn-1.0','idn-1.0.xsd' ],
-         });
+ $po->ns({ 'idn' => 'urn:ietf:params:xml:ns:idn-1.0' });
  return;
 }
 
@@ -74,7 +73,6 @@ sub info_parse
 sub create_build
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  # Make Compatible with Data::IDN  object
  if (Net::DRI::Util::has_key($rd,'idn') && UNIVERSAL::isa($rd->{idn},'Net::DRI::Data::IDN'))
@@ -88,11 +86,10 @@ sub create_build
  Net::DRI::Exception::usererr_invalid_parameters('idn_table must be of type XML schema token with at least 1 character') unless Net::DRI::Util::xml_is_token($rd->{idn_table},1);
  Net::DRI::Exception::usererr_invalid_parameters('uname must be of type XML schema token from 1 to 255 characters') if (exists $rd->{'uname'} && !Net::DRI::Util::xml_is_token($rd->{uname},1,255));
 
- my $eid=$mes->command_extension_register('idn','data');
  my @n;
  push @n,['idn:table',$rd->{idn_table}];
  push @n,['idn:uname',$rd->{uname}] if exists $rd->{uname};
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('idn', ['data', @n]);
 
  return;
 }
@@ -130,7 +127,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2013,2015,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
