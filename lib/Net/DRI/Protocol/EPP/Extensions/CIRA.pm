@@ -28,8 +28,8 @@ sub setup
 {
  my ($self,$rp)=@_;
  my $version=$self->version();
- $self->ns({cira=>['urn:ietf:params:xml:ns:cira-1.0','cira-1.0.xsd'],
-            poll=>['urn:ietf:params:xml:ns:poll-1.0','poll-1.0.xsd']});
+ $self->ns({cira=>'urn:ietf:params:xml:ns:cira-1.0',
+            poll=>'urn:ietf:params:xml:ns:poll-1.0'});
 
  $self->factories('contact',sub { return Net::DRI::Data::Contact::CIRA->new(); });
  $self->default_parameters({domain_create => { auth => { pw => '' } } }); ## authInfo not used by CIRA

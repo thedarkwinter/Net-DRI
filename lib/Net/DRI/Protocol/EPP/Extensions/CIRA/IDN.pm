@@ -41,8 +41,8 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $ns={ 'cira-idn'        => [ 'urn:ietf:params:xml:ns:cira-idn-1.0','cira-idn-1.0.xsd' ],
-             'cira-idn-bundle' => [ 'urn:ietf:params:xml:ns:cira-idn-bundle-1.0','cira-idn-bundle-1.0.xsd' ],
+ state $ns={ 'cira-idn'        => 'urn:ietf:params:xml:ns:cira-idn-1.0',
+             'cira-idn-bundle' => 'urn:ietf:params:xml:ns:cira-idn-bundle-1.0'
            };
  $po->ns($ns);
  return;
@@ -64,10 +64,9 @@ sub _validate_repertoire
 sub domain_check_build
 {
  my ($epp,$domain,$rp)=@_;
- my $mes=$epp->message();
  return unless _validate_repertoire($rp);
- my $eid=$mes->command_extension_register('cira-idn','ciraIdnCheck');
- $mes->command_extension($eid,['cira-idn:repertoire',$rp->{idn_table}]);
+ $epp->message()->command_extension('cira-idn', ['ciraIdnCheck', ['cira-idn:repertoire', $rp->{idn_table}]]);
+
  return;
 }
 
@@ -98,7 +97,7 @@ sub bundle_info_build
   push @d,['cira-idn-bundle:repertoire',$rp->{idn_table}];
  }
 
- $mes->command(['info','cira-idn-bundle:info',sprintf('xmlns:cira-idn-bundle="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('cira-idn-bundle'))]);
+ $mes->command(['info','cira-idn-bundle:info', $mes->nsattrs('cira-idn-bundle')]);
  $mes->command_body(\@d);
  return;
 }
@@ -147,8 +146,6 @@ sub bundle_info_parse
 sub domain_create_build
 {
  my ($epp,$domain,$rp)=@_;
- my $mes=$epp->message();
-
  return unless _validate_repertoire($rp);
 
  my @d;
@@ -158,9 +155,8 @@ sub domain_create_build
   Net::DRI::Exception::usererr_invalid_parameters('ulabel must be of type eppcom:labelType') unless Net::DRI::Util::xml_is_token($rp->{ulabel},1,255);
   push @d,['cira-idn:u-label',$rp->{ulabel}];
  }
+ $epp->message()->command_extension('cira-idn', ['ciraIdnCreate', @d]);
 
- my $eid=$mes->command_extension_register('cira-idn','ciraIdnCreate');
- $mes->command_extension($eid,\@d);
  return;
 }
 

@@ -39,7 +39,7 @@ sub register_commands
 sub build_command_extension
 {
  my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:cira="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('cira')));
+ return $mes->command_extension_register($tag, $mes->nsattrs('cira'));
 }
 
 sub info_parse
@@ -83,7 +83,6 @@ sub create
 sub transfer_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_contact($rd);
 
  my @n;
@@ -101,9 +100,8 @@ sub transfer_request
   Net::DRI::Exception::usererr_insufficient_parameters('only up to 3 tech contacts are possible in .CA for domain_transfer_start') if (scalar(@c)!=scalar(grep { Net::DRI::Util::isa_contact($_,'Net::DRI::Data::Contact::CIRA') && length $_->srid() && $_->validate(1) } @c) || @c>3);
   push @n,map { ['cira:contact',{type=>'tech'},$_->srid()] } @c;
  }
+ $epp->message()->command_extension('cira', ['cira:ciraTransfer',['cira:ciraChg', @n]]);
 
- my $eid=build_command_extension($mes,$epp,'cira:ciraTransfer');
- $mes->command_extension($eid,['cira:ciraChg',@n]);
  return;
 }
 

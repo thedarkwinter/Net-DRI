@@ -31,7 +31,7 @@ sub get
 {
  my ($epp,$language)=@_;
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('cira:ciraInfo',sprintf('xmlns:cira="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('cira')));
+ my $eid=$mes->command_extension_register('cira:ciraInfo', $mes->nsattrs('cira'));
  $mes->command_extension($eid,[['cira:action','get CIRA latest agreement'],['cira:language',defined $language ? $language : 'en']]);
  return;
 }

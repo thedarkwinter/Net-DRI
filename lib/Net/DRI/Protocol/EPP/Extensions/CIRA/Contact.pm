@@ -34,12 +34,6 @@ sub register_commands
  return { 'contact' => \%tmp };
 }
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:cira="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('cira')));
-}
-
 ####################################################################################################
 ########### Query commands
 
@@ -92,7 +86,6 @@ sub info_parse
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
 
  ## $contact->validate() has been called
  my @n;
@@ -108,16 +101,14 @@ sub create
  push @n,['cira:createdByResellerId',$contact->reseller_id()] if defined $contact->reseller_id();
  push @n,['cira:whoisDisplaySetting',$contact->whois_display()] if defined $contact->whois_display();
 
- my $eid=build_command_extension($mes,$epp,'cira:ciraCreate');
- $mes->command_extension($eid,[@n]);
+ $epp->message()->command_extension('cira', ['cira:ciraCreate', @n]);
+
  return;
 }
 
 sub update
 {
  my ($epp,$contact,$todo)=@_;
- my $mes=$epp->message();
-
  my $newc=$todo->set('info');
  return unless defined $newc;
 
@@ -128,11 +119,10 @@ sub update
  push @n,['cira:cprCategory',$newc->legal_form()] if defined $newc->legal_form();
  push @n,['cira:language',$newc->lang()] if defined $newc->lang();
  push @n,['cira:whoisDisplaySetting',$newc->whois_display()] if defined $newc->whois_display();
-
  return unless @n;
 
- my $eid=build_command_extension($mes,$epp,'cira:ciraUpdate');
- $mes->command_extension($eid,['cira:ciraChg',@n]);
+ $epp->message()->command_extension('cira', ['cira:ciraUpdate', ['cira:ciraChg',@n]]);
+
  return;
 }
 
