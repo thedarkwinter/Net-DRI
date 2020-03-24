@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::SIDN::Contact;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -25,19 +26,15 @@ use Net::DRI::Exception;
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           info   => [ undef, \&info_parse ],
-           create => [ \&create, undef ],
-	   update => [ \&update ],
-         );
 
- return { 'contact' => \%tmp };
-}
+ state $contact = {
+                   info   => [ undef, \&info_parse ],
+                   create => [ \&create, undef ],
+                   update => [ \&update ],
+                  };
+ state $commands = { 'contact' => $contact };
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,$mes->nsattrs('sidn'));
+ return $commands;
 }
 
 ####################################################################################################

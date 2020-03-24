@@ -165,7 +165,7 @@ is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:para
 ####################################################################################################
 ## Host commands
 
-$R2=$E1.'<response>'.r().'<resData><host:infData xmlns:host="urn:ietf:params:xml:ns:host-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><host:name>ns1.domain100.nl</host:name><host:roid>NSR_100-SIDN</host:roid><host:status s="ok"/><host:addr ip="v4">1.2.3.0</host:addr><host:clID>100000</host:clID><host:crID>100000</host:crID><host:crDate>2009-06-10T00:00:00.000+02:00</host:crDate><host:upID>100000</host:upID><host:upDate>2009-06-12T00:00:00.000+02:00</host:upDate></host:infData></resData><extension><urn1:ext xmlns:urn1="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0"><urn1:infData><urn1:host><urn1:limited>false</urn1:limited></urn1:host></urn1:infData></urn1:ext></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><host:infData xmlns:host="urn:ietf:params:xml:ns:host-1.0"><host:name>ns1.domain100.nl</host:name><host:roid>NSR_100-SIDN</host:roid><host:status s="ok"/><host:addr ip="v4">1.2.3.0</host:addr><host:clID>100000</host:clID><host:crID>100000</host:crID><host:crDate>2009-06-10T00:00:00.000+02:00</host:crDate><host:upID>100000</host:upID><host:upDate>2009-06-12T00:00:00.000+02:00</host:upDate></host:infData></resData><extension><urn1:ext xmlns:urn1="http://rxsd.domain-registry.nl/sidn-ext-epp-1.0"><urn1:infData><urn1:host><urn1:limited>false</urn1:limited></urn1:host></urn1:infData></urn1:ext></extension>'.$TRID.'</response>'.$E2;
 
 $rc=$dri->host_info('ns1.domain100.nl');
 $h=$rc->get_data('self');

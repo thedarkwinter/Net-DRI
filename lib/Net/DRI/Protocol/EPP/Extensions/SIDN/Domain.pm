@@ -38,12 +38,6 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,$mes->nsattrs('sidn'));
-}
-
 sub info_parse
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
