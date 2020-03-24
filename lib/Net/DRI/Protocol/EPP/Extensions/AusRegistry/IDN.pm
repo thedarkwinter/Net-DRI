@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP AusRegistry IDN Extension
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -36,8 +36,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'idn' => [ 'urn:X-ar:params:xml:ns:idnadomain-1.0','idnadomain-1.0.xsd' ],
-         });
+ $po->ns({ 'idn' => 'urn:X-ar:params:xml:ns:idnadomain-1.0' });
  return;
 }
 
@@ -97,7 +96,6 @@ sub info_parse
 sub create_build
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  return unless Net::DRI::Util::has_key($rd,'idn');
 
@@ -107,8 +105,8 @@ sub create_build
  Net::DRI::Exception::usererr_insufficient_parameters(q{IDN ref hash must have a user_form key}) unless exists $rd->{idn}->{user_form} && defined $rd->{idn}->{user_form};
  Net::DRI::Exception::usererr_invalid_parameters(q{IDN user_form value must be of type XML token from 1 to 255 characters}) unless Net::DRI::Util::xml_is_token($rd->{idn}->{user_form},1,255);
 
- my $eid=$mes->command_extension_register('idn','create');
- $mes->command_extension($eid,['userForm',{language => $rd->{idn}->{language}},$rd->{idn}->{user_form}]);
+ my $mes=$epp->message();
+ $mes->command_extension('idn', ['create', ['userForm', {language => $rd->{idn}->{language}}, $rd->{idn}->{user_form}]]);
 
  return;
 }
@@ -167,7 +165,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -177,4 +175,3 @@ the Free Software Foundation; either version 2 of the License, or
 See the LICENSE file that comes with this distribution for more details.
 
 =cut
-

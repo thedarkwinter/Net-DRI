@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP AusRegistry Key Value Extension
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -37,8 +37,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'kv' => [ 'urn:X-ar:params:xml:ns:kv-1.0','kv-1.0.xsd' ],
-         });
+ $po->ns({ 'kv' => 'urn:X-ar:params:xml:ns:kv-1.0' });
  return;
 }
 
@@ -103,9 +102,9 @@ sub build_kvlists
    Net::DRI::Exception::usererr_invalid_parameters(qq{item name "$key" (in kvlist name "$kvlistname") must be an XML token}) unless Net::DRI::Util::xml_is_token($key);
    my $v=$rd->{$kvlistname}->{$key};
    Net::DRI::Exception::usererr_invalid_parameters(qq{value "$v" for item name "$key" (in kvlist name "$kvlistname") must be an XML string}) unless Net::DRI::Util::xml_is_string($v);
-   push @kv,['kv:item',{key => $key},$v];
+   push @kv,['item',{key => $key},$v];
   }
-  push @kvs,['kv:kvlist',{name => $kvlistname},@kv];
+  push @kvs,['kvlist',{name => $kvlistname},@kv];
  }
  return @kvs;
 }
@@ -122,12 +121,8 @@ sub build_kvlists
 sub create_build
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
- return unless Net::DRI::Util::has_key($rd,'keyvalue');
-
- my $eid=$mes->command_extension_register('kv','create');
- $mes->command_extension($eid,[build_kvlists($rd->{keyvalue})]);
+ $epp->message()->command_extension('kv', ['create', build_kvlists($rd->{keyvalue})]) if Net::DRI::Util::has_key($rd,'keyvalue');
 
  return;
 }
@@ -144,13 +139,10 @@ sub create_build
 sub update_build
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $toset=$todo->set('keyvalue');
- return unless defined $toset;
 
- my $eid=$mes->command_extension_register('kv','update');
- $mes->command_extension($eid,[build_kvlists($toset)]);
+ $epp->message()->command_extension('kv', ['update', build_kvlists($toset)]) if defined $toset;
 
  return;
 }
@@ -188,7 +180,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

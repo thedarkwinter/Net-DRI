@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP AusRegistry Domain Variant Extension
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -37,8 +37,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'variant' => [ 'urn:X-ar:params:xml:ns:variant-1.0','variant-1.0.xsd' ],
-         });
+ $po->ns({ 'variant' => 'urn:X-ar:params:xml:ns:variant-1.0' });
  return;
 }
 
@@ -54,12 +53,11 @@ sub capabilities_add { return ('domain_update','variants',['add','del']); }
 sub info_build
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  my $variants='all'; ## default value
  $variants=$rd->{variants} if Net::DRI::Util::has_key($rd,'variants') && $rd->{variants}=~m/^(?:all|none)$/;
 
- my $eid=$mes->command_extension_register('variant','info',{variants => $variants});
+ $epp->message()->command_extension('variant', ['info', {variants => $variants}]);
 
  return;
 }
@@ -152,13 +150,11 @@ sub build_variants
 sub update_build
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $toadd=$todo->add('variants');
  my $todel=$todo->del('variants');
  return unless defined $toadd || defined $todel;
 
- my $eid=$mes->command_extension_register('variants','update');
  my @v;
 
  if (defined $toadd)
@@ -172,7 +168,7 @@ sub update_build
   push @v,['variants:rem',build_variants($todel)];
  }
 
- $mes->command_extension($eid,\@v);
+ $epp->message()->command_extension('variants', ['update', @v]);
 
  return;
 }
@@ -210,7 +206,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

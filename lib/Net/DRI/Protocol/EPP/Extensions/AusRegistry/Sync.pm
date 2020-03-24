@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP AusRegistry Sync
 ##
-## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -33,7 +33,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $ns = { 'sync' => [ 'urn:X-ar:params:xml:ns:sync-1.0','sync-1.0.xsd' ] };
+ state $ns = { 'sync' => 'urn:X-ar:params:xml:ns:sync-1.0' };
  $po->ns($ns);
  return;
 }
@@ -49,7 +49,6 @@ sub implements { return 'http://ausregistry.github.io/doc/Domain%20Expiry%20Sync
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $sync=$todo->set('sync');
  return unless defined $sync && $sync;
@@ -59,8 +58,7 @@ sub update
  Net::DRI::Util::check_isa($sync,'DateTime');
  my $date = $sync->clone()->set_time_zone('UTC')->strftime('%FT%T.%6NZ');
 
- my $eid=$mes->command_extension_register('sync', 'update');
- $mes->command_extension($eid,['sync:exDate', $date]);
+ $epp->message()->command_extension('sync', ['update', ['exDate', $date]]);
  return;
 }
 
@@ -97,7 +95,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
