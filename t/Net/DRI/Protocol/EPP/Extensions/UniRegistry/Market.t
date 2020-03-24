@@ -12,7 +12,7 @@ use Test::More tests => 100;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -36,7 +36,7 @@ my ($dh,@c,$contact);
 ## market check - with suggestions
 $R2=$E1.'<response>'.r().'<resData><market:chkData xmlns:market="http://ns.uniregistry.net/market-1.0" type="domain"><market:cd><market:name bin="1" offer="1" avail="1">example.com</market:name><market:price>10000</market:price></market:cd><market:cd><market:name avail="0">testing.com</market:name><market:suggestion><market:name bin="1" offer="0">retesting.com</market:name><market:price>5000.00</market:price></market:suggestion><market:suggestion><market:name bin="1" offer="1">iqtesting.net</market:name><market:price>5000.00</market:price></market:suggestion><market:suggestion><market:name bin="0" offer="1">hivtesting.ca</market:name><market:price>5000.00</market:price></market:suggestion></market:cd></market:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->market_check((qw/example.com testing.com/), { 'type_attr'=>'domain', 'suggestions_attr'=>'true'} );
-is_string($R1,$E1.'<command><check><market:check xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd" type="domain" suggestions="true"><market:name>example.com</market:name><market:name>testing.com</market:name></market:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'market_check build');
+is_string($R1,$E1.'<command><check><market:check xmlns:market="http://ns.uniregistry.net/market-1.0" type="domain" suggestions="true"><market:name>example.com</market:name><market:name>testing.com</market:name></market:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'market_check build');
 is($rc->is_success(),1,'market_check multi is_success');
 is($dri->get_info('exist','market','example.com'),0,'market_check multi get_info(exist,domain1)');
 is($dri->get_info('exist','market','testing.com'),1,'market_check multi get_info(exist,domain2)');
@@ -60,7 +60,7 @@ is(@{$suggestions}[2]->{bin},1,'market_check multi get_info(exists,domain2) sugg
 ## market check - without suggestions
 $R2=$E1.'<response>'.r().'<resData><market:chkData xmlns:market="http://ns.uniregistry.net/market-1.0" type="domain"><market:cd><market:name bin="1" offer="1" avail="1">example.com</market:name><market:price>10000</market:price></market:cd><market:cd><market:name avail="0">testing.com</market:name></market:cd></market:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->market_check(qw/example.com testing.com/);
-is_string($R1,$E1.'<command><check><market:check xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd" type="domain" suggestions="true"><market:name>example.com</market:name><market:name>testing.com</market:name></market:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'market_check build');
+is_string($R1,$E1.'<command><check><market:check xmlns:market="http://ns.uniregistry.net/market-1.0" type="domain" suggestions="true"><market:name>example.com</market:name><market:name>testing.com</market:name></market:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'market_check build');
 is($rc->is_success(),1,'market_check multi is_success');
 is($dri->get_info('exist','market','example.com'),0,'market_check multi get_info(exist,domain1)');
 is($dri->get_info('exist','market','testing.com'),1,'market_check multi get_info(exist,domain2)');
@@ -72,7 +72,7 @@ is($dri->get_info('price','market','example.com'),10000,'market_check multi get_
 # response when the order is in status "completed"
 $R2=$E1.'<response>'.r().'<resData><market:infData xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_885-UR</market:orderID><market:name type="domain">example.game</market:name><market:amount>5000.00</market:amount><market:status>completed</market:status><market:crDate>2015-02-16T14:47:40Z</market:crDate><market:upDate>2015-02-16T14:47:45Z</market:upDate><market:transferInfo><market:pw>p@55w0rD!</market:pw></market:transferInfo></market:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->market_info('MA_885-UR');
-is_string($R1,$E1.'<command><info><market:info xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd"><market:orderID>MA_885-UR</market:orderID></market:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'market_info build');
+is_string($R1,$E1.'<command><info><market:info xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_885-UR</market:orderID></market:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'market_info build');
 is($rc->is_success(),1,'market_info multi is_success');
 is($dri->get_info('action'),'info','market_info get_info(action)');
 is($dri->get_info('type'),'market','market_info get_info(type)');
@@ -126,7 +126,7 @@ is("".$d,'2015-02-09T17:31:30','message get_info(upDate) value');
 $R2=$E1.'<response>'.r().'<resData><market:creData xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_6fc-UR</market:orderID><market:name type="domain">example.com</market:name><market:amount>15000.00</market:amount><market:status>received</market:status><market:crDate>2015-02-18T11:49:18Z</market:crDate></market:creData></resData>'.$TRID.'</response>'.$E2;
 $contact = { 'fname'=>'John', 'lname'=>'Doe', 'email'=>'jdoe@example.com', 'voice'=>'+1.5552223344' };
 $rc=$dri->market_create('example.com', { 'order_type'=>'offer', 'amount'=>15000, 'contact'=>$contact });
-is_string($R1,$E1.'<command><create><market:create xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd" type="offer"><market:name type="domain">example.com</market:name><market:amount>15000</market:amount><market:contact><market:firstName>John</market:firstName><market:lastName>Doe</market:lastName><market:email>jdoe@example.com</market:email><market:phone>+1.5552223344</market:phone></market:contact></market:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'market_create of type "offer" build');
+is_string($R1,$E1.'<command><create><market:create xmlns:market="http://ns.uniregistry.net/market-1.0" type="offer"><market:name type="domain">example.com</market:name><market:amount>15000</market:amount><market:contact><market:firstName>John</market:firstName><market:lastName>Doe</market:lastName><market:email>jdoe@example.com</market:email><market:phone>+1.5552223344</market:phone></market:contact></market:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'market_create of type "offer" build');
 is($rc->is_success(),1,'market_create of type "offer" is_success');
 is($dri->get_info('action'),'create','market_create get_info(action)');
 is($dri->get_info('type'),'market','market_create get_info(type)');
@@ -142,7 +142,7 @@ is("".$d,'2015-02-18T11:49:18','market_create get_info(crDate) value');
 ## market create for an order of type "bin"
 $R2=$E1.'<response>'.r().'<resData><market:creData xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_6fc-UR</market:orderID><market:name type="domain">example.com</market:name><market:amount>20000.00</market:amount><market:status>bin</market:status><market:crDate>2015-02-18T13:54:01Z</market:crDate><market:holdExpiryDate>2015-02-25T13:54:01Z</market:holdExpiryDate></market:creData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->market_create('example.com', { 'order_type'=>'bin', 'amount'=>20000 });
-is_string($R1,$E1.'<command><create><market:create xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd" type="bin"><market:name type="domain">example.com</market:name><market:amount>20000</market:amount></market:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'market_create of type "bin" build');
+is_string($R1,$E1.'<command><create><market:create xmlns:market="http://ns.uniregistry.net/market-1.0" type="bin"><market:name type="domain">example.com</market:name><market:amount>20000</market:amount></market:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'market_create of type "bin" build');
 is($rc->is_success(),1,'market_create of type "bin" is_success');
 $d=$dri->get_info('hold_expiry_date');
 isa_ok($d,'DateTime','market_create get_info(holdExpiryDate)');
@@ -151,20 +151,20 @@ is("".$d,'2015-02-25T13:54:01','market_create get_info(holdExpiryDate) value');
 ## market create for an order of type "hold"
 $R2=$E1.'<response>'.r().'<resData><market:creData xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>123123123</market:orderID><market:name type="domain">example.com</market:name><market:amount>20000.00</market:amount><market:status>hold</market:status><market:crDate>2015-02-18T13:54:01Z</market:crDate><market:holdExpiryDate>2015-02-25T13:54:01Z</market:holdExpiryDate></market:creData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->market_create('example.com', { 'order_type'=>'hold', 'amount'=>20000 });
-is_string($R1,$E1.'<command><create><market:create xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd" type="hold"><market:name type="domain">example.com</market:name><market:amount>20000</market:amount></market:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'market_create of type "hold" build');
+is_string($R1,$E1.'<command><create><market:create xmlns:market="http://ns.uniregistry.net/market-1.0" type="hold"><market:name type="domain">example.com</market:name><market:amount>20000</market:amount></market:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'market_create of type "hold" build');
 is($rc->is_success(),1,'market_create of type "hold" is_success');
 
 
 ## market update - cancel order
 $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
 $rc=$dri->market_update('MA_382-UR', { 'order'=>'cancel' });
-is_string($R1,$E1.'<command><update><market:update xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd"><market:orderID>MA_382-UR</market:orderID><market:cancel/></market:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'market_update cancel order build');
+is_string($R1,$E1.'<command><update><market:update xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_382-UR</market:orderID><market:cancel/></market:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'market_update cancel order build');
 is($rc->is_success(),1,'market_update cancel order is_success');
 
 ## market update - complete order
 $R2=$E1.'<response>'.r().'<resData><market:creData xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_862-UR</market:orderID><market:name type="domain">example.com</market:name><market:amount>20000.00</market:amount><market:status>completed</market:status><market:crDate>2015-02-18T13:54:01Z</market:crDate><market:upDate>2015-02-18T13:54:02Z</market:upDate><market:transferInfo><market:pw>b4a78783c95d78d</market:pw></market:transferInfo></market:creData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->market_update('MA_382-UR', { 'order'=>'complete' });
-is_string($R1,$E1.'<command><update><market:update xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd"><market:orderID>MA_382-UR</market:orderID><market:complete/></market:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'market_update complete order build');
+is_string($R1,$E1.'<command><update><market:update xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_382-UR</market:orderID><market:complete/></market:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'market_update complete order build');
 is($rc->is_success(),1,'market_update complete order is_success');
 is($dri->get_info('order_id'),'MA_862-UR','market_update get_info(orderID)');
 is($dri->get_info('name'),'example.com','market_update get_info(name)');
@@ -182,7 +182,7 @@ is_deeply($dri->get_info('transfer_info'),{pw=>'b4a78783c95d78d'},'market_update
 # market update - complete acknowledge
 $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
 $rc=$dri->market_update('MA_382-UR', { 'order'=>'acknowledge' });
-is_string($R1,$E1.'<command><update><market:update xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd"><market:orderID>MA_382-UR</market:orderID><market:acknowledge/></market:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'market_update acknowledge order build');
+is_string($R1,$E1.'<command><update><market:update xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_382-UR</market:orderID><market:acknowledge/></market:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'market_update acknowledge order build');
 is($rc->is_success(),1,'market_update acknowledge order is_success');
 
 ## END: Market - EPP Transform Commands
@@ -199,7 +199,7 @@ $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $R2=$E1.'<response>'.r().'<resData><market:creData xmlns:market="http://ns.uniregistry.net/market-1.0"><market:orderID>MA_6fc-UR</market:orderID><market:name type="domain">example.com</market:name><market:amount>15000.00</market:amount><market:status>received</market:status><market:crDate>2015-02-18T11:49:18Z</market:crDate></market:creData></resData>'.$TRID.'</response>'.$E2;
 $contact = { 'fname'=>'John', 'lname'=>'Doe', 'email'=>'jdoe@example.com', 'voice'=>'+1.5552223344' };
 $rc=$dri->market_create('example.com', { 'order_type'=>'offer', 'amount'=>15000, 'contact'=>$contact });
-is_string($R1,$E1.'<command><create><market:create xmlns:market="http://ns.uniregistry.net/market-1.0" xsi:schemaLocation="http://ns.uniregistry.net/market-1.0 market-1.0.xsd" type="offer"><market:name type="domain">example.com</market:name><market:amount>15000</market:amount><market:contact><market:firstName>John</market:firstName><market:lastName>Doe</market:lastName><market:email>jdoe@example.com</market:email><market:phone>+1.5552223344</market:phone></market:contact></market:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'market_create of type "offer" build');
+is_string($R1,$E1.'<command><create><market:create xmlns:market="http://ns.uniregistry.net/market-1.0" type="offer"><market:name type="domain">example.com</market:name><market:amount>15000</market:amount><market:contact><market:firstName>John</market:firstName><market:lastName>Doe</market:lastName><market:email>jdoe@example.com</market:email><market:phone>+1.5552223344</market:phone></market:contact></market:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'market_create of type "offer" build');
 is($rc->is_success(),1,'market_create of type "offer" is_success');
 is($dri->get_info('action'),'create','market_create get_info(action)');
 is($dri->get_info('type'),'market','market_create get_info(type)');

@@ -96,7 +96,7 @@ sub register_commands
 sub setup
 {
   my ($self,$po) = @_;
-  $po->ns( { 'market' => ['http://ns.uniregistry.net/market-1.0','market-1.0.xsd']} );
+  $po->ns( { 'market' => 'http://ns.uniregistry.net/market-1.0' } );
   return;
 }
 
@@ -186,7 +186,7 @@ sub info_parse
   return unless $mes->is_success();
   foreach my $res (qw/creData upData infData/)
   {
-    next unless $resdata=$mes->get_response($mes->ns('market'),$res);
+    next unless $resdata=$mes->get_response('market',$res);
     $oname = 'market' unless defined $oname;
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
@@ -238,11 +238,11 @@ sub market_build_command
     {
       @market=map { ['market:name',$_,{'type'=>'domain'}] } @m;
     }
-    $msg->command([$command,'market:'.$tcommand,sprintf('xmlns:market="%s" xsi:schemaLocation="%s %s" type="'.$marketattr->{order_type}.'"',$msg->nsattrs('market'))]);
+    $msg->command([$command,'market:'.$tcommand, $msg->nsattrs('market') . ' type="'.$marketattr->{order_type}.'"']);
   } elsif ($command =~ m/^(?:info|update)$/)
   {
     @market=map { ['market:orderID',$_,$marketattr] } @m;
-    $msg->command([$command,'market:'.$tcommand,sprintf('xmlns:market="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('market'))]);
+    $msg->command([$command,'market:'.$tcommand, $msg->nsattrs('market')]);
   } elsif ($command eq 'check')
   {
     Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless @m;
@@ -254,9 +254,9 @@ sub market_build_command
     {
       $marketattr->{type_attr} = 'domain' unless defined $marketattr->{type_attr};
       $marketattr->{suggestions_attr} = 'false' unless defined $marketattr->{suggestions_attr};
-      $msg->command([$command,'market:'.$tcommand,sprintf('xmlns:market="%s" xsi:schemaLocation="%s %s" type="'.$marketattr->{type_attr}.'" suggestions="'.$marketattr->{suggestions_attr}.'"',$msg->nsattrs('market'))]);
+      $msg->command([$command,'market:'.$tcommand, $msg->nsattrs('market') . ' type="'.$marketattr->{type_attr}.'" suggestions="'.$marketattr->{suggestions_attr}.'"']);
     } else {
-      $msg->command([$command,'market:'.$tcommand,sprintf('xmlns:market="%s" xsi:schemaLocation="%s %s" type="domain" suggestions="false"',$msg->nsattrs('market'))]);
+      $msg->command([$command,'market:'.$tcommand, $msg->nsattrs('market') . ' type="domain" suggestions="false"']);
     }
   }
   return @market;

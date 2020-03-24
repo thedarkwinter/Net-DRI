@@ -13,7 +13,7 @@ use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -36,14 +36,14 @@ my (@labels);
 ### eps check - single
 $R2=$E1.'<response>'.r().'<resData><eps:chkData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:cd><eps:label>test-validate</eps:label><eps:roids><eps:roid>EP_ad755e69ce0af2c8b565acb6d98fc6b0-UR</eps:roid></eps:roids></eps:cd></eps:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_check('test-validate');
-is_string($R1,$E1.'<command><check><eps:check xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:label>test-validate</eps:label></eps:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_check build (single)');
+is_string($R1,$E1.'<command><check><eps:check xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:label>test-validate</eps:label></eps:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_check build (single)');
 is($rc->is_success(),1,'eps_check single is_success');
 is_deeply(shift @{$dri->get_info('roids','eps','test-validate')},'EP_ad755e69ce0af2c8b565acb6d98fc6b0-UR','eps_check get_info(roids) test-validate');
 
 ### eps check - multi
 $R2=$E1.'<response>'.r().'<resData><eps:chkData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:cd><eps:label>test-validate</eps:label><eps:roids><eps:roid>EP_ad755e69ce0af2c8b565acb6d98fc6b0-UR</eps:roid></eps:roids></eps:cd><eps:cd><eps:label>foobar-validate</eps:label><eps:roids><eps:roid>EP_ad755e69ce0af2c8b565acb6d98fc6b1-UR</eps:roid><eps:roid>EP_ad755e69ce0af2c8b565acb6d98fc6b2-UR</eps:roid></eps:roids></eps:cd></eps:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_check(qw/test-validate foobar-validate/);
-is_string($R1,$E1.'<command><check><eps:check xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:label>test-validate</eps:label><eps:label>foobar-validate</eps:label></eps:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_check build (multi)');
+is_string($R1,$E1.'<command><check><eps:check xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:label>test-validate</eps:label><eps:label>foobar-validate</eps:label></eps:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_check build (multi)');
 is($rc->is_success(),1,'eps_check multi is_success');
 is_deeply(shift @{$dri->get_info('roids','eps','test-validate')},'EP_ad755e69ce0af2c8b565acb6d98fc6b0-UR','eps_check multi get_info(roids) test-validate');
 is_deeply($dri->get_info('roids','eps','foobar-validate'),['EP_ad755e69ce0af2c8b565acb6d98fc6b1-UR','EP_ad755e69ce0af2c8b565acb6d98fc6b2-UR'],'eps_check multi get_info(roids) foobar-validate');
@@ -51,10 +51,10 @@ is_deeply($dri->get_info('roids','eps','foobar-validate'),['EP_ad755e69ce0af2c8b
 ### eps info
 $R2=$E1.'<response>'.r().'<resData><eps:infData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels><eps:registrant>lm39</eps:registrant><eps:clID>registry_a</eps:clID><eps:crID>registry_a</eps:crID><eps:crDate>2019-02-22T14:14:10</eps:crDate><eps:exDate>2020-02-22T14:14:10</eps:exDate><eps:releases><eps:release><eps:name>test-andvalidate.isc</eps:name><eps:authInfo><eps:pw>uniregistry</eps:pw></eps:authInfo><eps:crDate>2019-02-22T14:14:10.697Z</eps:crDate></eps:release></eps:releases><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_info('EP_e726f81a44c5c4bd00d160973808825c-UR');
-is_string($R1,$E1.'<command><info><eps:info xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid></eps:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_info build');
+is_string($R1,$E1.'<command><info><eps:info xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid></eps:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_info build');
 is($rc->is_success(),1,'eps_info is_success');
 $rc=$dri->eps_info('EP_e726f81a44c5c4bd00d160973808825c-UR',{auth=>{pw=>'abcd1234'}});
-is_string($R1,$E1.'<command><info><eps:info xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_info build (with auth)');
+is_string($R1,$E1.'<command><info><eps:info xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_info build (with auth)');
 is($rc->is_success(),1,'eps_info (with auth) is_success');
 is($dri->get_info('action'),'info','eps_info get_info(action)');
 is($dri->get_info('type'),'eps','eps_info get_info(type)');
@@ -92,7 +92,7 @@ is($e->[1]->{crDate},'2019-09-24T14:14:10.697Z','eps_info get_info(releases) sec
 $R2='';
 $R2=$E1.'<response>'.r().'<resData><eps:infData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels><eps:registrant>lm39</eps:registrant><eps:clID>registry_a</eps:clID><eps:crID>registry_a</eps:crID><eps:crDate>2019-02-22T14:14:10</eps:crDate><eps:exDate>2020-02-22T14:14:10</eps:exDate></eps:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_info('EP_e726f81a44c5c4bd00d160973808825c-UR');
-is_string($R1,$E1.'<command><info><eps:info xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid></eps:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_info build for an unauthorized client');
+is_string($R1,$E1.'<command><info><eps:info xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid></eps:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_info build for an unauthorized client');
 is($rc->is_success(),1,'eps_info is_success for an unauthorized client');
 is($dri->get_info('action'),'info','eps_info get_info(action) for an unauthorized client');
 is($dri->get_info('type'),'eps','eps_info get_info(type) for an unauthorized client');
@@ -109,9 +109,9 @@ isa_ok($d,'DateTime','eps_info get_info(exDate) for an unauthorized client');
 is("".$d,'2020-02-22T14:14:10','eps_info get_info(exDate) value for an unauthorized client');
 
 # eps exempt with multiple exemptions in response
-$R2=$E1.'<response>'.r().'<resData><eps:empData xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:ed><eps:label>test-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>3111246</eps:iprID><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels></eps:exemption><eps:exemption><eps:iprID>3111777</eps:iprID><eps:labels><eps:label>test-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed></eps:empData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><eps:empData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:ed><eps:label>test-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>3111246</eps:iprID><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels></eps:exemption><eps:exemption><eps:iprID>3111777</eps:iprID><eps:labels><eps:label>test-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed></eps:empData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_exempt('test-validate');
-is_string($R1,$E1.'<command><check><eps:exempt xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:label>test-validate</eps:label></eps:exempt></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_exempt build (single label)');
+is_string($R1,$E1.'<command><check><eps:exempt xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:label>test-validate</eps:label></eps:exempt></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_exempt build (single label)');
 is($rc->is_success(),1,'eps_exempt single label is_success');
 is($dri->get_info('action'),'exempt','eps_exempt get_info(action)');
 is($dri->get_info('type'),'eps','eps_exempt get_info(type)');
@@ -129,9 +129,9 @@ is_deeply($e->{labels},['test-validate'],'eps_exempt get_exemptions(labels)');
 #$dri->cache_clear();
 
 # eps exempt - multi (they don't have a sample but let create one based on their doc specs)
-$R2=$E1.'<response>'.r().'<resData><eps:empData xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:ed><eps:label>test-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>3111246</eps:iprID><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed><eps:ed><eps:label>foobar-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>20190925</eps:iprID><eps:labels><eps:label>foobar-andvalidate</eps:label><eps:label>foobar-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed></eps:empData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><eps:empData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:ed><eps:label>test-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>3111246</eps:iprID><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed><eps:ed><eps:label>foobar-validate</eps:label><eps:exemptions><eps:exemption><eps:iprID>20190925</eps:iprID><eps:labels><eps:label>foobar-andvalidate</eps:label><eps:label>foobar-validate</eps:label></eps:labels></eps:exemption></eps:exemptions></eps:ed></eps:empData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_exempt(qw/test-validate foobar-validate/);
-is_string($R1,$E1.'<command><check><eps:exempt xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:label>test-validate</eps:label><eps:label>foobar-validate</eps:label></eps:exempt></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_exempt build (multi label)');
+is_string($R1,$E1.'<command><check><eps:exempt xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:label>test-validate</eps:label><eps:label>foobar-validate</eps:label></eps:exempt></check><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_exempt build (multi label)');
 is($rc->is_success(),1,'eps_exempt multi is_success');
 is($dri->get_info('action'),'exempt_multi','eps_exempt multi get_info(action)');
 is($dri->get_info('type'),'eps','eps_exempt multi get_info(type)');
@@ -148,7 +148,7 @@ is_deeply($e->{labels},['foobar-andvalidate','foobar-validate'],'eps_exempt mult
 $R2=$E1.'<response>'.r().'<resData><eps:creData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:crDate>2019-02-22T14:14:10</eps:crDate><eps:exDate>2020-02-22T14:14:10</eps:exDate></eps:creData></resData>'.$TRID.'</response>'.$E2;
 @labels = qw/test-andvalidate test-validate/;
 $rc=$dri->eps_create(\@labels, {product_type => "standard", duration => DateTime::Duration->new(years=>1), registrant => ("lm39"), auth=>{pw=>"abcd1234"}});
-is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd" type="standard"><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build');
+is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" type="standard"><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build');
 is($rc->is_success(),1,'eps_create is_success');
 is($dri->get_info('action'),'create','eps_create get_info(action)');
 is($dri->get_info('type'),'eps','eps_create get_info(type)');
@@ -269,7 +269,7 @@ EOF
 chomp $enc;
 $lp = { type => 'application', phase => 'open', 'encoded_signed_marks'=>[ $enc ] };
 $rc=$dri->eps_create(\@labels, {product_type => ("plus"), duration => DateTime::Duration->new(years=>1), registrant => ("lm39"), auth=>{pw=>"abcd1234"}, lp => $lp});
-is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd" type="plus"><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="application"><launch:phase>open</launch:phase>'.$enc.'</launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build with SMD file validation');
+is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" type="plus"><eps:labels><eps:label>test-andvalidate</eps:label><eps:label>test-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" type="application"><launch:phase>open</launch:phase>'.$enc.'</launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build with SMD file validation');
 is($rc->is_success(),1,'eps_create is_success with SMD file validation');
 is($dri->get_info('action'),'create','eps_create get_info(action) with SMD file validation');
 is($dri->get_info('type'),'eps','eps_create get_info(type) with SMD file validation');
@@ -284,13 +284,13 @@ is("".$d,'2020-02-22T14:14:10','eps_create get_info(exDate) value');
 # same command with single label in array
 @labels = qw/test-and-validate/;
 $rc=$dri->eps_create(\@labels, {product_type => ("plus"), duration => DateTime::Duration->new(years=>1), registrant => ("lm39"), auth=>{pw=>"abcd1234"}, lp => $lp});
-is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd" type="plus"><eps:labels><eps:label>test-and-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="application"><launch:phase>open</launch:phase>'.$enc.'</launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build with SMD file validation');
+is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" type="plus"><eps:labels><eps:label>test-and-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" type="application"><launch:phase>open</launch:phase>'.$enc.'</launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build with SMD file validation');
 is($rc->is_success(),1,'eps_create is_success with SMD file validation');
 is($dri->get_info('action'),'create','eps_create get_info(action) with SMD file validation');
 
 # same command with single label in scalar
 $rc=$dri->eps_create('test-et-validate', {product_type => ("plus"), duration => DateTime::Duration->new(years=>1), registrant => ("lm39"), auth=>{pw=>"abcd1234"}, lp => $lp});
-is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd" type="plus"><eps:labels><eps:label>test-et-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:launch-1.0 launch-1.0.xsd" type="application"><launch:phase>open</launch:phase>'.$enc.'</launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build with SMD file validation');
+is_string($R1,$E1.'<command><create><eps:create xmlns:eps="http://ns.uniregistry.net/eps-1.0" type="plus"><eps:labels><eps:label>test-et-validate</eps:label></eps:labels><eps:period>1</eps:period><eps:registrant>lm39</eps:registrant><eps:authInfo><eps:pw>abcd1234</eps:pw></eps:authInfo></eps:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" type="application"><launch:phase>open</launch:phase>'.$enc.'</launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_create build with SMD file validation');
 is($rc->is_success(),1,'eps_create is_success with SMD file validation');
 is($dri->get_info('action'),'create','eps_create get_info(action) with SMD file validation');
 
@@ -298,13 +298,13 @@ is($dri->get_info('action'),'create','eps_create get_info(action) with SMD file 
 # eps delete
 $R2=$E1.'<response>'.r().'<msgQ count="2" id="1"/>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_delete('EP_e726f81a44c5c4bd00d160973808825c-UR');
-is_string($R1,$E1.'<command><delete><eps:delete xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid></eps:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_delete build');
+is_string($R1,$E1.'<command><delete><eps:delete xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid></eps:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_delete build');
 is($rc->is_success(),1,'eps_delete is_success');
 
 # eps renew
 $R2=$E1.'<response>'.r().'<resData><eps:renData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:exDate>2022-02-22T14:14:10</eps:exDate></eps:renData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->eps_renew('EP_e726f81a44c5c4bd00d160973808825c-UR',{duration => DateTime::Duration->new(years=>2), current_expiration => DateTime->new(year=>2020,month=>2,day=>22)});
-is($R1,$E1.'<command><renew><eps:renew xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:curExpDate>2020-02-22</eps:curExpDate><eps:period>2</eps:period></eps:renew></renew><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_renew build');
+is($R1,$E1.'<command><renew><eps:renew xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:curExpDate>2020-02-22</eps:curExpDate><eps:period>2</eps:period></eps:renew></renew><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_renew build');
 is($dri->get_info('action'),'renew','eps_renew get_info(action)');
 is($dri->get_info('type'),'eps','eps_renew get_info(type)');
 is($dri->get_info('roid'),'EP_e726f81a44c5c4bd00d160973808825c-UR','eps_renew get_info(roid)');
@@ -320,7 +320,7 @@ throws_ok { $dri->eps_renew('EP_e726f81a44c5c4bd00d160973808825c-UR',{duration =
 # eps transfer (only op="request" is supported for EPS objects)
 $R2=$E1.'<response>'.r().'<resData><eps:trnData xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:trStatus>serverApproved</eps:trStatus><eps:reID>registry_a</eps:reID><eps:reDate>2019-02-22T14:15:00</eps:reDate><eps:acID>uniregistry</eps:acID><eps:acDate>2019-02-22T14:15:00</eps:acDate></eps:trnData></resData>'.$TRID.'</response>'.$E2;
 $rc = $dri->eps_transfer_request('EP_e726f81a44c5c4bd00d160973808825c-UR', {auth=>{pw=>'abc1234'}});
-is($R1,$E1.'<command><transfer op="request"><eps:transfer xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:authInfo><eps:pw>abc1234</eps:pw></eps:authInfo></eps:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>', 'eps_transfer_request build');
+is($R1,$E1.'<command><transfer op="request"><eps:transfer xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:authInfo><eps:pw>abc1234</eps:pw></eps:authInfo></eps:transfer></transfer><clTRID>ABC-12345</clTRID></command></epp>', 'eps_transfer_request build');
 is($rc->is_success(),1,'eps_transfer_request is_success');
 is($dri->get_info('action'),'transfer_request','eps_transfer_request get_info(action)');
 is($dri->get_info('type'),'eps','eps_transfer_request get_info(type)');
@@ -341,19 +341,19 @@ $todo = $dri->local_object('changes');
 $todo->set('registrant',$dri->local_object('contact')->srid('reg_a_cntct'));
 $todo->set('auth',{pw=>'password'});
 $rc=$dri->eps_update('EP_e726f81a44c5c4bd00d160973808825c-UR', $todo);
-is_string($R1,$E1.'<command><update><eps:update xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:chg><eps:registrant>reg_a_cntct</eps:registrant><eps:authInfo><eps:pw>password</eps:pw></eps:authInfo></eps:chg></eps:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_update build');
+is_string($R1,$E1.'<command><update><eps:update xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:chg><eps:registrant>reg_a_cntct</eps:registrant><eps:authInfo><eps:pw>password</eps:pw></eps:authInfo></eps:chg></eps:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_update build');
 is($rc->is_success(),1,'eps_update is_success');
 
 # eps release create
 $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
 $rc=$dri->eps_release_create('EP_e726f81a44c5c4bd00d160973808825c-UR', { name=>("test-andvalidate.isc"), auth=>{pw=>"uniregistry"} });
-is_string($R1,$E1.'<command><create><eps:release xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:name>test-andvalidate.isc</eps:name><eps:authInfo><eps:pw>uniregistry</eps:pw></eps:authInfo></eps:release></create><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_release_create build');
+is_string($R1,$E1.'<command><create><eps:release xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:name>test-andvalidate.isc</eps:name><eps:authInfo><eps:pw>uniregistry</eps:pw></eps:authInfo></eps:release></create><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_release_create build');
 is($rc->is_success(),1,'eps_release_create is_success');
 
 # eps release delete
 $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
 $rc=$dri->eps_release_delete('EP_e726f81a44c5c4bd00d160973808825c-UR', { name=>("test-andvalidate.isc") });
-is_string($R1,$E1.'<command><delete><eps:release xmlns:eps="http://ns.uniregistry.net/eps-1.0" xsi:schemaLocation="http://ns.uniregistry.net/eps-1.0 eps-1.0.xsd"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:name>test-andvalidate.isc</eps:name></eps:release></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_release_delete build');
+is_string($R1,$E1.'<command><delete><eps:release xmlns:eps="http://ns.uniregistry.net/eps-1.0"><eps:roid>EP_e726f81a44c5c4bd00d160973808825c-UR</eps:roid><eps:name>test-andvalidate.isc</eps:name></eps:release></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'eps_release_delete build');
 is($rc->is_success(),1,'eps_release_delete is_success');
 
 
