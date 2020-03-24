@@ -105,7 +105,7 @@ sub register_commands
 sub setup
 {
   my ($self,$po) = @_;
-  $po->ns( { 'eps' => ['http://ns.uniregistry.net/eps-1.0','eps-1.0.xsd']} );
+  $po->ns( { 'eps' => 'http://ns.uniregistry.net/eps-1.0' } );
   return;
 }
 
@@ -174,7 +174,7 @@ sub info_parse
   $oname = 'eps' unless defined $oname;
   foreach my $res (qw/creData upData infData renData trnData/)
   {
-    next unless $resdata=$mes->get_response($mes->ns('eps'),$res);
+    next unless $resdata=$mes->get_response('eps',$res);
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
       my ($name,$content)=@$el;
@@ -216,7 +216,7 @@ sub exempt_parse
 
   foreach my $res (qw/empData/)
   {
-    next unless $resdata=$mes->get_response($mes->ns('eps'),$res);
+    next unless $resdata=$mes->get_response('eps',$res);
     $oname = 'eps' unless defined $oname;
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
@@ -383,7 +383,7 @@ sub eps_build_command
     }
     ## Type is mandatory: standard or plus
     Net::DRI::Exception::usererr_invalid_parameters('type must be standard or plus') unless $epsattr->{product_type} && $epsattr->{product_type}  =~ m/^(standard|plus)$/;
-    $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s" type="'.$epsattr->{product_type}.'"',$msg->nsattrs('eps'))]);
+    $msg->command([$command,'eps:'.$tcommand . '', $msg->nsattrs('eps') . ' type="'.$epsattr->{product_type}.'"']);
     push @eps, ['eps:labels', @labels];
   } elsif ($tcommand =~ m/^(?:info|update|delete|renew|transfer|release_create|release_delete)$/)
   {
@@ -395,7 +395,7 @@ sub eps_build_command
     $command='create' if $command eq 'release_create';
     $command='delete' if $command eq 'release_delete';
 
-    $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('eps'))]);
+    $msg->command([$command,'eps:'.$tcommand, $msg->nsattrs('eps')]);
   } elsif ($tcommand eq 'check')
   {
     Net::DRI::Exception->die(1,'protocol/EPP',2,'Label needed') unless @e;
@@ -403,7 +403,7 @@ sub eps_build_command
     {
       push @eps, ['eps:label', $_] unless ref $_ eq 'HASH';
     }
-    $msg->command([$command,'eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('eps'))]);
+    $msg->command([$command,'eps:'.$tcommand, $msg->nsattrs('eps')]);
   } elsif ($tcommand eq 'exempt')
   {
     Net::DRI::Exception->die(1,'protocol/EPP',2,'Label needed') unless @e;
@@ -411,7 +411,7 @@ sub eps_build_command
     {
       push @eps, ['eps:label', $_] unless ref $_ eq 'HASH';
     }
-    $msg->command(['check','eps:'.$tcommand,sprintf('xmlns:eps="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('eps'))]);
+    $msg->command(['check','eps:'.$tcommand, $msg->nsattrs('eps')]);
   }
   return @eps;
 }
