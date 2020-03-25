@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Cloud Registry EPP extensions
 ##
-## Copyright (c) 2009-2011 Cloud Registry Pty Ltd <http://www.cloudregistry.net>. All rights reserved.
+## Copyright (c) 2009-2011,2018 Cloud Registry Pty Ltd <http://www.cloudregistry.net>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,7 +48,7 @@ Wil Tan E<lt>wil@cloudregistry.netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009-2011 Cloud Registry Pty Ltd <http://www.cloudregistry.net>.
+Copyright (c) 2009-2011,2018 Cloud Registry Pty Ltd <http://www.cloudregistry.net>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -65,8 +65,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({ lp => ['http://www.cloudregistry.net/ns/launchphase-1.0','launchphase-1.0.xsd'],
-           });
+ $self->ns({ lp => 'http://www.cloudregistry.net/ns/launchphase-1.0' });
  return;
 }
 
