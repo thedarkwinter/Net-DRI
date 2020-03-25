@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -52,6 +53,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,10 +80,8 @@ sub register_commands
 
 sub check {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless exists $rd->{registrant};
  my @n;
- my $eid=$mes->command_extension_register('nom-direct-rights','check',{'xmlns:contact'=>'urn:ietf:params:xml:ns:contact-1.0'});
  if (ref $rd->{registrant} eq '') {
   push @n,['nom-direct-rights:registrant',$rd->{registrant}];
  }
@@ -100,7 +100,7 @@ sub check {
    push @n,['nom-direct-rights:email',$c->email()] if $c->email();
   }
  }
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('nom-direct-rights', ['check', @n, {'xmlns:contact'=>'urn:ietf:params:xml:ns:contact-1.0'}]);
  return;
 }
 

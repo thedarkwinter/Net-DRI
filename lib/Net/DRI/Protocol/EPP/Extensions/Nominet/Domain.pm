@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .UK EPP Domain commands
 ##
-## Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2013-2014,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2013-2014,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
@@ -143,7 +143,7 @@ sub domain_nom_ext
 {
  my $rd=shift;
  my @n;
- #TODO Validate these fields? 
+ #TODO Validate these fields?
  my @errs;
  foreach (qw/first-bill recur-bill/) { push @errs, "$_ [$rd->{$_}]" if ($rd->{$_} && $rd->{$_} !~ m/^(bc|th)$/); }
  foreach (qw/auto-bill next-bill/) { push @errs, "$_ [$rd->{$_}]" if ($rd->{$_} && !($rd->{$_} =~ /^[+]?\d+$/ && $rd->{$_}<183)); }
@@ -154,7 +154,7 @@ sub domain_nom_ext
   $rd->{$_} = 'Y' if $rd->{$_} =~ m/^(1|Y|YES|TRUE)$/i;
   $rd->{$_} = 'N' if $rd->{$_} =~ m/^(0|N|NO|FALSE)$/i;
   push @errs, "$_ [$rd->{$_}]" if $rd->{$_} !~ m/^(Y|N)$/;
-}
+ }
  Net::DRI::Exception::usererr_invalid_parameters('Invalid domain information: '.join('/',@errs)) if @errs;
 
  foreach (qw/first-bill recur-bill auto-bill next-bill notes reseller auto-period next-period renew-not-required/) {
@@ -169,9 +169,7 @@ sub create {
  undef $rd->{'renew-not-required'}; # only for updates
  my @n = domain_nom_ext($rd);
  return unless @n;
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('domain-nom-ext:create',sprintf('xmlns:domain-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain-nom-ext')));
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('domain-nom-ext', ['create', @n]);
  return;
 }
 
@@ -180,13 +178,11 @@ sub update {
  my $rd;
  foreach (qw/first-bill recur-bill auto-bill next-bill notes reseller auto-period next-period renew-not-required/) {
   $rd->{$_} = $todo->set($_) if defined $todo->set($_);
-  }
+ }
  return unless $rd;
  my @n = domain_nom_ext($rd);
  return unless @n;
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('domain-nom-ext:update',sprintf('xmlns:domain-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain-nom-ext')));
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('domain-nom-ext', ['update', @n]);
  return;
 }
 
@@ -201,7 +197,7 @@ sub list
   Net::DRI::Exception::usererr_invalid_parameters($_) if $rd->{$_} and $rd->{$_} !~ m/^[0-9]{4}-[0-9]{2}$/;
  }
 
-  $mes->command(['info','l:list',sprintf('xmlns:l="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-list'))]);
+ $mes->command(['info','l:list',sprintf('xmlns:l="%s"',$mes->ns('std-list'))]);
  my @d;
  push @d, ['l:month',$rd->{'regMonth'}] if $rd->{regMonth};
  push @d, ['l:expiry',$rd->{'exMonth'}] if $rd->{exMonth};
@@ -219,7 +215,7 @@ sub unrenew
  my $mes=$epp->message();
  Net::DRI::Exception::usererr_insufficient_parameters('Domain name required') unless $domain;
  Net::DRI::Exception::usererr_invalid_parameters('domain') unless Net::DRI::Util::is_hostname($domain);
- $mes->command(['update','u:unrenew',sprintf('xmlns:u="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-unrenew'))]);
+ $mes->command(['update','u:unrenew',sprintf('xmlns:u="%s"',$mes->ns('std-unrenew'))]);
  my @d=(['u:domainName',$domain]);
  $mes->command_body(\@d);
  return;
@@ -233,7 +229,7 @@ sub release
  Net::DRI::Exception::usererr_insufficient_parameters('Domain name required, specify alldomains.co.uk if you are releasing an account') unless $domain;
  Net::DRI::Exception::usererr_insufficient_parameters('registar_tag is required') unless $rd->{registrar_tag};
  Net::DRI::Exception::usererr_insufficient_parameters('To release an account you must specify alldomains.co.uk as the domain name') if defined $rd->{account_id} && $domain ne 'alldomains.co.uk'; # failsafe
- $mes->command(['update','r:release',sprintf('xmlns:r="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-release'))]);
+ $mes->command(['update','r:release',sprintf('xmlns:r="%s"',$mes->ns('std-release'))]);
  my @d=((defined $rd->{account_id} ? ['r:registrant',$rd->{account_id}] : ['r:domainName',$domain]),['r:registrarTag',$rd->{registrar_tag}]);
  $mes->command_body(\@d);
  return;
@@ -245,7 +241,7 @@ sub handshake_accept
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
  Net::DRI::Exception::usererr_insufficient_parameters('case_id is required') unless $rd->{case_id};
- $mes->command(['update','h:accept',sprintf('xmlns:h="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-handshake'))]);
+ $mes->command(['update','h:accept',sprintf('xmlns:h="%s"',$mes->ns('std-handshake'))]);
  my @d=(['h:caseId',$rd->{case_id}]);
  push @d, ['h:registrant',$rd->{'registrant'}] if $rd->{'registrant'};
  $mes->command_body(\@d);
@@ -258,7 +254,7 @@ sub handshake_reject
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
  Net::DRI::Exception::usererr_insufficient_parameters('case_id is required') unless $rd->{case_id};
- $mes->command(['update','h:reject',sprintf('xmlns:h="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-handshake'))]);
+ $mes->command(['update','h:reject',sprintf('xmlns:h="%s"',$mes->ns('std-handshake'))]);
  my @d=(['h:caseId',$rd->{case_id}]);
  $mes->command_body(\@d);
  return;
@@ -270,7 +266,7 @@ sub lock ## no critic (Subroutines::ProhibitBuiltinHomonyms)
  my $mes=$epp->message();
  Net::DRI::Exception::usererr_insufficient_parameters('Domain name required') unless $domain;
  Net::DRI::Exception::usererr_insufficient_parameters('type must be set to investigation to lock a domain') unless $rd->{type} && $rd->{type} eq 'investigation';
- $mes->command(['update','l:lock',sprintf('xmlns:l="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-locks')). ' object="domain" type="investigation"']);
+ $mes->command(['update','l:lock',sprintf('xmlns:l="%s"',$mes->ns('std-locks')). ' object="domain" type="investigation"']);
  my @d=(['l:domainName',$domain]);
  $mes->command_body(\@d);
  return;

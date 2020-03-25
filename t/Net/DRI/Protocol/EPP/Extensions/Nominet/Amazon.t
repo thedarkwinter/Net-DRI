@@ -11,7 +11,7 @@ use Test::More tests => 32;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -59,9 +59,9 @@ is($rc->get_data('session','server','dcp_string'),'<access><all/></access><state
 ###
 # domain check multi
 ###
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example22.moi</domain:name></domain:cd><domain:cd><domain:name avail="0">example2.moi</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example22.moi</domain:name></domain:cd><domain:cd><domain:name avail="0">example2.moi</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check('example22.moi','example2.moi');
-is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example22.moi</domain:name><domain:name>example2.moi</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multi build');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example22.moi</domain:name><domain:name>example2.moi</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multi build');
 is($rc->is_success(),1,'domain_check multi is_success');
 is($dri->get_info('exist','domain','example22.moi'),0,'domain_check multi get_info(exist) 1/2');
 is($dri->get_info('exist','domain','example2.moi'),1,'domain_check multi get_info(exist) 2/2');
@@ -78,7 +78,7 @@ $cs->set($c1,'registrant');
 $cs->set($c2,'admin');
 $cs->set($c2,'tech');
 $rc=$dri->domain_create('example123.moi',{pure_create=>1,contact=>$cs,auth=>{pw=>'2fooBAR'},allocation_token => 'abc123'});
-is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example123.moi</domain:name><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><allocationToken:allocationToken xmlns:allocationToken="urn:ietf:params:xml:ns:allocationToken-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:allocationToken-1.0 allocationToken-1.0.xsd">abc123</allocationToken:allocationToken></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create allocation_token build');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example123.moi</domain:name><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><allocationToken:allocationToken xmlns:allocationToken="urn:ietf:params:xml:ns:allocationToken-1.0">abc123</allocationToken:allocationToken></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create allocation_token build');
 
 ###
 # domain create with fee 0.23
@@ -92,7 +92,7 @@ $cs->set($c2,'admin');
 $cs->set($c2,'tech');
 my  $fee = {currency=>'USD',fee=>'5.00'};
 $rc=$dri->domain_create('explore.moi',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.discover.moi'],['ns2.discover.moi']),contact=>$cs,auth=>{pw=>'2fooBAR'},fee=>$fee});
-is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>explore.moi</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.discover.moi</domain:hostObj><domain:hostObj>ns2.discover.moi</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.23" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.23 fee-0.23.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build_xml');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>explore.moi</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.discover.moi</domain:hostObj><domain:hostObj>ns2.discover.moi</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.23"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build_xml');
 is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
@@ -104,9 +104,9 @@ is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit')
 ###
 # domain check multi - transition from Neustar to Nominet phase 2
 ###
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example22.aws</domain:name></domain:cd><domain:cd><domain:name avail="0">example2.prime</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example22.aws</domain:name></domain:cd><domain:cd><domain:name avail="0">example2.prime</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check('example22.aws','example2.prime');
-is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example22.aws</domain:name><domain:name>example2.prime</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multi build');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example22.aws</domain:name><domain:name>example2.prime</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check multi build');
 is($rc->is_success(),1,'domain_check multi is_success');
 is($dri->get_info('exist','domain','example22.aws'),0,'domain_check multi get_info(exist) 1/2');
 is($dri->get_info('exist','domain','example2.prime'),1,'domain_check multi get_info(exist) 2/2');

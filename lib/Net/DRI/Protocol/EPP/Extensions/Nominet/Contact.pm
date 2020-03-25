@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .UK EPP Contact commands
 ##
-## Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2013-2014,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2013-2014,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
@@ -124,9 +124,7 @@ sub create
  my ($epp,$c)=@_;
  my @n = contact_nom_ext($c);
  return unless @n;
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('contact-nom-ext:create',sprintf('xmlns:contact-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('contact-nom-ext')));
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('contact-nom-ext', ['create', @n]);
  return;
 }
 
@@ -138,9 +136,7 @@ sub update
  return unless $tochg;
  my @n = contact_nom_ext($tochg);
  return unless @n;
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('contact-nom-ext:update',sprintf('xmlns:contact-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('contact-nom-ext')));
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('contact-nom-ext', ['update', @n]);
  return;
 }
 
@@ -150,7 +146,7 @@ sub fork ## no critic (Subroutines::ProhibitBuiltinHomonyms)
  my $mes=$epp->message();
  Net::DRI::Exception::usererr_insufficient_parameters('Contact srID is required') unless $c->srid();
  Net::DRI::Exception::usererr_insufficient_parameters('newContactID is required') unless $rd->{newContactId};
- $mes->command(['update','f:fork',sprintf('xmlns:f="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-fork'))]);
+ $mes->command(['update','f:fork',sprintf('xmlns:f="%s"',$mes->ns('std-fork'))]);
  my @doms = @{$rd->{domains}};
  my @d=(['f:contactID',$c->srid()],['f:newContactId',$rd->{newContactId}]);
  foreach (@doms) { push @d,['f:domainName',$_]; }
@@ -164,7 +160,7 @@ sub lock ## no critic (Subroutines::ProhibitBuiltinHomonyms)
  my $mes=$epp->message();
  Net::DRI::Exception::usererr_insufficient_parameters('Contact srID is required') unless $c->srid();
  Net::DRI::Exception::usererr_insufficient_parameters('type must be set to investigation OR opt-out to lock a contact') unless $rd->{type} && $rd->{type} =~ m/^(investigation|opt-out)$/;
- $mes->command(['update','l:lock',sprintf('xmlns:l="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('std-locks')). ' object="contact" type="'.$rd->{type}.'"']);
+ $mes->command(['update','l:lock',sprintf('xmlns:l="%s"',$mes->ns('std-locks')). ' object="contact" type="'.$rd->{type}.'"']);
  my @d=(['l:contactId',$c->srid()]);
  $mes->command_body(\@d);
  return;
