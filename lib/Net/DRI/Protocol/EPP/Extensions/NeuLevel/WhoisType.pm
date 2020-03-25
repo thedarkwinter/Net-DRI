@@ -99,9 +99,8 @@ sub create
  return unless Net::DRI::Util::has_key($rd,'whois_type');
  my $unspec = add_whoistype($rd->{'whois_type'});
  return unless defined $unspec;
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('neulevel','extension');
- $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+ $epp->message()->command_extension('neulevel', ['extension', ['neulevel:unspec', $unspec]]);
+
  return;
 }
 
@@ -112,9 +111,8 @@ sub update
  return unless defined $tochg;
  my $unspec = add_whoistype($tochg);
  return unless defined $unspec;
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('neulevel','extension');
- $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+ $epp->message()->command_extension('neulevel', ['extension', ['neulevel:unspec', $unspec]]);
+
  return;
 }
 

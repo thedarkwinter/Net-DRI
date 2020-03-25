@@ -103,9 +103,7 @@ sub check
  my ($epp,$domain,$rd)=@_;
  return unless Net::DRI::Util::has_key($rd,'fee');
  my $unspec = 'FeeCheck=Y';
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('neulevel','extension');
- $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+ $epp->message()->command_extension('neulevel', ['extension', ['neulevel:unspec', $unspec]]);
  return;
 }
 
@@ -145,9 +143,7 @@ sub transform
  Net::DRI::Exception::usererr_insufficient_parameters('fee tier') unless $fee->{tier} =~ m/^\w+$/;
  Net::DRI::Exception::usererr_insufficient_parameters('fee price') unless $fee->{price} =~ m/^\d+$/;
  my $unspec = 'TierName=' . $fee->{tier} . ' AnnualTierPrice=' . $fee->{price};
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('neulevel','extension');
- $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+ $epp->message()->command_extension('neulevel', ['extension', ['neulevel:unspec', $unspec]]);
  return;
 }
 

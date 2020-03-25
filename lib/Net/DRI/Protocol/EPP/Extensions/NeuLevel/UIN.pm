@@ -3,6 +3,7 @@
 ##
 ## Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
 ##                    All rights reserved.
+## Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -18,6 +19,7 @@ package Net::DRI::Protocol::EPP::Extensions::NeuLevel::UIN;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 
@@ -50,6 +52,7 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -67,13 +70,20 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class, $version) = @_;
- my %tmp = (
-           create => [ \&add_uin, undef ],
-           transfer_request => [ \&add_uin, undef ],
-           renew => [ \&renew, undef ],
-         );
+ state $domain = {
+                  create           => [ \&add_uin, undef ],
+                  transfer_request => [ \&add_uin, undef ],
+                  renew            => [ \&renew,   undef ],
+                 };
+ state $commands = { domain => $domain };
+ return $commands;
+}
 
- return { 'domain' => \%tmp };
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ 'neulevel' => 'urn:ietf:params:xml:ns:neulevel-1.0' });
+ return;
 }
 
 ####################################################################################################
@@ -83,20 +93,16 @@ sub register_commands
 sub add_uin
 {
  my ($epp, $domain, $rd) = @_;
- my $mes = $epp->message();
 
  return unless Net::DRI::Util::has_key($rd,'uin');
 
- my $eid = $mes->command_extension_register('neulevel:extension',
-	'xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"');
- $mes->command_extension($eid, ['neulevel:unspec', 'UIN=' . $rd->{uin}]);
+ $epp->message()->command_extension('neulevel', ['extension', ['unspec', 'UIN=' . $rd->{uin}]]);
  return;
 }
 
 sub renew
 {
  my ($epp, $domain, $rd) = @_;
- my $mes = $epp->message();
  my @vals = qw(RestoreReasonCode RestoreComment TrueData ValidUse UIN);
  my %info;
  my $comment;
@@ -116,9 +122,7 @@ sub renew
   $info{UIN} = $rd->{uin};
  }
 
- my $eid = $mes->command_extension_register('neulevel:extension',
-	'xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"');
- $mes->command_extension($eid, ['neulevel:unspec', join(' ', map { $_ . '=' . $info{$_} } grep { defined($info{$_}) } @vals)]);
+ $epp->message()->command_extension('neulevel', ['extension', ['unspec', join(' ', map { $_ . '=' . $info{$_} } grep { defined($info{$_}) } @vals)]]);
  return;
 }
 

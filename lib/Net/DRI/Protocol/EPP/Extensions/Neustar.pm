@@ -25,7 +25,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({neulevel => ['urn:ietf:params:xml:ns:neulevel-1.0','neulevel-1.0.xsd']});
+ $self->ns({neulevel => 'urn:ietf:params:xml:ns:neulevel-1.0'});
  return;
 }
 

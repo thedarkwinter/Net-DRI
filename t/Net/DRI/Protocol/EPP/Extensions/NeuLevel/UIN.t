@@ -13,7 +13,7 @@ use Test::More tests => 9;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -55,7 +55,7 @@ $ok=eval {
 print(STDERR $@->as_string()) if ! $ok;
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'domain create');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>jerusalem.travel</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>dns1.syhosting.ch</domain:hostObj></domain:ns><domain:contact type="admin">SK1-TRAVEL</domain:contact><domain:contact type="tech">TL1-TRAVEL</domain:contact><domain:authInfo><domain:pw>bulle.com</domain:pw></domain:authInfo></domain:create></create><extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>UIN=235</neulevel:unspec></neulevel:extension></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain create xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0"><command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>jerusalem.travel</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>dns1.syhosting.ch</domain:hostObj></domain:ns><domain:contact type="admin">SK1-TRAVEL</domain:contact><domain:contact type="tech">TL1-TRAVEL</domain:contact><domain:authInfo><domain:pw>bulle.com</domain:pw></domain:authInfo></domain:create></create><extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0"><neulevel:unspec>UIN=235</neulevel:unspec></neulevel:extension></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain create xml');
 
 ## Renew a domain
 $R2 = $E1 . '<response>' . r(1001,'Command completed successfully; ' .
@@ -72,7 +72,7 @@ $ok=eval {
 print(STDERR $@->as_string()) if ! $ok;
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'domain renew');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>muenchhausen-airlines.travel</domain:name><domain:curExpDate>2006-12-24</domain:curExpDate><domain:period unit="y">2</domain:period></domain:renew></renew><extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>UIN=423</neulevel:unspec></neulevel:extension></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain renew xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0"><command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>muenchhausen-airlines.travel</domain:name><domain:curExpDate>2006-12-24</domain:curExpDate><domain:period unit="y">2</domain:period></domain:renew></renew><extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0"><neulevel:unspec>UIN=423</neulevel:unspec></neulevel:extension></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain renew xml');
 
 ## Restore a deleted domain
 $R2 = $E1 . '<response>' . r(1001,'Command completed successfully; ' .
@@ -89,7 +89,7 @@ $ok=eval {
 print(STDERR $@->as_string()) if ! $ok;
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'domain restore');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>deleted-by-accident.travel</domain:name><domain:curExpDate>2008-12-24</domain:curExpDate></domain:renew></renew><extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>RestoreReasonCode=1 RestoreComment=DeletedByMistake TrueData=Y ValidUse=Y UIN=423</neulevel:unspec></neulevel:extension></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain restore xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0"><command><renew><domain:renew xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>deleted-by-accident.travel</domain:name><domain:curExpDate>2008-12-24</domain:curExpDate></domain:renew></renew><extension><neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0"><neulevel:unspec>RestoreReasonCode=1 RestoreComment=DeletedByMistake TrueData=Y ValidUse=Y UIN=423</neulevel:unspec></neulevel:extension></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain restore xml');
 
 ####################################################################################################
 exit(0);

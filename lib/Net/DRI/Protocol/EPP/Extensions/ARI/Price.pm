@@ -87,7 +87,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'price' => [ 'urn:ar:params:xml:ns:price-1.2','price-1.2.xsd' ]});
+ $po->ns({ 'price' => 'urn:ar:params:xml:ns:price-1.2' });
  $po->capabilities('domain_update','price',['set']);
  return;
 }
@@ -116,9 +116,7 @@ sub set_premium_values {
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'price');
- my $eid=$mes->command_extension_register('price','check');
  my @n;
  if (Net::DRI::Util::has_key($rd->{price},'duration') && UNIVERSAL::isa($rd->{'price'}->{'duration'},'DateTime::Duration'))
  {
@@ -127,7 +125,8 @@ sub check
  {
   push @n, ['price:period',$rd->{'price'}->{'duration'},{'unit' => 'y'}];
  }
- $mes->command_extension($eid,\@n );
+ $epp->message()->command_extension('price', ['check', @n]);
+
  return;
 }
 
@@ -136,7 +135,7 @@ sub check_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $chkdata=$mes->get_extension($mes->ns('price'),'chkData');
+ my $chkdata=$mes->get_extension('price','chkData');
  return unless defined $chkdata;
  
  foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
@@ -190,7 +189,6 @@ sub update {
 sub ack_price
 {
  my ($epp,$domain,$rd,$cmd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'price') && defined $cmd && $cmd =~ m/^(create|transfer|renew|update)$/;
 
  my (@n,@a);
@@ -200,8 +198,7 @@ sub ack_price
   push @a,['price:price',$price->{price}] if $price->{price};
  }
  push @n,['price:ack',@a];
- my $eid=$mes->command_extension_register('price',$cmd);
- $mes->command_extension($eid,\@n );
+ $epp->message()->command_extension('price', [$cmd, @n]);
 
  return;
 }

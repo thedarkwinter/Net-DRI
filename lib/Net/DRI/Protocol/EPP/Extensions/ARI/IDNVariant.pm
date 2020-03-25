@@ -90,8 +90,8 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'idn' => [ 'urn:ar:params:xml:ns:idn-1.0','idn-1.0.xsd' ],
-                       'variant' => [ 'urn:ar:params:xml:ns:variant-1.1','variant-1.1.xsd' ] });
+ $po->ns({ 'idn' => 'urn:ar:params:xml:ns:idn-1.0',
+                       'variant' => 'urn:ar:params:xml:ns:variant-1.1' });
  return;
 }
 
@@ -104,9 +104,9 @@ sub parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $idn_infData=$mes->get_extension($mes->ns('idn'),'infData');
- my $var_infData=$mes->get_extension($mes->ns('variant'),'infData');
- my $var_creData=$mes->get_extension($mes->ns('variant'),'creData');
+ my $idn_infData=$mes->get_extension('idn','infData');
+ my $var_infData=$mes->get_extension('variant','infData');
+ my $var_creData=$mes->get_extension('variant','creData');
  return unless ($idn_infData || $var_infData || $var_creData);
  
  ## IDN
@@ -153,15 +153,13 @@ sub create
 
  ## IDN
  my @n = ['idn:languageTag',$tag]; 
- my $eid=$mes->command_extension_register('idn','create');
- $mes->command_extension($eid,\@n);
+ $mes->command_extension('idn', ['create', @n]);
 
  ## Variants
  if ($rd->{idn}->variants())
  {
   my @v = map { ['variant:variant',$_]; } @{$rd->{idn}->variants()};
-  my $eid=$mes->command_extension_register('variant','create');
-  $mes->command_extension($eid,\@v);
+  $mes->command_extension('variant', ['create', @v]);
  }
 
  return;
@@ -188,8 +186,8 @@ sub update
  push @n, ['variant:add',@add] if @add;
  push @n, ['variant:rem',@del] if @del;
 
- my $eid=$mes->command_extension_register('variant','update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('variant', ['update', @n]);
+
  return;
 }
 

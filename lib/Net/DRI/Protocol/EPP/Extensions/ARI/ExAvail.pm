@@ -79,7 +79,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'exAvail' => [ 'urn:ar:params:xml:ns:exAvail-1.0','exAvail-1.0.xsd' ]});
+ $po->ns({ 'exAvail' => 'urn:ar:params:xml:ns:exAvail-1.0' });
  return;
 }
 
@@ -88,10 +88,9 @@ sub setup
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless (Net::DRI::Util::has_key($rd,'ex_avail') && $rd->{'ex_avail'});
- my $eid=$mes->command_extension_register('exAvail','check');
- $mes->command_extension($eid,[]);
+ $epp->message()->command_extension('exAvail', ['check']);
+
  return;
 }
 
@@ -100,7 +99,7 @@ sub check_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $chkdata=$mes->get_extension($mes->ns('exAvail'),'chkData');
+ my $chkdata=$mes->get_extension('exAvail','chkData');
  return unless defined $chkdata;
  
  foreach my $el (Net::DRI::Util::xml_list_children($chkdata))

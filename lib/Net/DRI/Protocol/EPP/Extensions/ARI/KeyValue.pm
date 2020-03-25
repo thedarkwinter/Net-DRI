@@ -82,7 +82,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'kv' => [ 'urn:X-ar:params:xml:ns:kv-1.0','kv-1.0.xsd' ]});
+ $po->ns({ 'kv' => 'urn:X-ar:params:xml:ns:kv-1.0' });
  return;
 }
 
@@ -149,11 +149,8 @@ sub create_build
 {
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
-
  return unless Net::DRI::Util::has_key($rd,'keyvalue');
-
- my $eid=$mes->command_extension_register('kv','create');
- $mes->command_extension($eid,[build_kvlists($rd->{keyvalue})]);
+ $epp->message()->command_extension('kv', ['create', build_kvlists($rd->{keyvalue})]);
 
  return;
 }
@@ -161,13 +158,9 @@ sub create_build
 sub update_build
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
-
  my $toset=$todo->set('keyvalue');
  return unless defined $toset;
-
- my $eid=$mes->command_extension_register('kv','update');
- $mes->command_extension($eid,[build_kvlists($toset)]);
+ $epp->message()->command_extension('kv', ['update', build_kvlists($toset)]);
 
  return;
 }
@@ -175,12 +168,8 @@ sub update_build
 sub renew_build
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
-
  return unless Net::DRI::Util::has_key($rd,'keyvalue');
-
- my $eid=$mes->command_extension_register('kv','renew');
- $mes->command_extension($eid,[build_kvlists($rd->{keyvalue})]);
+ $epp->message()->command_extension('kv', ['renew', build_kvlists($rd->{keyvalue})]);
 
  return;
 }

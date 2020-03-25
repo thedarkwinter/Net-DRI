@@ -147,8 +147,8 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'application' => [ 'urn:ar:params:xml:ns:application-1.0','application-1.0.xsd' ],
-                       'tmch' => [ 'urn:ar:params:xml:ns:tmch-1.0','tmch-1.0.xsd' ]});
+ $po->ns({ 'application' => 'urn:ar:params:xml:ns:application-1.0',
+                       'tmch' => 'urn:ar:params:xml:ns:tmch-1.0' });
  return;
 }
 
@@ -159,12 +159,10 @@ sub capabilities_add { return (['domain_update','lp',['set']]); }
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'lp');
  my $lp = $rd->{'lp'};
  Net::DRI::Exception::usererr_invalid_parameters('lp type must be claims') if exists $lp->{type} && $lp->{type}  ne 'claims';
- my $eid=$mes->command_extension_register('tmch','check');
- $mes->command_extension($eid,[]);
+ $epp->message()->command_extension('tmch', ['check']);
  return;
 }
 
@@ -173,7 +171,7 @@ sub check_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $chkdata=$mes->get_extension($mes->ns('tmch'),'chkData');
+ my $chkdata=$mes->get_extension('tmch','chkData');
  return unless defined $chkdata;
 
  foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
@@ -202,22 +200,19 @@ sub check_parse
 sub info
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'lp');
  my $lp = $rd->{'lp'};
 
  ## Application
  if (exists $lp->{application_id})
  {
-   my $eid=$mes->command_extension_register('application','info');
-   $mes->command_extension($eid,(['application:id',$lp->{'application_id'}]));
+   $epp->message()->command_extension('application', ['info', ['application:id',$lp->{'application_id'}]]);
  }
 
  ## Tmch
  if (exists $lp->{include_mark} && $lp->{include_mark} && $lp->{include_mark} !~ m/^(no|false)$/)
  {
-   my $eid=$mes->command_extension_register('tmch','info');
-   $mes->command_extension($eid,[]);
+   $epp->message()->command_extension('tmch', ['info']);
  }
 
  return;
@@ -228,8 +223,8 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $app_infData=$mes->get_extension($mes->ns('application'),'infData');
- my $tmch_infData=$mes->get_extension($mes->ns('tmch'),'infData');
+ my $app_infData=$mes->get_extension('application','infData');
+ my $tmch_infData=$mes->get_extension('tmch','infData');
 
  if ($app_infData)
  {
@@ -261,7 +256,6 @@ sub info_parse
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'lp');
 
  my $lp = $rd->{'lp'};
@@ -270,10 +264,9 @@ sub create
 
  ## Application
  if (exists $lp->{phase}) {
-  my $a_eid=$mes->command_extension_register('application','create');
   push @n,['application:id',$lp->{'application_id'}] if exists $lp->{application_id};
   push @n,['application:phase',$lp->{'phase'}];
-  $mes->command_extension($a_eid,\@n);
+  $epp->message()->command_extension('application', ['create', @n]);
  }
 
 
@@ -317,8 +310,7 @@ sub create
   }
   if (@n)
   {
-   my $eid=$mes->command_extension_register('tmch','create');
-   $mes->command_extension($eid,\@n);
+   $epp->message()->command_extension('tmch', ['create', @n]);
   }
  }
 
@@ -330,7 +322,7 @@ sub create_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $creData=$mes->get_extension($mes->ns('application'),'creData');
+ my $creData=$mes->get_extension('application','creData');
  return unless $creData;
  foreach my $el (Net::DRI::Util::xml_list_children($creData))
  {
@@ -344,7 +336,6 @@ sub create_parse
 sub update_delete
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  my ($lp,$cmd);
  if (UNIVERSAL::isa($rd,'Net::DRI::Data::Changes')) {
    $cmd = 'update';
@@ -360,11 +351,10 @@ sub update_delete
  #Net::DRI::Exception::usererr_insufficient_parameters('phase') unless exists $lp->{phase}; # seems to be optional
  Net::DRI::Exception::usererr_insufficient_parameters('application_id') unless exists $lp->{application_id};
 
- my $eid=$mes->command_extension_register('application',$cmd);
  my @n;
  push @n,['application:id',$lp->{'application_id'}] if exists $lp->{application_id};
  push @n,['application:phase',$lp->{'phase'}] if exists $lp->{phase};
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('application', [$cmd, @n]);
 
  return;
 }

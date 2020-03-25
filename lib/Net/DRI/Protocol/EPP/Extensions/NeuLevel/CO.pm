@@ -108,9 +108,7 @@ sub parse
   } elsif ($rd_unspec->{'restore_reason_code'} && $rd_unspec->{'restore_comment'} && $rd_unspec->{'true_data'} && $rd_unspec->{'valid_use'}) {
     $unspec = 'RestoreReasonCode=' . $rd_unspec->{'restore_reason_code'} . ' RestoreComment=' . $rd_unspec->{'restore_comment'} . ' TrueData=' . $rd_unspec->{'true_data'} . ' ValidUse=' . $rd_unspec->{'valid_use'};
   }
-  my $mes=$epp->message();
-  my $eid=$mes->command_extension_register('neulevel','extension');
-  $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+  $epp->message()->command_extension('neulevel', ['extension', ['neulevel:unspec', $unspec]]);
   return;
  }
 

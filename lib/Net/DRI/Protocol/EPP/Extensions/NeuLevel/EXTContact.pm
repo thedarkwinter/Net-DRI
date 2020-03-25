@@ -141,16 +141,15 @@ sub contact_create
 {
  my ($epp,$c)=@_;
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('neulevel','extension');
  return unless (grep $_ eq 'nexus_category', $c->attributes()) && defined $c->{nexus_category};
 
  # check if application_purpose exist - if exist return AppPurpose (for .US) otherwise EXTContact
  if ($c->{application_purpose}) {
    my $us_str=sprintf('AppPurpose=%s NexusCategory=%s',$c->application_purpose(),$c->nexus_category());
-   $mes->command_extension($eid,['neulevel:unspec',$us_str]);
+   $mes->command_extension('neulevel', ['extension', ['neulevel:unspec',$us_str]]);
  } else {
    my $unspec = 'EXTContact=' . ($c->ext_contact() && $c->ext_contact() eq 'N' ? 'N':'Y') . ' NexusCategory=' . uc($c->nexus_category());
-   $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+   $mes->command_extension('neulevel', ['extension', ['neulevel:unspec',$unspec]]);
  }
 
  return;
@@ -160,17 +159,16 @@ sub contact_update
 {
  my ($epp,$oldc,$todo)=@_;
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('neulevel','extension');
  my $c=$todo->set('info');
  return unless (grep $_ eq 'nexus_category', $c->attributes()) && defined $c->{nexus_category};
 
  # check if application_purpose exist - if exist return AppPurpose (for .US) otherwise EXTContact
  if ($c->{application_purpose}) {
    my $us_str=sprintf('AppPurpose=%s NexusCategory=%s',$c->application_purpose(),$c->nexus_category());
-   $mes->command_extension($eid,['neulevel:unspec', $us_str]);
+   $mes->command_extension('neulevel', ['extension', ['neulevel:unspec',$us_str]]);
  } else {
    my $unspec = 'EXTContact=' . ($c->ext_contact() && $c->ext_contact() eq 'N' ? 'N':'Y') . ' NexusCategory=' . uc($c->nexus_category());
-   $mes->command_extension($eid,['neulevel:unspec', $unspec]);
+   $mes->command_extension('neulevel', ['extension', ['neulevel:unspec',$unspec]]);
  }
 
  return;
@@ -206,9 +204,7 @@ sub domain_create
 {
  my ($epp,$domain,$rd)=@_;
  return unless exists $rd->{ext_contact};
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('neulevel','extension');
- $mes->command_extension($eid,['neulevel:unspec', 'EXTContact=' . $rd->{ext_contact}]);
+ $epp->message()->command_extension('neulevel', ['extension', ['neulevel:unspec', 'EXTContact=' . $rd->{ext_contact}]]);
  return;
 }
 
@@ -216,9 +212,7 @@ sub domain_update
 {
  my ($epp,$domain,$todo)=@_;
  return unless my $ext_contact = $todo->set('ext_contact');
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('neulevel','extension');
- $mes->command_extension($eid,['neulevel:unspec', 'EXTContact=' . $ext_contact]);
+ $epp->message()->command_extension('neulevel', ['extension', ['neulevel:unspec', 'EXTContact=' . $ext_contact]]);
  return;
 }
 

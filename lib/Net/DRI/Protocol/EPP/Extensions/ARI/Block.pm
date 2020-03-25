@@ -84,7 +84,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'block' => [ 'urn:ar:params:xml:ns:block-1.0','block-1.0.xsd' ]});
+ $po->ns({ 'block' => 'urn:ar:params:xml:ns:block-1.0' });
  return;
 }
 
@@ -98,7 +98,7 @@ sub parse
  my ($data,$dt);
  foreach my $dt (qw/creData infData renData/)
  {
-  last if $data=$mes->get_extension($mes->ns('block'),$dt);
+  last if $data=$mes->get_extension('block',$dt);
  }
  return unless defined $data;
  foreach my $el (Net::DRI::Util::xml_list_children($data))
@@ -122,13 +122,11 @@ sub delete { return build_block(@_,'delete'); }
 sub build_block
 {
  my ($epp,$domain,$rd,$cmd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'block_id') && defined $cmd && $cmd =~ m/^(info|create|renew|delete)$/;
 
  my (@n);
  push @n, ['block:id', $rd->{block_id}];
- my $eid=$mes->command_extension_register('block',$cmd);
- $mes->command_extension($eid,\@n );
+ $epp->message()->command_extension('block', [$cmd, @n]);
 
  return;
 }
