@@ -89,7 +89,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CN',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{ssl_version => 'TLSv1'},'Net::DRI::Protocol::EPP::Extensions::CN',{}) if $type eq 'epp';
 
  return;
 }
