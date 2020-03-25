@@ -1,6 +1,6 @@
-## Domain Registry Interface, Mark & Signed Mark for EPP (draft-ietf-eppext-tmch-smd-06)
+## Domain Registry Interface, Mark & Signed Mark for EPP (RFC7848)
 ##
-## Copyright (c) 2013-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013-2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -31,12 +31,12 @@ my $NS_XMLDSIG = 'http://www.w3.org/2000/09/xmldsig#';
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'mark'       => [ 'urn:ietf:params:xml:ns:mark-1.0','mark-1.0.xsd' ],
-           'signedMark' => [ 'urn:ietf:params:xml:ns:signedMark-1.0','signedMark-1.0'] });
+ $po->ns({ 'mark'       => 'urn:ietf:params:xml:ns:mark-1.0',
+           'signedMark' => 'urn:ietf:params:xml:ns:signedMark-1.0' });
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-ietf-eppext-tmch-smd-06'; }
+sub implements { return 'https://tools.ietf.org/html/rfc7848'; }
 
 my %xml2perl = ( trademark       => 'trademark',
                  treatyOrStatute => 'treaty_statute',
@@ -63,7 +63,7 @@ sub build_marks
  my @r;
  foreach my $m (ref $rd eq 'ARRAY' ? @$rd : $rd)
  {
-  push @r,['mark:mark',{ 'xmlns:mark' => $po->ns()->{'mark'}->[0]},build_mark($m)];
+  push @r,['mark:mark', { 'xmlns:mark' => $po->ns()->{'mark'}}, build_mark($m)];
  }
  return @r;
 }
@@ -161,7 +161,7 @@ sub _build_contact
  $v=$contact->voice();
  if (defined $v && length $v)
  {
-  Net::DRI::Exception::usererr_invalid_parameters('Voice of contact must be an XML token string verifying pattern "(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?"') unless Net::DRI::Util::xml_is_token($v,0,24) && $v=~m/^(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?$/; 
+  Net::DRI::Exception::usererr_invalid_parameters('Voice of contact must be an XML token string verifying pattern "(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?"') unless Net::DRI::Util::xml_is_token($v,0,24) && $v=~m/^(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?$/;
   push @r,Net::DRI::Protocol::EPP::Util::build_tel('mark:voice',$v);
  } else
  {
@@ -171,7 +171,7 @@ sub _build_contact
  $v=$contact->fax();
  if (defined $v && length $v)
  {
-  Net::DRI::Exception::usererr_invalid_parameters('Fax of contact must be an XML token string verifying pattern "(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?"') unless Net::DRI::Util::xml_is_token($v,0,24) && $v=~m/^(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?$/; 
+  Net::DRI::Exception::usererr_invalid_parameters('Fax of contact must be an XML token string verifying pattern "(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?"') unless Net::DRI::Util::xml_is_token($v,0,24) && $v=~m/^(\+[0-9]{1,3}\.[0-9]{1,14})(?:x)?(\d+)?$/;
   push @r,Net::DRI::Protocol::EPP::Util::build_tel('mark:fax',$v);
  }
 
@@ -327,16 +327,16 @@ sub _build_treaty
   my @pro;
   Net::DRI::Exception::usererr_invalid_parameters('Each protection item must be a ref hash, not: '.$rprot) unless ref $rprot eq 'HASH';
 
-  push @pro,_add_token($rprot,'cc');
+  push @r,_add_token($rprot,'cc');
   Net::DRI::Exception::usererr_invalid_parameters(qq{Value for "cc" key must be an XML token string of 2 characters}) unless Net::DRI::Util::xml_is_token($rprot->{cc},2,2);
 
-  push @pro,_add_token($rprot,'region',1);
+  push @r,_add_token($rprot,'region',1);
 
   if (Net::DRI::Util::has_key($rprot,'ruling'))
   {
    foreach my $ruling (ref $rprot->{ruling} eq 'ARRAY' ? @{$rprot->{ruling}} : ($rprot->{ruling}))
    {
-    push @pro,_add_token({ ruling => $ruling },'ruling');
+    push @r,_add_token({ ruling => $ruling },'ruling');
     Net::DRI::Exception::usererr_invalid_parameters(qq{Each "ruling" item must be an XML token string of 2 characters}) unless Net::DRI::Util::xml_is_token($ruling,2,2);
    }
   }
@@ -621,16 +621,19 @@ sub parse_encoded_signed_mark
 {
  my ($po,$start,$xmlsec)=@_;
  my $content;
+
  if (ref $start)
  {
   my $encoding=$start->hasAttribute('encoding') ? $start->getAttribute('encoding') : 'base64';
   Net::DRI::Exception::err_invalid_parameter('For encoded signed mark, only base64 encoding is supported') unless $encoding eq 'base64';
   my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start->textContent());
   $content = (@a) ? $content=join("\n",@a[1..($#a-1)]) : $start->textContent(); } else
+ } else
  {
   my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start);
   $content=join("\n",@a[1..($#a-1)]);
  }
+
  require MIME::Base64;
  my $xml=MIME::Base64::decode_base64($content);
  $xml=Encode::decode('UTF-8',$xml,Encode::FB_CROAK | Encode::LEAVE_SRC);
@@ -649,7 +652,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark - ICANN TMCH Mark/Signed Mark EPP Extension (draft-ietf-eppext-tmch-smd-06) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark - ICANN TMCH Mark/Signed Mark EPP Extension (RFC 7848) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -673,7 +676,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013-2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2013-2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
