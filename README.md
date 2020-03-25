@@ -1,9 +1,9 @@
-### Net-DRI-0.12-tdw
+### Net-DRI-0.13-tdw
 
 * * *
 #### Overview
 
-Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek [Home Page](http://www.dotandco.com/services/software/Net-DRI/), [CPAN](http://search.cpan.org/dist/Net-DRI/) based on Net-DRI-0.96_09 that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.
+Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek based on Net-DRI-0.96_09 ([meta::cpan](https://metacpan.org/release/Net-DRI)) that includes support for new gTLDs, as well as a few other experimental changes. While some of these changes might be merged into the main release, there is no guarantee that they will be, or that they will be exactly the same if they do, so please consider this fork "mostly stable", but experimental.
 
 * * *
 #### Warning!
