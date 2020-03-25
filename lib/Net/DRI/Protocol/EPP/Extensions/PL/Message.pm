@@ -90,12 +90,12 @@ sub parse
   return unless my $msgid=$mes->msg_id();
   my @tmp; # used to parse at the end of this function the dom names if extdom-2.0
 
-  # pl_domain => extdom-2.0
-  foreach my $tmp_pl_domain (qw/pollAuthInfo pollDomainAutoRenewed pollDomainAutoRenewFailed dlgData expData pollDomainBlocked pollDomainUnblocked pollFutureRemoved pollTasteRemoved pollDomainJudicialRemoved trnData/)
+  # extdom => extdom-2.0
+  foreach my $tmp_extdom (qw/pollAuthInfo pollDomainAutoRenewed pollDomainAutoRenewFailed dlgData expData pollDomainBlocked pollDomainUnblocked pollFutureRemoved pollTasteRemoved pollDomainJudicialRemoved trnData/)
   {
-    if (my $data=$mes->get_response('pl_domain',$tmp_pl_domain))
+    if (my $data=$mes->get_response('extdom',$tmp_extdom))
     {
-      $oaction = Net::DRI::Util::xml2perl($tmp_pl_domain);
+      $oaction = Net::DRI::Util::xml2perl($tmp_extdom);
       $oaction =~ s/^poll_//;
       $otype = 'domain';
       foreach my $el (Net::DRI::Util::xml_list_children($data))
@@ -174,7 +174,7 @@ sub parse
   # Multiple domain names for the extdom...
   foreach (qw/dlgData expData/)
   {
-    if (my $data=$mes->get_response('pl_domain',$_))
+    if (my $data=$mes->get_response('extdom',$_))
     {
       $rinfo->{$otype}->{$oname}->{extdom_names}= \@tmp;
       $rinfo->{$otype}->{$oname}->{action}= $_;
@@ -200,7 +200,7 @@ sub parse
   # extcon => extcon-2.0
   foreach my $tmp_extcon (qw/create update infData info delData/)
   {
-    if (my $data=$mes->get_response('pl_contact',$tmp_extcon))
+    if (my $data=$mes->get_response('extcont',$tmp_extcon))
     {
       $oaction = Net::DRI::Util::xml2perl($tmp_extcon);
       $otype = $oname = 'extcon';

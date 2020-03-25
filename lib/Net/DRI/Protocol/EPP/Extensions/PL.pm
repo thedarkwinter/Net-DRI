@@ -68,14 +68,14 @@ sub setup
 {
   my ($self,$rp)=@_;
   $self->ns({
-      _main       => ['http://www.dns.pl/nask-epp-schema/epp-2.0','epp-2.0.xsd'],
-      domain      => ['http://www.dns.pl/nask-epp-schema/domain-2.0','domain-2.0.xsd'],
-      contact     => ['http://www.dns.pl/nask-epp-schema/contact-2.0','contact-2.0.xsd'],
-      host        => ['http://www.dns.pl/nask-epp-schema/host-2.0','host-2.0.xsd'],
-      pl_contact  => ['http://www.dns.pl/nask-epp-schema/extcon-2.0','extcon-2.0.xsd'],
-      pl_domain   => ['http://www.dns.pl/nask-epp-schema/extdom-2.0','extdom-2.0.xsd'],
-      future      => ['http://www.dns.pl/nask-epp-schema/future-2.0','future-2.0.xsd'],
-      extepp      => ['http://www.dns.pl/nask-epp-schema/extepp-2.0','extepp-2.0.xsd'],
+      epp         => 'http://www.dns.pl/nask-epp-schema/epp-2.0',
+      domain      => 'http://www.dns.pl/nask-epp-schema/domain-2.0',
+      contact     => 'http://www.dns.pl/nask-epp-schema/contact-2.0',
+      host        => 'http://www.dns.pl/nask-epp-schema/host-2.0',
+      extcon      => 'http://www.dns.pl/nask-epp-schema/extcon-2.0',
+      extdom      => 'http://www.dns.pl/nask-epp-schema/extdom-2.0',
+      future      => 'http://www.dns.pl/nask-epp-schema/future-2.0',
+      extepp      => 'http://www.dns.pl/nask-epp-schema/extepp-2.0'
     });
 
   $self->capabilities('host_update','name',undef); ## No change of hostnames

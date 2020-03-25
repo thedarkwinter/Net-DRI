@@ -75,12 +75,6 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:extcon="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('pl_contact')));
-}
-
 sub add_individual_element
 {
  my ($epp,$contact,$op)=@_;
@@ -90,11 +84,10 @@ sub add_individual_element
  my $ind=$contact->individual();
 
  return unless (defined($ind));
- my $eid=build_command_extension($mes,$epp,'extcon:'.$op);
  my @e;
  push @e,['extcon:individual',$ind]           if defined($ind);
 
- $mes->command_extension($eid,\@e);
+ $epp->message()->command_extension('extcon', [$op, @e]);
  return;
 }
 
@@ -118,13 +111,11 @@ sub info
  my $mes=$epp->message();
 
  return unless (Net::DRI::Util::has_auth($ep) && exists $ep->{auth}->{pw});
-
- my $eid=build_command_extension($mes,$epp,'extcon:info');
  if (Net::DRI::Util::has_key($ep->{auth},'roid'))
  {
-  $mes->command_extension($eid,[['extcon:authInfo',['extcon:pw',{roid=>$ep->{auth}->{roid}},$ep->{auth}->{pw}]]]);
+  $mes->command_extension('extcon', ['info', ['extcon:authInfo',['extcon:pw',{roid=>$ep->{auth}->{roid}},$ep->{auth}->{pw}]]]);
  } else {
-  $mes->command_extension($eid,[['extcon:authInfo',['extcon:pw',$ep->{auth}->{pw}]]]);
+  $mes->command_extension('extcon', ['info', ['extcon:authInfo',['extcon:pw',$ep->{auth}->{pw}]]]);
  }
  return;
 }
@@ -135,7 +126,7 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension('pl_contact','infData');
+ my $infdata=$mes->get_extension('extcon','infData');
  return unless defined $infdata;
 
  my $contact=$rinfo->{contact}->{$oname}->{self};

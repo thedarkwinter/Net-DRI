@@ -84,7 +84,7 @@ sub capabilities_add { return (['domain_update','secdns',['add','del']]); }
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'secDNS' => [ 'http://www.dns.pl/nask-epp-schema/secDNS-2.0','secDNS-2.0.xsd' ] });
+ $po->ns({ 'secDNS' => 'http://www.dns.pl/nask-epp-schema/secDNS-2.0' });
  return;
 }
 
@@ -93,7 +93,6 @@ sub setup
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $toadd=$todo->add('secdns');
  my $todel=$todo->del('secdns');
@@ -102,12 +101,12 @@ sub update
  return unless @def;
 
  Net::DRI::Exception::usererr_invalid_parameters('In NASK SecDNS-2.0, only add or del is possible, not more than one of them') if (@def>1);
- my $eid=$mes->command_extension_register('secDNS','update',{});
 
  my @n;
  push @n,['secDNS:add',Net::DRI::Protocol::EPP::Extensions::SecDNS::add_interfaces(ref $toadd eq 'ARRAY' ? $toadd : [ $toadd ] )] if defined $toadd;
  push @n,['secDNS:rem',Net::DRI::Protocol::EPP::Extensions::SecDNS::add_interfaces(ref $todel eq 'ARRAY' ? $todel : [ $todel ] )] if defined $todel;
- $mes->command_extension($eid,\@n);
+
+ $epp->message()->command_extension('secDNS', ['update', @n]);
 
  return;
 }

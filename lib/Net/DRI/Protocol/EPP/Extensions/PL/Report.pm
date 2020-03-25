@@ -31,7 +31,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'extreport' => [ 'http://www.dns.pl/nask-epp-schema/extreport-2.0','extreport-2.0.xsd' ] });
+ $po->ns({ 'extreport' => 'http://www.dns.pl/nask-epp-schema/extreport-2.0' });
  return;
 }
 
@@ -40,7 +40,6 @@ sub setup
 sub create
 {
  my ($epp,$id,$rp)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_insufficient_parameters('An ID must be provided to track this report results') unless defined $id && length $id;
  Net::DRI::Exception::usererr_insufficient_parameters('An hash ref must be provided with at least a type key') unless Net::DRI::Util::has_key($rp,'type');
@@ -70,8 +69,9 @@ sub create
  push @n,['extreport:offset',$rp->{offset}] if Net::DRI::Util::has_key($rp,'offset') && $rp->{offset}=~m/^\d+$/;
  push @n,['extreport:limit',$rp->{limit}]   if Net::DRI::Util::has_key($rp,'limit')  && $rp->{limit}=~m/^\d+$/;
 
- my $eid=$mes->command_extension_register('extreport','report');
- $mes->command_extension($eid,\@n);
+
+ $epp->message()->command_extension('extreport', ['report', @n]);
+
  return;
 }
 

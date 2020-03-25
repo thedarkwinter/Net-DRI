@@ -325,7 +325,7 @@ sub future_build_command
   } 
   
   my $tcommand=ref $command ? $command->[0] : $command;
-  $msg->command([$command,'future:'.$tcommand,sprintf('xmlns:future="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('future'))]);
+  $msg->command([$command,'future:'.$tcommand,$msg->nsattrs('future')]);
   
   my @f=map { ['future:name',$_,$futureattr] } @fut;
   return @f;

@@ -84,15 +84,13 @@ sub register_commands
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  return unless exists($rd->{reason}) || exists($rd->{book});
  my @e;
  #push @e,['extdom:reason',$rd->{reason}] if (exists($rd->{reason}) && $rd->{reason}); # as of 6.1, no longer used
  push @e,['extdom:book']                 if (exists($rd->{book}) && $rd->{book});
 
- my $eid=$mes->command_extension_register('extdom:create',sprintf('xmlns:extdom="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('pl_domain')));
- $mes->command_extension($eid,\@e);
+ $epp->message()->command_extension('extdom',['extdom:create',@e]);
  return;
 }
 
@@ -101,16 +99,13 @@ sub create
 sub renew
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  return unless exists $rd->{reactivate};
  my @e;
 
  # NASK expects an empty extdom:reactivate tag
  push @e,['extdom:reactivate',''];
-
- my $eid=$mes->command_extension_register('extdom:renew',sprintf('xmlns:extdom="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('pl_domain')));
- $mes->command_extension($eid,\@e);
+ $epp->message()->command_extension('extdom',['extdom:renew',@e]);
  return;
 }
 
