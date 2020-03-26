@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -28,11 +29,11 @@ sub setup
  my ($self,$rp) = @_;
  # These are the TANGO-RS extensions but use corenic namespaces
  $self->ns({
-  (map { $_ => ['http://xmlns.corenic.net/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/idn auction mark-ext/),
-  'el' => ['http://xmlns.corenic.net/epp/contact-eligibility-1.0','contact-eligibility-1.0.xsd'],
-  'promo' => ['http://xmlns.corenic.net/epp/promotion-1.0','promotion-1.0.xsd'],
-  'promo_info' => ['http://xmlns.corenic.net/epp/promotion-info-1.0','promotion-info-1.0.xsd'],
-  'promo_info_r' => ['http://xmlns.tango-rs.net/epp/promotion-info-1.0','promotion-info-1.0.xsd'],
+  (map { $_ => 'http://xmlns.corenic.net/epp/'.$_.'-1.0' } qw/idn auction mark-ext/),
+  'el' => 'http://xmlns.corenic.net/epp/contact-eligibility-1.0',
+  'promo' => 'http://xmlns.corenic.net/epp/promotion-1.0',
+  'promo_info' => 'http://xmlns.corenic.net/epp/promotion-info-1.0',
+  'promo_info_r' => 'http://xmlns.tango-rs.net/epp/promotion-info-1.0',
  });
  $self->capabilities('domain_update','idn',['add','del']);
  $self->capabilities('domain_update','auction',['set']);

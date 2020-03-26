@@ -104,7 +104,7 @@ sub capabilities_add { return (['domain_update','lp',['set']]); }
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'launch' => [ 'urn:ietf:params:xml:ns:launch-1.0','launch-1.0.xsd' ] });
+ $po->ns({ 'launch' => 'urn:ietf:params:xml:ns:launch-1.0' });
  return;
 }
 
@@ -129,8 +129,6 @@ sub create
   Net::DRI::Exception::usererr_insufficient_parameters('reference_url mandatory') if !exists $rd->{reference_url} && $lp->{phase} eq 'custom' && $lp->{sub_phase} =~ m/^(public-interest|local-entities)$/;
   Net::DRI::Exception::usererr_insufficient_parameters('trademark_id and trademark_issuer are mandatory') if !exists $rd->{trademark_id} && $lp->{phase} eq 'custom' && $lp->{sub_phase} =~ m/^(local-trademark)$/;
 
-  my $eid = (exists $lp->{type}) ? $mes->command_extension_register('launch','create',{type => $lp->{type}}) : undef;
-  $eid=$mes->command_extension_register('launch','create') unless defined $eid;
   my @n = Net::DRI::Protocol::EPP::Extensions::LaunchPhase::_build_idContainerType($lp);
   my @n2;
 
@@ -205,7 +203,11 @@ sub create
    }
   }
 
-  $mes->command_extension($eid,\@n);
+  if (exists $lp->{type}) {
+    $epp->message()->command_extension('launch', ['create', @n], {type => $lp->{type}});
+  } else {
+    $epp->message()->command_extension('launch', ['create', @n]);
+  }
  }
  return;
 }

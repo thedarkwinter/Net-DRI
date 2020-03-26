@@ -88,15 +88,13 @@ sub register_commands
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
  return unless $contact->{'enterprise_id'};
 
  my @n;
  push @n, ['el:enterpriseID',$contact->{'enterprise_id'}];
  return unless @n;
 
- my $eid=$mes->command_extension_register('el','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('el', ['create', @n]);
 
  return;
 }
@@ -104,14 +102,12 @@ sub create
 sub update
 {
  my ($epp,$contact,$todo)=@_;
- my $mes=$epp->message();
  my $extc=$todo->set('info');
 
  my $enterprise_id=$extc->{'enterprise_id'};
  return unless (defined($enterprise_id));
 
- my $eid=$mes->command_extension_register('el','update');
- $mes->command_extension($eid,['el:chg',['el:enterpriseID',$enterprise_id]]);
+ $epp->message()->command_extension('el', ['update', ['el:chg',['el:enterpriseID',$enterprise_id]]]);
 
  return;
 }
@@ -121,7 +117,7 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $infdata=$mes->get_extension($mes->ns('el'),'infData');
+ my $infdata=$mes->get_extension('el','infData');
  return unless defined $infdata;
 
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))

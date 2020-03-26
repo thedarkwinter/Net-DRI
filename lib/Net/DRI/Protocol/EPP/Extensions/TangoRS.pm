@@ -25,7 +25,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 sub setup
 {
  my ($self,$rp) = @_;
- $self->ns({ map { $_ => ['http://xmlns.tango-rs.net/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/idn auction/ });
+ $self->ns({ map { $_ => 'http://xmlns.tango-rs.net/epp/'.$_.'-1.0' } qw/idn auction/ });
  $self->capabilities('domain_update','idn',['add','del']);
  $self->capabilities('domain_update','auction',['set']);
 }

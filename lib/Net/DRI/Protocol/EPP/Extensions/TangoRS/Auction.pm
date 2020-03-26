@@ -99,14 +99,12 @@ sub build_bid
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'auction');
 
  my @n = build_bid($rd->{'auction'});
  return unless @n;
 
- my $eid=$mes->command_extension_register('auction','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('auction', ['create', @n]);
 
  return;
 }
@@ -114,14 +112,13 @@ sub create
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
  return unless $todo->set('auction');
 
  my @n = build_bid($todo->set('auction'));
  return unless @n;
 
- my $eid=$mes->command_extension_register('auction','update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('auction', ['update', @n]);
+
  return;
 }
 
@@ -130,7 +127,7 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $infdata=$mes->get_extension($mes->ns('auction'),'infData');
+ my $infdata=$mes->get_extension('auction','infData');
  return unless defined $infdata;
 
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))

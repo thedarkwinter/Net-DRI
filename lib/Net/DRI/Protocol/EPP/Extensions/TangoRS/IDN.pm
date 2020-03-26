@@ -155,7 +155,7 @@ sub parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- return unless my $infData=$mes->get_extension($mes->ns('idn'),'infData');
+ return unless my $infData=$mes->get_extension('idn','infData');
  return unless my $idn = _parse_idnContainerType($po,$oname,$infData);
  $rinfo->{$otype}->{$oname}->{idn}=$idn;
  return;
@@ -164,22 +164,18 @@ sub parse
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'idn');
  return unless my @n = _build_idnContainerType($rd);
- my $eid=$mes->command_extension_register('idn','check');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('idn', ['check', @n]);
  return;
 }
 
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless Net::DRI::Util::has_key($rd,'idn');
  return unless my @n = _build_idnContainerType($rd,1);
- my $eid=$mes->command_extension_register('idn','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('idn', ['create', @n]);
  return;
 }
 
@@ -187,7 +183,6 @@ sub create
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $add = $todo->add('idn');
  my $del = $todo->del('idn');
@@ -204,8 +199,7 @@ sub update
  push @n, ['idn:add',@add] if @add;
  push @n, ['idn:rem',@del] if @del;
 
- my $eid=$mes->command_extension_register('idn','update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('idn', ['update', @n]);
  return;
 }
 

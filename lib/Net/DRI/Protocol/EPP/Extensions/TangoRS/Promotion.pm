@@ -106,7 +106,7 @@ sub build_promo_command {
 
   # build promo code xml
   my $tcommand=ref $command ? $command->[0] : $command;
-  $msg->command([$command,'promo:'.$tcommand,sprintf('xmlns:promo="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('promo_info'))]);
+  $msg->command([$command,'promo:'.$tcommand, $msg->nsattrs('promo_info')]);
   push @d, ['promo:code',$promo,$codeattr];
 
   return @d;
@@ -190,15 +190,14 @@ sub create {
   return unless Net::DRI::Util::has_key($rd,'promo_code'); # make sure the key exists
 
   # modify command body namespace
-  $mes->command(['create','domain:create',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain'))]);
+  $mes->command(['create','domain:create', $mes->nsattrs('domain')]);
 
   # build promo extension
   my @m = build_promo_extension($rd->{'promo_code'});
   return unless @m;
 
   # push extension element into command
-  my $eid=$mes->command_extension_register('promo:create',sprintf('xmlns:promo="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('promo')));
-  $mes->command_extension($eid,\@m);
+  $mes->command_extension('promo', ['create', @m]);
 
   return;
 }
@@ -209,15 +208,14 @@ sub renew {
   return unless $rd->{'promo_code'};
 
   # modify command body namespace
-  $mes->command(['update','domain:renew',sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain'))]);
+  $mes->command(['update','domain:renew', $mes->nsattrs('domain')]);
 
   # build promo extension
   my @p = build_promo_extension($rd->{'promo_code'});
   return unless @p;
 
   # push extension element into command
-  my $eid=$mes->command_extension_register('promo:renew',sprintf('xmlns:promo="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('promo')));
-  $mes->command_extension($eid,\@p);
+  $mes->command_extension('promo', ['renew', @p]);
 
   return;
 }
