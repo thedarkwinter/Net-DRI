@@ -72,7 +72,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'service_message' => [ 'http://tld-box.at/xmlns/resdata-1.1','resdata-1.1.xsd' ]});
+ $po->ns({ 'service_message' => 'http://tld-box.at/xmlns/resdata-1.1' });
  return;
 }
 
@@ -85,7 +85,7 @@ sub parse
  return unless $mes->is_success();
  return unless my $msgid=$mes->msg_id();
 
- my $resdata=$mes->get_response($mes->ns('service_message'),'message');
+ my $resdata=$mes->get_response('service_message','message');
  return unless defined $resdata;
  
  $rinfo->{message}->{$msgid}->{message_type} = $resdata->getAttribute('type') if $resdata->hasAttribute('type');

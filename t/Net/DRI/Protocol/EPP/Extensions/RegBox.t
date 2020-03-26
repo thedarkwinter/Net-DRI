@@ -12,7 +12,7 @@ use Test::More tests => 8;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -44,11 +44,11 @@ SKIP: {
   skip 'Skipping 3 greeting tests',3;
 $R2=$E1.'<greeting><greeting><svID>epp1-brussels.rb.ipcom.at</svID><svDate>2014-11-11T14:39:53.576230Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:signedMark-1.0</extURI><extURI>urn:ietf:params:xml:ns:mark-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
-is($dri->protocol()->ns()->{fee}->[0],'http://tld-box.at/xmlns/resdata-1.1','Service Message resdata-1.1 loaded correctly');
+is($dri->protocol()->ns()->{fee},'http://tld-box.at/xmlns/resdata-1.1','Service Message resdata-1.1 loaded correctly');
 }
 
 # random message
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="10" id="123"><qDate>2014-02-01T16:00:00.000Z</qDate><msg>Some message</msg></msgQ><resData><message xmlns="http://tld-box.at/xmlns/resdata-1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="MessageType"><desc>Descriptive message</desc><data><entry name="sample">stuff</entry></data></message></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="10" id="123"><qDate>2014-02-01T16:00:00.000Z</qDate><msg>Some message</msg></msgQ><resData><message xmlns="http://tld-box.at/xmlns/resdata-1.1"  type="MessageType"><desc>Descriptive message</desc><data><entry name="sample">stuff</entry></data></message></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),'123','message_retrieve get_info(last_id)');
 is($dri->get_info('content','message',123),'Some message','message_retrieve get_info(message)');
