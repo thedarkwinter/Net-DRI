@@ -562,9 +562,9 @@ sub xml_escape
 
 sub xml_write
 {
- my $rd=shift;
+ my ($rd, $default_ns) = @_;
  my @t;
- foreach my $d (ref $rd->[0] ? @$rd : ($rd)) ## $d is a node=ref array
+ foreach my $d (ref $rd->[0] eq 'ARRAY' ? @$rd : ($rd)) ## $d is a node=ref array
  {
   my @c; ## list of children nodes
   my %attr;
@@ -579,17 +579,23 @@ sub xml_write
    }
   }
   my $tag=shift(@c);
-  my $attr=keys(%attr)? ' '.join(' ',map { $_.'="'.$attr{$_}.'"' } sort { $a cmp $b } keys %attr) : '';
-  if (ref $tag eq 'XML::LibXML::Element') # MH: it its an XML Element just push it straight; this is used by LaunchPhase to push signedMarks in
+  if (defined $default_ns && index($tag, ':') == -1)
   {
-   push @t, $tag;
-  } elsif (!@c || (@c==1 && !ref($c[0]) && ($c[0] eq '')))
+   $tag = $default_ns.':'.$tag;
+  }
+  my $attr = '';
+  if (keys(%attr))
+  {
+   # sort all xmlns first then others
+   $attr = ' '.join(' ',map { $_.'="'.$attr{$_}.'"' } sort { index($b,'xmlns:') <=> index($a,'xmlns:') || $a cmp $b } keys %attr);
+  }
+  if (!@c || (@c==1 && !ref($c[0]) && ($c[0] eq '')))
   {
    push @t,'<'.$tag.$attr.'/>';
   } else
   {
    push @t,'<'.$tag.$attr.'>';
-   push @t,(@c==1 && !ref($c[0]))? xml_escape($c[0]) : xml_write(\@c);
+   push @t,(@c==1 && !ref($c[0]))? xml_escape($c[0]) : xml_write(\@c, $default_ns);
    push @t,'</'.$tag.'>';
   }
  }
