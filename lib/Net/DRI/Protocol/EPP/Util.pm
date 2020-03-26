@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Protocol Utility functions
 ##
-## Copyright (c) 2009,2010,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009,2010,2015,2018,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -46,7 +46,6 @@ sub parse_node_value
  $t=~s!^<value(?:\s+xmlns:epp=["'][^"']+["'])?>(.+?)</value>$!$1!;
  $t=~s/^\s+//;
  $t=~s/\s+$//;
- $t =~ s/>\s*</></g;
  $t=~s!^<text>(.+)</text>$!$1!;
  $t=~s!^<epp:undef\s*/>$!!;
  return $t;
@@ -69,7 +68,20 @@ sub parse_node_result
    my $c2=$c[-1]->[1]; ## <reason> node
    my ($ll,$lt)=parse_node_msg($c2);
    my $v=parse_node_value($c1);
-   push @i,{ from => $from.':extValue', type => $v=~m/^</ ? 'rawxml' : 'text', message => $v, lang => $ll, reason => $lt };
+   my %info = ( from => $from.':extValue', type => $v=~m/^</ ? 'rawxml' : 'text');
+   if ($lt =~m/^\s*(\S+) not in login services\s*$/) # draft-gould-casanova-regext-unhandled-namespaces §3
+   {
+    $info{unhandled_namespace} = $1;
+    $v =~s!^<value>\s*!!;
+    $v =~s!\s*</value>$!!;
+    $info{unhandled_content} = $v;
+   } else
+   {
+    $info{lang} = $ll;
+    $info{reason} = $lt;
+    $info{message} = $v;
+   }
+   push @i, \%info;
   } elsif ($name eq 'value')
   {
    my $v=parse_node_value($c);
@@ -94,7 +106,7 @@ sub domain_build_command
  }
 
  my $tcommand=ref $command ? $command->[0] : $command;
- $msg->command([$command,'domain:'.$tcommand,sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('domain'))]);
+ $msg->command([$command,'domain:'.$tcommand, $msg->nsattrs('domain')]);
 
  my @d=map { ['domain:name',$_,$domainattr] } @dom;
  return @d;
@@ -153,8 +165,6 @@ sub build_period
 sub build_ns
 {
  my ($epp,$ns,$domain,$xmlns,$noip)=@_;
- # hostasns = <domain:ns>ns1.test.com</domain:ns>
- return map { ['domain:ns',$_] } $ns->get_names() if ($epp->{hostasns} == 1);  
 
  my @d;
  my $asattr=$epp->{hostasattr};
@@ -302,7 +312,7 @@ sub build_disclose
  {
   if (exists $d->{$item})
   {
-   push @d,[$ns.':'.$item,{type=>'int'}],[$ns.':'.$item,{type=>'loc'}];
+   push @d,[$ns.':'.$item,{type=>'int'}],[$ns.':name',{type=>'loc'}];
   } else
   {
    push @d,[$ns.':'.$item,{type=>'int'}] if exists $d->{$item.'_int'};
@@ -401,7 +411,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009,2010,2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009,2010,2015,2018,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
