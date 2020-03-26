@@ -63,7 +63,7 @@ sub build_marks
  my @r;
  foreach my $m (ref $rd eq 'ARRAY' ? @$rd : $rd)
  {
-  push @r,['mark:mark', { 'xmlns:mark' => $po->ns()->{'mark'}}, build_mark($m)];
+  push @r,['mark:mark', { 'xmlns:mark' => $po->ns()->{'mark'} }, build_mark($m)];
  }
  return @r;
 }
@@ -627,7 +627,7 @@ sub parse_encoded_signed_mark
   my $encoding=$start->hasAttribute('encoding') ? $start->getAttribute('encoding') : 'base64';
   Net::DRI::Exception::err_invalid_parameter('For encoded signed mark, only base64 encoding is supported') unless $encoding eq 'base64';
   my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start->textContent());
-  $content = (@a) ? $content=join("\n",@a[1..($#a-1)]) : $start->textContent(); } else
+  $content = (@a) ? $content=join("\n",@a[1..($#a-1)]) : $start->textContent();
  } else
  {
   my @a=grep { /-----BEGIN ENCODED SMD-----/ .. /-----END ENCODED SMD-----/ } split(/\n/,$start);
