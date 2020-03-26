@@ -327,16 +327,16 @@ sub _build_treaty
   my @pro;
   Net::DRI::Exception::usererr_invalid_parameters('Each protection item must be a ref hash, not: '.$rprot) unless ref $rprot eq 'HASH';
 
-  push @r,_add_token($rprot,'cc');
+  push @pro,_add_token($rprot,'cc');
   Net::DRI::Exception::usererr_invalid_parameters(qq{Value for "cc" key must be an XML token string of 2 characters}) unless Net::DRI::Util::xml_is_token($rprot->{cc},2,2);
 
-  push @r,_add_token($rprot,'region',1);
+  push @pro,_add_token($rprot,'region',1);
 
   if (Net::DRI::Util::has_key($rprot,'ruling'))
   {
    foreach my $ruling (ref $rprot->{ruling} eq 'ARRAY' ? @{$rprot->{ruling}} : ($rprot->{ruling}))
    {
-    push @r,_add_token({ ruling => $ruling },'ruling');
+    push @pro,_add_token({ ruling => $ruling },'ruling');
     Net::DRI::Exception::usererr_invalid_parameters(qq{Each "ruling" item must be an XML token string of 2 characters}) unless Net::DRI::Util::xml_is_token($ruling,2,2);
    }
   }

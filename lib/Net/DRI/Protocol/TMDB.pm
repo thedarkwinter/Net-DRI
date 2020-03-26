@@ -123,8 +123,8 @@ sub new
  my $version=Net::DRI::Util::check_equal($rp->{version},['1.0'],'1.0');
  $self->version($version);
 
- $self->ns({ _main   => ['urn:ietf:params:xml:ns:tmNotice-1.0','tmNotice-1.0'],
-                         mark => ['urn:ietf:params:xml:ns:mark-1.0','mark-1.0'],
+ $self->ns({ epp   => 'urn:ietf:params:xml:ns:tmNotice-1.0',
+                         mark => 'urn:ietf:params:xml:ns:mark-1.0',
                         });
  
  # set cnis / smd creds

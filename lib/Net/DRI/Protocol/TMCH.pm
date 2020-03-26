@@ -213,10 +213,10 @@ sub new
  my $version=Net::DRI::Util::check_equal($rp->{version},['1.1'],'1.1');
  $self->version($version);
 
- $self->ns({ _main   => ['urn:ietf:params:xml:ns:tmch-1.1','tmch-1.1'],
-                         mark => ['urn:ietf:params:xml:ns:mark-1.0','mark-1.0'],
-                         dignedMark => ['urn:ietf:params:xml:ns:signedMark-1.0','signedMark-1.0'],
-                         'xmldsig-core-schema' => ['urn:ietf:params:xml:ns:xmldsig-core-schema-1.0','xmldsig-core-schema-1.0']
+ $self->ns({ epp   => 'urn:ietf:params:xml:ns:tmch-1.1',
+                         mark => 'urn:ietf:params:xml:ns:mark-1.0','mark-1.0',
+                         signedMark => 'urn:ietf:params:xml:ns:signedMark-1.0',
+                         'xmldsig-core-schema' => 'urn:ietf:params:xml:ns:xmldsig-core-schema-1.0'
                         });
  $drd->set_factories($self) if $drd->can('set_factories');
  $self->factories('message',sub { my $m=Net::DRI::Protocol::TMCH::Message->new(@_); $m->ns($self->ns()); $m->version($version); return $m; });

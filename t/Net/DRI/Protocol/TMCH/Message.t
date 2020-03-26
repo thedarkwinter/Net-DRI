@@ -16,13 +16,10 @@ my $s;
 ###################################################################################
 
 $msg=Net::DRI::Protocol::TMCH::Message->new();
-$msg->ns({ _main   => ['urn:ietf:params:xml:ns:tmch-1.0','tmch-1.0']});
+$msg->ns({ epp   => 'urn:ietf:params:xml:ns:tmch-1.0'});
 $s=Net::DRI::Data::Raw->new_from_string(<<EOF);
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<tmch xmlns="urn:ietf:params:xml:ns:tmch-1.0"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="urn:ietf:params:xml:ns:tmch-1.0
-     tmch-1.0.xsd">
+<tmch xmlns="urn:ietf:params:xml:ns:tmch-1.0">
   <response>
     <result code="1000">
       <msg>Command completed successfully</msg>
@@ -43,13 +40,10 @@ is($msg->cltrid(),'ABC-12345','parse (result,trid) cltrid');
 is($msg->svtrid(),'54321-XYZ','parse (result,trid) svtrid');
 
 $msg=Net::DRI::Protocol::TMCH::Message->new();
-$msg->ns({ _main   => ['urn:ietf:params:xml:ns:tmch-1.0','tmch-1.0']});
+$msg->ns({ epp   => 'urn:ietf:params:xml:ns:tmch-1.0'});
 $s=Net::DRI::Data::Raw->new_from_string(<<EOF);
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<tmch xmlns="urn:ietf:params:xml:ns:tmch-1.0"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="urn:ietf:params:xml:ns:tmch-1.0
-     tmch-1.0.xsd">
+<tmch xmlns="urn:ietf:params:xml:ns:tmch-1.0">
   <response>
     <result code="2004">
       <msg>Parameter value range error</msg>

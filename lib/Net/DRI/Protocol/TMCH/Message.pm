@@ -111,7 +111,7 @@ sub as_string
  my ($self,$protect)=@_;
  my @d;
  push @d,'<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
- push @d,'<tmch '.sprintf('xmlns="%s" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="%s %s"',$self->nsattrs('_main')).'>';
+ push @d,'<tmch '.$self->nsattrs('epp').'>';
 
  my ($cmd,$ocmd,$ons);
  my $rc=$self->command();
@@ -209,7 +209,7 @@ sub _get_content
 sub parse
 {
  my ($self,$dc,$rinfo)=@_;
- my $NS=$self->ns('_main');
+ my $NS=$self->ns('epp');
  my $parser=XML::LibXML->new();
  my $doc=$parser->parse_string($dc->as_string());
  my $root=$doc->getDocumentElement();
