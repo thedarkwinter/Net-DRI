@@ -86,7 +86,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{remote_host => 'epp.sandbox.nic.fr'},'Net::DRI::Protocol::EPP::Extensions::AFNIC',{})                                           if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host => 'epp.sandbox.nic.fr',ssl_version => 'TLSv1'},'Net::DRI::Protocol::EPP::Extensions::AFNIC',{})                                           if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{find_remote_server => ['fr.','DCHK1:iris.lwz']},'Net::DRI::Protocol::IRIS',{version=>'1.0',authority=>'fr',request_deflate=>1}) if $type eq 'dchk';
  return;
 }

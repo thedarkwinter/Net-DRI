@@ -1,15 +1,19 @@
 Net::DRI changelog from newest to oldest changes
 
-0.13-tdw 2017-XX-XX DEVELOPMENT RELEASE
-!! Note, this is not an official release; it is based on Net-DRI-0.96_09. See http://search.cpan.org/dist/Net-DRI/ !!
-!! Note, this release includes the restructure of DRDs from Net-DRI-0.96_09, meaing that you will need to change your scripts.
-!! See http://cpansearch.perl.org/src/PMEVZEK/Net-DRI-0.96_09/Changes, along with the note:
-!! "This version changes almost all DRD module names, you will need to change your scripts.
-!!  This is a consequence of an old design decision that no DRD module should have a TLD as name.
-!!  Now, by default a DRD of a TLD registry will have the sponsor name as listed on IANA website."
-!! Note3, While the upstream favours the Registry name for DRD, I favour the BackendOperator::Platform Naming
-!! So instead of (.travel) Tralliance, I use Neustar::Tralliance, though there is variation in here I am still working on!
-= DotAsia modules removed, use Afilias/Shared. Old .asia specific extensions no longer in use. 
+0.13-tdw 2020-03-25 DEVELOPMENT RELEASE
+!! Note, this is not an official release; it is based on Net-DRI-0.96_09. See https://metacpan.org/release/Net-DRI !!
+!! Many gTLDs have been migrated between registry backends, I won't detail except for change of DRD.
+!! Credit to Paulo Jorge for dozens and dozens of minor changes.
+= Neustar/Narwal corrected, renamed to Neustar/Narwhal
+= Neustar/BIZ now Neustar/Narwhal
+= Afilias/DotAsia now Afilias::Shared
+= DotAsia modules removed, use Afilias/Shared. Old .asia specific extensions no longer in use.
+= DNSBelgium moved to DNSBelgium/BE and DNSBelgium/GTLD
+= VeriSign/NAME now VeriSign/NameStore
+= UnitedTLD/Rightside and UnitedTLD/Donuts merged into single DRD Donuts
++ Updates for .de (RRI-3.0), .eu, .pl, .it, from Paulo Jorge
++ Added .cl, .sk, .fi, .tw, and .pt support, from Paulo Jorge
++ Added UniRegistry::EPS support, from Paulo Jorge
 
 
 0.12-tdw 2017-06-28 DEVELOPMENT RELEASE
