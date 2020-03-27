@@ -280,7 +280,6 @@ sub parse_secdns
  my $mes = shift;
  my $node = shift;
  my $n = $node->getFirstChild();
- my ($flags, $protocol, $algorithm, $publickey) = '';
  my $key_data;
 
  while ($n)
