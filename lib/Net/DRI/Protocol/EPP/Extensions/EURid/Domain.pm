@@ -1,5 +1,4 @@
 ## Domain Registry Interface, EURid Domain EPP extension commands
-## (based on EURid EPP_Guidelines_2_1_09)
 ##
 ## Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.

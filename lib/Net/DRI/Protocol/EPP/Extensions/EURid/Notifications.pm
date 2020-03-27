@@ -1,5 +1,4 @@
 ## Domain Registry Interface, EURid Registrar EPP extension notifications
-## (based on EURid EPP_Guidelines_2_1_09, RegNotifications_051213.pdf (v1.2), schemas for poll-1.2)
 ##
 ## Copyright (c) 2009,2012-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
