@@ -96,7 +96,7 @@ is($rc->get_data('contact',$id,'id'),'c16212472','contact_create 3 get_info(id)'
 is(''.$rc->get_data('contact',$id,'crDate'),'2012-10-03T12:14:04','contact_create 3 get_info(crdate)');
 
 
-## contact create release_notes_march_2019.pdf - whoisEmail
+## whoisEmail
 $R2=$E1.'<response>'.r().'<resData><contact:creData><contact:id>c16212472</contact:id><contact:crDate>2012-10-03T12:14:04.747Z</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
 $co=$dri->local_object('contact')->srid('client_id004');
 $co->name('Ann Ployee');

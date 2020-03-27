@@ -211,7 +211,7 @@ isa_ok($dh->[0],'Net::DRI::Data::Hosts','domain_info get_info(nsgroup)');
 is($dri->get_info('keygroup'), 'keygroup-1350898304165', 'domain_info get_info(name)');
 
 
-# <domain:info> with registrantCountry and maxExtensionPeriod - release_notes_march_2019.pdf
+# <domain:info> with registrantCountry and maxExtensionPeriod
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>20190315-test001.eu</domain:name><domain:roid>foobar-EURID</domain:roid><domain:status s="ok"/><domain:registrant>c160</domain:registrant></domain:infData></resData><extension><domain-ext:infData xmlns:domain-ext="http://www.eurid.eu/xml/epp/domain-ext-2.4"><domain-ext:onHold>false</domain-ext:onHold><domain-ext:quarantined>true</domain-ext:quarantined><domain-ext:suspended>false</domain-ext:suspended><domain-ext:seized>false</domain-ext:seized><domain-ext:availableDate>2014-10-23T16:11:55.109Z</domain-ext:availableDate><domain-ext:deletionDate>2014-09-13T16:11:55.109Z</domain-ext:deletionDate><domain-ext:contact type="onsite">c163</domain-ext:contact><domain-ext:delayed>true</domain-ext:delayed><domain-ext:onHold>false</domain-ext:onHold><domain-ext:quarantined>false</domain-ext:quarantined><domain-ext:suspended>false</domain-ext:suspended><domain-ext:seized>false</domain-ext:seized><domain-ext:delayed>false</domain-ext:delayed><domain-ext:maxExtensionPeriod>9</domain-ext:maxExtensionPeriod><domain-ext:registrantCountry>PT</domain-ext:registrantCountry><domain-ext:registrantCountryOfCitizenship>PT</domain-ext:registrantCountryOfCitizenship></domain-ext:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('20190315-test001.eu');
 is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">20190315-test001.eu</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command></epp>','domain_info build');
@@ -411,7 +411,6 @@ is($dri->get_info('unicode'),'вмкйршаудхыийведйкгг.ею','do
 
 ########################################################################################################
 ## dnsQuality Info
-# This was taken off Release Notes_11October2017_v1.0.pdf
 
 $R2=$E1.'<response>'.r().'<resData><dnsQuality:infData xmlns:dnsQuality="http://www.eurid.eu/xml/epp/dnsQuality-2.0"><dnsQuality:name>dnsq_domain.eu</dnsQuality:name><dnsQuality:checkTime>2017-08-17T11:23:44.312+02:00</dnsQuality:checkTime><dnsQuality:score>1000</dnsQuality:score></dnsQuality:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->dns_quality_info('dnsq_domain.eu');
@@ -426,7 +425,6 @@ is($dri->get_info('score'),1000,'domain_info get_info(name)');
 
 ########################################################################################################
 ## GDPR context updates
-# This was taken off Release releasenotes_may2018.pdf
 
 # chapter 3: change for EPP contact info domain: details are not available if a transfer auth code is provided (in case domain not under Registrar portfolio)
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>somedomain.eu</domain:name><domain:roid>somedomain_eu-EURID</domain:roid><domain:status s="ok"/><domain:clID>#non-disclosed#</domain:clID><domain:crID>#non-disclosed#</domain:crID><domain:crDate>2018-03-23T10:03:49.428Z</domain:crDate><domain:upID>#non-disclosed#</domain:upID><domain:upDate>2018-03-23T10:03:49.000Z</domain:upDate><domain:exDate>2019-03-23T22:59:59.999Z</domain:exDate></domain:infData></resData><extension xmlns:domain-ext-2.4="http://www.eurid.eu/xml/epp/domain-ext-2.4" xmlns:idn="http://www.eurid.eu/xml/epp/idn-1.0"><domain-ext-2.4:infData><domain-ext-2.4:onHold>false</domain-ext-2.4:onHold><domain-ext-2.4:quarantined>false</domain-ext-2.4:quarantined><domain-ext-2.4:suspended>false</domain-ext-2.4:suspended><domain-ext-2.4:seized>false</domain-ext-2.4:seized><domain-ext-2.4:delayed>false</domain-ext-2.4:delayed></domain-ext-2.4:infData></extension>'.$TRID.'</response>'.$E2;
@@ -456,7 +454,6 @@ is("".$d,'2019-03-23T22:59:59','domain_info get_info(exDate) value');
 
 ########################################################################################################
 ## dnssecEligibility Info
-# This was taken off releasenotes_may2018.pdf (GDPR related)
 
 $R2=$E1.'<response>'.r().'<resData><dnssecEligibility:infData xmlns:dnssecEligibility="http://www.eurid.eu/xml/epp/dnssecEligibility-1.0"><dnssecEligibility:name>somedomain.eu</dnssecEligibility:name><dnssecEligibility:eligible>true</dnssecEligibility:eligible><dnssecEligibility:msg>Eligible for DNSSEC discount</dnssecEligibility:msg><dnssecEligibility:code>1001</dnssecEligibility:code></dnssecEligibility:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->dnssec_eligibility_info('somedomain.eu');
@@ -483,7 +480,7 @@ is($dri->get_info('code'),'2000','dnssec_eligibility_info2 get_info(code)');
 
 
 ########################################################################################################
-## This was taken off release_notes_11032020.pdf (lock service and multiyear transfers allowed related )
+## lock service and multiyear transfers allowed related
 
 # <domain:info>
 $R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>somedomainlock.eu</domain:name><domain:roid>test_eu-EURID</domain:roid><domain:status s="clientDeleteProhibited"/><domain:status s="clientTransferProhibited"/><domain:status s="clientUpdateProhibited"/><domain:registrant>c11</domain:registrant><domain:contact type="billing">c10</domain:contact><domain:clID>t000001</domain:clID><domain:crID>t000001</domain:crID><domain:crDate>2020-03-02T10:00:43.027Z</domain:crDate><domain:upID>t000001</domain:upID><domain:upDate>2020-03-02T10:02:41.000Z</domain:upDate><domain:exDate>2021-03-02T22:59:59.999Z</domain:exDate></domain:infData></resData><extension xmlns:domain-ext-2.4="http://www.eurid.eu/xml/epp/domain-ext-2.4"><domain-ext-2.4:infData><domain-ext-2.4:onHold>false</domain-ext-2.4:onHold><domain-ext-2.4:quarantined>false</domain-ext-2.4:quarantined><domain-ext-2.4:suspended>false</domain-ext-2.4:suspended><domain-ext-2.4:seized>false</domain-ext-2.4:seized><domain-ext-2.4:contact type="onsite">c12</domain-ext-2.4:contact><domain-ext-2.4:delayed>false</domain-ext-2.4:delayed><domain-ext-2.4:maxExtensionPeriod>9</domain-ext-2.4:maxExtensionPeriod><domain-ext-2.4:registrantCountry>BE</domain-ext-2.4:registrantCountry></domain-ext-2.4:infData></extension>'.$TRID.'</response>'.$E2;
