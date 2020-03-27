@@ -200,7 +200,8 @@ sub info_parse
   }
   elsif ($name eq 'dnsentry')
   {
-   $ns->add(parse_ns($mes,$c));
+   $ns->add(parse_ns($mes,$c)) if defined parse_ns($mes,$c);
+   push @{$rinfo->{domain}->{$oname}->{secdns}}, parse_secdns($mes,$c) if defined parse_secdns($mes,$c);
   }
   elsif ($name eq 'regAccId')
   {
@@ -272,6 +273,52 @@ sub parse_ns
  } continue { $n = $n->getNextSibling(); }
 
  return ($hostname, \@ip4, \@ip6);
+}
+
+sub parse_secdns
+{
+ my $mes = shift;
+ my $node = shift;
+ my $n = $node->getFirstChild();
+ my ($flags, $protocol, $algorithm, $publickey) = '';
+ my $key_data;
+
+ while ($n)
+ {
+  next unless ($n->nodeType() == 1); ## only for element nodes
+  my $name = $n->localname() || $n->nodeName();
+  next unless $name;
+
+  # lets return info as standard EPP SecDNS extension: key_(flags|protocol|alg|pubKey)
+  if ($name eq 'rdata')
+  {
+   my $nn = $n->getFirstChild();
+   while ($nn)
+   {
+    next unless ($nn->nodeType() == 1); ## only for element nodes
+    my $name2 = $nn->localname() || $nn->nodeName();
+    next unless $name2;
+    if ($name2 eq 'flags')
+    {
+     $key_data->{'key_flags'} = $nn->getFirstChild()->getData();
+    }
+    elsif ($name2 eq 'protocol')
+    {
+     $key_data->{'key_protocol'} = $nn->getFirstChild()->getData();
+    }
+    elsif ($name2 eq 'algorithm')
+    {
+     $key_data->{'key_alg'} = $nn->getFirstChild()->getData();
+    }
+    elsif ($name2 eq 'publicKey')
+    {
+     $key_data->{'key_pubKey'} = $nn->getFirstChild()->getData();
+    }
+   } continue { $nn = $nn->getNextSibling(); }
+  }
+ } continue { $n = $n->getNextSibling(); }
+
+ return ($key_data);
 }
 
 sub transfer_query
