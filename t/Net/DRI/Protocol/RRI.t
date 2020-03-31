@@ -7,7 +7,7 @@ use utf8;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 163;
+use Test::More tests => 164;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -30,7 +30,7 @@ $dri->target('DENIC')->add_current_profile('p1','rri',{f_send=>\&mysend,f_recv=>
 my $rc;
 my $s;
 my $d;
-my ($dh,@c,$ns);
+my ($dh,@c,$ns,$secdns);
 
 ####################################################################################################
 ## Session Management
@@ -306,6 +306,24 @@ $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success<
             <dnsentry:address>87.233.175.19</dnsentry:address>
           </dnsentry:rdata>
         </dnsentry:dnsentry>
+        <dnsentry:dnsentry xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="dnsentry:DNSKEY">
+          <dnsentry:owner>denic.de.</dnsentry:owner>
+          <dnsentry:rdata>
+            <dnsentry:flags>257</dnsentry:flags>
+            <dnsentry:protocol>3</dnsentry:protocol>
+            <dnsentry:algorithm>7</dnsentry:algorithm>
+            <dnsentry:publicKey>BwFBBceSXa/P93GbzsO8/aqk4w3NA0C3Ll4bPCptnAu2drcmyhQcw4HzKHCBI5qAIcOZPgVi47jbi8lR7w+EB8jvCqIHKxGUxcw16qu5qKCGxpEY+qPyLiwTIStcJSIYllx5Jsh0cw77o9eFnyTGAR4m+X9nES1tpVs4axqulSCrO9N5RrBEuWyeNOAmVIpClT3nsPfBy30B+vkv6OQPY8eDRDLQ1LOe3ac+KpA7R0mXD9twCYOnruPe4mIiccrkopiT7cLFRrjGEDNYQnEEPVbVujQDmTldCLIQ9xpYHaLlxJZ1DYJA7lew2iExLyE5IVFH8lRDg+aCkTUGSA3GV8tQhDc=</dnsentry:publicKey>
+          </dnsentry:rdata>
+        </dnsentry:dnsentry>
+        <dnsentry:dnsentry xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="dnsentry:DNSKEY">
+          <dnsentry:owner>denic.de.</dnsentry:owner>
+          <dnsentry:rdata>
+            <dnsentry:flags>257</dnsentry:flags>
+            <dnsentry:protocol>3</dnsentry:protocol>
+            <dnsentry:algorithm>7</dnsentry:algorithm>
+            <dnsentry:publicKey>AwFBBceSXa/P93GbzsO8/aqk4w3NA0C3Ll4bPCptnAu2drcmyhQcw4HzKHCBI5qAIcOZPgVi47jbi8lR7w+EB8jvCqIHKxGUxcw16qu5qKCGxpEY+qPyLiwTIStcJSIYllx5Jsh0cw77o9eFnyTGAR4m+X9nES1tpVs4axqulSCrO9N5RrBEuWyeNOAmVIpClT3nsPfBy30B+vkv6OQPY8eDRDLQ1LOe3ac+KpA7R0mXD9twCYOnruPe4mIiccrkopiT7cLFRrjGEDNYQnEEPVbVujQDmTldCLIQ9xpYHaLlxJZ1DYJA7lew2iExLyE5IVFH8lRDg+aCkTUGSA3GV8tQhDc=</dnsentry:publicKey>
+          </dnsentry:rdata>
+        </dnsentry:dnsentry>
         <domain:changed>2018-08-13T14:24:38+02:00</domain:changed>
       </domain:infoData>
     </tr:data>
@@ -326,6 +344,21 @@ is(join(',', map { my ($name, $v4, $v6) = $ns->get_details($_); $v4->[0] }
 	$ns->get_names()), '181.91.170.1,193.171.255.36,87.233.175.19', 'Name server v4 IPs');
 is(join(',', map { my ($name, $v4, $v6) = $ns->get_details($_); $v6->[0] }
 	$ns->get_names(1)), '2a02:568:121:6:2:0:0:2', 'Name server v6 IPs');
+$secdns = $dri->get_info('secdns', 'domain', 'denic.de');
+is_deeply($secdns,[
+  {
+    key_flags=>257,
+    key_protocol=>3,
+    key_alg=>7,
+    key_pubKey=>'BwFBBceSXa/P93GbzsO8/aqk4w3NA0C3Ll4bPCptnAu2drcmyhQcw4HzKHCBI5qAIcOZPgVi47jbi8lR7w+EB8jvCqIHKxGUxcw16qu5qKCGxpEY+qPyLiwTIStcJSIYllx5Jsh0cw77o9eFnyTGAR4m+X9nES1tpVs4axqulSCrO9N5RrBEuWyeNOAmVIpClT3nsPfBy30B+vkv6OQPY8eDRDLQ1LOe3ac+KpA7R0mXD9twCYOnruPe4mIiccrkopiT7cLFRrjGEDNYQnEEPVbVujQDmTldCLIQ9xpYHaLlxJZ1DYJA7lew2iExLyE5IVFH8lRDg+aCkTUGSA3GV8tQhDc='
+  },
+  {
+    key_flags=>257,
+    key_protocol=>3,
+    key_alg=>7,
+    key_pubKey=>'AwFBBceSXa/P93GbzsO8/aqk4w3NA0C3Ll4bPCptnAu2drcmyhQcw4HzKHCBI5qAIcOZPgVi47jbi8lR7w+EB8jvCqIHKxGUxcw16qu5qKCGxpEY+qPyLiwTIStcJSIYllx5Jsh0cw77o9eFnyTGAR4m+X9nES1tpVs4axqulSCrO9N5RrBEuWyeNOAmVIpClT3nsPfBy30B+vkv6OQPY8eDRDLQ1LOe3ac+KpA7R0mXD9twCYOnruPe4mIiccrkopiT7cLFRrjGEDNYQnEEPVbVujQDmTldCLIQ9xpYHaLlxJZ1DYJA7lew2iExLyE5IVFH8lRDg+aCkTUGSA3GV8tQhDc='
+  }
+],'domain_info get_info(secdns) - key data');
 
 # domain:CHPROV (based on RRI v3.0 sample)
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
