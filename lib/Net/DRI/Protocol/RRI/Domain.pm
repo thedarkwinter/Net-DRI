@@ -200,7 +200,8 @@ sub info_parse
   }
   elsif ($name eq 'dnsentry')
   {
-   $ns->add(parse_ns($mes,$c));
+   $ns->add(parse_ns($mes,$c)) if defined parse_ns($mes,$c);
+   push @{$rinfo->{domain}->{$oname}->{secdns}}, parse_secdns($mes,$c) if defined parse_secdns($mes,$c);
   }
   elsif ($name eq 'regAccId')
   {
@@ -272,6 +273,51 @@ sub parse_ns
  } continue { $n = $n->getNextSibling(); }
 
  return ($hostname, \@ip4, \@ip6);
+}
+
+sub parse_secdns
+{
+ my $mes = shift;
+ my $node = shift;
+ my $n = $node->getFirstChild();
+ my $key_data;
+
+ while ($n)
+ {
+  next unless ($n->nodeType() == 1); ## only for element nodes
+  my $name = $n->localname() || $n->nodeName();
+  next unless $name;
+
+  # lets return info as standard EPP SecDNS extension: key_(flags|protocol|alg|pubKey)
+  if ($name eq 'rdata')
+  {
+   my $nn = $n->getFirstChild();
+   while ($nn)
+   {
+    next unless ($nn->nodeType() == 1); ## only for element nodes
+    my $name2 = $nn->localname() || $nn->nodeName();
+    next unless $name2;
+    if ($name2 eq 'flags')
+    {
+     $key_data->{'key_flags'} = $nn->getFirstChild()->getData();
+    }
+    elsif ($name2 eq 'protocol')
+    {
+     $key_data->{'key_protocol'} = $nn->getFirstChild()->getData();
+    }
+    elsif ($name2 eq 'algorithm')
+    {
+     $key_data->{'key_alg'} = $nn->getFirstChild()->getData();
+    }
+    elsif ($name2 eq 'publicKey')
+    {
+     $key_data->{'key_pubKey'} = $nn->getFirstChild()->getData();
+    }
+   } continue { $nn = $nn->getNextSibling(); }
+  }
+ } continue { $n = $n->getNextSibling(); }
+
+ return ($key_data);
 }
 
 sub transfer_query
@@ -577,8 +623,7 @@ sub update
  my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
  my $ns = $rd->{ns};
  my $cs = $rd->{contact};
-
- Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
+ my $secdns = $rd->{secdns};
 
  Net::DRI::Exception::usererr_invalid_parameters('Must specify contact set and name servers with update command (or use the proper API)') unless (Net::DRI::Util::isa_contactset($cs) && Net::DRI::Util::isa_hosts($ns));
 
@@ -594,6 +639,8 @@ sub update
  my $nsdel = $todo->del('ns');
  my $cadd = $todo->add('contact');
  my $cdel = $todo->del('contact');
+ my $sadd = $todo->add('secdns');
+ my $sdel = $todo->del('secdns');
 
  if (defined($nsadd)) { foreach my $hostname ($nsadd->get_names())
  {
@@ -631,6 +678,10 @@ sub update
 
  push @d, build_contact($cs);
  push @d, build_ns($rri, $ns, $domain);
+
+ # no idea if secdns is working... need to confirm on Production, someway :)
+ push @d, build_secdns($sadd,$domain) if defined($sadd);
+ push @d, build_secdns($sdel,$domain) if defined($sdel);
 
  $mes->command_body(\@d);
  return;

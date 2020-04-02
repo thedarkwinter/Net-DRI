@@ -91,7 +91,7 @@ sub parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless my $data=$mes->get_extension($mes->ns('cnnic-contact'),'infData');
- my $obj=$rinfo->{contact}->{$oname}->{self};
+ return unless my $obj=$rinfo->{contact}->{$oname}->{self};
  foreach my $el (Net::DRI::Util::xml_list_children($data)) 
  {
   my ($n,$c)=@$el;
