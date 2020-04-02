@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign Zone Management EPP extension
 ##
-## Copyright (c) 2012,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2012,2015,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -34,7 +34,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'zoneMgt' => [ 'http://www.verisign.com/epp/zoneMgt-1.0','zoneMgt-1.0.xsd' ],
+ $po->ns({ 'zoneMgt' => 'http://www.verisign.com/epp/zoneMgt-1.0',
          });
  return;
 }
@@ -78,12 +78,10 @@ sub _generate_rrecs
 sub domain_create_generate
 {
  my ($epp,$domain,$rp)=@_;
- my $mes=$epp->message();
 
  return unless Net::DRI::Util::has_key($rp,'zone');
 
- my $eid=$mes->command_extension_register('zoneMgt','create');
- $mes->command_extension($eid,[_generate_rrecs($rp->{zone})]);
+ $epp->message()->command_extension('zoneMgt', ['create', _generate_rrecs($rp->{zone})]);
  return;
 }
 
@@ -136,9 +134,7 @@ sub domain_update_generate
  push @n,['zoneMgt:add',_generate_rrecs($zadd)] if $zadd;
  push @n,['zoneMgt:rem',_generate_rrecs($zdel)] if $zdel;
 
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('zoneMgt','update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('zoneMgt', ['update', @n]);
  return;
 }
 
@@ -175,7 +171,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2012,2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
