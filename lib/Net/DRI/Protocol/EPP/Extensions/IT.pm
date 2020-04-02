@@ -68,7 +68,7 @@ sub setup
  my ($self,$rp)=@_;
 
  $self->ns({
-               'it_epp' => 'http://www.nic.it/ITNIC-EPP/extepp-1.0',
+               'extepp' => 'http://www.nic.it/ITNIC-EPP/extepp-1.0',
                'extcon' => 'http://www.nic.it/ITNIC-EPP/extcon-1.0',
                'extdom' => 'http://www.nic.it/ITNIC-EPP/extdom-2.0',
        });

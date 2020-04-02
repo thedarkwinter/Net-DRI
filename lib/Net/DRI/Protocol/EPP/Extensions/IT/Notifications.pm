@@ -62,7 +62,7 @@ sub parse
 
  # namespace => node , action
  my %namespaces=(
-               'it_epp' => {
+               'extepp' => {
                                 'passwdReminder' => 'password_expiring',
                                 'wrongNamespaceReminder' => 'wrong_namespace',
                                 'creditMsgData' => 'low_balance',
@@ -89,7 +89,7 @@ sub parse
                 while ( ($node,$ac) = each (%{$nodeac}))
                 {
                         next unless $data= $mes->get_extension($ns,$node);
-                        $otype = ($ns eq 'it_epp') ? 'message' : 'domain';
+                        $otype = ($ns eq 'extepp') ? 'message' : 'domain';
                         if ($otype eq 'domain') {
                                 my $tn = Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'domain');
                                 $tn = Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'name');
@@ -108,7 +108,7 @@ sub parse_recurse
         return unless $data;
         my $mes=$po->message();
 
-        parse_namespace($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_epp'),'wrongNamespaceInfo'));
+        parse_namespace($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('extepp'),'wrongNamespaceInfo'));
         parse_status($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'targetStatus'));
         parse_nameservers($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'nameservers'));
         parse_tests($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'tests'));
