@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Grace Period commands (RFC3915)
 ##
-## Copyright (c) 2005,2006,2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005,2006,2008-2010,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005,2006,2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005,2006,2008-2010,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ sub capabilities_add { return ('domain_update','rgp',['set']); }
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'rgp' => [ 'urn:ietf:params:xml:ns:rgp-1.0','rgp-1.0.xsd' ] });
+ $po->ns({ 'rgp' => 'urn:ietf:params:xml:ns:rgp-1.0' });
  return;
 }
 
@@ -92,7 +92,7 @@ sub info_parse
  return unless $mes->is_success();
 
  my $ns=$mes->ns('rgp');
- my $infdata=$mes->get_extension($ns,'infData');
+ my $infdata=$mes->get_extension('rgp', 'infData');
  return unless defined $infdata;
 
  my $cs=$rinfo->{domain}->{$oname}->{status}; ## a Net::DRI::Protocol::EPP::Core::Status object
@@ -110,7 +110,6 @@ sub info_parse
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $rgp=$todo->set('rgp');
  return unless (defined $rgp && $rgp && ref $rgp eq 'HASH');
@@ -119,12 +118,8 @@ sub update
  Net::DRI::Exception::usererr_invalid_parameters('RGP op must be request or report') unless ($op=~m/^(?:request|report)$/);
  Net::DRI::Exception::usererr_invalid_parameters('Report data must be included if the operation is a report') unless (($op eq 'request') xor exists $rgp->{report});
 
- my $eid=$mes->command_extension_register('rgp:update',sprintf('xmlns:rgp="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('rgp')));
-
- if ($op eq 'request')
- {
-  $mes->command_extension($eid,['rgp:restore',{ op => $op }]);
- } else
+ my @restore = ({ op => $op });  # this is enough for op=request
+ if ($op eq 'report')
  {
   my %r=%{$rgp->{report}};
   my $def=$epp->default_parameters();
@@ -140,8 +135,10 @@ sub update
   push @d,['rgp:statement',$r{statement1},exists $r{statement1_lang} ? {lang => $r{statement1_lang}} : ()];
   push @d,['rgp:statement',$r{statement2},exists $r{statement2_lang} ? {lang => $r{statement2_lang}} : ()];
   push @d,['rgp:other',$r{other}] if exists $r{other};
-  $mes->command_extension($eid,['rgp:restore',['rgp:report',@d],{ op => $op }]);
+  push @restore, ['rgp:report', @d];
  }
+
+ $epp->message()->command_extension('rgp', ['update', ['restore', @restore]]);
  return;
 }
 
@@ -151,7 +148,7 @@ sub update_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $updata=$mes->get_extension($mes->ns('rgp'),'upData');
+ my $updata=$mes->get_extension('rgp', 'upData');
  return unless defined $updata;
 
  ## We do nothing, since the rgpStatus alone is useless
