@@ -90,7 +90,7 @@ sub new
                                 hosts       => sub { return Net::DRI::Data::Hosts->new(@_); },
                                 status      => sub { return Net::DRI::Data::StatusList->new(@_); },
                                 language_tag=> sub { return Net::DRI::Data::LanguageTag->new(@_); },
-                                idn   => sub { return Net::DRI::Data::IDN->new(@_); },
+                                idn         => sub { return Net::DRI::Data::IDN->new(@_); },
                            },
             logging     => $ctx->{registry}->logging(),
             logging_ctx => { registry => $ctx->{registry}->name(), profile => $ctx->{profile}, transport_class => $ctx->{transport_class} },
@@ -146,7 +146,7 @@ sub _load
 
  my %skip = map { substr($_,1) => 1 } grep { /^-/ } @classes;
 
- my (%c,%done,@done);
+ my (%done, @done, @commands);
  foreach my $class (@classes)
  {
   next if exists $done{$class} || $class=~m/^-/ || exists $skip{$class};
@@ -155,7 +155,8 @@ sub _load
   Net::DRI::Exception::method_not_implemented('register_commands',$class) unless $class->can('register_commands');
   my $rh=$class->register_commands($version);
   $self->{commands_by_class}->{$class}=$rh;
-  Net::DRI::Util::hash_merge(\%c,$rh); ## { object type => { action type => [ build action, parse action ]+ } }
+  push @commands, $rh;
+
   if ($class->can('capabilities_add'))
   {
    my @a=$class->capabilities_add();
@@ -173,6 +174,11 @@ sub _load
  }
 
  $self->{loaded_modules}=\@done;
+ my %c;
+ foreach my $rh (@commands)
+ {
+  Net::DRI::Util::hash_merge(\%c, $rh); ## { object type => { action type => [ build action, parse action ]+ } }
+ }
  $self->commands(\%c);
  return;
 }
