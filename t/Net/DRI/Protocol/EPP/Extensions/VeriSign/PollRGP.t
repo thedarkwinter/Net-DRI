@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 
 use Test::More tests => 13;
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -26,7 +26,7 @@ my $s;
 my $d;
 my ($dh,@c);
 
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="5" id="12345"><qDate>2004-05-03T20:06:17.0002Z</qDate><msg>Restore Request Pending</msg></msgQ><resData><rgp-poll:pollData xmlns:rgp-poll="http://www.verisign.com/epp/rgp-poll-1.0" xsi:schemaLocation="http://www.verisign.com/epp/rgp-poll-1.0 rgp-poll-1.0.xsd"><rgp-poll:name>foobar.com</rgp-poll:name><rgp-poll:rgpStatus s="pendingDelete"/><rgp-poll:reqDate>2004-05-03T20:06:17.0002Z</rgp-poll:reqDate><rgp-poll:reportDueDate>2004-05-03T20:06:17.0002Z</rgp-poll:reportDueDate></rgp-poll:pollData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="5" id="12345"><qDate>2004-05-03T20:06:17.0002Z</qDate><msg>Restore Request Pending</msg></msgQ><resData><rgp-poll:pollData xmlns:rgp-poll="http://www.verisign.com/epp/rgp-poll-1.0"><rgp-poll:name>foobar.com</rgp-poll:name><rgp-poll:rgpStatus s="pendingDelete"/><rgp-poll:reqDate>2004-05-03T20:06:17.0002Z</rgp-poll:reqDate><rgp-poll:reportDueDate>2004-05-03T20:06:17.0002Z</rgp-poll:reportDueDate></rgp-poll:pollData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),12345,'message get_info last_id');
 is(''.$dri->get_info('qdate','message',12345),'2004-05-03T20:06:17','message get_info qdate');

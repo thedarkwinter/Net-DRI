@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP RGP Poll (EPP-RGP-Poll-Mapping.pdf)
 ##
-## Copyright (c) 2006-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::PollRGP;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Protocol::EPP::Util;
@@ -72,6 +73,15 @@ sub register_commands
  return { 'message' => \%tmp };
 }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+
+ state $ns = { 'rgp-poll' => 'http://www.verisign.com/epp/rgp-poll-1.0' };
+ $po->ns($ns);
+ return;
+}
+
 ####################################################################################################
 
 sub parse
@@ -80,7 +90,7 @@ sub parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_response('http://www.verisign.com/epp/rgp-poll-1.0','pollData');
+ my $infdata=$mes->get_response('rgp-poll','pollData');
  return unless defined $infdata;
 
  my %w=(action => 'rgp_notification');
