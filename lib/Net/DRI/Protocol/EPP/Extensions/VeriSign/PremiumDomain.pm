@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign EPP Premium Domain Extension
 ##
-## Copyright (c) 2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2012,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -26,10 +27,11 @@ sub register_commands
 {
  my ($class,$version)=@_;
 
- return { 'domain' => { 'check'  => [ \&check, \&check_parse ],
-                        'check_multi'  => [ \&check, \&check_parse ],
-                        'update' => [ \&update, undef ],
-                      } };
+ state $cmds = { 'domain' => { 'check'  => [ \&check, \&check_parse ],
+                               'check_multi'  => [ \&check, \&check_parse ],
+                               'update' => [ \&update, undef ],
+               } };
+ return $cmds;
 }
 
 sub capabilities_add { return ('domain_update','premium_short_name',['set']); }
@@ -37,7 +39,8 @@ sub capabilities_add { return ('domain_update','premium_short_name',['set']); }
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'premiumdomain' => [ 'http://www.verisign.com/epp/premiumdomain-1.0','premiumdomain-1.0.xsd' ] });
+ state $rns = { 'premiumdomain' => 'http://www.verisign.com/epp/premiumdomain-1.0' };
+ $po->ns($rns);
  return;
 }
 
@@ -46,7 +49,6 @@ sub setup
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  my $pd;
  if (Net::DRI::Util::has_key($rd,'premium_domain'))
@@ -62,8 +64,7 @@ sub check
  }
  return unless Net::DRI::Util::xml_is_boolean($pd) && $pd;
 
- my $eid=$mes->command_extension_register('premiumdomain:check',sprintf('xmlns:premiumdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('premiumdomain')));
- $mes->command_extension($eid,['premiumdomain:flag',$pd]);
+ $epp->message()->command_extension('premiumdomain', ['check', ['flag', $pd]]);
  return;
 }
 
@@ -109,9 +110,7 @@ sub update
  my $chg=$todo->set('premium_short_name');
  return unless defined $chg && length $chg;
 
- my $mes=$po->message();
- my $eid=$mes->command_extension_register('premiumdomain:reassign',sprintf('xmlns:premiumdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('premiumdomain')));
- $mes->command_extension($eid,['premiumdomain:shortName',$chg]);
+ $po->message()->command_extension('premiumdomain', ['reassign', ['premiumdomain:shortName',$chg]]);
  return;
 }
 
@@ -164,7 +163,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2012,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
