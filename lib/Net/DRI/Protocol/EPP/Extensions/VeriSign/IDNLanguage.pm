@@ -88,11 +88,20 @@ sub create
  my ($epp,$domain,$rd)=@_;
 
  return unless ($domain=~/^xn--/);
+ Net::DRI::Exception::usererr_insufficient_parameters('Language tag must be provided') unless (Net::DRI::Util::has_key($rd,'language') || Net::DRI::Util::has_key($rd,'idn'));
 
- Net::DRI::Exception::usererr_insufficient_parameters('Language tag must be provided') unless Net::DRI::Util::has_key($rd,'language');
- Net::DRI::Exception::usererr_invalid_parameters('IDN language tag must be of type XML schema language') unless Net::DRI::Util::xml_is_language($rd->{language});
+ my $script;
+ if (Net::DRI::Util::has_key($rd,'idn') && UNIVERSAL::isa($rd->{idn},'Net::DRI::Data::IDN') && defined $rd->{idn}->iso639_2()) { # use IDN object if possible
+  $script = $rd->{idn}->iso639_2();
+ }
+ elsif (Net::DRI::Util::has_key($rd,'language')) # Fall back to old/standard
+ {
+  Net::DRI::Exception::usererr_invalid_parameters('IDN language tag must be of type XML schema language') unless Net::DRI::Util::xml_is_language($rd->{language});
+  $script = $rd->{language};
+ }
+ return unless $script;
 
- $epp->message()->command_extension('idnLang', ['tag', $rd->{language}]);
+ $epp->message()->command_extension('idnLang', ['tag', $script]);
  return;
 }
 
