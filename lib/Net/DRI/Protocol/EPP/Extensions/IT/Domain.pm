@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .IT Domain extension
 ##
-## Copyright (C) 2009-2010 Tower Technologies. All rights reserved.
+## Copyright (C) 2009-2010,2016 Tower Technologies. All rights reserved.
 ##
 ## This program free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License v2.
@@ -31,7 +31,7 @@ Alessandro Zummo, E<lt>a.zummo@towertech.itE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2010 Tower Technologies.
+Copyright (C) 2009-2010,2016 Tower Technologies.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -63,8 +63,7 @@ sub info
  return unless defined $rd->{inf_contacts};
  Net::DRI::Exception::usererr_invalid_parameters('inf_contacts must be one of registrant|admin|tech|all') unless $rd->{inf_contacts} =~ m/^registrant|admin|tech|all$/;
  my $mes=$epp->message();
- my $eid =$mes->command_extension_register('extdom:infContacts', sprintf('op="'.$rd->{inf_contacts}.'" xmlns:extdom="%s" xsi:schemaLocation="%s %s"', $mes->nsattrs('it_domain')));
- $mes->command_extension($eid);
+ $mes->command_extension('extdom', ['infContacts' . ' op="'.$rd->{inf_contacts} . '"']);
 }
 
 sub transfer
@@ -72,11 +71,10 @@ sub transfer
  my ($epp,$domain,$rd)=@_;
  return unless defined $rd->{new_registrant } && defined $rd->{new_authinfo};
  my $mes=$epp->message();
- my $eid =$mes->command_extension_register('extdom:trade', sprintf('xmlns:extdom="%s" xsi:schemaLocation="%s %s"', $mes->nsattrs('it_domain')));
  my @d;
  push @d, ['extdom:newRegistrant', $rd->{new_registrant} ];
  push @d, ['extdom:newAuthInfo', ['extdom:pw',$rd->{new_authinfo}] ];
- $mes->command_extension($eid,['extdom:transferTrade',@d]);
+ $mes->command_extension('extdom', ['trade', ['transferTrade', @d]]);
 }
 
 sub parse
@@ -85,12 +83,12 @@ sub parse
        my ($po, $otype, $oaction, $oname, $rinfo) = @_;
 
        my $msg = $po->message;
-       my $ns = $msg->ns('it_domain');
+       my $ns = $msg->ns('extdom');
 
-       my $infdata = $msg->get_extension('it_domain', 'infData');
-       my $infns = $msg->get_extension('it_domain', 'infNsToValidateData');
-       my $infconts = $msg->get_extension('it_domain','infContactsData');
-       my $remapped_idn = $msg->get_extension('it_domain','remappedIdnData');
+       my $infdata = $msg->get_extension('extdom', 'infData');
+       my $infns = $msg->get_extension('extdom', 'infNsToValidateData');
+       my $infconts = $msg->get_extension('extdom','infContactsData');
+       my $remapped_idn = $msg->get_extension('extdom','remappedIdnData');
 
        if (defined $remapped_idn) {
                 my ($idn_requested,$idn_created);
@@ -141,7 +139,7 @@ sub parse
                         my $ctype = ($name eq 'registrant')?'registrant':$c->getAttribute('type');
                         my $cont = $po->create_local_object('contact');
                         my %pi=map { $_ => [] } qw/city sp pc cc/;
-                        foreach my $el2 (Net::DRI::Util::xml_list_children(Net::DRI::Util::xml_traverse($c,$msg->ns('it_domain'),'infContact')))
+                        foreach my $el2 (Net::DRI::Util::xml_list_children(Net::DRI::Util::xml_traverse($c,$msg->ns('extdom'),'infContact')))
                         {
                                 my ($name2,$c2) = @$el2;
                                 $cont->srid($c2->textContent) if $name2 eq 'id';
@@ -154,7 +152,7 @@ sub parse
                         foreach my $key (keys %pi) { $cont->{$key} = $pi{$key}; }
 
                         # even the extra contact details are under a different namespace from a contact_info!
-                        foreach my $el2 (Net::DRI::Util::xml_list_children(Net::DRI::Util::xml_traverse($c,$msg->ns('it_domain'),'extInfo')))
+                        foreach my $el2 (Net::DRI::Util::xml_list_children(Net::DRI::Util::xml_traverse($c,$msg->ns('extdom'),'extInfo')))
                         {
                                 my ($name2,$c2) = @$el2;
                                 $cont->consent_for_publishing( ($c->textContent()eq'true')?1:0 ) if $name eq 'consentForPublishing';

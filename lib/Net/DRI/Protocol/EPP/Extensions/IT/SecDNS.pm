@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .IT SecDNS extension
 ##
-## Copyright (C) 2019 Paulo Jorge. All rights reserved.
+## Copyright (C) 2019,2020 Paulo Jorge. All rights reserved.
 ##
 ## This program free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License v2.
@@ -35,7 +35,7 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019 Paulo Jorge.
+Copyright (C) 2019,2020 Paulo Jorge.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ sub register_commands {
 
 sub setup {
   my ($class, $po, $version)=@_;
-  $po->ns({ 'it_secdns' => [ 'http://www.nic.it/ITNIC-EPP/extsecDNS-1.0', 'extsecDNS-1.0.xsd' ] });
+  $po->ns({ 'extsecDNS' => 'http://www.nic.it/ITNIC-EPP/extsecDNS-1.0' });
   return;
 }
 
@@ -73,8 +73,8 @@ sub parse_extdomain
 {
   my ($po, $otype, $oaction, $oname, $rinfo) = @_;
   my $mes = $po->message;
-  my $ns = $mes->ns('it_secdns');
-  my $infds = $mes->get_extension('it_secdns', 'infDsOrKeyToValidateData');
+  my $ns = $mes->ns('extsecDNS');
+  my $infds = $mes->get_extension('extsecDNS', 'infDsOrKeyToValidateData');
   return unless defined $infds;
   my @d;
   my $msl;
@@ -115,7 +115,7 @@ sub parse_extnotification
   my $msgid=$oname=$mes->msg_id();
   return unless (defined($msgid) && $msgid);
 
-  my $infds = $mes->get_extension('it_secdns', 'secDnsErrorMsgData');
+  my $infds = $mes->get_extension('extsecDNS', 'secDnsErrorMsgData');
   return unless defined $infds;
 
   foreach my $el (Net::DRI::Util::xml_list_children($infds)) {

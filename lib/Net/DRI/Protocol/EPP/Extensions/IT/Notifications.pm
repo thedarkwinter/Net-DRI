@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .IT message extensions
 ##
-## Copyright (C) 2009-2010,2013 Tower Technologies. All rights reserved.
+## Copyright (C) 2009-2010,2013,2016 Tower Technologies. All rights reserved.
 ##                        (C) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This program free software; you can redistribute it and/or modify
@@ -11,7 +11,6 @@ package Net::DRI::Protocol::EPP::Extensions::IT::Notifications;
 
 use strict;
 use warnings;
-use Data::Dumper;
 
 =pod
 
@@ -33,7 +32,7 @@ Alessandro Zummo, E<lt>a.zummo@towertech.itE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2010,2013 Tower Technologies.
+Copyright (C) 2009-2010,2013,2016 Tower Technologies.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -69,7 +68,7 @@ sub parse
                                 'creditMsgData' => 'low_balance',
 
                         },
-                'it_domain' => {
+                'extdom' => {
                                 'chgStatusMsgData' => 'update', # FIXME is this right?
                                 'dnsErrorMsgData' => 'dns_error',
                                 'dnsWarningMsgData' => 'update', #FIXME is this right?
@@ -92,8 +91,8 @@ sub parse
                         next unless $data= $mes->get_extension($ns,$node);
                         $otype = ($ns eq 'it_epp') ? 'message' : 'domain';
                         if ($otype eq 'domain') {
-                                my $tn = Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'domain');
-                                $tn = Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'name');
+                                my $tn = Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'domain');
+                                $tn = Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'name');
                                 $rinfo->{$otype}->{$oname}->{object_id} = $oname = $tn->textContent() if $tn;
                          }
                         $oaction = $rinfo->{$otype}->{$oname}->{action} = $ac;
@@ -110,10 +109,10 @@ sub parse_recurse
         my $mes=$po->message();
 
         parse_namespace($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_epp'),'wrongNamespaceInfo'));
-        parse_status($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'targetStatus'));
-        parse_nameservers($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'nameservers'));
-        parse_tests($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'tests'));
-        parse_queries($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('it_domain'),'queries'));
+        parse_status($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'targetStatus'));
+        parse_nameservers($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'nameservers'));
+        parse_tests($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'tests'));
+        parse_queries($po,$otype,$oaction,$oname,$rinfo,Net::DRI::Util::xml_traverse($data,$mes->ns('extdom'),'queries'));
 
         foreach my $el (Net::DRI::Util::xml_list_children($data))
         {

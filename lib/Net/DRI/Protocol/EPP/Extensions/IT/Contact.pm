@@ -1,6 +1,8 @@
 ## Domain Registry Interface, .IT Contact EPP extension
 ##
-## Copyright (C) 2009-2010,2013 Tower Technologies. All rights reserved.
+## Copyright (C) 2009-2010,2013,2016 Tower Technologies. All rights reserved.
+##           (c) 2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License v2.
@@ -30,7 +32,9 @@ Alessandro Zummo, E<lt>a.zummo@towertech.itE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2010,2013 Tower Technologies.
+Copyright (C) 2009-2010,2013,2016 Tower Technologies.
+Copyright (c) 2019 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -55,20 +59,9 @@ sub register_commands
        return { 'contact' => $ops };
 }
 
-sub build_command_extension
-{
-       my ($msg, $epp, $tag) = @_;
-
-       return $msg->command_extension_register($tag,
-               sprintf('xmlns:extcon="%s" xsi:schemaLocation="%s %s"', $msg->nsattrs('it_contact')));
-}
-
 sub fix_contact
 {
        my ($epp, $c, $op) = @_;
-       my $msg = $epp->message;
-
-       my $eid = build_command_extension($msg, $epp, 'extcon:' . $op);
 
        my @ext;
 
@@ -92,8 +85,10 @@ sub fix_contact
        push @ext, [ 'extcon:registrant', @registrant ]
                if scalar @registrant;
 
-       $msg->command_extension($eid, [ @ext ])
-               if scalar @ext;
+       if (@ext)
+       {
+               $epp->message()->command_extension('extcon', [$op, @ext]);
+       }
        return;
 }
 
@@ -107,15 +102,13 @@ sub create
 sub update
 {
         my ($epp,$contact,$todo)=@_;
-        my $mes=$epp->message();
         my $newc=$todo->set('info');
         return unless defined($newc->consent_for_publishing());
 
         my @n;
         push @n, [ 'extcon:consentForPublishing',$newc->consent_for_publishing() ];
 
-        my $eid=build_command_extension($mes,$epp,'extcon:update');
-        $mes->command_extension($eid,\@n);
+        $epp->message()->command_extension('extcon', ['update', @n]);
 
         return;
 }
@@ -124,9 +117,9 @@ sub info_parse
 {
        my ($po, $type, $action, $oname, $rinfo) = @_;
        my $msg = $po->message;
-       my $ns = $msg->ns('it_contact');
+       my $ns = $msg->ns('extcon');
 
-       my $infdata = $msg->get_extension('it_contact', 'infData');
+       my $infdata = $msg->get_extension('extcon', 'infData');
        return unless $infdata;
        my $s=$rinfo->{contact}->{$oname}->{self};
        
