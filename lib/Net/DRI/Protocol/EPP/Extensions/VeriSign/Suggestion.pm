@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign EPP Suggestion Extension
 ##
-## Copyright (c) 2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2012,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -33,7 +33,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'suggestion' => [ 'http://www.verisign-grs.com/epp/suggestion-1.1','suggestion-1.1.xsd' ] });
+ $po->ns({ 'suggestion' => 'http://www.verisign-grs.com/epp/suggestion-1.1' });
  return;
 }
 
@@ -43,7 +43,7 @@ sub suggestion
 {
  my ($epp,$domain,$rd)=@_;
 
- Net::DRI::Exception::usererr_insufficient_parameters('suggestion domain/key must be a string of up to 32 characters') unless Net::DRI::Util::xml_is_string($domain,1,32);
+ Net::DRI::Exception::usererr_insufficient_parameters('suggestion domain/key must be a string') unless Net::DRI::Util::xml_is_string($domain);
  my @d;
  push @d,['suggestion:key',$domain];
 
@@ -61,7 +61,7 @@ sub suggestion
  } else
  {
   my %f;
-  foreach my $k (qw/contentfilter customfilter usehyphens usenumbers/)
+  foreach my $k (qw/contentfilter customfilter usehyphens usenumbers useidns/)
   {
    $f{$k}=$rd->{$k} if Net::DRI::Util::has_key($rd,$k) && Net::DRI::Util::xml_is_boolean($rd->{$k});
   }
@@ -99,8 +99,29 @@ sub suggestion
   {
    foreach my $tld (ref $rd->{tld} eq 'ARRAY' ? @{$rd->{tld}} : ($rd->{tld}))
    {
-    Net::DRI::Exception::usererr_invalid_parameters(sprintf('TLD must be 2 to 6 characters among a-zA-Z and not: ',defined $tld ? $tld : '<undef>')) unless defined $tld && $tld=~m/^[a-zA-Z]{2,6}$/;
+    Net::DRI::Exception::usererr_invalid_parameters(sprintf('TLD must be 1 to 255 characters and not: ',defined $tld ? $tld : '<undef>')) unless Net::DRI::Util::xml_is_token($tld,1,255);
     push @f,['suggestion:tld',$tld];
+   }
+  }
+  if (Net::DRI::Util::has_key($rd,'geo') && ref $rd->{geo} eq 'HASH')
+  {
+   if (exists $rd->{geo}->{lat} && exists $rd->{geo}->{lon})
+   {
+    my $lat = $rd->{geo}->{lat};
+    Net::DRI::Exception::usererr_invalid_parameters('geo latitude must be a decimal with at most 6 decimal digits, between -90 and +90') unless Net::DRI::Util::xml_is_decimal($lat, 6, undef, -90, 90);
+    my $lon = $rd->{geo}->{lon};
+    Net::DRI::Exception::usererr_invalid_parameters('geo longitude must be a decimal with at most 6 decimal digits, between -180 and +180') unless Net::DRI::Util::xml_is_decimal($lat, 6, undef, -180, 180);
+    push @f,['suggestion:geo',['suggestion:coordinates', { lat => $lat, lon => $lon } ]];
+   } elsif (exists $rd->{geo}->{addr})
+   {
+    my $addr = $rd->{geo}->{addr};
+    Net::DRI::Exception::usererr_invalid_parameters('geo addr must be an XML token with 3 to 45 characters') unless Net::DRI::Util::xml_is_token($addr, 3, 45);
+    my $ip = exist $rd->{geo}->{ip} ? $rd->{geo}->{ip} : 'v4';
+    Net::DRI::Exception::usererr_invalid_parameters('geo ip must be v4 or v6 string') unless $ip=~m/^v[46]$/;
+    push @f,['suggestion:geo',['suggestion:addr',{ ip => $ip }, $addr]];
+   } else
+   {
+    Net::DRI::Exception::usererr_insufficient_parameters('geo data should have either lat+lon keys or addr/addr+ip keys');
    }
   }
 
@@ -108,9 +129,15 @@ sub suggestion
  }
 
  push @d,@f if @f;
+ if (Net::DRI::Util::has_key($rd, 'sub_id'))
+ {
+  my $subid=$rd->{sub_id};
+  Net::DRI::Exception::usererr_invalid_parameters('if provided sub_id value must be an XML token') unless Net::DRI::Util::xml_is_token($subid);
+  push @d,['suggestion:subID', $subid];
+ }
 
  my $mes=$epp->message();
- $mes->command(['info','suggestion:info',sprintf('xmlns:suggestion="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('suggestion'))]);
+ $mes->command(['info','suggestion:info', $mes->nsattrs('suggestion')]);
  $mes->command_body(\@d);
  return;
 }
@@ -170,11 +197,11 @@ sub parse_table
   my $name=$row->getAttribute('name');
   $d{score}=0+$row->getAttribute('score');
   $d{status}=$row->getAttribute('status');
-  foreach my $key (qw/source morelikethis ppcvalue/)
+  foreach my $key (qw/source morelikethis ppcvalue uName/)
   {
    my $v=$row->getAttribute($key);
    next unless defined $v;
-   $d{$key}=$v;
+   $d{lc $key}=$v;
   }
   $r{$name}=\%d;
  }
@@ -202,6 +229,7 @@ sub parse_grid
   {
    my $tld=$cell->getAttribute('tld');
    $rr{$tld}={ score => 0+$cell->getAttribute('score'), status => $cell->getAttribute('status'), %d };
+   $rr{$tld}->{utld}=$cell->getAttribute('uTld') if $cell->hasAttribute('uTld');
   }
   $r{$name}=\%rr;
  }
@@ -221,9 +249,9 @@ Net::DRI::Protocol::EPP::Extensions::VeriSign::Suggestion - VeriSign EPP Suggest
 =head1 SYNOPSIS
 
         $dri=Net::DRI->new();
-        $dri->add_registry('VNDS',{client_id=>'XXXXXX');
-
-	$dri->domain_suggest('whatever.com',{...});
+        $dri->add_registry('VeriSign::NameStore',{client_id=>'XXXXXX');
+        $dri->add_profile(...);
+	$dri->domain_suggest('whatever.tv',{...});
 
 This extension is loaded by default during add_profile.
 
@@ -249,7 +277,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2012,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
