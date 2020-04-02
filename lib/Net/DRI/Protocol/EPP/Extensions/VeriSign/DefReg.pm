@@ -77,8 +77,8 @@ sub register_commands
             check  => [ \&check, \&check_parse ],
             info   => [ \&info, \&info_parse ],
             delete => [ \&delete ],
-	          update => [ \&update ],
-	          renew  => [ \&renew ],
+            update => [ \&update ],
+            renew  => [ \&renew ],
             transfer_query => [ \&transfer_query, \&transfer_parse ],
             transfer_request => [ \&transfer_request, \&transfer_parse ],
             transfer_cancel => [ \&transfer_cancel, \&transfer_parse ],
@@ -93,7 +93,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ defReg => ['http://www.nic.name/epp/defReg-1.0','defReg-1.0.xsd'] });
+ $po->ns({ defReg => 'http://www.nic.name/epp/defReg-1.0' });
  $po->capabilities('defreg_update', 'status', ['add', 'rem']);
  foreach (qw/auth contact tm tmCountry tmDate/) { $po->capabilities('defreg_update', $_ ,['chg']); }
  return;
@@ -107,7 +107,7 @@ sub _build_transfer
  my ($epp,$roid,$rd,$op)=@_;
  my $mes = $epp->message();
  Net::DRI::Exception->die(1,'protocol/EPP',2,'defReg roid needed') unless (defined($roid));
- $mes->command(['transfer',{'op'=>$op}],'defReg:transfer',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+ $mes->command(['transfer',{'op'=>$op}],'defReg:transfer', $mes->nsattrs('defReg'));
  my @d;
  push @d, ['defReg:roid', $roid ];
  push @d,Net::DRI::Protocol::EPP::Util::build_period($rd->{duration},'defReg') if Net::DRI::Util::has_duration($rd);
@@ -123,8 +123,7 @@ sub _parse_defref
   my $mes=$po->message();
   return unless $mes->is_success();
 
-  my $ns = $mes->ns('defReg');
-  my $data=$mes->get_response($ns, $section);
+  my $data=$mes->get_response('defReg', $section);
   return unless $data;
 
   my $cs = $po->create_local_object('contactset');
@@ -190,7 +189,7 @@ sub check
 {
  my ($epp, $names, $rd) = @_;
  my $mes=$epp->message();
- $mes->command('check','defReg:check',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+ $mes->command('check', 'defReg:check', $mes->nsattrs('defReg'));
  my (@d,$level);
  foreach my $name (@{$names}) {
   $level = exists($rd->{"level_$name"}) ? $rd->{"level_$name"} : exists($rd->{level}) ? $rd->{level} : 'standard' ;
@@ -206,10 +205,9 @@ sub check_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $ns = $mes->ns('defReg');
- my $chkdata=$mes->get_response($ns, 'chkData');
+ my $chkdata=$mes->get_response('defReg', 'chkData');
  return unless $chkdata;
- foreach my $cd ($chkdata->getElementsByTagNameNS($ns,'cd'))
+ foreach my $cd ($chkdata->getElementsByTagNameNS($mes->ns('defReg'),'cd'))
  {
   my $c = $cd->getFirstChild();
   my $name;
@@ -238,7 +236,7 @@ sub info
  my ($epp,$roid,$rd)=@_;
  my $mes = $epp->message();
  Net::DRI::Exception->die(1,'protocol/EPP',2,'defReg roid needed') unless (defined($roid));
- $mes->command('info','defReg:info',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+ $mes->command('info','defReg:info', $mes->nsattrs('defReg'));
  my @d;
  push @d, ['defReg:roid', $roid ];
  push @d, ['defReg:authInfo', ['defReg:pw', $rd->{auth}->{pw}, exists($rd->{auth}->{roid})? { 'roid' => $rd->{auth}->{roid} } : undef]] if exists $rd->{auth};
@@ -270,7 +268,7 @@ sub create
 
  my $mes = $epp->message();
  Net::DRI::Exception->die(1,'protocol/EPP',2,'defReg name needed') unless (defined($name));
- $mes->command('create','defReg:create',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+ $mes->command('create','defReg:create', $mes->nsattrs('defReg'));
 
  my $cs = $rd->{contact};
  Net::DRI::Exception::usererr_insufficient_parameters('contact') unless $cs && Net::DRI::Util::check_isa($cs, 'Net::DRI::Data::ContactSet');
@@ -310,7 +308,7 @@ sub delete
  my ($epp,$roid,$rd)=@_;
  my $mes = $epp->message();
  Net::DRI::Exception->die(1,'protocol/EPP',2,'defReg roid needed') unless (defined($roid));
- $mes->command('delete','defReg:delete',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+ $mes->command('delete','defReg:delete', $mes->nsattrs('defReg'));
  my @d;
  push @d, ['defReg:roid', $roid ];
  $mes->command_body(\@d);
@@ -327,7 +325,7 @@ sub renew
   Net::DRI::Exception::usererr_invalid_parameters('defReg current_expiration required') unless Net::DRI::Util::check_isa($curexp,'DateTime');
   Net::DRI::Exception::usererr_invalid_parameters('defReg invalid period') if defined $period && !Net::DRI::Util::check_isa($period,'DateTime::Duration');
 
-  $mes->command('renew','defReg:renew',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+  $mes->command('renew','defReg:renew', $mes->nsattrs('defReg'));
   my @d;
   push @d, ['defReg:roid', $roid ];
   push(@d, ['defReg:curExpDate', $curexp->ymd]) if defined $curexp;
@@ -348,7 +346,7 @@ sub update
 
  Net::DRI::Exception::usererr_invalid_parameters($todo.' must be a Net::DRI::Data::Changes object') unless Net::DRI::Util::isa_changes($todo);
 
- $mes->command('update','defReg:update',sprintf('xmlns:defReg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('defReg')));
+ $mes->command('update','defReg:update', $mes->nsattrs('defReg'));
  my (@d,@add,@del,@set);
  push @d, ['defReg:roid', $roid ];
 
