@@ -47,7 +47,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
        my ($class, $version) = @_;
-       return { 'message' => { 'notication' => [undef, \&parse] } };
+       return { 'message' => { 'notification' => [undef, \&parse] } };
 }
 
 ####################################################################################################
