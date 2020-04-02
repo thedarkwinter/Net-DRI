@@ -10,7 +10,7 @@ use Test::More tests => 7;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -25,7 +25,7 @@ my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { re
 $dri->add_current_registry('VeriSign::COM_NET');
 $dri->add_current_profile('p1','epp',{f_send => \&mysend, f_recv => \&myrecv});
 
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">toto.com</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">toto.com</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
 
 my $rc1=$dri->domain_check('toto.com');
 is($dri->get_info('result_from_cache'),0,'dri->get_info(result_from_cache) 1st call');
