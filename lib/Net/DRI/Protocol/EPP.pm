@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Protocol (STD 69)
 ##
-## Copyright (c) 2005-2011,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2011,2013-2014,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,6 +17,7 @@ package Net::DRI::Protocol::EPP;
 use utf8;
 use strict;
 use warnings;
+use version 0.77;
 
 use base qw(Net::DRI::Protocol);
 
@@ -52,7 +53,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2011,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2011,2013-2014,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -82,14 +83,13 @@ sub new
  foreach my $o (qw/ns status contact/) { $self->capabilities('domain_update',$o,['add','del']); }
  foreach my $o (qw/registrant auth/)   { $self->capabilities('domain_update',$o,['set']); }
 
- $self->{hostasns}=$drd->info('host_as_ns') || 0;
  $self->{hostasattr}=$drd->info('host_as_attr') || 0;
  $self->{contacti18n}=$drd->info('contact_i18n') || 7; ## bitwise OR with 1=LOC only, 2=INT only, 4=LOC+INT only
  $self->{defaulti18ntype}=undef; ## only needed for registries not following truely EPP standard, like .CZ
  $self->{usenullauth}=$drd->info('use_null_auth') || 0; ## See RFC4931 §3.2.5
- $self->ns({ _main   => ['urn:ietf:params:xml:ns:epp-1.0','epp-1.0.xsd'],
-             domain  => ['urn:ietf:params:xml:ns:domain-1.0','domain-1.0.xsd'],
-             contact => ['urn:ietf:params:xml:ns:contact-1.0','contact-1.0.xsd'],
+ $self->ns({ epp     => 'urn:ietf:params:xml:ns:epp-1.0',
+             domain  => 'urn:ietf:params:xml:ns:domain-1.0',
+             contact => 'urn:ietf:params:xml:ns:contact-1.0',
            });
 
  $drd->set_factories($self) if $drd->can('set_factories');
@@ -122,7 +122,7 @@ sub core_modules
  if (! $self->{hostasattr})
  {
   push @core,'Host';
-  $self->ns({host => ['urn:ietf:params:xml:ns:host-1.0','host-1.0.xsd']});
+  $self->ns({host => 'urn:ietf:params:xml:ns:host-1.0'});
  }
  return map { 'Net::DRI::Protocol::EPP::Core::'.$_ } @core;
 }
@@ -140,7 +140,10 @@ sub ns
 sub switch_to_highest_namespace_version
 {
  my ($self,$nsalias)=@_;
- my ($basens)=($self->message()->ns($nsalias)=~m/^(\S+)-[\d.]+$/);
+
+ my $ns=$self->message()->ns($nsalias);
+ Net::DRI::Exception::err_invalid_parameters("No namespace defined for alias \"$nsalias\"") unless defined $ns;
+ my ($basens)=($ns=~m/^(\S+)-[\d.]+$/);
  my $rs=$self->default_parameters()->{server};
  my @ns=grep { m/^${basens}-\S+$/ } @{$rs->{extensions_selected}};
  Net::DRI::Exception::err_invalid_parameters("No extension found under namespace ${basens}-*") unless @ns;
@@ -149,10 +152,7 @@ sub switch_to_highest_namespace_version
  foreach my $ns (@ns)
  {
   my ($v)=($ns=~m/^\S+-([\d.]+)$/);
-  $version=0+$v if ! defined $version || 0+$v > $version;
-  # if 1.0 is the highest version, it currently sets to int 1. The below fixes
-  # this and doesn't seem appear to break other tests
-  $version="1.0" if $version eq "1";
+  $version=0+$v if ! defined $version || version->parse('v'.(0+$v)) > version->parse('v'.$version); ## needed for fees (fees-0.4 fees-0.7 fees-0.11 etc...)
  }
 
  my $fullns=$basens.'-'.$version;
@@ -164,9 +164,7 @@ sub switch_to_highest_namespace_version
   $self->log_output('info','protocol',{action=>'greeting',direction=>'in',trid=>$self->message()->cltrid(),message=>sprintf('For "%s" extension, using "%s"',$nsalias,$fullns)});
  }
 
- my $xsd=($self->message()->nsattrs($nsalias))[2];
- $xsd=~s/-([\d.]+)\.xsd$/-${version}.xsd/;
- $self->ns({ $nsalias => [ $fullns, $xsd ]});
+ $self->ns({ $nsalias => $fullns });
  $self->message()->ns($self->ns()); ## not necessary, just to make sure
  ## remove all other versions of same namespace
  $rs->{extensions_selected}=[ grep { ! m/^${basens}-([\d.]+)$/ || $1 eq $version } @{$rs->{extensions_selected}} ];
