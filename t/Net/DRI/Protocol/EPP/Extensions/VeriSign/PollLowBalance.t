@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 
 use Test::More tests => 11;
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -26,7 +26,7 @@ my $s;
 my $d;
 my ($dh,@c);
 
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="12345"><qDate>2004-03-25T18:20:07.0078Z</qDate><msg>Low Account Balance (SRS)</msg></msgQ><resData><lowbalance-poll:pollData xmlns:lowbalance-poll="http://www.verisign.com/epp/lowbalance-poll-1.0" xsi:schemaLocation="http://www.verisign.com/epp/lowbalance-poll-1.0 lowbalance-poll-1.0.xsd"><lowbalance-poll:registrarName>Test Registar</lowbalance-poll:registrarName><lowbalance-poll:creditLimit>1000</lowbalance-poll:creditLimit><lowbalance-poll:creditThreshold type="PERCENT">10</lowbalance-poll:creditThreshold><lowbalance-poll:availableCredit>80</lowbalance-poll:availableCredit></lowbalance-poll:pollData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="12345"><qDate>2004-03-25T18:20:07.0078Z</qDate><msg>Low Account Balance (SRS)</msg></msgQ><resData><lowbalance-poll:pollData xmlns:lowbalance-poll="http://www.verisign.com/epp/lowbalance-poll-1.0"><lowbalance-poll:registrarName>Test Registar</lowbalance-poll:registrarName><lowbalance-poll:creditLimit>1000</lowbalance-poll:creditLimit><lowbalance-poll:creditThreshold type="PERCENT">10</lowbalance-poll:creditThreshold><lowbalance-poll:availableCredit>80</lowbalance-poll:availableCredit></lowbalance-poll:pollData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),12345,'message get_info last_id');
 is(''.$dri->get_info('qdate','message',12345),'2004-03-25T18:20:07','message get_info qdate');

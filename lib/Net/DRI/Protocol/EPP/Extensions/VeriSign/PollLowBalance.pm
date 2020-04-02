@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Low Balance (EPP-LowBalance-Mapping.pdf)
 ##
-## Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::PollLowBalance;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 
@@ -47,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -71,6 +72,15 @@ sub register_commands
  return { 'message' => \%tmp };
 }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+
+ state $ns = { 'lowbalance' => 'http://www.verisign.com/epp/lowbalance-poll-1.0' };
+ $po->ns($ns);
+ return;
+}
+
 ####################################################################################################
 
 sub parse
@@ -79,7 +89,7 @@ sub parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_response('http://www.verisign.com/epp/lowbalance-poll-1.0','pollData');
+ my $infdata=$mes->get_response('lowbalance','pollData');
  return unless $infdata;
 
  my %w=(action => 'lowbalance_notification');
