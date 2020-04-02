@@ -2,7 +2,7 @@
 ## (based on .NAME Technical Accreditation Guide v3.03)
 ##
 ## Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>
-## Copyright (c) 2017 Paulo Jorge <paullojorgge@gmail.com>
+## Copyright (c) 2017,2020 Paulo Jorge <paullojorgge@gmail.com>
 ## All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -57,7 +57,7 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-Copyright (c) 2017 Paulo Jorge <paullojorgge@gmail.com>
+Copyright (c) 2017,2020 Paulo Jorge <paullojorgge@gmail.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -91,7 +91,7 @@ sub register_commands {
 
 sub setup {
   my ( $class, $po, $version ) = @_;
-  $po->ns( { emailFwd => [ 'http://www.nic.name/epp/emailFwd-1.0', 'emailFwd-1.0.xsd' ] } );
+  $po->ns( { emailFwd => 'http://www.nic.name/epp/emailFwd-1.0' } );
   $po->capabilities( 'emailfwd_update', 'info', ['set'] );
   return;
 }
@@ -104,8 +104,7 @@ sub _parse_emailfwd {
   my $mes = $po->message();
   return unless $mes->is_success();
 
-  my $ns = $mes->ns('emailFwd');
-  my $infdata = $mes->get_response( $ns, $child );
+  my $infdata = $mes->get_response( 'emailFwd', $child );
   return unless $infdata;
 
   my $nm;
@@ -170,7 +169,7 @@ sub _build_transfer {
   my $mes = $epp->message();
   Net::DRI::Exception->die( 1, 'protocol/EPP', 2, 'emailFwd name needed' ) unless ( defined($mail) );
   $mes->command( [ 'transfer', { 'op' => $op } ],
-                 'emailFwd:transfer', sprintf( 'xmlns:emailFwd="%s" xsi:schemaLocation="%s %s"', $mes->nsattrs('emailFwd') ) );
+                 'emailFwd:transfer', $mes->nsattrs('emailFwd') );
   my @d;
   push @d, [ 'emailFwd:name', $mail ];
   push @d, Net::DRI::Protocol::EPP::Util::build_period( $rd->{duration}, 'emailFwd' ) if Net::DRI::Util::has_duration($rd);
@@ -189,9 +188,7 @@ sub build_command {
 
   Net::DRI::Exception->die( 1, 'protocol/EPP', 2, 'emailFwd name needed' ) unless ( defined( $info->{name} ) );
 
-  my @ns = $msg->nsattrs('emailFwd');
-  @ns = qw(http://www.nic.name/epp/emailFwd-1.0 http://www.nic.name/epp/emailFwd-1.0 emailFwd-1.0.xsd) unless @ns;
-  $msg->command( [ $command, 'emailFwd:' . $command, sprintf( 'xmlns:emailFwd="%s" xsi:schemaLocation="%s %s"', @ns ) ] );
+  $msg->command( [ $command, 'emailFwd:' . $command, $msg->nsattrs('emailFwd') ] );
 
   push( @ret, [ 'emailFwd:name',  $info->{name} ] )  if ( defined( $info->{name} ) );
   push( @ret, [ 'emailFwd:fwdTo', $info->{fwdTo} ] ) if ( defined( $info->{fwdTo} ) );
@@ -229,7 +226,7 @@ sub check {
   my $mes = $epp->message();
   my (@d);
   if ( $mail && ref $mail ) {
-    $mes->command( 'check', 'emailFwd:check', sprintf( 'xmlns:emailFwd="%s" xsi:schemaLocation="%s %s"', $mes->nsattrs('emailFwd') ) );
+    $mes->command( 'check', 'emailFwd:check', $mes->nsattrs('emailFwd') );
     foreach my $name ( @{$mail} ) {
       push( @d, [ 'emailFwd:name', {}, $name ] );
     }
@@ -246,10 +243,9 @@ sub check_parse {
   my $mes = $po->message();
   return unless $mes->is_success();
 
-  my $ns = $mes->ns('emailFwd');
-  my $chkdata = $mes->get_response( $ns, 'chkData' );
+  my $chkdata = $mes->get_response( 'emailFwd', 'chkData' );
   return unless $chkdata;
-  foreach my $cd ( $chkdata->getElementsByTagNameNS( $ns, 'cd' ) ) {
+  foreach my $cd ( $chkdata->getElementsByTagNameNS( $mes->ns('emailFwd'), 'cd' ) ) {
     my $c = $cd->getFirstChild();
     my $fwd;
 
@@ -326,7 +322,7 @@ sub update {
 
   Net::DRI::Exception::usererr_invalid_parameters( $todo . ' must be a Net::DRI::Data::Changes object' ) unless Net::DRI::Util::isa_changes($todo);
 
-  $mes->command( 'update', 'emailFwd:update', sprintf( 'xmlns:emailFwd="%s" xsi:schemaLocation="%s %s"', $mes->nsattrs('emailFwd') ) );
+  $mes->command( 'update', 'emailFwd:update', $mes->nsattrs('emailFwd') );
   my ( @d, @add, @del, @set );
   push @d, [ 'emailFwd:name', $mail ];
 
