@@ -164,7 +164,7 @@ sub transform_parse
   my $resdata;
   foreach my $res (qw/infData creData/)
   {
-    next unless $resdata=$mes->get_response($mes->ns('registry'),$res);
+    next unless $resdata=$mes->get_response('registry',$res);
     my %p;
     my @registry_phase;
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
