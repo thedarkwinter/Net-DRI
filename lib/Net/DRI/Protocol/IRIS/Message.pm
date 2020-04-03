@@ -1,6 +1,6 @@
 ## Domain Registry Interface, IRIS Message
 ##
-## Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -55,7 +55,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -115,7 +115,7 @@ sub as_string
  Net::DRI::Exception::err_assert('Net::DRI::Protocol::IRIS::Message can only handle <request> operations for now') unless defined $self->search();
  my @d;
  push @d,'<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
- push @d,sprintf('<request xmlns="%s" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="%s %s">',$self->nsattrs('iris1'));
+ push @d,sprintf('<request xmlns="%s">',$self->nsattrs('iris1'));
 
  foreach my $search (@{$self->search()}) ## $search is a refhash comme il faut
  {
