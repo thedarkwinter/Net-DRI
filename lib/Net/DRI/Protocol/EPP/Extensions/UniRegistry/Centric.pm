@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -81,6 +82,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
 (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -109,7 +111,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns( { 'urc' => ['http://ns.uniregistry.net/centric-1.0','centric-1.0.xsd']} );
+ $po->ns( { 'urc' => 'http://ns.uniregistry.net/centric-1.0' } );
  $po->capabilities('domain_update','urc',['set']);
  $po->factories('urc_contact',sub { return Net::DRI::Data::Contact::UniRegistry->new(); });
 }
@@ -152,7 +154,6 @@ sub build_centric
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  my $urc;
 
  # urc is optional for .inc and ICM TLDs (.adult, .porn, .sex, .xxx)
@@ -165,22 +166,19 @@ sub create
 
  my @n = build_centric($urc,$epp->{contacti18n});
  return unless @n;
- my $eid=$mes->command_extension_register('urc','registrant');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('urc', ['registrant', @n]);
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
  my $urc;
  return unless $todo->set('urc') && ($urc = $todo->set('urc'));
 
  my @n = build_centric($urc,$epp->{contacti18n});
  return unless @n;
- my $eid=$mes->command_extension_register('urc','registrant');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('urc', ['registrant', @n]);
  return;
 }
 
@@ -193,7 +191,7 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $infdata=$mes->get_extension($mes->ns('urc'),'registrant');
+ my $infdata=$mes->get_extension('urc','registrant');
  return unless defined $infdata;
 
  my %cd=map { $_ => [] } qw/name org city sp pc cc/;
