@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2010,2013-2015 HEXONET GmbH, http://www.hexonet.net,
 ##                    Jens Wagner <info@hexonet.net>
+## Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -18,6 +19,7 @@ package Net::DRI::Protocol::EPP::Extensions::ISPAPI::KeyValue;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 
@@ -53,6 +55,7 @@ Jens Wagner, E<lt>jwagner@hexonet.netE<gt>
 Copyright (c) 2010,2013-2015 HEXONET GmbH, E<lt>http://www.hexonet.netE<gt>,
 Alexander Biehl <abiehl@hexonet.net>,
 Jens Wagner <jwagner@hexonet.net>
+Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -69,26 +72,27 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-          check => [ \&create_keyvalue, \&parse_keyvalue ],
-          info => [ \&create_keyvalue, \&parse_keyvalue ],
-          create => [ \&create_keyvalue, \&parse_keyvalue ],
-          update => [ \&create_keyvalue_update, \&parse_keyvalue ],
-          transfer_request => [ \&create_keyvalue, \&parse_keyvalue ],
-         );
- my %api=(
-          call => [ \&create_keyvalue_extension, \&parse_keyvalue ],
-         );
 
- my %account=(
-              list_domains => [\&list_domains, \&list_domains_parse ],
-             );
+ state $objects = {
+                   check            => [ \&create_keyvalue,        \&parse_keyvalue ],
+                   info             => [ \&create_keyvalue,        \&parse_keyvalue ],
+                   create           => [ \&create_keyvalue,        \&parse_keyvalue ],
+                   update           => [ \&create_keyvalue_update, \&parse_keyvalue ],
+                   transfer_request => [ \&create_keyvalue,        \&parse_keyvalue ],
+                  };
+ my $account = { list_domains => [ \&list_domains, \&list_domains_parse ] };
+ my $api     = { call         => [ \&create_keyvalue_extension, \&parse_keyvalue ] };
 
- return { 'domain' => \%tmp, 'contact' => \%tmp, 'ns' => \%tmp, 'account' => \%account, 'api' => \%api };
+ state $commands = { 'domain' => $objects, 'contact' => $objects, 'ns' => $objects, 'account' => $account, 'api' => $api };
+ return $commands;
 }
 
-our @NS = ('http://schema.ispapi.net/epp/xml/keyvalue-1.0', 'http://schema.ispapi.net/epp/xml/keyvalue-1.0 keyvalue-1.0.xsd');
-
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ 'keyvalue' => 'http://schema.ispapi.net/epp/xml/keyvalue-1.0' });
+ return;
+}
 
 ####################################################################################################
 
@@ -98,11 +102,7 @@ sub create_keyvalue_extension
 {
  my ($epp,$hash)=@_;
 
- my $mes=$epp->message();
-
- my $eid=$mes->command_extension_register('keyvalue:extension','xmlns:keyvalue="'.$NS[0].'" xsi:schemaLocation="'.$NS[1].'"', 'keyvalue');
-
- my @kv = ();
+ my @kv;
 
  foreach my $key ( sort { $a cmp $b } keys %{$hash} ) {
   my $value = $hash->{$key};
@@ -114,7 +114,7 @@ sub create_keyvalue_extension
   }
  }
  return unless @kv;
- $mes->command_extension($eid,\@kv);
+ $epp->message()->command_extension('keyvalue', ['extension', @kv]);
  return;
 }
 
@@ -122,7 +122,6 @@ sub create_keyvalue_extension
 sub create_keyvalue
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  return unless Net::DRI::Util::has_key($rd,'keyvalue');
 
@@ -145,12 +144,12 @@ sub parse_keyvalue
 {
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes = $po->message();
- my $extension = $mes->get_extension($NS[0],'extension');
+ my $extension = $mes->get_extension('keyvalue', 'extension');
  return unless (defined($extension));
 
  my $keyvalue = {};
 
- foreach my $kv ( $extension->getChildrenByTagNameNS($NS[0], 'kv') ) {
+ foreach my $kv ( $extension->getChildrenByTagNameNS($mes->ns('keyvalue'), 'kv') ) {
   $keyvalue->{$kv->getAttribute('key')} = $kv->getAttribute('value');
  }
  $rinfo->{$otype}{$oname}{keyvalue} = $keyvalue;
