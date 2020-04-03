@@ -1,6 +1,6 @@
 ## Domain Registry Interface, CIRA (.CA) Registry Driver
 ##
-## Copyright (c) 2010-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010-2011,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -65,12 +65,12 @@ sub agreement_get
  Net::DRI::Exception::usererr_invalid_parameters('CIRA agreement language must be "en" or "fr"') if (defined $language && $language!~m/^(?:fr|en)$/);
 
  ## This is an hack until the registry fix their EPP extension.
- my $cmd='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><extension><cira:ciraInfo xmlns:cira="urn:ietf:params:xml:ns:cira-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cira-1.0 cira-1.0.xsd"><cira:action>get CIRA latest agreement</cira:action><cira:language>'.(defined $language && length $language ? $language : 'en').'</cira:language></cira:ciraInfo></extension></command></epp>';
+ my $cmd='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0"><command><extension><cira:ciraInfo xmlns:cira="urn:ietf:params:xml:ns:cira-1.0"><cira:action>get CIRA latest agreement</cira:action><cira:language>'.(defined $language && length $language ? $language : 'en').'</cira:language></cira:ciraInfo></extension></command></epp>';
  my $ans=$self->SUPER::raw_command($ndr,$cmd);
  my $dr=Net::DRI::Data::Raw->new_from_xmlstring($ans);
  my $mes=Net::DRI::Protocol::EPP::Message->new();
  $mes->version('1.0');
- $mes->ns({ _main => ['urn:ietf:params:xml:ns:epp-1.0','epp-1.0.xsd'], cira=>['urn:ietf:params:xml:ns:cira-1.0','cira-1.0.xsd']});
+ $mes->ns({ epp => 'urn:ietf:params:xml:ns:epp-1.0', cira=>'urn:ietf:params:xml:ns:cira-1.0'});
  $mes->parse($dr,{});
  my $rc=$mes->result_status();
  if ($rc->is_success())
@@ -123,7 +123,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010-2011 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010-2011,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
