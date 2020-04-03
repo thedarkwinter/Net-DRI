@@ -83,7 +83,7 @@ sub register_commands
 sub setup
 {
  my ($self,$po) = @_;
- $po->ns({ map { $_ => ['http://www.unitedtld.com/epp/'.$_.'-1.0',$_.'-1.0.xsd'] } qw/finance/ });
+ $po->ns({ map { $_ => 'http://www.unitedtld.com/epp/'.$_.'-1.0' } qw/finance/ });
 }
 
 ####################################################################################################
@@ -92,7 +92,7 @@ sub info
 {
  my ($epp,$domain,$rd,$cmd)=@_;
  my $mes=$epp->message();
- $mes->command(['info','finance:info',sprintf('xmlns:finance="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('finance'))]);
+ $mes->command('info','finance:info',$mes->nsattrs('finance'));
  return;
 }
 
@@ -101,7 +101,7 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- my $infdata=$mes->get_response($mes->ns('finance'),'infData');
+ my $infdata=$mes->get_response('finance','infData');
  return unless defined $infdata;
 
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
