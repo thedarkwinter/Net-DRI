@@ -1,6 +1,7 @@
 ## Domain Registry Interface, .AU Domain EPP extension commands
 ##
 ## Copyright (c) 2007,2008,2013 Distribute.IT Pty Ltd, www.distributeit.com.au, Rony Meyer <perl@spot-light.ch>. All rights reserved.
+## Copyright (c) 2016,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,6 +49,7 @@ Rony Meyer, E<lt>perl@spot-light.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2013 Distribute.IT Pty Ltd, E<lt>http://www.distributeit.com.auE<gt>, Rony Meyer <perl@spot-light.ch>.
+Copyright (c) 2016,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,16 +76,9 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:auext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('auext')));
-}
-
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_insufficient_parameters('eligibility attribute is mandatory, as ref hash') 
          unless (exists($rd->{eligibility}) && (ref($rd->{eligibility}) eq 'HASH'));
@@ -109,12 +104,7 @@ sub create
  }
  push @n,['auext:policyReason',$rd->{eligibility}->{policyReason}];
 
- my $eid=build_command_extension($mes,$epp,'auext:extensionAU');
-
- my @nn;
- push @nn, ['auext:create',@n];
-
- $mes->command_extension($eid,\@nn);
+ $epp->message()->command_extension('auext', ['extensionAU', ['create', @n]]);
  return;
 }
 

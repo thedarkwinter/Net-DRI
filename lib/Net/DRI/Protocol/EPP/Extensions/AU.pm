@@ -1,6 +1,7 @@
 ## Domain Registry Interface, .AU EPP extensions
 ##
 ## Copyright (c) 2007-2009,2013 Distribute.IT Pty Ltd, www.distributeit.com.au, Rony Meyer <perl@spot-light.ch>. All rights reserved.
+## Copyright (c) 2018 Patrick Mevzek <netdri@dotandco.com>.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,6 +49,7 @@ Rony Meyer, E<lt>perl@spot-light.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007-2009,2013 Distribute.IT Pty Ltd, E<lt>http://www.distributeit.com.auE<gt>, Rony Meyer <perl@spot-light.ch>.
+Copyright (c) 2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -64,8 +66,8 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({auext   => ['urn:au:params:xml:ns:auext-1.0','auext-1.0.xsd'],
-            auextnew=> ['urn:X-au:params:xml:ns:auext-1.1','auext-1.1.xsd'],
+ $self->ns({auext   => 'urn:au:params:xml:ns:auext-1.0',
+            auextnew=> 'urn:X-au:params:xml:ns:auext-1.1',
           });
  $self->capabilities('domain_update','maintainer_url',['set']);
  return;
