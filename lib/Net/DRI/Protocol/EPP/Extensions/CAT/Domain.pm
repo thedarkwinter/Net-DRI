@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .CAT Domain EPP extension commands
 ##
-## Copyright (c) 2006-2008,2012-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2012-2014,2016,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2012-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2012-2014,2016,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -76,12 +76,6 @@ sub register_commands
 }
 
 ####################################################################################################
-
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:dx="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('puntcat_domain')));
-}
 
 sub add_name_variant
 {
@@ -196,21 +190,17 @@ sub add_puntcat_extension
 
 sub create
 {
- my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ my ($epp, $domain, $rd)=@_;
 
- my @n=add_puntcat_extension($rd);
- return unless @n;
+ my @n = add_puntcat_extension($rd);
+ $epp->message()->command_extension('dx', ['create', @n]) if @n;
 
- my $eid=build_command_extension($mes,$epp,'dx:create');
- $mes->command_extension($eid,\@n);
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
  my (@tmp,@n);
 
  if ($todo->types('name_variant'))
@@ -218,9 +208,9 @@ sub update
   Net::DRI::Exception->die(0,'protocol/EPP',11,'Only name_variant add/del available for domain') if grep { ! /^(?:add|del)$/ } $todo->types('name_variant');
 
   @tmp=add_name_variant($todo->add('name_variant'));
-  push @n,['dx:add',@tmp] if @tmp;
+  push @n,['add', @tmp] if @tmp;
   @tmp=add_name_variant($todo->del('name_variant'));
-  push @n,['dx:rem',@tmp] if @tmp;
+  push @n,['rem', @tmp] if @tmp;
  }
 
  @tmp=();
@@ -245,11 +235,9 @@ sub update
   Net::DRI::Exception->die(0,'protocol/EPP',11,'Only registrant_disclosure set available for domain') if grep { $_ ne 'set' } $todo->types('registrant_disclosure');
   push @tmp,add_disclose($todo->set('registrant_disclosure'));
  }
- push @n,['dx:chg',@tmp] if @tmp;
+ push @n, ['chg', @tmp] if @tmp;
 
- return unless @n;
- my $eid=build_command_extension($mes,$epp,'dx:update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('dx', ['update', @n]) if @n;
  return;
 }
 
@@ -259,9 +247,10 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension('puntcat_domain','infData');
+ my $infdata=$mes->get_extension('dx','infData');
  return unless $infdata;
 
+ my $ns=$mes->ns('dx');
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
@@ -285,7 +274,7 @@ sub info_parse
      $ens{auth}={ id => $cc->getAttribute('id') };
     } elsif ($name2 eq 'sponsoring')
     {
-     $ens{sponsor}=[ map { $_->textContent() } $cc->getChildrenByTagNameNS($mes->ns('puntcat_domain'),'sponsor') ];
+     $ens{sponsor}=[ map { $_->textContent() } $cc->getChildrenByTagNameNS($ns,'sponsor') ];
     } elsif ($name2 eq 'refURL')
     {
      $ens{ref_url}=$cc->textContent();
