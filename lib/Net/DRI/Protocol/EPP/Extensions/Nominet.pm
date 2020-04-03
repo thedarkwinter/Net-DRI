@@ -1,8 +1,9 @@
 ## Domain Registry Interface, .UK EPP extensions
 ## As seen on http://www.nominet.org.uk/registrars/systems/epp/ and http://www.nominet.org.uk/digitalAssets/16844_EPP_Mapping.pdf
 ##
-## Copyright (c) 2008,2009 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2009,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -51,8 +52,9 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2009 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2009,2018 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -70,7 +72,7 @@ sub setup
 {
  my ($self,$rp)=@_;
  my @extNS=qw/contact-nom-ext-1.0 domain-nom-ext-1.2 std-contact-id-1.0 std-fork-1.0 std-handshake-1.0 std-list-1.0 std-locks-1.0 std-notifications-1.2 std-release-1.0 std-unrenew-1.0 std-warning-1.1 nom-abuse-feed-1.0 nom-direct-rights-1.0/;
- foreach my $ns (@extNS) { $self->ns({ (split(/-([^-]+)$/,$ns))[0] => ['http://www.nominet.org.uk/epp/xml/'.$ns,$ns.'.xsd'] }); }
+ foreach my $ns (@extNS) { $self->ns({ (split(/-([^-]+)$/,$ns))[0] => 'http://www.nominet.org.uk/epp/xml/'.$ns }); }
  foreach my $o (qw/first-bill recur-bill auto-bill next-bill notes reseller auto-period next-period renew-not-required/) { $self->capabilities('domain_update',$o,['set']); }
  $self->factories('contact',sub { return Net::DRI::Data::Contact::Nominet->new(); });
  $self->default_parameters({domain_create => { auth => { pw => '' } } }); ## domain:authInfo is not used by Nominet
