@@ -10,7 +10,7 @@ use Test::More tests => 28;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -50,7 +50,7 @@ is($dri->get_info('registrant_state'),'verified','domain_create get_info(registr
 is($dri->get_info('state','contact','th1contact1Test'),'verified','domain_create get_info(state,contact,X) value');
 
 ## Contact commands
-$R2=$E1.'<response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>th1domainTest</contact:id><contact:roid>62273C-COOP</contact:roid><contact:status s="ok">ok</contact:status><contact:postalInfo type="loc"><contact:name>Kermit The Frog</contact:name><contact:org>The Muppet Show</contact:org><contact:addr><contact:city>Chicago</contact:city><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:email>k.frog@example.tld</contact:email><contact:clID>TestHarness1</contact:clID><contact:crID>TestHarness1</contact:crID><contact:crDate>2004-10-29T12:29:02.6Z</contact:crDate><contact:authInfo><contact:pw>Match Sticks</contact:pw></contact:authInfo></contact:infData></resData><extension><coop:infData xmlns:coop="http://www.nic.coop/contactCoopExt-1.0"><coop:state code="verified">Verified</coop:state><coop:sponsor>th1Sponsor1</coop:sponsor><coop:sponsor>th1Sponsor2</coop:sponsor></coop:infData></extension>'.$TRID.'</response>'.$E2;
+$R2='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><response>'.r().'<resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>th1domainTest</contact:id><contact:roid>62273C-COOP</contact:roid><contact:status s="ok">ok</contact:status><contact:postalInfo type="loc"><contact:name>Kermit The Frog</contact:name><contact:org>The Muppet Show</contact:org><contact:addr><contact:city>Chicago</contact:city><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:email>k.frog@example.tld</contact:email><contact:clID>TestHarness1</contact:clID><contact:crID>TestHarness1</contact:crID><contact:crDate>2004-10-29T12:29:02.6Z</contact:crDate><contact:authInfo><contact:pw>Match Sticks</contact:pw></contact:authInfo></contact:infData></resData><extension><coop:infData xmlns:coop="http://www.nic.coop/contactCoopExt-1.0"><coop:state code="verified">Verified</coop:state><coop:sponsor>th1Sponsor1</coop:sponsor><coop:sponsor>th1Sponsor2</coop:sponsor></coop:infData></extension>'.$TRID.'</response>'.$E2;
 my $co=$dri->local_object('contact')->srid('th1domainTest');
 $rc=$dri->contact_info($co);
 is($rc->is_success(),1,'contact_info is_success');
@@ -62,7 +62,7 @@ is($co->state(),'verified','contact_info get_info(self) state');
 is_deeply($co->sponsors(),['th1Sponsor1','th1Sponsor2'],'contact_info get_info(self) sponsors');
 
 
-$R2=$E1.'<response>'.r().'<resData><contact:creData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>th1domainTest</contact:id><contact:crDate>1999-04-03T22:00:00.0Z</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
+$R2='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><response>'.r().'<resData><contact:creData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>th1domainTest</contact:id><contact:crDate>1999-04-03T22:00:00.0Z</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
 $co=$dri->local_object('contact')->srid('th1domainTest');
 $co->name('Kermit The Frog');
 $co->org('The Muppet Show');
@@ -72,7 +72,7 @@ $co->email('k.frog@example.tld');
 $co->auth({pw=>'Match Sticks'});
 $co->sponsors(['th1Sponsor1','th1Sponsor2']);
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>th1domainTest</contact:id><contact:postalInfo type="loc"><contact:name>Kermit The Frog</contact:name><contact:org>The Muppet Show</contact:org><contact:addr><contact:city>Chicago</contact:city><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:email>k.frog@example.tld</contact:email><contact:authInfo><contact:pw>Match Sticks</contact:pw></contact:authInfo></contact:create></create><extension><coop:create xmlns:coop="http://www.nic.coop/contactCoopExt-1.0"><coop:sponsor>th1Sponsor1</coop:sponsor><coop:sponsor>th1Sponsor2</coop:sponsor></coop:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>th1domainTest</contact:id><contact:postalInfo type="loc"><contact:name>Kermit The Frog</contact:name><contact:org>The Muppet Show</contact:org><contact:addr><contact:city>Chicago</contact:city><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:email>k.frog@example.tld</contact:email><contact:authInfo><contact:pw>Match Sticks</contact:pw></contact:authInfo></contact:create></create><extension><coop:create xmlns:coop="http://www.nic.coop/contactCoopExt-1.0"><coop:sponsor>th1Sponsor1</coop:sponsor><coop:sponsor>th1Sponsor2</coop:sponsor></coop:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
 is($rc->is_success(),1,'contact_create is_success');
 is($dri->get_info('action'),'create','contact_create get_info(action)');
 is($dri->get_info('exist'),1,'contact_create get_info(exist)');

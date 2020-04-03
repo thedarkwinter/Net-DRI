@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .COOP Contact EPP extension commands
 ## (based on document: EPP Extensions for the .coop TLD Registrant Verification version 1.6)
 ##
-## Copyright (c) 2006,2008,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008,2013-2014,2016,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2008,2013-2014,2016,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -81,12 +81,6 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:coop="%s"',($mes->nsattrs('coop'))[0]));
-}
-
 sub build_sponsors
 {
  my $s=shift;
@@ -105,7 +99,6 @@ sub build_prefs
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
 
  ## validate() has been called
  my @n;
@@ -114,15 +107,13 @@ sub create
 
  return unless @n;
 
- my $eid=build_command_extension($mes,$epp,'coop:create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('coop', ['create', @n]);
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my @n;
  push @n,['coop:add',build_sponsors($todo->add('sponsor'))] if $todo->add('sponsor');
@@ -131,8 +122,7 @@ sub update
  push @n,['coop:chg',\@nn] if @nn;
  return unless @n;
 
- my $eid=build_command_extension($mes,$epp,'coop:update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('coop', ['update', @n]);
  return;
 }
 
