@@ -1,7 +1,8 @@
 ## Domain Registry Interface, EPP NameStore Extension for Verisign
 ##
 ## Copyright (c) 2006,2008,2009 Rony Meyer <perl@spot-light.ch>. All rights reserved.
-##                    2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2010,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,11 +18,9 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::NameStore;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
-use Net::DRI::Exception;
-
-our $NS='http://www.verisign-grs.com/epp/namestoreExt-1.1';
 
 =pod
 
@@ -53,7 +52,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2006,2008,2009 Rony Meyer <perl@spot-light.ch>.
-          (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2010,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -128,6 +128,14 @@ sub register_commands
         };
 }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ state $rns = { 'namestoreExt' => 'http://www.verisign-grs.com/epp/namestoreExt-1.1' };
+ $po->ns($rns);
+ return;
+}
+
 ####################################################################################################
 
 ########### Add the NameStore Extenstion to all domain & host commands
@@ -139,19 +147,15 @@ sub add_namestore_ext
  my $mes=$epp->message();
  my $defprod=$epp->default_parameters()->{subproductid} || '_auto_';
 
- my $eid=$mes->command_extension_register('namestoreExt:namestoreExt',sprintf('xmlns:namestoreExt="%s" xsi:schemaLocation="%s namestoreExt-1.1.xsd"',$NS,$NS));
-
  if (Net::DRI::Util::has_key($rd,'subproductid') && $rd->{subproductid})
  {
-  $mes->command_extension($eid,['namestoreExt:subProduct',$rd->{subproductid}]);
-  $epp->{current_product} = $rd->{subproductid};
+  $mes->command_extension('namestoreExt',['namestoreExt', ['subProduct', $rd->{subproductid}]]);
   return;
  }
 
  unless ($defprod eq '_auto_')
  {
-  $mes->command_extension($eid,['namestoreExt:subProduct',$defprod]);
-  $epp->{current_product} = $defprod;
+  $mes->command_extension('namestoreExt',['namestoreExt', ['subProduct', $defprod]]);
   return;
  }
 
@@ -182,7 +186,7 @@ sub add_namestore_ext
   $ext = 'name' if $object eq 'defReg';
  }
  $epp->{current_product} = $ext;
- $mes->command_extension($eid,['namestoreExt:subProduct',$ext]);
+ $mes->command_extension('namestoreExt',['namestoreExt', ['subProduct',$ext]]);
  return;
 }
 
@@ -192,9 +196,9 @@ sub parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension($NS,'namestoreExt');
+ my $infdata=$mes->get_extension('namestoreExt','namestoreExt');
  return unless $infdata;
- my $c=$infdata->getChildrenByTagNameNS($NS,'subProduct');
+ my $c=$infdata->getChildrenByTagNameNS($mes->ns('namestoreExt'),'subProduct');
  return unless $c;
 
  $rinfo->{$otype}->{$oname}->{subproductid}=$c->get_node(1)->textContent();
@@ -209,9 +213,9 @@ sub parse_error
  ## Parse namestoreExt in case of errors
  return unless $mes->result_is('PARAMETER_VALUE_POLICY_ERROR') || $mes->result_is('COMMAND_SYNTAX_ERROR');
 
- my $data=$mes->get_extension($NS,'nsExtErrData');
+ my $data=$mes->get_extension('namestoreExt','nsExtErrData');
  return unless defined $data;
- $data=$data->getChildrenByTagNameNS($NS,'msg');
+ $data=$data->getChildrenByTagNameNS($mes->ns('namestoreExt'),'msg');
  return unless defined $data && $data->size();
  $data=$data->get_node(1);
 
