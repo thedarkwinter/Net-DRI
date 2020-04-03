@@ -20,7 +20,6 @@ sub parse
   my $mes=$po->message();
   return unless $mes->is_success();
 
-  my $msgid=$mes->msg_id();
   my @ns = ('nicmx', 'niclat'); # to parse into message defined by the Registry
   # TODO: confirm the next 3 variable. Check if MX didn't change because of NGTLD!
   my $min_type_id = 4;
@@ -30,7 +29,8 @@ sub parse
   foreach (@ns) {
     $max_type_id = 22 if $_ eq 'niclat'; # more codes for .LAT TLD
     $ex_date_renew = 5 if $_ eq 'niclat'; # date renew code different from .MX. Why? :(
-    foreach my $res($mes->get_extension($mes->ns('ext_msg'),$_))
+    my $profile_namespace = $_.'-msg'; # with recent Net-DRI namespace tweaks we need to get/build this properly :)
+    foreach my $res($mes->get_extension($profile_namespace, $_))
     {
       next unless $res;
       my @res_children = Net::DRI::Util::xml_list_children($res);

@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2015,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,6 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2006,2008,2009,2012 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2015,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -67,11 +68,11 @@ sub setup
 {
   my ($self,$rp)=@_;
   $self->ns({
-      rar         => ['http://www.nic.mx/rar-1.0','rar-1.0.xsd'],
-      ext_msg     => ['http://www.nic.mx/nicmx-msg-1.0','nicmx-msg-1.0.xsd'],         # service messages (Mandatory extension in order to open session)
-      ext_res     => ['http://www.nic.mx/nicmx-res-1.0','nicmx-res-1.0.xsd'],         # result codes
-      ext_rar     => ['http://www.nic.mx/nicmx-rar-1.0','nicmx-rar-1.0.xsd'],         # rar
-      ext_domrst  => ['http://www.nic.mx/nicmx-domrst-1.0','nicmx-domrst-1.0.xsd'],   # domain:restore
+      'rar'          => 'http://www.nic.mx/rar-1.0',
+      'nicmx-msg'    => 'http://www.nic.mx/nicmx-msg-1.0',    # service messages (Mandatory extension in order to open session)
+      'nicmx-res'    => 'http://www.nic.mx/nicmx-res-1.0',    # result codes
+      'nicmx-rar'    => 'http://www.nic.mx/nicmx-rar-1.0',    # rar
+      'nicmx-domrst' => 'http://www.nic.mx/nicmx-domrst-1.0', # domain:restore
     });
 
   return;

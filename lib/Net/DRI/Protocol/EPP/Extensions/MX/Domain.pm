@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2015,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -46,13 +46,15 @@ Please also see the SUPPORT file in the distribution.
 
 E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
 Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2015,2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -85,8 +87,7 @@ sub restore
 
   Net::DRI::Exception::usererr_insufficient_parameters('Domain name is mandatory') unless defined $domain;
   Net::DRI::Exception::usererr_insufficient_parameters('Invalid domain name') unless Net::DRI::Util::xml_is_token($domain,1,255);
-
-  $mes->command(['renew','nicmx-domrst:restore',sprintf('xmlns:nicmx-domrst="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domrst'))]);
+  $mes->command(['renew','nicmx-domrst:restore', $mes->nsattrs('nicmx-domrst')]);
   $mes->command_body(['nicmx-domrst:name',$domain]);
   return;
 }

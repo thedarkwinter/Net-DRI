@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-## Copyright (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2015,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -67,6 +67,7 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2015,2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -94,7 +95,6 @@ sub register_commands
 sub create_build
 {
   my ($epp,$domain,$rd)=@_;
-  my $mes=$epp->message();
   if ($rd->{idn})
   {
     Net::DRI::Exception::usererr_invalid_parameters('Value for "idn" key must be a Net::DRI::Data::IDN object') unless UNIVERSAL::isa($rd->{idn},'Net::DRI::Data::IDN');
@@ -103,8 +103,7 @@ sub create_build
     return unless Net::DRI::Util::has_key($rd,'idn');
     my @n;
     push @n, ['idn:lang',uc($rd->{idn}->iso639_1())];
-    my $eid=$mes->command_extension_register('idn:create',sprintf('xmlns:idn="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_idn')));
-    $mes->command_extension($eid,\@n);
+    $epp->message()->command_extension('idn:create', ['', @n]);
   }
   return;
 }
@@ -116,7 +115,7 @@ sub parse
   return unless $mes->is_success();
   foreach ('checkResData','infoResData') # TODO: check if the manual schema is correct! they are not using standard name: chkData and infData
   {
-    next unless my $resdata = $mes->get_extension($mes->ns('ext_idn'),$_);
+    next unless my $resdata = $mes->get_extension('nicmx-idn',$_);
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
       my ($name,$content)=@$el;

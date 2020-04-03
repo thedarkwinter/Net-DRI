@@ -67,12 +67,12 @@ sub setup
 {
   my ($self,$rp)=@_;
   $self->ns({
-      rar         => ['http://www.nic.mx/rar-1.0','rar-1.0.xsd'],
-      ext_msg     => ['http://www.nic.mx/niclat-msg-1.0','niclat-msg-1.0.xsd'],           # service messages
-      ext_res     => ['http://www.nic.mx/nicmx-res-1.0','nicmx-res-1.0.xsd'],             # result codes
-      ext_rar     => ['http://www.nic.mx/nicmx-rar-1.0','nicmx-rar-1.0.xsd'],             # rar
-      ext_adm     => ['http://www.nic.mx/nicmx-admstatus-1.1','nicmx-admstatus-1.1.xsd'], # administrative status
-      ext_idn     => ['http://www.nic.lat/nicmx-idn-1.0','nicmx-idn-1.0.xsd'],            # IDNs
+      'rar'             => 'http://www.nic.mx/rar-1.0',
+      'niclat-msg'      => 'http://www.nic.mx/niclat-msg-1.0',      # service messages
+      'nicmx-res'       => 'http://www.nic.mx/nicmx-res-1.0',       # result codes
+      'nicmx-rar'       => 'http://www.nic.mx/nicmx-rar-1.0',       # rar
+      'nicmx-admstatus' => 'http://www.nic.mx/nicmx-admstatus-1.1', # administrative status
+      'nicmx-idn'       => 'http://www.nic.lat/nicmx-idn-1.0',      # IDNs
     });
 
   return;

@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-## Copyright (c) 2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2015,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -56,6 +56,7 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2015,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -82,7 +83,7 @@ sub info
 {
   my ($epp)=@_;
   my $mes=$epp->message();
-  $mes->command(['info','rar:info',sprintf('xmlns:rar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('rar'))]);
+  $mes->command(['info','rar:info', $mes->nsattrs('rar')]);
   return;
 }
 
@@ -95,7 +96,7 @@ sub info_parse
   my $resdata;
   foreach my $res ('infData')
   {
-    next unless $resdata=$mes->get_response($mes->ns('rar'),$res);
+    next unless $resdata=$mes->get_response('rar',$res);
     foreach my $el(Net::DRI::Util::xml_list_children($resdata))
     {
       my ($n,$c)=@$el;
