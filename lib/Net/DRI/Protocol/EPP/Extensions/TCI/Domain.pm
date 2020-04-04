@@ -28,13 +28,13 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=( 
- 					create           => [ \&create, undef], 
-					update           => [ \&update, ],
+          create           => [ \&create, undef], 
+          update           => [ \&update, ],
           transfer_request => [ \&transfer_request ],
           transfer_cancel  => [ \&transfer_cancel,],
           transfer_answer  => [ \&transfer_answer,],
           transfer_query   => [ \&transfer_query,],
-					info             => [ undef, \&info_parse ],
+          info             => [ undef, \&info_parse ],
          );
 
  return { 'domain' => \%tmp };

@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .RU/.SU/.XN--P1AI EPP Contact Extension for Net::DRI
 ##
 ## Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-##               2011-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2011-2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -59,7 +59,7 @@ sub build_command
 
 	my $tcommand = (ref($command)) ? $command->[0] : $command;
 	$msg->command([$command, 'contact:' . $tcommand,
-		sprintf('xmlns:contact="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('contact'))]);
+		sprintf('xmlns:contact="%s"',$msg->nsattrs('contact'))]);
 
 	my @d = map { ['contact:id', $_] } @c;
 	if (($tcommand =~ m/^(?:info|transfer)$/) && ref($contact[0]) &&
@@ -68,7 +68,7 @@ sub build_command
 		my $az = $contact[0]->auth();
 		if ($az && ref($az) && exists($az->{pw}))
 		{
-			push(@d, ['contact:authInfo',['contact:pw', $az->{pw}]]);
+			push(@d, ['contact:authInfo', $az->{pw}]);
 		}
 	}
 
@@ -113,7 +113,7 @@ sub info_parse
 			$rinfo->{contact}->{$oname}->{roid}=$contact->roid();
 		} elsif ($name eq 'status')
 		{
-			push @s,Net::DRI::Protocol::EPP::Util::parse_node_status($c);
+			push @s,Net::DRI::Protocol::EPP::Util::parse_status($c);
 		} elsif ($name=~m/^(clID|crID|upID)$/)
 		{
 			$rinfo->{contact}->{$oname}->{$1}=$c->textContent();
@@ -438,7 +438,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-Copyright (c) 2011-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2011-2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

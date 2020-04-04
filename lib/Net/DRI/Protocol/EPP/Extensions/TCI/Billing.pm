@@ -23,7 +23,7 @@ sub info
 
  my $mes=$epp->message();
 
- $mes->command(['info','billing:info',sprintf('xmlns:billing="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('billing')),]);
+ $mes->command(['info','billing:info',$mes->nsattrs('billing'),]);
  
  if ($rd && ref($rd) eq 'HASH')
  {
