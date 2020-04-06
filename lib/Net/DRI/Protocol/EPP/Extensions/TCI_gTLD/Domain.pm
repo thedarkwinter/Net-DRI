@@ -29,22 +29,15 @@ sub register_commands
  my %tmp=( 
           create => [ \&create, undef ],
           info   => [ undef, \&info_parse ],
-					update => [ \&update ],
+          update => [ \&update ],
          );
 
  return { 'domain' => \%tmp };
 }
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:domain="%s" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="%s %s"',$mes->nsattrs('tci_dom')));
-}
-
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  if (exists $rd->{description})
  {
@@ -54,15 +47,13 @@ sub create
 	 my @n;
 	 push @n,['domain:description',$rd->{description}];
 
-	 my $eid=build_command_extension($mes,$epp,'domain:create');
-	 $mes->command_extension($eid,\@n);
+	 $epp->message()->command_extension('tci-domain-ext', ['create', @n]);
  }
 }
 
 sub update
 {
  my ($epp,$domain,$toc,$rd)=@_;
- my $mes=$epp->message();
  my @chg;
  my $chg = $toc->set('description');
  if ($chg)
@@ -71,9 +62,8 @@ sub update
 	{
 		push @chg, ['domain:description', $str];
 	}
-#use Data::Dumper; die Dumper \@chg, $chg;
-	 my $eid=build_command_extension($mes,$epp,'domain:update');
-	 $mes->command_extension($eid,['domain:chg', @chg]);
+
+	 $epp->message()->command_extension('tci-domain-ext', ['update', ['chg', @chg]]);
  }
 }
 

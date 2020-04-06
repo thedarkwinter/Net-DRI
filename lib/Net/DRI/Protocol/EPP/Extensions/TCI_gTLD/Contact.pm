@@ -40,18 +40,11 @@ sub register_commands
 }
 
 ####################################################################################################
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:contact="%s" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="%s %s"',$mes->nsattrs('tci_con')));
-}
-
 sub build_ext_data
 {
  my ($epp, $contact, $mes, $op) = @_;
 
  my @n;
- my $eid = build_command_extension($mes, $epp, "contact:$op");
 
  if ($contact->person)
  {
@@ -64,11 +57,11 @@ sub build_ext_data
 
 	if ($op eq 'create')
 	{
-		$mes->command_extension($eid, ['contact:person', @n]);
+		$epp->message()->command_extension('tci-contact-ext', [$op, ['contact:person', @n]]);
 	}
 	elsif ($op eq 'update')
 	{
-		$mes->command_extension($eid, ['contact:chg', ['contact:person', @n]]);
+		$epp->message()->command_extension('tci-contact-ext', [$op, ['contact:chg', ['contact:person', @n]]]);
 	}
  }
  else
@@ -94,11 +87,11 @@ sub build_ext_data
 
 	if ($op eq 'create')
 	{
-		$mes->command_extension($eid, ['contact:organization', @n]);
+		$epp->message()->command_extension('tci-contact-ext', ['contact:create xmlns:contact="' . $epp->message()->ns('tci-contact-ext') . '"', ['contact:organization', @n]]);
 	}
 	elsif ($op eq 'update')
 	{
-		$mes->command_extension($eid, ['contact:chg', ['contact:organization', @n]]);
+		$epp->message()->command_extension('tci-contact-ext', [$op, ['contact:chg', ['contact:organization', @n]]]);
 	}
  }
 }
@@ -130,7 +123,7 @@ sub info_parse
  my $infdata=$mes->get_extension('contact','infData');
  return unless $infdata;
 
- my $ns=$mes->ns('tci_con');
+ my $ns=$mes->ns('tci-contact-ext');
  $infdata=Net::DRI::Util::xml_traverse($infdata,$ns,'infData','contact');
  return unless defined $infdata;
 

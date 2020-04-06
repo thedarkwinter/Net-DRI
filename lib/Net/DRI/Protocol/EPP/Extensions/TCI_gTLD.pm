@@ -14,13 +14,11 @@ sub setup
 {
  my ($self,$rp)=@_;
  $self->ns({
-						 secdns  => ['urn:ietf:params:xml:ns:secDNS-1.1', 'secDNS-1.1.xsd'],
-						 rgp     => ['urn:ietf:params:xml:ns:rgp-1.0', 'rgp-1.0.xsd'],
-
-						 tci_con => ['http://www.tcinet.ru/epp/tci-contact-ext-1.0', 'tci-contact-ext-1.0.xsd'],
-						 tci_dom => ['http://www.tcinet.ru/epp/tci-domain-ext-1.0', 'tci-domain-ext-1.0.xsd'],
-
-						 launch  => ['urn:ietf:params:xml:ns:launch-1.0', 'launch-1.0.xsd']
+                'secdns'          => 'urn:ietf:params:xml:ns:secDNS-1.1',
+                'rgp'             => 'urn:ietf:params:xml:ns:rgp-1.0',
+                'tci-contact-ext' => 'http://www.tcinet.ru/epp/tci-contact-ext-1.0',
+                'tci-domain-ext'  => 'http://www.tcinet.ru/epp/tci-domain-ext-1.0',
+                'launch'          => 'urn:ietf:params:xml:ns:launch-1.0'
           });
 
 
