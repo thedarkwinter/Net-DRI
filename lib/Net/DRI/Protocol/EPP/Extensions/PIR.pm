@@ -24,11 +24,11 @@ sub setup
 {
  my ($self,$rp)=@_;
  $self->ns({
-  ipr       => ['urn:afilias:params:xml:ns:ipr-1.1','ipr-1.1.xsd'],
-  idn       => ['urn:afilias:params:xml:ns:idn-1.0','idn-1.0.xsd'],
-  oxrs      => ['urn:afilias:params:xml:ns:oxrs-1.1','oxrs-1.1.xsd'],
-  registrar => ['urn:ietf:params:xml:ns:registrar-1.0','registrar-1.0.xsd'],
-  validation 	=> ['urn:afilias:params:xml:ns:validation-1.0','validation-1.0.xsd'],
+  ipr       => 'urn:afilias:params:xml:ns:ipr-1.1',
+  idn       => 'urn:afilias:params:xml:ns:idn-1.0',
+  oxrs      => 'urn:afilias:params:xml:ns:oxrs-1.1',
+  registrar => 'urn:ietf:params:xml:ns:registrar-1.0',
+  validation => 'urn:afilias:params:xml:ns:validation-1.0',
  });
  return;
 }
