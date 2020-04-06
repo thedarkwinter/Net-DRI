@@ -165,6 +165,8 @@ sub build_period
 sub build_ns
 {
  my ($epp,$ns,$domain,$xmlns,$noip)=@_;
+ # hostasns = <domain:ns>ns1.test.com</domain:ns>
+ return map { ['domain:ns',$_] } $ns->get_names() if ($epp->{hostasns} == 1);
 
  my @d;
  my $asattr=$epp->{hostasattr};

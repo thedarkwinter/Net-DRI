@@ -83,6 +83,7 @@ sub new
  foreach my $o (qw/ns status contact/) { $self->capabilities('domain_update',$o,['add','del']); }
  foreach my $o (qw/registrant auth/)   { $self->capabilities('domain_update',$o,['set']); }
 
+ $self->{hostasns}=$drd->info('host_as_ns') || 0;
  $self->{hostasattr}=$drd->info('host_as_attr') || 0;
  $self->{contacti18n}=$drd->info('contact_i18n') || 7; ## bitwise OR with 1=LOC only, 2=INT only, 4=LOC+INT only
  $self->{defaulti18ntype}=undef; ## only needed for registries not following truely EPP standard, like .CZ
