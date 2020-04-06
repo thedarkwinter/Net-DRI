@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2014-2019 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2014-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -111,7 +111,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 Copyright (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>.
 Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
-Copyright (c) 2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2014-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 
 All rights reserved.
 
@@ -155,7 +155,7 @@ sub setup
   # This means any commands called before greeting will use that version until its bumped to highest version
   my $v = $po->{brown_fee_version} // $po->{fee_version};
   $v = '1.0' unless defined $v && $v =~ m/^\d.(\d+)$/;
-  $po->ns({ 'fee' => [ 'urn:ietf:params:xml:ns:fee-'.$v,'fee-'.$v.'.xsd' ] });
+  $po->ns({ 'fee' => 'urn:ietf:params:xml:ns:fee-'.$v });
   $po->capabilities('domain_update','fee',['set']);
   return;
 }
@@ -421,8 +421,7 @@ sub check
   @fees = ($rd->{fee}) if ref $rd->{fee} eq 'HASH';
   @fees = @{$rd->{fee}} if ref $rd->{fee} eq 'ARRAY';
 
-  my $eid=$mes->command_extension_register('fee','check');
-  $mes->command_extension($eid, [fee_set_build(ver($mes),$fees[0])]);
+  $mes->command_extension('fee', ['check', fee_set_build(ver($mes),$fees[0])]);
 
   return;
 
@@ -435,7 +434,7 @@ sub check_parse
   return unless $mes->is_success;
   my $version = ver($mes);
 
-  my $chkdata = $mes->get_extension($mes->ns('fee'),'chkData');
+  my $chkdata = $mes->get_extension('fee','chkData');
   return unless defined $chkdata;
 
   my ($currency);
@@ -471,7 +470,7 @@ sub transform_parse
 
   foreach my $ex (qw/creData delData renData trnData updData/)
   {
-    next unless $resdata=$mes->get_extension($mes->ns('fee'),$ex);
+    next unless $resdata=$mes->get_extension('fee',$ex);
     my %p;
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
@@ -500,7 +499,6 @@ sub transform_parse
 sub transform_build
 {
   my ($epp,$domain,$rd,$cmd)=@_;
-  my $mes=$epp->message();
   return unless Net::DRI::Util::has_key($rd,'fee');
 
   Net::DRI::Exception::usererr_insufficient_parameters('For "fee" key parameter the value must be a ref hash with keys: currency, fee') unless Net::DRI::Util::has_key($rd->{fee},'currency') && Net::DRI::Util::has_key($rd->{fee},'fee');
@@ -528,8 +526,8 @@ sub transform_build
     push @n,['fee:fee',$rp->{fee}];
   }
 
-  my $eid=$mes->command_extension_register('fee',$cmd);
-  $mes->command_extension($eid,\@n);
+  $epp->message()->command_extension('fee', [$cmd, @n]);
+
   return;
 }
 

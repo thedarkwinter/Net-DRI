@@ -153,6 +153,7 @@ sub switch_to_highest_namespace_version
  {
   my ($v)=($ns=~m/^\S+-([\d.]+)$/);
   $version=0+$v if ! defined $version || version->parse('v'.(0+$v)) > version->parse('v'.$version); ## needed for fees (fees-0.4 fees-0.7 fees-0.11 etc...)
+  $version='1.0' if $version and $version eq '1'; ## PJ tweak for fees - for some reason after namespeace tweak was always returning: '1' instead of '1.0' :(
  }
 
  my $fullns=$basens.'-'.$version;
