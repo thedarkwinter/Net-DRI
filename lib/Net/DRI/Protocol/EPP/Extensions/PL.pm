@@ -75,7 +75,8 @@ sub setup
       extcon      => 'http://www.dns.pl/nask-epp-schema/extcon-2.0',
       extdom      => 'http://www.dns.pl/nask-epp-schema/extdom-2.0',
       future      => 'http://www.dns.pl/nask-epp-schema/future-2.0',
-      extepp      => 'http://www.dns.pl/nask-epp-schema/extepp-2.0'
+      extepp      => 'http://www.dns.pl/nask-epp-schema/extepp-2.0',
+      extreport   => 'http://www.dns.pl/nask-epp-schema/extreport-2.0',
     });
 
   $self->capabilities('host_update','name',undef); ## No change of hostnames

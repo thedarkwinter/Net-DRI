@@ -47,16 +47,6 @@ sub register_commands
   return { 'future' => \%tmp };
 }
 
-#Setup added in Protocol/EPP/Extensions/PL.pm
-#sub setup 
-#{  
-#  my ($self,$rp)=@_;
-#  $rp->ns({#  
-#    future => ['http://www.dns.pl/nask-epp-schema/future-2.0','future-2.0.xsd'],
-#  });
-#  return;
-#}
-
 sub info{
 	my ($epp,$domain,$rd)=@_;
 	my $mes=$epp->message();
