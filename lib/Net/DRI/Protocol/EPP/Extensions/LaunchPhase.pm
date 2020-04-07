@@ -252,7 +252,7 @@ sub check
  my @n = _build_idContainerType($lp) unless exists $lp->{type} && $lp->{type} eq 'trademark'; # draft-ietf-eppext-launchphase-03
 
  if (exists $lp->{type}) {
-  $epp->message()->command_extension('launch', ['check',{type => $lp->{type}}]);
+  $epp->message()->command_extension('launch', ['check',{type => $lp->{type}}, @n]);
  } else {
   $epp->message()->command_extension('launch', ['check', @n]);
  }
@@ -269,11 +269,11 @@ sub check_parse
  my $chkdata=$mes->get_extension('launch','chkData');
  return unless defined $chkdata;
 
- my $phaseel = $chkdata->getChildrenByTagNameNS('launch','phase')->shift();
+ my $phaseel = $chkdata->getChildrenByTagNameNS($mes->ns('launch'),'phase')->shift();
  my $phase = (defined $phaseel && $phaseel->textContent()) ? $phaseel->textContent() : 'wtf';
  my $type = ($chkdata->hasAttribute('type'))?$chkdata->getAttribute('type'):undef;
 
- foreach my $cd ($chkdata->getChildrenByTagNameNS('launch','cd'))
+ foreach my $cd ($chkdata->getChildrenByTagNameNS($mes->ns('launch'),'cd'))
  {
   my ($domain,@claims);
   foreach my $el (Net::DRI::Util::xml_list_children($cd))
@@ -325,7 +325,7 @@ sub info
  my @n = _build_idContainerType($lp);
 
  if (exists $lp->{include_mark} && $lp->{include_mark} && $lp->{include_mark} !~ m/^(no|false)$/) {
-   $epp->message()->command_extension('launch', ['info',{includeMark => 'true'}]);
+   $epp->message()->command_extension('launch', ['info',{includeMark => 'true'}, @n]);
  } else {
    $epp->message()->command_extension('launch', ['info', @n]);
  }
