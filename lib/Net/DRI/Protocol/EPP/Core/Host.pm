@@ -71,7 +71,7 @@ sub register_commands
            check  => [ \&check, \&check_parse ],
            info   => [ \&info, \&info_parse ],
            delete => [ \&delete ],
-	   update => [ \&update ],
+           update => [ \&update ],
            review_complete => [ undef, \&pandata_parse ],
          );
 

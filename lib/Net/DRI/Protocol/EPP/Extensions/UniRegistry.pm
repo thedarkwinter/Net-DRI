@@ -27,8 +27,14 @@ sub core_modules
 {
  my ($self,$rp)=@_;
  my @c;
- push @c, map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Domain Host Contact/;
- push @c, map { 'Net::DRI::Protocol::EPP::Extensions::UniRegistry::'.$_ } qw/EPS/ if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'ICM_EPS'; ;
+ push @c, map { 'Net::DRI::Protocol::EPP::Core::'.$_ } qw/Session RegistryMessage Domain Contact/;
+ # need following tweak to use Host properly :p
+ if (! $self->{hostasattr})
+ {
+  push @c, 'Net::DRI::Protocol::EPP::Core::Host';
+  $self->ns({host => ['urn:ietf:params:xml:ns:host-1.0','host-1.0.xsd']});
+ }
+ push @c, map { 'Net::DRI::Protocol::EPP::Extensions::UniRegistry::'.$_ } qw/EPS/ if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'ICM_EPS';
 
  return @c;
 }
