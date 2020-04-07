@@ -155,8 +155,8 @@ sub create
  my $mes=$epp->message();
  my $urc;
 
- # urc is optional for .inc and ICM TLDs (.adult, .porn, .sex, .xxx)
- if ($domain && $domain =~ m/\.(?:inc|adult|porn|sex|xxx)$/) {
+ # urc is optional for .dealer, .inc and ICM TLDs (.adult, .porn, .sex, .xxx)
+ if ($domain && $domain =~ m/\.(?:dealer|inc|adult|porn|sex|xxx)$/) {
   return unless ( Net::DRI::Util::has_key($rd,'contact')) && (Net::DRI::Util::check_isa($rd->{'contact'},'Net::DRI::Data::ContactSet')) && ($urc = $rd->{'contact'}->get('urc') );
 
  }
