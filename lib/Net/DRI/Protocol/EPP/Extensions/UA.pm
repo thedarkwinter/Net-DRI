@@ -11,11 +11,11 @@ our $VERSION=do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf("%d".".%02d" x $#r,
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({ domain    => ['http://hostmaster.ua/epp/domain-1.1', 'domain-1.1.xsd'],
-             contact   => ['http://hostmaster.ua/epp/contact-1.1','contact-1.1.xsd'],
-						 host      => ['http://hostmaster.ua/epp/host-1.1',   'host-1.1.xsd'],
-						 graceperiod => ['http://hostmaster.ua/epp/rgp-1.1', 'rgp-1.1.xsd'],
-						 uaepp       => ['http://hostmaster.ua/epp/uaepp-1.1', 'uaepp-1.1.xsd'],
+ $self->ns({ domain      => 'http://hostmaster.ua/epp/domain-1.1',
+             contact     => 'http://hostmaster.ua/epp/contact-1.1',
+             host        => 'http://hostmaster.ua/epp/host-1.1',
+             rgp         => 'http://hostmaster.ua/epp/rgp-1.1',
+             uaepp       => 'http://hostmaster.ua/epp/uaepp-1.1',
           });
  $Net::DRI::Protocol::EPP::Extensions::GracePeriod::NS = 'http://hostmaster.ua/epp/rgp-1.1';
  foreach my $o (qw/contact/) { $self->capabilities('contact_update',$o,['set']); }

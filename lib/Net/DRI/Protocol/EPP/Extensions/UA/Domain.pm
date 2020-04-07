@@ -29,34 +29,27 @@ sub register_commands
  my %tmp=( 
           create => [ \&create, undef ],
           info   => [ undef, \&info_parse ],
-					update => [ \&update ],
+          update => [ \&update ],
          );
 
  return { 'domain' => \%tmp };
 }
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:uaepp="%s" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="%s %s"',$mes->nsattrs('uaepp')));
-}
-
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ my @n;
 
  if ($domain =~ /^[^.]+\.ua$/)
  {
- Net::DRI::Exception::usererr_insufficient_parameters('license attribute is mandatory') 
-         unless (exists($rd->{license}));
-
- my @n;
- push @n,['uaepp:license',$rd->{license}];
-
- my $eid=build_command_extension($mes,$epp,'uaepp:create');
- $mes->command_extension($eid,\@n);
+  Net::DRI::Exception::usererr_insufficient_parameters('license attribute is mandatory') 
+        unless (exists($rd->{license}));
+  push @n,['uaepp:license',$rd->{license}];
  }
+
+ $epp->message()->command_extension('uaepp', ['create', @n]);
+
+ return;
 }
 
 sub update
@@ -67,11 +60,12 @@ sub update
  my $chg = $toc->set('license');
  if ($chg)
  {
-		push @chg, ['uaepp:license', $chg];
-#use Data::Dumper; die Dumper \@chg, $chg;
-	 my $eid=build_command_extension($mes,$epp,'uaepp:update');
-	 $mes->command_extension($eid,['uaepp:chg', @chg]);
+  push @chg, ['uaepp:license', $chg];
  }
+
+ $epp->message()->command_extension('uaepp', ['update', @chg]);
+
+ return;
 }
 
 sub info_parse
@@ -95,10 +89,10 @@ sub info_parse
   {
    $ens{license}=$c->getFirstChild()->getData();
   }
-	else
-	{
-		warn "Unknown name $name";
-	}
+  else
+  {
+   warn "Unknown name $name";
+  }
  } continue { $c=$c->getNextSibling(); }
 
  $rinfo->{domain}->{$oname}->{license}=$ens{license};

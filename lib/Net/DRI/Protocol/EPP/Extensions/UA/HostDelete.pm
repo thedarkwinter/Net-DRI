@@ -21,28 +21,19 @@ use utf8;
 
 sub register_commands
 {
-	my ($class, $version) = @_;
-	my %tmp = ( 
-		delete => [ \&delete, undef ],
-	);
+ my ($class, $version) = @_;
+ my %tmp = ( 
+  delete => [ \&delete, undef ],
+ );
 
-	return { 'host' => \%tmp };
-}
-
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:uaepp="http://hostmaster.ua/epp/uaepp-1.1"'));
+ return { 'host' => \%tmp };
 }
 
 sub build_ext_data
 {
  my ($epp, $host, $mes, $op) = @_;
-
  my @n;
- my $eid = build_command_extension($mes, $epp, "uaepp:$op");
-
- $mes->command_extension($eid, ['uaepp:deleteNS', undef, {confirm => "yes"}]);
+ $mes->command_extension('uaepp', [$op, ['deleteNS', undef, {confirm => "yes"}]]);
 }
 
 sub delete
