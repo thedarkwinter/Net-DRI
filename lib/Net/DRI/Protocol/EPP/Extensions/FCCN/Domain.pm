@@ -1,6 +1,7 @@
 ## Domain Registry Interface, .PT Domain EPP extension commands
 ##
-## Copyright (c) 2008,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2013-2014,2016,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +50,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2013-2014,2016,2019 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -73,7 +75,7 @@ sub register_commands
           renew  => [ \&renew ],
           renounce => [ \&renounce ],
           delete => [ \&delete ],
-	  transfer_request => [ \&transfer_request ],
+          transfer_request => [ \&transfer_request ],
          );
 
  return { 'domain' => \%tmp };
@@ -81,16 +83,9 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:ptdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ptdomain')));
-}
-
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_insufficient_parameters('Registrant contact required for .PT domain name creation') unless (Net::DRI::Util::has_contact($rd) && $rd->{contact}->has_type('registrant'));
  Net::DRI::Exception::usererr_insufficient_parameters('Tech contact required for .PT domain name creation') unless (Net::DRI::Util::has_contact($rd) && $rd->{contact}->has_type('tech'));
@@ -109,8 +104,8 @@ sub create
  push @n,['ptdomain:registration_basis',{type => $rd->{registration_basis}}];
  push @n,['ptdomain:autoRenew',$rd->{auto_renew}];
  push @n,['ptdomain:ownerVisible',$rd->{owner_visible}];
- my $eid=build_command_extension($mes,$epp,'ptdomain:create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('ptdomain', ['create', @n]);
+
  return;
 }
 
@@ -145,13 +140,11 @@ sub add_roid
 sub info
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
-
- my $eid=build_command_extension($mes,$epp,'ptdomain:info');
  my @n=add_roid($rd->{roid});
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('ptdomain', ['info', @n]);
+
  return;
 }
 
@@ -191,22 +184,19 @@ sub info_parse
 sub update
 {
  my ($epp,$domain,$toc,$rd)=@_;
- my $mes=$epp->message();
 
  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
  Net::DRI::Exception::usererr_insufficient_parameters('owner_visible attribute is mandatory for .PT domain name update') unless $toc->{'owner_visible'}; # mandatory due GDPR changes
-
- my $eid=build_command_extension($mes,$epp,'ptdomain:update');
  my @n=add_roid($rd->{roid});
  push @n,['ptdomain:ownerVisible',$toc->set('owner_visible')];
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('ptdomain', ['update', @n]);
+
  return;
 }
 
 sub renew
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
@@ -217,11 +207,11 @@ sub renew
   $rd->{$d} = xml_parse_auto_renew($rd->{$d});
  }
 
- my $eid=build_command_extension($mes,$epp,'ptdomain:renew');
  my @n=add_roid($rd->{roid});
  push @n,['ptdomain:autoRenew',$rd->{auto_renew}] if Net::DRI::Util::has_key($rd,'auto_renew');
  push @n,['ptdomain:notRenew',$rd->{not_renew}] if Net::DRI::Util::has_key($rd,'not_renew');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('ptdomain', ['renew', @n]);
+
  return;
 }
 
@@ -235,36 +225,30 @@ sub renounce
  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
  $mes->command_body(\@d);
 
- my $eid=build_command_extension($mes,$epp,'ptdomain:transfer');
  my @n;
  push @n,add_roid($rd->{roid});
  push @n,['ptdomain:renounce','true']; # Forcing always to true. By the manual: "When a registrar wants to renounce the sponsorship of a domain he sends a transfer request without authorization code and with the <ptdomain:renounce> field set to true."
- $mes->command_extension($eid,\@n);
+ $mes->command_extension('ptdomain', ['transfer', @n]);
+
  return;
 }
 
 sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
-
  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
-
- my $eid=build_command_extension($mes,$epp,'ptdomain:delete');
  my @n=add_roid($rd->{roid});
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('ptdomain', ['delete', @n]);
+
  return;
 }
 
 sub transfer_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
-
  Net::DRI::Exception::usererr_insufficient_parameters('you have to specify authinfo for .PT domain transfer (mapped to transferKey)') unless Net::DRI::Util::has_auth($rd);
+ $epp->message()->command_extension('ptdomain', ['transfer', ['ptdomain:transferKey',$rd->{"auth"}->{"pw"}]]);
 
- my $eid=build_command_extension($mes,$epp,'ptdomain:transfer');
- $mes->command_extension($eid,['ptdomain:transferKey',$rd->{"auth"}->{"pw"}]);
  return;
 }
 

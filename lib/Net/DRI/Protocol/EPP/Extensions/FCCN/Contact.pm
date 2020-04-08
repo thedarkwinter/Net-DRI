@@ -1,6 +1,7 @@
 ## Domain Registry Interface, FCCN (.PT) Contact EPP extension commands
 ##
-## Copyright (c) 2008,2009,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2009,2013,2016,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -47,7 +48,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2009,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2013-2014,2016,2019 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -64,7 +66,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
           create => [ \&create, undef ],
           update => [ \&update, undef ],
           info   => [ undef, \&info_parse ],
@@ -75,32 +77,23 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:ptcontact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ptcontact')));
-}
-
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
 
-# validate() has been called
+ # validate() has been called
  my @n;
  push @n,['ptcontact:identification',$contact->identification()->{value}];
  push @n,['ptcontact:mobile',$contact->mobile()] if $contact->mobile();
 
- my $eid=build_command_extension($mes,$epp,'ptcontact:create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('ptcontact', ['create', @n]);
+
  return;
 }
 
 sub update
 {
  my ($epp,$contact,$todo)=@_;
- my $mes=$epp->message();
-
  my @n;
  my $auth=$contact->auth();
  Net::DRI::Exception::usererr_insufficient_parameters('Contact password is mandatory for .PT contact update') unless (defined($auth) && (ref($auth) eq 'HASH') && exists($auth->{pw}) && Net::DRI::Util::xml_is_normalizedstring($auth->{pw}));
@@ -113,8 +106,8 @@ sub update
   push @n,['ptcontact:mobile',$newc->mobile()] if $newc->mobile();
  }
 
- my $eid=build_command_extension($mes,$epp,'ptcontact:update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('ptcontact', ['update', @n]);
+
  return;
 }
 

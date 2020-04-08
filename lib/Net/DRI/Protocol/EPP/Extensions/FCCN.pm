@@ -66,8 +66,8 @@ sub setup
  my ($self,$rp,$params)=@_;
  my $namespace_base = (defined($params) && ref($params) eq "HASH" && defined($params->{"namespace_base"})) ? $params->{"namespace_base"} : "http://eppdev.dns.pt/schemas";
 
- $self->ns({ ptdomain  => ["$namespace_base/ptdomain-1.0",'ptdomain-1.0.xsd'],
-             ptcontact => ["$namespace_base/ptcontact-1.0",'ptcontact-1.0.xsd'],
+ $self->ns({ ptdomain  => "$namespace_base/ptdomain-1.0",
+             ptcontact => "$namespace_base/ptcontact-1.0",
            });
  $self->capabilities('contact_update','status',undef);
  $self->capabilities('domain_update','owner_visible',['set']);
