@@ -11,7 +11,7 @@ use Test::More tests => 7;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -53,7 +53,7 @@ $cs->set($c2,'tech');
 $cs->set($dri->local_object('contact')->srid('sh8013'),'abuse');
 $cs->set($dri->local_object('contact')->srid('ClientZ'),'dns-operator');
 $rc=$dri->domain_create('example2.feedback',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),contact=>$cs,auth=>{pw=>'2fooBAR'}});
-is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example2.feedback</domain:name><domain:period unit="y">2</domain:period><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><auxcontact:create xmlns:auxcontact="urn:ietf:params:xml:ns:auxcontact-0.1" xsi:schemaLocation="urn:ietf:params:xml:ns:auxcontact-0.1 auxcontact-0.1.xsd"><auxcontact:contact type="abuse">sh8013</auxcontact:contact><auxcontact:contact type="dns-operator">ClientZ</auxcontact:contact></auxcontact:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example2.feedback</domain:name><domain:period unit="y">2</domain:period><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><auxcontact:create xmlns:auxcontact="urn:ietf:params:xml:ns:auxcontact-0.1"><auxcontact:contact type="abuse">sh8013</auxcontact:contact><auxcontact:contact type="dns-operator">ClientZ</auxcontact:contact></auxcontact:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 
 ## domain update
 $R2='';
@@ -65,7 +65,7 @@ $csdel->set($dri->local_object('contact')->srid('ClientZ'),'dns-operator');
 $toc->add('contact',$csadd);
 $toc->del('contact',$csdel);
 $rc=$dri->domain_update('example3.feedback',$toc);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.feedback</domain:name></domain:update></update><extension><auxcontact:update xmlns:auxcontact="urn:ietf:params:xml:ns:auxcontact-0.1" xsi:schemaLocation="urn:ietf:params:xml:ns:auxcontact-0.1 auxcontact-0.1.xsd"><auxcontact:add><auxcontact:contact type="dns-operator">ClientXYZ</auxcontact:contact></auxcontact:add><auxcontact:rem><auxcontact:contact type="dns-operator">ClientZ</auxcontact:contact></auxcontact:rem></auxcontact:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.feedback</domain:name></domain:update></update><extension><auxcontact:update xmlns:auxcontact="urn:ietf:params:xml:ns:auxcontact-0.1"><auxcontact:add><auxcontact:contact type="dns-operator">ClientXYZ</auxcontact:contact></auxcontact:add><auxcontact:rem><auxcontact:contact type="dns-operator">ClientZ</auxcontact:contact></auxcontact:rem></auxcontact:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
 
 ####################################################################################################
 exit 0;
