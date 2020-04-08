@@ -66,7 +66,7 @@ sub setup
 {
     my ($self,$rp)=@_;
     my $version=$self->version();
-    $self->ns({iis=>['urn:se:iis:xml:epp:iis-1.2','iis-1.2.xsd']}); ## this will be updated if needed after server greeting
+    $self->ns({iis=>'urn:se:iis:xml:epp:iis-1.2'}); ## this will be updated if needed after server greeting
     return;
 }
 

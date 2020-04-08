@@ -1,7 +1,8 @@
 ## Domain Registry Interface, IIS EPP Domain/Contact Extensions for Net::DRI
 ## Contributed by Elias Sidenbladh and Ulrich Wisser from NIC SE
 ##
-## Copyright (c) 2006,2008-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008-2011,2013,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,7 +51,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008-2011 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2008-2011,2013,2019 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -140,7 +142,7 @@ sub domain_parse {
     $rinfo->{domain}->{$oname}->{notify} = $notify if defined $notify;
 
     # get <iis:infData/> from <extension/>
-    my $infData = $mes->get_extension( $mes->ns('iis'), 'infData' );
+    my $infData = $mes->get_extension( 'iis', 'infData' );
     return unless defined $infData;
 
     # parse deleteDate (optional)
@@ -186,7 +188,7 @@ sub contact_parse {
     $rinfo->{contact}->{$oname}->{notify} = $notify if defined $notify;
 
     # get <iis:infData/> from <extension/>
-    my $result = $mes->get_extension( $mes->ns('iis'), 'infData' );
+    my $result = $mes->get_extension( 'iis', 'infData' );
     return unless defined $result;
 
     # parse orgno (mandatory)
@@ -366,7 +368,6 @@ sub delete_parse {
 sub domain_update {
     my ( $epp, $domain, $rd ) = @_;
     my @data = ();
-    my $mes  = $epp->message();
 
     # iis:clientDelete
     if ( exists $rd->{client_delete} ) {
@@ -377,11 +378,8 @@ sub domain_update {
     # only add extension if any data gets added
     return unless @data;
 
-    # create <iis:update/>
-    my $iis_extension = $mes->command_extension_register('iis','update');
-
-    # now add extension to message
-    $mes->command_extension( $iis_extension, \@data );
+    # create <iis:update/> and add extension to message
+    $epp->message()->command_extension('iis', ['update', @data]);
 
     # done
     return;
@@ -390,7 +388,6 @@ sub domain_update {
 sub domain_transfer {
     my ( $epp, $domain, $rd ) = @_;
     my @data = ();
-    my $mes  = $epp->message();
 
     # new nameservers (optional)
     push @data, [ 'iis:ns',  map { [ 'iis:hostObj', $_ ] } $rd->{ns}->get_names() ] if Net::DRI::Util::has_ns($rd);
@@ -398,11 +395,8 @@ sub domain_transfer {
     # only add body if any data gets added
     return unless @data;
 
-    # create <iis:transfer/>
-    my $iis_extension = $mes->command_extension_register('iis','transfer');
-
-    # now add extension to message
-    $mes->command_extension( $iis_extension, \@data );
+    # create <iis:transfer/> and add extension to message
+    $epp->message()->command_extension('iis', ['transfer', @data]);
 
     # done
     return;
@@ -412,7 +406,6 @@ sub domain_transfer {
 sub contact_create {
     my ( $epp, $contact, $rd ) = @_;
     my @data = ();
-    my $mes  = $epp->message();
 
     # iis:orgno (mandatory)
     my $orgno;
@@ -435,11 +428,8 @@ sub contact_create {
     # only add extension if any data gets added
     return unless @data;
 
-    # create <iis:create/>
-    my $iis_extension = $mes->command_extension_register('iis','create');
-
-    # now add extension to message
-    $mes->command_extension( $iis_extension, \@data );
+    # create <iis:create/> and add extension to message
+    $epp->message()->command_extension('iis', ['create', @data]);
 
     # done
     return;
@@ -449,7 +439,6 @@ sub contact_create {
 sub contact_update {
     my ( $epp, $contact, $rd ) = @_;
     my @data = ();
-    my $mes  = $epp->message();
 
     # get the new contact information
     my $newc = $rd->set('info');
@@ -466,11 +455,8 @@ sub contact_update {
     # only add extension if any data gets added
     return unless @data;
 
-    # create <iis:update/>
-    my $iis_extension = $mes->command_extension_register('iis','update');
-
-    # now add extension to message
-    $mes->command_extension( $iis_extension, \@data );
+    # create <iis:update/> and add extension to message
+    $epp->message()->command_extension('iis', ['update', @data]);
 
     # done
     return;
