@@ -1,8 +1,9 @@
 ## Domain Registry Interface, DNSBE Domain EPP extension commands
 ## (based on Registration_guidelines_v4_7_2-Part_4-epp.pdf)
 ##
-## Copyright (c) 2006-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2010,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -54,7 +55,9 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2010,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -91,16 +94,9 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:dnsbe="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnsbe')));
-}
-
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  ## Registrant contact is mandatory (optional in EPP), already added in Core, we just verify here
  Net::DRI::Exception->die(0,'protocol/EPP',11,'Registrant contact is mandatory in domain_create')
@@ -109,15 +105,13 @@ sub create
  return unless exists($rd->{nsgroup});
  my @n=add_nsgroup($rd->{nsgroup});
 
- my $eid=build_command_extension($mes,$epp,'dnsbe:ext');
- $mes->command_extension($eid,['dnsbe:create',['dnsbe:domain',@n]]);
+ $epp->message()->command_extension('dnsbe', ['ext', ['create', ['domain', @n]]]);
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  if (grep { ! /^(?:add|del)$/ } $todo->types('nsgroup'))
  {
@@ -132,8 +126,7 @@ sub update
  push @n,['dnsbe:add',add_nsgroup($nsgadd)] if $nsgadd;
  push @n,['dnsbe:rem',add_nsgroup($nsgdel)] if $nsgdel;
 
- my $eid=build_command_extension($mes,$epp,'dnsbe:ext');
- $mes->command_extension($eid,['dnsbe:update',['dnsbe:domain',@n]]);
+ $epp->message()->command_extension('dnsbe', ['ext', ['update', ['domain', @n]]]);
  return;
 }
 
@@ -142,11 +135,9 @@ sub update
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  my @d;
  push @d,['dnsbe:check',['dnsbe:domain version="2.0"']];
- my $eid=$mes->command_extension_register('dnsbe:ext',sprintf('xmlns:dnsbe="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnsbe')));
- $mes->command_extension($eid,\@d);
+ $epp->message()->command_extension('dnsbe', ['ext', @d]);
 
  return;
 }
@@ -197,11 +188,9 @@ sub check_parse
 sub info
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  my @d;
  push @d,['dnsbe:info',['dnsbe:domain version="2.0"']];
- my $eid=$mes->command_extension_register('dnsbe:ext',sprintf('xmlns:dnsbe="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnsbe')));
- $mes->command_extension($eid,\@d);
+ $epp->message()->command_extension('dnsbe', ['ext', @d]);
 
  return;
 }
@@ -245,26 +234,21 @@ sub info_parse
 sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  return unless (exists($rd->{deleteDate}) && $rd->{deleteDate});
 
  Net::DRI::Util::check_isa($rd->{deleteDate},'DateTime');
 
- my $eid=build_command_extension($mes,$epp,'dnsbe:ext');
- my @n=('dnsbe:delete',['dnsbe:domain',['dnsbe:deleteDate',$rd->{deleteDate}->set_time_zone('UTC')->strftime("%Y-%m-%dT%T.%NZ")]]);
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('dnsbe', ['ext', ['delete', ['domain', ['deleteDate', $rd->{deleteDate}->set_time_zone('UTC')->strftime("%Y-%m-%dT%T.%NZ")]]]]);
  return;
 }
 
 sub transfer_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
+ my $mes = $epp->message();
 
- my @n=add_transfer($epp,$mes,$domain,$rd);
- my $eid=build_command_extension($mes,$epp,'dnsbe:ext');
- $mes->command_extension($eid,['dnsbe:transfer',['dnsbe:domain',@n]]);
+ $mes->command_extension('dnsbe', ['ext', ['transfer', ['domain', add_transfer($epp, $mes, $domain, $rd)]]]);
  return;
 }
 
@@ -299,7 +283,7 @@ sub add_transfer
  {
   my $n=Net::DRI::Protocol::EPP::Util::build_ns($epp,$rd->{ns},$domain,'dnsbe');
   my @ns=$mes->nsattrs('domain');
-  push @$n,{'xmlns:domain'=>shift(@ns),'xsi:schemaLocation'=>sprintf('%s %s',@ns)};
+  push @$n,{'xmlns:domain'=>shift(@ns)};
   push @n,$n;
  }
 
@@ -342,9 +326,7 @@ sub transferq_request
  push @d,Net::DRI::Protocol::EPP::Util::build_period($rd->{period}) if Net::DRI::Util::has_duration($rd);
  $mes->command_body(\@d);
 
- my @n=add_transfer($epp,$mes,$domain,$rd);
- my $eid=build_command_extension($mes,$epp,'dnsbe:ext');
- $mes->command_extension($eid,['dnsbe:transferq',['dnsbe:domain',@n]]);
+ $mes->command_extension('dnsbe', ['ext', ['transferq', ['domain', add_transfer($epp, $mes, $domain, $rd)]]]);
  return;
 }
 
@@ -354,10 +336,8 @@ sub trade
  my $mes=$epp->message();
  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['trade',{'op'=>'request'}],$domain);
  $mes->command_body(\@d);
+ $mes->command_extension('dnsbe', ['ext', ['trade', ['domain', add_transfer($epp, $mes, $domain, $rd)]]]);
 
- my @n=add_transfer($epp,$mes,$domain,$rd);
- my $eid=build_command_extension($mes,$epp,'dnsbe:ext');
- $mes->command_extension($eid,['dnsbe:trade',['dnsbe:domain',@n]]);
  return;
 }
 
@@ -373,13 +353,12 @@ sub reactivate
 sub request_authcode
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
- my $trid = $mes->cltrid();
- my $eid=build_command_extension($mes,$epp,'dnsbe:ext');
+ my $mes = $epp->message();
+
  my @d;
  push @d,['dnsbe:domainName',$domain];
  push @d,['dnsbe:url',$rd->{'url'}] if $rd->{'url'};
- $mes->command_extension($eid,['dnsbe:command',['dnsbe:requestAuthCode',@d],['dnsbe:clTRID',$trid]]);
+ $mes->command_extension('dnsbe', ['ext', ['command', ['requestAuthCode', @d], ['clTRID', $mes->cltrid()]]]);
  # missing TRID
  return;
 }

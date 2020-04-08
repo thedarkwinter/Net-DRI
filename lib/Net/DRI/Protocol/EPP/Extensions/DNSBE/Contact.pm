@@ -1,7 +1,7 @@
 ## Domain Registry Interface, DNSBE Contact EPP extension commands
 ## (based on Registration_guidelines_v4_7_2-Part_4-epp.pdf)
 ##
-## Copyright (c) 2006,2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008,2013,2016,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -46,7 +46,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2008,2013,2016,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=( 
+ my %tmp=(
           create            => [ \&create, undef ],
           update            => [ \&update, undef ],
           info              => [ undef, \&info_parse ],
@@ -74,16 +74,9 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:dnsbe="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnsbe')));
-}
-
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
 
  ## validate() has been called, we are sure that type & lang exists
  my @n;
@@ -91,15 +84,13 @@ sub create
  push @n,['dnsbe:vat',$contact->vat()] if $contact->vat();
  push @n,['dnsbe:lang',$contact->lang()];
 
- my $eid=build_command_extension($mes,$epp,'dnsbe:ext');
- $mes->command_extension($eid,['dnsbe:create',['dnsbe:contact',@n]]);
+ $epp->message()->command_extension('dnsbe', ['ext', ['create', ['contact', @n]]]);
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $newc=$todo->set('info');
  return unless ($newc && (defined($newc->vat()) || defined($newc->lang())));
@@ -108,8 +99,7 @@ sub update
  push @n,['dnsbe:vat',$newc->vat()]   if defined($newc->vat());
  push @n,['dnsbe:lang',$newc->lang()] if defined($newc->lang());
 
- my $eid=build_command_extension($mes,$epp,'dnsbe:ext');
- $mes->command_extension($eid,['dnsbe:update',['dnsbe:contact',['dnsbe:chg',@n]]]);
+ $epp->message()->command_extension('dnsbe', ['ext', ['update', ['contact', ['chg', @n]]]]);
  return;
 }
 
