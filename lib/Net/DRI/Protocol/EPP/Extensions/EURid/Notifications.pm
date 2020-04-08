@@ -1,9 +1,9 @@
 ## Domain Registry Interface, EURid Registrar EPP extension notifications
-## (based on EURid EPP_Guidelines_2_1_09, RegNotifications_051213.pdf (v1.2), schemas for poll-1.2)
 ##
-## Copyright (c) 2009,2012-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009,2012-2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
 ##               2015 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##               2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,8 +50,10 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009,2012-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009,2012-2013,2018 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
+              2015 Michael Holloway <michael@thedarkwinter.com>.
+              2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,7 +80,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'poll' => [ 'http://www.eurid.eu/xml/epp/poll-1.2','poll-1.2.xsd' ] });
+ $po->ns({ 'poll' => 'http://www.eurid.eu/xml/epp/poll-1.2' });
  return;
 }
 

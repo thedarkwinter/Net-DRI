@@ -1,7 +1,8 @@
 ## Domain Registry Interface, EURid RegistrarFinance EPP extension commands
 ##
-## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+## Copyright (c) 2009,2012,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2016 Michael Holloway <michael@thedarkwinter.com>.
+##               2020 Paulo Jorge <paullojorgge@gmail.com>.
 ##               All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -37,9 +38,9 @@ sub register_commands
 sub setup
 {
   my ($class,$po,$version)=@_;
-  $po->ns({ 'registrar_finance'    => [ 'http://www.eurid.eu/xml/epp/registrarFinance-1.0','registrarFinance-1.0' ] });
-  $po->ns({ 'registrar_hit_points' => [ 'http://www.eurid.eu/xml/epp/registrarHitPoints-1.0','registrarHitPoints-1.0' ] });
-  $po->ns({ 'registration_limit'   => [ 'http://www.eurid.eu/xml/epp/registrationLimit-1.1','registrationLimit-1.1' ] });
+  $po->ns({ 'registrarFinance'    => 'http://www.eurid.eu/xml/epp/registrarFinance-1.0' });
+  $po->ns({ 'registrarHitPoints'  => 'http://www.eurid.eu/xml/epp/registrarHitPoints-1.0' });
+  $po->ns({ 'registrationLimit'   => 'http://www.eurid.eu/xml/epp/registrationLimit-1.1' });
   return;
 }
 
@@ -119,17 +120,17 @@ sub parse_info
  my $registrar = {};
  my ($infdata);
 
- if ($infdata=$mes->get_response('registrar_finance','infData'))
+ if ($infdata=$mes->get_response('registrarFinance','infData'))
  {
    _parse_info_finance($po, $registrar, $infdata);
  }
 
- elsif ($infdata=$mes->get_response('registrar_hit_points','infData'))
+ elsif ($infdata=$mes->get_response('registrarHitPoints','infData'))
  {
     _parse_info_hitpoints($po, $registrar, $infdata);
  }
 
- elsif ($infdata=$mes->get_response('registration_limit','infData'))
+ elsif ($infdata=$mes->get_response('registrationLimit','infData'))
  {
     _parse_info_registration_limit($po, $registrar, $infdata);
  }
@@ -150,14 +151,15 @@ sub info
  my $mes=$epp->message();
  if ($rd && exists $rd->{type} && ($rd->{type} eq 'hit_points' || $rd->{type} eq 'hitpoints'))
  {
-   $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar_hit_points')));
- } elsif ($rd && exists $rd->{type} && $rd->{type} eq 'registration_limit')
+   $mes->command(['info','registrar:info',sprintf('xmlns:registrar="%s"',$mes->ns('registrarHitPoints'))]);
+ } elsif ($rd && exists $rd->{type} && ($rd->{type} eq 'registration_limit' || $rd->{type} eq 'registrationLimit'))
  {
-   $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registration_limit')));
+   $mes->command(['info','registrar:info',sprintf('xmlns:registrar="%s"',$mes->ns('registrationLimit'))]);
  } else # default to finance
  {
-   $mes->command('info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar_finance')));
+   $mes->command(['info','registrar:info',sprintf('xmlns:registrar="%s"',$mes->ns('registrarFinance'))]);
  }
+
  return;
 }
 
@@ -194,8 +196,9 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
- Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+ Copyright (c) 2009,2012,2013,2018 Patrick Mevzek <netdri@dotandco.com>.
                2016 Michael Holloway <michael@thedarkwinter.com>.
+               2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

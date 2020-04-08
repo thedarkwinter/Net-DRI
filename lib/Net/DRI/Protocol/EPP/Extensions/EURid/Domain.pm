@@ -1,9 +1,9 @@
 ## Domain Registry Interface, EURid Domain EPP extension commands
-## (based on EURid EPP_Guidelines_2_1_09)
 ##
-## Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2013,2015,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
 ##               2015-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##               2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -52,9 +52,10 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2013,2015,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
               2015-2016 Michael Holloway <michael@thedarkwinter.com>.
+              2020 Paulo Jorge <paullojorgge@gmail.com>.
 
 All rights reserved.
 
@@ -92,31 +93,24 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/domain-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.3',$ns.'-2.3.xsd' ] });
+  $po->ns({ $ns => 'http://www.eurid.eu/xml/epp/'.$ns.'-2.3' });
  }
  foreach my $ns (qw/homoglyph/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.0',$ns.'-1.0.xsd' ] });
+  $po->ns({ $ns => 'http://www.eurid.eu/xml/epp/'.$ns.'-1.0' });
  }
  foreach my $ns (qw/authInfo/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.1',$ns.'-1.1.xsd' ] });
+  $po->ns({ $ns => 'http://www.eurid.eu/xml/epp/'.$ns.'-1.1' });
  }
  return;
 }
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:eurid="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('eurid')));
-}
-
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  my $cs=$rd->{contact};
 
  my @n;
@@ -128,15 +122,13 @@ sub create
 
  return unless @n;
 
- my $eid=$mes->command_extension_register('domain-ext','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('domain-ext', ['create', @n]);
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  if (grep { ! /^(?:add|del)$/ } $todo->types('nsgroup'))
  {
@@ -170,25 +162,21 @@ sub update
 
  return unless @n;
 
- my $eid=$mes->command_extension_register('domain-ext','update');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('domain-ext', ['update', @n]);
  return;
 }
 
 sub info
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  if (Net::DRI::Util::has_key($rd,'authinfo_request') && $rd->{authinfo_request})
  {
-  my $eid=$mes->command_extension_register('authInfo','info');
-  $mes->command_extension($eid,['authInfo:request']);
+  $epp->message()->command_extension('authInfo', ['info', ['request']]);
  }
  if (Net::DRI::Util::has_key($rd,'authinfo_cancel') && $rd->{authinfo_cancel})
  {
-  my $eid=$mes->command_extension_register('authInfo','info');
-  $mes->command_extension($eid,['authInfo:cancel']);
+  $epp->message()->command_extension('authInfo', ['info', ['cancel']]);
  }
  return;
 }
@@ -347,7 +335,6 @@ sub check_parse
 sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  my $hasdelete=Net::DRI::Util::has_key($rd,'deleteDate') ? 1 : 0;
  my $hascancel=(Net::DRI::Util::has_key($rd,'cancel') && $rd->{cancel}) ? 1 : 0;
@@ -355,7 +342,6 @@ sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
  return unless $hasdelete || $hascancel;
  Net::DRI::Exception::usererr_invalid_parameters('For domain_delete, parameters deleteDate & cancel can not be set at the same time') if $hasdelete && $hascancel;
 
- my $eid=$mes->command_extension_register('domain-ext','delete');
  my @n;
 
  if ($hasdelete)
@@ -368,16 +354,14 @@ sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
   @n=(['domain-ext:cancel']);
  }
 
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('domain-ext', ['delete', @n]);
  return;
 }
 
 sub transfer_request
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
- my $eid=$mes->command_extension_register('domain-ext','transfer',{'xmlns:domain'=>'urn:ietf:params:xml:ns:domain-1.0'});
  my @d;
 
  if (Net::DRI::Util::has_contact($rd))
@@ -397,7 +381,7 @@ sub transfer_request
  ## TODO keygroup
  ##  push @n,['eurid:keygroup',$rd->{keygroup}] if Net::DRI::Util::has_key($rd,'keygroup') && Net::DRI::Util::xml_is_token($rd->{keygroup},1,100);
 
- $mes->command_extension($eid,['domain-ext:request',@d]);
+ $epp->message()->command_extension('domain-ext', ['transfer', ['request', @d]]);
 
  if ($epp->has_module('Net::DRI::Protocol::EPP::Extensions::SecDNS'))
  {

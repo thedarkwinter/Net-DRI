@@ -1,8 +1,8 @@
 ## Domain Registry Interface, EURid Contact EPP extension commands
-## (based on EURid Release Notes_11October2017_v1.0.pdf)
 ##
-## Copyright (c) 2005,2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005,2008,2012,2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
+##               2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,8 +49,9 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005,2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005,2008,2012,2013,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
+              2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -81,7 +82,7 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/contact-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-1.3',$ns.'-1.3.xsd' ] });
+  $po->ns({ $ns => 'http://www.eurid.eu/xml/epp/'.$ns.'-1.3' });
  }
  return;
 }
@@ -91,7 +92,6 @@ sub setup
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
 
  ## validate() has been called, we are sure that type & lang exists
  my @n;
@@ -102,15 +102,13 @@ sub create
  push @n,['contact-ext:naturalPerson',$contact->natural_person()];
  push @n,['contact-ext:countryOfCitizenship',$contact->country_of_citizenship()] if defined($contact->country_of_citizenship); # optional element
 
- my $eid=$mes->command_extension_register('contact-ext','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('contact-ext', ['create', @n]);
  return;
 }
 
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $newc=$todo->set('info');
  return unless ($newc && (defined($newc->vat()) || defined($newc->lang())));
@@ -122,8 +120,7 @@ sub update
  push @n,['contact-ext:naturalPerson',$newc->natural_person()] if defined($newc->natural_person());
  push @n,['contact-ext:countryOfCitizenship',$newc->country_of_citizenship()] if defined($newc->country_of_citizenship());
 
- my $eid=$mes->command_extension_register('contact-ext','update');
- $mes->command_extension($eid,['contact-ext:chg',@n]);
+ $epp->message()->command_extension('contact-ext', ['update', ['chg', @n]]);
  return;
 }
 

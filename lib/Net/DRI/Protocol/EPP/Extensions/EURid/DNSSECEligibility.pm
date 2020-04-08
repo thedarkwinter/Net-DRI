@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2018 Patrick Mevzek <netdri@dotandco.com>.
 ##               2018 Michael Holloway <michael@thedarkwinter.com>.
-##               2018 Paulo Jorge <paullojorgge@gmail>.
+##               2018-2020 Paulo Jorge <paullojorgge@gmail>.
 ##               All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -38,7 +38,7 @@ sub register_commands
 sub setup
 {
   my ($class,$po,$version)=@_;
-  $po->ns({ 'dnssec_eligibility' => [ 'http://www.eurid.eu/xml/epp/dnssecEligibility-1.0','dnssecEligibility-1.0.xsd' ] });
+  $po->ns({ 'dnssecEligibility' => 'http://www.eurid.eu/xml/epp/dnssecEligibility-1.0' });
   return;
 }
 
@@ -49,7 +49,7 @@ sub parse_info
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- return unless my $infdata=$mes->get_response('dnssec_eligibility','infData');
+ return unless my $infdata=$mes->get_response('dnssecEligibility','infData');
  my $d = {};
  $otype = $d->{object_type} = 'domain';
  $oaction = $d->{action} = 'info';
@@ -74,7 +74,7 @@ sub info
  my ($epp,$dom,$rd)=@_;
  my $mes=$epp->message();
 
- $mes->command('info','dnssecEligibility:info',sprintf('xmlns:dnssecEligibility="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnssec_eligibility')));
+ $mes->command('info','dnssecEligibility:info',$mes->nsattrs('dnssecEligibility'));
  my @d = ['dnssecEligibility:name', $dom];
  $mes->command_body(\@d);
 

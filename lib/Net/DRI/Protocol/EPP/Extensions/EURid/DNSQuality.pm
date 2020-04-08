@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>.
 ##               2017 Michael Holloway <michael@thedarkwinter.com>.
+##               2020 Paulo Jorge <paullojorgge@gmail.com>.
 ##               All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -37,7 +38,7 @@ sub register_commands
 sub setup
 {
   my ($class,$po,$version)=@_;
-  $po->ns({ 'dns_quality' => [ 'http://www.eurid.eu/xml/epp/dnsQuality-2.0','dnsQuality-2.0.xsd' ] });
+  $po->ns({ 'dnsQuality' => 'http://www.eurid.eu/xml/epp/dnsQuality-2.0' });
   return;
 }
 
@@ -48,7 +49,7 @@ sub parse_info
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
  return unless $mes->is_success();
- return unless my $infdata=$mes->get_response('dns_quality','infData');
+ return unless my $infdata=$mes->get_response('dnsQuality','infData');
  my $d = {};
  $otype = $d->{object_type} = 'domain';
  $oaction = $d->{action} = 'info';
@@ -76,7 +77,7 @@ sub info
  my ($epp,$dom,$rd)=@_;
  my $mes=$epp->message();
 
- $mes->command('info','dnsQuality:info',sprintf('xmlns:dnsQuality="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dns_quality')));
+ $mes->command('info','dnsQuality:info',$mes->nsattrs('dnsQuality'));
  my @d = ['dnsQuality:name', $dom];
  $mes->command_body(\@d);
 
@@ -118,6 +119,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
  Copyright (c) 2017 Patrick Mevzek <netdri@dotandco.com>.
                2017 Michael Holloway <michael@thedarkwinter.com>.
+               2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
