@@ -71,7 +71,7 @@ sub setup
 {
   my ($self,$rp)=@_;
   $self->ns({
-      sidn  => ['http://rxsd.domain-registry.nl/sidn-ext-epp-1.0','sidn-ext-epp-1.0.xsd'],   # sidn-ext-epp
+      sidn  => 'http://rxsd.domain-registry.nl/sidn-ext-epp-1.0',   # sidn-ext-epp
     });
 
   return;
