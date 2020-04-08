@@ -11,7 +11,7 @@ use Test::More tests => 73;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -37,7 +37,7 @@ my ($dh,@c,$toc,$cs,$c1,$c2,@fees);
 ## We use a greeting here to switch the namespace version here to -0.11 testing
 $R2=$E1.'<greeting><svID>Fee-0.11-server</svID><svDate>2014-11-21T10:10:46.0751Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:fee-0.11</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
-is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.11','Fee 0.11 loaded correctly');
+is($dri->protocol()->ns()->{fee},'urn:ietf:params:xml:ns:fee-0.11','Fee 0.11 loaded correctly');
 ####################################################################################################
 
 ####################################################################################################
@@ -52,11 +52,11 @@ $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params
   { domain=>'restaurants.space',action=>'restore' }
 );
 $rc=$dri->domain_check('tourism.space','holidays.space','hotels.space', {fee=>\@fees});
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>tourism.space</domain:name><domain:name>holidays.space</domain:name><domain:name>hotels.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.11 fee-0.11.xsd"><fee:command phase="sunrise">create</fee:command><fee:currency>USD</fee:currency></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check_multi build backwards compatibility');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>tourism.space</domain:name><domain:name>holidays.space</domain:name><domain:name>hotels.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.11"><fee:command phase="sunrise">create</fee:command><fee:currency>USD</fee:currency></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check_multi build backwards compatibility');
 
 $dri->cache_clear();
 $rc=$dri->domain_check('tourism.space','holidays.space','hotels.space', { fee=> { action => 'create', 'currency' => 'USD' } });
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>tourism.space</domain:name><domain:name>holidays.space</domain:name><domain:name>hotels.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.11 fee-0.11.xsd"><fee:command>create</fee:command><fee:currency>USD</fee:currency></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check_multi build');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>tourism.space</domain:name><domain:name>holidays.space</domain:name><domain:name>hotels.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.11"><fee:command>create</fee:command><fee:currency>USD</fee:currency></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check_multi build');
 is($rc->is_success(),1,'domain_check multi is_success');
 is($dri->get_info('action'),'check','domain_check multi get_info (action)');
 is($dri->get_info('exist','domain','tourism.space'),0,'domain_check multi get_info(exist) 1/3');
@@ -109,7 +109,7 @@ is($dri->get_info('create_price','domain','holidays.space'),5.00,'domain_check_m
 ## Check: single domain - minimum data on renew for premium
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">check-claims-landrush.space</domain:name></domain:cd><domain:cd><domain:name avail="1">check-claims-landrush.space</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:cd avail="1"><fee:object><domain:name>check-claims-landrush.space</domain:name></fee:object><fee:command>renew</fee:command><fee:currency>EUR</fee:currency><fee:period unit="y">2</fee:period><fee:fee description="Renewal Fee" refundable="1" grace-period="P5D">650.00</fee:fee><fee:class>premium</fee:class></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check('check-claims-landrush.space',{fee=>{action=>'renew', duration=>DateTime::Duration->new(years=>2), 'currency' => 'EUR'}});
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>check-claims-landrush.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.11 fee-0.11.xsd"><fee:command>renew</fee:command><fee:currency>EUR</fee:currency><fee:period unit="y">2</fee:period></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>check-claims-landrush.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.11"><fee:command>renew</fee:command><fee:currency>EUR</fee:currency><fee:period unit="y">2</fee:period></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build');
 is($dri->get_info('action'),'check','domain_check get_info(action)');
 is($dri->get_info('exist'),0,'domain_check get_info(exist)');
 
@@ -128,7 +128,7 @@ $dri->cache_clear();
 # domain_check_price
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">check-sunrise.space</domain:name></domain:cd><domain:cd><domain:name avail="1">check-claims-landrush.space</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:cd avail="1"><fee:object><domain:name>check-sunrise.space</domain:name></fee:object><fee:command phase="sunrise">create</fee:command><fee:currency>USD</fee:currency><fee:period unit="y">2</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">5000.00</fee:fee><fee:class>premium</fee:class></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check_price('check-sunrise.space',{action=>'create', duration=>DateTime::Duration->new(years=>2), 'currency' => 'USD', 'phase' => 'sunrise'});
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>check-sunrise.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.11 fee-0.11.xsd"><fee:command phase="sunrise">create</fee:command><fee:currency>USD</fee:currency><fee:period unit="y">2</fee:period></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>check-sunrise.space</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.11"><fee:command phase="sunrise">create</fee:command><fee:currency>USD</fee:currency><fee:period unit="y">2</fee:period></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build');
 is($dri->get_info('action'),'check','domain_check_price get_info(action)');
 is($dri->get_info('exist'),0,'domain_check_price get_info(exist)');
 $d = shift @{$dri->get_info('fee')};
@@ -154,7 +154,7 @@ is($dri->get_info('create_price'),5000,'domain_check get_info (create_price)');
 #is($dri->get_info('restore_price'),9.95,'domain_check get_info (restore_price) undef');
 
 ## domain create
-$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.space</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.11 fee-0.11.xsd"><fee:currency>USD</fee:currency><fee:period unit="y">1</fee:period><fee:fee>5.00</fee:fee><fee:balance>-5.00</fee:balance><fee:creditLimit>1000.00</fee:creditLimit></fee:creData></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>exdomain.space</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.11"><fee:currency>USD</fee:currency><fee:period unit="y">1</fee:period><fee:fee>5.00</fee:fee><fee:balance>-5.00</fee:balance><fee:creditLimit>1000.00</fee:creditLimit></fee:creData></extension>'.$TRID.'</response>'.$E2;
 $cs=$dri->local_object('contactset');
 $c1=$dri->local_object('contact')->srid('jd1234');
 $c2=$dri->local_object('contact')->srid('sh8013');
@@ -162,7 +162,7 @@ $cs->set($c1,'registrant');
 $cs->set($c2,'admin');
 $cs->set($c2,'tech');
 $rc=$dri->domain_create('exdomain.space',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.example.bar'],['ns2.example.bar']),contact=>$cs,auth=>{pw=>'2fooBAR'},fee=>{currency=>'USD',fee=>'5.00'}});
-is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.space</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.bar</domain:hostObj><domain:hostObj>ns2.example.bar</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.11 fee-0.11.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>exdomain.space</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.bar</domain:hostObj><domain:hostObj>ns2.example.bar</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.11"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_create build');
 is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');

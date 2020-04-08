@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-## Copyright (c) 2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2014-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -125,7 +125,7 @@ sub setup
   # update from 0.4 - 0.5 has big changes, so lets default to 0.5 unless specified.
   # This means any commands called before greeting will use that version until its bumped to highest version
   my $v = (exists $po->{brown_fee_version} && $po->{brown_fee_version} =~ m/^\d.(\d+)$/) ? $po->{brown_fee_version} : '0.5';
-  $po->ns({ 'fee' => [ 'urn:ietf:params:xml:ns:fee-'.$v,'fee-'.$v.'.xsd' ] });
+  $po->ns({ 'fee' => 'urn:ietf:params:xml:ns:fee-'.$v });
   $po->capabilities('domain_update','fee',['set']);
   return;
 }
@@ -412,14 +412,12 @@ sub check
    foreach my $fee_set (@fees)
    {
      @n = fee_set_build_legacy($fee_set,$domain);
-     my $eid=$mes->command_extension_register('fee','check');
-     $mes->command_extension($eid,\@n);
+     $epp->message()->command_extension('fee', ['check', @n]);
    }
   }
   elsif (ver($mes) >= 11)
   {
-   my $eid=$mes->command_extension_register('fee','check');
-   $mes->command_extension($eid, [fee_set_build_11($fees[0])]);
+   $epp->message()->command_extension('fee', ['check', fee_set_build_11($fees[0])]);
   }
   else # 0.5+
   {
@@ -429,8 +427,7 @@ sub check
      push @fee_set,@n if @n;
    }
    return unless @fee_set;
-   my $eid=$mes->command_extension_register('fee','check');
-   $mes->command_extension($eid,\@fee_set);
+   $epp->message()->command_extension('fee', ['check', @fee_set]);
   }
   return;
 
@@ -444,7 +441,7 @@ sub check_parse
   my $version = (($mes->ns('fee')=~m!fee-(\d\.\d+)!)) ? "$1" : '0.4';
 
   my $chkdata=$mes->node_extension if ($version eq '0.4');
-  $chkdata=$mes->get_extension($mes->ns('fee'),'chkData') if ($version eq '0.5' || $version eq '0.6' || $version eq '0.7' || $version eq '0.8' || $version eq '0.9' || $version eq '0.11');
+  $chkdata=$mes->get_extension('fee','chkData') if ($version eq '0.5' || $version eq '0.6' || $version eq '0.7' || $version eq '0.8' || $version eq '0.9' || $version eq '0.11');
   return unless defined $chkdata;
 
   foreach my $el (Net::DRI::Util::xml_list_children($chkdata))
@@ -490,8 +487,7 @@ sub info
   {
     @n = fee_set_build_legacy($fee_set) if ($version eq '0.4');
     @n = fee_set_build($version, $fee_set) if ($version ne '0.4');
-    my $eid=$mes->command_extension_register('fee','info');
-    $mes->command_extension($eid,\@n);
+    $epp->message()->command_extension('fee', ['info', @n]);
   }
   return;
 }
@@ -503,7 +499,7 @@ sub info_parse
   return unless $mes->is_success();
   my $version = (($mes->ns('fee')=~m!fee-(\d\.\d+)!)) ? "$1" : '0.4';
 
-  my $infdata=$mes->get_extension($mes->ns('fee'),'infData');
+  my $infdata=$mes->get_extension('fee','infData');
   return unless defined $infdata;
 
   my $fee_set = fee_set_parse_legacy($infdata) if ($version eq '0.4');
@@ -525,7 +521,7 @@ sub transform_parse
   my $resdata;
   foreach my $ex (qw/creData delData renData trnData updData/)
   {
-    next unless $resdata=$mes->get_extension($mes->ns('fee'),$ex);
+    next unless $resdata=$mes->get_extension('fee',$ex);
     my %p;
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
@@ -577,8 +573,8 @@ sub transform_build
     push @n,['fee:fee',$rp->{fee}];
   }
 
-  my $eid=$mes->command_extension_register('fee',$cmd);
-  $mes->command_extension($eid,\@n);
+  $epp->message()->command_extension('fee', [$cmd, @n]);
+
   return;
 }
 
