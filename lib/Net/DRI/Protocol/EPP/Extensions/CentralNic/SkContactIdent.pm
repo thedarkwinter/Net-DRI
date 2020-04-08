@@ -85,14 +85,13 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'skContactIdent' => [ 'http://www.sk-nic.sk/xml/epp/sk-contact-ident-0.2','sk-contact-ident-0.2.xsd' ] });
+ $po->ns({ 'skContactIdent' => 'http://www.sk-nic.sk/xml/epp/sk-contact-ident-0.2' });
  return;
 }
 
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
  my @n;
 
  push @n,['skContactIdent:legalForm', $contact->legal_form()];
@@ -102,8 +101,7 @@ sub create
  }
 
  return unless @n;
- my $eid=$mes->command_extension_register('skContactIdent','create');
- $mes->command_extension($eid,\@n);
+ $epp->message()->command_extension('skContactIdent', ['create', @n]);
 
  return;
 }
@@ -134,7 +132,6 @@ sub info_parse
 # sub update
 # {
 #  my ( $epp, $contact, $todo ) = @_;
-#  my $mes  = $epp->message();
 #  my $newc = $todo->set('info');
 #  my @n;
 #
@@ -146,8 +143,7 @@ sub info_parse
 #  }
 #
 #  return unless @n;
-#  my $eid=$mes->command_extension_register('skContactIdent','update');
-#  $mes->command_extension($eid,\@n);
+#  $epp->message()->command_extension('skContactIdent', ['update', @n]);
 #
 #  return;
 # }
