@@ -1,6 +1,8 @@
 ## Domain Registry Interface, EPP IDN Language (EPP-IDN-Lang-Mapping.pdf)
 ##
 ## Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,6 +52,8 @@ Tonnerre Lombard E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,7 +82,7 @@ sub register_commands
 sub setup
 {
   my ($class,$po,$version)=@_;
-  $po->ns({'idn' =>['urn:afilias:params:xml:ns:idn-1.0','idn-1.0.xsd']});
+  $po->ns({'idn' =>'urn:afilias:params:xml:ns:idn-1.0'});
 }
 
 ####################################################################################################
@@ -86,7 +90,6 @@ sub setup
 sub add_language
 {
  my ($tag,$epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  my $script;
  if (Net::DRI::Util::has_key($rd,'idn') && UNIVERSAL::isa($rd->{idn},'Net::DRI::Data::IDN') && defined $rd->{idn}->iso639_1()) { # use IDN object if possible
   $script = $rd->{idn}->iso639_1() . (defined $rd->{idn}->extlang() ? '-'.$rd->{idn}->extlang():''); # Warning, I *think* .asia uses different codes here?
@@ -97,8 +100,7 @@ sub add_language
   $script = $rd->{language};
  }
  return unless $script;
- my $eid=$mes->command_extension_register('idn',$tag);
- $mes->command_extension($eid,['idn:script', $script]);
+ $epp->message()->command_extension('idn', [$tag, ['idn:script', $script]]);
  return;
 }
 
