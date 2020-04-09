@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -53,7 +54,8 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-                       (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -73,8 +75,8 @@ sub setup
  
  use Data::Dumper;
  my $version=$self->version();
- $self->ns({ es_creds => ['urn:red.es:xml:ns:es_creds-1.0','es_creds-1.0'],
-                          es_bandeja => ['urn:red.es:xml:ns:es_bandeja-1.0','es_bandeja-1.0']
+ $self->ns({ es_creds => 'urn:red.es:xml:ns:es_creds-1.0',
+                          es_bandeja => 'urn:red.es:xml:ns:es_bandeja-1.0'
           });
  $self->capabilities('host_update','name',undef); ## No change of hostnames
  $self->capabilities('domain_update','registrant',undef); # registrant cannot be changed
@@ -93,8 +95,7 @@ sub setup
           $m->ns($self->{ns}); 
           $m->version($version);
            my @n = (['es_creds:clID',$rp->{client_login}],['es_creds:pw',$rp->{client_password}]);
-           my $eid = $m->command_extension_register('es_creds','es_creds');
-           $m->command_extension($eid,\@n);
+           $m->command_extension('es_creds', ['es_creds', @n]);
            return $m;
          });
    $self->factories('contact',sub { return Net::DRI::Data::Contact::ES->new(); });

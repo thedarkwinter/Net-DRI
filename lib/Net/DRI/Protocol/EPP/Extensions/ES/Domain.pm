@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +50,8 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 =head1 COPYRIGHT
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-                       (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -67,11 +69,11 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
-              info                => [ undef, \&info_parse ],
-             create            => [ \&create, undef ],
-             update          => [ \&update, undef ],
-             renew            => [ \&renew, undef ],
-             transfer_request  => [ \&transfer_request, \&transfer_request_parse ],
+            info             => [ undef, \&info_parse ],
+            create           => [ \&create, undef ],
+            update           => [ \&update, undef ],
+            renew            => [ \&renew, undef ],
+            transfer_request => [ \&transfer_request, \&transfer_request_parse ],
          );
 
  return { 'domain' => \%tmp };

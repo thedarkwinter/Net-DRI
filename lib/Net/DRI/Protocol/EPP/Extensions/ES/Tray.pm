@@ -111,7 +111,7 @@ sub info {
 
  #create message 
  my $mes=$epp->message();
- $mes->command(['info','es_bandeja:info',sprintf('xmlns:es_bandeja="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('es_bandeja'))]);
+ $mes->command(['info','es_bandeja:info',$mes->nsattrs('es_bandeja')]);
  my @d;
  push @d, ['es_bandeja:fechaDesde',$rd->{fromDate}->iso8601()] if defined $rd->{fromDate};
  push @d, ['es_bandeja:fechaHasta',$rd->{toDate}->iso8601()] if defined $rd->{toDate};
