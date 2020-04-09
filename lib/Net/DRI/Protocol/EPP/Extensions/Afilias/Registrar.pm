@@ -1,7 +1,7 @@
 ## Domain Registry Interface, AFILIAS Registrar.pm
 ##
 ## Copyright (c) 2007,2008,2009 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-## Copyright (c) 2013-2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2013,2014,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -43,7 +43,7 @@ sub register_commands
 sub setup
 {
   my ($self,$rp)=@_;
-  $rp->ns({ registrar => ['urn:ietf:params:xml:ns:registrar-1.0','registrar-1.0.xsd'] });
+  $rp->ns({ registrar => 'urn:ietf:params:xml:ns:registrar-1.0' });
   return;
 }
 
@@ -52,7 +52,7 @@ sub setup
 sub info{
   my ($epp,$clID)=@_;
   my $mes=$epp->message();
-  $mes->command(['info','registrar:info',sprintf('xmlns:registrar="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('registrar'))]);
+  $mes->command(['info','registrar:info',$mes->nsattrs('registrar')]);
   my @d;
   push @d, ['registrar:id',$clID];
   $mes->command_body(\@d);
@@ -143,7 +143,7 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-Copyright (c) 2013-2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2013,2014,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
