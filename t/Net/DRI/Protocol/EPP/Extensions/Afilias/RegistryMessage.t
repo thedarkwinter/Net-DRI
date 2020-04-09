@@ -13,7 +13,7 @@ use Test::More tests => 19;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -44,7 +44,7 @@ is_deeply($dri->get_info('added_statuses','message',2733),['serverUpdateProhibit
 is_deeply($dri->get_info('removed_statuses','message',2733),[],'message get_info removedStatuses');
 is($dri->get_info('auth_info_updated','message',2733),1,'message get_info authInfoUpdated');
 
-$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="22" id="12345"><qDate>2014-12-22T06:41:03.0Z</qDate><msg lang="en-US">Transfer Auto Approved.</msg></msgQ><resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>randomdomain.info</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>ClientY</domain:reID><domain:reDate>2014-12-22T06:41:03.0Z</domain:reDate><domain:acID>ClientX</domain:acID><domain:acDate>2014-12-17T06:41:03.0Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="22" id="12345"><qDate>2014-12-22T06:41:03.0Z</qDate><msg lang="en-US">Transfer Auto Approved.</msg></msgQ><resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>randomdomain.info</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>ClientY</domain:reID><domain:reDate>2014-12-22T06:41:03.0Z</domain:reDate><domain:acID>ClientX</domain:acID><domain:acDate>2014-12-17T06:41:03.0Z</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->message_retrieve();
 is($dri->get_info('last_id'),'12345','message_retrieve get_info(last_id)');
 is($dri->get_info('lang','message','12345'),'en-US','message get_info lang');

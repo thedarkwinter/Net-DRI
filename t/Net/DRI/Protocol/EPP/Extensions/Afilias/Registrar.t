@@ -13,7 +13,7 @@ use Test::More tests => 19;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -31,7 +31,7 @@ my ($rc,$ok,$cs,$st,$p);
 
 ####################################################################################################
 ## Registrar Extension
-$R2=$E1.'<response>'.r().'<resData><registrar:infData xmlns:registrar="urn:ietf:params:xml:ns:registrar-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:registrar-1.0 registrar-1.0.xsd">
+$R2=$E1.'<response>'.r().'<resData><registrar:infData xmlns:registrar="urn:ietf:params:xml:ns:registrar-1.0">
   <registrar:id>ClientX</registrar:id>
   <registrar:roid>R3003-LRMS</registrar:roid>
   <registrar:user>ClientX</registrar:user>
@@ -54,7 +54,7 @@ $R2=$E1.'<response>'.r().'<resData><registrar:infData xmlns:registrar="urn:ietf:
 #$rc = $dri->registrar_info("ClientX");
 $rc = $dri->registrar_info(); # uses current clid from add_registry
 
-is($R1,$E1.'<command><info><registrar:info xmlns:registrar="urn:ietf:params:xml:ns:registrar-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:registrar-1.0 registrar-1.0.xsd"><registrar:id>ClientX</registrar:id></registrar:info></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info build_xml');
+is($R1,$E1.'<command><info><registrar:info xmlns:registrar="urn:ietf:params:xml:ns:registrar-1.0"><registrar:id>ClientX</registrar:id></registrar:info></info><clTRID>ABC-12345</clTRID></command></epp>','registrar_info build_xml');
 is($dri->get_info('id'),'ClientX','registrar_info({id => "ClientX"})');
 is($dri->get_info('roid'),'R3003-LRMS','registrar_info({roid => "R3003-LRMS"})');
 is($dri->get_info('user'),'ClientX','registrar_info({user => "ClientX"})');
