@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2014,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -37,7 +37,7 @@ sub register_commands
 sub setup
 {
   my ($class,$po,$version)=@_;
-  $po->ns({validation => ['urn:afilias:params:xml:ns:validation-1.0','validation-1.0.xsd']});
+  $po->ns({validation => 'urn:afilias:params:xml:ns:validation-1.0'});
   $po->capabilities('domain_update','validation',['set']);
   return;
 }
@@ -52,7 +52,7 @@ sub parse
   my $resdata;
   foreach my $ex (qw/creData updData/)
   {
-    next unless $resdata=$mes->get_extension($mes->ns('validation'),$ex);
+    next unless $resdata=$mes->get_extension('validation',$ex);
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
       my ($name,$content)=@$el;
@@ -69,11 +69,8 @@ sub update
   my ($epp,$domain,$todo)=@_;
   return unless my $ch=$todo->set('validation');
   return unless $ch;
-
-  my $mes=$epp->message();
-  my $eid=$mes->command_extension_register('validation','update');
   my @n = ['validation:chg',['validation:ownership','']];
-  $mes->command_extension($eid,\@n);
+  $epp->message()->command_extension('validation', ['update', @n]);
 
   return;
 }
