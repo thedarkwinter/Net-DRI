@@ -66,7 +66,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({ oxrs => ['urn:afilias:params:xml:ns:oxrs-1.1','oxrs-1.1.xsd'] });
+ $self->ns({ oxrs => 'urn:afilias:params:xml:ns:oxrs-1.1' });
  return;
 }
 
