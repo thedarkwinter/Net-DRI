@@ -2,7 +2,8 @@
 ##
 ## Copyright (c) 2008 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
 ##           (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>.
-##                    All rights reserved.
+##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
+## All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -54,6 +55,7 @@ E<lt>http://www.hexonet.net/E<gt>.
 
 Copyright (c) 2008 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
           (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+		  (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -71,9 +73,9 @@ sub register_commands
 {
  my ($class,$version)=@_;
  my %tmp=(
-           create =>		[ \&add_pro_extinfo ],
-           update =>		[ \&add_pro_extinfo ],
-	   info =>		[ undef, \&parse ]
+           create => [ \&add_pro_extinfo ],
+           update => [ \&add_pro_extinfo ],
+           info =>   [ undef, \&parse ]
          );
 
  return { 'domain' => \%tmp };
@@ -82,8 +84,8 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ av  => ['http://registrypro.pro/2003/epp/1/av-2.0', 'av-2.0.xsd'] });
- $po->ns({ rpro=> ['http://registrypro.pro/2003/epp/1/rpro-epp-2.0','rpro-epp-2.0.xsd'] });
+ $po->ns({ av  => 'http://registrypro.pro/2003/epp/1/av-2.0' });
+ $po->ns({ rpro=> 'http://registrypro.pro/2003/epp/1/rpro-epp-2.0' });
  $po->capabilities('domain_update','pro',['set']);
  return;
 }
@@ -94,7 +96,6 @@ sub setup
 sub add_pro_extinfo
 {
  my ($epp, $domain, $rd) = @_;
- my $mes = $epp->message();
  my @prodata;
  my @tmdata;
  my $pw;
@@ -130,8 +131,7 @@ sub add_pro_extinfo
 	if (exists($ph->{auth}));
  return unless (@prodata);
 
- my $eid = $mes->command_extension_register('rpro:proDomain',sprintf('xmlns:rpro="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('rpro')));
- $mes->command_extension($eid, [@prodata]);
+ $epp->message()->command_extension('rpro', ['proDomain', @prodata]);
  return;
 }
 
