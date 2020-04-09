@@ -1,6 +1,7 @@
 ## Domain Registry Interface, CIRA EPP Agreement commands
 ##
 ## Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -30,9 +31,7 @@ sub register_commands
 sub get
 {
  my ($epp,$language)=@_;
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('cira:ciraInfo', $mes->nsattrs('cira'));
- $mes->command_extension($eid,[['cira:action','get CIRA latest agreement'],['cira:language',defined $language ? $language : 'en']]);
+ $epp->message()->command_extension('cira', ['ciraInfo', [['cira:action','get CIRA latest agreement'],['cira:language',defined $language ? $language : 'en']]]);
  return;
 }
 
@@ -96,6 +95,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
