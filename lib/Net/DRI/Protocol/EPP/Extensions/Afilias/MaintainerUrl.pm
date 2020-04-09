@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Afilias maintainerUrl EPP extension
 ##
-## Copyright (c) 2010,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -24,18 +24,18 @@ use Net::DRI::Exception;
 
 sub create
 {
- my ($rd)=@_;
+ my ($ns,$rd)=@_;
  return unless Net::DRI::Util::has_key($rd,'maintainer_url');
- return ['maintainerUrl',$rd->{maintainer_url}];
+ return [$ns.':maintainerUrl',$rd->{maintainer_url}];
 }
 
 sub update
 {
- my ($todo)=@_;
+ my ($ns,$todo)=@_;
 
  Net::DRI::Exception->die(0,'protocol/EPP',11,'Only maintainer_url set available for domain') if (grep { ! /^(?:set)$/ } $todo->types('maintainer_url'));
  return unless $todo->set('maintainer_url');
- return ['maintainerUrl',$todo->set('maintainer_url')];
+ return [$ns.':maintainerUrl',$todo->set('maintainer_url')];
 }
 
 sub info_parse
@@ -79,7 +79,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2019 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
