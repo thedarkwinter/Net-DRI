@@ -1,7 +1,8 @@
 ## Domain Registry Interface, Afilias EPP Renew Redemption Period Extension
 ##
-## Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-##                    All rights reserved.
+## Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
+## Copyright (c) 2016,2018,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,6 +18,7 @@ package Net::DRI::Protocol::EPP::Extensions::Afilias::Restore;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 
@@ -49,6 +51,8 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+Copyright (c) 2016,2018,2019 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -65,11 +69,17 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class, $version) = @_;
- my %tmp = (
-           renew => [ \&renew, undef ],
-         );
+ state $cmds = { 'domain' => { 'renew' => [ \&renew, undef ] } };
 
- return { 'domain' => \%tmp };
+ return $cmds;
+}
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ state $rns = { 'rgp' => 'urn:EPP:xml:ns:ext:rgp-1.0' };
+ $po->ns($rns);
+ return;
 }
 
 ####################################################################################################
@@ -79,13 +89,10 @@ sub register_commands
 sub renew
 {
  my ($epp, $domain, $rd) = @_;
- my $mes = $epp->message();
 
- return unless Net::DRI::Util::has_key($rd,'rgp');
+ return unless Net::DRI::Util::has_key($rd, 'rgp') && $rd->{'rgp'};
 
- my $eid = $mes->command_extension_register('rgp:renew',
-	'xmlns:rgp="urn:EPP:xml:ns:ext:rgp-1.0" xsi:schemaLocation="urn:EPP:xml:ns:ext:rgp-1.0 rgp-1.0.xsd"');
- $mes->command_extension($eid, ['rgp:restore']);
+ $epp->message()->command_extension('rgp', ['renew', ['restore']]);
  return;
 }
 
