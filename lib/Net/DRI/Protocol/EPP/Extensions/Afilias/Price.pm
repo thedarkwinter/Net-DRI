@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2014 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2014,2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -42,7 +42,7 @@ sub register_commands
 sub setup
 {
   my ($class,$po,$version)=@_;
-  $po->ns({ map { $_ => [ 'urn:afilias:params:xml:ns:'.$_.'-1.0',$_.'-1.0.xsd' ] } qw/price/ });
+  $po->ns({ map { $_ => 'urn:afilias:params:xml:ns:'.$_.'-1.0' } qw/price/ });
   return;
 }
 
@@ -71,7 +71,7 @@ sub check_parse
   my ($po,$otype,$oaction,$oname,$rinfo)=@_;
   my $mes=$po->message();
   return unless $mes->is_success();
-  my $resdata=$mes->get_extension($mes->ns('price'),'chkData');
+  my $resdata=$mes->get_extension('price','chkData');
   return unless defined $resdata;	
 
   my (%p,$this_domain);
@@ -127,7 +127,7 @@ sub transform_parse
   my $resdata;
   foreach my $ex (qw/creData renData trnData/)
   {
-    next unless $resdata=$mes->get_extension($mes->ns('price'),$ex);
+    next unless $resdata=$mes->get_extension('price',$ex);
     my %p;
     foreach my $el (Net::DRI::Util::xml_list_children($resdata))
     {
@@ -182,6 +182,8 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2014,2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
