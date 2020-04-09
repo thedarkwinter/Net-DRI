@@ -188,7 +188,7 @@ sub parse
 
  foreach my $ex (qw/infData creData upData delData renData trnData/)
  {
-  next unless my $resdata=$mes->get_extension($mes->ns('cdn'),$ex);
+  next unless my $resdata=$mes->get_extension('cdn',$ex);
   $rinfo->{domain}->{$oname}->{cdn} = _parse_cdn($resdata);
   return;
  }

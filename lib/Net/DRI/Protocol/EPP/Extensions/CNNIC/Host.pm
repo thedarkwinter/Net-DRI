@@ -111,7 +111,7 @@ sub info_parse
  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
  my $mes=$po->message();
 
- return unless my $data=$mes->get_extension($mes->ns('cnnic-host'),'infData');
+ return unless my $data=$mes->get_extension('cnnic-host','infData');
  foreach my $el (Net::DRI::Util::xml_list_children($data))
  {
   my ($n,$c)=@$el;
