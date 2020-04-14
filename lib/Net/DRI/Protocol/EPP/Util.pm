@@ -68,20 +68,7 @@ sub parse_node_result
    my $c2=$c[-1]->[1]; ## <reason> node
    my ($ll,$lt)=parse_node_msg($c2);
    my $v=parse_node_value($c1);
-   my %info = ( from => $from.':extValue', type => $v=~m/^</ ? 'rawxml' : 'text');
-   if ($lt =~m/^\s*(\S+) not in login services\s*$/) # draft-gould-casanova-regext-unhandled-namespaces §3
-   {
-    $info{unhandled_namespace} = $1;
-    $v =~s!^<value>\s*!!;
-    $v =~s!\s*</value>$!!;
-    $info{unhandled_content} = $v;
-   } else
-   {
-    $info{lang} = $ll;
-    $info{reason} = $lt;
-    $info{message} = $v;
-   }
-   push @i, \%info;
+   push @i,{ from => $from.':extValue', type => $v=~m/^</ ? 'rawxml' : 'text', message => $v, lang => $ll, reason => $lt };
   } elsif ($name eq 'value')
   {
    my $v=parse_node_value($c);
