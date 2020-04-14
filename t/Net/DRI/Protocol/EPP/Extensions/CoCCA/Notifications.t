@@ -117,7 +117,7 @@ $dri->add_current_registry('CoCCA::CoCCA');
 $dri->target('CoCCA::CoCCA')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
 $drd = $dri->driver();
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA',{'brown_fee_version' => '0.8'}],'CoCCA - epp transport_protocol_default');
-is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.8','Cocca Brown-Fee 0.8 loaded correctly');
+is($dri->protocol()->ns()->{fee},'urn:ietf:params:xml:ns:fee-0.8','Cocca Brown-Fee 0.8 loaded correctly');
 
 
 ### balance
