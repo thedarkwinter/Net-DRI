@@ -1,8 +1,9 @@
 ## Domain Registry Interface, EPP NSgroup extension commands
 ## (based on .BE Registration_guidelines_v4_7_1)
 ##
-## Copyright (c) 2005-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2016 Michael Holloway <michael@thedarkwinter.com>.
+##               2020 Paulo Jorge <paullojorgge@gmail.com>.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,8 +51,9 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 Copyright (c) 2016 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -72,7 +74,7 @@ sub register_commands
             check  => [ \&check, \&check_parse ],
             info   => [ \&info, \&info_parse ],
             delete => [ \&delete ],
-	    update => [ \&update ],
+            update => [ \&update ],
           );
 
  $tmp1{check_multi}=$tmp1{check};
@@ -102,7 +104,7 @@ sub build_command
  }
 
  Net::DRI::Exception->die(1,'protocol/EPP',2,'NSgroup name needed') unless @gn;
- $msg->command([$command,'nsgroup:'.$command,sprintf('xmlns:nsgroup="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('nsgroup'))]);
+ $msg->command([$command,'nsgroup:'.$command, $msg->nsattrs('nsgroup')]);
  return map { ['nsgroup:name',$_] } @gn;
 }
 
@@ -150,7 +152,7 @@ sub check_parse
  return unless $mes->is_success();
 
  my $ns=$mes->ns('nsgroup');
- my $chkdata=$mes->get_response($ns,'chkData');
+ my $chkdata=$mes->get_response('nsgroup', 'chkData');
  return unless defined $chkdata;
 
  foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'cd'))
@@ -190,7 +192,7 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_response($mes->ns('nsgroup'),'infData');
+ my $infdata=$mes->get_response('nsgroup', 'infData');
  return unless defined $infdata;
 
  my $ns=$po->create_local_object('hosts');
