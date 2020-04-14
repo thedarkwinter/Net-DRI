@@ -1,7 +1,8 @@
 ## Domain Registry Interface, EURid/DNSBE Keygroup EPP Extension
 ##
-## Copyright (c) 2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2013-2014,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2016 Michael Holloway <michael@thedarkwinter.com>.
+##               2020 Paulo Jorge <paullojorgge@gmail.com>.
 ##
 ## This file is part of Net::DRI
 ##
@@ -39,6 +40,13 @@ sub register_commands
 
 sub capabilities_add { return ('keygroup_update','keys',['set']); }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ 'keygroup' => 'http://www.eurid.eu/xml/epp/keygroup-1.0' });
+ return;
+}
+
 sub build_command
 {
  my ($epp,$msg,$command,$names)=@_;
@@ -52,7 +60,7 @@ sub build_command
 
  Net::DRI::Exception->die(1,'protocol/EPP',2,'Keygroup name needed') unless @gn;
 
- $msg->command([$command,'keygroup:'.$command,sprintf('xmlns:keygroup="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('keygroup'))]);
+ $msg->command([$command,'keygroup:'.$command, $msg->nsattrs('keygroup')]);
  return map { ['keygroup:name',$_] } @gn;
 }
 
@@ -99,11 +107,10 @@ sub check_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $ns=$mes->ns('keygroup');
- my $chkdata=$mes->get_response($ns,'chkData');
+ my $chkdata=$mes->get_response('keygroup', 'chkData');
  return unless defined $chkdata;
 
- foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'cd'))
+ foreach my $cd ($chkdata->getChildrenByTagNameNS($mes->ns('keygroup'), 'cd'))
  {
   my $kg;
   foreach my $el (Net::DRI::Util::xml_list_children($cd))
@@ -141,7 +148,7 @@ sub info_parse
  return unless $mes->is_success();
 
  my $ns=$mes->ns('keygroup');
- my $infdata=$mes->get_response($ns,'infData');
+ my $infdata=$mes->get_response('keygroup', 'infData');
  return unless defined $infdata;
 
  my @k;
@@ -266,8 +273,9 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2013-2014,2018 Patrick Mevzek <netdri@dotandco.com>.
 Copyright (c) 2016 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
