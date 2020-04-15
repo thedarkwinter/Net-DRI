@@ -71,7 +71,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 =head1 COPYRIGHT
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-                       (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -85,7 +85,7 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-sub new # FIXME - check these valies
+sub new # FIXME - check these values
 {
  my $class=shift;
  my $self=$class->SUPER::new(@_);

@@ -174,7 +174,7 @@ sub info_parse
    $cs->add($ccache{$id},$c->getAttribute('type'));
   } elsif ($name eq 'ns')
   {
-   if ($po->{hostns} && $po->{hostasns} == 1) {
+   if ($po->{hostasns} == 1) {
     $rinfo->{domain}->{$oname}->{ns} = $po->create_local_object('hosts') unless defined ($rinfo->{domain}->{$oname}->{ns});
     $rinfo->{domain}->{$oname}->{ns}->add($c->textContent());
    }

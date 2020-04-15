@@ -72,11 +72,10 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- 
- use Data::Dumper;
+
  my $version=$self->version();
  $self->ns({ es_creds => 'urn:red.es:xml:ns:es_creds-1.0',
-                          es_bandeja => 'urn:red.es:xml:ns:es_bandeja-1.0'
+             es_bandeja => 'urn:red.es:xml:ns:es_bandeja-1.0'
           });
  $self->capabilities('host_update','name',undef); ## No change of hostnames
  $self->capabilities('domain_update','registrant',undef); # registrant cannot be changed
@@ -94,13 +93,13 @@ sub setup
           my $m=Net::DRI::Protocol::EPP::Message->new(@_); 
           $m->ns($self->{ns}); 
           $m->version($version);
-           my @n = (['es_creds:clID',$rp->{client_login}],['es_creds:pw',$rp->{client_password}]);
-           $m->command_extension('es_creds', ['es_creds', @n]);
-           return $m;
+          my @n = (['es_creds:clID',$rp->{client_login}],['es_creds:pw',$rp->{client_password}]);
+          $m->command_extension('es_creds', ['es_creds', @n]);
+          return $m;
          });
-   $self->factories('contact',sub { return Net::DRI::Data::Contact::ES->new(); });
+ $self->factories('contact',sub { return Net::DRI::Data::Contact::ES->new(); });
 
-   return;
+ return;
 }
 
 sub default_extensions { return qw/ES::Session ES::Domain ES::Contact ES::Tray/; } 
