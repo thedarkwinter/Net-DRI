@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2009,2013 Jouanne Mickael <grigouze@gandi.net>. All rights reserved.
 ## Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,7 +18,6 @@ package Net::DRI::Protocol::EPP::Extensions::NeuLevel::IDNLanguage;
 
 use strict;
 use warnings;
-use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -52,6 +52,7 @@ Jouanne Mickael E<lt>grigouze@gandi.netE<gt>
 
 Copyright (c) 2009,2013 Jouanne Mickael <grigouze@gandi.net>.
 Copyright (c) 2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -68,8 +69,11 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- state $commands = { 'domain' => { 'create' => [ \&create, undef ] } };
- return $commands;
+ my %tmp=(
+           create => [ \&create, undef ],
+         );
+
+ return { 'domain' => \%tmp };
 }
 
 sub setup
@@ -81,16 +85,33 @@ sub setup
 
 ####################################################################################################
 
-sub create
+sub add_language
 {
- my ($epp, $domain, $rd)=@_;
+ my ($tag,$epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ my $script;
+ if (Net::DRI::Util::has_key($rd,'idn') && UNIVERSAL::isa($rd->{idn},'Net::DRI::Data::IDN') && defined $rd->{idn}->iso639_1()) { # use IDN object if possible
+  $script = $rd->{idn}->iso639_1() . (defined $rd->{idn}->extlang() ? '-'.$rd->{idn}->extlang():'');
+ }
+ elsif (Net::DRI::Util::has_key($rd,'language')) # Fall back to old/standard
+ {
+  Net::DRI::Exception::usererr_invalid_parameters('IDN language tag must be of type XML schema language') unless Net::DRI::Util::xml_is_language($rd->{language});
+  $script = $rd->{language};
+ }
+ return unless $script;
 
- return unless Net::DRI::Util::has_key($rd,'language');
-
- Net::DRI::Exception::usererr_invalid_parameters('IDN language tag must be of type XML schema language') unless Net::DRI::Util::xml_is_language($rd->{language});
- $epp->message()->command_extension('neulevel', ['extension', ['neulevel:unspec', 'IDNLang=' . $rd->{language}]]);
+ $epp->message()->command_extension('neulevel', ['create', ['neulevel:unspec', 'IDNLang=' . $script]]);
+ # tweak to send command extension as expected :) - they expect idn element and not neulevel (check test file: NeuLevel/IDN.t)
+ $epp->{message}->{extension}->{idn} = $epp->{message}->{extension}->{neulevel};
+ delete $epp->{message}->{extension}->{neulevel};
 
  return;
+}
+
+sub create
+{
+ my (@args)=@_;
+ return add_language('idn:create',@args);
 }
 
 ####################################################################################################
