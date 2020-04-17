@@ -91,16 +91,14 @@ is_deeply([$rc->get_extended_results()],
 	{
 		from=>'eppcom:extValue',
 		type=>'rawxml',
-		message=>'<secDNS:infData xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1"><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>4</secDNS:digestType><secDNS:digest>AAAA54840FBBB6F4270F8B6D8C06C6A2B3152E55D2E9F81132130E507829B6D24FA56A4E074B4692DDC46F512B048AAC</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>AAAA9AB3E7D203FF7923B8773599E248717F1DC79A9BEF09D8981B13AB7A049E</secDNS:digest></secDNS:dsData></secDNS:infData>',
-		reason=>'urn:ietf:params:xml:ns:secDNS-1.1 not in login services',
-		lang=>'en'
+		unhandled_content=>'<secDNS:infData xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1"><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>4</secDNS:digestType><secDNS:digest>AAAA54840FBBB6F4270F8B6D8C06C6A2B3152E55D2E9F81132130E507829B6D24FA56A4E074B4692DDC46F512B048AAC</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>AAAA9AB3E7D203FF7923B8773599E248717F1DC79A9BEF09D8981B13AB7A049E</secDNS:digest></secDNS:dsData></secDNS:infData>',
+		unhandled_namespace=>'urn:ietf:params:xml:ns:secDNS-1.1',
 	},
 	{
 		from=>'eppcom:extValue',
 		type=>'rawxml',
-		message=>'<changePoll:changeData xmlns:changePoll="urn:ietf:params:xml:ns:changePoll-1.0"><changePoll:operation>update</changePoll:operation><changePoll:date>2018-11-20T15:01:01+01:00</changePoll:date><changePoll:svTRID>20181120.123456</changePoll:svTRID><changePoll:who>SWITCH CDS: see https://www.nic.ch/faqs/dnssec/cds/</changePoll:who><changePoll:reason>DNSSEC initialized</changePoll:reason></changePoll:changeData>',
-		reason=>'urn:ietf:params:xml:ns:changePoll-1.0 not in login services',
-		lang=>'en'
+		unhandled_content=>'<changePoll:changeData xmlns:changePoll="urn:ietf:params:xml:ns:changePoll-1.0"><changePoll:operation>update</changePoll:operation><changePoll:date>2018-11-20T15:01:01+01:00</changePoll:date><changePoll:svTRID>20181120.123456</changePoll:svTRID><changePoll:who>SWITCH CDS: see https://www.nic.ch/faqs/dnssec/cds/</changePoll:who><changePoll:reason>DNSSEC initialized</changePoll:reason></changePoll:changeData>',
+		unhandled_namespace=>'urn:ietf:params:xml:ns:changePoll-1.0',
 	}
 ],'message 2 extra info');
 is(''.$dri->get_info('qdate','message','46533741'),'2018-11-20T15:01:01','message 2 get_info qdate');
@@ -121,9 +119,8 @@ is_deeply([$rc->get_extended_results()],
 	{
 		from=>'eppcom:extValue',
 		type=>'rawxml',
-		message=>'<secDNS:infData xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1"><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>4</secDNS:digestType><secDNS:digest>AAAA54840FBBB6F4270F8B6D8C06C6A2B3152E55D2E9F81132130E507829B6D24FA56A4E074B4692DDC46F512B048AAC</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>AAAA9AB3E7D203FF7923B8773599E248717F1DC79A9BEF09D8981B13AB7A049E</secDNS:digest></secDNS:dsData></secDNS:infData>',
-		reason=>'urn:ietf:params:xml:ns:secDNS-1.1 not in login services',
-		lang=>'en'
+		unhandled_content=>'<secDNS:infData xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1"><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>4</secDNS:digestType><secDNS:digest>AAAA54840FBBB6F4270F8B6D8C06C6A2B3152E55D2E9F81132130E507829B6D24FA56A4E074B4692DDC46F512B048AAC</secDNS:digest></secDNS:dsData><secDNS:dsData><secDNS:keyTag>1337</secDNS:keyTag><secDNS:alg>13</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>AAAA9AB3E7D203FF7923B8773599E248717F1DC79A9BEF09D8981B13AB7A049E</secDNS:digest></secDNS:dsData></secDNS:infData>',
+		unhandled_namespace=>'urn:ietf:params:xml:ns:secDNS-1.1',
 	}
 ],'message 3 extra info');
 is(''.$dri->get_info('qdate','message','46533741'),'2018-11-20T15:01:01','message 3 get_info qdate');
@@ -152,9 +149,8 @@ is_deeply([$rc->get_extended_results()],
 	{
 		from=>'eppcom:extValue',
 		type=>'rawxml',
-		message=>'<changePoll:changeData xmlns:changePoll="urn:ietf:params:xml:ns:changePoll-1.0"><changePoll:operation>update</changePoll:operation><changePoll:date>2018-11-20T15:55:16+01:00</changePoll:date><changePoll:svTRID>20181120.123456</changePoll:svTRID><changePoll:who>SWITCH CDS: see https://www.nic.ch/faqs/dnssec/cds/</changePoll:who><changePoll:reason>Rollover of DNSSEC Digest</changePoll:reason></changePoll:changeData>',
-		reason=>'urn:ietf:params:xml:ns:changePoll-1.0 not in login services',
-		lang=>'en'
+		unhandled_content=>'<changePoll:changeData xmlns:changePoll="urn:ietf:params:xml:ns:changePoll-1.0"><changePoll:operation>update</changePoll:operation><changePoll:date>2018-11-20T15:55:16+01:00</changePoll:date><changePoll:svTRID>20181120.123456</changePoll:svTRID><changePoll:who>SWITCH CDS: see https://www.nic.ch/faqs/dnssec/cds/</changePoll:who><changePoll:reason>Rollover of DNSSEC Digest</changePoll:reason></changePoll:changeData>',
+		unhandled_namespace=>'urn:ietf:params:xml:ns:changePoll-1.0',
 	}
 ],'message 4 extra info');
 is(''.$dri->get_info('qdate','message','46533743'),'2018-11-20T15:55:16','message 4 get_info qdate');
