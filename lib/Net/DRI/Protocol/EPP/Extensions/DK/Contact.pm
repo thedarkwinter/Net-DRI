@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2013-2015-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -54,7 +54,7 @@ David Makuni <d.makuni@live.co.uk>
 
 Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2013-2015-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -83,32 +83,37 @@ sub register_commands {
 ## HELPERS
 sub _build_dkhm_contact {
   my ( $epp, $c ) = @_;
-  my @dkhm;
+  my %dkhm;
+  my $mes = $epp->message;
+  my $ns = $mes->ns('dkhm');
 
   if (defined $c->type()) {
-		push @dkhm,['dkhm:userType',$c->type()];
-	}
+    $dkhm{userType}=$c->type();
+  }
 
   if (defined $c->ean()) {
-		push @dkhm,['dkhm:EAN',$c->ean()];
-	}
+    $dkhm{EAN}=$c->ean();
+  }
 
-	if (defined $c->vat()) {
-		push @dkhm,['dkhm:CVR',$c->vat()];
-	}
+  if (defined $c->vat()) {
+    $dkhm{CVR}=$c->vat();
+  }
 
   if (defined $c->pnumber()) {
-		push @dkhm,['dkhm:pnumber',$c->pnumber()];
-	}
+    $dkhm{pnumber}=$c->pnumber();
+  }
 
   if (defined $c->alt_email()) {
-		push @dkhm,['dkhm:secondaryEmail',$c->alt_email()];
-	}
+    $dkhm{secondaryEmail}=$c->alt_email();
+  }
 
   if (defined $c->mobile()) {
-		push @dkhm,['dkhm:mobilephone',$c->mobile()];
-	}
-  $epp->message()->command_extension('dkhm', @dkhm);
+    $dkhm{mobilephone}=$c->mobile();
+  }
+
+  for my $d (keys  %dkhm) {
+    push @{$epp->{message}->{extension}->{'dkhm:'.$d}}, ['dkhm:'.$d, $dkhm{$d}, {'xmlns:dkhm'=>$ns}];
+  }
 
   return;
 }
@@ -121,24 +126,24 @@ sub _parse_dkhm_contact {
   my $c=$rinfo->{contact}->{$oname}->{self};
   my $data;
 
-	if ($data = $mes->get_extension('dkhm','contact_validated')) {
-  	$c->contact_validated($data->getFirstChild()->textContent());
-	}
-	if ($data = $mes->get_extension('dkhm','mobilephone')) {
-  	$c->mobile($data->getFirstChild()->textContent());
-	}
+  if ($data = $mes->get_extension('dkhm','contact_validated')) {
+    $c->contact_validated($data->getFirstChild()->textContent());
+  }
+  if ($data = $mes->get_extension('dkhm','mobilephone')) {
+    $c->mobile($data->getFirstChild()->textContent());
+  }
   if ($data = $mes->get_extension('dkhm','secondaryEmail')) {
-  	$c->alt_email($data->getFirstChild()->textContent());
-	}
+    $c->alt_email($data->getFirstChild()->textContent());
+  }
   if ($data = $mes->get_extension('dkhm','CVR')) {
-  	$c->var($data->getFirstChild()->textContent());
-	}
+    $c->var($data->getFirstChild()->textContent());
+  }
   if ($data = $mes->get_extension('EAN','secondaryEmail')) {
-  	$c->ean($data->getFirstChild()->textContent());
-	}
+    $c->ean($data->getFirstChild()->textContent());
+  }
   if ($data = $mes->get_extension('dkhm','userType')) {
-  	$c->type($data->getFirstChild()->textContent());
-	}
+    $c->type($data->getFirstChild()->textContent());
+  }
 
   return;
 }
