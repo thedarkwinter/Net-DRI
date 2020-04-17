@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2013-2015-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -57,7 +57,7 @@ David Makuni <d.makuni@live.co.uk>
 
 Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2013-2015-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -72,48 +72,48 @@ See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
 sub register_commands {
-	my ( $class, $version)=@_;
-	my %tmp=(
-	  'check'  => [ undef, \&check_parse ],
-	  'info'   => [ undef, \&_parse_dkhm_domain ],
-	  'create' => [ \&create, \&_parse_dkhm_domain ],
-	  'renew'  => [ undef, \&_parse_dkhm_domain ],
-	  'update' =>	[ undef, \&_parse_dkhm_domain ]
-	);
+  my ( $class, $version)=@_;
+  my %tmp=(
+    'check'  => [ undef, \&check_parse ],
+    'info'   => [ undef, \&_parse_dkhm_domain ],
+    'create' => [ \&create, \&_parse_dkhm_domain ],
+    'renew'  => [ undef, \&_parse_dkhm_domain ],
+    'update' =>	[ undef, \&_parse_dkhm_domain ]
+  );
 
-	return { 'domain' => \%tmp };
+  return { 'domain' => \%tmp };
 }
 
 ####################################################################################################
 ## HELPERS
 sub _build_dkhm_domain
 {
-	my ($epp,$domain,$rd)=@_;
-	return unless Net::DRI::Util::has_key($rd,'confirmation_token');
-	$epp->message()->command_extension('dkhm',['dkhm:orderconfirmationToken',$rd->{confirmation_token}]);
+  my ($epp,$domain,$rd)=@_;
+  return unless Net::DRI::Util::has_key($rd,'confirmation_token');
+  $epp->message()->command_extension('dkhm',['orderconfirmationToken', $rd->{confirmation_token}]);
 
-	return;
+  return;
 }
 
 sub _parse_dkhm_domain
 {
-	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
 
-	my $mes=$po->message();
-	return unless $mes->is_success();
-	my $data;
+  my $mes=$po->message();
+  return unless $mes->is_success();
+  my $data;
 
-	if ($data = $mes->get_extension('dkhm','trackingNo')) {
-		$rinfo->{domain}->{$oname}->{tracking_no} = $data->getFirstChild()->textContent();
-	}
-	if ($data = $mes->get_extension('dkhm','domain_confirmed')) {
-		$rinfo->{domain}->{$oname}->{domain_confirmed} = $data->getFirstChild()->textContent();
-	}
-	if ($data = $mes->get_extension('dkhm','registrant_validated')) {
-		$rinfo->{domain}->{$oname}->{registrant_validated} = $data->getFirstChild()->textContent();
-	}
+  if ($data = $mes->get_extension('dkhm','trackingNo')) {
+    $rinfo->{domain}->{$oname}->{tracking_no} = $data->getFirstChild()->textContent();
+  }
+  if ($data = $mes->get_extension('dkhm','domain_confirmed')) {
+    $rinfo->{domain}->{$oname}->{domain_confirmed} = $data->getFirstChild()->textContent();
+  }
+  if ($data = $mes->get_extension('dkhm','registrant_validated')) {
+    $rinfo->{domain}->{$oname}->{registrant_validated} = $data->getFirstChild()->textContent();
+  }
 
-	return;
+  return;
 }
 
 ####################################################################################################
@@ -123,17 +123,17 @@ sub create {
 }
 
 sub check_parse {
-	my ($po,$otype,$oaction,$oname,$rinfo)=@_;
-	my $mes=$po->message();
-	return unless $mes->is_success();
+  my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+  my $mes=$po->message();
+  return unless $mes->is_success();
 
-	my $adata = $mes->get_extension('dkhm','domainAdvisory');
+  my $adata = $mes->get_extension('dkhm','domainAdvisory');
   return unless $adata;
 
   if ($adata->hasAttribute('domain') && $adata->getAttribute('advisory'))
   {
    $rinfo->{domain}->{$adata->getAttribute('domain')}->{advisory} = $adata->getAttribute('advisory');
-	}
+  }
 
   return;
 }

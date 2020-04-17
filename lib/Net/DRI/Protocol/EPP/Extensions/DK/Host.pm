@@ -1,5 +1,8 @@
 ## Host Registry Interface, .DK Host EPP extension commands
 ##
+## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
+## Copyright (c) 2013-2015-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -53,7 +56,7 @@ David Makuni <d.makuni@live.co.uk>
 
 Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2013-2015-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -68,25 +71,25 @@ See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
 sub register_commands {
-	my ( $class, $version)=@_;
+  my ( $class, $version)=@_;
 
-	my %tmp=(
-	  'create' => [ \&create, undef],
-	  'update' => [ \&update, undef],
-	);
+  my %tmp=(
+    'create' => [ \&create, undef],
+    'update' => [ \&update, undef],
+  );
 
-	return { 'host' => \%tmp };
+  return { 'host' => \%tmp };
 }
 
 ####################################################################################################
 ## HELPERS
 sub _build_dkhm_host
 {
-	my ($epp,$host,$rd)=@_;
-	return unless Net::DRI::Util::has_key($rd,'requested_ns_admin');
-	$epp->message()->command_extension('dkhm',['dkhm:requestedNsAdmin',$rd->{requested_ns_admin}]);
+  my ($epp,$host,$rd)=@_;
+  return unless Net::DRI::Util::has_key($rd,'requested_ns_admin');
+  $epp->message()->command_extension('dkhm',['dkhm:requestedNsAdmin',$rd->{requested_ns_admin}]);
 
-	return;
+  return;
 }
 
 ####################################################################################################
@@ -96,10 +99,10 @@ sub create {
 }
 
 sub update {
-	my ($epp,$host,$todo)=@_;
-	my $requested_ns_admin = $todo->set('requested_ns_admin');
-	return unless $requested_ns_admin;
-	return _build_dkhm_host($epp,$host, {'requested_ns_admin' => $requested_ns_admin});
+  my ($epp,$host,$todo)=@_;
+  my $requested_ns_admin = $todo->set('requested_ns_admin');
+  return unless $requested_ns_admin;
+  return _build_dkhm_host($epp,$host, {'requested_ns_admin' => $requested_ns_admin});
 }
 
 1;
