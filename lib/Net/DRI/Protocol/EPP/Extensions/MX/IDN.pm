@@ -103,7 +103,7 @@ sub create_build
     return unless Net::DRI::Util::has_key($rd,'idn');
     my @n;
     push @n, ['idn:lang',uc($rd->{idn}->iso639_1())];
-    $epp->message()->command_extension('idn:create', ['', @n]);
+    $epp->message()->command_extension('idn', ['create', @n, {'xmlns:idn'=>'http://www.nic.lat/nicmx-idn-1.0'}]);
   }
   return;
 }
