@@ -109,7 +109,7 @@ is($dri->get_info('action'),'check','host_check get_info(action)');
 $R2=$E1.'<response>'.r().'<resData><contact:chkData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:cd><contact:id avail="1">sh8000</contact:id></contact:cd></contact:chkData></resData>'.$TRID.'</response>'.$E2;
 my $co=$dri->local_object('contact')->srid('sh8000'); #->auth({pw=>'2fooBAR'});
 $rc=$dri->contact_check($co);
-is($R1,$E1.'<command><check><contact:check xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>sh8000</contact:id></contact:check></check><extension><namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1"><namestoreExt:subProduct>FOO</namestoreExt:subProduct></namestoreExt:namestoreExt></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_check build');
+is($R1,$E1.'<command><check><contact:check xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>sh8000</contact:id></contact:check></check><extension><namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1"><namestoreExt:subProduct>BLAH</namestoreExt:subProduct></namestoreExt:namestoreExt></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_check build');
 is($rc->is_success(),1,'contact_check is_success');
 is($dri->get_info('action'),'check','contact_check get_info(action)');
 is($dri->get_info('exist'),0,'contact_check get_info(exist)');
