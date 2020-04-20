@@ -200,7 +200,7 @@ sub parse
   # extcon => extcon-2.0
   foreach my $tmp_extcon (qw/create update infData info delData/)
   {
-    if (my $data=$mes->get_response('extcont',$tmp_extcon))
+    if (my $data=$mes->get_response('extcon',$tmp_extcon))
     {
       $oaction = Net::DRI::Util::xml2perl($tmp_extcon);
       $otype = $oname = 'extcon';
