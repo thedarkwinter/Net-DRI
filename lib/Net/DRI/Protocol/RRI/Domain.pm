@@ -580,6 +580,9 @@ sub trade
  ## Nameservers, OPTIONAL
  push @d, build_ns($rri, $rd->{ns}, $domain) if Net::DRI::Util::has_ns($rd);
 
+ ## SecDns records, OPTIONAL
+ push @d, build_secdns($rd->{secdns}, $domain) if $rd->{secdns};
+
  $mes->command_body(\@d);
  return;
 }
