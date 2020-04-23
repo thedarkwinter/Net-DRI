@@ -57,11 +57,11 @@ sub build_ext_data
 
 	if ($op eq 'create')
 	{
-		$epp->message()->command_extension('tci-contact-ext', [$op, ['contact:person', @n]]);
+		$epp->message()->command_extension('contact', [$op, ['contact:person', @n], {'xmlns:contact'=>'http://www.tcinet.ru/epp/tci-contact-ext-1.0'}]);
 	}
 	elsif ($op eq 'update')
 	{
-		$epp->message()->command_extension('tci-contact-ext', [$op, ['contact:chg', ['contact:person', @n]]]);
+		$epp->message()->command_extension('contact', [$op, ['contact:chg', ['contact:person', @n]], {'xmlns:contact'=>'http://www.tcinet.ru/epp/tci-contact-ext-1.0'}]);
 	}
  }
  else
@@ -87,11 +87,11 @@ sub build_ext_data
 
 	if ($op eq 'create')
 	{
-		$epp->message()->command_extension('tci-contact-ext', ['contact:create xmlns:contact="' . $epp->message()->ns('tci-contact-ext') . '"', ['contact:organization', @n]]);
+		$epp->message()->command_extension('contact', [$op, ['contact:organization', @n], {'xmlns:contact'=>$epp->message()->ns('tci-contact-ext')}]);
 	}
 	elsif ($op eq 'update')
 	{
-		$epp->message()->command_extension('tci-contact-ext', [$op, ['contact:chg', ['contact:organization', @n]]]);
+		$epp->message()->command_extension('contact', [$op, ['contact:chg', ['contact:organization', @n]], {'xmlns:contact'=>'http://www.tcinet.ru/epp/tci-contact-ext-1.0'}]);
 	}
  }
 }

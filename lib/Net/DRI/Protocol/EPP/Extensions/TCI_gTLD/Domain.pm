@@ -47,7 +47,7 @@ sub create
 	 my @n;
 	 push @n,['domain:description',$rd->{description}];
 
-	 $epp->message()->command_extension('tci-domain-ext', ['create', @n]);
+	 $epp->message()->command_extension('domain', ['create', @n, {'xmlns:domain'=>$epp->message()->ns('tci-domain-ext')}]);
  }
 }
 
@@ -63,7 +63,7 @@ sub update
 		push @chg, ['domain:description', $str];
 	}
 
-	 $epp->message()->command_extension('tci-domain-ext', ['update', ['chg', @chg]]);
+	 $epp->message()->command_extension('domain', ['update', ['chg', @chg], {'xmlns:domain'=>$epp->message()->ns('tci-domain-ext')}]);
  }
 }
 
