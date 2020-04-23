@@ -3,6 +3,7 @@
 ##
 ## Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>
 ## Copyright (c) 2016 Michael Holloway <michael@thedarkwinter.com>
+## Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>
 ## All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -57,6 +58,7 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 
 Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
 Copyright (c) 2016 Michael Holloway <michael@thedarkwinter.com>
+Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -227,7 +229,6 @@ sub check_parse
    }
   } continue { $c = $c->getNextSibling(); }
  }
- #use Data::Dumper; print Dumper $rinfo;
  return;
 }
 

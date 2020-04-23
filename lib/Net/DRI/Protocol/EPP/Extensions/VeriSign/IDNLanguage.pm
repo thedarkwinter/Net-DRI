@@ -1,6 +1,8 @@
 ## Domain Registry Interface, EPP IDN Language (EPP-IDN-Lang-Mapping.pdf)
 ##
-## Copyright (c) 2006,2008,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>
+## Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>
+## All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,6 +52,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2006,2008,2013,2016,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,9 +69,11 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- state $cmds = { 'domain' => { 'create' => [ \&create, undef ] } };
+ my %tmp=(
+           create => [ \&create, undef ],
+         );
 
- return $cmds;
+ return { 'domain' => \%tmp, 'defreg' => \%tmp };
 }
 
 sub setup
