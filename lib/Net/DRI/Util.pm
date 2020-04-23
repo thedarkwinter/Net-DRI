@@ -589,7 +589,10 @@ sub xml_write
    # sort all xmlns first then others
    $attr = ' '.join(' ',map { $_.'="'.$attr{$_}.'"' } sort { index($b,'xmlns:') <=> index($a,'xmlns:') || $a cmp $b } keys %attr);
   }
-  if (!@c || (@c==1 && !ref($c[0]) && ($c[0] eq '')))
+  if (ref $tag eq 'XML::LibXML::Element') # MH: it its an XML Element just push it straight; this is used by LaunchPhase to push signedMarks in
+  {
+   push @t, $tag;
+  } elsif (!@c || (@c==1 && !ref($c[0]) && ($c[0] eq '')))
   {
    push @t,'<'.$tag.$attr.'/>';
   } else
