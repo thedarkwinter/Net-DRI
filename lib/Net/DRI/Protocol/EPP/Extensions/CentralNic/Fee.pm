@@ -412,7 +412,7 @@ sub check
    foreach my $fee_set (@fees)
    {
      @n = fee_set_build_legacy($fee_set,$domain);
-     $epp->message()->command_extension('fee', ['check', @n]);
+     push @{$epp->message()->{extension}->{'fee'}}, ['check', @n, {'xmlns:fee'=>'urn:ietf:params:xml:ns:fee-0.4'}];
    }
   }
   elsif (ver($mes) >= 11)
