@@ -204,7 +204,7 @@ sub create
   }
 
   if (exists $lp->{type}) {
-    $epp->message()->command_extension('launch', ['create', @n], {type => $lp->{type}});
+    push @{$epp->{message}->{extension}->{'launch'}}, ['create',{'xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" ' . type => $lp->{type}}, @n];
   } else {
     $epp->message()->command_extension('launch', ['create', @n]);
   }

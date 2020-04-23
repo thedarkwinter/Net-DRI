@@ -459,11 +459,11 @@ sub create
      push @n, ['launch:notice',@notice];
     }
    }
-   
+
   if (exists $lp->{type}) {
-    push @{$epp->{message}->{extension}->{'launch'}}, ['create',{'xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" ' . type => $lp->{type}},@n];
+    push @{$epp->{message}->{extension}->{'launch'}}, ['create',{'xmlns:launch="urn:ietf:params:xml:ns:launch-1.0" ' . type => $lp->{type}}, @n];
   } else {
-    $epp->message()->command_extension('launch', ['create',@n]);
+    $epp->message()->command_extension('launch', ['create', @n]);
   }
  }
  return;

@@ -262,7 +262,7 @@ $root=$doc->getDocumentElement();
 $lp = {phase => 'sunrise','encoded_signed_marks'=>[ $root ]};
 $rc=$dri->domain_create('example1-2.scot',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=>$lp,intended_use=>'fooBAR'});
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example1-2.scot</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><launch:create xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase>sunrise</launch:phase><ext:augmentedMark xmlns:ext="http://xmlns.corenic.net/epp/mark-ext-1.0">'.$root.'<ext:applicationInfo type="intended-use">fooBAR</ext:applicationInfo></ext:augmentedMark></launch:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create sunrise launch phase build_xml [encoded_signed_mark validation model - using xml root element]');
-exit 0;
+
 # 1.3 "Public Interest" Launch Phase
 $lp = {phase => 'public-interest'};
 $rc=$dri->domain_create('example1-3.scot',{pure_create=>1,auth=>{pw=>'2fooBAR'},lp=>$lp,reference_url=>'http://xmlns.corenic.net/epp/test',intended_use=>'fooBAR'});
@@ -422,7 +422,8 @@ my $promo_hash = {
 
 $R2 = $E1 . '<response><result code="1000"><msg>Command completed successfully</msg></result><resData><infData xmlns="http://xmlns.tango-rs.net/epp/promotion-info-1.0"><promo><promotionName>Unlimited Creation codes</promotionName><validity from="2016-09-20T13:40:00.000Z" /><utilization avail="true"><enabled>true</enabled><operations>create</operations><codeUsable>true</codeUsable><inValidityPeriod>true</inValidityPeriod><validDomainName>true</validDomainName></utilization></promo><pricing><total mu="EUR" value="25" /></pricing></infData></resData>' . $TRID . '</response>' . $E2;
 $rc=$dri->promo_info('EXAMPLE-PROMO-1231',{promo_data=>$promo_hash});
-is_string($R1,$E1.'<command><info ><promo:info xmlns:promo="http://xmlns.corenic.net/epp/promotion-info-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code><promo:domain><promo:name>example.eus</promo:name></promo:domain><promo:pricing><promo:create><promo:period unit="m">54</promo:period></promo:create></promo:pricing><promo:refdate>2016-07-01T10:10:00.0Z</promo:refdate><promo:phase name="special-phase">custom</promo:phase></promo:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_promo_info build quering promotion details');
+is_string($R1,$E1.'<command><info><promo:info xmlns:promo="http://xmlns.corenic.net/epp/promotion-info-1.0"><promo:code>EXAMPLE-PROMO-1231</promo:code><promo:domain><promo:name>example.eus</promo:name></promo:domain><promo:pricing><promo:create><promo:period unit="m">54</promo:period></promo:create></promo:pricing><promo:refdate>2016-07-01T10:10:00.0Z</promo:refdate><promo:phase name="special-phase">custom</promo:phase></promo:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_promo_info build quering promotion details');
+
 is($rc->is_success(),1,'domain_promo_info is_success quering promotion details');
 
 # domain promo info parse: testing the parsing of promotional information from the response

@@ -106,7 +106,7 @@ sub build_promo_command {
 
   # build promo code xml
   my $tcommand=ref $command ? $command->[0] : $command;
-  $msg->command([$command,'promo:'.$tcommand, $msg->nsattrs('promo_info')]);
+  $msg->command([$tcommand,'promo:'.$tcommand, 'xmlns:promo="' . $msg->ns('promo_info'). '"']);
   push @d, ['promo:code',$promo,$codeattr];
 
   return @d;
