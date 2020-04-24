@@ -32,7 +32,7 @@ sub core_modules
  if (! $self->{hostasattr})
  {
   push @c, 'Net::DRI::Protocol::EPP::Core::Host';
-  $self->ns({host => ['urn:ietf:params:xml:ns:host-1.0','host-1.0.xsd']});
+  $self->ns({host => 'urn:ietf:params:xml:ns:host-1.0'});
  }
  push @c, map { 'Net::DRI::Protocol::EPP::Extensions::UniRegistry::'.$_ } qw/EPS/ if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'ICM_EPS';
 
