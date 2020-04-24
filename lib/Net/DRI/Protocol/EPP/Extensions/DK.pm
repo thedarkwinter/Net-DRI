@@ -68,7 +68,7 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub setup {
     my ( $self, $rp ) = @_;
-    $self->ns({dkhm => 'urn:dkhm:params:xml:ns:dkhm-2.0'});
+    $self->ns({dkhm => 'urn:dkhm:params:xml:ns:dkhm-3.0'});
     $self->capabilities('host_update','status',undef);
     $self->capabilities('host_update','requested_ns_admin',['set']);
     return;
