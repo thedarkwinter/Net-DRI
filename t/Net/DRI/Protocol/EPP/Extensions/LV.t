@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 66;
+use Test::More tests => 67;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -198,5 +198,15 @@ is($dri->get_info('object_type','message','555'),'domain','message get_info obje
 is($dri->get_info('object_id','message','555'),'testdomain1.lv','message get_info id');
 is($dri->get_info('action','message','555'),'transfer','message get_info action'); ## with this, we know what action has triggered this delayed message
 is($dri->get_info('reID','message','555'),'new_regisrtar','message get_info reID');
+
+
+####################################################################################################
+####### Transfer operations ########
+
+### Transfer REQUEST operation
+$R2=$E1.'<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><trID><clTRID>5de52339104fa</clTRID><svTRID>LVNIC-20191202-31b3c6c4fc6f3119757ec5605410c28a-2</svTRID></trID></response>'.$E2;
+$rc=$dri->domain_transfer_start('transfer-accept-testuser-1.lv',{auth=>{pw=>'transfer-accept-testuser-1.lv'}});
+is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-accept-testuser-1.lv</domain:name><domain:authInfo><domain:pw>transfer-accept-testuser-1.lv</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
+
 
 exit 0;
