@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 67;
+use Test::More tests => 77;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -208,5 +208,20 @@ $R2=$E1.'<response><result code="1000"><msg lang="en">Command completed successf
 $rc=$dri->domain_transfer_start('transfer-accept-testuser-1.lv',{auth=>{pw=>'transfer-accept-testuser-1.lv'}});
 is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-accept-testuser-1.lv</domain:name><domain:authInfo><domain:pw>transfer-accept-testuser-1.lv</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
 
+### Transfer informative QUERY operation
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-accept-ignored-4.lv</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>TestUser2</domain:reID><domain:reDate>2019-12-02T16:44:09+02:00</domain:reDate><domain:acID>TestUser</domain:acID><domain:acDate>2019-12-08T00:00:00+02:00</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_query('transfer-accept-ignored-4.lv');
+is($R1,$E1.'<command><transfer op="query"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-accept-ignored-4.lv</domain:name></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_query build');
+is($dri->get_info('action'),'transfer','domain_transfer_query get_info(action)');
+is($dri->get_info('exist'),1,'domain_transfer_query get_info(exist)');
+is($dri->get_info('trStatus'),'pending','domain_transfer_query get_info(trStatus)');
+is($dri->get_info('reID'),'TestUser2','domain_transfer_query get_info(reID)');
+$d=$dri->get_info('reDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(reDate)');
+is("".$d,'2019-12-02T16:44:09','domain_transfer_query get_info(reDate) value');
+is($dri->get_info('acID'),'TestUser','domain_transfer_query get_info(acID)');
+$d=$dri->get_info('acDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(acDate)');
+is("".$d,'2019-12-08T00:00:00','domain_transfer_query get_info(acDate) value');
 
 exit 0;
