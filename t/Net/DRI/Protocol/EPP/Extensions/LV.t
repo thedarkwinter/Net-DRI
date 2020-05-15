@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 77;
+use Test::More tests => 79;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -223,5 +223,12 @@ is($dri->get_info('acID'),'TestUser','domain_transfer_query get_info(acID)');
 $d=$dri->get_info('acDate');
 isa_ok($d,'DateTime','domain_transfer_query get_info(acDate)');
 is("".$d,'2019-12-08T00:00:00','domain_transfer_query get_info(acDate) value');
+
+### Transfer CANCEL operation
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_stop('transfer-ignored-testuser-5.lv');
+is_string($R1,$E1.'<command><transfer op="cancel"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-ignored-testuser-5.lv</domain:name></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_stop build');
+is($rc->is_success(),1,'domain_transfer_stop is_success');
+
 
 exit 0;
