@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 79;
+use Test::More tests => 81;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -229,6 +229,12 @@ $R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
 $rc=$dri->domain_transfer_stop('transfer-ignored-testuser-5.lv');
 is_string($R1,$E1.'<command><transfer op="cancel"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-ignored-testuser-5.lv</domain:name></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_stop build');
 is($rc->is_success(),1,'domain_transfer_stop is_success');
+
+### Transfer APPROVE operation
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_accept('transfer-away-testuser-4.lv');
+is_string($R1,$E1.'<command><transfer op="approve"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-away-testuser-4.lv</domain:name></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_start build');
+is($rc->is_success(),1,'domain_transfer_start is_success');
 
 
 exit 0;
