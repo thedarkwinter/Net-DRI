@@ -1,5 +1,4 @@
 ## Domain Registry Interface, EURid Domain EPP extension commands
-## (based on EURid EPP_Guidelines_2_1_09)
 ##
 ## Copyright (c) 2005-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>. All rights reserved.
@@ -92,7 +91,7 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/domain-ext/)
  {
-  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.3',$ns.'-2.3.xsd' ] });
+  $po->ns({ $ns => [ 'http://www.eurid.eu/xml/epp/'.$ns.'-2.4',$ns.'-2.4.xsd' ] });
  }
  foreach my $ns (qw/homoglyph/)
  {

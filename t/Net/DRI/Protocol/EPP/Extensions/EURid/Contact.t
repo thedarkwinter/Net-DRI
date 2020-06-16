@@ -32,10 +32,10 @@ $dri->target('EURid')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>
 my ($rc,$s,$d,$co,$toc,$cs,$h,$dh,@c);
 
 ########################################################################################################
-## Greeting Examples taken from EPP_Guidelines_2_1_09
+## Greeting
 
 ## Process greetings to select namespace versions
-$R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2016-11-17T14:30:12.230Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarFinance-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarHitPoints-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrationLimit-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/nsgroup-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/keygroup-1.1</objURI><svcExtension><extURI>http://www.eurid.eu/xml/epp/contact-ext-1.3</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.3</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/idn-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dnsQuality-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/authInfo-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.2</extURI><extURI>http://www.eurid.eu/xml/epp/homoglyph-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$R2=$E1.'<greeting><svID>eurid.eu</svID><svDate>2016-11-17T14:30:12.230Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarFinance-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrarHitPoints-1.0</objURI><objURI>http://www.eurid.eu/xml/epp/registrationLimit-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/nsgroup-1.1</objURI><objURI>http://www.eurid.eu/xml/epp/keygroup-1.1</objURI><svcExtension><extURI>http://www.eurid.eu/xml/epp/contact-ext-1.3</extURI><extURI>http://www.eurid.eu/xml/epp/domain-ext-2.4</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>http://www.eurid.eu/xml/epp/idn-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/dnsQuality-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/authInfo-1.0</extURI><extURI>http://www.eurid.eu/xml/epp/poll-1.2</extURI><extURI>http://www.eurid.eu/xml/epp/homoglyph-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{'contact-ext'}->[0],'http://www.eurid.eu/xml/epp/contact-ext-1.3','contact-ext 1.3 for server announcing 1.3');
 
@@ -43,10 +43,6 @@ is($dri->protocol()->ns()->{'contact-ext'}->[0],'http://www.eurid.eu/xml/epp/con
 ## Contacts - these are old tests but still work
 ## Note, the only difference between contact-ext-1.0 and contact-ext-1.1 is that the lang became  minOccurs="0", so I am not going to update these tests.
 ## The contact extension still has vat and lang
-
-## Examples taken from EPP_Guidelines_2_0_5.pdf
-## Contact
-## p.38
 
 $R2=$E1.'<response>'.r().'<resData><contact:creData><contact:id>c16212470</contact:id><contact:crDate>2012-10-03T12:14:03.325Z</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
 $co=$dri->local_object('contact')->srid('client_id001');
@@ -96,7 +92,7 @@ is($rc->get_data('contact',$id,'id'),'c16212472','contact_create 3 get_info(id)'
 is(''.$rc->get_data('contact',$id,'crDate'),'2012-10-03T12:14:04','contact_create 3 get_info(crdate)');
 
 
-## contact create release_notes_march_2019.pdf - whoisEmail
+## whoisEmail
 $R2=$E1.'<response>'.r().'<resData><contact:creData><contact:id>c16212472</contact:id><contact:crDate>2012-10-03T12:14:04.747Z</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
 $co=$dri->local_object('contact')->srid('client_id004');
 $co->name('Ann Ployee');
