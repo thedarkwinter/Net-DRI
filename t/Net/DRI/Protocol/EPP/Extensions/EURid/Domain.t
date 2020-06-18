@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 231;
+use Test::More tests => 233;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -185,7 +185,7 @@ is($dri->get_info('ace'), 'xn--domnio-qq-i5a.eu', 'domain get_info(name_ace)');
 is($dri->get_info('unicode'), 'domínio-qq.eu', 'domain get_info(name_idn)');
 $s=$dri->get_info('status');
 isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
-is_deeply([$s->list_status()],['ok','quarantined'],'domain_info get_info(status) list');
+is_deeply([$s->list_status()],['ok'],'domain_info get_info(status) list');
 is($s->is_active(),1,'domain_info get_info(status) is_active'); # hmm, this shout probably not be active? but lets not break old implementation [yet?]
 $e=$dri->get_info('secdns');
 is_deeply($e,[{key_flags=>'257',key_protocol=>3,key_alg=>5,key_pubKey=>'AwEAAc8mj6eqspwxX/E+OVoA/+MTawDce72K8UOgFmDAvilVqWKsXv9a6HQVPW/feDGHQ3cvGAisb1tv4/DFJBqWniLVr77S20JhhpB+MtuJkKSmb59basCItUo/B9MohZ4hFWsgWtL8HnIuJq1jMwXzmAO236EsUjXVzAdxhqsVX7v1'}],'domain_info get_info(secdns)');
@@ -196,6 +196,8 @@ $d=$dri->get_info('deletionDate');
 isa_ok($d,'DateTime','domain_info get_info(deletionDate)');
 is(''.$d,'2014-09-13T16:11:55','domain_info get_info(deletionDate) value');
 is($dri->get_info('delayed'), 1, 'domain get_info(delayed)');
+is($dri->get_info('quarantined'), 'true', 'domain get_info(quarantined)');
+is($dri->get_info('onHold'), 'false', 'domain get_info(onHold)');
 
 ## 2.1.09/domains/domain-info/domain-info06-cmd.xml
 # Domain name in own portfolio with a deletion date, nsgroup and 1 keygroup
