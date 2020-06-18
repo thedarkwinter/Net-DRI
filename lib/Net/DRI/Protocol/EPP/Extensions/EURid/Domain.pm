@@ -226,15 +226,12 @@ sub info_parse
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
-  if ($name=~m/^(onHold|quarantined|suspended)$/) ## onHold here has nothing to do with EPP client|serverHold, unfortunately
+  if ($name=~m/^(onHold|quarantined|suspended|seized|delayed)$/) ## onHold here has nothing to do with EPP client|serverHold, unfortunately
   {
    $rinfo->{domain}->{$oname}->{$name}=$c->textContent();
   } elsif ($name=~m/^(availableDate|deletionDate)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$po->parse_iso8601($c->textContent());
-  } elsif ($name eq 'delayed')
-  {
-   $rinfo->{domain}->{$oname}->{$name} = Net::DRI::Util::xml_parse_boolean($c->textContent());
   } elsif ($name eq 'contact')
   {
    $contact->add($po->create_local_object('contact')->srid($c->textContent()),$c->getAttribute('type'));

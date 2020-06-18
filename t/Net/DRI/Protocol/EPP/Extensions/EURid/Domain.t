@@ -195,7 +195,7 @@ is(''.$d,'2014-10-23T16:11:55','domain_info get_info(availableDate) value');
 $d=$dri->get_info('deletionDate');
 isa_ok($d,'DateTime','domain_info get_info(deletionDate)');
 is(''.$d,'2014-09-13T16:11:55','domain_info get_info(deletionDate) value');
-is($dri->get_info('delayed'), 1, 'domain get_info(delayed)');
+is($dri->get_info('delayed'), 'true', 'domain get_info(delayed)');
 is($dri->get_info('quarantined'), 'true', 'domain get_info(quarantined)');
 is($dri->get_info('onHold'), 'false', 'domain get_info(onHold)');
 
@@ -397,7 +397,7 @@ is_string($R1,'<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns=
 is($rc->is_success(),1,'domain_transfer_query is_success');
 is($dri->get_info('trStatus'),'pending','domain_transfer_query get_info(trStatus)');
 is($dri->get_info('reID'),'t000002','domain_transfer_query get_info(reID)');
-is($dri->get_info('delayed'),1,'domain_transfer_query get_info(delayed)');
+is($dri->get_info('delayed'),'true','domain_transfer_query get_info(delayed)');
 $s=$dri->get_info('contact');
 isa_ok($s,'Net::DRI::Data::ContactSet','domain_transfer_query get_info(contact)');
 is_deeply([$s->types()],['billing','registrant','tech'],'domain_info get_info(contact) types');
