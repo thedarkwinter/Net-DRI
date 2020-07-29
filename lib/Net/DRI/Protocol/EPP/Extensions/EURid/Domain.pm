@@ -229,6 +229,8 @@ sub info_parse
   if ($name=~m/^(onHold|quarantined|suspended|seized|delayed)$/) ## onHold here has nothing to do with EPP client|serverHold, unfortunately
   {
    $status->add($name) if Net::DRI::Util::xml_parse_boolean($c->textContent()); ## TODO : correct status name?
+   # get also element value
+   $rinfo->{domain}->{$oname}->{$name}=$c->textContent();
   } elsif ($name=~m/^(availableDate|deletionDate)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$po->parse_iso8601($c->textContent());
