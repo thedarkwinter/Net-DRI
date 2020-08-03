@@ -88,9 +88,9 @@ sub parse
   my $mes=$po->message();
   return unless $mes->is_success();
   return unless my $msgid=$mes->msg_id();
-  my @tmp; # used to parse at the end of this function the dom names if extdom-2.0
+  my @tmp;
 
-  # pl_domain => extdom-2.0
+  # pl_domain => extdom-x.x
   foreach my $tmp_pl_domain (qw/pollAuthInfo pollDomainAutoRenewed pollDomainAutoRenewFailed dlgData expData pollDomainBlocked pollDomainUnblocked pollFutureRemoved pollTasteRemoved pollDomainJudicialRemoved trnData/)
   {
     if (my $data=$mes->get_response('pl_domain',$tmp_pl_domain))
@@ -148,7 +148,7 @@ sub parse
      }
   }
 
-  # extepp => extepp-2.0
+  # extepp => extepp-x.x
   foreach my $tmp_extepp (qw/accountBalanceCrossed accountBalanceInsufficient passwdReminder/)
   {
     if (my $data=$mes->get_response('extepp',$tmp_extepp))
@@ -197,7 +197,7 @@ sub parse
   }
 
 
-  # extcon => extcon-2.0
+  # extcon => extcon-x.x
   foreach my $tmp_extcon (qw/create update infData info delData/)
   {
     if (my $data=$mes->get_response('pl_contact',$tmp_extcon))
