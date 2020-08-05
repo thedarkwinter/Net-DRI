@@ -79,7 +79,7 @@ sub name     { return 'Neustar::IN'; }
 sub tlds {
     my @in = ( 'in', map { $_.'.in'} qw/ac co edu firm gen gov ind mil net org res/ );
     my @xngecrj9c = ( 'xn--gecrj9c', map { $_.'.xn--gecrj9c'} qw/xn--0dc7cb3a6a xn--hdc1b4ch5i xn--iecsq2bc9f/ );
-    my @xn45brj9c = ( 'xn--45brj9c', map { $_.'.xn--45brj9c'} qw/xn--b5b2au3c8d7b2b xn--p5b2bfp1g0b0b xn--r5b0alaxhm0qzbe/ );
+    my @xn45brj9c = ( 'xn--45brj9c', map { $_.'.xn--45brj9c'} qw/xn--b5b2au3c8d7b2b xn--p5b2bfp5fh3fra xn--r5b0alaxhm0qzbe/ );
     my @xnh2brj9c = ( 'xn--h2brj9c', map { $_.'.xn--h2brj9c'} qw/xn--11b7cb3a6a xn--i1b1b4ch5i xn--j2bsq2bc9f/ );
     my @xnxkc2dl3a5ee0h = ( 'xn--xkc2dl3a5ee0h', map { $_.'.xn--xkc2dl3a5ee0h'} qw/xn--clc2dj4b0d xn--vkc6b7c7c xn--vlccpku2dp3h/ );
     my @xns9brj9c = ( 'xn--s9brj9c', map { $_.'.xn--s9brj9c'} qw/xn--d9b2bf3g1k xn--d9b7cb3a6a xn--x8b5axg2ab21a xn--x8b7dzbzbb/ );
