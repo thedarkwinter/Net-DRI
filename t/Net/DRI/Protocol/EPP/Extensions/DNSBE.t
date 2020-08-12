@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 95;
+use Test::More tests => 102;
 
 our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
 our $E2='</epp>';
@@ -190,6 +190,27 @@ $s=$dri->get_info('status','domain','xn--dn-kia.be');
 isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status) 5/6');
 is_deeply([$s->list_status()],['serverTransferProhibited'],'domain_info get_info(status) list 5/6');
 is($dri->get_info('exist','domain','xn--belgi-rsa.be'),0,'domain_check multi get_info(exist) 6/6');
+
+
+####################################################################################################
+## add test to debug dnsbelgium, new TLDs issue with poll message
+##
+##
+$dri=Net::DRI::TrapExceptions->new({cache_ttl=>10,trid_factory => sub { return 'clientref-123007'}});
+$dri->add_registry('DNSBelgium::GTLD');
+$dri->target('brussels')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
+$R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="3" id="178168c1-d28f-4662-9a0c-9fb4e6f753a1"><qDate>2020-05-09T07:10:38.611Z</qDate><msg>Contact is deleted by Registry for privacy reasons.</msg></msgQ><resData><contact:delete xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>FOOBAR-053148</contact:id></contact:delete></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->message_retrieve();
+# lets also test how many poll message queued
+is($dri->message_count(),3,'direct message count');
+is($dri->get_info('last_id'),'178168c1-d28f-4662-9a0c-9fb4e6f753a1','message get_info last_id 1');
+is($dri->get_info('last_id','message','session'),'178168c1-d28f-4662-9a0c-9fb4e6f753a1','message get_info last_id 2');
+is($dri->get_info('id','message','178168c1-d28f-4662-9a0c-9fb4e6f753a1'),'178168c1-d28f-4662-9a0c-9fb4e6f753a1','message get_info id');
+is(''.$dri->get_info('qdate','message','178168c1-d28f-4662-9a0c-9fb4e6f753a1'),'2020-05-09T07:10:38','message get_info qdate');
+is($dri->get_info('content','message','178168c1-d28f-4662-9a0c-9fb4e6f753a1'),'Contact is deleted by Registry for privacy reasons.','message get_info msg');
+# now get extra, resdata
+is($dri->get_info('contact_id','message','178168c1-d28f-4662-9a0c-9fb4e6f753a1'),'FOOBAR-053148','message get_info contact delete SRID');
 
 exit 0;
 
