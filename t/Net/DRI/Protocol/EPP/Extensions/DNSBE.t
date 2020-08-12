@@ -210,7 +210,7 @@ is($dri->get_info('id','message','178168c1-d28f-4662-9a0c-9fb4e6f753a1'),'178168
 is(''.$dri->get_info('qdate','message','178168c1-d28f-4662-9a0c-9fb4e6f753a1'),'2020-05-09T07:10:38','message get_info qdate');
 is($dri->get_info('content','message','178168c1-d28f-4662-9a0c-9fb4e6f753a1'),'Contact is deleted by Registry for privacy reasons.','message get_info msg');
 # now get extra, resdata
-is($dri->get_info('contact_id','message','178168c1-d28f-4662-9a0c-9fb4e6f753a1'),'FOOBAR-053148','message get_info contact delete SRID');
+is($dri->get_info('contact','message','178168c1-d28f-4662-9a0c-9fb4e6f753a1'),'FOOBAR-053148','message get_info contact delete SRID');
 
 exit 0;
 

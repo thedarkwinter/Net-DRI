@@ -93,7 +93,7 @@ sub parse
    $n{$1}=$c->textContent();
    $n{$1}=$po->parse_iso8601($c->textContent()) if $name eq 'date';
    # tweak for .brussels/.vlaanderen poll notification
-   $n{'contact_id'}=$c->textContent() if $name eq 'delete';
+   $n{'contact'}=$c->textContent() if $name eq 'delete';
   }
  }
 
