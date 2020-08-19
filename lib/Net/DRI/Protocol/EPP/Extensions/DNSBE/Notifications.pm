@@ -80,16 +80,20 @@ sub parse
  my $mes=$po->message();
  return unless $mes->is_success();
  my $poll=$mes->get_response('dnsbe','pollRes');
+ # next line is a tweak only for .brussels/.vlaanderen
+ $poll=$mes->node_resdata() unless defined $poll;
  return unless defined $poll;
 
  my %n;
  foreach my $el (Net::DRI::Util::xml_list_children($poll))
  {
   my ($name,$c)=@$el;
-  if ($name=~m/^(action|returncode|type|contact|domainname|date|email|level|detailedcode|date)$/)
+  if ($name=~m/^(action|returncode|type|contact|domainname|date|email|level|detailedcode|date|delete)$/)
   {
    $n{$1}=$c->textContent();
    $n{$1}=$po->parse_iso8601($c->textContent()) if $name eq 'date';
+   # tweak for .brussels/.vlaanderen poll notification
+   $n{'contact'}=$c->textContent() if $name eq 'delete';
   }
  }
 
