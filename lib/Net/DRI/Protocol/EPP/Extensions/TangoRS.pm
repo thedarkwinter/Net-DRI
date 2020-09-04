@@ -32,9 +32,7 @@ sub setup
 
 sub default_extensions {
  my ($self,$pp) = @_;
- my @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction/;
- $self->{fee_version} = $self->{brown_fee_version} = $pp->{brown_fee_version} // $pp->{fee_version};
- push @ext, 'Fee' if $self->{fee_version} && $self->{fee_version} >= '0.21';
+ my @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction Fee/;
 
  return @ext;
 }

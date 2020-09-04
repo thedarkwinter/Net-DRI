@@ -1037,7 +1037,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction> urn:ar:params:xml:ns:au
 
 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.6
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-1.0
 
 Fee extension is currently only used in .NRW and for domain_check command only.
 
@@ -1046,7 +1046,7 @@ Fee extension is currently only used in .NRW and for domain_check command only.
  return {
      bep_type => 1, # dedicated registry
      tlds => ['ruhr','gmx','ifm','nrw','whoswho'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version => ($tld eq 'nrw' ? '0.21': undef)}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'tango' || $bep eq 'tangors';
 
