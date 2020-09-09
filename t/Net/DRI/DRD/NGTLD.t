@@ -11,7 +11,7 @@ use DateTime::Duration;
 use Data::Dumper;
 
 
-use Test::More tests => 104;
+use Test::More tests => 108;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -72,12 +72,21 @@ is($drd->{info}->{host_check_limit},13,'afilias: host_check_limit');
 is($dri->info('contact_check_limit'),13,'afilias: contact_check_limit');
 is($drd->{info}->{domain_check_limit},13,'afilias: domain_check_limit');
 
+# TangRS / CORENIC - ruhr
+$rc = $dri->add_registry('NGTLD',{provider => 'tangors', name=>'ruhr'});
+is($rc->{last_registry},'ruhr','tangors (ruhr) add_registry');
+$rc = $dri->target('ruhr')->add_current_profile('p1-afilias','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{ruhr}->{driver};
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version=>undef}],'tangors (ruhr): epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction/],'tangors (ruhr): loaded_modules');
+is($drd->{bep}->{bep_type},1,'ruhr: bep_type');
+
 # TangRS / CORENIC - nrw (fee-1.0)
 $rc = $dri->add_registry('NGTLD',{provider => 'tangors', name=>'nrw'});
 is($rc->{last_registry},'nrw','tangors (nrw) add_registry');
 $rc = $dri->target('nrw')->add_current_profile('p1-nrw','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{nrw}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{}],'tangors (nrw): epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version=>'1.0'}],'tangors (nrw): epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction Fee/],'tangors (nrw): loaded_modules');
 is($drd->{bep}->{bep_type},1,'nrw: bep_type');
 
