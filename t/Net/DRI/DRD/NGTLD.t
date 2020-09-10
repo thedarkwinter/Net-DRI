@@ -75,7 +75,7 @@ is($drd->{info}->{domain_check_limit},13,'afilias: domain_check_limit');
 # TangRS / CORENIC - ruhr
 $rc = $dri->add_registry('NGTLD',{provider => 'tangors', name=>'ruhr'});
 is($rc->{last_registry},'ruhr','tangors (ruhr) add_registry');
-$rc = $dri->target('ruhr')->add_current_profile('p1-afilias','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->target('ruhr')->add_current_profile('p1-ruhr','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 $drd = $dri->{registries}->{ruhr}->{driver};
 is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version=>undef}],'tangors (ruhr): epp transport_protocol_default');
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction/],'tangors (ruhr): loaded_modules');
