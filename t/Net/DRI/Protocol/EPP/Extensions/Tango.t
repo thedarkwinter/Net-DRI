@@ -61,7 +61,6 @@ $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee},undef,'Fee extension not loaded');
 
 
-
 #####################
 ## IDN Extension
 
