@@ -1040,7 +1040,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.core
 =cut
 
  my $tangorsversion; # setting this variable because this profile use distinct fee extensions per TLD :(
- $tangorsversion = undef if $tld eq 'ruhr'; # no fee extension
+ $tangorsversion = undef; # no fee - default
  $tangorsversion = '1.0' if $tld eq 'nrw'; # fee standard (rfc8748)
  $tangorsversion = '0.21' if $tld eq 'whoswho'; # draft fee version 0.21
  # no idea about the other TLDs: gmx and ifm - simply add, and share please, if needed :)
