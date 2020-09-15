@@ -82,7 +82,7 @@ sub object_types  { return qw/domain ns registry/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{remote_host=>'otessl.verisign-grs.com', remote_port=>700},'Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NameStore',{'fee_version' => '0.9'}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host=>'otessl.verisign-grs.com', remote_port=>700},'Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NameStore',{}) if $type eq 'epp';
  return ('Net::DRI::Transport::Socket',{remote_host=>'whois.verisign-grs.com'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
  return;
 }
