@@ -5,10 +5,8 @@ dist: focal
 language: perl
 
 perl:
-  - "5.30"
-  - "5.26"
-  - "5.22"
-  - "5.18"
+  - "5.30.0"
+  - "5.26.0"
 
 notifications:
   recipients:
