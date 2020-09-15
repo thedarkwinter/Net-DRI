@@ -7,8 +7,13 @@ jobs:
   include:
     - os: linux
       dist: focal
+      perl: "5.30.0"
     - os: linux
       dist: bionic
+      perl: "5.24"
+    - os: linux
+      dist: trusty
+      perl: "5.18"
 
 notifications:
   recipients:
