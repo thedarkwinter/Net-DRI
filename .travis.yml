@@ -1,12 +1,16 @@
 # https://docs.travis-ci.com/user/languages/perl/
 ---
-dist: focal
 
 language: perl
 
-perl:
-  - "5.30.0"
-  - "5.26.0"
+jobs:
+  include:
+    - os: linux
+      dist: focal
+      perl: "5.30.0"
+    - os: linux
+      dist: bionic
+      perl: "5.26.1"
 
 notifications:
   recipients:
