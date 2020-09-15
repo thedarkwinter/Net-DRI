@@ -1,5 +1,18 @@
+# https://docs.travis-ci.com/user/languages/perl/
+---
+dist: focal
+
 language: perl
+
 perl:
   - "5.30"
-  - "5.28"
   - "5.26"
+  - "5.22"
+  - "5.18"
+
+notifications:
+  recipients:
+    - michael@thedarkwinter.com
+  email:
+    on_success: change
+    on_failure: always
