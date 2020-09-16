@@ -143,6 +143,12 @@ sub domain_update
  return $self->SUPER::domain_update($reg, $dom, $changes, $rd);
 }
 
+sub domain_delete
+{
+ my ($self, $reg, $dom, $rd) = @_;
+ return $reg->process('domain', 'delete', [$dom, $rd]);
+}
+
 sub domain_trade
 {
  my ($self, $reg, $dom, $rd) = @_;
