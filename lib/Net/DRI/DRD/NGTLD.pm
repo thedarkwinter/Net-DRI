@@ -556,7 +556,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
 =head3 TLDs
 
-kiwi
+kiwi sx
 
 =head3 Custom extensions
 
@@ -570,7 +570,7 @@ They will be adding a fury.xsd extension
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['kiwi'],
+     tlds => ['kiwi', 'sx'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{ custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.11' }],
    } if $bep eq 'fury';
