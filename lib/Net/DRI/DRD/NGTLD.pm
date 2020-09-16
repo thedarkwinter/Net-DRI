@@ -1037,16 +1037,18 @@ L<Net::DRI::Protocol::EPP::Extensions::TangoRS::Auction> urn:ar:params:xml:ns:au
 
 L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.corenic.net/epp/mark-ext-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.6
-
-Fee extension is currently only used in .NRW and for domain_check command only.
-
 =cut
+
+ my $tangorsversion; # setting this variable because this profile use distinct fee extensions per TLD :(
+ $tangorsversion = undef; # no fee - default
+ $tangorsversion = '1.0' if $tld eq 'nrw'; # fee standard (rfc8748)
+ $tangorsversion = '0.21' if $tld eq 'whoswho'; # draft fee version 0.21
+ # no idea about the other TLDs: gmx and ifm - simply add, and share please, if needed :)
 
  return {
      bep_type => 1, # dedicated registry
      tlds => ['ruhr','gmx','ifm','nrw','whoswho'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version => ($tld eq 'nrw' ? '0.21': undef)}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version => $tangorsversion}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'tango' || $bep eq 'tangors';
 
