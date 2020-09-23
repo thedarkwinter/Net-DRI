@@ -1448,9 +1448,6 @@ sub _build_price_query
  } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::ARI::Price', @{$ndr->protocol()->{loaded_modules}})
  {
    $rd->{price} = exists $rd->{duration} ? {duration => $rd->{duration}} :1;
- } elsif (grep $_ eq 'Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain', @{$ndr->protocol()->{loaded_modules}})
- {
-   $rd->{premium_domain} = 1;
  }
  my $fee_version = 0+($ndr->protocol()->{brown_fee_version} // $ndr->protocol()->{fee_version} // 0);
  # CentralNic::Fee (<=011) this extension is used in addition to premium_domain above, hense to elsif.
