@@ -1418,6 +1418,15 @@ sub domain_check_price
  my ($self,$ndr,@names)=@_;
  my $rd = (@names && exists $names[-1] && ref $names[-1] eq 'HASH' ) ? pop @names : {};
  $rd = $self->_build_price_query($ndr,$rd);
+ # get fee_version again in order to use (OR TRY) proper domain_check (CentralNIC vs Standard Fee) if multiple fee in use
+ my $fee_version = 0+($ndr->protocol()->{brown_fee_version} // $ndr->protocol()->{fee_version} // 0);
+ if ($fee_version >=1)
+ {
+  @{$ndr->protocol()->{loaded_modules}} = grep {$_ ne 'Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee'} @{$ndr->protocol()->{loaded_modules}};
+  #print Dumper($ndr->protocol->{loaded_modules});
+  # FIXME: CentralNic::Fee extension deleted from loaded_modules but domain check still being called from this extension instead of Standard Fee... WHY?! :(
+ }
+ #print Dumper($rd); exit 0;
  return $ndr->domain_check(@names,$rd);
 }
 
