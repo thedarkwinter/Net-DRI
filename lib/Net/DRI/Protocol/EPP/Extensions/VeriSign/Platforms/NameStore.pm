@@ -80,7 +80,13 @@ sub default_extensions
  $self->{fee_version} = $rp->{fee_version} if exists $rp->{fee_version};
  my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::Balance GracePeriod SecDNS ChangePoll LaunchPhase VeriSign::DefReg VeriSign::EmailFwd/;
  push @c,'VeriSign::JobsContact' if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'dotJOBS';
- push @c,qw/VeriSign::PremiumDomain CentralNic::Fee Fee/; ## not active for all TLDs, a little complicated
+ ## even if greeting return VeriSign::PremiumDomain and CentraNic::Fee lets use default_product to ONLY enforce usage of standard Fee
+ ## to avoid bigger problems - ex. using domain_check() from CentralNic::Fee instead of Fee due multiple Fees causing error: usererr_insufficient_parameters...
+ if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'standard_fee_only' {
+  push @c,qw/Fee/;
+ } else {
+  push @c,qw/VeriSign::PremiumDomain CentralNic::Fee Fee/; ## not active for all TLDs, a little complicated + they recently introduced standard Fee
+ }
  push @c,'VeriSign::NameStore'; ## this must come last
  return @c;
 }
