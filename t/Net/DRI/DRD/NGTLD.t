@@ -155,7 +155,7 @@ is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Sock
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::ClientAttributes VeriSign::TwoFactorAuth VeriSign::ZoneManagement VeriSign::Balance VeriSign::NameStore VeriSign::PremiumDomain CentralNic::Fee/],'verisign: loaded_modules');
 is($drd->{bep}->{bep_type},2,'verisign: bep_type');
 is($drd->{info}->{check_limit},13,'verisign: check_limit');
-is_deeply([$dri->tlds()],['com','net','cc','tv','name','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','xn--9dbq2a','azure','bing','broker','career','cfd','crs','forex','hotmail','java','maif','makeup','markets','microsoft','oracle','pictet','realestate','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],'verisign: tlds');
+is_deeply([$dri->tlds()],['com','net','cc','tv','name','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','xn--9dbq2a','azure','bing','broker','career','cfd','crs','forex','hotmail','java','maif','markets','microsoft','oracle','pictet','realestate','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],'verisign: tlds');
 
 # CoCCA
 $rc = $dri->add_registry('NGTLD',{provider => 'cocca'});

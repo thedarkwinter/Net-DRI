@@ -340,7 +340,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art baby bar basketball best blog bond budapest cam ceo college cyou desi design fans feedback forum fun gay gent host icu ink love luxury monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets uno website wiki wme xyz
+art baby bar basketball best blog bond budapest cam ceo college cyou desi design fans feedback forum fun gay gent host icu ink love luxury makeup monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets uno website wiki wme xyz
 
 Contended TLD's not included
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art baby bar basketball best blog bond budapest cam ceo college cyou desi design fans feedback forum fun gay gent host icu ink love luxury monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets uno website wiki wme xyz/;
+    my @ngtlds = qw/art baby bar basketball best blog bond budapest cam ceo college cyou desi design fans feedback forum fun gay gent host icu ink love luxury makeup monster observer online ooo pid press protection realty reit rent rest rugby saarland security site space storage store tech theatre tickets uno website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -1289,7 +1289,7 @@ L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS> (Extended Protection Se
 
 =head3 TLDs
 
-xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe xn--9dbq2a azure bing broker career cfd crs forex hotmail java maif makeup markets microsoft oracle pictet realestate realtor sca shell sky spreadbetting trading xbox windows
+xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe xn--9dbq2a azure bing broker career cfd crs forex hotmail java maif markets microsoft oracle pictet realestate realtor sca shell sky spreadbetting trading xbox windows
 
 Contended TLD's not included
 
@@ -1314,7 +1314,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
  return {
      bep_type => 2,
      contact_i18n => 7, # They accept LOC *or* INT, but only one of them.
-     tlds => ['com','net','cc','tv','name','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','xn--9dbq2a','azure','bing','broker','career','cfd','crs','forex','hotmail','java','maif','makeup','markets','microsoft','oracle','pictet','realestate','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],
+     tlds => ['com','net','cc','tv','name','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','xn--9dbq2a','azure','bing','broker','career','cfd','crs','forex','hotmail','java','maif','markets','microsoft','oracle','pictet','realestate','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn' => 1, custom => ['VeriSign::Sync', 'VeriSign::PollLowBalance', 'VeriSign::PollRGP', 'VeriSign::IDNLanguage', 'VeriSign::WhoWas', 'VeriSign::Suggestion', 'VeriSign::ClientAttributes', 'VeriSign::TwoFactorAuth', 'VeriSign::ZoneManagement', 'VeriSign::Balance', 'VeriSign::NameStore', 'VeriSign::PremiumDomain', 'CentralNic::Fee'], 'brown_fee_version' => '0.9'}],
      whois_server => 'ccwhois.verisign-grs.com',
    } if $bep eq 'verisign';
