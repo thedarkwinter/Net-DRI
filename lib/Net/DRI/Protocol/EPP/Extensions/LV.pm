@@ -82,7 +82,7 @@ sub setup {
     return;
 }
 
-sub default_extensions { return qw/LV::Domain LV::Contact/; }
+sub default_extensions { return qw/LV::Domain LV::Contact SecDNS/; }
 
 ####################################################################################################
 1;
