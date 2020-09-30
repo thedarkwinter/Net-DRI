@@ -1318,7 +1318,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Fee>
      tlds => ['com','net','cc','tv','name','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','xn--9dbq2a','azure','bing','broker','career','cfd','crs','forex','hotmail','java','maif','makeup','markets','microsoft','oracle','pictet','realestate','realtor','sca','shell','sky','spreadbetting','trading','xbox','windows'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn' => 1, custom => ['VeriSign::Sync', 'VeriSign::PollLowBalance', 'VeriSign::PollRGP', 'VeriSign::IDNLanguage', 'VeriSign::WhoWas', 'VeriSign::Suggestion', 'VeriSign::ClientAttributes', 'VeriSign::TwoFactorAuth', 'VeriSign::ZoneManagement', 'VeriSign::Balance', 'VeriSign::NameStore', 'VeriSign::PremiumDomain', 'CentralNic::Fee', 'Fee'], 'fee_version' => '1.0'}],
      whois_server => 'ccwhois.verisign-grs.com',
-   } if $bep eq 'verisign';
+   } if $bep eq 'verisign'; # please check comments under Verisign::Platforms::NameStore
 
 
 

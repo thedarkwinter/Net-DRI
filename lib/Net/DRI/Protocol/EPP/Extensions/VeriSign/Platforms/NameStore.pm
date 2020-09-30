@@ -78,15 +78,11 @@ sub default_extensions
 {
  my ($self,$rp)=@_;
  $self->{fee_version} = $rp->{fee_version} if exists $rp->{fee_version};
- my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::Balance GracePeriod SecDNS ChangePoll LaunchPhase VeriSign::DefReg VeriSign::EmailFwd/;
- push @c,'VeriSign::JobsContact' if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'dotJOBS';
+ # as per MH discussion lets only enforce usage of standard Fee extension to avoid problems (supported by Verisign for all TLDs)
+ # NOTE: left DRD - verisign profile loading ALL extensions (as returned by their greeting) - just enforcing the standard Fee here!
  ## even if greeting returns VeriSign::PremiumDomain and CentraNic::Fee lets use `standard_fee_only` to ONLY enforce usage of standard Fee (similar approach as JobsContact)
- ## to avoid bigger problems - ex. using domain_check() from CentralNic::Fee instead of Fee due multiple Fees causing error: `usererr_insufficient_parameters`
- if ( exists $rp->{standard_fee_only} && defined $rp->{standard_fee_only} && $rp->{standard_fee_only} eq 'yes' ) {
-  push @c,qw/Fee/;
- } else {
-  push @c,qw/VeriSign::PremiumDomain CentralNic::Fee Fee/; ## not active for all TLDs, a little complicated + they recently introduced standard Fee
- }
+ my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::Balance GracePeriod SecDNS ChangePoll LaunchPhase VeriSign::DefReg VeriSign::EmailFwd Fee/;
+ push @c,'VeriSign::JobsContact' if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'dotJOBS';
  push @c,'VeriSign::NameStore'; ## this must come last
  return @c;
 }
