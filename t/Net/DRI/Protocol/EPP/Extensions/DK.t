@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 31;
+use Test::More tests => 35;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=30; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -134,13 +134,32 @@ is($dri->get_info('advisory'),'Blocked','domain_check_extension get_info(advisor
 
 ####################################################################################################
 ####### Verisign balance + RGP standard ########
+
+### Verisign balance
 $R2=$E1.'<response>'.r().'<resData><balance:infData xmlns:balance="http://www.verisign.com/epp/balance-1.0"><balance:creditLimit>1000.00</balance:creditLimit><balance:balance>200.00</balance:balance><balance:availableCredit>800.00</balance:availableCredit><balance:creditThreshold><balance:fixed>500.00</balance:fixed></balance:creditThreshold></balance:infData></resData>'.$TRID.'</response>'.$E2;
-my $rc=$dri->balance_info();
+$rc=$dri->balance_info();
 is_string($R1,$E1.'<command><info><balance:info xmlns:balance="http://www.verisign.com/epp/balance-1.0" xsi:schemaLocation="http://www.verisign.com/epp/balance-1.0 balance-1.0.xsd"/></info><clTRID>ABC-12345</clTRID></command>'.$E2,'balance_info build');
 is($rc->get_data('session','balance','credit_limit'),1000,'balance_info get_data(credit_limit) 1');
 is($rc->get_data('session','balance','balance'),200,'balance_info get_data(balance) 1');
 is($rc->get_data('session','balance','available_credit'),800,'balance_info get_data(available_credit) 1');
 is($rc->get_data('session','balance','credit_threshold'),500,'balance_info get_data(credit_threshold) 1');
 is($rc->get_data('session','balance','credit_threshold_type'),'FIXED','balance_info get_data(credit_threshold_type) 1');
+
+### RGP - Registry Grace Period
+# op request
+$R2='';
+$toc=Net::DRI::Data::Changes->new();
+$toc->set('rgp',{ op => 'request'});
+$rc=$dri->domain_update('example51.dk',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example51.dk</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="request"/></rgp:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_request');
+is($rc->is_success(),1,'domain_update is_success +RGP');
+
+# op report
+$R2='';
+$toc=Net::DRI::Data::Changes->new();
+$toc->set('rgp',{ op => 'report', report => {predata=>'Pre-delete registration data goes here. Both XML and free text are allowed.', postdata=>'Post-restore registration data goes here. Both XML and free text are allowed.',deltime=>DateTime->new(year=>2003,month=>7,day=>10,hour=>22),restime=>DateTime->new(year=>2003,month=>7,day=>20,hour=>22),reason=>'Registrant error.',statement1=>'This registrar has not restored the Registered Name in order to assume the rights to use or sell the Registered Name for itself or for any third party.',statement2=>'The information in this report is true to best of this registrar\'s knowledge, and this registrar acknowledges that intentionally supplying false information in this report shall constitute an incurable material breach of the Registry-Registrar Agreement.',other=>'Supporting information goes here.' }});
+$rc=$dri->domain_update('example52.dk',$toc);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example52.dk</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="report"><rgp:report><rgp:preData>Pre-delete registration data goes here. Both XML and free text are allowed.</rgp:preData><rgp:postData>Post-restore registration data goes here. Both XML and free text are allowed.</rgp:postData><rgp:delTime>2003-07-10T22:00:00.0Z</rgp:delTime><rgp:resTime>2003-07-20T22:00:00.0Z</rgp:resTime><rgp:resReason>Registrant error.</rgp:resReason><rgp:statement>This registrar has not restored the Registered Name in order to assume the rights to use or sell the Registered Name for itself or for any third party.</rgp:statement><rgp:statement>The information in this report is true to best of this registrar\'s knowledge, and this registrar acknowledges that intentionally supplying false information in this report shall constitute an incurable material breach of the Registry-Registrar Agreement.</rgp:statement><rgp:other>Supporting information goes here.</rgp:other></rgp:report></rgp:restore></rgp:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_report');
+is($rc->is_success(),1,'domain_update is_success +RGP');
 
 exit 0;
