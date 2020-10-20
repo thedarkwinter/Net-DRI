@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2013-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -59,7 +59,7 @@ David Makuni <d.makuni@live.co.uk>
 
 Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
-Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2013-2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -98,6 +98,12 @@ sub set_factories {
 	my ($self,$po)=@_;
 	$po->factories('contact',sub { return Net::DRI::Data::Contact::DK->new(@_); });
 	return;
+}
+
+sub balance_info
+{
+ my ($self,$ndr)=@_;
+ return $ndr->process('balance','info');
 }
 
 ####################################################################################################

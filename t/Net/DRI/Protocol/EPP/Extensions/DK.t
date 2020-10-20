@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 25;
+use Test::More tests => 31;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=30; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -131,5 +131,16 @@ $rc=$dri->domain_check('blockeddomain.dk');
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>blockeddomain.dk</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build');
 is($rc->is_success(),1,'domain_check is_success');
 is($dri->get_info('advisory'),'Blocked','domain_check_extension get_info(advisory)');
+
+####################################################################################################
+####### Verisign balance + RGP standard ########
+$R2=$E1.'<response>'.r().'<resData><balance:infData xmlns:balance="http://www.verisign.com/epp/balance-1.0"><balance:creditLimit>1000.00</balance:creditLimit><balance:balance>200.00</balance:balance><balance:availableCredit>800.00</balance:availableCredit><balance:creditThreshold><balance:fixed>500.00</balance:fixed></balance:creditThreshold></balance:infData></resData>'.$TRID.'</response>'.$E2;
+my $rc=$dri->balance_info();
+is_string($R1,$E1.'<command><info><balance:info xmlns:balance="http://www.verisign.com/epp/balance-1.0" xsi:schemaLocation="http://www.verisign.com/epp/balance-1.0 balance-1.0.xsd"/></info><clTRID>ABC-12345</clTRID></command>'.$E2,'balance_info build');
+is($rc->get_data('session','balance','credit_limit'),1000,'balance_info get_data(credit_limit) 1');
+is($rc->get_data('session','balance','balance'),200,'balance_info get_data(balance) 1');
+is($rc->get_data('session','balance','available_credit'),800,'balance_info get_data(available_credit) 1');
+is($rc->get_data('session','balance','credit_threshold'),500,'balance_info get_data(credit_threshold) 1');
+is($rc->get_data('session','balance','credit_threshold_type'),'FIXED','balance_info get_data(credit_threshold_type) 1');
 
 exit 0;
