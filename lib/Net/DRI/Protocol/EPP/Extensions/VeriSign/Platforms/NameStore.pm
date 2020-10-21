@@ -77,10 +77,11 @@ sub setup
 sub default_extensions
 {
  my ($self,$rp)=@_;
- $self->{brown_fee_version} = $rp->{brown_fee_version} if exists $rp->{brown_fee_version};
- my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::Balance GracePeriod SecDNS ChangePoll LaunchPhase VeriSign::DefReg VeriSign::EmailFwd/;
+ $self->{fee_version} = $rp->{fee_version} if exists $rp->{fee_version};
+ # As VeriSign has started to use the RFC8748 Fee extension (fee-1.0), we are no longer supporting PremiumDomain and CentralNic::Fee to avoid conflicts
+ # These can still be loaded manually in add_current_profile()
+ my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::Balance GracePeriod SecDNS ChangePoll LaunchPhase VeriSign::DefReg VeriSign::EmailFwd Fee/;
  push @c,'VeriSign::JobsContact' if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'dotJOBS';
- push @c,qw/VeriSign::PremiumDomain CentralNic::Fee/; ## not active for all TLDs, a little complicated
  push @c,'VeriSign::NameStore'; ## this must come last
  return @c;
 }
