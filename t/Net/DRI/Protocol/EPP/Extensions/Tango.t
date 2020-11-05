@@ -9,7 +9,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 96;
+use Test::More tests => 97;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -29,6 +29,9 @@ $dri->target('ruhr')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\
 $dri->add_registry('NGTLD',{provider => 'Tango',name=>'nrw'});
 $dri->target('nrw')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
+$dri->add_registry('NGTLD',{provider => 'Tango',name=>'whoswho'});
+$dri->target('whoswho')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
 $dri->add_registry('NGTLD',{provider => 'corenic',name=>'eus'});
 $dri->target('eus')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
@@ -38,11 +41,18 @@ my $d;
 my ($dh,@c,$idn,$co,$co2);
 
 ###################################################################################################
-## Tango uses the fee-0.21 of for .NRW
-$dri->target('nrw');
+
+## For whoswho Tango uses fee-0.21 (based on Greeting: 09/09/2020)
+$dri->target('whoswho');
 $R2=$E1.'<greeting><svID>TANGO testing server</svID><svDate>2014-06-25T10:44:01.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.21</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee},'urn:ietf:params:xml:ns:fee-0.21','Fee 0.21 loaded correctly');
+
+## For nrw Tango uses the last Fee extension - https://tools.ietf.org/html/rfc8748
+$dri->target('nrw');
+$R2=$E1.'<greeting><svID>TANGO testing server</svID><svDate>2014-06-25T10:44:01.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:epp:fee-1.0</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($dri->protocol()->ns()->{fee},'urn:ietf:params:xml:ns:epp:fee-1.0','standard Fee-1.0 loaded correctly');
 
 # For ruhr, we make sure no fee extension is loaded
 $dri->target('ruhr');

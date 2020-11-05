@@ -90,7 +90,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{remote_host=>'rri.test.denic.de',remote_port=>51131,defer=>1,close_after=>1,socktype=>'tcp'},'Net::DRI::Protocol::RRI',{version=>'2.1'}) if $type eq 'rri';
+ return ('Net::DRI::Transport::Socket',{remote_host=>'rri.test.denic.de',remote_port=>51131,defer=>1,close_after=>1,socktype=>'ssl'},'Net::DRI::Protocol::RRI',{version=>'2.1'}) if $type eq 'rri';
  return;
 }
 
@@ -141,6 +141,12 @@ sub domain_update
  $rd->{ns} = $ns unless (defined($rd->{ns}));
 
  return $self->SUPER::domain_update($reg, $dom, $changes, $rd);
+}
+
+sub domain_delete
+{
+ my ($self, $reg, $dom, $rd) = @_;
+ return $reg->process('domain', 'delete', [$dom, $rd]);
 }
 
 sub domain_trade

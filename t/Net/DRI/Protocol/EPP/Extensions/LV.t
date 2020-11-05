@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 66;
+use Test::More tests => 83;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -198,5 +198,48 @@ is($dri->get_info('object_type','message','555'),'domain','message get_info obje
 is($dri->get_info('object_id','message','555'),'testdomain1.lv','message get_info id');
 is($dri->get_info('action','message','555'),'transfer','message get_info action'); ## with this, we know what action has triggered this delayed message
 is($dri->get_info('reID','message','555'),'new_regisrtar','message get_info reID');
+
+
+####################################################################################################
+####### Transfer operations ########
+
+### Transfer REQUEST operation
+$R2=$E1.'<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><trID><clTRID>5de52339104fa</clTRID><svTRID>LVNIC-20191202-31b3c6c4fc6f3119757ec5605410c28a-2</svTRID></trID></response>'.$E2;
+$rc=$dri->domain_transfer_start('transfer-accept-testuser-1.lv',{auth=>{pw=>'transfer-accept-testuser-1.lv'}});
+is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>transfer-accept-testuser-1.lv</domain:name><domain:authInfo><domain:pw>transfer-accept-testuser-1.lv</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
+
+### Transfer informative QUERY operation
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>transfer-accept-ignored-4.lv</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>TestUser2</domain:reID><domain:reDate>2019-12-02T16:44:09+02:00</domain:reDate><domain:acID>TestUser</domain:acID><domain:acDate>2019-12-08T00:00:00+02:00</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_query('transfer-accept-ignored-4.lv');
+is($R1,$E1.'<command><transfer op="query"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>transfer-accept-ignored-4.lv</domain:name></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_query build');
+is($dri->get_info('action'),'transfer','domain_transfer_query get_info(action)');
+is($dri->get_info('exist'),1,'domain_transfer_query get_info(exist)');
+is($dri->get_info('trStatus'),'pending','domain_transfer_query get_info(trStatus)');
+is($dri->get_info('reID'),'TestUser2','domain_transfer_query get_info(reID)');
+$d=$dri->get_info('reDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(reDate)');
+is("".$d,'2019-12-02T16:44:09','domain_transfer_query get_info(reDate) value');
+is($dri->get_info('acID'),'TestUser','domain_transfer_query get_info(acID)');
+$d=$dri->get_info('acDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(acDate)');
+is("".$d,'2019-12-08T00:00:00','domain_transfer_query get_info(acDate) value');
+
+### Transfer CANCEL operation
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_stop('transfer-ignored-testuser-5.lv');
+is_string($R1,$E1.'<command><transfer op="cancel"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>transfer-ignored-testuser-5.lv</domain:name></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_stop build');
+is($rc->is_success(),1,'domain_transfer_stop is_success');
+
+### Transfer APPROVE operation
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_accept('transfer-away-testuser-4.lv');
+is_string($R1,$E1.'<command><transfer op="approve"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>transfer-away-testuser-4.lv</domain:name></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_start build');
+is($rc->is_success(),1,'domain_transfer_start is_success');
+
+### Transfer REJECT operation
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_refuse('transfer-reject-testuser-4.lv');
+is_string($R1,$E1.'<command><transfer op="reject"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>transfer-reject-testuser-4.lv</domain:name></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_reject build');
+is($rc->is_success(),1,'domain_transfer_reject is_success');
 
 exit 0;

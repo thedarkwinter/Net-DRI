@@ -68,15 +68,14 @@ sub setup
 {
   my ($self,$rp)=@_;
   $self->ns({
-      epp         => 'http://www.dns.pl/nask-epp-schema/epp-2.0',
-      domain      => 'http://www.dns.pl/nask-epp-schema/domain-2.0',
-      contact     => 'http://www.dns.pl/nask-epp-schema/contact-2.0',
-      host        => 'http://www.dns.pl/nask-epp-schema/host-2.0',
-      extcon      => 'http://www.dns.pl/nask-epp-schema/extcon-2.0',
-      extdom      => 'http://www.dns.pl/nask-epp-schema/extdom-2.0',
-      future      => 'http://www.dns.pl/nask-epp-schema/future-2.0',
-      extepp      => 'http://www.dns.pl/nask-epp-schema/extepp-2.0',
-      extreport   => 'http://www.dns.pl/nask-epp-schema/extreport-2.0',
+      epp         => 'http://www.dns.pl/nask-epp-schema/epp-2.1',
+      domain      => 'http://www.dns.pl/nask-epp-schema/domain-2.1',
+      contact     => 'http://www.dns.pl/nask-epp-schema/contact-2.1',
+      host        => 'http://www.dns.pl/nask-epp-schema/host-2.1',
+      extcon      => 'http://www.dns.pl/nask-epp-schema/extcon-2.1',
+      extdom      => 'http://www.dns.pl/nask-epp-schema/extdom-2.1',
+      future      => 'http://www.dns.pl/nask-epp-schema/future-2.1',
+      extepp      => 'http://www.dns.pl/nask-epp-schema/extepp-2.1',
     });
 
   $self->capabilities('host_update','name',undef); ## No change of hostnames

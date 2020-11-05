@@ -65,7 +65,7 @@ is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:x
 $R2='';
 $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
 $dri->add_registry('NGTLD',{provider=>'verisign'});
-$dri->target('verisign')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->target('verisign')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['VeriSign::PremiumDomain']});
 
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">example1.career</domain:name></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check('example1.career');

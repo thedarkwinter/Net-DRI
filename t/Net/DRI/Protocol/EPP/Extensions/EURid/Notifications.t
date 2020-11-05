@@ -137,7 +137,7 @@ is($rc->get_data('message','456','level'),567,'notification !domain get_data(lev
 
 
 ########################################################################################################
-## New notifications This was taken from Release Notes_11October2017_v1.0.pdf
+## New notifications
 
 # New notification in DOMAIN context
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="7" id="9951"><qDate>2017-08-02T11:36:38.033Z</qDate><msg>Domain name released from quarantine: abcabc-1498131396995.eu</msg></msgQ><resData><poll-1.2:pollData xmlns:poll-1.2="http://www.eurid.eu/xml/epp/poll-1.2"><poll-1.2:context>DOMAIN</poll-1.2:context><poll-1.2:objectType>DOMAIN</poll-1.2:objectType><poll-1.2:object>abcabc-1498131396995.eu</poll-1.2:object><poll-1.2:objectUnicode>abcabc-1498131396995.eu</poll-1.2:objectUnicode><poll-1.2:action>RELEASED_FROM_QUARANTINE</poll-1.2:action><poll-1.2:code>1720</poll-1.2:code></poll-1.2:pollData></resData>'.$TRID.'</response>'.$E2;

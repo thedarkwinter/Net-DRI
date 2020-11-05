@@ -84,7 +84,7 @@ sub capabilities_add { return (['domain_update','secdns',['add','del']]); }
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'secDNS' => 'http://www.dns.pl/nask-epp-schema/secDNS-2.0' });
+ $po->ns({ 'secDNS' => 'http://www.dns.pl/nask-epp-schema/secDNS-2.1' });
  return;
 }
 
@@ -100,7 +100,7 @@ sub update
  my @def=grep { defined } ($toadd,$todel);
  return unless @def;
 
- Net::DRI::Exception::usererr_invalid_parameters('In NASK SecDNS-2.0, only add or del is possible, not more than one of them') if (@def>1);
+ Net::DRI::Exception::usererr_invalid_parameters('In NASK SecDNS-2.1, only add or del is possible, not more than one of them') if (@def>1);
 
  my @n;
  push @n,['secDNS:add',Net::DRI::Protocol::EPP::Extensions::SecDNS::add_interfaces(ref $toadd eq 'ARRAY' ? $toadd : [ $toadd ] )] if defined $toadd;

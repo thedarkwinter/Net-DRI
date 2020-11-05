@@ -28,6 +28,13 @@ sub register_commands
  return { 'report' => { create => [ \&create, \&create_parse ] } };
 }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ 'extreport' => 'http://www.dns.pl/nask-epp-schema/extreport-2.1' });
+ return;
+}
+
 ####################################################################################################
 
 sub create

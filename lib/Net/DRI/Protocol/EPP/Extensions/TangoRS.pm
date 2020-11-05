@@ -32,9 +32,21 @@ sub setup
 
 sub default_extensions {
  my ($self,$pp) = @_;
- my @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction/;
- $self->{fee_version} = $self->{brown_fee_version} = $pp->{brown_fee_version} // $pp->{fee_version};
- push @ext, 'Fee' if $self->{fee_version} && $self->{fee_version} >= '0.21';
+ my @ext;
+
+ # tweak to fix mess with multiple (and non existent) fees
+ # .ruhr: no fee; .nrw: standard 1.0 fee (rfc8748); .whoswho: draft fee version 0.21
+ # no idea about the other TLDs: gmx and ifm - simply add, and share please, if needed :)
+ if ($self && ($self->{logging_ctx}->{profile} =~ m/nrw/ || $self->{logging_ctx}->{registry} =~ m/nrw/)) {
+  $pp->{fee_version} = '1.0';
+  @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction Fee/;
+ } elsif ($self && ($self->{logging_ctx}->{profile} =~ m/whoswho/ || $self->{logging_ctx}->{registry} =~ m/whoswho/)) {
+  $pp->{fee_version} = '0.21';
+  @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction CentralNic::Fee/;
+ } else {
+  $pp->{fee_version} = undef;
+  @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction/;
+ }
 
  return @ext;
 }

@@ -93,7 +93,7 @@ sub setup
  my ($class,$po,$version)=@_;
  foreach my $ns (qw/domain-ext/)
  {
-  $po->ns({ $ns => 'http://www.eurid.eu/xml/epp/'.$ns.'-2.3' });
+  $po->ns({ $ns => 'http://www.eurid.eu/xml/epp/'.$ns.'-2.4' });
  }
  foreach my $ns (qw/homoglyph/)
  {
@@ -215,15 +215,14 @@ sub info_parse
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name,$c)=@$el;
-  if ($name=~m/^(onHold|quarantined|suspended)$/) ## onHold here has nothing to do with EPP client|serverHold, unfortunately
+  if ($name=~m/^(onHold|quarantined|suspended|seized|delayed)$/) ## onHold here has nothing to do with EPP client|serverHold, unfortunately
   {
    $status->add($name) if Net::DRI::Util::xml_parse_boolean($c->textContent()); ## TODO : correct status name?
+   # get also element value
+   $rinfo->{domain}->{$oname}->{$name}=$c->textContent();
   } elsif ($name=~m/^(availableDate|deletionDate)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$po->parse_iso8601($c->textContent());
-  } elsif ($name eq 'delayed')
-  {
-   $rinfo->{domain}->{$oname}->{$name} = Net::DRI::Util::xml_parse_boolean($c->textContent());
   } elsif ($name eq 'contact')
   {
    $contact->add($po->create_local_object('contact')->srid($c->textContent()),$c->getAttribute('type'));

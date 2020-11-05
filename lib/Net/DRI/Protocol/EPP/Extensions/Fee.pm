@@ -155,7 +155,11 @@ sub setup
   # This means any commands called before greeting will use that version until its bumped to highest version
   my $v = $po->{brown_fee_version} // $po->{fee_version};
   $v = '1.0' unless defined $v && $v =~ m/^\d.(\d+)$/;
-  $po->ns({ 'fee' => 'urn:ietf:params:xml:ns:fee-'.$v });
+  if ($v && $v eq '1.0') {
+    $po->ns({ 'fee' => 'urn:ietf:params:xml:ns:epp:fee-'.$v });
+  } else {
+    $po->ns({ 'fee' => 'urn:ietf:params:xml:ns:fee-'.$v });
+  }
   $po->capabilities('domain_update','fee',['set']);
   return;
 }

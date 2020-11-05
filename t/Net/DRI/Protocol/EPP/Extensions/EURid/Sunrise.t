@@ -34,7 +34,6 @@ my ($rc,$s,$d,$co,$toc,$cs,$h,$dh,@c);
 ############################################################################################################
 ## Sunrise
 
-## Examples from Registration_guidelines_v1_0F-appendix2-sunrise.pdf
 $dri->target('EURid')->add_current_profile('p2','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['EURid::Sunrise']});
 
 ## p.8
