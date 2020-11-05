@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Handling of contact data for CIRA
 ##
-## Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2013,2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -22,7 +22,7 @@ use base qw/Net::DRI::Data::Contact/;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-__PACKAGE__->register_attributes(qw(legal_form lang is_individual ip_address agreement reseller_id whois_display));
+__PACKAGE__->register_attributes(qw(legal_form lang agreement whois_display));
 
 ####################################################################################################
 
@@ -45,13 +45,11 @@ sub validate
 
  push @errs,'legal_form' if (defined $self->legal_form() && $self->legal_form()!~m!^(?:CCO|CCT|RES|GOV|EDU|ASS|HOP|PRT|TDM|TRD|PLT|LAM|TRS|ABO|INB|LGR|OMK|MAJ)$!);
  push @errs,'lang' if (defined $self->lang() && $self->lang()!~m/^(?:fr|en)$/o);
- push @errs,'ip_address' if (defined $self->ip_address() && !Net::DRI::Util::is_ipv4($self->ip_address(),1) && !Net::DRI::Util::is_ipv6($self->ip_address(),1));
  if (defined $self->agreement())
  {
   my $ra=$self->agreement();
-  push @errs,'agreement' if (ref($ra) ne 'HASH' || 2!=keys(%$ra) || !exists($ra->{version}) || !exists($ra->{signed}) || length($ra->{version}) > 4 || $ra->{signed}!~m/^(?:0|1)$/);
+  push @errs,'agreement' if (ref($ra) ne 'HASH' || 2!=keys(%$ra) || !exists($ra->{version}) || !exists($ra->{signed}) || (length($ra->{version}) > 4 and ''.$ra->{version} ne 'default') || $ra->{signed}!~m/^(?:0|1)$/);
  }
- push @errs,'reseller_id' if (defined $self->reseller_id() && length($self->reseller_id()) > 255);
  push @errs,'whois_display' if (defined $self->whois_display() && $self->whois_display()!~m/^(?:FULL|PRIVATE)$/o);
 
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
@@ -102,18 +100,10 @@ legal form (see registry list of possible CPR values), mandatory for registrant 
 
 contact preferred language, either 'fr' or 'en'
 
-=head2 ip_address()
-
-(optional) registrant originating IP address (v4 or v6)
-
 =head2 agreement()
 
 ref hash with keys version and signed (value being 1 or 0); optional for non registrant contacts
 registry also adds a third key, 'timestamp'
-
-=head2 reseller_id()
-
-(optional) ID of the registrar reseller
 
 =head2 whois_display()
 
@@ -137,7 +127,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2013,2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
