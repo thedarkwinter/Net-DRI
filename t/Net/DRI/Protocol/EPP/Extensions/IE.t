@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -106,6 +106,15 @@ $cs->set($dri->local_object('contact')->srid('testcontact1'),'registrant');
 $rc=$dri->domain_create('testdomain5.ie',{ pure_create => 1, contact => $cs, auth => { pw => 'password' } });
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>testdomain5.ie</domain:name><domain:registrant>testcontact1</domain:registrant><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build (simple)');
 
+####################################################################################################
+## Domain create (full)
 
+$cs=$dri->local_object('contactset');
+$cs->add($dri->local_object('contact')->srid('testcontact1'),'registrant');
+$cs->add($dri->local_object('contact')->srid('testcontact1'),'admin');
+$cs->add($dri->local_object('contact')->srid('testcontact1'),'tech');
+$cs->add($dri->local_object('contact')->srid('testcontact1'),'billing');
+$rc=$dri->domain_create('testdomain4.ie',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns2.testdomain3.example'],['ns3.testdomain3.example']),auth=>{pw=>'password'},contact=>$cs,privacy=>1});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>testdomain4.ie</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns2.testdomain3.example</domain:hostObj><domain:hostObj>ns3.testdomain3.example</domain:hostObj></domain:ns><domain:registrant>testcontact1</domain:registrant><domain:contact type="admin">testcontact1</domain:contact><domain:contact type="billing">testcontact1</domain:contact><domain:contact type="tech">testcontact1</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.0"><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PRIVATE</fury:value></fury:property></fury:properties></fury:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_create build (full)');
 
 exit 0;
