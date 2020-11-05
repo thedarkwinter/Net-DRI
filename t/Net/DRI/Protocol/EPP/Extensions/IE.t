@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -26,7 +26,7 @@ $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_registry('CIRA::IE');
 $dri->target('CIRA::IE')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-my ($rc,$co,$h,$toc);
+my ($rc,$co,$cs,$h,$toc);
 use Data::Dumper; # TODO: delete when all implemented and tested :)
 
 ####################################################################################################
@@ -96,4 +96,16 @@ $co->contact_type('COM');
 $co->cro_number('123456');
 $rc=$dri->contact_create($co);
 is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>testcontact3</contact:id><contact:postalInfo type="loc"><contact:name>Foo Name</contact:name><contact:org>Bar Org</contact:org><contact:addr><contact:street>Line 1</contact:street><contact:street>Line 2</contact:street><contact:street>Line 3</contact:street><contact:city>Ottawa</contact:city><contact:sp>on</contact:sp><contact:pc>K1N4B3</contact:pc><contact:cc>ca</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.fury</contact:email><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo><contact:disclose flag="0"><contact:voice/><contact:email/></contact:disclose></contact:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.0"><fury:properties><fury:property><fury:key>IE_CONTACT_TYPE</fury:key><fury:value>COM</fury:value></fury:property><fury:property><fury:key>IE_CRO_NUMBER</fury:key><fury:value>123456</fury:value></fury:property><fury:property><fury:key>LANGUAGE</fury:key><fury:value>EN</fury:value></fury:property></fury:properties></fury:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'contact_create build 3');
+
+####################################################################################################
+## Domain create (simple)
+
+$R2='';
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('testcontact1'),'registrant');
+$rc=$dri->domain_create('testdomain5.ie',{ pure_create => 1, contact => $cs, auth => { pw => 'password' } });
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>testdomain5.ie</domain:name><domain:registrant>testcontact1</domain:registrant><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build (simple)');
+
+
+
 exit 0;

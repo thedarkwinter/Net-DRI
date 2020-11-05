@@ -22,7 +22,7 @@ use base qw/Net::DRI::Data::Contact/;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-__PACKAGE__->register_attributes(qw(lang contact_type cro_number supporting_number ticket_status ticket_id ticket_remark rant_validation_status));
+__PACKAGE__->register_attributes(qw(lang contact_type cro_number supporting_number ticket_status ticket_id ticket_remark rant_validation_status whois_display));
 
 ####################################################################################################
 
@@ -139,6 +139,10 @@ Indicates the latest remark for a validation ticket. This field only applies if 
 =head2 rant_validation_status()
 
 Indicates whether a contact has been validated.
+
+=head2 whois_display()
+
+for registrant contacts, either FULL or PRIVATE
 
 =head1 SUPPORT
 
