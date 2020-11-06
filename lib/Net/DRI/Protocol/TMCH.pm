@@ -214,7 +214,7 @@ sub new
  $self->version($version);
 
  $self->ns({ epp   => 'urn:ietf:params:xml:ns:tmch-1.1',
-                         mark => 'urn:ietf:params:xml:ns:mark-1.0','mark-1.0',
+                         mark => 'urn:ietf:params:xml:ns:mark-1.0',
                          signedMark => 'urn:ietf:params:xml:ns:signedMark-1.0',
                          'xmldsig-core-schema' => 'urn:ietf:params:xml:ns:xmldsig-core-schema-1.0'
                         });
