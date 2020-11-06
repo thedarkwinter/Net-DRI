@@ -27,7 +27,7 @@ use Net::DRI::Data::Contact::IE;
 sub default_extensions {
  my ($self,$pp) = @_;
  $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
- my @extensions = qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee CIRA::FuryIE/; # TODO: confirm via <greeting>!!!
+ my @extensions = qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee CIRA::FuryIE/;
  return @extensions;
 }
 

@@ -23,7 +23,7 @@ use base qw/Net::DRI::DRD/;
 use DateTime::Duration;
 use Net::DRI::Exception;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/domain_transfer_stop domain_transfer_query domain_transfer_accept domain_transfer_refuse/);
+# __PACKAGE__->make_exception_for_unavailable_operations(qw//);
 
 =pod
 

@@ -41,7 +41,6 @@ sub validate
   push @errs,'srid' unless Net::DRI::Util::xml_is_token($self->srid(),3,16);
  }
 
- # TODO: improve this... if possible :p
  push @errs,'sp' if (defined $self->sp() && defined $self->cc() && $self->cc() eq 'CA' && $self->sp()!~m/^(?:AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$/);
 
  push @errs,'contact_type' if (defined $self->contact_type() && $self->contact_type()!~m!^(?:CHA|COM|OTH)$!);

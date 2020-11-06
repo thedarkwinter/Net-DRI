@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 6;
+use Test::More tests => 9;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -26,8 +26,8 @@ $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_registry('CIRA::IE');
 $dri->target('CIRA::IE')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-my ($rc,$co,$cs,$h,$toc);
-use Data::Dumper; # TODO: delete when all implemented and tested :)
+my ($rc,$c1,$co,$cs,$h,$toc);
+
 
 ####################################################################################################
 ## Fury RGP 1.0 EPP Extension
@@ -38,6 +38,7 @@ is($rc->get_data('domain','testing.ie','rgp_status_end'), '2018-11-03T19:22:29',
 
 ####################################################################################################
 ## Fury 2.0 EPP Extension
+
 
 ## Contact create
 
@@ -97,6 +98,17 @@ $co->cro_number('123456');
 $rc=$dri->contact_create($co);
 is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>testcontact3</contact:id><contact:postalInfo type="loc"><contact:name>Foo Name</contact:name><contact:org>Bar Org</contact:org><contact:addr><contact:street>Line 1</contact:street><contact:street>Line 2</contact:street><contact:street>Line 3</contact:street><contact:city>Ottawa</contact:city><contact:sp>on</contact:sp><contact:pc>K1N4B3</contact:pc><contact:cc>ca</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.7035555555</contact:voice><contact:fax>+1.7035555556</contact:fax><contact:email>jdoe@example.fury</contact:email><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo><contact:disclose flag="0"><contact:voice/><contact:email/></contact:disclose></contact:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.0"><fury:properties><fury:property><fury:key>IE_CONTACT_TYPE</fury:key><fury:value>COM</fury:value></fury:property><fury:property><fury:key>IE_CRO_NUMBER</fury:key><fury:value>123456</fury:value></fury:property><fury:property><fury:key>LANGUAGE</fury:key><fury:value>EN</fury:value></fury:property></fury:properties></fury:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'contact_create build 3');
 
+
+####################################################################################################
+## Contact update (Changing a contact's language from French to English)
+$co=$dri->local_object('contact')->srid('agreed');
+$toc=$dri->local_object('changes');
+$toc->add('lang','en');
+$toc->del('lang','fr');
+$rc=$dri->contact_update($co, $toc);
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>agreed</contact:id></contact:update></update><extension><fury:update xmlns:fury="urn:ietf:params:xml:ns:fury-2.0"><fury:add><fury:properties><fury:property><fury:key>LANGUAGE</fury:key><fury:value>EN</fury:value></fury:property></fury:properties></fury:add><fury:rem><fury:properties><fury:property><fury:key>LANGUAGE</fury:key><fury:value>FR</fury:value></fury:property></fury:properties></fury:rem></fury:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'contact_update build (change lang fr => en)');
+
+
 ####################################################################################################
 ## Domain create (simple)
 
@@ -105,6 +117,7 @@ $cs=$dri->local_object('contactset');
 $cs->set($dri->local_object('contact')->srid('testcontact1'),'registrant');
 $rc=$dri->domain_create('testdomain5.ie',{ pure_create => 1, contact => $cs, auth => { pw => 'password' } });
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>testdomain5.ie</domain:name><domain:registrant>testcontact1</domain:registrant><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build (simple)');
+
 
 ####################################################################################################
 ## Domain create (full)
@@ -116,5 +129,31 @@ $cs->add($dri->local_object('contact')->srid('testcontact1'),'tech');
 $cs->add($dri->local_object('contact')->srid('testcontact1'),'billing');
 $rc=$dri->domain_create('testdomain4.ie',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns2.testdomain3.example'],['ns3.testdomain3.example']),auth=>{pw=>'password'},contact=>$cs,privacy=>1});
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>testdomain4.ie</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns2.testdomain3.example</domain:hostObj><domain:hostObj>ns3.testdomain3.example</domain:hostObj></domain:ns><domain:registrant>testcontact1</domain:registrant><domain:contact type="admin">testcontact1</domain:contact><domain:contact type="billing">testcontact1</domain:contact><domain:contact type="tech">testcontact1</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.0"><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PRIVATE</fury:value></fury:property></fury:properties></fury:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_create build (full)');
+
+
+####################################################################################################
+## Domain create (using IDN)
+
+$cs=$dri->local_object('contactset');
+$c1=$dri->local_object('contact')->srid('testcontact1');
+$cs->set($c1,'registrant');
+$cs->set($c1,'admin');
+$rc=$dri->domain_create('xn--r-wfan6a.ie',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,auth=>{pw=>'password'},idn_table => 'fr', uname => 'çïrâ.ie'});
+is_string($R1,$E1.qq'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>xn--r-wfan6a.ie</domain:name><domain:period unit="y">1</domain:period><domain:registrant>testcontact1</domain:registrant><domain:contact type="admin">testcontact1</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><idn:data xmlns:idn="urn:ietf:params:xml:ns:idn-1.0"><idn:table>fr</idn:table><idn:uname>çïrâ.ie</idn:uname></idn:data></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build (using IDN)');
+
+
+####################################################################################################
+## Domain update (fury extension)
+
+$toc=$dri->local_object('changes');
+$toc->add('ns',$dri->local_object('hosts')->set('ns1.testdomain3.example','ns3.testdomain3.example'));
+$cs=$dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('testcontact1'),'tech');
+$toc->add('contact',$cs);
+$toc->add('status',$dri->local_object('status')->no('delete'));
+$toc->set('auth', { pw => 'password2' });
+$toc->set('privacy', 0);
+$rc=$dri->domain_update('testdomain3.ie', $toc);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>testdomain3.ie</domain:name><domain:add><domain:ns><domain:hostObj>ns1.testdomain3.example</domain:hostObj><domain:hostObj>ns3.testdomain3.example</domain:hostObj></domain:ns><domain:contact type="tech">testcontact1</domain:contact><domain:status s="clientDeleteProhibited"/></domain:add><domain:chg><domain:authInfo><domain:pw>password2</domain:pw></domain:authInfo></domain:chg></domain:update></update><extension><fury:update xmlns:fury="urn:ietf:params:xml:ns:fury-2.0"><fury:add><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PUBLIC</fury:value></fury:property></fury:properties></fury:add><fury:rem><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PRIVATE</fury:value></fury:property></fury:properties></fury:rem></fury:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_update build (fury extension)');
 
 exit 0;
