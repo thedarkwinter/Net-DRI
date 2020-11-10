@@ -45,11 +45,6 @@ sub validate
 
  push @errs,'contact_type' if (defined $self->contact_type() && $self->contact_type()!~m!^(?:CHA|COM|OTH)$!);
  push @errs,'lang' if (defined $self->lang() && $self->lang()!~m/^(?:fr|en)$/o);
- if (defined $self->agreement())
- {
-  my $ra=$self->agreement();
-  push @errs,'agreement' if (ref($ra) ne 'HASH' || 2!=keys(%$ra) || !exists($ra->{version}) || !exists($ra->{signed}) || (length($ra->{version}) > 4 and ''.$ra->{version} ne 'default') || $ra->{signed}!~m/^(?:0|1)$/);
- }
  push @errs,'whois_display' if (defined $self->whois_display() && $self->whois_display()!~m/^(?:FULL|PRIVATE)$/o);
 
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;

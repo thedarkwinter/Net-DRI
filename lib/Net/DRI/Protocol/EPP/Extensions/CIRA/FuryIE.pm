@@ -38,9 +38,6 @@ sub register_commands
         'info'   => [ undef, \&domain_info_parse ],
         'update' => [ \&domain_update_build, undef ],
     },
-    'agreement' => {
-        'info' => [ \&agreement_info_build, \&agreement_info_parse ],
-    },
  };
 
  return $cmds;
@@ -235,32 +232,42 @@ sub contact_info_parse
  return unless defined $infdata;
 
  my $contact = $rinfo->{contact}->{$oname}->{self};
+ return unless defined $contact;
 
  foreach my $el (Net::DRI::Util::xml_list_children($infdata))
  {
   my ($name, $node) = @$el;
   if ($name eq 'properties')
   {
-   my %agreement;
    foreach my $ell (Net::DRI::Util::xml_list_children($node, 'property'))
    {
     my ($key, $value) = parse_attribute($po, $ell);
     if (uc $key eq 'LANGUAGE')
     {
      $contact->lang(lc $value);
-    } elsif (uc $key eq 'CPR')
+    } elsif (uc $key eq 'IE_CONTACT_TYPE')
     {
-     $contact->legal_form($value);
-    } elsif (uc $key eq 'AGREEMENT_TIMESTAMP')
+     $contact->contact_type($value);
+    } elsif (uc $key eq 'IE_CRO_NUMBER')
     {
-     $agreement{timestamp} = $po->parse_iso8601($value);
-    } elsif (uc $key eq 'AGREEMENT_VERSION')
+     $contact->cro_number($value);
+    } elsif (uc $key eq 'IE_SUPPORTING_NUMBER')
     {
-     $agreement{version} = $value;
-     $agreement{signed} = 1;
+     $contact->supporting_number($value);
+    } elsif (uc $key eq 'IE_TICKET_STATUS')
+    {
+     $contact->ticket_status($value);
+    } elsif (uc $key eq 'IE_TICKET_ID')
+    {
+     $contact->ticket_id($value);
+    } elsif (uc $key eq 'IE_TICKET_REMARK')
+    {
+     $contact->ticket_remark($value);
+    } elsif (uc $key eq 'IE_RANT_VALIDATION_STATUS')
+    {
+     $contact->rant_validation_status($value);
     }
    }
-   $contact->agreement(\%agreement) if %agreement;
   }
  }
 
@@ -278,7 +285,6 @@ sub contact_update_build
  my @d;
  push @d, ['add', ['properties', build_properties({'LANGUAGE' => uc $add})]];
  push @d, ['rem', ['properties', build_properties({'LANGUAGE' => uc $del})]];
- # What about CPR and AGREEMENT?
  $epp->message()->command_extension('fury', ['update', @d]);
  return;
 }
@@ -331,7 +337,6 @@ sub domain_info_parse
    my ($name, $node) = @$el;
    if ($name eq 'properties')
    {
-    my %agreement;
     foreach my $ell (Net::DRI::Util::xml_list_children($node, 'property'))
     {
      my ($key, $value) = parse_attribute($po, $ell);
@@ -380,50 +385,6 @@ sub domain_update_build
  push @d, ['add', ['properties', build_properties($toset ? \%on : \%off)]];
  push @d, ['rem', ['properties', build_properties($toset ? \%off : \%on)]];
  $epp->message()->command_extension('fury', ['update', @d]);
-
- return;
-}
-
-sub agreement_info_build
-{
- my ($epp, $language) = @_;
-
- $epp->message()->command_extension('fury', ['command', ['info', ['language', $language // 'en'], ['properties', build_properties({'AGREEMENT_VERSION' => {'default' => 'true'}})]]]);
- return;
-}
-
-sub agreement_info_parse
-{
- my ($po, $otype, $oaction, $oname, $rinfo)=@_;
- my $mes = $po->message();
- return unless $mes->is_success();
-
- my $infdata = $mes->get_extension('fury', 'response');
- return unless defined $infdata;
-
- ($infdata) = Net::DRI::Util::xml_list_children($infdata, 'infData');
- return unless defined $infdata;
-
- foreach my $el (Net::DRI::Util::xml_list_children($infdata))
- {
-  my ($name, $node) = @$el;
-  if ($name eq 'language')
-  {
-   $rinfo->{agreement}->{cira}->{language} = lc $node->textContent();
-  } elsif ($name eq 'properties')
-  {
-   foreach my $ell (Net::DRI::Util::xml_list_children($node, 'property'))
-   {
-    my ($key, $value) = parse_property($po, $ell);
-
-    if ($key eq 'AGREEMENT_VERSION')
-    {
-     $rinfo->{agreement}->{cira}->{version} = $value->{'values'}[0]{'localized_value'};
-     $rinfo->{agreement}->{cira}->{content} = $value->{'values'}[0]{'localized_detail'};
-    }
-   }
-  }
- }
 
  return;
 }

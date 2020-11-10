@@ -113,14 +113,5 @@ sub verify_name_domain
  return $self->_verify_name_rules($domain,$op,{check_name=>1,check_name_dots=>[1,2,3],my_tld_not_strict=>1});
 }
 
-sub agreement_info
-{
- my ($self,$ndr,$language)=@_;
- Net::DRI::Exception::usererr_invalid_parameters('CIRA IE (Titan) agreement language must be "en" or "fr"') if (defined $language && $language!~m/^(?:fr|en)$/);
-
- my $rc=$ndr->process('agreement', 'info', [ $language ]);
- return $rc;
-}
-
 ####################################################################################################
 1;

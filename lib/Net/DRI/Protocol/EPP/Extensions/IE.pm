@@ -24,6 +24,14 @@ use Net::DRI::Data::Contact::IE;
 
 ####################################################################################################
 
+sub setup
+{
+ my ($self,$rp)=@_;
+
+ $self->factories('contact',sub { return Net::DRI::Data::Contact::IE->new(); });
+ return;
+}
+
 sub default_extensions {
  my ($self,$pp) = @_;
  $self->{brown_fee_version} = $pp->{brown_fee_version} if exists $pp->{brown_fee_version};
