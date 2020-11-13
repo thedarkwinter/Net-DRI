@@ -40,7 +40,6 @@ lib/Net/DRI/Data/Contact/FICORA.pm
 lib/Net/DRI/Data/Contact/FRED.pm
 lib/Net/DRI/Data/Contact/IIS.pm
 lib/Net/DRI/Data/Contact/IT.pm
-lib/Net/DRI/Data/Contact/JOBS.pm
 lib/Net/DRI/Data/Contact/LU.pm
 lib/Net/DRI/Data/Contact/LV.pm
 lib/Net/DRI/Data/Contact/Neustar.pm
@@ -475,7 +474,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/ClientAttributes.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/DefReg.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/EmailFwd.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/IDNLanguage.pm
-lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/JobsContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/NameStore.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Platforms/COM_NET.pm
 lib/Net/DRI/Protocol/EPP/Extensions/VeriSign/Platforms/NameStore.pm
@@ -723,7 +721,6 @@ t/Net/DRI/Protocol/EPP/Extensions/VeriSign/ClientAttributes.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/DefReg.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/EmailFwd.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/IDNLanguage.t
-t/Net/DRI/Protocol/EPP/Extensions/VeriSign/JobsContact.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/NameStore.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/PollChangePoll.t
 t/Net/DRI/Protocol/EPP/Extensions/VeriSign/PollLowBalance.t

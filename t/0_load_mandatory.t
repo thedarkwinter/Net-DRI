@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 543;
+use Test::More tests => 541;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -30,7 +30,6 @@ use_ok('Net::DRI::Data::Contact::FICORA');
 use_ok('Net::DRI::Data::Contact::FRED');
 use_ok('Net::DRI::Data::Contact::IIS');
 use_ok('Net::DRI::Data::Contact::IT');
-use_ok('Net::DRI::Data::Contact::JOBS');
 use_ok('Net::DRI::Data::Contact::LU');
 use_ok('Net::DRI::Data::Contact::LV');
 use_ok('Net::DRI::Data::Contact::NominetMMX');
@@ -456,7 +455,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::ClientAttributes');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::DefReg');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::EmailFwd');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::IDNLanguage');
-use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::JobsContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::NameStore');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::COM_NET');
 use_ok('Net::DRI::Protocol::EPP::Extensions::VeriSign::Platforms::NameStore');
