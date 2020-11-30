@@ -7,6 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
+use Test::More skip_all => 'Verisign JobsContact extension not in use anymore but we are keeping it... for now :)';
 use Test::More tests => 29;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
