@@ -104,7 +104,7 @@ sub name     { return 'Afilias::Shared'; }
 
 sub tlds     {
  my @legacygTLDs = qw/asia/;
- my @newgTLDs = qw/xn--4gbrim xn--kput3i bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl rich srl vegas yachts zara/;
+ my @newgTLDs = qw/xn--4gbrim xn--kput3i autos bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl rich srl vegas yachts zara/;
  my @ccTLDs = (
      'ag',(map { $_.'.ag'} qw/co com net nom org/),
      'bz',(map { $_.'.bz'} qw/co com net org/),
