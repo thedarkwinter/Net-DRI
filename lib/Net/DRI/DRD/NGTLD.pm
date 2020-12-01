@@ -299,14 +299,14 @@ Afilias SRS has extended their plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-ngtlds: xn--4gbrim xn--kput3i autos bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl rich srl vegas yachts zara
+ngtlds: xn--4gbrim xn--kput3i bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl rich srl vegas yachts zara
 gtlds: mobi
 cctlds: ag bz gi lc mn me sc vc
 
 =cut
 
  if ($bep eq 'afiliassrs') {
-   my @ngtlds = qw/xn--4gbrim xn--kput3i autos bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl rich srl vegas yachts zara/;
+   my @ngtlds = qw/xn--4gbrim xn--kput3i bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl rich srl vegas yachts zara/;
    my @gtlds = qw/asia/;
    my @cctlds = (
        'ag',(map { $_.'.ag'} qw/co com net nom org/),
@@ -340,7 +340,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art baby bar basketball beauty best blog bond budapest cam ceo college cyou desi design fans feedback forum fun gay gent hair host icu ink love luxury makeup monster observer online ooo pid press protection quest realty reit rent rest rugby saarland security site skin space storage store tech theatre tickets uno website wiki wme xyz
+art autos baby bar basketball beauty best blog bond budapest cam car cars ceo college cyou desi design fans feedback forum fun gay gent hair host icu ink love luxury makeup monster observer online ooo pid press protection quest realty reit rent rest rugby saarland security site skin space storage store tech theatre tickets uno website wiki wme xyz
 
 Contended TLD's not included
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art baby bar basketball beauty best blog bond budapest cam ceo college cyou desi design fans feedback forum fun gay gent hair host icu ink love luxury makeup monster observer online ooo pid press protection quest realty reit rent rest rugby saarland security site skin space storage store tech theatre tickets uno website wiki wme xyz/;
+    my @ngtlds = qw/art autos baby bar basketball beauty best blog bond budapest cam car cars ceo college cyou desi design fans feedback forum fun gay gent hair host icu ink love luxury makeup monster observer online ooo pid press protection quest realty reit rent rest rugby saarland security site skin space storage store tech theatre tickets uno website wiki wme xyz/;
     my @ngtlds_contested = qw/hotel mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -1116,7 +1116,7 @@ xn--3ds443g xn--fiq228c5hs xn--nyqy26a xn--rhqv96g xn--vuq861b
 
 =head3 TLDs
 
-audio auto blackfriday car cars christmas click country diet flowers game gift guitars help hiphop hiv hosting juegos link lol mom photo pics property sexy tattoo
+audio auto blackfriday christmas click country diet flowers game gift guitars help hiphop hiv hosting juegos link lol mom photo pics property sexy tattoo
 
 Contended TLD's not included
 
@@ -1147,7 +1147,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['audio','auto','blackfriday','car','cars','christmas','click','country','diet','flowers','game','gift','guitars','help','hiphop','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo'],
+     tlds => ['audio','auto','blackfriday','christmas','click','country','diet','flowers','game','gift','guitars','help','hiphop','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
