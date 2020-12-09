@@ -18,7 +18,6 @@ use strict;
 use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
-use Net::DRI::Data::Contact::JOBS;
 
 =pod
 
@@ -67,7 +66,6 @@ sub setup
  my ($self,$rp)=@_;
  $self->default_parameters()->{subproductid}=$rp->{default_product} || '_auto_';
  $self->default_parameters()->{whois_info}=0;
- $self->factories('contact',sub { return Net::DRI::Data::Contact::JOBS->new(@_); });
  return;
 }
 
@@ -81,7 +79,6 @@ sub default_extensions
  # As VeriSign has started to use the RFC8748 Fee extension (fee-1.0), we are no longer supporting PremiumDomain and CentralNic::Fee to avoid conflicts
  # These can still be loaded manually in add_current_profile()
  my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::Balance GracePeriod SecDNS ChangePoll LaunchPhase VeriSign::DefReg VeriSign::EmailFwd Fee/;
- push @c,'VeriSign::JobsContact' if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'dotJOBS';
  push @c,'VeriSign::NameStore'; ## this must come last
  return @c;
 }
