@@ -107,7 +107,7 @@ sub tlds {
   my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
   my @orgs = (map { $_.'.org' } qw/us ae/);
   my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-  my @ngtlds = qw/art auto baby bar basketball beauty best blog bond broker budapest cam car cars ceo cfd college cyou desi design fans feedback forex forum fun gay gent hair host icu ink love luxury makeup markets monster observer online ooo pid press protection quest realty reit rent rest rugby saarland security site skin space spreadbetting storage store tech theatre tickets trading uno website wiki wme xyz/;
+  my @ngtlds = qw/art auto baby bar basketball beauty best blog bond broker budapest build cam car cars ceo cfd college cyou desi design fans feedback forex forum fun gay gent hair host icu ink love luxury makeup markets monster observer online ooo pid press protection qpon quest realty reit rent rest rugby saarland security site skin space spreadbetting storage store tech theatre tickets trading uno website wiki wme xyz/;
   my @ngtlds_contested = qw/hotel mail/; # some of these might go to other registries
   return (@coms,@nets,@orgs,@others,@ngtlds);
 }
