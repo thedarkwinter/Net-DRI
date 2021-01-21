@@ -198,7 +198,7 @@ is($r->org(),'Afilias Ltd.','domain_info get_info (contact) registrant org');
 ####################################################################################################
 # ARI (Neustar Narwahl)
 
-$R2='Domain Name: nic.build
+$R2='Domain Name: nic.aaa
 Domain ID: D215DA75E3E0A4133AE5DD1B3BE26C3E6-ARI
 WHOIS Server: whois.aridnrs.net.au
 Referral URL: http://www.aridnrs.net.au/
@@ -222,7 +222,7 @@ Registrant Phone:
 Registrant Phone Ext:
 Registrant Fax:
 Registrant Fax Ext:
-Registrant Email: George@dotbuild.co
+Registrant Email: George@dotaaa.co
 Admin ID: C5BB57F68FC594A56A7ABB5573DF2FE1C-ARI
 Admin Name: Plan Bee LLC
 Admin Organization:
@@ -237,7 +237,7 @@ Admin Phone:
 Admin Phone Ext:
 Admin Fax:
 Admin Fax Ext:
-Admin Email: George@dotbuild.co
+Admin Email: George@dotaaa.co
 Tech ID: C5BB57F68FC594A56A7ABB5573DF2FE1C-ARI
 Tech Name: Plan Bee LLC
 Tech Organization:
@@ -252,11 +252,11 @@ Tech Phone:
 Tech Phone Ext:
 Tech Fax:
 Tech Fax Ext:
-Tech Email: George@dotbuild.co
-Name Server: a.nic.build
-Name Server: b.nic.build
-Name Server: c.nic.build
-Name Server: d.nic.build
+Tech Email: George@dotaaa.co
+Name Server: a.nic.aaa
+Name Server: b.nic.aaa
+Name Server: c.nic.aaa
+Name Server: d.nic.aaa
 DNSSEC: signedDelegation
 >>> Last update of WHOIS database: 2014-05-27T09:29:20Z <<<
 
@@ -283,10 +283,10 @@ We may discontinue or amend any part or the whole of these Terms of Service from
 
 $dri->add_registry('NGTLD',{provider=>'ari'});
 $dri->target('ari')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.build');
+$rc = $dri->domain_info('nic.aaa');
 is($rc->is_success(),1,'ARI domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.build','domain_info get_info (name)');
+is($dri->get_info('name'),'nic.aaa','domain_info get_info (name)');
 is($dri->get_info('id'),'D215DA75E3E0A4133AE5DD1B3BE26C3E6-ARI','domain_info get_info (id)');
 is($dri->get_info('clName'),'Plan Bee LLC','domain_info get_info (clName)');
 is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)');
@@ -302,7 +302,7 @@ is($dri->get_info('wuDate'),'2014-05-27T09:29:20','domain_info get_info (wuDate)
 $h=$dri->get_info('ns');
 isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
 @hs=$h->get_names();
-is_deeply(\@hs,['a.nic.build','b.nic.build','c.nic.build','d.nic.build'],'domain_info get_info (ns) get_names');
+is_deeply(\@hs,['a.nic.aaa','b.nic.aaa','c.nic.aaa','d.nic.aaa'],'domain_info get_info (ns) get_names');
 $c=$dri->get_info('contact');
 isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
 is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
