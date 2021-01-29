@@ -1,8 +1,8 @@
 ## Domain Registry Interface, Handling of contact data for JP
 ##
-## Copyright (c) 2020 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2020 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2021 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -23,7 +23,7 @@ use base qw/Net::DRI::Data::Contact/;
 use Net::DRI::Exception;
 use Net::DRI::Util;
 
-__PACKAGE__->register_attributes(qw(type));
+__PACKAGE__->register_attributes(qw(suffix alloc ryid handle transfer domainCreatePreValidation suspendDate lapsedNs));
 
 =pod
 
@@ -66,9 +66,9 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2020 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2020 Michael Holloway <michael@thedarkwinter.com>.
-          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
+Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2021 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2021 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -90,22 +90,9 @@ sub validate
 
  $self->SUPER::validate($change); ## will trigger an Exception if problem
 
- if (!$change)
- {
-  Net::DRI::Exception::usererr_insufficient_parameters('Invalid contact information: pc mandatory') unless (scalar($self->pc()));
- }
-
- push @errs,'sp' if $self->sp(); ## not allowed
- push @errs,'type' if ($self->type() && $self->type()!~m/^(?:holder_org|holder_pers|contact)/);
+ push @errs,'suffix' if ($self->suffix() && $self->suffix()!~m/^(?:jp|ojp)/);
+ push @errs,'alloc' if ($self->alloc() && $self->alloc()!~m/^(?:registrant|public|personnel)/);
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
-
- if ($self->type() && ($self->type() ne 'contact'))
- {
-  push @errs,'voice' if $self->voice();
-  push @errs,'fax'   if $self->fax();
-  push @errs,'org'   if $self->org();
-  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information (not allowed for holders): '.join('/',@errs)) if @errs;
- }
 
  return 1; ## everything ok.
 }

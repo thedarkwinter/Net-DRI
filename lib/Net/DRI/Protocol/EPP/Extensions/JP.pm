@@ -1,8 +1,8 @@
 ## Domain Registry Interface, JPRS EPP extensions
 ##
-## Copyright (c) 2020 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2020 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2021 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -20,6 +20,8 @@ use strict;
 use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
+
+use Net::DRI::Data::Contact::JP;
 
 =pod
 
@@ -49,9 +51,9 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2020 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2020 Michael Holloway <michael@thedarkwinter.com>.
-          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
+Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2021 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2021 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -69,18 +71,12 @@ sub setup
 {
  my ($self,$rp)=@_;
  $self->ns({jpex => ['urn:ietf:params:xml:ns:jpex-1.0','jpex-1.0.xsd']});
-#  $self->capabilities('contact_update','status',undef); ## No changes in status possible for .LU contacts
-#  $self->capabilities('contact_update','disclose',['add','del']);
-#  $self->capabilities('host_update','status',undef);
-#  $self->capabilities('domain_update','registrant',undef); ## a trade is needed
-#  $self->capabilities('domain_update','auth',undef); ## not used
-#  $self->factories('status',sub { return Net::DRI::Protocol::EPP::Extensions::LU::Status->new(); });
-#  $self->default_parameters({domain_create => { auth => { pw => '' }, duration => undef } }); ## authInfo and period not used
+ $self->factories('contact', sub { return Net::DRI::Data::Contact::JP->new(); });
+
  return;
 }
 
-# sub default_extensions { return qw/JP::Domain JP::Contact JP::Poll/; }
-sub default_extensions { return qw/JP::Contact/; }
+sub default_extensions { return qw/CentralNic::Fee GracePeriod IDN JP::JPEX LaunchPhase SecDNS/; }
 
 ####################################################################################################
 1;

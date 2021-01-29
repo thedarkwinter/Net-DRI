@@ -1,8 +1,8 @@
 ## Domain Registry Interface, JPRS GMO Registry (.jp) Driver
 ##
-## Copyright (c) 2020 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2020 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2020 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2021 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -57,7 +57,9 @@ This DRD extends the L<Net::DRI::DRD::GMORegistry::JPRS>
 
 =head3 Custom extensions:
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.11
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::JP::JPEX> urn:ietf:params:xml:ns:jpex-1.0
 
 =head1 SUPPORT
 
@@ -77,9 +79,9 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2020 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2020 Michael Holloway <michael@thedarkwinter.com>.
-          (c) 2020 Paulo Jorge <paullojorgge@gmail.com>.
+Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2021 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2021 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
