@@ -82,6 +82,48 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
+# list of Japonese prefecture codes - JISX0401
+my %prefectures = (
+  '01' => 'Hokkaido',
+  '02' => 'Aomori',
+  '03' => 'Iwate',
+  '04' => 'Miyagi',
+  '05' => 'Akita',
+  '06' => 'Yamagata',
+  '07' => 'Fukushima',
+  '08' => 'Ibaraki',
+  '09' => 'Tochigi',
+  '10' => 'Gunma',
+  '11' => 'Saitama',
+  '12' => 'Chiba',
+  '13' => 'Tokyo',
+  '14' => 'Kanagawa',
+  '15' => 'Niigatta',
+  '16' => 'Toyama',
+  '27' => 'Osaka',
+  '28' => 'Hyogo',
+  '29' => 'Nara',
+  '30' => 'Wakayama',
+  '31' => 'Tottori',
+  '32' => 'Shimane',
+  '33' => 'Okayama',
+  '34' => 'Hiroshima',
+  '35' => 'Yamaguchi',
+  '36' => 'Tokushima',
+  '37' => 'Kagawa',
+  '38' => 'Ehime',
+  '39' => 'Kochi',
+  '40' => 'Fukuoka',
+  '41' => 'Saga',
+  '42' => 'Nagasaki',
+  '43' => 'Kumamoto',
+  '44' => 'Oita',
+  '45' => 'Miyazaki',
+  '46' => 'Kagoshima',
+  '47' => 'Okinawa',
+  '99' => 'outside of Japan'
+);
+
 sub validate
 {
  my ($self,$change)=@_;
@@ -93,6 +135,13 @@ sub validate
  push @errs,'suffix' if ($self->suffix() && $self->suffix()!~m/^(?:jp|ojp)/);
  push @errs,'alloc' if ($self->alloc() && $self->alloc()!~m/^(?:registrant|public|personnel)/);
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
+
+ # sp is mandatory for alloc registrant AND only accepts 2 digit number allocated to Japan prefectures
+ if ($self->alloc() && $self->alloc() eq 'registrant') {
+  Net::DRI::Exception::usererr_insufficient_parameters('sp field is mandatory for registrant!') unless ($self->sp());
+  Net::DRI::Exception::usererr_invalid_parameters('sp is not a 2 digits number!') unless ($self->sp() =~ m/^\d{1,2}$/);
+  Net::DRI::Exception::usererr_invalid_parameters("sp is not a valid prefecture!") unless (exists $prefectures{$self->sp()});
+ }
 
  return 1; ## everything ok.
 }
@@ -108,6 +157,5 @@ sub init
  }
  return;
 }
-
 ####################################################################################################
 1;

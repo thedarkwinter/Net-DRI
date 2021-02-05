@@ -9,7 +9,8 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: delete me when all done :p
 
-use Test::More tests => 40;
+use Test::More tests => 45;
+use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -27,7 +28,7 @@ $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('GMORegistry::JPRS');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-my ($rc, $co, $d, $s);
+my ($rc, $co, $d, $s, $cs, $c1, $c2, $c3, $c4);
 
 ####################################################################################################
 $R2=$E1.'<greeting>
@@ -101,7 +102,22 @@ is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:para
 is($rc->is_success(),1,'contact_create  (Registrant) is_success');
 is($dri->get_info('action'),'create','contact_create (Registrant) get_info(action)');
 is($dri->get_info('exist'),1,'contact_create (Registrant) get_info(exist)');
+
+# lets see if validations are working
+## sp field missing - mandatory for alloc registrant
+delete $co->{'sp'};
+throws_ok { $dri->contact_create($co) } qr/sp field is mandatory for registrant/, 'contact_create (Registrant) mandatory sp field missing';
+## sp is not a 2 digit
+$co->sp('123');
+throws_ok { $dri->contact_create($co) } qr/sp is not a 2 digits number/, 'contact_create (Registrant) sp is not a 2 digits number 1/2';
+$co->sp('foobar');
+throws_ok { $dri->contact_create($co) } qr/sp is not a 2 digits number/, 'contact_create (Registrant) sp is not a 2 digits number 2/2';
+# use invalid sp prefecture
+$co->sp('50');
+throws_ok { $dri->contact_create($co) } qr/sp is not a valid prefecture/, 'contact_create (Registrant) sp is not a valid Japonese prefecture';
 ####################################################################################################
+
+
 
 ####################################################################################################
 ### Contact create (Public)
@@ -126,7 +142,6 @@ is($rc->is_success(),1,'contact_create  (Public) is_success');
 is($dri->get_info('action'),'create','contact_create (Public) get_info(action)');
 is($dri->get_info('exist'),1,'contact_create (Public) get_info(exist)');
 ####################################################################################################
-
 
 
 ####################################################################################################
@@ -172,5 +187,37 @@ is($co->alloc(),'registrant','contact_info get_info(self) alloc');
 is($co->ryid(),'REG-90-1234-5678','contact_info get_info(self) ryid');
 ####################################################################################################
 
+####################################################################################################
+### Contact transfers not available!
+####################################################################################################
+throws_ok { $dri->contact_transfer_start( $dri->local_object('contact')->srid('sh8017')->auth({pw=>'2fooBAR'}) ) } qr/No operation contact transfer_start available for registry GMORegistry::JPRS/, 'contact transfer operations not available';
+####################################################################################################
+
+
+exit 0;
+####################################################################################################
+### Domain create
+####################################################################################################
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.jp</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
+$cs=$dri->local_object('contactset');
+$c1=$dri->local_object('contact')->srid('TEST1');
+$c2=$dri->local_object('contact')->srid('TEST2');
+$c3=$dri->local_object('contact')->srid('TEST3');
+$c4=$dri->local_object('contact')->srid('TEST4');
+$cs->set($c1,'registrant');
+$cs->set($c2,'admin');
+$cs->set($c3,'tech');
+$cs->set($c4,'billing');
+$rc=$dri->domain_create('test.jp',{contact=>$cs,auth=>{pw=>'2fooBAR'}});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.jp</domain:name><domain:registrant>TEST1</domain:registrant><domain:contact type="admin">TEST2</domain:contact><domain:contact type="tech">TEST3</domain:contact><domain:contact type="billing">TEST4</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><jpex:create xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp" /><jpex:contact alloc="public"><jpex:handle>TEST5</jpex:handle></jpex:contact></jpex:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is($dri->get_info('action'),'create','domain_create get_info(action)');
+is($dri->get_info('exist'),1,'domain_create get_info(exist)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','domain_create get_info(crDate)');
+is("".$d,'1999-04-03T22:00:00','domain_create get_info(crDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_create get_info(exDate)');
+is("".$d,'2001-04-03T22:00:00','domain_create get_info(exDate) value');
+####################################################################################################
 
 exit 0;
