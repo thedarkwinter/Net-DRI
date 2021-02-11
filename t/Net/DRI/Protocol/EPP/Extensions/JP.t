@@ -9,7 +9,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: delete me when all done :p
 
-use Test::More tests => 45;
+use Test::More tests => 55;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -194,7 +194,6 @@ throws_ok { $dri->contact_transfer_start( $dri->local_object('contact')->srid('s
 ####################################################################################################
 
 
-exit 0;
 ####################################################################################################
 ### Domain create
 ####################################################################################################
@@ -208,8 +207,14 @@ $cs->set($c1,'registrant');
 $cs->set($c2,'admin');
 $cs->set($c3,'tech');
 $cs->set($c4,'billing');
-$rc=$dri->domain_create('test.jp',{contact=>$cs,auth=>{pw=>'2fooBAR'}});
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.jp</domain:name><domain:registrant>TEST1</domain:registrant><domain:contact type="admin">TEST2</domain:contact><domain:contact type="tech">TEST3</domain:contact><domain:contact type="billing">TEST4</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><jpex:create xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp" /><jpex:contact alloc="public"><jpex:handle>TEST5</jpex:handle></jpex:contact></jpex:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+note("invalid duration check: != 1 year");
+throws_ok { $dri->domain_create('test.jp',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),contact=>$cs,auth=>{pw=>'2fooBAR'}}) } qr/Invalid duration/, 'domain create for 2 years invalid - only 1 year accepted';
+# note("missing required suffix");
+throws_ok { $dri->domain_create('test.jp',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,auth=>{pw=>'2fooBAR'}}) } qr/suffix is required/, 'domain create mandatory suffix is missing';
+# note("invalid suffix");
+throws_ok { $dri->domain_create('test.jp',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,auth=>{pw=>'2fooBAR'}, suffix=>'jpp'}) } qr/invalid suffi/, 'domain create invalid suffix usage';
+$rc=$dri->domain_create('test.jp',{ pure_create=>1, contact=>$cs, auth=>{pw=>'2fooBAR'}, suffix=>'jp', alloc=>'public', handle=>'TEST5' });
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.jp</domain:name><domain:registrant>TEST1</domain:registrant><domain:contact type="admin">TEST2</domain:contact><domain:contact type="billing">TEST4</domain:contact><domain:contact type="tech">TEST3</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><jpex:create xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp"/><jpex:contact alloc="public"><jpex:handle>TEST5</jpex:handle></jpex:contact></jpex:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($dri->get_info('action'),'create','domain_create get_info(action)');
 is($dri->get_info('exist'),1,'domain_create get_info(exist)');
 $d=$dri->get_info('crDate');
@@ -218,6 +223,13 @@ is("".$d,'1999-04-03T22:00:00','domain_create get_info(crDate) value');
 $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','domain_create get_info(exDate)');
 is("".$d,'2001-04-03T22:00:00','domain_create get_info(exDate) value');
+####################################################################################################
+
+
+####################################################################################################
+### Domain update
+####################################################################################################
+
 ####################################################################################################
 
 exit 0;

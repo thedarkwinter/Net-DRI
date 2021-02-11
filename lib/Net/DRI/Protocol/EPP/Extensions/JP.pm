@@ -76,6 +76,7 @@ sub setup
  return;
 }
 
+sub core_contact_types { return ('admin','billing','tech'); }
 sub default_extensions { return qw/CentralNic::Fee GracePeriod IDN JP::JPEX LaunchPhase SecDNS/; }
 
 ####################################################################################################

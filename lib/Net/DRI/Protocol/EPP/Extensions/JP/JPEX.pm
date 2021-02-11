@@ -79,7 +79,7 @@ sub register_commands
         'info'   => [ undef, \&contact_info_parse ],
     },
     'domain' => {
-        # 'create' => [ \&domain_create_build, undef ],
+        'create' => [ \&domain_create_build, undef ],
         # 'info'   => [ undef, \&domain_info_parse ],
         # 'update' => [ \&domain_update_build, undef ],
     },
@@ -143,11 +143,32 @@ sub contact_create_build
 
  ## validate() has been called, we are sure that type exists
  my @n;
- push @n,['jpex:domain suffix="'.$contact->suffix().'"'] if $contact->suffix();;
+ push @n,['jpex:domain suffix="'.$contact->suffix().'"'] if $contact->suffix();
  push @n,['jpex:contact alloc="'.$contact->alloc().'"'] if $contact->alloc();
 
  my $eid=build_command_extension($mes,$epp,'jpex:create');
  $mes->command_extension($eid,[@n]);
+
+ return;
+}
+
+sub domain_create_build
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+
+ # suffix is required
+ Net::DRI::Exception->die(0,'protocol/EPP',11,'suffix is required in domain_create')
+  unless ($rd && $rd->{'suffix'});
+ Net::DRI::Exception->die(0,'protocol/EPP',11,'invalid suffix: jp or ojp')
+  unless ($rd->{'suffix'} =~ m/^(jp|ojp)$/);
+
+ my @jpex;
+ push @jpex,['jpex:domain suffix="'.$rd->{'suffix'}.'"'];
+ push @jpex,['jpex:contact', ['jpex:handle', $rd->{'handle'}], {'alloc'=>$rd->{'alloc'}}] if $rd->{'alloc'};
+
+ my $eid=build_command_extension($mes,$epp,'jpex:create');
+ $mes->command_extension($eid,[@jpex]);
 
  return;
 }

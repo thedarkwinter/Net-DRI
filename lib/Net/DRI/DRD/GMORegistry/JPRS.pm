@@ -108,9 +108,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1); } # only 1 year period
-# sub periods  { return; } ## registry does not expect any duration at all # TODO: check this!!!
 sub name     { return 'GMORegistry::JPRS'; }
-
 sub tlds { return qw/jp co.jp or.jp ed.jp ac.jp/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
@@ -119,7 +117,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::JP',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::JP',{'brown_fee_version' => '0.5'}) if $type eq 'epp';
  return;
 }
 
