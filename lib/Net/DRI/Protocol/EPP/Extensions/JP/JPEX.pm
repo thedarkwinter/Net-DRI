@@ -81,7 +81,7 @@ sub register_commands
     'domain' => {
         'create' => [ \&domain_create_build, undef ],
         # 'info'   => [ undef, \&domain_info_parse ],
-        # 'update' => [ \&domain_update_build, undef ],
+        'update' => [ \&domain_update_build, undef ],
     },
  };
 
@@ -168,6 +168,21 @@ sub domain_create_build
  push @jpex,['jpex:contact', ['jpex:handle', $rd->{'handle'}], {'alloc'=>$rd->{'alloc'}}] if $rd->{'alloc'};
 
  my $eid=build_command_extension($mes,$epp,'jpex:create');
+ $mes->command_extension($eid,[@jpex]);
+
+ return;
+}
+
+sub domain_update_build
+{
+ my ($epp,$domain,$todo)=@_;
+ my $mes=$epp->message();
+
+ my @jpex;
+ push @jpex,['jpex:domain suffix="'.$todo->set('suffix').'"'] if $todo->{'suffix'};
+ push @jpex,['jpex:contact', ['jpex:handle', $todo->set('handle')], {'alloc'=>$todo->set('alloc')}] if $todo->{'alloc'};
+
+ my $eid=build_command_extension($mes,$epp,'jpex:update');
  $mes->command_extension($eid,[@jpex]);
 
  return;

@@ -9,7 +9,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: delete me when all done :p
 
-use Test::More tests => 55;
+use Test::More tests => 57;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -229,6 +229,17 @@ is("".$d,'2001-04-03T22:00:00','domain_create get_info(exDate) value');
 ####################################################################################################
 ### Domain update
 ####################################################################################################
+$R2='';
+my $toc=$dri->local_object('changes');
+$toc->add('ns',$dri->local_object('hosts')->set(['dns1.test.shop'],['dns2.test.shop']));
+$toc->del('ns',$dri->local_object('hosts')->set(['dns1.test.com'],['dns2.test.com']));
+$toc->add('secdns',{keyTag=>34567,alg=>8,digestType=>2,digest=>'1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF'});
+$toc->set('suffix','jp');
+$toc->set('alloc','public');
+$toc->set('handle','TEST3');
+$rc=$dri->domain_update('test.jp',$toc);
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.jp</domain:name><domain:add><domain:ns><domain:hostObj>dns1.test.shop</domain:hostObj><domain:hostObj>dns2.test.shop</domain:hostObj></domain:ns></domain:add><domain:rem><domain:ns><domain:hostObj>dns1.test.com</domain:hostObj><domain:hostObj>dns2.test.com</domain:hostObj></domain:ns></domain:rem></domain:update></update><extension><jpex:update xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp"/><jpex:contact alloc="public"><jpex:handle>TEST3</jpex:handle></jpex:contact></jpex:update><secDNS:update xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:add><secDNS:dsData><secDNS:keyTag>34567</secDNS:keyTag><secDNS:alg>8</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF</secDNS:digest></secDNS:dsData></secDNS:add></secDNS:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
+is($rc->is_success(),1,'domain_update is_success');
 
 ####################################################################################################
 

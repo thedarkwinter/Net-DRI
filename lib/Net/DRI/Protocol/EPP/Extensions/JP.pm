@@ -73,6 +73,9 @@ sub setup
  $self->ns({jpex => ['urn:ietf:params:xml:ns:jpex-1.0','jpex-1.0.xsd']});
  $self->factories('contact', sub { return Net::DRI::Data::Contact::JP->new(); });
 
+ # domain
+ foreach my $o (qw/alloc handle suffix/)  { $self->capabilities('domain_update',$o,['set']); }
+
  return;
 }
 
