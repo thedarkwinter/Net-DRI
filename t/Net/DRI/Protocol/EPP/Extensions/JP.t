@@ -9,7 +9,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: delete me when all done :p
 
-use Test::More tests => 57;
+use Test::More tests => 82;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -240,7 +240,45 @@ $toc->set('handle','TEST3');
 $rc=$dri->domain_update('test.jp',$toc);
 is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.jp</domain:name><domain:add><domain:ns><domain:hostObj>dns1.test.shop</domain:hostObj><domain:hostObj>dns2.test.shop</domain:hostObj></domain:ns></domain:add><domain:rem><domain:ns><domain:hostObj>dns1.test.com</domain:hostObj><domain:hostObj>dns2.test.com</domain:hostObj></domain:ns></domain:rem></domain:update></update><extension><jpex:update xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp"/><jpex:contact alloc="public"><jpex:handle>TEST3</jpex:handle></jpex:contact></jpex:update><secDNS:update xmlns:secDNS="urn:ietf:params:xml:ns:secDNS-1.1" xsi:schemaLocation="urn:ietf:params:xml:ns:secDNS-1.1 secDNS-1.1.xsd"><secDNS:add><secDNS:dsData><secDNS:keyTag>34567</secDNS:keyTag><secDNS:alg>8</secDNS:alg><secDNS:digestType>2</secDNS:digestType><secDNS:digest>1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF</secDNS:digest></secDNS:dsData></secDNS:add></secDNS:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build');
 is($rc->is_success(),1,'domain_update is_success');
+####################################################################################################
 
+
+####################################################################################################
+### Domain info
+####################################################################################################
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.jp</domain:name><domain:roid>DO123456-GMO</domain:roid><domain:status s="inactive"/><domain:registrant>TEST1-xxx</domain:registrant><domain:contact type="tech">TEST5-xxx</domain:contact><domain:contact type="admin">TEST5-xxx</domain:contact><domain:contact type="billing">TEST5-xxx</domain:contact><domain:clID>H12345</domain:clID><domain:crID>H12345</domain:crID><domain:crDate>2020-09-01T08:03:41.0Z</domain:crDate><domain:upDate>2020-09-01T08:12:02.0Z</domain:upDate><domain:exDate>2021-09-29T23:59:59.0Z</domain:exDate><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:infData></resData><extension><jpex:info xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp"/><jpex:contact alloc="public"><jpex:handle>TEST5-xxx</jpex:handle></jpex:contact></jpex:info></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('test.jp',{auth=>{pw=>'2fooBAR'}});
+is($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">test.jp</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_info build with auth');
+is($dri->get_info('action'),'info','domain_info get_info(action)');
+is($dri->get_info('exist'),1,'domain_info get_info(exist)');
+is($dri->get_info('roid'),'DO123456-GMO','domain_info get_info(roid)');
+$s=$dri->get_info('status');
+isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status)');
+is_deeply([$s->list_status()],['inactive'],'domain_info get_info(status) list');
+is($s->is_active(),0,'domain_info get_info(status) is_active');
+$s=$dri->get_info('contact');
+isa_ok($s,'Net::DRI::Data::ContactSet','domain_info get_info(contact)');
+is_deeply([$s->types()],['admin','billing','registrant','tech'],'domain_info get_info(contact) types');
+is($s->get('registrant')->srid(),'TEST1-xxx','domain_info get_info(contact) registrant srid');
+is($s->get('admin')->srid(),'TEST5-xxx','domain_info get_info(contact) admin srid');
+is($s->get('billing')->srid(),'TEST5-xxx','domain_info get_info(contact) billing srid');
+is($s->get('tech')->srid(),'TEST5-xxx','domain_info get_info(contact) tech srid');
+is($dri->get_info('clID'),'H12345','domain_info get_info(clID)');
+is($dri->get_info('crID'),'H12345','domain_info get_info(crID)');
+$d=$dri->get_info('crDate');
+isa_ok($d,'DateTime','domain_info get_info(crDate)');
+is("".$d,'2020-09-01T08:03:41','domain_info get_info(crDate) value');
+$d=$dri->get_info('upDate');
+isa_ok($d,'DateTime','domain_info get_info(upDate)');
+is("".$d,'2020-09-01T08:12:02','domain_info get_info(upDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_info get_info(exDate)');
+is("".$d,'2021-09-29T23:59:59','domain_info get_info(exDate) value');
+is_deeply($dri->get_info('auth'),{pw=>'2fooBAR'},'domain_info get_info(auth)');
+# jpex
+is($dri->get_info('suffix'),'jp','domain_info get_info(suffix)');
+is($dri->get_info('alloc'),'public','domain_info get_info(public)');
+is($dri->get_info('handle'),'TEST5-xxx','domain_info get_info(handle)');
 ####################################################################################################
 
 exit 0;

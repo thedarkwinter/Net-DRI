@@ -80,7 +80,7 @@ sub register_commands
     },
     'domain' => {
         'create' => [ \&domain_create_build, undef ],
-        # 'info'   => [ undef, \&domain_info_parse ],
+        'info'   => [ undef, \&domain_info_parse ],
         'update' => [ \&domain_update_build, undef ],
     },
  };
@@ -184,6 +184,47 @@ sub domain_update_build
 
  my $eid=build_command_extension($mes,$epp,'jpex:update');
  $mes->command_extension($eid,[@jpex]);
+
+ return;
+
+}
+
+sub domain_info_parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ return unless $mes->is_success();
+
+ my $infdata=$mes->get_extension('jpex','info');
+ return unless $infdata;
+ my $ns=$mes->ns('jpex');
+ return unless $ns;
+
+ my $dom_info = $rinfo->{domain}->{$oname};
+ foreach my $el ( Net::DRI::Util::xml_list_children($infdata) ) {
+  my ( $name, $content ) = @$el;
+  if ( lc($name) eq 'domain' ) {
+   $dom_info->{'suffix'} = $content->getAttribute('suffix') if $content->hasAttribute('suffix');
+   $dom_info->{'transfer'} = $content->getAttribute('transfer') if $content->hasAttribute('transfer');
+   $dom_info->{'domainCreatePreValidation'} = $content->getAttribute('domainCreatePreValidation') if $content->hasAttribute('domainCreatePreValidation');
+   foreach my $el_domain ( Net::DRI::Util::xml_list_children($content) ) {
+    my ( $name_domain, $content_domain ) = @$el_domain;
+    $dom_info->{'suspendDate'} = $content_domain->textContent() if ( $name_domain eq 'suspendDate' );
+    $dom_info->{'lapsedNs'} = $content_domain->textContent() if ( $name_domain eq 'lapsedNs' );
+    # for ojp domain names
+    $dom_info->{'suspiciousDomainName'} = $content_domain->textContent() if ( $name_domain eq 'suspiciousDomainName' );
+    $dom_info->{'expirationMonth'} = $content_domain->textContent() if ( $name_domain eq 'expirationMonth' );
+    $dom_info->{'deletionDate'} = $content_domain->textContent() if ( $name_domain eq 'deletionDate' );
+   }
+  } elsif ( lc($name) eq 'contact' ) {
+   $dom_info->{'alloc'} = $content->getAttribute('alloc') if $content->hasAttribute('alloc');
+   foreach my $el_contact ( Net::DRI::Util::xml_list_children($content) ) {
+    my ( $name_contact, $content_contact ) = @$el_contact;
+    $dom_info->{'ryid'} = $content_contact->textContent() if ( lc($name_contact) eq 'ryid' );
+    $dom_info->{'handle'} = $content_contact->textContent() if ( lc($name_contact) eq 'handle' );
+   }
+  }
+ }
 
  return;
 }
