@@ -82,6 +82,8 @@ sub register_commands
         'create' => [ \&domain_create_build, undef ],
         'info'   => [ undef, \&domain_info_parse ],
         'update' => [ \&domain_update_build, undef ],
+        'transfer_request' => [ \&transfer_request, undef ],
+        'trade_request' => [ \&trade_request, undef ]
     },
  };
 
@@ -225,6 +227,59 @@ sub domain_info_parse
    }
   }
  }
+
+ return;
+}
+
+
+# NOTE: this is only acceptable 10 days before the domain expiration date! (What?!?!)
+# NOT RECOMMENDED for domain names which link with a single REG-ID since transfer fee will be charged upon completion
+# <domain:authInfo> not applicable. Registrars should decide whether to accept/reject a transfer request on their policy
+sub transfer_request
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
+ # <domain:period> either 0 or 1!
+ ## When 0 the domain creation date and the expiry date will not be extended or modified when the transfer is completed
+ ## When 1 the domain creation date and the expiry date will be extended based on the transfer completion date
+ push @d,Net::DRI::Protocol::EPP::Util::build_period($rd->{duration}) if Net::DRI::Util::has_duration($rd);
+
+ $mes->command_body(\@d);
+
+ my @jpex;
+ Net::DRI::Exception::usererr_insufficient_parameters('suffix missing: jp or ojp') unless $rd->{'suffix'};
+ if ($rd->{'suffix'} && $rd->{'suffix'} eq 'jp') {
+  Net::DRI::Exception::usererr_insufficient_parameters('ryid and handle missing') unless ( $rd->{'ryid'} && $rd->{'handle'} );
+  push @jpex,['jpex:domain suffix="jp" transfer="domain"'];
+  push @jpex,['jpex:contact', ['jpex:ryid', $rd->{'ryid'}], {'alloc'=>'registrant'}];
+  push @jpex,['jpex:contact', ['jpex:handle', $rd->{'handle'}], {'alloc'=>'public'}];
+ } elsif ($rd->{'suffix'} && $rd->{'suffix'} eq 'ojp') { # TODO: still need to confirm the following :(
+  push @jpex,['jpex:domain suffix="ojp" transfer="agent"'];
+ }
+
+ my $eid=build_command_extension($mes,$epp,'jpex:transfer');
+ $mes->command_extension($eid,[@jpex]);
+
+ return;
+}
+
+# README: by the documentation is seems that this is only acceptable 10 days before the expiry date
+sub trade_request
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+ my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
+ $mes->command_body(\@d);
+
+ my @jpex;
+ Net::DRI::Exception::usererr_insufficient_parameters('ryid and handle missing') unless ( $rd->{'ryid'} && $rd->{'handle'} );
+ push @jpex,['jpex:domain suffix="jp" transfer="registrant"'];
+ push @jpex,['jpex:contact', ['jpex:ryid', $rd->{'ryid'}], {'alloc'=>'registrant'}];
+ push @jpex,['jpex:contact', ['jpex:handle', $rd->{'handle'}], {'alloc'=>'public'}];
+
+ my $eid=build_command_extension($mes,$epp,'jpex:transfer');
+ $mes->command_extension($eid,[@jpex]);
 
  return;
 }

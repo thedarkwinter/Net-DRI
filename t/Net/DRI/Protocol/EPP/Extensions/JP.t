@@ -9,7 +9,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: delete me when all done :p
 
-use Test::More tests => 82;
+use Test::More tests => 84;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -280,5 +280,31 @@ is($dri->get_info('suffix'),'jp','domain_info get_info(suffix)');
 is($dri->get_info('alloc'),'public','domain_info get_info(public)');
 is($dri->get_info('handle'),'TEST5-xxx','domain_info get_info(handle)');
 ####################################################################################################
+
+
+####################################################################################################
+### TODO Domain delete (suspend date JPEX)
+####################################################################################################
+
+
+####################################################################################################
+### TODO Domain update (restore JPEX)
+####################################################################################################
+
+
+####################################################################################################
+### Domain transfer
+####################################################################################################
+$R2='';
+$rc=$dri->domain_transfer_start('test.jp',{duration=>DateTime::Duration->new(years=>1),suffix=>'jp',ryid=>'TEST10',handle=>'TEST11'});
+is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.jp</domain:name><domain:period unit="y">1</domain:period></domain:transfer></transfer><extension><jpex:transfer xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp" transfer="domain"/><jpex:contact alloc="registrant"><jpex:ryid>TEST10</jpex:ryid></jpex:contact><jpex:contact alloc="public"><jpex:handle>TEST11</jpex:handle></jpex:contact></jpex:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
+
+
+####################################################################################################
+### Domain trade
+####################################################################################################
+$R2='';
+$rc=$dri->domain_trade_start('trade.jp',{ryid=>'REG-90-0000-0001',handle=>'TEST12'});
+is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>trade.jp</domain:name></domain:transfer></transfer><extension><jpex:transfer xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp" transfer="registrant"/><jpex:contact alloc="registrant"><jpex:ryid>REG-90-0000-0001</jpex:ryid></jpex:contact><jpex:contact alloc="public"><jpex:handle>TEST12</jpex:handle></jpex:contact></jpex:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_trade_request build');
 
 exit 0;
