@@ -232,9 +232,6 @@ sub domain_info_parse
 }
 
 
-# NOTE: this is only acceptable 10 days before the domain expiration date! (What?!?!)
-# NOT RECOMMENDED for domain names which link with a single REG-ID since transfer fee will be charged upon completion
-# <domain:authInfo> not applicable. Registrars should decide whether to accept/reject a transfer request on their policy
 sub transfer_request
 {
  my ($epp,$domain,$rd)=@_;
@@ -252,7 +249,7 @@ sub transfer_request
  if ($rd->{'suffix'} && $rd->{'suffix'} eq 'jp') {
   Net::DRI::Exception::usererr_insufficient_parameters('ryid and handle missing') unless ( $rd->{'ryid'} && $rd->{'handle'} );
   push @jpex,['jpex:domain suffix="jp" transfer="domain"'];
-  push @jpex,['jpex:contact', ['jpex:ryid', $rd->{'ryid'}], {'alloc'=>'registrant'}];
+  push @jpex,['jpex:contact', ['jpex:handle', $rd->{'ryid'}], {'alloc'=>'registrant'}];
   push @jpex,['jpex:contact', ['jpex:handle', $rd->{'handle'}], {'alloc'=>'public'}];
  } elsif ($rd->{'suffix'} && $rd->{'suffix'} eq 'ojp') { # TODO: still need to confirm the following :(
   push @jpex,['jpex:domain suffix="ojp" transfer="agent"'];
