@@ -181,8 +181,9 @@ sub domain_update_build
  my $mes=$epp->message();
 
  my @jpex;
- push @jpex,['jpex:domain suffix="'.$todo->set('suffix').'"'] if $todo->{'suffix'};
- push @jpex,['jpex:contact', ['jpex:handle', $todo->set('handle')], {'alloc'=>$todo->set('alloc')}] if $todo->{'alloc'};
+ push @jpex,['jpex:domain suffix="'.$todo->set('suffix').'"'] if $todo->set('suffix');
+ push @jpex,['jpex:contact', ['jpex:handle', $todo->set('handle')], {'alloc'=>$todo->set('alloc')}] if $todo->set('alloc');
+ return unless @jpex;
 
  my $eid=build_command_extension($mes,$epp,'jpex:update');
  $mes->command_extension($eid,[@jpex]);
