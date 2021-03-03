@@ -858,7 +858,7 @@ abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fi
 
 =head3 Nominet-Amazon: TLDs migrated in 2019 from Neustar into Nominet management
 
-audible author aws book bot buy call circle deal fast fire free got hot imdb jot joy kindle like moi now pay pin prime read room safe save secure silk smile spot talk tunes tushu wanggou wow yamaxun you zappos
+amazon audible author aws book bot buy call circle deal fast fire free got hot imdb jot joy kindle like moi now pay pin prime read room safe save secure silk smile spot talk tunes tushu wanggou wow yamaxun you zappos
 
 =cut
 
@@ -878,7 +878,7 @@ audible author aws book bot buy call circle deal fast fire free got hot imdb jot
 
   return {
      bep_type => 1, # dedicated registry
-     tlds => ['audible','author','aws','book','bot','buy','call','circle','deal','fast','fire','free','got','hot','imdb','jot','joy','kindle','like','moi','now','pay','pin','prime','read','room','safe','save','secure','silk','smile','spot','talk','tunes','tushu','wanggou','wow','yamaxun','you','zappos'],
+     tlds => ['amazon','audible','author','aws','book','bot','buy','call','circle','deal','fast','fire','free','got','hot','imdb','jot','joy','kindle','like','moi','now','pay','pin','prime','read','room','safe','save','secure','silk','smile','spot','talk','tunes','tushu','wanggou','wow','yamaxun','you','zappos'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.23' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-amazon';
