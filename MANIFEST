@@ -160,6 +160,7 @@ lib/Net/DRI/DRD/TeleInfo.pm
 lib/Net/DRI/DRD/TMDB.pm
 lib/Net/DRI/DRD/TRA/AE.pm
 lib/Net/DRI/DRD/TRA/BH.pm
+lib/Net/DRI/DRD/UniRegistry/CREDITUNION.pm
 lib/Net/DRI/DRD/UniRegistry/EPS.pm
 lib/Net/DRI/DRD/UniRegistry/ICM.pm
 lib/Net/DRI/DRD/UniRegistry/INC.pm

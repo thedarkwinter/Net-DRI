@@ -104,7 +104,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'UniRegistry::UniRegistry'; }
 
-sub tlds     { return ('audio', 'blackfriday', 'christmas', 'click', 'country', 'creditunion', 'diet', 'flowers', 'game', 'gift', 'guitars', 'help', 'hiphop', 'hiv', 'hosting', 'juegos', 'link', 'lol', 'mom', 'photo', 'pics', 'property', 'sexy', 'tattoo'); }
+sub tlds     { return ('audio', 'blackfriday', 'christmas', 'click', 'country', 'diet', 'flowers', 'game', 'gift', 'guitars', 'help', 'hiphop', 'hiv', 'hosting', 'juegos', 'link', 'lol', 'mom', 'photo', 'pics', 'property', 'sexy', 'tattoo'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
