@@ -146,7 +146,7 @@ use_ok('Net::DRI::DRD::TELEGreenland');
 use_ok('Net::DRI::DRD::TMDB');
 use_ok('Net::DRI::DRD::TRA::AE');
 use_ok('Net::DRI::DRD::TRA::BH');
-use_ok('Net::DRI::DRD::UniRegistry::CREDITUNION');
+use_ok('Net::DRI::DRD::UniRegistry::COOP');
 use_ok('Net::DRI::DRD::UniRegistry::EPS');
 use_ok('Net::DRI::DRD::UniRegistry::ICM');
 use_ok('Net::DRI::DRD::UniRegistry::INC');

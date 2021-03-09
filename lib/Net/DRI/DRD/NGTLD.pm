@@ -1185,7 +1185,7 @@ UniRegistry use a distinct server for this TLD (epp.registry.coop:700)
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
      whois_server => 'whois.registry.coop',
-   } if $bep eq 'unireg_creditunion';
+   } if $bep eq 'unireg_coop';
 
 =pod
 

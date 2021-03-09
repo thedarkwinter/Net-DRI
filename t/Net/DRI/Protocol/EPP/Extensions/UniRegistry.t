@@ -88,9 +88,9 @@ is($dri->get_info('reID','message',124),'registrar_a','message_retrieve get_info
 
 
 #####################
-## Test .creditunion profile
+## Test COOP new profile (.creditunion TLD)
 $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_current_registry('UniRegistry::CREDITUNION');
+$dri->add_current_registry('UniRegistry::COOP');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example22.creditunion</domain:name></domain:cd><domain:cd><domain:name avail="0">examexample2.creditunion</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
