@@ -855,6 +855,7 @@ cymru wales bbc
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
 abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop gucci horse law london luxe miami rodeo surf vip vodka wedding work yoga
+# README: .gucci is not part of MMX but loading here because has a similar logic :p
 
 =head3 Nominet-Amazon: TLDs migrated in 2019 from Neustar into Nominet management
 
