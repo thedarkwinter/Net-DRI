@@ -1117,7 +1117,7 @@ xn--3ds443g xn--fiq228c5hs xn--nyqy26a xn--rhqv96g xn--vuq861b
 
 =head3 TLDs
 
-audio blackfriday christmas click country creditunion diet flowers game gift guitars help hiphop hiv hosting juegos link lol mom photo pics property sexy tattoo
+audio blackfriday christmas click country diet flowers game gift guitars help hiphop hiv hosting juegos link lol mom photo pics property sexy tattoo
 
 Contended TLD's not included
 
@@ -1148,12 +1148,45 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['audio','blackfriday','christmas','click','country','creditunion','diet','flowers','game','gift','guitars','help','hiphop','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo'],
+     tlds => ['audio','blackfriday','christmas','click','country','diet','flowers','game','gift','guitars','help','hiphop','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
      whois_server => 'whois.uniregistry.net',
    } if $bep eq 'unireg';
+
+=pod
+
+=head3 TLDs
+
+creditunion
+
+UniRegistry use a distinct server for this TLD (epp.registry.coop:700)
+
+=head3 Standard extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
+
+=head3 Custom extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
+
+=cut
+
+ return {
+     bep_type => 1, # dedicated (that I am aware :p)
+     tlds => ['creditunion'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
+     whois_server => 'whois.registry.coop',
+   } if $bep eq 'unireg_coop';
 
 =pod
 
