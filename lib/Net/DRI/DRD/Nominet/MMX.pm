@@ -94,7 +94,8 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Nominet::MMX'; }
-sub tlds     { return qw/abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop horse law london luxe miami rodeo surf vip vodka wedding work yoga/; }
+# README: .gucci is not part of MMX but loading here because has a similar logic :p
+sub tlds     { return qw/abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop gucci horse law london luxe miami rodeo surf vip vodka wedding work yoga/; }
 sub object_types { return qw/domain contact ns/; }
 sub profile_types { return qw/epp/; }
 
