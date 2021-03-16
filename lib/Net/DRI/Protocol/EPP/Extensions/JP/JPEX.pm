@@ -263,11 +263,15 @@ sub transfer_request
 }
 
 # README: by the documentation is seems that this is only acceptable 10 days before the expiry date
+# added trade (as per documentation) but such is not possible todo. in order to change contact registrant object details
+# this need to be done via a <contact:update> - not possible to use <domain:update> to set a new registrant as well!
 sub trade_request
 {
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
+ push @d,['domain:period', 0, {'unit'=>'y'}]; # always enforce 0
+
  $mes->command_body(\@d);
 
  my @jpex;
