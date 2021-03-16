@@ -1,7 +1,8 @@
-## Domain Registry Interface, Nominet-MMX policies for Net::DRI
+## Domain Registry Interface, UniRegistry::COOP Driver
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013,2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2021 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,12 +14,13 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::Nominet::MMX;
+package Net::DRI::DRD::UniRegistry::COOP;
 
 use strict;
 use warnings;
 
-use base qw/Net::DRI::DRD/;
+use base qw/Net::DRI::DRD::UniRegistry::UniRegistry/;
+use Net::DRI::Data::Contact::UniRegistry;
 
 use DateTime::Duration;
 
@@ -26,13 +28,13 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::Nominet::MMX - Mominet-MMX policies for Net::DRI
+Net::DRI::DRD::UniRegistry::COOP - UniRegistry::COOP Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension for Nominet-MMX (Minds And Machines) gTLDs
+Additional domain extension UniRegistry::COOP New Generic TLDs
 
-Nominet-MMX utilises the following standard extensions. Please see the test files for more examples.
+UniRegistry::COOP utilises a dedicated server and the following standard extensions. Please see the test files for more examples.
 
 =head2 Standard extensions:
 
@@ -44,11 +46,10 @@ Nominet-MMX utilises the following standard extensions. Please see the test file
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::AllocationToken> urn:ietf:params:xml:ns:allocationToken-1.0
-
 =head2 Custom extensions:
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
+
 
 =head1 SUPPORT
 
@@ -64,12 +65,13 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2013,2017 Michael Holloway <michael@thedarkwinter.com>.
+Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2021 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2021 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -93,29 +95,25 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'Nominet::MMX'; }
-# README: .gucci is not part of MMX but loading here because has a similar logic :p
-sub tlds     { return qw/abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop gucci horse law london luxe miami rodeo surf vip vodka wedding work yoga/; }
-sub object_types { return qw/domain contact ns/; }
+sub name     { return 'UniRegistry::COOP'; }
+
+sub tlds     { return ('creditunion'); }
+sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{ 'brown_fee_version' => '0.7' }) if $type eq 'epp';
  return;
 }
 
-####################################################################################################
-
-sub verify_name_domain
+sub set_factories
 {
- my ($self,$ndr,$domain,$op)=@_;
- return $self->_verify_name_rules($domain,$op,{check_name => 1,
-                                               my_tld => 1,
-                                               icann_reserved => 0,
-                                              });
+ my ($self,$po)=@_;
+ $po->factories('contact',sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); });
+ return;
 }
 
 ####################################################################################################

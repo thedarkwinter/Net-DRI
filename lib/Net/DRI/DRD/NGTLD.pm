@@ -299,14 +299,14 @@ Afilias SRS has extended their plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-ngtlds: xn--4gbrim xn--kput3i autos bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl rich srl vegas yachts zara
+ngtlds: xn--4gbrim xn--kput3i bnpparibas eco ged global indians ist istanbul ltda onl rich srl vegas zara
 gtlds: mobi
 cctlds: ag bz gi lc mn me sc vc
 
 =cut
 
  if ($bep eq 'afiliassrs') {
-   my @ngtlds = qw/xn--4gbrim xn--kput3i autos bnpparibas boats creditunion eco ged global homes indians ist istanbul ltda motorcycles onl rich srl vegas yachts zara/;
+   my @ngtlds = qw/xn--4gbrim xn--kput3i bnpparibas eco ged global indians ist istanbul ltda onl rich srl vegas zara/;
    my @gtlds = qw/asia/;
    my @cctlds = (
        'ag',(map { $_.'.ag'} qw/co com net nom org/),
@@ -340,7 +340,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art auto baby bar basketball beauty best blog bond broker budapest build cam car cars ceo cfd college cyou desi design fans feedback forex forum fun gay gent hair host icu ink love luxury makeup markets monster observer online ooo pid press protection qpon quest realty reit rent rest rugby saarland security site skin space spreadbetting storage store tech theatre tickets trading uno website wiki wme xyz
+art auto autos baby bar basketball beauty best blog boats bond broker budapest build cam car cars ceo cfd college cyou desi design fans feedback forex forum fun gay gent hair homes host icu ink love luxury makeup markets monster motorcycles observer online ooo pid press protection qpon quest realty reit rent rest rugby saarland security site skin space spreadbetting storage store tech theatre tickets trading uno website wiki wme xyz yachts
 
 Contended TLD's not included
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art auto baby bar basketball beauty best blog bond broker budapest build cam car cars ceo cfd college cyou desi design fans feedback forex forum fun gay gent hair host icu ink love luxury makeup markets monster observer online ooo pid press protection qpon quest realty reit rent rest rugby saarland security site skin space spreadbetting storage store tech theatre tickets trading uno website wiki wme xyz/;
+    my @ngtlds = qw/art auto autos baby bar basketball beauty best blog boats bond broker budapest build cam car cars ceo cfd college cyou desi design fans feedback forex forum fun gay gent hair homes host icu ink love luxury makeup markets monster motorcycles observer online ooo pid press protection qpon quest realty reit rent rest rugby saarland security site skin space spreadbetting storage store tech theatre tickets trading uno website wiki wme xyz yachts/;
     my @ngtlds_contested = qw/hotel mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -686,7 +686,7 @@ biz hotels htc ipiranga itau
 
 Narwhal (use 'ari' or 'narwhal') or DRD::Narwhal
 
-aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball bible bid biz booking boots box buzz calvinklein cancerresearch caravan cartier catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co commbank compare coupon courses cricket cuisinella date dell discover doha download duns dupont earth everbank faith farmers ferrero film flickr flir ford fox frontier ftr gap giving grainger gucci hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe lifeinsurance lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer pharmacy philips physio piaget ping pramerica praxi pru prudential qvc racing review rmit rocher safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade travel trust tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj yahoo yandex zero zippo
+aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball bible bid biz booking boots box buzz calvinklein cancerresearch caravan cartier catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co commbank compare coupon courses cricket cuisinella date dell discover doha download duns dupont earth everbank faith farmers ferrero film flickr flir ford fox frontier ftr gap giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe lifeinsurance lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer pharmacy philips physio piaget ping pramerica praxi pru prudential qvc racing review rmit rocher safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade travel trust tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj yahoo yandex zero zippo
 
 =head3 Standard extensions:
 
@@ -753,7 +753,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'commbank', 'compare', 'coupon',
         'courses', 'cricket', 'cuisinella', 'date', 'dell', 'discover', 'doha', 'download', 'duns', 'dupont', 'earth', 'everbank',
         'faith', 'farmers', 'ferrero', 'film', 'flickr', 'flir', 'ford', 'fox', 'frontier', 'ftr', 'gap', 'giving',
-        'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm',
+        'grainger', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm',
         'ieee', 'insurance', 'intel', 'intuit', 'ipiranga', 'iselect', 'itau', 'iwc', 'jlc', 'jmp', 'jnj', 'jpmorgan', 'kinder', 'kpmg',
         'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'lilly', 'lincoln', 'loan', 'loft', 'marshalls', 'mattel', 'mcd',
         'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
@@ -786,7 +786,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'commbank', 'compare', 'coupon',
         'courses', 'cricket', 'cuisinella', 'date', 'dell', 'discover', 'doha', 'download', 'duns', 'dupont', 'earth', 'everbank',
         'faith', 'farmers', 'ferrero', 'film', 'flickr', 'flir', 'ford', 'fox', 'frontier', 'ftr', 'gap', 'giving',
-        'grainger', 'gucci', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm',
+        'grainger', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm',
         'ieee', 'insurance', 'intel', 'intuit', 'ipiranga', 'iselect', 'itau', 'iwc', 'jlc', 'jmp', 'jnj', 'jpmorgan', 'kinder', 'kpmg',
         'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'lilly', 'lincoln', 'loan', 'loft', 'marshalls', 'mattel', 'mcd',
         'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
@@ -854,11 +854,12 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop horse law london luxe miami rodeo surf vip vodka wedding work yoga
+abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop gucci horse law london luxe miami rodeo surf vip vodka wedding work yoga
+# README: .gucci is not part of MMX but loading here because has a similar logic :p
 
 =head3 Nominet-Amazon: TLDs migrated in 2019 from Neustar into Nominet management
 
-audible author aws book bot buy call circle deal fast fire free got hot imdb jot joy kindle like moi now pay pin prime read room safe save secure silk smile spot talk tunes tushu wanggou wow yamaxun you zappos
+amazon audible author aws book bot buy call circle deal fast fire free got hot imdb jot joy kindle like moi now pay pin prime read room safe save secure silk smile spot talk tunes tushu wanggou wow yamaxun you zappos
 
 =cut
 
@@ -871,14 +872,14 @@ audible author aws book bot buy call circle deal fast fire free got hot imdb jot
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['abogado', 'bayern', 'beer', 'boston', 'bradesco', 'broadway', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'horse', 'law', 'london', 'luxe', 'miami', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
+     tlds => ['abogado', 'bayern', 'beer', 'boston', 'bradesco', 'broadway', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'gucci', 'horse', 'law', 'london', 'luxe', 'miami', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
 
   return {
      bep_type => 1, # dedicated registry
-     tlds => ['audible','author','aws','book','bot','buy','call','circle','deal','fast','fire','free','got','hot','imdb','jot','joy','kindle','like','moi','now','pay','pin','prime','read','room','safe','save','secure','silk','smile','spot','talk','tunes','tushu','wanggou','wow','yamaxun','you','zappos'],
+     tlds => ['amazon','audible','author','aws','book','bot','buy','call','circle','deal','fast','fire','free','got','hot','imdb','jot','joy','kindle','like','moi','now','pay','pin','prime','read','room','safe','save','secure','silk','smile','spot','talk','tunes','tushu','wanggou','wow','yamaxun','you','zappos'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.23' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-amazon';
@@ -1153,6 +1154,39 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
      whois_server => 'whois.uniregistry.net',
    } if $bep eq 'unireg';
+
+=pod
+
+=head3 TLDs
+
+creditunion
+
+UniRegistry use a distinct server for this TLD (epp.registry.coop:700)
+
+=head3 Standard extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::secDNS> urn:ietf:params:xml:ns:secDNS-1.1
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::GracePeriod> urn:ietf:params:xml:ns:rgp-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
+
+=head3 Custom extensions:
+
+=head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
+
+=cut
+
+ return {
+     bep_type => 1, # dedicated (that I am aware :p)
+     tlds => ['creditunion'],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
+     whois_server => 'whois.registry.coop',
+   } if $bep eq 'unireg_coop';
 
 =pod
 
