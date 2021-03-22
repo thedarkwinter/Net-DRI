@@ -169,6 +169,17 @@ sub domain_create_build
  push @jpex,['jpex:domain suffix="'.$rd->{'suffix'}.'"'];
  push @jpex,['jpex:contact', ['jpex:handle', $rd->{'handle'}], {'alloc'=>$rd->{'alloc'}}] if $rd->{'alloc'};
 
+ # used for ojp domain only (2nd level tlds)
+ if ($rd->{'domainCreatePreValidation'}) {
+  Net::DRI::Exception->die(0,'protocol/EPP',11,'invalid domainCreatePreValidation: YES or NO')
+   unless (uc($rd->{'domainCreatePreValidation'}) =~ m/^(YES|NO)$/);
+  @jpex=(); # clean jpex arrray - ugly but fast way :p
+  push @jpex,['jpex:domain suffix="'.$rd->{'suffix'}.'" domainCreatePreValidation="'.$rd->{'domainCreatePreValidation'}.'"'];
+  push @jpex,['jpex:organization', _organization($rd->{'organization'})] if $rd->{'organization'};
+  push @jpex,['jpex:representative', _representative($rd->{'representative'})] if $rd->{'representative'};
+  push @jpex,['jpex:condition', _condition($rd->{'condition'})] if $rd->{'condition'};
+ }
+
  my $eid=build_command_extension($mes,$epp,'jpex:create');
  $mes->command_extension($eid,[@jpex]);
 
@@ -286,5 +297,50 @@ sub trade_request
  return;
 }
 
+
+
+sub _organization
+{
+ my ($rd)=@_;
+ my @organization;
+ if ($rd && (ref($rd) eq 'HASH')) {
+  foreach my $o (qw/name nameKana nameEn postalCode address addressEn type typeEn registrationDate registrationAddress replyMail request/) {
+   push @organization,['jpex:'.$o, $rd->{$o}] if $rd->{$o};
+   # README: i think that `request` is a attribute but not sure/couldn't test in their OT&E!
+  }
+ }
+
+ return @organization;
+}
+
+
+sub _representative
+{
+ my ($rd)=@_;
+ my @representative;
+ if ($rd && (ref($rd) eq 'HASH')) {
+  foreach my $r (qw/lastName firstName lastNameEn firstNameEn title/) {
+   push @representative,['jpex:'.$r, $rd->{$r}] if $rd->{$r};
+  }
+ }
+
+ return @representative;
+}
+
+
+sub _condition
+{
+ my ($rd)=@_;
+ my @condition;
+ if ($rd && (ref($rd) eq 'HASH')) {
+  foreach my $c (qw/no_other_ojp_domain_is_registered_under_the_same_corporation the_applicant_must_a_registered_corporation/) {
+   Net::DRI::Exception->die(0,'protocol/EPP',11,"invalid $c token: YES or NO")
+    unless (uc($rd->{$c}) =~ m/^(YES|NO)$/);
+   push @condition,['jpex:'.$c, uc($rd->{$c})] if $rd->{$c};
+  }
+ }
+
+ return @condition;
+}
 ####################################################################################################
 1;

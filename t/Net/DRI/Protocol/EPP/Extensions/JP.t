@@ -9,7 +9,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: delete me when all done :p
 
-use Test::More tests => 84;
+use Test::More tests => 89;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -283,16 +283,6 @@ is($dri->get_info('handle'),'TEST5-xxx','domain_info get_info(handle)');
 
 
 ####################################################################################################
-### TODO Domain delete (suspend date JPEX)
-####################################################################################################
-
-
-####################################################################################################
-### TODO Domain update (restore JPEX)
-####################################################################################################
-
-
-####################################################################################################
 ### Domain transfer
 ####################################################################################################
 $R2='';
@@ -306,5 +296,62 @@ is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:i
 $R2='';
 $rc=$dri->domain_trade_start('trade.jp',{ryid=>'REG-90-0000-0001',handle=>'TEST12'});
 is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>trade.jp</domain:name><domain:period unit="y">0</domain:period></domain:transfer></transfer><extension><jpex:transfer xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp" transfer="registrant"/><jpex:contact alloc="registrant"><jpex:ryid>REG-90-0000-0001</jpex:ryid></jpex:contact><jpex:contact alloc="public"><jpex:handle>TEST12</jpex:handle></jpex:contact></jpex:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_trade_request build');
+
+
+
+####################################################################################################
+### Domain create - organizational JPEX TLDs
+####################################################################################################
+# let's use the error create response from their documentation to add some extra tests/echecks
+$R2='';
+$cs=$dri->local_object('contactset');
+$c1=$dri->local_object('contact')->srid('sh8011');
+$c2=$dri->local_object('contact')->srid('sh8012');
+$c3=$dri->local_object('contact')->srid('sh8013');
+$cs->set($c1,'registrant');
+$cs->set($c2,'admin');
+$cs->set($c3,'tech');
+throws_ok { $dri->domain_create('test.co.jp',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),contact=>$cs,auth=>{pw=>'2fooBAR'}}) } qr/Invalid duration/, 'domain create (ojp) for 2 years invalid - only 1 year accepted';
+# note("missing required suffix");
+throws_ok { $dri->domain_create('test.co.jp',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,auth=>{pw=>'2fooBAR'}}) } qr/suffix is required/, 'domain create (ojp) mandatory suffix is missing';
+# note("invalid suffix");
+throws_ok { $dri->domain_create('test.co.jp',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,auth=>{pw=>'2fooBAR'}, suffix=>'jpp'}) } qr/invalid suffi/, 'domain create (ojp) invalid suffix usage';
+# note("invalid domainCreatePreValidation");
+throws_ok { $dri->domain_create('test.co.jp',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,auth=>{pw=>'2fooBAR'}, suffix=>'ojp', domainCreatePreValidation=>'Y'}) } qr/invalid domainCreatePreValidation/, 'domain create (ojp) invalid domainCreatePreValidation usage';
+my %organization = (
+	'name' => '株式会社 ドメインサンプル',
+	'nameKana' => 'かぶしきかいしゃどめいんさんぷる',
+	'nameEn' => 'Domain-sample Corporatin',
+	'postalCode' => '101-0065',
+	'address' => '東京都千代田区西神田 11-22-33',
+	'addressEn' => '11-22-33 Nishi-Kanda Chiyoda-ku, Tokyo Japan, 101-0065',
+	'type' => '株式会社',
+	'typeEn' => 'Company Limited',
+	'registrationDate' => '2000-04-03',
+	'registrationAddress' => '東京都千代田区西神田 11-22-33',
+	'replyMail' => 'example@example.shop'
+);
+my %representative = (
+	'lastName' => 'ドメイン',
+	'firstName' => '太郎',
+	'lastNameEn' => 'Domain',
+	'firstNameEn' => 'Taro',
+	'title' => '代表取締役'
+);
+my %condition = (
+	'no_other_ojp_domain_is_registered_under_the_same_corporation' => 'yes',
+	'the_applicant_must_a_registered_corporation' => 'yes',
+);
+$rc=$dri->domain_create('example.co.jp',{
+	pure_create => 1,
+	contact => $cs,
+	auth => {pw=>'2fooBAR'},
+	suffix => 'ojp',
+	domainCreatePreValidation => 'NO',
+	organization => \%organization,
+	representative => \%representative,
+	condition => \%condition
+});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.co.jp</domain:name><domain:registrant>sh8011</domain:registrant><domain:contact type="admin">sh8012</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><jpex:create xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="ojp" domainCreatePreValidation="NO"/><jpex:organization><jpex:name>株式会社 ドメインサンプル</jpex:name><jpex:nameKana>かぶしきかいしゃどめいんさんぷる</jpex:nameKana><jpex:nameEn>Domain-sample Corporatin</jpex:nameEn><jpex:postalCode>101-0065</jpex:postalCode><jpex:address>東京都千代田区西神田 11-22-33</jpex:address><jpex:addressEn>11-22-33 Nishi-Kanda Chiyoda-ku, Tokyo Japan, 101-0065</jpex:addressEn><jpex:type>株式会社</jpex:type><jpex:typeEn>Company Limited</jpex:typeEn><jpex:registrationDate>2000-04-03</jpex:registrationDate><jpex:registrationAddress>東京都千代田区西神田 11-22-33</jpex:registrationAddress><jpex:replyMail>example@example.shop</jpex:replyMail></jpex:organization><jpex:representative><jpex:lastName>ドメイン</jpex:lastName><jpex:firstName>太郎</jpex:firstName><jpex:lastNameEn>Domain</jpex:lastNameEn><jpex:firstNameEn>Taro</jpex:firstNameEn><jpex:title>代表取締役</jpex:title></jpex:representative><jpex:condition><jpex:no_other_ojp_domain_is_registered_under_the_same_corporation>YES</jpex:no_other_ojp_domain_is_registered_under_the_same_corporation><jpex:the_applicant_must_a_registered_corporation>YES</jpex:the_applicant_must_a_registered_corporation></jpex:condition></jpex:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create (ojp) build');
 
 exit 0;
