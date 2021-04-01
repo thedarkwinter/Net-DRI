@@ -686,7 +686,7 @@ biz hotels htc ipiranga itau
 
 Narwhal (use 'ari' or 'narwhal') or DRD::Narwhal
 
-aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball bible bid biz booking boots box buzz calvinklein cancerresearch caravan cartier catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co commbank compare coupon courses cricket cuisinella date dell discover doha download duns dupont earth everbank faith farmers ferrero film flickr flir ford fox frontier ftr gap giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe lifeinsurance lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer pharmacy philips physio piaget ping pramerica praxi pru prudential qvc racing review rmit rocher safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade travel tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj yahoo yandex zero zippo
+aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball bible bid biz booking boots box buzz calvinklein cancerresearch caravan cartier catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co commbank compare coupon courses cricket cuisinella date dell discover doha download duns dupont earth everbank faith farmers ferrero film flickr flir ford fox frontier ftr gap giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe lifeinsurance lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping pramerica praxi pru prudential qvc racing review rmit rocher safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade travel tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj yahoo yandex zero zippo
 
 =head3 Standard extensions:
 
@@ -758,7 +758,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'lilly', 'lincoln', 'loan', 'loft', 'marshalls', 'mattel', 'mcd',
         'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
         'netflix', 'neustar', 'nfl', 'nike', 'northwesternmutual', 'nyc', 'office', 'olayan', 'olayangroup', 'oldnavy', 'one', 'open', 'osaka',
-        'pamperedchef', 'panerai', 'party', 'passagens', 'pfizer', 'pharmacy', 'philips', 'physio', 'piaget', 'ping', 'pramerica', 'praxi',
+        'pamperedchef', 'panerai', 'party', 'passagens', 'pfizer', 'philips', 'physio', 'piaget', 'ping', 'pramerica', 'praxi',
         'pru', 'prudential', 'qvc', 'racing', 'review', 'rmit', 'rocher', 'safety', 'sandvik',
         'sandvikcoromant', 'sas', 'saxo', 'schmidt', 'science', 'scor', 'seek', 'select', 'seven', 'skype', 'song',
         'staples', 'starhub', 'statefarm', 'stream', 'study', 'sucks', 'swiftcover', 'sydney', 'tab', 'taipei', 'taobao', 'target', 'tdk',
@@ -791,7 +791,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'lilly', 'lincoln', 'loan', 'loft', 'marshalls', 'mattel', 'mcd',
         'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
         'netflix', 'neustar', 'nfl', 'nike', 'northwesternmutual', 'nyc', 'office', 'olayan', 'olayangroup', 'oldnavy', 'one', 'open', 'osaka',
-        'pamperedchef', 'panerai', 'party', 'passagens', 'pfizer', 'pharmacy', 'philips', 'physio', 'piaget', 'ping', 'pramerica', 'praxi',
+        'pamperedchef', 'panerai', 'party', 'passagens', 'pfizer', 'philips', 'physio', 'piaget', 'ping', 'pramerica', 'praxi',
         'pru', 'prudential', 'qvc', 'racing', 'review', 'rmit', 'rocher', 'safety', 'sandvik',
         'sandvikcoromant', 'sas', 'saxo', 'schmidt', 'science', 'scor', 'seek', 'select', 'seven', 'skype', 'song',
         'staples', 'starhub', 'statefarm', 'stream', 'study', 'sucks', 'swiftcover', 'sydney', 'tab', 'taipei', 'taobao', 'target', 'tdk',
@@ -854,8 +854,8 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop gucci horse law london luxe miami rodeo surf vip vodka wedding work yoga
-# README: .gucci is not part of MMX but loading here because has a similar logic :p
+abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop gucci horse law london luxe miami pharmacy rodeo surf vip vodka wedding work yoga
+# README: .gucci/.pharmacy is not part of MMX but loading here because has a similar logic :p
 
 =head3 Nominet-Amazon: TLDs migrated in 2019 from Neustar into Nominet management
 
@@ -872,7 +872,7 @@ amazon audible author aws book bot buy call circle deal fast fire free got hot i
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['abogado', 'bayern', 'beer', 'boston', 'bradesco', 'broadway', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'gucci', 'horse', 'law', 'london', 'luxe', 'miami', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
+     tlds => ['abogado', 'bayern', 'beer', 'boston', 'bradesco', 'broadway', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'gucci', 'horse', 'law', 'london', 'luxe', 'miami', 'pharmacy', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
