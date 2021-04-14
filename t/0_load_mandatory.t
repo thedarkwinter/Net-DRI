@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 544;
+use Test::More tests => 543;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -375,7 +375,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::IDNLanguage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message');
-use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::UIN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::WhoisType');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Neustar');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NEWGTLD');
