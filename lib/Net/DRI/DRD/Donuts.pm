@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2018 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2018-2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -51,6 +51,8 @@ Donuts utilises the following standard, and custom extensions. Please see the te
 
 =head3 L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
 
+=head3 L<NET::DRI::Protocol::EPP::Extensions::ARI::KeyValue> urn:X-ar:params:xml:ns:kv-1.1
+
 =head2 DPML Blocks / Overrides:
 
 In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with the correct TLD (.dpml.zone for block) and the LaunchPhase extensions should contain the [Encoded] Signed Mark, along with the phase name 'dpml'
@@ -78,6 +80,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
 (c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2018-2021 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
