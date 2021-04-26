@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -26,11 +27,11 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ARI::KeyValue - EPP ARI Key Value commands for Net::DRI : L<http://ausregistry.github.io/doc/kv-1.0/kv-1.0.html>
+Net::DRI::Protocol::EPP::Extensions::ARI::KeyValue - EPP ARI Key Value commands for Net::DRI : L<http://ausregistry.github.io/doc/kv-1.1/kv-1.1.html>
 
 =head1 DESCRIPTION
 
-Adds the KeyValue Extension (urn:X-ar:params:xml:ns:kv-1.0) to domain commands. The extension is built by adding the following data to the create, and update commands. This information is also returned from an info command.
+Adds the KeyValue Extension (urn:X-ar:params:xml:ns:kv-1.1) to domain commands. The extension is built by adding the following data to the create, and update commands. This information is also returned from an info command.
 
   $kv = { bn => { 'entityType' => 'Australian Private Company', 'abn' => '18 092 242 209' } };
   $rc = $dri->domain_create('domain.tld',{... keyvalue => $kv});
@@ -74,6 +75,7 @@ sub register_commands
            create => [ \&create_build, undef ],
            update => [ \&update_build, undef ],
            renew  => [ \&renew_build, undef ],
+           transfer_request => [ \&transfer_build, undef ],
          );
 
  return { 'domain' => \%tmp };
@@ -82,7 +84,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'kv' => [ 'urn:X-ar:params:xml:ns:kv-1.0','kv-1.0.xsd' ]});
+ $po->ns({ 'kv' => [ 'urn:X-ar:params:xml:ns:kv-1.1','kv-1.1.xsd' ]});
  return;
 }
 
@@ -180,6 +182,19 @@ sub renew_build
  return unless Net::DRI::Util::has_key($rd,'keyvalue');
 
  my $eid=$mes->command_extension_register('kv','renew');
+ $mes->command_extension($eid,[build_kvlists($rd->{keyvalue})]);
+
+ return;
+}
+
+sub transfer_build
+{
+ my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
+
+ return unless Net::DRI::Util::has_key($rd,'keyvalue');
+
+ my $eid=$mes->command_extension_register('kv','transfer');
  $mes->command_extension($eid,[build_kvlists($rd->{keyvalue})]);
 
  return;
