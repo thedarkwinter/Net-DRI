@@ -340,7 +340,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art auto autos baby bar basketball beauty best blog boats bond budapest build cam car cars ceo cfd college cyou desi design fans feedback forum fun gay gent hair homes host icu ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest rugby saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts
+art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou desi design fans feedback forum fun gay gent hair homes host icu ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest rugby saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts
 
 Contended TLD's not included
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art auto autos baby bar basketball beauty best blog boats bond budapest build cam car cars ceo cfd college cyou desi design fans feedback forum fun gay gent hair homes host icu ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest rugby saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts/;
+    my @ngtlds = qw/art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou desi design fans feedback forum fun gay gent hair homes host icu ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest rugby saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts/;
     my @ngtlds_contested = qw/hotel mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -746,7 +746,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
      bep_type => 2, # shared registry
      tlds => [
         'aaa', 'able', 'accountant', 'aetna', 'afl', 'aig', 'americanexpress', 'amex', 'amica', 'analytics', 'anz', 'aramco', 'athleta',
-        'auspost', 'axa', 'banamex', 'bananarepublic', 'bank', 'barclaycard', 'barclays', 'baseball', 'bible', 'bid', 'biz',
+        'auspost', 'axa', 'banamex', 'bananarepublic', 'bank', 'barclaycard', 'barclays', 'baseball', 'basketball', 'bible', 'bid', 'biz',
         'booking', 'boots', 'box', 'buzz', 'calvinklein', 'cancerresearch', 'caravan', 'cartier', 'catholic', 'cba', 'cbn',
         'cbre', 'chase', 'chintai', 'chloe', 'cisco', 'citadel', 'citi', 'cloud', 'club',
         'co', 'com.co', 'net.co', 'nom.co',
@@ -779,7 +779,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
      bep_type => 2, # shared registry
      tlds => [
         'aaa', 'able', 'accountant', 'aetna', 'afl', 'aig', 'americanexpress', 'amex', 'amica', 'analytics', 'anz', 'aramco', 'athleta',
-        'auspost', 'axa', 'banamex', 'bananarepublic', 'bank', 'barclaycard', 'barclays', 'baseball', 'bible', 'bid', 'biz',
+        'auspost', 'axa', 'banamex', 'bananarepublic', 'bank', 'barclaycard', 'barclays', 'baseball', 'basketball', 'bible', 'bid', 'biz',
         'booking', 'boots', 'box', 'buzz', 'calvinklein', 'cancerresearch', 'caravan', 'cartier', 'catholic', 'cba', 'cbn',
         'cbre', 'chase', 'chintai', 'chloe', 'cisco', 'citadel', 'citi', 'cloud', 'club',
         'co', 'com.co', 'net.co', 'nom.co',
