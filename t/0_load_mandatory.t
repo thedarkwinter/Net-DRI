@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 543;
+use Test::More tests => 542;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -149,7 +149,6 @@ use_ok('Net::DRI::DRD::TRA::BH');
 use_ok('Net::DRI::DRD::UniRegistry::COOP');
 use_ok('Net::DRI::DRD::UniRegistry::EPS');
 use_ok('Net::DRI::DRD::UniRegistry::ICM');
-use_ok('Net::DRI::DRD::UniRegistry::INC');
 use_ok('Net::DRI::DRD::UniRegistry::UniRegistry');
 use_ok('Net::DRI::DRD::UPU');
 use_ok('Net::DRI::DRD::VeriSign::COM_NET');

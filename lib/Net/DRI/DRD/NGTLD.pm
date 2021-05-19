@@ -340,7 +340,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou desi design fans feedback forum fun gay gent hair homes host icu ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts
+art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi design fans feedback forum fun gay gent hair homes host icu inc ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts
 
 Contended TLD's not included
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou desi design fans feedback forum fun gay gent hair homes host icu ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts/;
+    my @ngtlds = qw/art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi design fans feedback forum fun gay gent hair homes host icu inc ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts/;
     my @ngtlds_contested = qw/hotel mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -1190,48 +1190,6 @@ UniRegistry use a distinct server for this TLD (epp.registry.coop:700)
 
 =pod
 
-=head3 TLDs
-
-dealer, inc
-
-UniRegistry use a distinct server for these TLDs
-
-=head3 Custom extensions:
-
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
-
-L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric> http://ns.uniregistry.net/centric-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> http://ns.uniregistry.net/market-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::RegistryMessage> (poll parser suppliment)
-
-=head3 Other extensions:
-
-L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/epp/sync-1.0
-
-=cut
-
- if ($bep eq 'unireg_inc') {
-  # These methods are in the DRD
-  require Net::DRI::DRD::UniRegistry::INC;
-  *market_check = sub { return Net::DRI::DRD::UniRegistry::INC::market_check(@_); };
-  *market_info= sub { return Net::DRI::DRD::UniRegistry::INC::market_info(@_); };
-  *market_create= sub { return Net::DRI::DRD::UniRegistry::INC::market_create(@_); };
-  *market_update= sub { return Net::DRI::DRD::UniRegistry::INC::market_update(@_); };
- }
-
- return {
-     bep_type => 2, # shared registry (for some reason they decided to use for .dealer - if they add more we might need to improve naming profile in the future)
-     tlds => ['dealer','inc'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
-     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
-     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'unireg_inc';
-
-=pod
-
 =head2 ICM
 
  $dri->add_registry('NGTLD',{provider=>'unireg_icm'});
@@ -1263,11 +1221,11 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  if ($bep eq 'unireg_icm') {
   # These methods are in the DRD
-  require Net::DRI::DRD::UniRegistry::INC;
-  *market_check = sub { return Net::DRI::DRD::UniRegistry::INC::market_check(@_); };
-  *market_info= sub { return Net::DRI::DRD::UniRegistry::INC::market_info(@_); };
-  *market_create= sub { return Net::DRI::DRD::UniRegistry::INC::market_create(@_); };
-  *market_update= sub { return Net::DRI::DRD::UniRegistry::INC::market_update(@_); };
+  require Net::DRI::DRD::UniRegistry::Market;
+  *market_check = sub { return Net::DRI::DRD::UniRegistry::Market::market_check(@_); };
+  *market_info= sub { return Net::DRI::DRD::UniRegistry::Market::market_info(@_); };
+  *market_create= sub { return Net::DRI::DRD::UniRegistry::Market::market_create(@_); };
+  *market_update= sub { return Net::DRI::DRD::UniRegistry::Market::market_update(@_); };
  }
 
  return {
