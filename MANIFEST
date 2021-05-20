@@ -392,7 +392,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/EXTContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNLanguage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Message.pm
-lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Neustar.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NEWGTLD.pm
@@ -691,7 +690,6 @@ t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/KeyValue.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Narwhal.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Price.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/TMCHApplication.t
-t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.t
 t/Net/DRI/Protocol/EPP/Extensions/NO.t
 t/Net/DRI/Protocol/EPP/Extensions/Nominet.t

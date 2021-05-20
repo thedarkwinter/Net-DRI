@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2018 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2018-2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -51,6 +51,8 @@ Donuts utilises the following standard, and custom extensions. Please see the te
 
 =head3 L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
 
+=head3 L<NET::DRI::Protocol::EPP::Extensions::ARI::KeyValue> urn:X-ar:params:xml:ns:kv-1.1
+
 =head2 DPML Blocks / Overrides:
 
 In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with the correct TLD (.dpml.zone for block) and the LaunchPhase extensions should contain the [Encoded] Signed Mark, along with the phase name 'dpml'
@@ -78,6 +80,7 @@ Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
 (c) 2014-2016 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2018-2021 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -104,7 +107,7 @@ sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'Donuts'; }
 sub tlds  {
  my @dpml = qw/dpml.pub dpml.zone/; # DPML
- my @gtlds = qw/academy accountants actor agency airforce apartments architect army associates attorney auction band bargains bike bingo boutique builders business cab cafe camera camp capital cards care careers cash casino catering center charity chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction consulting contact contractors cool coupons credit creditcard cruises dance dating deals degree delivery democrat dental dentist diamonds digital direct directory discount doctor dog domains education email energy engineer engineering enterprises equipment estate events exchange expert exposed express fail family fan farm finance financial fish fitness flights florist football forsale foundation fund furniture futbol fyi gallery games gifts gives glass gmbh gold golf graphics gratis gripe group guide guru haus healthcare hockey holdings holiday hospital house immo immobilien industries institute insure international investments irish jetzt jewelry kaufen kitchen land lawyer lease legal life lighting limited limo live loans ltd maison management market marketing mba media medical memorial moda money mortgage movie navy network news ninja partners parts pets photography photos pictures pizza place plumbing plus productions properties pub recipes rehab reise reisen rentals repair report republican restaurant reviews rip rocks run sale salon sarl school schule services shoes shopping show singles soccer social software solar solutions sports studio style supplies supply support surgery systems tax taxi team technology tennis theater tienda tips tires today tools tours town toys training university vacations ventures vet viajes video villas vin vision voyage watch wine works world wtf xn--czrs0t xn--fjq720a xn--unup4y xn--vhquv zone/;
+ my @gtlds = qw/academy accountants actor agency airforce apartments architect army associates attorney auction band bargains bike bingo boutique broker builders business cab cafe camera camp capital cards care careers cash casino catering center charity chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction consulting contact contractors cool coupons credit creditcard cruises dance dating deals degree delivery democrat dental dentist diamonds digital direct directory discount doctor dog domains education email energy engineer engineering enterprises equipment estate events exchange expert exposed express fail family fan farm finance financial fish fitness flights florist football forex forsale foundation fund furniture futbol fyi gallery games gifts gives glass gmbh gold golf graphics gratis gripe group guide guru haus healthcare hockey holdings holiday hospital house immo immobilien industries institute insure international investments irish jetzt jewelry kaufen kitchen land lawyer lease legal life lighting limited limo live loans ltd maison management market markets marketing mba media medical memorial moda money mortgage movie navy network news ninja observer partners parts pets photography photos pictures pizza place plumbing plus productions properties pub realty recipes rehab reise reisen rentals repair report republican restaurant reviews rip rocks run sale salon sarl school schule services shoes shopping show singles soccer social software solar solutions sports studio style supplies supply support surgery systems tax taxi team technology tennis theater tienda tips tires today tools tours town toys trading training travel university vacations ventures vet viajes video villas vin vision voyage watch wine works world wtf xn--czrs0t xn--fjq720a xn--unup4y xn--vhquv zone/;
  return (@dpml,@gtlds);
 }
 sub object_types { return ('domain','contact','ns'); }
