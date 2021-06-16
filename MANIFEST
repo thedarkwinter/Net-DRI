@@ -279,7 +279,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/KeySys.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/SkContactIdent.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/TradeDomain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ChangePoll.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Agreement.pm
