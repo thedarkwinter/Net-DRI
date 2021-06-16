@@ -22,7 +22,12 @@ use warnings;
 sub register_commands
 {
  my ($class,$version)=@_;
- return { 'message' => { 'result' => [ undef, \&parse ] } };
+ return {
+  'message' => {
+   'result' => [ undef, \&parse ],
+   'msgdata' => [ undef, \&parse_msg ],
+  }
+ };
 }
 
 ## Parse error message with a <value> node in the oxrs namespace to enhance what is reported back to application
@@ -42,6 +47,18 @@ sub parse
    $rinfo->{from}='eppcom';
    $rinfo->{type}='text';
   }
+ }
+ return;
+}
+
+## Parse error message with a <value> node in the oxrs namespace to enhance what is reported back to application
+sub parse_msg
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$po->message();
+ if ($mes->node_resdata()) {
+  $rinfo->{custom}->{resdata} = $mes->node_resdata();
+  return;
  }
  return;
 }
