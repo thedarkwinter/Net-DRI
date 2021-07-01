@@ -854,8 +854,8 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop gucci horse law london luxe miami pharmacy rodeo surf vip vodka wedding work yoga
-# README: .gucci/.pharmacy is not part of MMX but loading here because has a similar logic :p
+abogado bayern beer boston bradesco broadway career casa cooking dds fashion fishing fit garden gop gucci horse jobs law london luxe med miami pharmacy realestate realtor rodeo surf vip vodka wedding work yoga
+# README: .career/.gucci/.jobs/.med/.pharmacy/.realestate/.realtor is not part of MMX but loading here because has a similar logic :p
 
 =head3 Nominet-Amazon: TLDs migrated in 2019 from Neustar into Nominet management
 
@@ -872,7 +872,7 @@ amazon audible author aws book bot buy call circle deal fast fire free got hot i
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['abogado', 'bayern', 'beer', 'boston', 'bradesco', 'broadway', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'gucci', 'horse', 'law', 'london', 'luxe', 'miami', 'pharmacy', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
+     tlds => ['abogado', 'bayern', 'beer', 'boston', 'bradesco', 'broadway', 'career', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'gucci', 'horse', 'jobs', 'law', 'london', 'luxe', 'med', 'miami', 'pharmacy', 'realestate', 'realtor', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
@@ -1281,7 +1281,7 @@ L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS> (Extended Protection Se
 
 =head3 TLDs
 
-xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe xn--9dbq2a azure bing career crs hotmail java maif microsoft oracle pictet realestate realtor sca shell sky xbox windows
+xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe xn--9dbq2a azure bing crs hotmail java maif microsoft oracle pictet sca shell sky xbox windows
 
 Note: As VeriSign has started to use the RFC8748 Fee extension (fee-1.0), we are no longer supporting PremiumDomain and CentralNic::Fee to avoid conflicts
 
@@ -1307,7 +1307,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Fee>
  return {
      bep_type => 2,
      contact_i18n => 7, # They accept LOC *or* INT, but only one of them.
-     tlds => ['com','net','cc','tv','name','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','xn--9dbq2a','azure','bing','career','crs','hotmail','java','maif','microsoft','oracle','pictet','realestate','realtor','sca','shell','sky','xbox','windows'],
+     tlds => ['com','net','cc','tv','name','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','xn--9dbq2a','azure','bing','crs','hotmail','java','maif','microsoft','oracle','pictet','sca','shell','sky','xbox','windows'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn' => 1, custom => ['VeriSign::Sync', 'VeriSign::PollLowBalance', 'VeriSign::PollRGP', 'VeriSign::IDNLanguage', 'VeriSign::WhoWas', 'VeriSign::Suggestion', 'VeriSign::ClientAttributes', 'VeriSign::TwoFactorAuth', 'VeriSign::ZoneManagement', 'VeriSign::Balance', 'VeriSign::NameStore', 'Fee'], 'fee_version' => '1.0'}],
      whois_server => 'ccwhois.verisign-grs.com',
    } if $bep eq 'verisign';
