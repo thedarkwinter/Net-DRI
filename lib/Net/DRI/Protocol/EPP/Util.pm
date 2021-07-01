@@ -279,7 +279,8 @@ sub parse_disclose
   my ($name,$node)=@$el;
   if ($name=~m/^(name|org|addr)$/)
   {
-   $r{$1.'_'.$node->getAttribute('type')}=$flag;
+	  
+   $r{$1.'_'.$node->getAttribute('type')}=$flag if $node->getAttribute('type');
   } else
   {
    $r{$name}=$flag;
