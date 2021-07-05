@@ -1,6 +1,6 @@
 ## Domain Registry Interface, CIRA EPP Contact commands
 ##
-## Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -32,12 +32,6 @@ sub register_commands
          );
 
  return { 'contact' => \%tmp };
-}
-
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:cira="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('cira')));
 }
 
 ####################################################################################################
@@ -92,7 +86,6 @@ sub info_parse
 sub create
 {
  my ($epp,$contact)=@_;
- my $mes=$epp->message();
 
  ## $contact->validate() has been called
  my @n;
@@ -108,7 +101,8 @@ sub create
  push @n,['cira:createdByResellerId',$contact->reseller_id()] if defined $contact->reseller_id();
  push @n,['cira:whoisDisplaySetting',$contact->whois_display()] if defined $contact->whois_display();
 
- my $eid=build_command_extension($mes,$epp,'cira:ciraCreate');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('cira', 'ciraCreate');
  $mes->command_extension($eid,[@n]);
  return;
 }
@@ -116,7 +110,6 @@ sub create
 sub update
 {
  my ($epp,$contact,$todo)=@_;
- my $mes=$epp->message();
 
  my $newc=$todo->set('info');
  return unless defined $newc;
@@ -131,7 +124,8 @@ sub update
 
  return unless @n;
 
- my $eid=build_command_extension($mes,$epp,'cira:ciraUpdate');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('cira', 'ciraUpdate');
  $mes->command_extension($eid,['cira:ciraChg',@n]);
  return;
 }
@@ -169,7 +163,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

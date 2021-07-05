@@ -54,7 +54,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005,2007-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005,2007-2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -205,8 +205,8 @@ sub apply
  if (exists($rd->{nsgroup}))
  {
   my @n=Net::DRI::Protocol::EPP::Extensions::EURid::Domain::add_nsgroup($rd->{nsgroup});
-  my $eid=Net::DRI::Protocol::EPP::Extensions::EURid::Domain::build_command_extension($mes,$epp,'eurid:ext');
-  $mes->command_extension($eid,['eurid:apply',['eurid:domain',@n]]);
+  my $eid=$mes->command_extension_register('domain-ext','ext');
+  $mes->command_extension($eid,['domain-ext:apply',['domain-ext:domain',@n]]);
  }
  return;
 }

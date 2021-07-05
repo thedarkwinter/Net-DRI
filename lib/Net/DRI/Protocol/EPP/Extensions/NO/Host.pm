@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2008,2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -51,6 +52,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 Copyright (c) 2008,2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -79,21 +81,6 @@ sub register_commands {
 
 ####################################################################################################
 
-#####
-# Facets
-#
-
-sub _build_facet_extension {
-    my ( $mes, $epp, $tag ) = @_;
-
-    return $mes->command_extension_register(
-        $tag,
-        sprintf(
-            'xmlns:no-ext-epp="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('no_epp')
-        )
-    );
-}
-
 ##
 # This facet method is generic and can be called from all object operations
 #
@@ -105,7 +92,7 @@ sub build_facets {
 
     my $mes = $epp->message();
     if (exists($rd->{facets}) && defined($rd->{facets})) {
-       $eid = _build_facet_extension( $mes, $epp, 'no-ext-epp:extended' );
+       $eid = $mes->command_extension_register('no-ext-epp', 'extended');
        foreach my $fkey (sort { $a cmp $b } keys(%{$rd->{facets}})) {
            push @e, [ 'no-ext-epp:facet', { name => $fkey }, $rd->{facets}->{$fkey} ];
        }
@@ -127,9 +114,9 @@ sub parse_info {
     my $mes = $po->message();
     return unless $mes->is_success();
 
-    my $NS = $mes->ns('no_host');
+    my $NS = $mes->ns('no-ext-host');
 
-    my $condata = $mes->get_extension('no_host','infData');
+    my $condata = $mes->get_extension('no-ext-host','infData');
     return unless $condata;
 
     my @e = $condata->getElementsByTagNameNS( $NS, 'contact' );
@@ -152,19 +139,6 @@ sub parse_info {
     return;
 }
 
-sub build_command_extension {
-    my ( $mes, $epp, $tag ) = @_;
-
-    return $mes->command_extension_register(
-        $tag,
-        sprintf(
-            'xmlns:no-ext-host="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('no_host')
-        )
-    );
-}
-
-
-
 sub info {
     my ( $epp, $ho, $rd ) = @_;
     my $mes = $epp->message();
@@ -179,7 +153,7 @@ sub info {
     my $r;
 
     if ($si) {
-       my $eid = build_command_extension( $mes, $epp, 'no-ext-host:info' );
+       my $eid = $mes->command_extension_register('no-ext-host', 'info' );
        my @e;
        push @e, [ 'no-ext-host:sponsoringClientID', $si ];
        $r = $mes->command_extension( $eid, \@e );
@@ -201,7 +175,7 @@ sub create {
 
     if (exists($rd->{contact}) && defined($rd->{contact})) {
        my @e;
-       my $eid = build_command_extension( $mes, $epp, 'no-ext-host:create' );
+       my $eid = $mes->command_extension_register('no-ext-host', 'create' );
        my $c = $rd->{contact};
        my $srid;
  
@@ -255,7 +229,7 @@ sub update {
     my $r;
 
     if ( $ca || $cd ) {
-       my $eid = build_command_extension( $mes, $epp, 'no-ext-host:update' );
+       my $eid = $mes->command_extension_register('no-ext-host', 'update' );
 
        my ( @n, @e, $c, $srid );
 

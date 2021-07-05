@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Stores ordered list of contacts + type (registrant, admin, tech, bill, etc...)
 ##
-## Copyright (c) 2005-2009,2011-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2009,2011-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -96,7 +96,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2009,2011-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2009,2011-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -123,9 +123,18 @@ sub new
   Net::DRI::Exception::usererr_invalid_parameters('Invalid number of parameters passed') unless @r%2==0;
   while(my ($ctype,$ids)=splice(@r,0,2))
   {
+   my %ccache;
    foreach my $id (ref $ids eq 'ARRAY' ? @$ids : ($ids))
    {
-    my $o=Net::DRI::Util::isa_contact($id) ? $id : Net::DRI::Data::Contact->new()->srid($id);
+    my $o;
+    if (Net::DRI::Util::isa_contact($id))
+    {
+     $o=$id;
+    } else
+    {
+     $ccache{$id}=Net::DRI::Data::Contact->new()->srid($id) unless exists $ccache{$id};
+     $o=$ccache{$id};
+    }
     $self->add($o,$ctype);
    }
   }
@@ -240,9 +249,9 @@ sub get
 sub get_all
 {
  my ($self)=@_;
- my %r=map { $_ => 1 } map { @{$_} } values(%{$self->{c}});
- my @r = sort { $a cmp $b } keys %r;
- return @r;
+ my %r=map { $_->id() => $_ } map { @{$_} } values(%{$self->{c}});
+ my @r=sort { $a cmp $b } keys %r;
+ return map { $r{$_} } @r;
 }
 
 sub match ## compare two contact lists

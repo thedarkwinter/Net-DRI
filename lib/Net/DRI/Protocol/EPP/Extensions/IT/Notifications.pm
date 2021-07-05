@@ -33,7 +33,7 @@ Alessandro Zummo, E<lt>a.zummo@towertech.itE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2010,2013 Tower Technologies.
+Copyright (C) 2009-2010,2013,2016 Tower Technologies.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

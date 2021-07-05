@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .UK EPP Contact commands
 ##
-## Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2013-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2013-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
@@ -125,7 +125,7 @@ sub create
  my @n = contact_nom_ext($c);
  return unless @n;
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('contact-nom-ext:create',sprintf('xmlns:contact-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('contact-nom-ext')));
+ my $eid=$mes->command_extension_register('contact-nom-ext', 'create');
  $mes->command_extension($eid,\@n);
  return;
 }
@@ -139,7 +139,7 @@ sub update
  my @n = contact_nom_ext($tochg);
  return unless @n;
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('contact-nom-ext:update',sprintf('xmlns:contact-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('contact-nom-ext')));
+ my $eid=$mes->command_extension_register('contact-nom-ext', 'update');
  $mes->command_extension($eid,\@n);
  return;
 }

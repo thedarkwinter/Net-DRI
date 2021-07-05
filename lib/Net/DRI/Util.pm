@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Misc. useful functions
 ##
-## Copyright (c) 2005-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -53,7 +53,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ See the LICENSE file that comes with this distribution for more details.
 
 ####################################################################################################
 
-## See https://www.iso.org/obp/ui/#search , select 'Country codes', then 'Officially assigned', order by Alpha-2 code (last checked on 2015-05-24)
+## See https://www.iso.org/obp/ui/#search , select 'Country codes', then 'Officially assigned', order by Alpha-2 code (last checked on 2018-01-16)
 ##                        qw/.A .B .C .D .E .F .G .H .I .J .K .L .M .N .O .P .Q .R .S .T .U .V .W .X .Y .Z
 our %CCA2=map { $_ => 1 } qw/         AD AE AF AG    AI       AL AM    AO    AQ AR AS AT AU    AW AX    AZ/,
                           qw/BA BB    BD BE BF BG BH BI BJ    BL BM BN BO    BQ BR BS BT    BV BW    BY BZ/,
@@ -526,6 +526,22 @@ sub xml_is_boolean
  return 0 unless defined $in;
  return 1 if ($in=~m/^(?:1|0|true|false)$/);
  return 0;
+}
+
+sub xml_is_decimal
+{
+ my ($in, $decimal, $total, $min, $max)=@_;
+ return 0 unless defined $in;
+ return 0 unless $in=~m/^[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)$/;
+ if (defined $decimal || defined $total)
+ {
+  my ($pre, $post)=split(/\./, abs $in);
+  return 0 if defined $decimal && length $post > $decimal;
+  return 0 if defined $total && (length($pre) + length($post)) > $total;
+ }
+ return 0 if defined $min && $in < $min;
+ return 0 if defined $max && $in > $max;
+ return 1;
 }
 
 sub xml_parse_boolean

@@ -212,7 +212,7 @@ is($R1,$E1.'<command><check><host:check xmlns:host="urn:ietf:params:xml:ns:host-
 is($rc->is_success(),1,'host_check multi is_success');
 is($dri->get_info('exist','host','ns10.example2.com'),0,'host_check multi get_info(exist) 1/3');
 is($dri->get_info('exist','host','ns20.example2.com'),1,'host_check multi get_info(exist) 2/3');
-is($dri->get_info('exist_reason','host',,'ns20.example2.com'),'In use','host_check multi get_info(exist_reason)');
+is($dri->get_info('exist_reason','host','ns20.example2.com'),'In use','host_check multi get_info(exist_reason)');
 is($dri->get_info('exist','host','ns30.example2.com'),0,'host_check multi get_info(exist) 3/3');
 
 

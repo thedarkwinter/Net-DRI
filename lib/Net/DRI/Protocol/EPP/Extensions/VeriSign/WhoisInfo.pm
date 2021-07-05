@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Whois Info (EPP-Whois-Info-Ext.pdf)
 ##
-## Copyright (c) 2006-2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::WhoisInfo;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -48,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -65,11 +66,17 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           info => [ \&info, \&info_parse ],
-         );
+ state $cmds = { 'domain' => { 'info' => [ \&info, \&info_parse ] } };
 
- return { 'domain' => \%tmp };
+ return $cmds;
+}
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ state $rns = { 'whoisInf' => [ 'http://www.verisign.com/epp/whoisInf-1.0', 'whoisInf-1.0.xsd' ] };
+ $po->ns($rns);
+ return;
 }
 
 ####################################################################################################
@@ -98,7 +105,7 @@ sub info
  }
  Net::DRI::Exception::usererr_invalid_parameters('Whois Info must be true/false/1/0') unless Net::DRI::Util::xml_is_boolean($wi);
 
- my $eid=$mes->command_extension_register('whoisInf:whoisInf','xmlns:whoisInf="http://www.verisign.com/epp/whoisInf-1.0" xsi:schemaLocation="http://www.verisign.com/epp/whoisInf-1.0 whoisInf-1.0.xsd"');
+ my $eid=$mes->command_extension_register('whoisInf', 'whoisInf');
  $mes->command_extension($eid,['whoisInf:flag',$wi]);
  return;
 }
@@ -109,7 +116,7 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension('http://www.verisign.com/epp/whoisInf-1.0','whoisInfData');
+ my $infdata=$mes->get_extension('whoisInf','whoisInfData');
  return unless $infdata;
 
  my %w;

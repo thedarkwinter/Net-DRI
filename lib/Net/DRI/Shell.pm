@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Shell interface
 ##
-## Copyright (c) 2008-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2014,2016-2017 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Shell;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Exporter qw(import);
 our @EXPORT_OK=qw(run);
@@ -26,6 +27,7 @@ use Net::DRI::Protocol::ResultStatus;
 use Term::ReadLine; ## see also Term::Shell
 use Time::HiRes ();
 use IO::Handle ();
+use DateTime::Duration;
 
 our $HISTORY=(exists $ENV{HOME} && defined $ENV{HOME} && length $ENV{HOME})? $ENV{HOME}.'/.drish_history' : undef;
 
@@ -166,10 +168,11 @@ Will open the local FILENAME and read in it commands and execute all of them; yo
 start your shell with a filename as argument and its commands will be run at beginning of
 session before giving the control back. They will be displayed (username and password will be
 masked) with their results.
+FILENAME content must be UTF-8 encoded.
 
 =head3 record FILENAME
 
-If called with a filename argument, all subsequent commands, and their results will be printed in the filename given.
+If called with a filename argument, all subsequent commands, and their results will be printed in the filename given, in UTF-8 encoding.
 If called without argument, it stops a current recording session.
 
 =head3 !cmd
@@ -468,7 +471,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2014,2016-2017 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -485,7 +488,9 @@ See the LICENSE file that comes with this distribution for more details.
 sub run
 {
  my (@args)=@_;
- my $term=Term::ReadLine->new('Net::DRI shell');
+ binmode(STDIN,  ':encoding(UTF-8)');
+ binmode(STDOUT, ':encoding(UTF-8)');
+ my $term=Term::ReadLine->new('Net::DRI shell', \*STDIN, \*STDOUT);
  $term->MinLine(undef); # disable implicit add_history call()
  my $ctx={ term    => $term,
            term_features => $term->Features(),
@@ -565,7 +570,7 @@ sub handle_file
  my ($ctx,$file)=@_;
  output($ctx,'Executing commands from file '.$file." :\n");
  $ctx->{completion}->{files}->{$file}=time();
- open(my $ch,'<',$file) or die "Unable to open $file : $!"; ## no critic (InputOutput::RequireBriefOpen)
+ open(my $ch,'<:encoding(UTF-8)',$file) or die "Unable to open $file : $!"; ## no critic (InputOutput::RequireBriefOpen)
  while(defined(my $l=<$ch>))
  {
   chomp($l);
@@ -863,6 +868,18 @@ sub _complete_contacts
  return @r;
 }
 
+## Trying to be smart with some values
+sub _unserialize
+{
+ my ($v)=@_;
+ if ($v=~m/^P(\d+)(Y|M)$/) ##hum, this looks like a duration…
+ {
+  state $rexpand = { qw/Y years M months/ };
+  $v=DateTime::Duration->new($rexpand->{$2} => $1);
+ }
+ return $v;
+}
+
 sub process
 {
  my ($ctx,$wl)=@_;
@@ -876,7 +893,7 @@ sub process
  while (@g)
  {
   my $n=shift(@g);
-  my $v=shift(@g);
+  my $v=_unserialize(shift(@g));
   if (exists($p{$n}))
   {
    $p{$n}=[$p{$n}] unless (ref($p{$n}) eq 'ARRAY');
@@ -1060,7 +1077,7 @@ sub record
  if (defined($n) && $n)
  {
   $ctx->{completion}->{files}->{$n}=time();
-  open(my $fh,'>',$n) or return (undef,$m.'Unable to write local file '.$n.' : '.$!); ## no critic (InputOutput::RequireBriefOpen)
+  open(my $fh,'>:encoding(UTF-8)',$n) or return (undef,$m.'Unable to write local file '.$n.' : '.$!); ## no critic (InputOutput::RequireBriefOpen)
   $fh->autoflush(1); ## this is thanks to IO::Handle
   $ctx->{record_filehandle}=$fh;
   $ctx->{record_filename}=$n;
@@ -1429,13 +1446,14 @@ sub wrap_command_domain
   $dom=~s/`(.+)`/$1/;
   $res=$cmd.'.'.$$.'.'.time().'.results'; ## TODO choose a predictable filename ? if so, use an option
   open($fin,'-|',$dom) or return (undef,'Unable to execute local command '.$dom.' : '.$!); ## no critic (InputOutput::RequireBriefOpen)
-  open($fout,'>',$res) or return (undef,'Unable to write (for results) local file '.$res.' : '.$!); ## no critic (InputOutput::RequireBriefOpen)
+  binmode($fin,':encoding(UTF-8)');
+  open($fout,'>:encoding(UTF-8)',$res) or return (undef,'Unable to write (for results) local file '.$res.' : '.$!); ## no critic (InputOutput::RequireBriefOpen)
  } elsif ($dom=~m!/!) ## Local file
  {
   return (undef,'Local file '.$dom.' does not exist or unreadable') unless (-e $dom && -r _);
   $res=$dom.'.'.$$.'.'.time().'.results'; ## see above
-  open($fin,'<',$dom)  or return (undef,'Unable to read local file '.$dom.' : '.$!); ## no critic (InputOutput::RequireBriefOpen)
-  open($fout,'>',$res) or return (undef,'Unable to write (for results) local file '.$res.' : '.$!); ## no critic (InputOutput::RequireBriefOpen)
+  open($fin,'<:encoding(UTF-8)',$dom)  or return (undef,'Unable to read local file '.$dom.' : '.$!); ## no critic (InputOutput::RequireBriefOpen)
+  open($fout,'>:encoding(UTF-8)',$res) or return (undef,'Unable to write (for results) local file '.$res.' : '.$!); ## no critic (InputOutput::RequireBriefOpen)
  }
 
  unless (defined $fin && defined $fout) ## Pure unique domain name
@@ -1570,7 +1588,7 @@ sub build_duration
 {
  my ($ctx,$rd)=@_;
  return unless exists($rd->{duration});
- my ($v,$u)=($rd->{duration}=~m/^(\d+)(y(?:ears?)|m(?:onths?))$/i);
+ my ($v,$u)=($rd->{duration}=~m/^P?(\d+)(y(?:ears?)|m(?:onths?))$/i);
  die sprintf('Invalid duration specification "%s"',$rd->{duration}) unless defined $v && defined $u;
  $rd->{duration}=$ctx->{dri}->local_object('duration','years'  => $v) if ($u=~m/^y(?:ears?)?$/i);
  $rd->{duration}=$ctx->{dri}->local_object('duration','months' => $v) if ($u=~m/^m(?:onths?)?$/i);

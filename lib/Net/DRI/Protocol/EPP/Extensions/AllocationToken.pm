@@ -1,6 +1,6 @@
-## Allocation Token Mapping for EPP (draft-gould-allocation-token-01)
+## Allocation Token Mapping for EPP (draft-ietf-regext-allocation-token-05)
 ##
-## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -27,17 +27,14 @@ sub register_commands
 {
  my ($class,$version)=@_;
 
- state $rd={ 'domain' => { check            => [ \&command, undef ],
-                           check_multi      => [ \&command, undef ],
-                           info             => [ \&command, \&info_parse ],
-                           create           => [ \&command, undef ],
-                           transfer_request => [ \&command, undef ],
-                           update           => [ \&command, undef ],
-                         },
-           };
+ state $rd = { info => [ \&command, \&info_parse ] };
+ $rd->{check} = $rd->{check_multi} = $rd->{create} = $rd->{transfer_request} = $rd->{update} = [ \&command, undef ];
 
- return $rd;
+ state $cmds = { 'domain' => $rd };
+ return $cmds;
 }
+
+sub capabilities_add { return ['domain_update','allocation_token',['set']]; }
 
 sub setup
 {
@@ -48,30 +45,33 @@ sub setup
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-gould-allocation-token-02'; }
+sub implements { return 'https://tools.ietf.org/html/draft-ietf-regext-allocation-token-05'; }
 
 ####################################################################################################
 
 sub command
 {
- my ($epp,$domain,@rd)=@_;
+ my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
  my $operation=$mes->operation()->[1];
- my $rd=$rd[$operation eq 'update' ? 1 : 0];
-
- return unless Net::DRI::Util::has_key($rd,'allocation_token');
- my $token=$rd->{allocation_token};
- Net::DRI::Exception::usererr_invalid_parameters('Invalid syntax for allocation token: '.$token) unless Net::DRI::Util::xml_is_token($token);
+ my $token;
 
  if ($operation eq 'info')
  {
-  return unless $rd->{allocation_token}; ## any true value will be enough for us here
-  my $eid=$mes->command_extension_register('allocationToken','info');
+  return unless Net::DRI::Util::has_key($rd,'allocation_token') && $rd->{allocation_token}; ## any true value will be enough for us here
  } else
  {
-  my $eid=$mes->command_extension_register('allocationToken','allocationToken');
-  $mes->command_extension($eid,$token);
+  $token = $epp->extract_argument('allocation_token', $rd);
+  return unless defined $token;
  }
+
+ my $eid = $mes->command_extension_register('allocationToken', $operation eq 'info' ? 'info' : 'allocationToken');
+ if (defined $token)
+ {
+  Net::DRI::Exception::usererr_invalid_parameters('Invalid syntax for allocation token: '.$token) unless Net::DRI::Util::xml_is_token($token);
+  $mes->command_extension($eid, $token);
+ }
+
  return;
 }
 
@@ -97,7 +97,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::AllocationToken - EPP Allocation Token mapping (draft-gould-allocation-token-02) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::AllocationToken - EPP Allocation Token mapping (draft-ietf-regext-allocation-token-05) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -121,7 +121,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2015,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

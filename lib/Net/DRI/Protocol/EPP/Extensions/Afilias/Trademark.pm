@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Afilias Trademark extension (for .INFO .MOBI .IN)
 ##
-## Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -67,7 +67,7 @@ sub create
  }
 
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('trademark:create',sprintf('xmlns:trademark="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('trademark')));
+ my $eid=$mes->command_extension_register('trademark', 'create');
  $mes->command_extension($eid,\@t);
  return;
 }
@@ -129,7 +129,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

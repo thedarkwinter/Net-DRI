@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .IT Contact EPP extension
 ##
-## Copyright (C) 2009-2010,2013 Tower Technologies. All rights reserved.
+## Copyright (C) 2009-2010,2013,2016 Tower Technologies. All rights reserved.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License v2.
@@ -30,7 +30,7 @@ Alessandro Zummo, E<lt>a.zummo@towertech.itE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2010,2013 Tower Technologies.
+Copyright (C) 2009-2010,2013,2016 Tower Technologies.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -55,20 +55,9 @@ sub register_commands
        return { 'contact' => $ops };
 }
 
-sub build_command_extension
-{
-       my ($msg, $epp, $tag) = @_;
-
-       return $msg->command_extension_register($tag,
-               sprintf('xmlns:extcon="%s" xsi:schemaLocation="%s %s"', $msg->nsattrs('it_contact')));
-}
-
 sub fix_contact
 {
        my ($epp, $c, $op) = @_;
-       my $msg = $epp->message;
-
-       my $eid = build_command_extension($msg, $epp, 'extcon:' . $op);
 
        my @ext;
 
@@ -92,8 +81,13 @@ sub fix_contact
        push @ext, [ 'extcon:registrant', @registrant ]
                if scalar @registrant;
 
-       $msg->command_extension($eid, [ @ext ])
-               if scalar @ext;
+       if (@ext)
+       {
+	       my $msg = $epp->message;
+               my $eid = $msg->command_extension_register('extcon', $op);
+
+       	       $msg->command_extension($eid, [ @ext ]);
+       }
        return;
 }
 

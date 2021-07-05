@@ -356,6 +356,42 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 + Added TMDB DRD using TMDB.pm
 
 
+0.96_10 2018-03-11 DEVELOPMENT RELEASE
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+
++ Shell : nicely serialize/unserialize durations
++ DRD/Example : new DRD module for tld .EXAMPLE, useful in tests
++ Protocol/EPP/Extensions/Nomulus Protocol/EPP/Extensions/Nomulus/{Allocate,Metadata,Superuser} : new modules to implement Google extensions in Nomulus from https://github.com/google/nomulus/
++ Protocol/EPP/Extensions/DNAME : new module to implement draft-bortzmeyer-regext-epp-dname-00
++ Protocol/EPP/Extensions/ArtRecord : new module to implement https://gitlab.centralnic.com/centralnic/epp-artrecord-extension/raw/fd935a927252f4420e233adce877830782a22ba4/draft-brown-artRecord.txt
++ Protocol/EPP/Extensions/VerificationCode : new module to implement draft-ietf-regext-verificationcode-02
++ Protocol/EPP/Extensions/CentralNic/RegType : new module to implement https://gitlab.centralnic.com/centralnic/epp-registration-type-extension/blob/e210c27730c8926324e502efff4d0ad77190d7c2/draft-brown-regtype.txt
++ Protocol/EPP/Extensions/CentralNic/AuxContact : new module to implement https://gitlab.centralnic.com/centralnic/epp-auxcontact-extension/blob/1b7a0e935523b306387d236908017ea7ba72f794/draft-brown-auxcontact.txt
++ Protocol/ResultStatus : new function is_success_or_die(), use it in eg/whois.pl
++ Protocol/ResultStatus : new function get_data_keys()
++ Util::xml_is_decimal() new function
++ Added file EPP_namespaces.txt to track all EPP extensions namespaces
+= DRD/Nominet : force connection to be TLSv12 (cherry-pick of 6d0d8f7ee330d174e057bbd2191d1b6304631f46 from Paulo Jorge)
+= Protocol/EPP/Message/command_extension_register() : promote new API as the only official one and give a warning message for old API use
+= Protocol/EPP/Extensions/VeriSign/Suggestion : update documentation to version 1.5 (new geo key)
+= DRD/VeriSign/NameStore : added EDU as a supported TLD
+= Data/ContactSet::new() : if contact IDs are not passed, do not recreate the same contact multiple times
+= Protocol/EPP/Extensions/ICANN/MarkSignedMark : updated to RFC7848
+= Protocol/EPP/Extensions/CNNIC/Bundling : updated to draft-ietf-regext-bundling-registration-00
+= Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate : updated to draft-lozano-ietf-eppext-registrar-expiration-date-01
+= Protocol/EPP/Extensions/KeyRelay : updated to RFC8063
+= Protocol/EPP/Extensions/ChangePoll : updated to draft-ietf-regext-change-poll-07
+= Protocol/EPP/Extensions/AllocationToken : updated to refer to draft-ietf-regext-allocation-token-05, change of API in case of update
+= (tests) Protocol/EPP/util.pl : new file to simplify doing EPP tests
+- Protocol/EPP::switch_to_highest_namespace_version() : bugfix in handling version numbers, like for fees
+- Protocol/EPP/Extensions/VeriSign/{ClientAttributes,PremiumDomain,WhoWas} : fix documentation
+- Transport/Socket: remove call to message factories (old API)
+- Data/ContactSet::get_all() : bugfix
+- Protocol/EPP/Connection::read_data() : bugfix to deal with namespace in the </epp> node (inspired by Michael Holloway fix in 42abc9a2c123a66b2c2339e5a1c71e7c06d5a766)
+- Shell: make sure all I/O is UTF-8 encoded/decoded
+
 0.96_09 2016-05-22 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,

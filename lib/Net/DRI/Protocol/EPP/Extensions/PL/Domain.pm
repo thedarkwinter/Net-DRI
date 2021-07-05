@@ -18,6 +18,7 @@ package Net::DRI::Protocol::EPP::Extensions::PL::Domain;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Exception;
 use Net::DRI::Util;

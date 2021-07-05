@@ -1,7 +1,7 @@
 ## Domain Registry Interface, VeriSign EPP Client Object Attribute Extension
 ## From epp-client-object-attribute.pdf
 ##
-## Copyright (c) 2011-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2011-2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -97,7 +97,7 @@ sub create
  Net::DRI::Exception::usererr_invalid_parameters('client_attributes must be a hash ref') unless ref $rcoa eq 'HASH';
 
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('coa:create',sprintf('xmlns:coa="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('coa')));
+ my $eid=$mes->command_extension_register('coa', 'create');
  $mes->command_extension($eid,add_coa('create',$rcoa));
  return;
 }
@@ -125,7 +125,7 @@ sub update
  }
 
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('coa:update',sprintf('xmlns:coa="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('coa')));
+ my $eid=$mes->command_extension_register('coa', 'update');
  $mes->command_extension($eid,@d);
  return;
 }
@@ -144,8 +144,8 @@ Net::DRI::Protocol::EPP::Extensions::VeriSign::ClientAttributes - VeriSign EPP C
 =head1 SYNOPSIS
 
         $dri=Net::DRI->new();
-        $dri->add_registry('VNDS',{client_id=>'XXXXXX');
-
+        $dri->add_current_registry('VeriSign::COM_NET',{client_id=>'XXXXXX');
+        $dri->add_current_profile(...);
         $rc=$dri->domain_info('whatever.com');
         $rh=$rc->get_data('client_attributes');
 
@@ -173,7 +173,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2011-2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -106,12 +106,6 @@ sub setup
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:eurid="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('eurid')));
-}
-
 sub create
 {
  my ($epp,$domain,$rd)=@_;

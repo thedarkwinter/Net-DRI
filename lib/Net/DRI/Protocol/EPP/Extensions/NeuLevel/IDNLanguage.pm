@@ -1,6 +1,7 @@
 ## Domain Registry Interface, Neulevel EPP IDN Language
 ##
 ## Copyright (c) 2009,2013 Jouanne Mickael <grigouze@gandi.net>. All rights reserved.
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +17,7 @@ package Net::DRI::Protocol::EPP::Extensions::NeuLevel::IDNLanguage;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -49,6 +51,7 @@ Jouanne Mickael E<lt>grigouze@gandi.netE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2009,2013 Jouanne Mickael <grigouze@gandi.net>.
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Key Relay Mapping for EPP
 ##
-## Copyright (c) 2013,2015,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2015-2017 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -45,7 +45,7 @@ sub setup
  return;
 }
 
-sub implements { return 'http://tools.ietf.org/html/draft-ietf-eppext-keyrelay-11'; }
+sub implements { return 'https://tools.ietf.org/html/rfc8063'; }
 
 ####################################################################################################
 
@@ -157,7 +157,7 @@ sub notification_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $data=$mes->get_response($mes->ns('keyrelay'),'infData');
+ my $data=$mes->get_response('keyrelay', 'infData');
  return unless defined $data;
 
  my %r = ( type => 'keyrelay' );
@@ -228,7 +228,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::KeyRelay - EPP Key Relay mapping (draft-ietf-eppext-keyrelay-11) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::KeyRelay - EPP Key Relay mapping (draft-ietf-eppext-keyrelay-12) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -252,7 +252,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013,2015,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2013,2015-2017 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .UK EPP Domain commands
 ##
-## Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008-2010,2013-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008-2010,2013-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
@@ -170,7 +170,7 @@ sub create {
  my @n = domain_nom_ext($rd);
  return unless @n;
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('domain-nom-ext:create',sprintf('xmlns:domain-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain-nom-ext')));
+ my $eid=$mes->command_extension_register('domain-nom-ext', 'create');
  $mes->command_extension($eid,\@n);
  return;
 }
@@ -185,7 +185,7 @@ sub update {
  my @n = domain_nom_ext($rd);
  return unless @n;
  my $mes=$epp->message();
- my $eid=$mes->command_extension_register('domain-nom-ext:update',sprintf('xmlns:domain-nom-ext="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('domain-nom-ext')));
+ my $eid=$mes->command_extension_register('domain-nom-ext', 'update');
  $mes->command_extension($eid,\@n);
  return;
 }

@@ -134,7 +134,7 @@ sub new
  my %opts=%$rp;
  my $po=$ctx->{protocol};
 
- my %t=(message_factory => $po->factories()->{message});
+ my %t;
  Net::DRI::Exception::usererr_insufficient_parameters('protocol_connection') unless (exists($opts{protocol_connection}) && $opts{protocol_connection});
  $t{pc}=$opts{protocol_connection};
  Net::DRI::Util::load_module($t{pc},'transport/socket');
