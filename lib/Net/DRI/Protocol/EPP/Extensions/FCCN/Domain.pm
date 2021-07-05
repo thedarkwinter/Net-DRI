@@ -222,13 +222,13 @@ sub renew
 sub renounce
 {
  my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
 
  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
  $mes->command_body(\@d);
 
- my $mes=$epp->message();
  my $eid=$mes->command_extension_register('ptdomain', 'renounce');
  my @n;
  push @n,add_roid($rd->{roid});

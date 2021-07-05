@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 542;
+use Test::More tests => 548;
 
 BEGIN {
 use_ok('Net::DRI');
