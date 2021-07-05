@@ -1,7 +1,7 @@
 ## Domain Registry Interface, Afilias EPP Renew Redemption Period Extension
 ##
-## Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
-## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,7 +17,6 @@ package Net::DRI::Protocol::EPP::Extensions::Afilias::Restore;
 
 use strict;
 use warnings;
-use feature 'state';
 
 use Net::DRI::Util;
 
@@ -50,7 +49,6 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -67,17 +65,11 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class, $version) = @_;
- state $cmds = { 'domain' => { 'renew' => [ \&renew, undef ] } };
+ my %tmp = (
+           renew => [ \&renew, undef ],
+         );
 
- return $cmds;
-}
-
-sub setup
-{
- my ($class,$po,$version)=@_;
- state $rns = { 'argp' => [ 'urn:EPP:xml:ns:ext:rgp-1.0', 'rgp-1.0.xsd' ] };
- $po->ns($rns);
- return;
+ return { 'domain' => \%tmp };
 }
 
 ####################################################################################################
@@ -91,8 +83,9 @@ sub renew
 
  return unless Net::DRI::Util::has_key($rd,'rgp');
 
- my $eid = $mes->command_extension_register('argp', 'renew');
- $mes->command_extension($eid, ['argp:restore']);
+ my $eid = $mes->command_extension_register('rgp:renew',
+	'xmlns:rgp="urn:EPP:xml:ns:ext:rgp-1.0" xsi:schemaLocation="urn:EPP:xml:ns:ext:rgp-1.0 rgp-1.0.xsd"');
+ $mes->command_extension($eid, ['rgp:restore']);
  return;
 }
 

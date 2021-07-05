@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP IDN Language (EPP-IDN-Lang-Mapping.pdf)
 ##
-## Copyright (c) 2006,2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,7 +16,6 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::IDNLanguage;
 
 use strict;
 use warnings;
-use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -49,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2008,2013 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,17 +65,11 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- state $cmds = { 'domain' => { 'create' => [ \&create, undef ] } };
+ my %tmp=(
+           create => [ \&create, undef ],
+         );
 
- return $cmds;
-}
-
-sub setup
-{
- my ($class,$po,$version)=@_;
- state $rns = { 'idnLang' => [ 'http://www.verisign.com/epp/idnLang-1.0', 'idnLang-1.0.xsd' ] };
- $po->ns($rns);
- return;
+ return { 'domain' => \%tmp, 'defreg' => \%tmp };
 }
 
 ####################################################################################################
@@ -86,6 +79,7 @@ sub setup
 sub create
 {
  my ($epp,$domain,$rd)=@_;
+ my $mes=$epp->message();
  return unless ($domain=~/^xn--/);
  Net::DRI::Exception::usererr_insufficient_parameters('Language tag must be provided') unless (Net::DRI::Util::has_key($rd,'language') || Net::DRI::Util::has_key($rd,'idn'));
 
@@ -100,8 +94,7 @@ sub create
  }
  return unless $script;
 
- my $mes=$epp->message();
- my $eid=$mes->command_extension_register('idnLang', 'tag');
+ my $eid=$mes->command_extension_register('idnLang:tag','xmlns:idnLang="http://www.verisign.com/epp/idnLang-1.0" xsi:schemaLocation="http://www.verisign.com/epp/idnLang-1.0 idnLang-1.0.xsd"');
  $mes->command_extension($eid,$script);
  return;
 }

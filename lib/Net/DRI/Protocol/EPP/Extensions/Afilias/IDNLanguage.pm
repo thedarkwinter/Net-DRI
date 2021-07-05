@@ -1,7 +1,6 @@
 ## Domain Registry Interface, EPP IDN Language (EPP-IDN-Lang-Mapping.pdf)
 ##
 ## Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
-## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,7 +16,6 @@ package Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage;
 
 use strict;
 use warnings;
-use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -52,7 +50,6 @@ Tonnerre Lombard E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -69,9 +66,19 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- state $cmds = { 'domain' => { 'create' => [ \&create, undef ], 'check' => [ \&check, undef ] } };
+ my %tmp=(
+           create => [ \&create, undef ],
+           check =>  [ \&check, undef ],
+           check_multi =>  [ \&check, undef ],
+         );
 
- return $cmds;
+ return { 'domain' => \%tmp };
+}
+
+sub setup
+{
+  my ($class,$po,$version)=@_;
+  $po->ns({'idn' =>['urn:afilias:params:xml:ns:idn-1.0','idn-1.0.xsd']});
 }
 
 ####################################################################################################
@@ -90,22 +97,14 @@ sub add_language
   $script = $rd->{language};
  }
  return unless $script;
- my $eid=$mes->command_extension_register('idn', $tag);
- $mes->command_extension($eid,['idn:script', $rd->{language}]);
+ my $eid=$mes->command_extension_register('idn',$tag);
+ $mes->command_extension($eid,['idn:script', $script]);
  return;
 }
 
-sub create
-{
- my (@args)=@_;
- return add_language('create',@args);
-}
+sub create { return add_language('create',@_); }
 
-sub check
-{
- my (@args)=@_;
- return add_language('check',@args);
-}
+sub check { return add_language('check',@_); }
 
 ####################################################################################################
 1;
