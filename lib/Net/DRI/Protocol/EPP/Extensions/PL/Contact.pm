@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .PL Contact EPP extension commands
 ##
-## Copyright (c) 2006,2008,2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008,2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,7 +16,6 @@ package Net::DRI::Protocol::EPP::Extensions::PL::Contact;
 
 use strict;
 use warnings;
-use feature 'state';
 
 use Net::DRI::Util;
 
@@ -48,7 +47,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008,2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2008,2011,2013 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -120,7 +119,7 @@ sub info
 
  return unless (Net::DRI::Util::has_auth($ep) && exists $ep->{auth}->{pw});
 
- my $eid=$mes->command_extension_register('extcon', 'info');
+ my $eid=build_command_extension($mes,$epp,'extcon:info');
  if (Net::DRI::Util::has_key($ep->{auth},'roid'))
  {
   $mes->command_extension($eid,[['extcon:authInfo',['extcon:pw',{roid=>$ep->{auth}->{roid}},$ep->{auth}->{pw}]]]);
@@ -136,7 +135,7 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_extension('extcon','infData');
+ my $infdata=$mes->get_extension('pl_contact','infData');
  return unless defined $infdata;
 
  my $contact=$rinfo->{contact}->{$oname}->{self};
