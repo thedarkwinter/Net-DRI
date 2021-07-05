@@ -164,7 +164,7 @@ sub add_namestore_ext
  ## We do not know what will happen in case of check_multi with multiple TLDs
  my $ext;
  $domain=$domain->[0] if (ref($domain) eq 'ARRAY');
- if ($domain =~ m/\.(com|net|cc|tv|jobs)$/)
+ if ($domain =~ m/\.(com|net|cc|tv|jobs|edu)$/)
  {
   $ext = 'dot' . uc $1;
  } elsif ($domain =~ m/\.(name)$/)

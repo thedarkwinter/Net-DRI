@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EURid Sunrise EPP extension for Net::DRI
 ##
-## Copyright (c) 2005,2007-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005,2007-2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##

@@ -69,19 +69,9 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           create => [ \&create, undef ],
-           check =>  [ \&check, undef ],
-           check_multi =>  [ \&check, undef ],
-         );
+ state $cmds = { 'domain' => { 'create' => [ \&create, undef ], 'check' => [ \&check, undef ] } };
 
- return { 'domain' => \%tmp };
-}
-
-sub setup
-{
-  my ($class,$po,$version)=@_;
-  $po->ns({'idn' =>['urn:afilias:params:xml:ns:idn-1.0','idn-1.0.xsd']});
+ return $cmds;
 }
 
 ####################################################################################################
@@ -100,14 +90,22 @@ sub add_language
   $script = $rd->{language};
  }
  return unless $script;
- my $eid=$mes->command_extension_register('idn',$tag);
- $mes->command_extension($eid,['idn:script', $script]);
+ my $eid=$mes->command_extension_register('idn', $tag);
+ $mes->command_extension($eid,['idn:script', $rd->{language}]);
  return;
 }
 
-sub create { return add_language('create',@_); }
+sub create
+{
+ my (@args)=@_;
+ return add_language('create',@args);
+}
 
-sub check { return add_language('check',@_); }
+sub check
+{
+ my (@args)=@_;
+ return add_language('check',@args);
+}
 
 ####################################################################################################
 1;

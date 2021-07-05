@@ -66,7 +66,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
+ my %tmp=( 
           create => [ \&create, \&create_parse ],
           info   => [ \&info, \&info_parse ],
           update => [ \&update ],
@@ -97,12 +97,13 @@ sub create
   $rd->{$d} = xml_parse_auto_renew($rd->{$d});
  }
 
+ my $mes=$epp->message();
  my @n;
  push @n,['ptdomain:legitimacy',{type => $rd->{legitimacy}}];
  push @n,['ptdomain:registration_basis',{type => $rd->{registration_basis}}];
  push @n,['ptdomain:autoRenew',$rd->{auto_renew}];
  push @n,['ptdomain:ownerVisible',$rd->{owner_visible}];
- my $eid=build_command_extension($mes,$epp,'ptdomain:create');
+ my $eid=$mes->command_extension_register('ptdomain', 'create');
  $mes->command_extension($eid,\@n);
  return;
 }
@@ -138,11 +139,11 @@ sub add_roid
 sub info
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  $rd->{roid} = ''; # is mandatory but they dont do any validation. So force to be always empty
 
- my $eid=build_command_extension($mes,$epp,'ptdomain:info');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('ptdomain', 'info');
  my @n=add_roid($rd->{roid});
  $mes->command_extension($eid,\@n);
  return;
@@ -167,7 +168,7 @@ sub info_parse
   if ($name=~m/^(?:legitimacy|registration_basis)$/)
   {
    $rinfo->{domain}->{$oname}->{$name}=$c->getAttribute('type');
-  } elsif ($name=~m/^(?:nextPossibleRegistration|addPeriod|waitingRemoval)$/) # most are not used anymore but let's keep it :)
+  } elsif ($name=~m/^(?:nextPossibleRegistration|addPeriod|waitingRemoval)$/)
   {
    $rinfo->{domain}->{$oname}->{Net::DRI::Util::remcam($name)}=Net::DRI::Util::xml_parse_boolean($c->getFirstChild()->getData());
   } elsif  ($name=~m/^(?:autoRenew|notRenew|ownerVisible)$/)
@@ -184,12 +185,12 @@ sub info_parse
 sub update
 {
  my ($epp,$domain,$toc,$rd)=@_;
- my $mes=$epp->message();
 
  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
  Net::DRI::Exception::usererr_insufficient_parameters('owner_visible attribute is mandatory for .PT domain name update') unless $toc->{'owner_visible'}; # mandatory due GDPR changes
 
- my $eid=build_command_extension($mes,$epp,'ptdomain:update');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('ptdomain', 'update');
  my @n=add_roid($rd->{roid});
  push @n,['ptdomain:ownerVisible',$toc->set('owner_visible')];
  $mes->command_extension($eid,\@n);
@@ -221,14 +222,14 @@ sub renew
 sub renounce
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
  my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,['transfer',{'op'=>'request'}],$domain);
  $mes->command_body(\@d);
 
- my $eid=build_command_extension($mes,$epp,'ptdomain:transfer');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('ptdomain', 'renounce');
  my @n;
  push @n,add_roid($rd->{roid});
  push @n,['ptdomain:renounce','true']; # Forcing always to true. By the manual: "When a registrar wants to renounce the sponsorship of a domain he sends a transfer request without authorization code and with the <ptdomain:renounce> field set to true."
@@ -239,11 +240,11 @@ sub renounce
 sub delete ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  $rd->{roid} = '' unless (Net::DRI::Util::has_key($rd,'roid')); # is mandatory but they dont do any validation. So force to be always empty
 
- my $eid=build_command_extension($mes,$epp,'ptdomain:delete');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('ptdomain', 'delete');
  my @n=add_roid($rd->{roid});
  $mes->command_extension($eid,\@n);
  return;

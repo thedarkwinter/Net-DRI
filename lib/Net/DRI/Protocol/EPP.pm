@@ -141,7 +141,10 @@ sub ns
 sub switch_to_highest_namespace_version
 {
  my ($self,$nsalias)=@_;
- my ($basens)=($self->message()->ns($nsalias)=~m/^(\S+)-[\d.]+$/);
+
+ my $ns=$self->message()->ns($nsalias);
+ Net::DRI::Exception::err_invalid_parameters("No namespace defined for alias \"$nsalias\"") unless defined $ns;
+ my ($basens)=($ns=~m/^(\S+)-[\d.]+$/);
  my $rs=$self->default_parameters()->{server};
  my @ns=grep { m/^${basens}-\S+$/ } @{$rs->{extensions_selected}};
  Net::DRI::Exception::err_invalid_parameters("No extension found under namespace ${basens}-*") unless @ns;
@@ -150,10 +153,7 @@ sub switch_to_highest_namespace_version
  foreach my $ns (@ns)
  {
   my ($v)=($ns=~m/^\S+-([\d.]+)$/);
-  $version=0+$v if ! defined $version || 0+$v > $version;
-  # if 1.0 is the highest version, it currently sets to int 1. The below fixes
-  # this and doesn't seem appear to break other tests
-  $version="1.0" if $version eq "1";
+  $version=0+$v if ! defined $version || version->parse('v'.(0+$v)) > version->parse('v'.$version); ## needed for fees (fees-0.4 fees-0.7 fees-0.11 etc...)
  }
 
  my $fullns=$basens.'-'.$version;

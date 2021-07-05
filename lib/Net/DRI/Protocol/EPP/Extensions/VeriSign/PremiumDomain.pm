@@ -27,10 +27,11 @@ sub register_commands
 {
  my ($class,$version)=@_;
 
- return { 'domain' => { 'check'  => [ \&check, \&check_parse ],
-                        'check_multi'  => [ \&check, \&check_parse ],
-                        'update' => [ \&update, undef ],
-                      } };
+ state $cmds = { 'domain' => { 'check'  => [ \&check, \&check_parse ],
+                                'check_multi'  => [ \&check, \&check_parse ],
+                               'update' => [ \&update, undef ],
+               } };
+ return $cmds;
 }
 
 sub capabilities_add { return ('domain_update','premium_short_name',['set']); }

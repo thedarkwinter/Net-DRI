@@ -66,11 +66,17 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           create => [ \&create, undef ],
-         );
+ state $cmds = { 'domain' => { 'create' => [ \&create, undef ] } };
 
- return { 'domain' => \%tmp, 'defreg' => \%tmp };
+ return $cmds;
+}
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ state $rns = { 'idnLang' => [ 'http://www.verisign.com/epp/idnLang-1.0', 'idnLang-1.0.xsd' ] };
+ $po->ns($rns);
+ return;
 }
 
 ####################################################################################################
@@ -80,7 +86,6 @@ sub register_commands
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
  return unless ($domain=~/^xn--/);
  Net::DRI::Exception::usererr_insufficient_parameters('Language tag must be provided') unless (Net::DRI::Util::has_key($rd,'language') || Net::DRI::Util::has_key($rd,'idn'));
 
@@ -95,7 +100,8 @@ sub create
  }
  return unless $script;
 
- my $eid=$mes->command_extension_register('idnLang:tag','xmlns:idnLang="http://www.verisign.com/epp/idnLang-1.0" xsi:schemaLocation="http://www.verisign.com/epp/idnLang-1.0 idnLang-1.0.xsd"');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('idnLang', 'tag');
  $mes->command_extension($eid,$script);
  return;
 }

@@ -26,24 +26,19 @@ use Net::DRI::Exception;
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           info             => [ undef, \&info_parse],
-           create           => [ \&create, undef ],
-           update           => [ \&update, undef ],
-           delete_cancel    => [ \&delete_cancel, undef ],
-           transfer_request => [ undef, \&transfer_parse ],
-         );
+ state $domain = {
+                  info             => [ undef, \&info_parse],
+                  create           => [ \&create, undef ],
+                  update           => [ \&update, undef ],
+                  delete_cancel    => [ \&delete_cancel, undef ],
+                  transfer_request => [ undef, \&transfer_parse ],
+                 };
+ state $commands = { 'domain' => $domain };
 
- return { 'domain' => \%tmp };
+ return $commands;
 }
 
 ####################################################################################################
-
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:sidn="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('sidn')));
-}
 
 sub info_parse
 {

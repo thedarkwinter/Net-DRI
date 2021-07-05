@@ -68,11 +68,15 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           create => [ \&create, undef ],
-         );
+ state $commands = { 'domain' => { 'create' => [ \&create, undef ] } };
+ return $commands;
+}
 
- return { 'domain' => \%tmp };
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ 'neulevel' => [ 'urn:ietf:params:xml:ns:neulevel-1.0','neulevel-1.0.xsd' ] });
+ return;
 }
 
 ####################################################################################################
@@ -92,8 +96,9 @@ sub add_language
  }
  return unless $script;
 
- my $eid=$mes->command_extension_register($tag,'xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"');
- $mes->command_extension($eid,['neulevel:unspec', 'IDNLang=' . $script]);
+ my $eid=$mes->command_extension_register('neulevel', 'extension');
+ $mes->command_extension($eid,['neulevel:unspec', 'IDNLang=' . $rd->{language}]);
+
  return;
 }
 
