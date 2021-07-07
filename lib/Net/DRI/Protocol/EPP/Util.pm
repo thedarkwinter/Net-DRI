@@ -279,7 +279,7 @@ sub parse_disclose
   my ($name,$node)=@$el;
   if ($name=~m/^(name|org|addr)$/ && $node->hasAttribute('type')) #Some TLDs dont implement the RFC exactly (ie: addr without type), fixed here to avoid warnings and badly constructed hash keys
   {
-   $r{$1.'_'.$node->getAttribute('type')}=$flag;;
+   $r{$1.'_'.$node->getAttribute('type')}=$flag;
   } else
   {
    $r{$name}=$flag;
