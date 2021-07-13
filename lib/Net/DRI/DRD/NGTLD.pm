@@ -667,7 +667,9 @@ Contended TLD's not included
 
 =pod
 
-=head2 Neustar Narwhal / ex - ARI
+=head2 GoDaddy => old Neustar Narwhal / ex - ARI
+
+ $dri->add_registry('NGTLD',{provider=>'godaddy'}); # To use GoDaddy extensions (Neustar sold Registry business to GoDaddy)
 
  $dri->add_registry('NGTLD',{provider=>'ari'}); # To use ARI extensions
 
@@ -679,12 +681,12 @@ Contended TLD's not included
 
 =head3 TLDs
 
-Legacy (use 'neustar')
-Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD.
+Legacy (use 'ari' or 'neustar' before that)
+GoDaddy operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD.
 
 biz hotels htc ipiranga itau
 
-Narwhal (use 'ari' or 'narwhal') or DRD::Narwhal
+GoDaddy (use 'godaddy' OR 'ari'/'narwhal' for legacy) or DRD::GoDaddy::GoDaddy
 
 aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball basketball bible bid biz booking boots box buzz calvinklein cancerresearch caravan cartier catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co commbank compare coupon courses cricket cuisinella date dell discover doha download duns dupont earth everbank faith farmers ferrero film flickr flir ford fox frontier ftr gap giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe lifeinsurance lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping pramerica praxi pru prudential qvc racing review rmit rocher rugby safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj yahoo yandex zero zippo
 
@@ -807,6 +809,39 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
      requires => [ 'Net::DRI::Data::Contact::Neustar'],
      whois_server => 'whois.aridnrs.net.au',
  } if $bep eq 'narwal' || $bep eq 'narwhal';
+
+ return {
+     bep_type => 2, # shared registry
+     tlds => [
+        'aaa', 'able', 'accountant', 'aetna', 'afl', 'aig', 'americanexpress', 'amex', 'amica', 'analytics', 'anz', 'aramco', 'athleta',
+        'auspost', 'axa', 'banamex', 'bananarepublic', 'bank', 'barclaycard', 'barclays', 'baseball', 'basketball', 'bible', 'bid', 'biz',
+        'booking', 'boots', 'box', 'buzz', 'calvinklein', 'cancerresearch', 'caravan', 'cartier', 'catholic', 'cba', 'cbn',
+        'cbre', 'chase', 'chintai', 'chloe', 'cisco', 'citadel', 'citi', 'cloud', 'club',
+        'co', 'com.co', 'net.co', 'nom.co',
+        'commbank', 'compare', 'coupon',
+        'courses', 'cricket', 'cuisinella', 'date', 'dell', 'discover', 'doha', 'download', 'duns', 'dupont', 'earth', 'everbank',
+        'faith', 'farmers', 'ferrero', 'film', 'flickr', 'flir', 'ford', 'fox', 'frontier', 'ftr', 'gap', 'giving',
+        'grainger', 'hbo', 'health', 'homegoods', 'homesense', 'honeywell', 'hoteles', 'hotels', 'hsbc', 'htc', 'hyatt', 'ibm',
+        'ieee', 'insurance', 'intel', 'intuit', 'ipiranga', 'iselect', 'itau', 'iwc', 'jlc', 'jmp', 'jnj', 'jpmorgan', 'kinder', 'kpmg',
+        'krd', 'kred', 'lanxess', 'latrobe', 'lifeinsurance', 'lilly', 'lincoln', 'loan', 'loft', 'marshalls', 'mattel', 'mcd',
+        'mcdonalds', 'melbourne', 'men', 'menu', 'mint', 'mlb', 'mobily', 'moe', 'monash', 'montblanc', 'moto', 'mtn', 'mutual', 'nba', 'netbank',
+        'netflix', 'neustar', 'nfl', 'nike', 'northwesternmutual', 'nyc', 'office', 'olayan', 'olayangroup', 'oldnavy', 'one', 'open', 'osaka',
+        'pamperedchef', 'panerai', 'party', 'passagens', 'pfizer', 'philips', 'physio', 'piaget', 'ping', 'pramerica', 'praxi',
+        'pru', 'prudential', 'qvc', 'racing', 'review', 'rmit', 'rocher', 'rugby', 'safety', 'sandvik',
+        'sandvikcoromant', 'sas', 'saxo', 'schmidt', 'science', 'scor', 'seek', 'select', 'seven', 'skype', 'song',
+        'staples', 'starhub', 'statefarm', 'stream', 'study', 'sucks', 'swiftcover', 'sydney', 'tab', 'taipei', 'taobao', 'target', 'tdk',
+        'tel', 'teva', 'tjmaxx', 'tjx', 'tkmaxx', 'tmall', 'trade', 'tube', 'us', 'virgin', 'vista', 'vistaprint',
+        'vivo', 'voting', 'vu', 'vuelos', 'walter', 'watches', 'weather', 'weatherchannel', 'webcam', 'williamhill', 'win', 'winners', 'woodside',
+        'wtc', 'xn--1ck2e1b', 'xn--80aqecdr1a', 'xn--bck1b9a5dre4c', 'xn--cck2b3b', 'xn--eckvdtc9d', 'xn--fct429k', 'xn--g2xx48c', 'xn--gckr3f0f',
+        'xn--gk3at1e', 'xn--jvr189m', 'xn--kcrx77d1x4a', 'xn--kpu716f', 'xn--mgba3a3ejt', 'xn--mgba7c0bbn0a', 'xn--mgbb9fbpob', 'xn--mgbi4ecexp',
+        'xn--ngbc5azd', 'xn--pbt977c', 'xn--rovu88b', 'xn--tiq49xqyj', 'yahoo', 'yandex',
+        'zero', 'zippo'
+     ],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::GoDaddy',{ 'brown_fee_version' => '0.6' }],
+     factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::GoDaddy->new(@_); } } ],
+     requires => [ 'Net::DRI::Data::Contact::GoDaddy'],
+     whois_server => 'whois.dnrs.godaddy',
+ } if $bep eq 'godaddy';
 
  return {
      bep_type => 1, # dedicated registry

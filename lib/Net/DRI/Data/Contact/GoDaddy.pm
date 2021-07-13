@@ -1,7 +1,8 @@
-## Domain Registry Interface, Handling of contact data for Neustar::Neustar
+## Domain Registry Interface, Handling of contact data for GoDaddy registry
 ##
 ## Copyright (c) 2006,2008-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## Copyright (c) 2014 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 #########################################################################################
 
-package Net::DRI::Data::Contact::Neustar;
+package Net::DRI::Data::Contact::GoDaddy;
 
 use utf8;
 use strict;
@@ -32,11 +33,11 @@ __PACKAGE__->register_attributes(qw(application_purpose ext_contact nexus_catego
 
 =head1 NAME
 
-Net::DRI::Data::Contact::Neustar - Handle Neustar::Neustar contact data for Net::DRI (will be removed soon to pass to use GoDaddy.pm instead!)
+Net::DRI::Data::Contact::GoDaddy - Handle GoDaddy registry contact data for Net::DRI
 
 =head1 DESCRIPTION
 
-This subclass of Net::DRI::Data::Contact adds accessors and validation for Neustar specific data.
+This subclass of Net::DRI::Data::Contact adds accessors and validation for GoDaddy registry specific data.
 Please read the following in order to understand what's mandatory for .US and .NYC domains!
 
 =head1 METHODS
@@ -97,12 +98,13 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Paulo Jorge, E<lt>paullojorgge@gmailcomE<gt>
 
 =head1 COPYRIGHT
 
 Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>.
 (c) 2014 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2021 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
