@@ -38,6 +38,7 @@ lib/Net/DRI/Data/Contact/EURid.pm
 lib/Net/DRI/Data/Contact/FCCN.pm
 lib/Net/DRI/Data/Contact/FICORA.pm
 lib/Net/DRI/Data/Contact/FRED.pm
+lib/Net/DRI/Data/Contact/IE.pm
 lib/Net/DRI/Data/Contact/IIS.pm
 lib/Net/DRI/Data/Contact/IT.pm
 lib/Net/DRI/Data/Contact/JOBS.pm
@@ -85,6 +86,7 @@ lib/Net/DRI/DRD/CGIBR/BR.pm
 lib/Net/DRI/DRD/CGIBR/GTLD.pm
 lib/Net/DRI/DRD/CIRA/CA.pm
 lib/Net/DRI/DRD/CIRA/Fury.pm
+lib/Net/DRI/DRD/CIRA/IE.pm
 lib/Net/DRI/DRD/CNNIC/CN.pm
 lib/Net/DRI/DRD/CNNIC/GTLD.pm
 lib/Net/DRI/DRD/CoCCA/CoCCA.pm
@@ -279,11 +281,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/SkContactIdent.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ChangePoll.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Agreement.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Contact.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Domain.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Notifications.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Fury.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CIRA/FuryIE.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CL.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CL/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CloudRegistry.pm
@@ -354,6 +353,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/HTTP.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IDN.pm
+lib/Net/DRI/Protocol/EPP/Extensions/IE.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IENUMAT.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IIS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IIS/Extensions.pm
@@ -633,7 +633,6 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/SKNIC.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNicGW.t
 t/Net/DRI/Protocol/EPP/Extensions/ChangePoll.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
-t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/CL.t
 t/Net/DRI/Protocol/EPP/Extensions/CN.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC/Bundling.t
@@ -668,6 +667,7 @@ t/Net/DRI/Protocol/EPP/Extensions/GracePeriod.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate.t
 t/Net/DRI/Protocol/EPP/Extensions/IDN.t
+t/Net/DRI/Protocol/EPP/Extensions/IE.t
 t/Net/DRI/Protocol/EPP/Extensions/IIS.t
 t/Net/DRI/Protocol/EPP/Extensions/IN.t
 t/Net/DRI/Protocol/EPP/Extensions/IT.t
