@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 540;
+use Test::More tests => 539;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -147,9 +147,9 @@ use_ok('Net::DRI::DRD::TELEGreenland');
 use_ok('Net::DRI::DRD::TMDB');
 use_ok('Net::DRI::DRD::TRA::AE');
 use_ok('Net::DRI::DRD::TRA::BH');
+use_ok('Net::DRI::DRD::UniRegistry::COOP');
 use_ok('Net::DRI::DRD::UniRegistry::EPS');
 use_ok('Net::DRI::DRD::UniRegistry::ICM');
-use_ok('Net::DRI::DRD::UniRegistry::INC');
 use_ok('Net::DRI::DRD::UniRegistry::UniRegistry');
 use_ok('Net::DRI::DRD::UPU');
 use_ok('Net::DRI::DRD::VeriSign::COM_NET');
@@ -371,7 +371,6 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::IDNLanguage');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message');
-use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::UIN');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NeuLevel::WhoisType');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Neustar');
 use_ok('Net::DRI::Protocol::EPP::Extensions::NEWGTLD');

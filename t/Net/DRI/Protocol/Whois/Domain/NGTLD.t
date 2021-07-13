@@ -1642,7 +1642,7 @@ $R2='Whois Server Version 2.0
 Domain names can now be registered with many different competing registrars.
 Go to http://registrar.verisign-grs.com/whois/ for detailed information.
 
-   Domain Name: NIC.CAREER
+   Domain Name: NIC.SCA
    Domain ID: 106017070
    Whois Server: rs.internic.net
    Referral URL: http://www.networksolutions.com
@@ -1733,10 +1733,10 @@ and Registrars.
 
 $dri->add_registry('NGTLD',{provider=>'verisign'});
 $dri->target('verisign')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.career');
+$rc = $dri->domain_info('nic.sca');
 is($rc->is_success(),1,'Verisign domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.career','domain_info get_info (name)');
+is($dri->get_info('name'),'nic.sca','domain_info get_info (name)');
 is($dri->get_info('id'),'106017070','domain_info get_info (id)');
 is($dri->get_info('clName'),'TEST REGISTRAR','domain_info get_info (clName)');
 is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)'); # FIXME, when this is 1 it does not get returned?

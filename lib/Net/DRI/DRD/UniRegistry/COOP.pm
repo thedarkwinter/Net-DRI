@@ -1,8 +1,8 @@
-## Domain Registry Interface, UniRegistry::INC Driver
+## Domain Registry Interface, UniRegistry::COOP Driver
 ##
-## Copyright (c) 2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2019 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2019 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2021 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::UniRegistry::INC;
+package Net::DRI::DRD::UniRegistry::COOP;
 
 use strict;
 use warnings;
@@ -28,13 +28,13 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::UniRegistry::UniRegistry - UniRegistry::INC Driver for Net::DRI
+Net::DRI::DRD::UniRegistry::COOP - UniRegistry::COOP Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension UniRegistry::INC New Generic TLDs
+Additional domain extension UniRegistry::COOP New Generic TLDs
 
-UniRegistry::INC utilises a dedicated server and the following standard extensions. Please see the test files for more examples.
+UniRegistry::COOP utilises a dedicated server and the following standard extensions. Please see the test files for more examples.
 
 =head2 Standard extensions:
 
@@ -50,15 +50,6 @@ UniRegistry::INC utilises a dedicated server and the following standard extensio
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
 
-=head3 L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Centric> http://ns.uniregistry.net/centric-1.0
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> http://ns.uniregistry.net/market-1.0
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::Market> (poll parser suppliment)
-
-=head2 Other extensions:
-
-=head3 L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/epp/sync-1.0
 
 =head1 SUPPORT
 
@@ -74,13 +65,13 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2019 Patrick Mevzek <netdri@dotandco.com>.
-          (c) 2019 Michael Holloway <michael@thedarkwinter.com>.
-          (c) 2019 Paulo Jorge <paullojorgge@gmail.com>.
+Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2021 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2021 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -104,9 +95,9 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'UniRegistry::INC'; }
+sub name     { return 'UniRegistry::COOP'; }
 
-sub tlds     { return ('dealer','inc'); }
+sub tlds     { return ('creditunion'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
