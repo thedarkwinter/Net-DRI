@@ -1,6 +1,6 @@
 ## Domain Registry Interface, CIRA (.CA) EPP extensions
 ##
-## Copyright (c) 2010,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2015,2018-2019 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -19,7 +19,6 @@ use warnings;
 
 use base qw/Net::DRI::Protocol::EPP/;
 
-use Net::DRI::Util;
 use Net::DRI::Data::Contact::CIRA;
 
 ####################################################################################################
@@ -27,17 +26,13 @@ use Net::DRI::Data::Contact::CIRA;
 sub setup
 {
  my ($self,$rp)=@_;
- my $version=$self->version();
- $self->ns({cira=>['urn:ietf:params:xml:ns:cira-1.0','cira-1.0.xsd'],
-            poll=>['urn:ietf:params:xml:ns:poll-1.0','poll-1.0.xsd']});
 
  $self->factories('contact',sub { return Net::DRI::Data::Contact::CIRA->new(); });
  $self->default_parameters({domain_create => { auth => { pw => '' } } }); ## authInfo not used by CIRA
  return;
 }
 
-sub core_contact_types { return ('admin','tech'); } ## No billing contact in .CA
-sub default_extensions { return qw/CIRA::Domain CIRA::Contact CIRA::Agreement CIRA::Notifications CIRA::IDN/; }
+sub default_extensions { return qw/CIRA::Fury GracePeriod SecDNS/; }
 
 ####################################################################################################
 1;
@@ -72,7 +67,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2015,2018-2019 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
