@@ -90,14 +90,14 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'CIRA::Fury'; }
-sub tlds     { return qw/kiwi sx/; }
+sub tlds     { return qw/eco kiwi sx/; }
 sub object_types  { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{ custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.11' }) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{ custom => ['CentralNic::Fee','CIRA::Fury'], 'brown_fee_version' => '0.11' }) if $type eq 'epp';
  return;
 }
 
