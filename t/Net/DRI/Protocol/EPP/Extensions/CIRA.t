@@ -277,8 +277,8 @@ like($rc->get_data('agreement', 'cira', 'content'), qr/Registrant Agreement: Ver
 
 ########################
 ### Cira Fury eco Domain
-$dri->add_registry('CIRA::Fury');
-$dri->target('CIRA::Fury')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('NGTLD',{provider=>'fury'});
+$dri->target('fury')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 $R2='';
 $co=$dri->local_object('contact');
@@ -296,7 +296,8 @@ $co->lang('en');
 $co->legal_form('CCT');
 $co->agreement({version => 'default', signed => 1});
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>furycontact2</contact:id><contact:postalInfo type="loc"><contact:name>Fury Contact2</contact:name><contact:addr><contact:street>123 Main Street</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K1S5K5</contact:pc><contact:cc>CA</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.6121221222</contact:voice><contact:email>furycontact@fury.eco</contact:email><contact:authInfo><contact:pw>password</contact:pw></contact:authInfo></contact:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.0" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.0 fury-2.0.xsd"><fury:properties><fury:property><fury:key>AGREEMENT_VERSION</fury:key><fury:value default="true"/></fury:property><fury:property><fury:key>CPR</fury:key><fury:value>CCT</fury:value></fury:property><fury:property><fury:key>LANGUAGE</fury:key><fury:value>EN</fury:value></fury:property></fury:properties></fury:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+print $R1,"\n";
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>furycontact2</contact:id><contact:postalInfo type="loc"><contact:name>Fury Contact2</contact:name><contact:addr><contact:street>123 Main Street</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K1S5K5</contact:pc><contact:cc>CA</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.6121221222</contact:voice><contact:email>furycontact@fury.eco</contact:email><contact:authInfo><contact:pw>password</contact:pw></contact:authInfo></contact:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.0"><fury:properties><fury:property><fury:key>LANGUAGE</fury:key><fury:value>EN</fury:value></fury:property></fury:properties></f ury:create></extension></command>'.$E2,'contact_create build');
 
 $cs=$dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('furycontact2'),'registrant');
