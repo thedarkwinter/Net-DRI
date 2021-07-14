@@ -104,10 +104,10 @@ $rc = $dri->add_registry('NGTLD',{provider => 'fury', 'name' => 'kiwi'});
 is($rc->{last_registry},'kiwi','fury: add_registry');
 $rc = $dri->target('kiwi')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 is($rc->is_success(),1,'fury: add_current_profile');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee/],'fury: loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN CentralNic::Fee CIRA::Fury/],'fury: loaded_modules');
 $drd = $dri->{registries}->{kiwi}->{driver};
 is($drd->{bep}->{bep_type},1,'fury: bep_type');
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee'],'brown_fee_version' => '0.11'}],'crr: epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom=>['CentralNic::Fee','CIRA::Fury'],'brown_fee_version' => '0.11'}],'crr: epp transport_protocol_default');
 
 # ZACR (Durban)
 $rc = $dri->add_registry('NGTLD',{provider => 'zacr','name'=>'joburg'});
