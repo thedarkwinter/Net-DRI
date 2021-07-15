@@ -572,7 +572,7 @@ They will be adding a fury.xsd extension
      bep_type => 1, # dedicated registry
      tlds => ['eco', 'kiwi', 'sx'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{ custom => ['CentralNic::Fee','CIRA::Fury'], 'brown_fee_version' => '0.11' }],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{ custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.11' }],
    } if $bep eq 'fury';
 
 =pod
