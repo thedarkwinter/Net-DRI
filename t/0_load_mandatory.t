@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 543;
+use Test::More tests => 540;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -74,6 +74,7 @@ use_ok('Net::DRI::DRD::CGIBR::BR');
 use_ok('Net::DRI::DRD::CGIBR::GTLD');
 use_ok('Net::DRI::DRD::CIRA::CA');
 use_ok('Net::DRI::DRD::CIRA::Fury');
+use_ok('Net::DRI::DRD::CIRA::IE');
 use_ok('Net::DRI::DRD::CNNIC::CN');
 use_ok('Net::DRI::DRD::CNNIC::GTLD');
 use_ok('Net::DRI::DRD::CoCCA::CoCCA');
@@ -265,11 +266,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::RegType');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::SkContactIdent');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ChangePoll');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Agreement');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Contact');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Domain');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::IDN');
-use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Notifications');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA::Fury');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CL');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CL::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CloudRegistry');
