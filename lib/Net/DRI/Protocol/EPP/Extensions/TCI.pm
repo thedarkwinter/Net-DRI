@@ -96,7 +96,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-Copyright (c) 2011-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2011-2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

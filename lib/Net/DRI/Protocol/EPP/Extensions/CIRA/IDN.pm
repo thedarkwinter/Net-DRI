@@ -1,6 +1,6 @@
 ## Domain Registry Interface, CIRA IDN handling (draft-wilcox-cira-idn-eppext-00)
 ##
-## Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -41,8 +41,8 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $ns={ 'cira-idn'        => [ 'urn:ietf:params:xml:ns:cira-idn-1.0','cira-idn-1.0.xsd' ],
-             'cira-idn-bundle' => [ 'urn:ietf:params:xml:ns:cira-idn-bundle-1.0','cira-idn-bundle-1.0.xsd' ],
+ state $ns={ 'cira-idn'        => 'urn:ietf:params:xml:ns:cira-idn-1.0',
+             'cira-idn-bundle' => 'urn:ietf:params:xml:ns:cira-idn-bundle-1.0',
            };
  $po->ns($ns);
  return;
@@ -98,7 +98,7 @@ sub bundle_info_build
   push @d,['cira-idn-bundle:repertoire',$rp->{idn_table}];
  }
 
- $mes->command(['info','cira-idn-bundle:info',sprintf('xmlns:cira-idn-bundle="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('cira-idn-bundle'))]);
+ $mes->command(['info','cira-idn-bundle:info', $mes->nsattrs('cira-idn-bundle')]);
  $mes->command_body(\@d);
  return;
 }
@@ -197,7 +197,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

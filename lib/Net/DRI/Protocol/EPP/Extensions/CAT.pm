@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .CAT EPP extensions
 ##
-## Copyright (c) 2006,2008,2009,2012,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006,2008,2009,2012,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -47,7 +47,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006,2008,2009,2012,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006,2008,2009,2012,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -64,9 +64,9 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({ cx => ['http://xmlns.domini.cat/epp/contact-ext-1.0','puntcat-contact-ext-1.0.xsd'],
-             dx  => ['http://xmlns.domini.cat/epp/domain-ext-1.0','puntcat-domain-ext-1.0.xsd'],
-             defreg  => ['http://xmlns.domini.cat/epp/defreg-1.0','puntcat-defreg-1.0.xsd'],
+ $self->ns({ cx     => 'http://xmlns.domini.cat/epp/contact-ext-1.0',
+             dx     => 'http://xmlns.domini.cat/epp/domain-ext-1.0',
+             defreg => 'http://xmlns.domini.cat/epp/defreg-1.0',
           });
  $self->capabilities('host_update','name',undef);
  $self->capabilities('domain_update','name_variant',['add','del']);

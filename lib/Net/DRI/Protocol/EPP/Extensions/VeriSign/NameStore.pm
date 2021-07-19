@@ -1,7 +1,7 @@
 ## Domain Registry Interface, EPP NameStore Extension for Verisign
 ##
 ## Copyright (c) 2006,2008,2009 Rony Meyer <perl@spot-light.ch>. All rights reserved.
-##               2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2010,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2006,2008,2009 Rony Meyer <perl@spot-light.ch>.
-          (c) 2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2010,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -129,7 +129,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $rns = { 'namestoreExt' => [ 'http://www.verisign-grs.com/epp/namestoreExt-1.1', 'namestoreExt-1.1.xsd' ] };
+ state $rns = { 'namestoreExt' => 'http://www.verisign-grs.com/epp/namestoreExt-1.1' };
  $po->ns($rns);
  return;
 }

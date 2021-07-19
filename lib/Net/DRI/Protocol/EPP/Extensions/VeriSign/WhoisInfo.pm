@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Whois Info (EPP-Whois-Info-Ext.pdf)
 ##
-## Copyright (c) 2006-2008,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2012,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2012,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $rns = { 'whoisInf' => [ 'http://www.verisign.com/epp/whoisInf-1.0', 'whoisInf-1.0.xsd' ] };
+ state $rns = { 'whoisInf' => 'http://www.verisign.com/epp/whoisInf-1.0'};
  $po->ns($rns);
  return;
 }

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EURid EPP extensions
 ##
-## Copyright (c) 2005,2007-2012 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005,2007-2012,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##               2014 Michael Kefeder <michael.kefeder@world4you.com>.
 ##               2015-2016 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005,2007-2012 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005,2007-2012i,2018 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
               2015-2016 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.

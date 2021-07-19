@@ -10,7 +10,7 @@ use Test::More tests => 13;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -30,7 +30,7 @@ my $ro=$dri->remote_object('bundle');
 
 $R2='';
 $rc=$dri->domain_check(qw/abc123.ca xyz987.ca xn--r-wfan6a.ca/,{idn_table => 'fr'});
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>abc123.ca</domain:name><domain:name>xyz987.ca</domain:name><domain:name>xn--r-wfan6a.ca</domain:name></domain:check></check><extension><cira-idn:ciraIdnCheck xmlns:cira-idn="urn:ietf:params:xml:ns:cira-idn-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cira-idn-1.0 cira-idn-1.0.xsd"><cira-idn:repertoire>fr</cira-idn:repertoire></cira-idn:ciraIdnCheck></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build with idn_table');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>abc123.ca</domain:name><domain:name>xyz987.ca</domain:name><domain:name>xn--r-wfan6a.ca</domain:name></domain:check></check><extension><cira-idn:ciraIdnCheck xmlns:cira-idn="urn:ietf:params:xml:ns:cira-idn-1.0"><cira-idn:repertoire>fr</cira-idn:repertoire></cira-idn:ciraIdnCheck></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build with idn_table');
 
 
 
@@ -42,7 +42,7 @@ is_deeply($rc->get_data('variants'),[qw/xn--r-wfan6a.ca xn--cir-cla.ca cira.ca/]
 
 $R2='<epp xmlns="urn:ietf:params:xml:ns:epp-1.0"><response><result code="1000"><msg>Command completed successfully</msg></result><resData></resData><extension><cira-idn-bundle:infData xmlns:cira-idn="urn:ietf:params:xml:ns:cira-idn-1.0" xmlns:cira-idn-bundle="urn:ietf:params:xml:ns:cira-idn-bundle-1.0"><cira-idn-bundle:canonicalDomainName>evaluation.ca</cira-idn-bundle:canonicalDomainName><cira-idn-bundle:roid>CIRA-123</cira-idn-bundle:roid><cira-idn-bundle:clID>rar600</cira-idn-bundle:clID><cira-idn-bundle:registrant>rant600</cira-idn-bundle:registrant><cira-idn-bundle:crID>rar600</cira-idn-bundle:crID><cira-idn-bundle:crDate>2012-12-08T16:25:01.0Z</cira-idn-bundle:crDate><cira-idn-bundle:upID>rar600</cira-idn-bundle:upID><cira-idn-bundle:upDate>2012-12-08T17:25:01.0Z</cira-idn-bundle:upDate><cira-idn-bundle:bundleDomains><cira-idn:name>evaluation.ca</cira-idn:name><cira-idn:name>xn--valuation-93a.ca</cira-idn:name><cira-idn:name>xn--valution-2ya9f.ca</cira-idn:name></cira-idn-bundle:bundleDomains></cira-idn-bundle:infData></extension>'.$TRID.'</response>'.$E2;
 $rc=$ro->info('xn--valuation-93a.ca',{ idn_table => 'fr' });
-is_string($R1,$E1.'<command><info><cira-idn-bundle:info xmlns:cira-idn-bundle="urn:ietf:params:xml:ns:cira-idn-bundle-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cira-idn-bundle-1.0 cira-idn-bundle-1.0.xsd"><cira-idn-bundle:name>xn--valuation-93a.ca</cira-idn-bundle:name><cira-idn-bundle:repertoire>fr</cira-idn-bundle:repertoire></cira-idn-bundle:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'bundle_info build');
+is_string($R1,$E1.'<command><info><cira-idn-bundle:info xmlns:cira-idn-bundle="urn:ietf:params:xml:ns:cira-idn-bundle-1.0"><cira-idn-bundle:name>xn--valuation-93a.ca</cira-idn-bundle:name><cira-idn-bundle:repertoire>fr</cira-idn-bundle:repertoire></cira-idn-bundle:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'bundle_info build');
 is($rc->get_data('bundle','xn--valuation-93a.ca','canonical_domain_name'),'evaluation.ca','bundle_info get_data canonical_domain_name');
 is($rc->get_data('bundle','xn--valuation-93a.ca','roid'),'CIRA-123','bundle_info get_data roid');
 is($rc->get_data('bundle','xn--valuation-93a.ca','clID'),'rar600','bundle_info get_data clID');
@@ -66,7 +66,7 @@ $cs->add($dri->local_object('contact')->srid('nbguy'),'tech');
 $cs->add($dri->local_object('contact')->srid('nbtech'),'tech');
 $cs->add($dri->local_object('contact')->srid('nbadmin'),'tech');
 $rc=$dri->domain_create('xn--r-wfan6a.ca',{ pure_create => 1, duration => $dri->local_object('duration',years => 2), ns => $ns, contact => $cs, auth => { pw => 'password' }, idn_table => 'fr', ulabel => 'cira.ca' });
-is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>xn--r-wfan6a.ca</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>hostname.example.net</domain:hostObj><domain:hostObj>hostname.example.com</domain:hostObj></domain:ns><domain:registrant>contactid-1</domain:registrant><domain:contact type="admin">contactid-1</domain:contact><domain:contact type="tech">nbguy</domain:contact><domain:contact type="tech">nbtech</domain:contact><domain:contact type="tech">nbadmin</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><cira-idn:ciraIdnCreate xmlns:cira-idn="urn:ietf:params:xml:ns:cira-idn-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cira-idn-1.0 cira-idn-1.0.xsd"><cira-idn:repertoire>fr</cira-idn:repertoire><cira-idn:u-label>cira.ca</cira-idn:u-label></cira-idn:ciraIdnCreate></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build with idn_table');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>xn--r-wfan6a.ca</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>hostname.example.net</domain:hostObj><domain:hostObj>hostname.example.com</domain:hostObj></domain:ns><domain:registrant>contactid-1</domain:registrant><domain:contact type="admin">contactid-1</domain:contact><domain:contact type="tech">nbguy</domain:contact><domain:contact type="tech">nbtech</domain:contact><domain:contact type="tech">nbadmin</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><cira-idn:ciraIdnCreate xmlns:cira-idn="urn:ietf:params:xml:ns:cira-idn-1.0"><cira-idn:repertoire>fr</cira-idn:repertoire><cira-idn:u-label>cira.ca</cira-idn:u-label></cira-idn:ciraIdnCreate></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build with idn_table');
 
 
 

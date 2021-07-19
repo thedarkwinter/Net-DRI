@@ -1,7 +1,7 @@
 ## Domain Registry Interface, nic.at domain transactions extension
 ## Contributed by Michael Braunoeder from NIC.AT <mib@nic.at>
 ##
-## Copyright (c) 2006-2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -37,8 +37,8 @@ sub register_commands {
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $ns = { 'at-ext-domain' => [ 'http://www.nic.at/xsd/at-ext-domain-1.0', 'at-ext-domain-1.0.xsd' ],
-               'at-ext-epp'    => [ 'http://www.nic.at/xsd/at-ext-epp-1.0', 'at-ext-epp-1.0.xsd' ],
+ state $ns = { 'at-ext-domain' => 'http://www.nic.at/xsd/at-ext-domain-1.0',
+               'at-ext-epp'    => 'http://www.nic.at/xsd/at-ext-epp-1.0',
              };
  $po->ns($ns);
  return;
@@ -68,7 +68,6 @@ sub extonly {
 
                my %domns;
                $domns{'xmlns:domain'}       = $mes->ns('at-ext-domain');
-               $domns{'xsi:schemaLocation'} = $mes->ns('at-ext-domain') . ' at-ext-domain-1.0.xsd';
 
 			 	my %zdhash;
 				$zdhash{'value'} = $rd->{zd} ? $rd->{zd} : 0;
@@ -97,11 +96,9 @@ sub extonly {
 
                my %domns;
                $domns{'xmlns:domain'}       = $mes->ns('domain');
-               $domns{'xsi:schemaLocation'} = $mes->ns('domain').' domain-1.0.xsd';
 
                my %domns2;
                $domns2{'xmlns:at-ext-domain'} = $mes->ns('at-ext-domain');
-               $domns2{'xsi:schemaLocation'}  = $mes->ns('at-ext-domain') . ' at-ext-domain-1.0.xsd';
 
 
 
@@ -212,7 +209,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Reseller Extension Mapping for EPP
 ##
-## Copyright (c) 2015,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2015,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -35,7 +35,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'resellerext' => [ 'urn:ietf:params:xml:ns:resellerext-1.0','resellerext-1.0.xsd' ] });
+ $po->ns({ 'resellerext' => 'urn:ietf:params:xml:ns:resellerext-1.0' });
  return;
 }
 
@@ -51,7 +51,7 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $data=$mes->get_extension($mes->ns('resellerext'),'infData');
+ my $data=$mes->get_extension('resellerext', 'infData');
  return unless defined $data;
 
  foreach my $el (Net::DRI::Util::xml_list_children($data))
@@ -143,7 +143,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2015,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2015,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

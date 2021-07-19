@@ -34,7 +34,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $ns = { 'changepoll' => [ 'urn:ietf:params:xml:ns:changePoll-1.0','changePoll-1.0.xsd' ] };
+ state $ns = { 'changepoll' => 'urn:ietf:params:xml:ns:changePoll-1.0' };
  $po->ns($ns);
  return;
 }
@@ -91,7 +91,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ChangePoll - EPP Change Poll Extension mapping (draft-gould-change-poll-07) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ChangePoll - EPP Change Poll Extension mapping (draft-ietf-regext-change-poll-07) for Net::DRI
 
 =head1 DESCRIPTION
 

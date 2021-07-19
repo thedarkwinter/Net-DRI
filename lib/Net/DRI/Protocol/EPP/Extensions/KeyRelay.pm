@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Key Relay Mapping for EPP
 ##
-## Copyright (c) 2013,2015-2017 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2015-2017,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -39,8 +39,8 @@ sub setup
 {
  my ($class,$po,$version)=@_;
  $po->ns({
-           'keyrelay' => [ 'urn:ietf:params:xml:ns:keyrelay-1.0','keyrelay-1.0.xsd' ],
-           'secDNS'   => [ 'urn:ietf:params:xml:ns:secDNS-1.1','secDNS-1.1.xsd' ], ## force 1.1 here
+           'keyrelay' => 'urn:ietf:params:xml:ns:keyrelay-1.0',
+           'secDNS'   => 'urn:ietf:params:xml:ns:secDNS-1.1', ## force 1.1 here
          });
  return;
 }
@@ -121,7 +121,7 @@ sub command
   push @d,['keyrelay:keyRelayData',@dd];
  }
 
- $mes->command(['create','keyrelay:create',sprintf('xmlns:keyrelay="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('keyrelay'))]);
+ $mes->command(['create','keyrelay:create', $mes->nsattrs('keyrelay')]);
  $mes->command_body(\@d);
 
  return;
@@ -252,7 +252,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013,2015-2017 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2013,2015-2017,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

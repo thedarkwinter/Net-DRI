@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign EPP WhoWas Extension
 ##
-## Copyright (c) 2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2012,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -32,7 +32,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'whowas' => [ 'http://www.verisign.com/epp/whowas-1.0','whowas-1.0.xsd' ] });
+ $po->ns({ 'whowas' => 'http://www.verisign.com/epp/whowas-1.0' });
  return;
 }
 
@@ -53,7 +53,7 @@ sub whowas_info
   $isroid=1;
  }
  my $mes=$epp->message();
- $mes->command(['info','whowas:info',sprintf('xmlns:whowas="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('whowas'))]);
+ $mes->command(['info','whowas:info', $mes->nsattrs('whowas')]);
  $mes->command_body([['whowas:type','domain'],[$isroid ? 'whowas:roid' : 'whowas:name',$domain]]);
  return;
 }
@@ -149,7 +149,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2012,2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

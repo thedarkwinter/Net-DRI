@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Protocol Utility functions
 ##
-## Copyright (c) 2009,2010,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009,2010,2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -94,7 +94,7 @@ sub domain_build_command
  }
 
  my $tcommand=ref $command ? $command->[0] : $command;
- $msg->command([$command,'domain:'.$tcommand,sprintf('xmlns:domain="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('domain'))]);
+ $msg->command([$command,'domain:'.$tcommand, $msg->nsattrs('domain')]);
 
  my @d=map { ['domain:name',$_,$domainattr] } @dom;
  return @d;
@@ -401,7 +401,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009,2010,2015 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009,2010,2015,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

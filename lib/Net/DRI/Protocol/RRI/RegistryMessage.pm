@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2008,2012 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -51,6 +52,8 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -79,7 +82,7 @@ sub pollack
 {
  my ($rri, $msgid) = @_;
  my $mes = $rri->message();
- $mes->command(['msg', 'delete', $mes->ns->{msg}->[0], {msgid => $msgid}]);
+ $mes->command(['msg', 'delete', $mes->ns('msg'), {msgid => $msgid}]);
  return;
 }
 
@@ -88,7 +91,7 @@ sub pollreq
  my ($rri,$msgid)=@_;
  Net::DRI::Exception::usererr_invalid_parameters('In RRI, you can not specify the message id you want to retrieve') if defined($msgid);
  my $mes = $rri->message();
- $mes->command(['msg', 'queue-read', $mes->ns->{msg}->[0]]);
+ $mes->command(['msg', 'queue-read', $mes->ns('msg')]);
  $mes->cltrid(undef);
  return;
 }

@@ -10,7 +10,7 @@ use Test::More tests => 41;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -30,7 +30,7 @@ my $ro=$dri->remote_object('reseller');
 
 $R2='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0"><response> <result code="1000"><msg>Command completed successfully</msg></result><resData><reseller:chkData xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0"><reseller:cd><reseller:id avail="1">res1523</reseller:id></reseller:cd><reseller:cd><reseller:id avail="0">re1523</reseller:id><reseller:reason>In use</reseller:reason></reseller:cd><reseller:cd><reseller:id avail="1">1523res</reseller:id></reseller:cd></reseller:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$ro->check([qw/res1523 re1523 1523res/]);
-is_string($R1,$E1.'<command><check><reseller:check xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:reseller-1.0 reseller-1.0.xsd"><reseller:id>res1523</reseller:id><reseller:id>re1523</reseller:id><reseller:id>1523res</reseller:id></reseller:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller check build');
+is_string($R1,$E1.'<command><check><reseller:check xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0"><reseller:id>res1523</reseller:id><reseller:id>re1523</reseller:id><reseller:id>1523res</reseller:id></reseller:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller check build');
 is($rc->get_data('reseller','res1523','action'),'check','get_data reseller check 1');
 is($rc->get_data('reseller','res1523','exist'),0,'get_data reseller check 2');
 is($rc->get_data('reseller','re1523','action'),'check','get_data reseller check 3');
@@ -43,7 +43,7 @@ is($rc->get_data('reseller','1523res','exist'),0,'get_data reseller check 7');
 
 $R2='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0"><response><result code="1000"><msg>Command completed successfully</msg></result><resData><reseller:infData xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0"><reseller:id>res1523</reseller:id><reseller:roid>res1523-REP</reseller:roid><reseller:state>ok</reseller:state><reseller:parentId>1523res</reseller:parentId><reseller:postalInfo type="int"><reseller:name>Example Reseller Inc.</reseller:name><reseller:addr><reseller:street>123 Example Dr.</reseller:street><reseller:street>Suite 100</reseller:street><reseller:city>Dulles</reseller:city><reseller:sp>VA</reseller:sp><reseller:pc>20166-6503</reseller:pc><reseller:cc>US</reseller:cc></reseller:addr></reseller:postalInfo><reseller:voice x="1234">+1.7035555555</reseller:voice><reseller:fax>+1.7035555556</reseller:fax><reseller:email>contact@reseller.example</reseller:email><reseller:url>http://reseller.example</reseller:url><reseller:contact type="admin">sh8013</reseller:contact><reseller:contact type="billing">sh8013</reseller:contact><reseller:clID>ClientY</reseller:clID><reseller:crID>ClientX</reseller:crID><reseller:crDate>1999-04-03T22:00:00.0Z</reseller:crDate><reseller:upID>ClientX</reseller:upID><reseller:upDate>1999-12-03T09:00:00.0Z</reseller:upDate><reseller:disclose flag="0"><reseller:voice/><reseller:email/></reseller:disclose></reseller:infData></resData>'.$TRID.'</response>'.$E2;
 $rc=$ro->info('res1523');
-is_string($R1,$E1.'<command><info><reseller:info xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:reseller-1.0 reseller-1.0.xsd"><reseller:id>res1523</reseller:id></reseller:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller info build');
+is_string($R1,$E1.'<command><info><reseller:info xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0"><reseller:id>res1523</reseller:id></reseller:info></info><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller info build');
 is($rc->get_data('reseller','res1523','action'),'info','get_data reseller info 1');
 is($rc->get_data('reseller','res1523','exist'),1,'get_data reseller info 2');
 my $cs=$rc->get_data('reseller','res1523','contact');
@@ -94,7 +94,7 @@ $co=$dri->local_object('contact')->srid('sh8013');
 $cs->set($co,'admin');
 $cs->set($co,'billing');
 $rc=$ro->create('res1523',{ status => 'ok', parent_id => '1523res', contact => $cs, url => 'http://reseller.example' } );
-is_string($R1,$E1.'<command><create><reseller:create xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:reseller-1.0 reseller-1.0.xsd"><reseller:id>res1523</reseller:id><reseller:state>ok</reseller:state><reseller:parentId>1523res</reseller:parentId><reseller:postalInfo type="loc"><reseller:name>Example Reseller Inc.</reseller:name><reseller:addr><reseller:street>123 Example Dr.</reseller:street><reseller:street>Suite 100</reseller:street><reseller:city>Dulles</reseller:city><reseller:sp>VA</reseller:sp><reseller:pc>20166-6503</reseller:pc><reseller:cc>US</reseller:cc></reseller:addr></reseller:postalInfo><reseller:voice x="1234">+1.7035555555</reseller:voice><reseller:fax>+1.7035555556</reseller:fax><reseller:email>contact@reseller.example</reseller:email><reseller:url>http://reseller.example</reseller:url><reseller:contact type="admin">sh8013</reseller:contact><reseller:contact type="billing">sh8013</reseller:contact><reseller:disclose flag="0"><reseller:voice/><reseller:email/></reseller:disclose></reseller:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller create build');
+is_string($R1,$E1.'<command><create><reseller:create xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0"><reseller:id>res1523</reseller:id><reseller:state>ok</reseller:state><reseller:parentId>1523res</reseller:parentId><reseller:postalInfo type="loc"><reseller:name>Example Reseller Inc.</reseller:name><reseller:addr><reseller:street>123 Example Dr.</reseller:street><reseller:street>Suite 100</reseller:street><reseller:city>Dulles</reseller:city><reseller:sp>VA</reseller:sp><reseller:pc>20166-6503</reseller:pc><reseller:cc>US</reseller:cc></reseller:addr></reseller:postalInfo><reseller:voice x="1234">+1.7035555555</reseller:voice><reseller:fax>+1.7035555556</reseller:fax><reseller:email>contact@reseller.example</reseller:email><reseller:url>http://reseller.example</reseller:url><reseller:contact type="admin">sh8013</reseller:contact><reseller:contact type="billing">sh8013</reseller:contact><reseller:disclose flag="0"><reseller:voice/><reseller:email/></reseller:disclose></reseller:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller create build');
 is($rc->get_data('reseller','res1523','id'),'res1523','get_data reseller create 1');
 is(''.$rc->get_data('reseller','res1523','crDate'),'1999-04-03T22:00:00','get_data reseller create 2');
 
@@ -102,7 +102,7 @@ is(''.$rc->get_data('reseller','res1523','crDate'),'1999-04-03T22:00:00','get_da
 
 $R2='';
 $rc=$ro->delete('res1523');
-is_string($R1,$E1.'<command><delete><reseller:delete xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:reseller-1.0 reseller-1.0.xsd"><reseller:id>res1523</reseller:id></reseller:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller delete build');
+is_string($R1,$E1.'<command><delete><reseller:delete xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0"><reseller:id>res1523</reseller:id></reseller:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller delete build');
 
 
 
@@ -126,6 +126,6 @@ $cs->set($co,'main');
 $toc->set('contact',$cs);
 $toc->set('status','readonly');
 $rc=$ro->update('res1523',$toc);
-is_string($R1,$E1.'<command><update><reseller:update xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:reseller-1.0 reseller-1.0.xsd"><reseller:id>res1523</reseller:id><reseller:add><reseller:contact type="tech">sh8013</reseller:contact></reseller:add><reseller:chg><reseller:state>readonly</reseller:state><reseller:postalInfo type="loc"><reseller:org/><reseller:addr><reseller:street>124 Example Dr.</reseller:street><reseller:street>Suite 200</reseller:street><reseller:city>Dulles</reseller:city><reseller:sp>VA</reseller:sp><reseller:pc>20166-6503</reseller:pc><reseller:cc>US</reseller:cc></reseller:addr></reseller:postalInfo><reseller:voice>+1.7034444444</reseller:voice><reseller:fax/><reseller:disclose flag="1"><reseller:voice/><reseller:email/></reseller:disclose></reseller:chg></reseller:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller update build');
+is_string($R1,$E1.'<command><update><reseller:update xmlns:reseller="urn:ietf:params:xml:ns:reseller-1.0"><reseller:id>res1523</reseller:id><reseller:add><reseller:contact type="tech">sh8013</reseller:contact></reseller:add><reseller:chg><reseller:state>readonly</reseller:state><reseller:postalInfo type="loc"><reseller:org/><reseller:addr><reseller:street>124 Example Dr.</reseller:street><reseller:street>Suite 200</reseller:street><reseller:city>Dulles</reseller:city><reseller:sp>VA</reseller:sp><reseller:pc>20166-6503</reseller:pc><reseller:cc>US</reseller:cc></reseller:addr></reseller:postalInfo><reseller:voice>+1.7034444444</reseller:voice><reseller:fax/><reseller:disclose flag="1"><reseller:voice/><reseller:email/></reseller:disclose></reseller:chg></reseller:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'reseller update build');
 
 exit 0;

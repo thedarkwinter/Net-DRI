@@ -37,7 +37,7 @@ sub capabilities_add { return ['domain_update','metadata',['set']]; }
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $ns = { 'metadata' => [ 'urn:google:params:xml:ns:metadata-1.0', 'metadata-1.0.xsd' ] };
+ state $ns = { 'metadata' => 'urn:google:params:xml:ns:metadata-1.0' };
  $po->ns($ns);
  return;
 }

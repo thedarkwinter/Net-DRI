@@ -1,7 +1,7 @@
 ## Domain Registry Interface, NIC.AT Contact extension
 ## Contributed by Michael Braunoeder from NIC.AT <mib@nic.at>
 ##
-## Copyright (c) 2006-2008,2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2010,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -47,7 +47,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2010,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'at-ext-contact' => [ 'http://www.nic.at/xsd/at-ext-contact-1.0','at-ext-contact-1.0.xsd' ] });
+ $po->ns({ 'at-ext-contact' => 'http://www.nic.at/xsd/at-ext-contact-1.0' });
  return;
 }
 

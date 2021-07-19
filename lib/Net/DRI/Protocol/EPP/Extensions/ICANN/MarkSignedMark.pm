@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Mark & Signed Mark for EPP (RFC7848)
 ##
-## Copyright (c) 2013-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013-2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -31,8 +31,8 @@ my $NS_XMLDSIG = 'http://www.w3.org/2000/09/xmldsig#';
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'mark'       => [ 'urn:ietf:params:xml:ns:mark-1.0','mark-1.0.xsd' ],
-           'signedMark' => [ 'urn:ietf:params:xml:ns:signedMark-1.0','signedMark-1.0'] });
+ $po->ns({ 'mark'       => 'urn:ietf:params:xml:ns:mark-1.0',
+           'signedMark' => 'urn:ietf:params:xml:ns:signedMark-1.0' });
  return;
 }
 
@@ -63,7 +63,7 @@ sub build_marks
  my @r;
  foreach my $m (ref $rd eq 'ARRAY' ? @$rd : $rd)
  {
-  push @r,['mark:mark',{ 'xmlns:mark' => $po->ns()->{'mark'}->[0]},build_mark($m)];
+  push @r,['mark:mark', { 'xmlns:mark' => $po->ns()->{'mark'}}, build_mark($m)];
  }
  return @r;
 }
@@ -673,7 +673,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013-2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2013-2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -1,4 +1,4 @@
-## Allocation Token Mapping for EPP (draft-ietf-regext-allocation-token-05)
+## Allocation Token Mapping for EPP (draft-ietf-regext-allocation-token-06)
 ##
 ## Copyright (c) 2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -28,7 +28,7 @@ sub register_commands
  my ($class,$version)=@_;
 
  state $rd = { info => [ \&command, \&info_parse ] };
- $rd->{check} = $rd->{check_multi} = $rd->{create} = $rd->{transfer_request} = $rd->{update} = [ \&command, undef ];
+ $rd->{check} = $rd->{check_multi} = $rd->{create} = $rd->{transfer_request} = [ \&command, undef ];
 
  state $cmds = { 'domain' => $rd };
  return $cmds;
@@ -40,12 +40,12 @@ sub setup
 {
  my ($class,$po,$version)=@_;
 
- state $ns = { 'allocationToken' => [ 'urn:ietf:params:xml:ns:allocationToken-1.0','allocationToken-1.0.xsd' ] };
+ state $ns = { 'allocationToken' => 'urn:ietf:params:xml:ns:allocationToken-1.0' };
  $po->ns($ns);
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-ietf-regext-allocation-token-05'; }
+sub implements { return 'https://tools.ietf.org/html/draft-ietf-regext-allocation-token-07'; }
 
 ####################################################################################################
 
@@ -68,7 +68,7 @@ sub command
  my $eid = $mes->command_extension_register('allocationToken', $operation eq 'info' ? 'info' : 'allocationToken');
  if (defined $token)
  {
-  Net::DRI::Exception::usererr_invalid_parameters('Invalid syntax for allocation token: '.$token) unless Net::DRI::Util::xml_is_token($token);
+  Net::DRI::Exception::usererr_invalid_parameters('Invalid syntax for allocation token: '.$token) unless Net::DRI::Util::xml_is_token($token, 1);
   $mes->command_extension($eid, $token);
  }
 
@@ -97,7 +97,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::AllocationToken - EPP Allocation Token mapping (draft-ietf-regext-allocation-token-05) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::AllocationToken - EPP Allocation Token mapping (draft-ietf-regext-allocation-token-06) for Net::DRI
 
 =head1 DESCRIPTION
 

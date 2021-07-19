@@ -107,8 +107,7 @@ sub build_command
  }
 
  my $tcommand = (ref($command)) ? $command->[0] : $command;
- my @ns = @{$msg->ns->{domain}};
- $msg->command(['domain', $tcommand, (defined($dns) ? $dns : $ns[0]), $domainattr]);
+ $msg->command(['domain', $tcommand, $dns // $msg->ns('domain'), $domainattr]);
 
  my @d;
  my ($ace,$idn) = Net::DRI::Util::idn_get_ace_unicode($domain);
@@ -137,10 +136,11 @@ sub check_parse
  my $mes = $po->message();
  return unless $mes->is_success();
 
- my $chkdata = $mes->get_content('checkData',$mes->ns('domain'));
+ my $ns = $mes->ns('domain');
+ my $chkdata = $mes->get_content('checkData', $ns);
  return unless $chkdata;
- my @d = $chkdata->getElementsByTagNameNS($mes->ns('domain'),'handle');
- my @s = $chkdata->getElementsByTagNameNS($mes->ns('domain'),'status');
+ my @d = $chkdata->getElementsByTagNameNS($ns, 'handle');
+ my @s = $chkdata->getElementsByTagNameNS($ns, 'status');
  return unless (@d && @s);
 
  my $dom = $d[0]->getFirstChild()->getData();
@@ -336,13 +336,12 @@ sub transfer_parse
  my $mes = $po->message();
  return unless $mes->is_success();
 
- my $infodata = $mes->get_content('infoData', $mes->ns('domain'));
+ my $ns = $mes->ns('domain');
+ my $infodata = $mes->get_content('infoData', $ns);
  return unless $infodata;
- my $namedata = ($infodata->getElementsByTagNameNS($mes->ns('domain'),
-	'handle'))[0];
+ my $namedata = ($infodata->getElementsByTagNameNS($ns, 'handle'))[0];
  return unless $namedata;
- my $trndata = ($infodata->getElementsByTagNameNS($mes->ns('domain'),
-	'chprovData'))[0];
+ my $trndata = ($infodata->getElementsByTagNameNS($ns, 'chprovData'))[0];
  return unless $trndata;
 
  $oname = lc($namedata->getFirstChild()->getData());
@@ -385,7 +384,7 @@ sub create
 {
  my ($rri, $domain, $rd) = @_;
  my $mes = $rri->message();
- my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
+ my %ns = map { $_ => $mes->ns($_) } qw(domain dnsentry xsi);
  my @d = build_command($mes, 'create', $domain, undef, \%ns);
  
  my $def = $rri->default_parameters();
@@ -530,7 +529,7 @@ sub transfer_request
 {
  my ($rri, $domain, $rd) = @_;
  my $mes = $rri->message();
- my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
+ my %ns = map { $_ => $mes->ns($_) } qw(domain dnsentry xsi);
  my @d = build_command($mes, 'chprov', $domain, undef, \%ns);
 
  ## Contacts, all OPTIONAL
@@ -559,7 +558,7 @@ sub trade
 {
  my ($rri, $domain, $rd) = @_;
  my $mes = $rri->message();
- my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
+ my %ns = map { $_ => $mes->ns($_) } qw(domain dnsentry xsi);
  my @d = build_command($mes, 'chholder', $domain, undef, \%ns);
 
  my $def = $rri->default_parameters();
@@ -601,7 +600,7 @@ sub transit {
 sub create_authinfo {
  my ($rri, $domain, $rd) = @_;
  my $mes = $rri->message();
- my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
+ my %ns = map { $_ => $mes->ns($_) } qw(domain dnsentry xsi);
  my $hash = exists($rd->{'authinfohash'}) ? { hash => $rd->{'authinfohash'}} : undef;
  $hash->{'expire'} = $rd->{'authinfoexpire'} if ($hash && exists($rd->{'authinfoexpire'}));
  my $cmd = ($hash) ? 'createAuthInfo1' : 'createAuthInfo2';
@@ -613,7 +612,7 @@ sub create_authinfo {
 sub delete_authinfo {
  my ($rri, $domain, $rd) = @_;
  my $mes = $rri->message();
- my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
+ my %ns = map { $_ => $mes->ns($_) } qw(domain dnsentry xsi);
  my @d = build_command($mes, 'deleteAuthInfo1', $domain, undef, \%ns);
  $mes->command_body(\@d);
  return;
@@ -623,7 +622,7 @@ sub update
 {
  my ($rri, $domain, $todo, $rd)=@_;
  my $mes = $rri->message();
- my %ns = map { $_ => $mes->ns->{$_}->[0] } qw(domain dnsentry xsi);
+ my %ns = map { $_ => $mes->ns($_) } qw(domain dnsentry xsi);
  my $ns = $rd->{ns};
  my $cs = $rd->{contact};
  my $secdns = $rd->{secdns};

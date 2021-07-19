@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2013,2015,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2013,2015,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
               2015-2016 Michael Holloway <michael@thedarkwinter.com>.
 

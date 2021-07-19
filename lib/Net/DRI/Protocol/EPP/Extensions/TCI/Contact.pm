@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .RU/.SU/.XN--P1AI EPP Contact Extension for Net::DRI
 ##
 ## Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-##               2011-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##               2011-2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -59,7 +59,7 @@ sub build_command
 
 	my $tcommand = (ref($command)) ? $command->[0] : $command;
 	$msg->command([$command, 'contact:' . $tcommand,
-		sprintf('xmlns:contact="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('contact'))]);
+		sprintf('xmlns:contact="%s"',$msg->nsattrs('contact'))]);
 
 	my @d = map { ['contact:id', $_] } @c;
 	if (($tcommand =~ m/^(?:info|transfer)$/) && ref($contact[0]) &&
@@ -438,7 +438,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2010-2011 Dmitry Belyavsky <beldmit@gmail.com>
-Copyright (c) 2011-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2011-2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

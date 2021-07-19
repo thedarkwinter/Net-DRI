@@ -1,7 +1,7 @@
 ## Domain Registry Interface, Afilias EPP extensions
 ##
 ## Copyright (c) 2007,2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
-##           (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Tonnerre Lombard E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2009 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-          (c) 2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+          (c) 2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({ oxrs => ['urn:afilias:params:xml:ns:oxrs-1.1','oxrs-1.1.xsd'] });
+ $self->ns({ oxrs => 'urn:afilias:params:xml:ns:oxrs-1.1' });
  return;
 }
 

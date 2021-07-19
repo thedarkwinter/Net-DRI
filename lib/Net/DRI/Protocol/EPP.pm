@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Protocol (STD 69)
 ##
-## Copyright (c) 2005-2011,2013-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2011,2013-2014,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -53,7 +53,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2011,2013-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2011,2013-2014,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -88,9 +88,9 @@ sub new
  $self->{contacti18n}=$drd->info('contact_i18n') || 7; ## bitwise OR with 1=LOC only, 2=INT only, 4=LOC+INT only
  $self->{defaulti18ntype}=undef; ## only needed for registries not following truely EPP standard, like .CZ
  $self->{usenullauth}=$drd->info('use_null_auth') || 0; ## See RFC4931 §3.2.5
- $self->ns({ _main   => ['urn:ietf:params:xml:ns:epp-1.0','epp-1.0.xsd'],
-             domain  => ['urn:ietf:params:xml:ns:domain-1.0','domain-1.0.xsd'],
-             contact => ['urn:ietf:params:xml:ns:contact-1.0','contact-1.0.xsd'],
+ $self->ns({ epp     => 'urn:ietf:params:xml:ns:epp-1.0',
+             domain  => 'urn:ietf:params:xml:ns:domain-1.0',
+             contact => 'urn:ietf:params:xml:ns:contact-1.0',
            });
 
  $drd->set_factories($self) if $drd->can('set_factories');
@@ -123,7 +123,7 @@ sub core_modules
  if (! $self->{hostasattr})
  {
   push @core,'Host';
-  $self->ns({host => ['urn:ietf:params:xml:ns:host-1.0','host-1.0.xsd']});
+  $self->ns({host => 'urn:ietf:params:xml:ns:host-1.0'});
  }
  return map { 'Net::DRI::Protocol::EPP::Core::'.$_ } @core;
 }
@@ -169,9 +169,7 @@ sub switch_to_highest_namespace_version
   $self->log_output('info','protocol',{action=>'greeting',direction=>'in',trid=>$self->message()->cltrid(),message=>sprintf('For "%s" extension, using "%s"',$nsalias,$fullns)});
  }
 
- my $xsd=($self->message()->nsattrs($nsalias))[2];
- $xsd=~s/-([\d.]+)\.xsd$/-${version}.xsd/;
- $self->ns({ $nsalias => [ $fullns, $xsd ]});
+ $self->ns({ $nsalias => $fullns });
  $self->message()->ns($self->ns()); ## not necessary, just to make sure
  ## remove all other versions of same namespace
  $rs->{extensions_selected}=[ grep { ! m/^${basens}-([\d.]+)$/ || $1 eq $version } @{$rs->{extensions_selected}} ];

@@ -32,7 +32,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $ns = { 'superuser' => [ 'urn:google:params:xml:ns:superuser-1.0', 'superuser-1.0.xsd' ] };
+ state $ns = { 'superuser' => 'urn:google:params:xml:ns:superuser-1.0' };
  $po->ns($ns);
  return;
 }

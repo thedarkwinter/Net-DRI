@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Message
 ##
-## Copyright (c) 2005-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2014,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -60,7 +60,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2014,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -107,16 +107,23 @@ sub result_extra_info { my ($self,@args)=@_; return $self->_get_result('extra_in
 
 sub ns
 {
- my ($self,$what)=@_;
- return $self->{ns} unless defined $what;
+ my ($self, $ns) = @_;
+ return $self->{ns} unless defined $ns;
 
- if (ref $what eq 'HASH')
+ if (! ref $ns)
  {
-  $self->{ns}=$what;
-  return $what;
+  return unless exists $self->{ns}->{$ns};
+  return $self->{ns}->{$ns};
  }
- return unless exists $self->{ns}->{$what};
- return $self->{ns}->{$what}->[0];
+
+ foreach my $alias (keys %$ns)
+ {
+  my $newns = ref $ns->{$alias} ? $ns->{$alias}->[0] : $ns->{$alias}; # the ref case is for old content that did not migrate to no XSD
+  Net::DRI::Exception->die(0,'protocol/EPP',1,sprintf('Duplicate namespace definition for "%s": previous="%s" new="%s"', $alias, $self->{ns}->{$alias}, $newns)) if exists $self->{ns}->{$alias};
+  $self->{ns}->{$alias} = $newns;
+ }
+
+ return $self->{ns};
 }
 
 sub nsattrs
@@ -126,26 +133,12 @@ sub nsattrs
  my @d=sort { $a cmp $b } grep { defined $_ && exists $self->{ns}->{$_} } (ref $what eq 'ARRAY' ? @$what : ($what));
  return unless @d;
 
- if (wantarray)
+ my @xns;
+ foreach my $rdd (@d)
  {
-  my @r;
-  foreach my $rdd (@d)
-  {
-   my @dd=@{$self->{ns}->{$rdd}};
-   push @r,$dd[0],$dd[0],$dd[1];
-  }
-  return @r;
- } else
- {
-  my (@xns,@xsl);
-  foreach my $rdd (@d)
-  {
-   my @dd=@{$self->{ns}->{$rdd}};
-   push @xns,sprintf('xmlns:%s="%s"',$rdd,$dd[0]);
-   push @xsl,sprintf('%s %s',$dd[0],$dd[1]);
-  }
-  return join(' ',@xns).' xsi:schemaLocation="'.join(' ',@xsl).'"';
+  push @xns, $rdd eq 'epp' ? sprintf('xmlns="%s"', $self->{ns}->{$rdd}) : sprintf('xmlns:%s="%s"', $rdd, $self->{ns}->{$rdd});
  }
+ return join(' ',@xns);
 }
 
 sub is_success { return _is_success(shift->result_code()); }
@@ -202,7 +195,7 @@ sub as_string
  my ($self,$protect)=@_;
  my @d;
  push @d,'<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
- push @d,'<epp '.sprintf('xmlns="%s" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="%s %s"',$self->nsattrs('_main')).'>';
+ push @d,'<epp '.$self->nsattrs('epp').'>';
 
  my ($cmd,$ocmd,$ons);
  my $rc=$self->command();
@@ -218,18 +211,18 @@ sub as_string
 
   if (!defined $ocmd && !defined $body)
   {
-   push @d,'<'.$cmd.$attr.'/>';
+   push @d,'<',$cmd,$attr,'/>';
   } else
   {
-   push @d,'<'.$cmd.$attr.'>';
+   push @d,'<',$cmd,$attr,'>';
    if (defined $body && length $body)
    {
-    push @d,(defined $ocmd && length $ocmd)? ('<'.$ocmd.' '.$ons.'>',Net::DRI::Util::xml_write($body),'</'.$ocmd.'>') : Net::DRI::Util::xml_write($body);
+    push @d,(defined $ocmd && length $ocmd)? ('<',$ocmd,' ',$ons,'>',Net::DRI::Util::xml_write($body),'</',$ocmd,'>') : Net::DRI::Util::xml_write($body);
    } else
    {
-    push @d,'<'.$ocmd.' '.$ons.'/>';
+    push @d,'<',$ocmd,' ',$ons,'/>';
    }
-   push @d,'</'.$cmd.'>';
+   push @d,'</',$cmd,'>';
   }
  }
 
@@ -245,12 +238,12 @@ sub as_string
    {
     if ((ref $rdata && @$rdata) || (! ref $rdata && $rdata ne ''))
     {
-     push @d,'<'.$ecmd.' '.$ens.'>';
+     push @d,'<',$ecmd,' ',$ens,'>';
      push @d,ref($rdata)? Net::DRI::Util::xml_write($rdata) : Net::DRI::Util::xml_escape($rdata);
-     push @d,'</'.$ecmd.'>';
+     push @d,'</',$ecmd,'>';
     } else
     {
-     push @d,'<'.$ecmd.' '.$ens.'/>';
+     push @d,'<',$ecmd,' ',$ens,'/>';
     }
    } else
    {
@@ -264,7 +257,7 @@ sub as_string
  my $cltrid=$self->cltrid();
  if (defined $cmd && $cmd ne 'hello')
  {
-  push @d,'<clTRID>'.$cltrid.'</clTRID>' if (defined $cltrid && Net::DRI::Util::xml_is_token($cltrid,3,64));
+  push @d,'<clTRID>',$cltrid,'</clTRID>' if (defined $cltrid && Net::DRI::Util::xml_is_token($cltrid,3,64));
   push @d,'</command>';
  }
  push @d,'</epp>';
@@ -288,11 +281,9 @@ sub get_extension { my ($self,@args)=@_; return $self->_get_content($self->node_
 
 sub _get_content
 {
- my ($self,$node,$nstag,$nodename)=@_;
- return unless (defined $node && defined $nstag && length $nstag && defined $nodename && length $nodename);
- my $ns=$self->ns($nstag);
- $ns=$nstag unless defined $ns && $ns;
- my @tmp=$node->getChildrenByTagNameNS($ns,$nodename);
+ my ($self, $node, $nstag, $nodename)=@_;
+ return unless defined $node && defined $nstag && length $nstag && defined $nodename && length $nodename;
+ my @tmp=$node->getChildrenByTagNameNS($self->ns($nstag), $nodename);
  return unless @tmp;
  return $tmp[0];
 }
@@ -301,7 +292,7 @@ sub parse
 {
  my ($self,$dc,$rinfo)=@_;
 
- my $NS=$self->ns('_main');
+ my $NS=$self->ns('epp');
  my $parser=XML::LibXML->new();
  my $doc=$parser->parse_string($dc->as_string());
  my $root=$doc->getDocumentElement();

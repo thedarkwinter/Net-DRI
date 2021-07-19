@@ -19,6 +19,7 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::EmailFwd;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;

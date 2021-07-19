@@ -1,7 +1,7 @@
 ## Domain Registry Interface, CoCCA IP Protection
 ## from http://cocca.org.nz/index.php/cocca-tools/extensions.html
 ##
-## Copyright (c) 2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2011,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2011,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -76,7 +76,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'cocca' => [ 'https://production.coccaregistry.net/cocca-ip-verification-1.1','cocca-ip-verification-1.1.xsd' ] });
+ $po->ns({ 'cocca' => 'https://production.coccaregistry.net/cocca-ip-verification-1.1' });
  return;
 }
 

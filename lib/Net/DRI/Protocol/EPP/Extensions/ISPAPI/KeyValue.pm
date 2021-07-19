@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2010,2013-2015 HEXONET GmbH, http://www.hexonet.net,
 ##                    Jens Wagner <info@hexonet.net>
-## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ## All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -55,7 +55,7 @@ Jens Wagner, E<lt>jwagner@hexonet.netE<gt>
 Copyright (c) 2010,2013-2015 HEXONET GmbH, E<lt>http://www.hexonet.netE<gt>,
 Alexander Biehl <abiehl@hexonet.net>,
 Jens Wagner <jwagner@hexonet.net>
-Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>
+Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -90,7 +90,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'keyvalue' => [ 'http://schema.ispapi.net/epp/xml/keyvalue-1.0','keyvalue-1.0.xsd' ] });
+ $po->ns({ 'keyvalue' => 'http://schema.ispapi.net/epp/xml/keyvalue-1.0' });
  return;
 }
 

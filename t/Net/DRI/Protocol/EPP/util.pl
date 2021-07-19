@@ -6,7 +6,7 @@ if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
 package Net::DRI::Test;
 
-my $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+my $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 my $E2='</epp>';
 my $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -49,6 +49,13 @@ sub get_command
  $cmd =~s/^\Q$E1\E//;
  $cmd =~s/\Q$E2\E$//;
  return $cmd;
+}
+
+sub format_xml
+{
+ my ($self, $xml) = @_;
+ $xml =~ s/\n\s*//g;
+ return $xml;
 }
 
 1;

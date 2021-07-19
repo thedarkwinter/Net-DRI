@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .BR EPP extensions
 ##
-## Copyright (c) 2008,2009,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2009,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2009,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2009,2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,8 +66,8 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({brdomain=> ['urn:ietf:params:xml:ns:brdomain-1.0','brdomain-1.0.xsd'],
-            brorg   => ['urn:ietf:params:xml:ns:brorg-1.0','brorg-1.0.xsd'],
+ $self->ns({brdomain=> 'urn:ietf:params:xml:ns:brdomain-1.0',
+            brorg   => 'urn:ietf:params:xml:ns:brorg-1.0',
            });
  $self->capabilities('domain_update','ticket',['set']);
  $self->capabilities('domain_update','release',['set']);

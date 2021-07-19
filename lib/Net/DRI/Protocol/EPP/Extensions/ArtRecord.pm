@@ -43,7 +43,7 @@ sub setup
 {
  my ($class,$po,$version)=@_;
 
- state $ns = { 'artRecord' => [ 'urn:ietf:params:xml:ns:artRecord-0.1','artRecord-0.1.xsd' ] };
+ state $ns = { 'artRecord' => 'urn:ietf:params:xml:ns:artRecord-0.1' };
  $po->ns($ns);
  return;
 }

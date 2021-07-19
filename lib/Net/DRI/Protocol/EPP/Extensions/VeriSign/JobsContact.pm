@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .JOBS contact extension
 ##
 ## Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+## Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -58,7 +58,7 @@ Tonnerre Lombard E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
-Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -87,7 +87,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $rns = { 'jobsContact' => [ 'http://www.verisign.com/epp/jobsContact-1.0', 'jobsContact-1.0.xsd' ] };
+ state $rns = { 'jobsContact' => 'http://www.verisign.com/epp/jobsContact-1.0' };
  $po->ns($rns);
  return;
 }

@@ -1,4 +1,4 @@
-## EPP Mapping for DNAME delegation of domain names (draft-bortzmeyer-regext-epp-dname-00)
+## EPP Mapping for DNAME delegation of domain names (draft-bortzmeyer-regext-epp-dname-02)
 ##
 ## Copyright (c) 2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
@@ -41,12 +41,12 @@ sub setup
 {
  my ($class,$po,$version)=@_;
 
- state $ns = { 'dnameDeleg' => [ 'urn:ietf:params:xml:ns:dnameDeleg-1.0','dnameDeleg-1.0.xsd' ] };
+ state $ns = { 'dnameDeleg' => 'urn:ietf:params:xml:ns:dnameDeleg-1.0' };
  $po->ns($ns);
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-bortzmeyer-regext-epp-dname-00'; }
+sub implements { return 'https://tools.ietf.org/html/draft-bortzmeyer-regext-epp-dname-02'; }
 
 ####################################################################################################
 
@@ -88,7 +88,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::DNAME - EPP Mapping for DNAME delegation of domain names (draft-bortzmeyer-regext-epp-dname-00) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::DNAME - EPP Mapping for DNAME delegation of domain names (draft-bortzmeyer-regext-epp-dname-02) for Net::DRI
 
 =head1 DESCRIPTION
 

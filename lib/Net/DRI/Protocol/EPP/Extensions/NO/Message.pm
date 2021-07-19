@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2008-2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
-## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+## Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -58,7 +58,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 Copyright (c) 2008-2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
-Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -175,7 +175,7 @@ sub parse_poll {
     my ( $po, $otype, $oaction, $oname, $rinfo ) = @_;
     my $mes = $po->message();
 
-    my $eppNS = $mes->ns('_main');
+    my $eppNS = $mes->ns('epp');
 
     # both message and results are defined by the same no-ext-result schema
     my $NS = $mes->ns('no-ext-result');

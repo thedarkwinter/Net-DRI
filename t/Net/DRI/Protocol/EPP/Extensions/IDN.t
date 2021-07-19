@@ -11,7 +11,7 @@ use Test::More tests => 3;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -42,6 +42,6 @@ $cs->set($c1,'registrant');
 $cs->set($c2,'admin');
 $cs->set($c2,'tech');
 $rc=$dri->domain_create('xn--espaol-zwa.com',{pure_create=>1,duration=>DateTime::Duration->new(years=>2),ns=>$dri->local_object('hosts')->set(['ns1.example.net'],['ns2.example.net']),contact=>$cs,auth=>{pw=>'2fooBAR'},idn_table => 'es', uname => 'español.com'});
-is_string($R1,$E1.qq'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>xn--espaol-zwa.com</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.net</domain:hostObj><domain:hostObj>ns2.example.net</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><idn:data xmlns:idn="urn:ietf:params:xml:ns:idn-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:idn-1.0 idn-1.0.xsd"><idn:table>es</idn:table><idn:uname>espa\x{00F1}ol.com</idn:uname></idn:data></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+is_string($R1,$E1.qq'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>xn--espaol-zwa.com</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.example.net</domain:hostObj><domain:hostObj>ns2.example.net</domain:hostObj></domain:ns><domain:registrant>jd1234</domain:registrant><domain:contact type="admin">sh8013</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><idn:data xmlns:idn="urn:ietf:params:xml:ns:idn-1.0"><idn:table>es</idn:table><idn:uname>espa\x{00F1}ol.com</idn:uname></idn:data></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 
 exit 0;

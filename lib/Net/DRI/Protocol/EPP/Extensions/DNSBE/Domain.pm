@@ -1,7 +1,7 @@
 ## Domain Registry Interface, DNSBE Domain EPP extension commands
 ## (based on Registration_guidelines_v4_7_2-Part_4-epp.pdf)
 ##
-## Copyright (c) 2006-2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2010,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -54,7 +54,8 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2010,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
+          (c) 2013 Michael Holloway <michael@thedarkwinter.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -293,7 +294,7 @@ sub add_transfer
  {
   my $n=Net::DRI::Protocol::EPP::Util::build_ns($epp,$rd->{ns},$domain,'dnsbe');
   my @ns=$mes->nsattrs('domain');
-  push @$n,{'xmlns:domain'=>shift(@ns),'xsi:schemaLocation'=>sprintf('%s %s',@ns)};
+  push @$n,{'xmlns:domain'=>shift(@ns)};
   push @n,$n;
  }
 

@@ -1,7 +1,7 @@
 ## Domain Registry Interface, nic.at domain transactions extension
 ## Contributed by Michael Braunoeder from NIC.AT <mib@nic.at>
 ##
-## Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,8 +17,7 @@ package Net::DRI::Protocol::EPP::Extensions::AT::ATResult;
 
 use strict;
 use warnings;
-
-our $NS='http://www.nic.at/xsd/at-ext-result-1.0';
+use feature 'state';
 
 =pod
 
@@ -48,7 +47,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -83,6 +82,14 @@ sub register_commands
                   'contact' => \%tmp };
 }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+
+ state $ns = { 'at-ext-result' => 'http://www.nic.at/xsd/at-ext-result-1.0' };
+ $po->ns($ns);
+ return;
+}
 
 sub condition_parse
 {
@@ -90,12 +97,12 @@ sub condition_parse
  my $mes=$po->message();
 
 
- my $condata=$mes->get_extension($NS,'conditions');
+ my $condata=$mes->get_extension('at-ext-result', 'conditions');
  return unless $condata;
 
  my @conditions;
-
- foreach my $el ($condata->getElementsByTagNameNS($NS,'condition'))
+ my $ns = $mes->ns('at-ext-result');
+ foreach my $el ($condata->getElementsByTagNameNS($ns, 'condition'))
  {
   my %con;
   my $c=$el->getFirstChild();
@@ -114,7 +121,7 @@ sub condition_parse
     $con{$1}=$c->getFirstChild()->getData();
    } elsif ($name=~m/^attributes$/)
      {
-	foreach my $attr ($c->getChildrenByTagNameNS($NS,'attr')) {
+	foreach my $attr ($c->getChildrenByTagNameNS($ns, 'attr')) {
                 my $attrname=$attr->getAttribute('name');
                 $con{"attr " .$attrname} = $attr->getFirstChild()->getData();
         }

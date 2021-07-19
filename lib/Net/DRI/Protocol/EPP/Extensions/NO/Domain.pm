@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2008-2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
-##           (c) 2016 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
+##           (c) 2016,2018 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -57,7 +57,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 Copyright (c) 2008-2010,2013-2014 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
-(c) 2016 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
+(c) 2016,2018 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -311,20 +311,13 @@ sub withdraw {
 
     my $r;
 
-    my (undef,$ExtNS,$ExtNSX)=$mes->nsattrs('no-ext-epp');
-
     my $eid = $mes->command_extension_register( 'no-ext-epp', 'command');
-
-    my (undef,$NS,$NSX)=$mes->nsattrs('no-ext-domain');
-    my %domns;
-    $domns{'xmlns:domain'}       = $NS;
-    $domns{'xsi:schemaLocation'} = $NS . " $NSX";
 
     $r=$mes->command_extension(
         $eid,
         [   [   'no-ext-epp:withdraw',
                 [   'domain:withdraw', [ 'domain:name', $domain ],
-                    \%domns
+                    {'xmlns:domain' => $mes->nsattrs('no-ext-domain')}
                 ]
             ],
             [ 'no-ext-epp:clTRID', $mes->cltrid() ]
@@ -372,16 +365,7 @@ sub transfer_execute {
 
     my $cltrid=$mes->cltrid();
 
-
-    my (undef,$NS,$NSX)=$mes->nsattrs('no-ext-domain');
-    my %domns;
-    $domns{'xmlns:domain'} = 'urn:ietf:params:xml:ns:domain-1.0';
-    $domns{'xsi:schemaLocation'}
-        = 'urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd';
-
-    my %domns2;
-    $domns2{'xmlns:no-ext-domain'} = $NS;
-    $domns2{'xsi:schemaLocation'}  = $NS . " $NSX";
+    my %domns = ('xmlns:domain' => 'urn:ietf:params:xml:ns:domain-1.0');
 
     my $r;
 
@@ -414,7 +398,7 @@ sub transfer_execute {
                     ],
                 ],
                 [   'no-ext-epp:extension',
-                    [   'no-ext-domain:transfer', \%domns2,
+                    [   'no-ext-domain:transfer', {'xmlns:no-ext-domain' => $mes->nsattrs('no-ext-domain')},
                         [ 'no-ext-domain:token', $token ]
                     ]
                 ],

@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 
 use Test::More tests => 102;
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -86,7 +86,7 @@ is($rc->get_data('message',$s,'date'),'2018-06-12T09:00:00','notification bounce
 $rc = $dri->domain_request_authcode('test.be', {url => 'http://test.com'});
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully created authinfo');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><extension><dnsbe:ext xmlns:dnsbe="http://www.dns.be/xml/epp/dnsbe-1.0" xsi:schemaLocation="http://www.dns.be/xml/epp/dnsbe-1.0 dnsbe-1.0.xsd"><dnsbe:command><dnsbe:requestAuthCode><dnsbe:domainName>test.be</dnsbe:domainName><dnsbe:url>http://test.com</dnsbe:url></dnsbe:requestAuthCode><dnsbe:clTRID>clientref-123007</dnsbe:clTRID></dnsbe:command></dnsbe:ext></extension></epp>','Domain Request Authcode XML correct');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0"><extension><dnsbe:ext xmlns:dnsbe="http://www.dns.be/xml/epp/dnsbe-1.0"><dnsbe:command><dnsbe:requestAuthCode><dnsbe:domainName>test.be</dnsbe:domainName><dnsbe:url>http://test.com</dnsbe:url></dnsbe:requestAuthCode><dnsbe:clTRID>clientref-123007</dnsbe:clTRID></dnsbe:command></dnsbe:ext></extension></epp>','Domain Request Authcode XML correct');
 
 
 ####################################################################################################

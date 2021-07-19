@@ -12,7 +12,7 @@ use Test::More tests => 17;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
-our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
+our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0">';
 our $E2='</epp>';
 our $TRID='<trID><clTRID>ABC-12345</clTRID><svTRID>54322-XYZ</svTRID></trID>';
 
@@ -69,7 +69,7 @@ $co->legal_form('CCT');
 $co->agreement({version => '1.9', signed => 1});
 $co->reseller_id('12345');
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8021</contact:id><contact:postalInfo type="loc"><contact:name>John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>350 Sparks Street</contact:street><contact:street>Suite 306</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K1R 7S8</contact:pc><contact:cc>CA</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.6132375335</contact:voice><contact:fax>+1.6132370534</contact:fax><contact:email>jdoe@cira20.ca</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><extension><cira:ciraCreate xmlns:cira="urn:ietf:params:xml:ns:cira-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cira-1.0 cira-1.0.xsd"><cira:language>en</cira:language><cira:originatingIpAddress>192.118.22.26</cira:originatingIpAddress><cira:cprCategory>CCT</cira:cprCategory><cira:ciraAgreementVersion>1.9</cira:ciraAgreementVersion><cira:agreementValue>Y</cira:agreementValue><cira:createdByResellerId>12345</cira:createdByResellerId></cira:ciraCreate></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>sh8021</contact:id><contact:postalInfo type="loc"><contact:name>John Doe</contact:name><contact:org>Example Inc.</contact:org><contact:addr><contact:street>350 Sparks Street</contact:street><contact:street>Suite 306</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K1R 7S8</contact:pc><contact:cc>CA</contact:cc></contact:addr></contact:postalInfo><contact:voice x="1234">+1.6132375335</contact:voice><contact:fax>+1.6132370534</contact:fax><contact:email>jdoe@cira20.ca</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><extension><cira:ciraCreate xmlns:cira="urn:ietf:params:xml:ns:cira-1.0"><cira:language>en</cira:language><cira:originatingIpAddress>192.118.22.26</cira:originatingIpAddress><cira:cprCategory>CCT</cira:cprCategory><cira:ciraAgreementVersion>1.9</cira:ciraAgreementVersion><cira:agreementValue>Y</cira:agreementValue><cira:createdByResellerId>12345</cira:createdByResellerId></cira:ciraCreate></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
 
 
 $R2='';
@@ -89,7 +89,7 @@ $co2->legal_form('CCT');
 $co2->lang('fr');
 $toc->set('info',$co2);
 $rc=$dri->contact_update($co,$toc);
-is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>flaguse19</contact:id><contact:add><contact:status s="clientDeleteProhibited"/></contact:add><contact:chg><contact:postalInfo type="loc"><contact:name>Updated Name Field</contact:name><contact:org/><contact:addr><contact:street>32 Wish Bone Avenue</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K4M 1N6</contact:pc></contact:addr></contact:postalInfo><contact:voice>+1.6134952324</contact:voice><contact:fax>+1.6134952323</contact:fax></contact:chg></contact:update></update><extension><cira:ciraUpdate xmlns:cira="urn:ietf:params:xml:ns:cira-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cira-1.0 cira-1.0.xsd"><cira:ciraChg><cira:cprCategory>CCT</cira:cprCategory><cira:language>fr</cira:language></cira:ciraChg></cira:ciraUpdate></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>flaguse19</contact:id><contact:add><contact:status s="clientDeleteProhibited"/></contact:add><contact:chg><contact:postalInfo type="loc"><contact:name>Updated Name Field</contact:name><contact:org/><contact:addr><contact:street>32 Wish Bone Avenue</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K4M 1N6</contact:pc></contact:addr></contact:postalInfo><contact:voice>+1.6134952324</contact:voice><contact:fax>+1.6134952323</contact:fax></contact:chg></contact:update></update><extension><cira:ciraUpdate xmlns:cira="urn:ietf:params:xml:ns:cira-1.0"><cira:ciraChg><cira:cprCategory>CCT</cira:cprCategory><cira:language>fr</cira:language></cira:ciraChg></cira:ciraUpdate></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_update build');
 
 ####################################################################################################
 ## Domain commands
@@ -105,7 +105,7 @@ $cs->add($dri->local_object('contact')->srid('transferrant'),'registrant');
 $cs->add($dri->local_object('contact')->srid('transferadmin'),'admin');
 $cs->add($dri->local_object('contact')->srid('transfertech1'),'tech');
 $rc=$dri->domain_transfer_start('onetech.ca',{auth=>{pw=>'password'},contact=>$cs});
-is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>onetech.ca</domain:name><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:transfer></transfer><extension><cira:ciraTransfer xmlns:cira="urn:ietf:params:xml:ns:cira-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cira-1.0 cira-1.0.xsd"><cira:ciraChg><cira:registrant>transferrant</cira:registrant><cira:contact type="admin">transferadmin</cira:contact><cira:contact type="tech">transfertech1</cira:contact></cira:ciraChg></cira:ciraTransfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
+is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>onetech.ca</domain:name><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:transfer></transfer><extension><cira:ciraTransfer xmlns:cira="urn:ietf:params:xml:ns:cira-1.0"><cira:ciraChg><cira:registrant>transferrant</cira:registrant><cira:contact type="admin">transferadmin</cira:contact><cira:contact type="tech">transfertech1</cira:contact></cira:ciraChg></cira:ciraTransfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
 
 
 ####################################################################################################
@@ -114,7 +114,7 @@ is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain
 ## Currently the registry expects a non conforming EPP frame with an <extension> inside <command>
 $R2=$E1.'<response>'.r().'<extension><cira:ciraInfo xmlns:cira="urn:ietf:params:xml:ns:cira-1.0"><cira:language>en</cira:language><cira:ciraAgreementVersion>2.0</cira:ciraAgreementVersion><cira:ciraAgreement>REGISTRANT AGREEMENT...complete agreement here</cira:ciraAgreement></cira:ciraInfo></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->agreement_get('en');
-is_string($R1,$E1.'<command><extension><cira:ciraInfo xmlns:cira="urn:ietf:params:xml:ns:cira-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:cira-1.0 cira-1.0.xsd"><cira:action>get CIRA latest agreement</cira:action><cira:language>en</cira:language></cira:ciraInfo></extension></command>'.$E2,'agreement_get build');
+is_string($R1,$E1.'<command><extension><cira:ciraInfo xmlns:cira="urn:ietf:params:xml:ns:cira-1.0"><cira:action>get CIRA latest agreement</cira:action><cira:language>en</cira:language></cira:ciraInfo></extension></command>'.$E2,'agreement_get build');
 is($rc->get_data('lang'),'en','agreement_get get_data(lang)');
 is($rc->get_data('version'),'2.0','agreement_get get_data(version)');
 is($rc->get_data('content'),'REGISTRANT AGREEMENT...complete agreement here','agreement_get get_data(content)');

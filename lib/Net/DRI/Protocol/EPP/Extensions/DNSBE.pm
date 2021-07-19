@@ -1,6 +1,6 @@
 ## Domain Registry Interface, DNSBE EPP extensions
 ##
-## Copyright (c) 2006-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2010,2013,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -67,9 +67,9 @@ sub setup
 {
  my ($self,$rp)=@_;
  my $version=$self->version();
- $self->ns({ dnsbe   => ['http://www.dns.be/xml/epp/dnsbe-1.0','dnsbe-1.0.xsd'],
-             nsgroup => ['http://www.dns.be/xml/epp/nsgroup-1.0','nsgroup-1.0.xsd'],
-             keygroup=> ['http://www.dns.be/xml/epp/keygroup-1.0','keygroup-1.0.xsd'],
+ $self->ns({ dnsbe   => 'http://www.dns.be/xml/epp/dnsbe-1.0',
+             nsgroup => 'http://www.dns.be/xml/epp/nsgroup-1.0',
+             keygroup=> 'http://www.dns.be/xml/epp/keygroup-1.0',
           });
  $self->capabilities('contact_update','status',undef); ## No changes in status possible for .BE domains/contacts
  #$self->capabilities('domain_update','status',undef);

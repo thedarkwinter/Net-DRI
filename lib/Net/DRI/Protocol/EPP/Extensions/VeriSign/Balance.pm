@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign Balance object mapping EPP extension
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -32,8 +32,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'balance' => [ 'http://www.verisign.com/epp/balance-1.0','balance-1.0.xsd' ],
-         });
+ $po->ns({ 'balance' => 'http://www.verisign.com/epp/balance-1.0' });
  return;
 }
 
@@ -44,7 +43,7 @@ sub balance_info_build
  my ($epp)=@_;
  my $mes=$epp->message();
 
- $mes->command(['info','balance:info', sprintf('xmlns:balance="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('balance'))]);
+ $mes->command(['info','balance:info', $mes->nsattrs('balance')]);
  return;
 }
 
@@ -109,7 +108,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

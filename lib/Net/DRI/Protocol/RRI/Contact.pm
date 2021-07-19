@@ -99,8 +99,7 @@ sub build_command
  }
 
  my $tcommand = (ref($command))? $command->[0] : $command;
- my @ns = @{$msg->ns->{contact}};
- $msg->command(['contact',$tcommand,$ns[0]]);
+ $msg->command(['contact',$tcommand, $msg->ns('contact')]);
 
  my @d = map { ['contact:handle',$_] } @c;
 

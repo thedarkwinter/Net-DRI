@@ -1,6 +1,6 @@
 ## Domain Registry Interface, Registrar Registration Expiration Date for EPP
 ##
-## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -27,10 +27,8 @@ sub register_commands
 {
  my ($class,$version)=@_;
  state $rmcds = { 'domain' => { 'info'             => [ undef, \&parse ],
-                                'transfer_query'   => [ undef, \&parse ],
                                 'create'           => [ \&build, undef ],
                                 'renew'            => [ \&build, undef ],
-                                'transfer_request' => [ \&build, undef ],
                                 'update'           => [ \&build_update, undef ],
                               },
                 };
@@ -41,14 +39,14 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $rns = { 'rrExDate' => [ 'urn:ietf:params:xml:ns:rrExDate-1.0', 'rrExDate-1.0.xsd' ]};
+ state $rns = { 'rrExDate' => 'urn:ietf:params:xml:ns:rrExDate-1.0' };
  $po->ns($rns);
  return;
 }
 
 sub capabilities_add { state $rcaps = ['domain_update','registrar_expiration_date',['set']]; return $rcaps; }
 
-sub implements { return 'https://tools.ietf.org/html/draft-lozano-ietf-eppext-registrar-expiration-date-01'; }
+sub implements { return 'https://tools.ietf.org/html/draft-lozano-ietf-regext-registrar-expiration-date-00'; }
 
 ####################################################################################################
 
@@ -59,7 +57,7 @@ sub parse
  return unless $mes->is_success();
 
  my $ns = $mes->ns('rrExDate');
- my $data = $mes->get_extension($ns, 'rrExDateData');
+ my $data = $mes->get_extension('rrExDate', 'rrExDateData');
  return unless defined $data;
 
  $data = Net::DRI::Util::xml_traverse($data, $ns, 'syncRyRrExpDate');
@@ -102,7 +100,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::ICANN::RegistrarExpirationDate - ICANN Registrar Registration Expiration Date EPP Extension (draft-lozano-ietf-eppext-registrar-expiration-date-00) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::ICANN::RegistrarExpirationDate - ICANN Registrar Registration Expiration Date EPP Extension (draft-lozano-ietf-regext-registrar-expiration-date-00) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -126,7 +124,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

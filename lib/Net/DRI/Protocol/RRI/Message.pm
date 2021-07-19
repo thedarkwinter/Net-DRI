@@ -1,6 +1,7 @@
 ## Domain Registry Interface, RRI Message
 ##
 ## Copyright (c) 2007-2009,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
+##           (c) 2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -95,7 +96,7 @@ sub ns
   return $what;
  }
  return unless exists($self->{ns}->{$what});
- return $self->{ns}->{$what}->[0];
+ return $self->{ns}->{$what};
 }
 
 sub is_success { return (shift->result() =~ m/^success/)? 1 : 0; }
@@ -115,8 +116,7 @@ sub as_string
 {
  my ($self)=@_;
  my $rns=$self->ns();
- my $topns=$rns->{_main};
- my $ens=sprintf('xmlns="%s"', $topns->[0]);
+ my $ens=sprintf('xmlns="%s"', $rns->{rri});
  my $cmdi = $self->command();
  my @d;
  push @d,'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
@@ -170,7 +170,7 @@ sub as_string
  return join('',@d);
 }
 
-sub topns { return shift->ns->{_main}->[0]; }
+sub topns { return shift->ns->{rri}; }
 
 sub get_content
 {
@@ -180,9 +180,7 @@ sub get_content
  my @tmp;
  my $n1=$self->node_resdata();
 
- $ns||=$self->topns();
-
- @tmp=$n1->getElementsByTagNameNS($ns,$nodename) if (defined($n1));
+ @tmp=$n1->getElementsByTagNameNS($ns // $self->topns(),$nodename) if (defined($n1));
 
  return unless @tmp;
  return wantarray()? @tmp : $tmp[0];
@@ -191,7 +189,6 @@ sub get_content
 sub parse
 {
  my ($self,$dc,$rinfo)=@_;
- my $NS=$self->topns();
  my $trNS = $self->ns('tr');
  my $parser=XML::LibXML->new();
  my $xstr = $dc->as_string();

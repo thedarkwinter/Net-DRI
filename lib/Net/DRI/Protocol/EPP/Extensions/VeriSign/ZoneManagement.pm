@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign Zone Management EPP extension
 ##
-## Copyright (c) 2012,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2012,2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -34,7 +34,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'zoneMgt' => [ 'http://www.verisign.com/epp/zoneMgt-1.0','zoneMgt-1.0.xsd' ],
+ $po->ns({ 'zoneMgt' => 'http://www.verisign.com/epp/zoneMgt-1.0',
          });
  return;
 }
@@ -175,7 +175,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2012,2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

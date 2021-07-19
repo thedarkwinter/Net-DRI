@@ -33,7 +33,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $ns = { 'allocate' => [ 'urn:google:params:xml:ns:allocate-1.0', 'allocate-1.0.xsd' ] };
+ state $ns = { 'allocate' => 'urn:google:params:xml:ns:allocate-1.0' };
  $po->ns($ns);
  return;
 }

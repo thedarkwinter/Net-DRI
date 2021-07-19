@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Domain commands (RFC5731)
 ##
-## Copyright (c) 2005-2010,2012-2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2010,2012-2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -50,7 +50,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2010,2012-2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2010,2012-2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -447,7 +447,7 @@ sub pandata_parse
    $rinfo->{domain}->{$oname}->{result}=Net::DRI::Util::xml_parse_boolean($c->getAttribute('paResult'));
   } elsif ($name eq 'paTRID')
   {
-   my $ns=$mes->ns('_main');
+   my $ns=$mes->ns('epp');
    my $tmp=Net::DRI::Util::xml_child_content($c,$ns,'clTRID');
    $rinfo->{domain}->{$oname}->{trid}=$tmp if defined $tmp;
    $rinfo->{domain}->{$oname}->{svtrid}=Net::DRI::Util::xml_child_content($c,$ns,'svTRID');

@@ -102,7 +102,7 @@ sub build_command
  }
 
  Net::DRI::Exception->die(1,'protocol/EPP',2,'NSgroup name needed') unless @gn;
- $msg->command([$command,'nsgroup:'.$command,sprintf('xmlns:nsgroup="%s" xsi:schemaLocation="%s %s"',$msg->nsattrs('nsgroup'))]);
+ $msg->command([$command,'nsgroup:'.$command, $msg->nsattrs('nsgroup')]);
  return map { ['nsgroup:name',$_] } @gn;
 }
 
@@ -150,7 +150,7 @@ sub check_parse
  return unless $mes->is_success();
 
  my $ns=$mes->ns('nsgroup');
- my $chkdata=$mes->get_response($ns,'chkData');
+ my $chkdata=$mes->get_response('nsgroup', 'chkData');
  return unless defined $chkdata;
 
  foreach my $cd ($chkdata->getChildrenByTagNameNS($ns,'cd'))
@@ -190,7 +190,7 @@ sub info_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $infdata=$mes->get_response($mes->ns('nsgroup'),'infData');
+ my $infdata=$mes->get_response('nsgroup', 'infData');
  return unless defined $infdata;
 
  my $ns=$po->create_local_object('hosts');

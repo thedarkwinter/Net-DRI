@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Grace Period commands (RFC3915)
 ##
-## Copyright (c) 2005,2006,2008-2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005,2006,2008-2010,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -48,7 +48,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005,2006,2008-2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005,2006,2008-2010,2013,2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ sub capabilities_add { return ('domain_update','rgp',['set']); }
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'rgp' => [ 'urn:ietf:params:xml:ns:rgp-1.0','rgp-1.0.xsd' ] });
+ $po->ns({ 'rgp' => 'urn:ietf:params:xml:ns:rgp-1.0' });
  return;
 }
 
@@ -92,7 +92,7 @@ sub info_parse
  return unless $mes->is_success();
 
  my $ns=$mes->ns('rgp');
- my $infdata=$mes->get_extension($ns,'infData');
+ my $infdata=$mes->get_extension('rgp', 'infData');
  return unless defined $infdata;
 
  my $cs=$rinfo->{domain}->{$oname}->{status}; ## a Net::DRI::Protocol::EPP::Core::Status object
@@ -151,7 +151,7 @@ sub update_parse
  my $mes=$po->message();
  return unless $mes->is_success();
 
- my $updata=$mes->get_extension($mes->ns('rgp'),'upData');
+ my $updata=$mes->get_extension('rgp', 'upData');
  return unless defined $updata;
 
  ## We do nothing, since the rgpStatus alone is useless

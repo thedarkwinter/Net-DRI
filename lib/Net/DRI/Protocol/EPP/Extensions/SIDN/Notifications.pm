@@ -1,6 +1,6 @@
 ## Domain Registry Interface, SIDN EPP Notifications
 ##
-## Copyright (c) 2009,2010 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009,2010,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -43,7 +43,7 @@ sub parse_sidn
 
  $oname='_unknown'; ## some messages carry back very little useful information !
  my $id=$mes->msg_id();
- my $nsepp=$mes->ns('_main');
+ my $nsepp=$mes->ns('epp');
  my %h=(action => 'review_sidn');
  my $cmd;
  foreach my $el (Net::DRI::Util::xml_list_children($node))
@@ -210,7 +210,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009,2010 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009,2010,2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

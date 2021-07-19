@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009,2012-2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009,2012-2013,2018 Patrick Mevzek <netdri@dotandco.com>.
               2014 Michael Kefeder <michael.kefeder@world4you.com>.
 All rights reserved.
 

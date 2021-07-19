@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP IDN (draft-ietf-eppext-idnmap-02)
 ##
-## Copyright (c) 2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -36,8 +36,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'idn' => [ 'urn:ietf:params:xml:ns:idn-1.0','idn-1.0.xsd' ],
-         });
+ $po->ns({ 'idn' => 'urn:ietf:params:xml:ns:idn-1.0' });
  return;
 }
 
@@ -130,7 +129,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013,2015 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2013,2015,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

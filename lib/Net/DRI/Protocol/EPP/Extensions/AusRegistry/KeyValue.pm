@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP AusRegistry Key Value Extension
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -37,8 +37,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'kv' => [ 'urn:X-ar:params:xml:ns:kv-1.0','kv-1.0.xsd' ],
-         });
+ $po->ns({ 'kv' => 'urn:X-ar:params:xml:ns:kv-1.0' });
  return;
 }
 
@@ -188,7 +187,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+Copyright (c) 2013,2018 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

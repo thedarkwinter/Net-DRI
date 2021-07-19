@@ -38,12 +38,12 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- state $rns = { 'verificationCode' => [ 'urn:ietf:params:xml:ns:verificationCode-1.0','verificationCode-1.0.xsd' ] };
+ state $rns = { 'verificationCode' => 'urn:ietf:params:xml:ns:verificationCode-1.0' };
  $po->ns($rns);
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/html/draft-ietf-regext-verificationcode-02'; }
+sub implements { return 'https://tools.ietf.org/html/draft-ietf-regext-verificationcode-03'; }
 
 ####################################################################################################
 
@@ -78,8 +78,7 @@ sub info_parse
  my $mes = $po->message();
  return unless $mes->is_success();
 
- my $ns = $mes->ns('verificationCode');
- my $data = $mes->get_extension($ns,'infData');
+ my $data = $mes->get_extension('verificationCode', 'infData');
  return unless defined $data;
 
  my %v;
@@ -159,7 +158,7 @@ __END__
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::VerificationCode - EPP Verification Code Extension mapping (draft-ietf-regext-verificationcode-02) for Net::DRI
+Net::DRI::Protocol::EPP::Extensions::VerificationCode - EPP Verification Code Extension mapping (draft-ietf-regext-verificationcode-03) for Net::DRI
 
 =head1 DESCRIPTION
 

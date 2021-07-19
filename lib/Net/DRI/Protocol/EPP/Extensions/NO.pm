@@ -2,7 +2,7 @@
 ##
 ## Copyright (c) 2008-2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
-## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
+## Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>.
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -54,7 +54,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 Copyright (c) 2008-2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
-Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>
+Copyright (c) 2016,2018 Patrick Mevzek <netdri@dotandco.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -70,11 +70,11 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub setup {
     my ($self,$rp)=@_;
-    $self->ns({ 'no-ext-contact' => [ 'http://www.norid.no/xsd/no-ext-contact-1.0','no-ext-contact-1.0.xsd' ],
-                'no-ext-domain'  => [ 'http://www.norid.no/xsd/no-ext-domain-1.1','no-ext-domain-1.1.xsd' ],
-                'no-ext-host'    => [ 'http://www.norid.no/xsd/no-ext-host-1.0','no-ext-host-1.0.xsd' ],
-                'no-ext-result'  => [ 'http://www.norid.no/xsd/no-ext-result-1.0','no-ext-result-1.0.xsd' ],
-                'no-ext-epp'     => [ 'http://www.norid.no/xsd/no-ext-epp-1.0','no-ext-epp-1.0.xsd' ],
+    $self->ns({ 'no-ext-contact' => 'http://www.norid.no/xsd/no-ext-contact-1.0',
+                'no-ext-domain'  => 'http://www.norid.no/xsd/no-ext-domain-1.1',
+                'no-ext-host'    => 'http://www.norid.no/xsd/no-ext-host-1.0',
+                'no-ext-result'  => 'http://www.norid.no/xsd/no-ext-result-1.0',
+                'no-ext-epp'     => 'http://www.norid.no/xsd/no-ext-epp-1.0',
              });
 
 

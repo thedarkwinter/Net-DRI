@@ -1,6 +1,7 @@
 ## Domain Registry Interface, .CO.CZ EPP extensions
 ##
 ## Copyright (c) 2008 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+## Copyright (c) 2018 Patrick Mevzek <netdri@dotandco.com>.
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -50,6 +51,7 @@ Tonnerre Lombard, E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2008 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+Copyright (c) 2018 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -67,8 +69,8 @@ sub setup
 {
  my ($self,$rp)=@_;
  $self->{defaulti18ntype}='loc'; # The registry does not provide contact postalinfo i18n type, although it is mandatory by EPP
- $self->ns({ domain  => ['http://www.nic.cz/xml/epp/domain-1.4','domain-1.4.xsd'],
-             contact => ['http://www.nic.cz/xml/epp/contact-1.5','contact-1.5.xsd'],
+ $self->ns({ domain  => 'http://www.nic.cz/xml/epp/domain-1.4',
+             contact => 'http://www.nic.cz/xml/epp/contact-1.5',
           });
  $self->capabilities('domain_update','status',undef);
  $self->capabilities('domain_update','nsset',['set']);
