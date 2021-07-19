@@ -1,6 +1,7 @@
 ## Domain Registry Interface, Cloud Registry LaunchPhase EPP Extension for managing Sunrise and Landrush
 ##
 ## Copyright (c) 2009-2011,2013 Cloud Registry Pty Ltd <http://www.cloudregistry.net>. All rights reserved.
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,6 +50,7 @@ Wil Tan E<lt>wil@cloudregistry.netE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2009-2011,2013 Cloud Registry Pty Ltd <http://www.cloudregistry.net>.
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -90,7 +92,7 @@ sub create
  push @lpdata, ['lp:pvrc', $rd->{lp}->{pvrc}]                                   if exists $rd->{lp}->{pvrc};
  push @lpdata, ['lp:phase', $rd->{lp}->{phase}]                                 if exists $rd->{lp}->{phase};
 
- my $eid=$mes->command_extension_register('lp:create',sprintf('xmlns:lp="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('lp')));
+ my $eid=$mes->command_extension_register('lp','create');
  $mes->command_extension($eid,[@lpdata]);
  return;
 }
@@ -119,7 +121,7 @@ sub info
  push @lpdata, ['lp:application_id', $rd->{lp}->{application_id}] if exists $rd->{lp}->{application_id};
  push @lpdata, ['lp:phase', $rd->{lp}->{phase}]                   if exists $rd->{lp}->{phase};
 
- my $eid=$mes->command_extension_register('lp:info',sprintf('xmlns:lp="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('lp')));
+ my $eid=$mes->command_extension_register('lp','info');
  $mes->command_extension($eid,[@lpdata]);
  return;
 }

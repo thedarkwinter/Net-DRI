@@ -85,12 +85,6 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:frnic="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('frnic')));
-}
-
 sub build_domain
 {
  my ($domain)=@_;
@@ -183,7 +177,7 @@ sub transfer_request
  my $mes=$epp->message();
 
  verify_contacts($rd);
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
+ my $eid=$mes->command_extension_register('frnic', 'ext');
  $mes->command_extension($eid,['frnic:transfer',['frnic:domain',add_keepds('transfer',$rd),build_contacts($rd)]]);
  return;
 }
@@ -227,7 +221,7 @@ sub trade_request
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
+ my $eid=$mes->command_extension_register('frnic', 'ext');
  my @n=build_domain($domain);
 
  push @n,build_registrant($rd);
@@ -241,7 +235,7 @@ sub trade_query
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
+ my $eid=$mes->command_extension_register('frnic', 'ext');
  my @n=build_domain($domain);
  push @n,build_authinfo($mes, $rd, 'trade query');
  $mes->command_extension($eid,['frnic:command',['frnic:trade',{op=>'query'},['frnic:domain',@n]],build_cltrid($mes)]);
@@ -253,7 +247,7 @@ sub trade_cancel
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
+ my $eid=$mes->command_extension_register('frnic', 'ext');
  my @n=build_domain($domain);
  push @n,build_authinfo($mes, $rd, 'trade cancel');
  $mes->command_extension($eid,['frnic:command',['frnic:trade',{op=>'cancel'},['frnic:domain',@n]],build_cltrid($mes)]);
@@ -275,7 +269,7 @@ sub recover_request
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=build_command_extension($mes,$epp,'frnic:ext');
+ my $eid=$mes->command_extension_register('frnic', 'ext');
  my @n=build_domain($domain);
  push @n,build_authinfo($mes, $rd, 'recover request');
  push @n,build_registrant($rd);

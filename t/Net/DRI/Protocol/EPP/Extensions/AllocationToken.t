@@ -68,7 +68,8 @@ is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain
 
 my $toc=$dri->local_object('changes');
 $toc->set('auth',{pw=>'2BARfoo'});
-$rc=$dri->domain_update('example206.com',$toc,{ allocation_token => 'abc123'});
+$toc->set('allocation_token', 'abc123');
+$rc=$dri->domain_update('example206.com',$toc);
 is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example206.com</domain:name><domain:chg><domain:authInfo><domain:pw>2BARfoo</domain:pw></domain:authInfo></domain:chg></domain:update></update><extension><allocationToken:allocationToken xmlns:allocationToken="urn:ietf:params:xml:ns:allocationToken-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:allocationToken-1.0 allocationToken-1.0.xsd">abc123</allocationToken:allocationToken></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update allocation_token build');
 
 

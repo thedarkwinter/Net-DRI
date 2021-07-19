@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2008,2010 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
+##           (c) 2016 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -53,6 +54,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 Copyright (c) 2008,2010 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
+Copyright (c) 2016 Patrick Mevzek E<lt>netdri@dotandco.comE<gt>
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -108,7 +110,7 @@ sub parse_info {
     my $mes = $po->message();
     return unless $mes->is_success();
 
-    my $NS = $mes->ns('no_contact');
+    my $NS = $mes->ns('no-ext-contact');
 
     my $c = $rinfo->{contact}->{$oname}->{self};
 
@@ -119,7 +121,7 @@ sub parse_info {
         && $oaction    eq 'info'
         && $c->email() eq 'n/a' );
 
-    my $condata = $mes->get_extension('no_contact','infData');
+    my $condata = $mes->get_extension('no-ext-contact','infData');
     return unless $condata;
 
     # type
@@ -207,17 +209,6 @@ sub facet {
     return Net::DRI::Protocol::EPP::Extensions::NO::Host::build_facets( $epp, $rd );
 }
 
-sub build_command_extension {
-    my ( $mes, $epp, $tag ) = @_;
-
-    return $mes->command_extension_register(
-        $tag,
-        sprintf(
-            'xmlns:no-ext-contact="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('no_contact')
-        )
-    );
-}
-
 sub add_no_extensions {
     my ( $epp, $contact, $op ) = @_;
     my $mes = $epp->message();
@@ -242,7 +233,7 @@ sub add_no_extensions {
        );
 
 
-    my $eid = build_command_extension( $mes, $epp, 'no-ext-contact:' . $op );
+    my $eid = $mes->command_extension_register('no-ext-contact', $op );
     my @e;
 
     push @e, [ 'no-ext-contact:type', $ty ] if ( defined($ty) && $ty );
@@ -376,7 +367,7 @@ sub update {
         || $xetodel
         || $xd) {
 
-       my $eid = build_command_extension( $mes, $epp, 'no-ext-contact:update' );
+       my $eid = $mes->command_extension_register('no-ext-contact', 'update' );
 
        my ( @n, @s );
 

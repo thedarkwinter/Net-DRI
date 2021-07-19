@@ -22,9 +22,6 @@ use feature 'state';
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
-our $NS = 'http://www.nic.at/xsd/at-ext-domain-1.0';
-our $ExtNS = 'http://www.nic.at/xsd/at-ext-epp-1.0';
-
 ####################################################################################################
 
 sub register_commands {
@@ -35,6 +32,16 @@ sub register_commands {
                                  },
                      };
        return $rops;
+}
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ state $ns = { 'at-ext-domain' => [ 'http://www.nic.at/xsd/at-ext-domain-1.0', 'at-ext-domain-1.0.xsd' ],
+               'at-ext-epp'    => [ 'http://www.nic.at/xsd/at-ext-epp-1.0', 'at-ext-epp-1.0.xsd' ],
+             };
+ $po->ns($ns);
+ return;
 }
 
 ####################################################################################################
@@ -52,25 +59,20 @@ sub extonly {
       Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless defined($domain) && $domain;
       Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid domain name: '.$domain) unless Net::DRI::Util::is_hostname($domain);
       ##$mes->command_body([['domain:name',$domain]]); ## Useless if pure extension
- 
-       my $eid = $mes->command_extension_register( 'command',
-                   'xmlns="' . $ExtNS
-                 . '" xsi:schemaLocation="'
-                 . $ExtNS
-                 . ' at-ext-epp-1.0.xsd"' );
 
+       my $eid = $mes->command_extension_register( 'at-ext-epp', 'command');
 
        my $cltrid=$mes->cltrid();
 
        if ( $transaction eq 'withdraw' ) {
 
                my %domns;
-               $domns{'xmlns:domain'}       = $NS;
-               $domns{'xsi:schemaLocation'} = $NS . ' at-ext-domain-1.0.xsd';
+               $domns{'xmlns:domain'}       = $mes->ns('at-ext-domain');
+               $domns{'xsi:schemaLocation'} = $mes->ns('at-ext-domain') . ' at-ext-domain-1.0.xsd';
 
 			 	my %zdhash;
 				$zdhash{'value'} = $rd->{zd} ? $rd->{zd} : 0;
-				
+
 	           $mes->command_extension(
                $eid,
 
@@ -94,12 +96,12 @@ sub extonly {
        return unless ( defined($token) );
 
                my %domns;
-               $domns{'xmlns:domain'}       = 'urn:ietf:params:xml:ns:domain-1.0';
-               $domns{'xsi:schemaLocation'} = 'urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd';
+               $domns{'xmlns:domain'}       = $mes->ns('domain');
+               $domns{'xsi:schemaLocation'} = $mes->ns('domain').' domain-1.0.xsd';
 
                my %domns2;
-               $domns2{'xmlns:at-ext-domain'}       = $NS;
-               $domns2{'xsi:schemaLocation'} = $NS . ' at-ext-domain-1.0.xsd';
+               $domns2{'xmlns:at-ext-domain'} = $mes->ns('at-ext-domain');
+               $domns2{'xsi:schemaLocation'}  = $mes->ns('at-ext-domain') . ' at-ext-domain-1.0.xsd';
 
 
 
@@ -134,11 +136,7 @@ sub delete { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 
        return unless ( defined($scheduledate) );
 
-       my $eid = $mes->command_extension_register( 'at-ext-domain:delete',
-                   'xmlns:at-ext-domain="' . $NS
-                 . '" xsi:schemaLocation="'
-                 . $NS
-                 . ' at-ext-domain-1.0.xsd"' );
+       my $eid = $mes->command_extension_register( 'at-ext-domain', 'delete');
 
        $mes->command_extension( $eid,
                [ 'at-ext-domain:scheduledate', $scheduledate ] );
@@ -154,11 +152,7 @@ sub transfer_request {
 
        return unless ( defined($registrarinfo) );
 
-       my $eid = $mes->command_extension_register( 'at-ext-domain:clientdata',
-                   'xmlns:at-ext-domain="' . $NS
-                 . '" xsi:schemaLocation="'
-                 . $NS
-                 . ' at-ext-domain-1.0.xsd"' );
+       my $eid = $mes->command_extension_register( 'at-ext-domain', 'clientdata');
 
        my %entryname;
        $entryname{name} = 'Registrarinfo';
@@ -172,7 +166,7 @@ sub extonly_parse_result {
     my $mes=$po->message();
     return unless $mes->is_success();
 
-    my $keydatedata=$mes->get_extension($NS,'keydate');
+    my $keydatedata=$mes->get_extension('at-ext-domain', 'keydate');
     return unless defined $keydatedata;
 
     my $keydate = $keydatedata->textContent();

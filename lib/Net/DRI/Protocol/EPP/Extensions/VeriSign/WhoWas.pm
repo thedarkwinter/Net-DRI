@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign EPP WhoWas Extension
 ##
-## Copyright (c) 2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -119,11 +119,11 @@ Net::DRI::Protocol::EPP::Extensions::VeriSign::WhoWas - VeriSign EPP WhoWas Exte
 =head1 SYNOPSIS
 
         $dri=Net::DRI->new();
-        $dri->add_registry('VNDS',{client_id=>'XXXXXX');
+        $dri->add_registry('VeriSign::NameStore',{client_id=>'XXXXXX');
 
         ...
 
-        $dri->domain_whowas('test.com');
+        $dri->domain_whowas('test.tv');
 
 This extension is automatically loaded when using the VNDS registry driver.
 

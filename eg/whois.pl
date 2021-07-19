@@ -16,76 +16,76 @@ my $ok=eval {
 
 $dri->add_registry('VeriSign::COM_NET',{});
 $rc=$dri->target('VeriSign::COM_NET')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('nsi.com',$dri);
 display('laposte.net',$dri);
 
 $dri->add_registry('SITA',{});
 $rc=$dri->target('SITA')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('cdg.aero',$dri);
 
 $dri->add_registry('PIR',{});
 $rc=$dri->target('PIR')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('laptop.org',$dri);
 
 $dri->add_registry('Afilias',{});
 $rc=$dri->target('Afilias')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('mta.info',$dri);
 
 $dri->add_registry('EURid',{});
 $rc=$dri->target('EURid')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('europa.eu',$dri);
 display('eurid.eu',$dri);
 
 $dri->add_registry('dotMOBI',{});
 $rc=$dri->target('dotMOBI')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('buongiorno.mobi',$dri);
 
 $dri->add_registry('VeriSign::NameStore',{});
 $rc=$dri->target('VeriSign::NameStore')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('sudoku.name',$dri);
 
 $dri->add_registry('RESTENA',{});
 $rc=$dri->target('RESTENA')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('restena.lu',$dri);
 
 $dri->add_registry('GDI',{});
 $rc=$dri->target('GDI')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('website.ws',$dri);
 
 $dri->add_registry('IIS',{});
 $rc=$dri->target('IIS')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('malmo.se',$dri);
 
 $dri->add_registry('puntCAT',{});
 $rc=$dri->target('puntCAT')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('barcelona.cat',$dri);
 
 $dri->add_registry('NicAT',{});
 $rc=$dri->target('NicAT')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('stare.at',$dri);
 
 $dri->add_registry('DNSPT',{});
 $rc=$dri->target('DNSPT')->add_current_profile('profile1','whois');
-die($rc) unless $rc->is_success();
+$rc->is_success_or_die();
 display('lisboa.pt',$dri);
 
 $dri->end();
 };
 
 if (! $ok)
-{
+{ 
  my $err=$@;
  print "\n\nAn EXCEPTION happened !\n";
  if (ref $err)

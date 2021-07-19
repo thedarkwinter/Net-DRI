@@ -1,6 +1,6 @@
 ## Domain Registry Interface, VeriSign EPP Premium Domain Extension
 ##
-## Copyright (c) 2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -26,10 +27,11 @@ sub register_commands
 {
  my ($class,$version)=@_;
 
- return { 'domain' => { 'check'  => [ \&check, \&check_parse ],
-                        'check_multi'  => [ \&check, \&check_parse ],
-                        'update' => [ \&update, undef ],
-                      } };
+ state $cmds = { 'domain' => { 'check'  => [ \&check, \&check_parse ],
+                                'check_multi'  => [ \&check, \&check_parse ],
+                               'update' => [ \&update, undef ],
+               } };
+ return $cmds;
 }
 
 sub capabilities_add { return ('domain_update','premium_short_name',['set']); }
@@ -37,7 +39,8 @@ sub capabilities_add { return ('domain_update','premium_short_name',['set']); }
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'premiumdomain' => [ 'http://www.verisign.com/epp/premiumdomain-1.0','premiumdomain-1.0.xsd' ] });
+ state $rns = { 'premiumdomain' => [ 'http://www.verisign.com/epp/premiumdomain-1.0','premiumdomain-1.0.xsd' ] };
+ $po->ns($rns);
  return;
 }
 
@@ -62,7 +65,7 @@ sub check
  }
  return unless Net::DRI::Util::xml_is_boolean($pd) && $pd;
 
- my $eid=$mes->command_extension_register('premiumdomain:check',sprintf('xmlns:premiumdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('premiumdomain')));
+ my $eid=$mes->command_extension_register('premiumdomain', 'check');
  $mes->command_extension($eid,['premiumdomain:flag',$pd]);
  return;
 }
@@ -110,7 +113,7 @@ sub update
  return unless defined $chg && length $chg;
 
  my $mes=$po->message();
- my $eid=$mes->command_extension_register('premiumdomain:reassign',sprintf('xmlns:premiumdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('premiumdomain')));
+ my $eid=$mes->command_extension_register('premiumdomain', 'reassign');
  $mes->command_extension($eid,['premiumdomain:shortName',$chg]);
  return;
 }
@@ -129,7 +132,7 @@ Net::DRI::Protocol::EPP::Extensions::VeriSign::PremiumDomain - VeriSign EPP Prem
 =head1 SYNOPSIS
 
         $dri=Net::DRI->new();
-        $dri->add_registry('VNDS',{client_id=>'XXXXXX');
+        $dri->add_registry('VeriSign::NameStore',{client_id=>'XXXXXX');
         $dri->add_profile('p1','epp',{... transport ...},{extensions => [ 'VeriSign::DomainPremium' ]});
 
         $dri->protocol->default_parameters()->{premium_domain}=1;
@@ -164,7 +167,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2010,2012,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

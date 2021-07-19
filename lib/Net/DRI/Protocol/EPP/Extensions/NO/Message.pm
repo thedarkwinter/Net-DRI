@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2008-2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 ##                    Trond Haugen E<lt>info@norid.noE<gt>
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 ##                    All rights reserved.
 ##
 ## This file is part of Net::DRI
@@ -57,6 +58,7 @@ Trond Haugen, E<lt>info@norid.noE<gt>
 
 Copyright (c) 2008-2010,2013 UNINETT Norid AS, E<lt>http://www.norid.noE<gt>,
 Trond Haugen E<lt>info@norid.noE<gt>
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -176,7 +178,7 @@ sub parse_poll {
     my $eppNS = $mes->ns('_main');
 
     # both message and results are defined by the same no-ext-result schema
-    my $NS = $mes->ns('no_result');
+    my $NS = $mes->ns('no-ext-result');
 
     return unless $mes->is_success();
     return if $mes->result_is('COMMAND_SUCCESSFUL_QUEUE_EMPTY');
@@ -185,7 +187,7 @@ sub parse_poll {
     $rinfo->{message}->{session}->{last_id} = $msgid;
 
     ## Parse any message
-    my $mesdata = $mes->get_response('no_result','message');
+    my $mesdata = $mes->get_response('no-ext-result','message');
 
     $rinfo->{$otype}->{$oname}->{message} = $mesdata;
     return unless $mesdata;
@@ -289,7 +291,7 @@ sub parse_poll {
     }
 
     # Parse any any contact info late response data
-    if (my $condata = $mes->get_extension('no_contact','infData')) {
+    if (my $condata = $mes->get_extension('no-ext-contact','infData')) {
        Net::DRI::Protocol::EPP::Extensions::NO::Contact::parse_info($po,'contact', 'info',$oname,$rinfo);
        if (defined($rinfo->{contact}) && $rinfo->{contact}) {
            $rinfo->{message}->{$msgid}->{contact} = $rinfo->{contact};
@@ -298,7 +300,7 @@ sub parse_poll {
     }
 
     # Parse any any host info late response data
-    if (my $condata = $mes->get_extension('no_host','infData')) {
+    if (my $condata = $mes->get_extension('no-ext-host','infData')) {
        Net::DRI::Protocol::EPP::Extensions::NO::Host::parse_info($po,'host','info',$oname,$rinfo);
 
        if (defined($rinfo->{host}) && $rinfo->{host}) {

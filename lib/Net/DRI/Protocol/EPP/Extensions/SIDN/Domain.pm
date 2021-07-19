@@ -1,6 +1,6 @@
 ## Domain Registry Interface, SIDN EPP Domain extensions
 ##
-## Copyright (c) 2009-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::SIDN::Domain;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -25,24 +26,19 @@ use Net::DRI::Exception;
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           info             => [ undef, \&info_parse],
-           create           => [ \&create, undef ],
-           update           => [ \&update, undef ],
-           delete_cancel    => [ \&delete_cancel, undef ],
-           transfer_request => [ undef, \&transfer_parse ],
-         );
+ state $domain = {
+                  info             => [ undef, \&info_parse],
+                  create           => [ \&create, undef ],
+                  update           => [ \&update, undef ],
+                  delete_cancel    => [ \&delete_cancel, undef ],
+                  transfer_request => [ undef, \&transfer_parse ],
+                 };
+ state $commands = { 'domain' => $domain };
 
- return { 'domain' => \%tmp };
+ return $commands;
 }
 
 ####################################################################################################
-
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:sidn="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('sidn')));
-}
 
 sub info_parse
 {
@@ -118,11 +114,12 @@ sub update
 sub delete_cancel
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception->die(1,'protocol/EPP',2,'Domain name needed') unless defined($domain) && $domain;
  Net::DRI::Exception->die(1,'protocol/EPP',10,'Invalid domain name: '.$domain) unless Net::DRI::Util::is_hostname($domain);
- my $eid=build_command_extension($mes,$epp,'sidn:command');
+
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('sidn', 'command');
  $mes->command_extension($eid,[['sidn:domainCancelDelete',['sidn:name',$domain]],['sidn:clTRID',$mes->cltrid()]]);
  return;
 }
@@ -177,7 +174,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009-2011,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009-2011,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -48,7 +48,7 @@ sub setup
  return;
 }
 
-sub implements { return 'https://tools.ietf.org/id/draft-kong-eppext-bundling-registration-02'; }
+sub implements { return 'https://tools.ietf.org/id/draft-ietf-regext-bundling-registration-00'; }
 
 ####################################################################################################
 

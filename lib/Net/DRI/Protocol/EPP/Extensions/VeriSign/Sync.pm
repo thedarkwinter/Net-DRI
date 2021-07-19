@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -65,11 +66,17 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           update => [ \&update, undef ],
-         );
+ state $cmds = { 'domain' => { 'update' => [ \&update, undef ] } };
 
- return { 'domain' => \%tmp };
+ return $cmds;
+}
+
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ state $rns = { 'sync' => [ 'http://www.verisign.com/epp/sync-1.0', 'sync-1.0.xsd' ] };
+ $po->ns($rns);
+ return;
 }
 
 sub capabilities_add { return ('domain_update','sync',['set']); }
@@ -81,7 +88,6 @@ sub capabilities_add { return ('domain_update','sync',['set']); }
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $sync=$todo->set('sync');
  return unless (defined($sync) && $sync);
@@ -99,7 +105,8 @@ sub update
 
  Net::DRI::Exception::usererr_invalid_parameters('Sync operation can not be mixed with other domain changes') if (grep { $_ ne 'sync' } $todo->types());
 
- my $eid=$mes->command_extension_register('sync:update','xmlns:sync="http://www.verisign.com/epp/sync-1.0" xsi:schemaLocation="http://www.verisign.com/epp/sync-1.0 sync-1.0.xsd"');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('sync', 'update');
  $mes->command_extension($eid,['sync:expMonthDay',$date]);
  return;
 }

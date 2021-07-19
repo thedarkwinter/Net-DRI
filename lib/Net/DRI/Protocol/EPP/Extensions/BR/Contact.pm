@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .BR Contact EPP extension commands
 ## draft-neves-epp-brorg-03.txt
 ##
-## Copyright (c) 2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -51,7 +51,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -82,18 +82,12 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:brorg="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('brorg')));
-}
-
 sub check
 {
  my ($epp,$contact,$rd)=@_;
  my $mes=$epp->message();
 
- my $eid=build_command_extension($mes,$epp,'brorg:check');
+ my $eid=$mes->command_extension_register('brorg','check');
  my @n;
  foreach my $c ((ref($contact) eq 'ARRAY')? @$contact : ($contact))
  {
@@ -152,16 +146,15 @@ sub check_parse
 sub info
 {
  my ($epp,$contact,$rd)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_invalid_parameters('contact must be Net::DRI::Data::Contact::BR object') unless Net::DRI::Util::isa_contact($contact,'Net::DRI::Data::Contact::BR');
  my $orgid=$contact->orgid();
  return unless defined($orgid); ## to be able to create pure contacts
  Net::DRI::Exception::usererr_invalid_parameters('orgid must be an xml token string with 1 to 30 characters') unless Net::DRI::Util::xml_is_token($orgid,1,30);
 
- my $eid=build_command_extension($mes,$epp,'brorg:info');
- my @n=(['brorg:organization',$orgid]);
- $mes->command_extension($eid,\@n);
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('brorg', 'info');
+ $mes->command_extension($eid,[['brorg:organization',$orgid]]);
  return;
 }
 
@@ -226,7 +219,6 @@ sub build_contacts
 sub create
 {
  my ($epp,$contact,$rd)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_invalid_parameters('contact must be Net::DRI::Data::Contact::BR object') unless Net::DRI::Util::isa_contact($contact,'Net::DRI::Data::Contact::BR');
  my $orgid=$contact->orgid();
@@ -236,7 +228,8 @@ sub create
  Net::DRI::Exception::usererr_invalid_parameters('associated_contacts must be a ContactSet object') unless Net::DRI::Util::isa_contactset($cs);
  Net::DRI::Exception::usererr_insufficient_parameters('associated_contacts must not be empty') if $cs->is_empty();
 
- my $eid=build_command_extension($mes,$epp,'brorg:create');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('brorg', 'create');
  my @n=(['brorg:organization',$orgid]);
  push @n,build_contacts($cs);
  push @n,['brorg:responsible',$contact->responsible()] if $contact->responsible();
@@ -247,7 +240,6 @@ sub create
 sub update
 {
  my ($epp,$contact,$todo)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_invalid_parameters('contact must be Net::DRI::Data::Contact::BR object') unless Net::DRI::Util::isa_contact($contact,'Net::DRI::Data::Contact::BR');
  my $orgid=$contact->orgid();
@@ -267,7 +259,9 @@ sub update
  push @n,['brorg:add',build_contacts($cadd)] if defined($cadd);
  push @n,['brorg:rem',build_contacts($cdel)] if defined($cdel);
  push @n,['brorg:chg',['brorg:responsible',Net::DRI::Util::isa_contact($resp,'Net::DRI::Data::Contact::BR')? $resp->responsible() : $resp]] if defined($resp);
- my $eid=build_command_extension($mes,$epp,'brorg:update');
+
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('brorg','update');
  $mes->command_extension($eid,\@n);
  return;
 }

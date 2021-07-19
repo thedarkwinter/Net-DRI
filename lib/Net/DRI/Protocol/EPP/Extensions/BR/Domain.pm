@@ -1,7 +1,7 @@
 ## Domain Registry Interface, .BR Domain EPP extension commands
 ## draft-neves-epp-brdomain-03.txt
 ##
-## Copyright (c) 2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -49,7 +49,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -81,21 +81,15 @@ sub register_commands
 
 ####################################################################################################
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:brdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('brdomain')));
-}
-
 sub check
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  return unless Net::DRI::Util::has_key($rd,'orgid');
  Net::DRI::Exception::usererr_invalid_parameters('orgid must be an xml token string with 1 to 30 characters') unless Net::DRI::Util::xml_is_token($rd->{orgid},1,30);
 
- my $eid=build_command_extension($mes,$epp,'brdomain:check');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('brdomain','check');
  my @n=('brdomain:organization',$rd->{orgid});
  $mes->command_extension($eid,\@n);
  return;
@@ -145,12 +139,12 @@ sub check_parse
 sub info
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  return unless Net::DRI::Util::has_key($rd,'ticket');
  Net::DRI::Exception::usererr_invalid_parameters('ticket parameter must be an integer') unless Net::DRI::Util::isint($rd->{ticket});
 
- my $eid=build_command_extension($mes,$epp,'brdomain:info');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('brdomain', 'info');
  my @n=('brdomain:ticketNumber',$rd->{ticket});
  $mes->command_extension($eid,\@n);
  return;
@@ -263,7 +257,6 @@ sub build_release
 sub create
 {
  my ($epp,$domain,$rd)=@_;
- my $mes=$epp->message();
 
  Net::DRI::Exception::usererr_insufficient_parameters('orgid is mandatory for domain_create') unless Net::DRI::Util::has_key($rd,'orgid');
  Net::DRI::Exception::usererr_invalid_parameters('orgid must be an xml token string with 1 to 30 characters') unless Net::DRI::Util::xml_is_token($rd->{orgid},1,30);
@@ -272,7 +265,8 @@ sub create
  push @n,build_release($rd->{release}) if (Net::DRI::Util::has_key($rd,'release') && (ref($rd->{release}) eq 'HASH'));
  push @n,['brdomain:autoRenew',{active => $rd->{auto_renew}? 1 : 0 }] if (Net::DRI::Util::has_key($rd,'auto_renew'));
 
- my $eid=build_command_extension($mes,$epp,'brdomain:create');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('brdomain','create');
  $mes->command_extension($eid,\@n);
  return;
 }
@@ -308,7 +302,6 @@ sub renew_parse
 sub update
 {
  my ($epp,$domain,$todo)=@_;
- my $mes=$epp->message();
 
  my $ticket=$todo->set('ticket');
  my $release=$todo->set('release');
@@ -324,7 +317,9 @@ sub update
  push @n,['brdomain:chg',@c] if @c;
 
  return unless @n;
- my $eid=build_command_extension($mes,$epp,'brdomain:update');
+
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('brdomain','update');
  $mes->command_extension($eid,\@n);
  return;
 }

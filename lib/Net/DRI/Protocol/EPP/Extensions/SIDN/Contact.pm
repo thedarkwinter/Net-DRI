@@ -1,6 +1,6 @@
 ## Domain Registry Interface, SIDN EPP Contact commands
 ##
-## Copyright (c) 2009,2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2009,2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +16,7 @@ package Net::DRI::Protocol::EPP::Extensions::SIDN::Contact;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -25,19 +26,15 @@ use Net::DRI::Exception;
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           info   => [ undef, \&info_parse ],
-           create => [ \&create, undef ],
-	   update => [ \&update ],
-         );
 
- return { 'contact' => \%tmp };
-}
+ state $contact = {
+                   info   => [ undef, \&info_parse ],
+                   create => [ \&create, undef ],
+                   update => [ \&update ],
+                  };
+ state $commands = { 'contact' => $contact };
 
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:sidn="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('sidn')));
+ return $commands;
 }
 
 ####################################################################################################
@@ -87,7 +84,7 @@ sub create
  push @n,['sidn:legalForm',$contact->legal_form()];
  push @n,['sidn:legalFormRegNo',$contact->legal_id()] if $contact->legal_id();
 
- my $eid=build_command_extension($mes,$epp,'sidn:ext');
+ my $eid=$mes->command_extension_register('sidn', 'ext');
  $mes->command_extension($eid,['sidn:create',['sidn:contact',@n]]);
  return;
 }
@@ -95,7 +92,6 @@ sub create
 sub update
 {
  my ($epp,$contact,$todo)=@_;
- my $mes=$epp->message();
 
  my $newc=$todo->set('info');
  return unless defined $newc;
@@ -109,7 +105,8 @@ sub update
 
  return unless @n;
 
- my $eid=build_command_extension($mes,$epp,'sidn:ext');
+ my $mes=$epp->message();
+ my $eid=$mes->command_extension_register('sidn', 'ext');
  $mes->command_extension($eid,['sidn:update',['sidn:contact',@n]]);
  return;
 }
@@ -147,7 +144,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009,2010 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2009,2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -1,7 +1,7 @@
 ## Domain Registry Interface, NIC.AT Contact extension
 ## Contributed by Michael Braunoeder from NIC.AT <mib@nic.at>
 ##
-## Copyright (c) 2006-2008,2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2006-2008,2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -17,8 +17,7 @@ package Net::DRI::Protocol::EPP::Extensions::AT::Contact;
 
 use strict;
 use warnings;
-
-our $NS='http://www.nic.at/xsd/at-ext-contact-1.0';
+use feature 'state';
 
 =pod
 
@@ -48,7 +47,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2008,2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2006-2008,2010,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -65,15 +64,22 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-                  info   => [ undef, \&parse_info ],
-                  update => [ \&update, undef ],
-                  create => [ \&create, undef ],
-         );
+ state $contact = {
+                   info   => [ undef, \&parse_info ],
+                   update => [ \&update, undef ],
+                   create => [ \&create, undef ],
+                  };
+ state $commands = { 'contact' => $contact };
 
- return { 'contact' => \%tmp };
+ return $commands;
 }
 
+sub setup
+{
+ my ($class,$po,$version)=@_;
+ $po->ns({ 'at-ext-contact' => [ 'http://www.nic.at/xsd/at-ext-contact-1.0','at-ext-contact-1.0.xsd' ] });
+ return;
+}
 
 sub parse_info
 {
@@ -85,12 +91,12 @@ sub parse_info
  my $c=$rinfo->{contact}->{$oname}->{self};
  $c->email(undef) if ($c->email() eq 'n/a');
 
- my $condata=$mes->get_extension($NS,'infData');
+ my $condata=$mes->get_extension('at-ext-contact', 'infData');
  return unless $condata;
 
  my @options;
 
- my $el=$condata->getElementsByTagNameNS($NS,'type');
+ my $el=$condata->getElementsByTagNameNS($mes->ns('at-ext-contact'), 'type');
  my $type=$el? $el->get_node(1)->getFirstChild()->getData() : undef;
 
  $c->type($type) if (defined($type) && $type);
@@ -106,7 +112,7 @@ sub create
  my $type=$contact->type();
  return unless (defined($type));
 
- my $eid=$mes->command_extension_register('at-ext-contact:create','xmlns:at-ext-contact="'.$NS.'" xsi:schemaLocation="'.$NS.' at-ext-contact-1.0.xsd"');
+ my $eid=$mes->command_extension_register('at-ext-contact', 'create');
  $mes->command_extension($eid,['at-ext-contact:type',$type]);
  return;
 }
@@ -121,7 +127,7 @@ sub update
  my $type=$newc->type();
  return unless (defined($type));
 
- my $eid=$mes->command_extension_register('at-ext-contact:update','xmlns:at-ext-contact="'.$NS.'" xsi:schemaLocation="'.$NS.' at-ext-contact-1.0.xsd"');
+ my $eid=$mes->command_extension_register('at-ext-contact', 'update');
  $mes->command_extension($eid,['at-ext-contact:chg',['at-ext-contact:type',$type]]);
  return;
 }

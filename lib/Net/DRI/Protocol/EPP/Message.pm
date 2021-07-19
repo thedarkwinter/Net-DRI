@@ -1,6 +1,6 @@
 ## Domain Registry Interface, EPP Message
 ##
-## Copyright (c) 2005-2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2005-2014,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -21,6 +21,7 @@ use warnings;
 use DateTime::Format::ISO8601 ();
 use DateTime ();
 use XML::LibXML ();
+use Carp;
 
 use Net::DRI::Protocol::ResultStatus;
 use Net::DRI::Exception;
@@ -59,7 +60,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2014 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2005-2014,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -177,6 +178,9 @@ sub command_extension_register
   $ons=$self->nsattrs($nss);
   ## This is used for other *generic* attributes, not for xmlns: ones !
   $ons.=' '.join(' ',map { sprintf('%s="%s"',$_,$otherattrs->{$_}) } sort { $a cmp $b } keys %$otherattrs) if defined $otherattrs && ref $otherattrs eq 'HASH' && keys %$otherattrs;
+ } else
+ {
+  carp "Use of command_extension_register old API soon to be removed, contact author to update";
  }
  $self->{extension}->[$eid]=[$ocmd,$ons,[]];
  return $eid;

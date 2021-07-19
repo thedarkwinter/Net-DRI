@@ -1,6 +1,6 @@
 ## Domain Registry Interface, .LU Contact EPP extension commands
 ##
-## Copyright (c) 2007,2008,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2007,2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -47,7 +47,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2007,2008,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2007,2008,2013,2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -71,12 +71,6 @@ sub register_commands
          );
 
  return { 'contact' => \%tmp };
-}
-
-sub build_command_extension
-{
- my ($mes,$epp,$tag)=@_;
- return $mes->command_extension_register($tag,sprintf('xmlns:dnslu="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('dnslu')));
 }
 
 ####################################################################################################
@@ -147,7 +141,7 @@ sub create
  my $rd=build_disclose($contact->disclose(),$contact->type());
  push @n,['dnslu:disclose',@$rd] if $rd;
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
+ my $eid=$mes->command_extension_register('dnslu', 'ext');
  $mes->command_extension($eid,['dnslu:create',['dnslu:contact',@n]]);
  return;
 }
@@ -162,7 +156,7 @@ sub update
  push @n,['dnslu:rem',['dnslu:disclose',@{build_disclose($todo->del('disclose'),'contact')}]] if $todo->del('disclose');
  return unless @n;
 
- my $eid=build_command_extension($mes,$epp,'dnslu:ext');
+ my $eid=$mes->command_extension_register('dnslu', 'ext');
  $mes->command_extension($eid,['dnslu:update',['dnslu:contact',@n]]);
  return;
 }

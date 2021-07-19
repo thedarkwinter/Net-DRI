@@ -99,7 +99,7 @@ is($dri->get_info('exist'),1,'domain_info get_info(exist)');
 is($dri->get_info('roid'),'EXAMPLE1-REP','domain_info get_info(roid)');
 is($dri->get_info('clID'),'ClientX','domain_info get_info(clID)');
 
-$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example201.com</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-06T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID><domain:acDate>2000-06-11T22:00:00.0Z</domain:acDate><domain:exDate>2002-09-08T22:00:00.0Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example201.com</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-06T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID><domain:acDate>2000-06-11T22:00:00.0Z</domain:acDate><domain:exDate>2002-09-08T22:00:00.0Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2; 
 $rc=$dri->domain_transfer_query('example201.com',{auth=>{pw=>'2fooBAR',roid=>'JD1234-REP'}});
 is($R1,$E1.'<command><transfer op="query"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example201.com</domain:name><domain:authInfo><domain:pw roid="JD1234-REP">2fooBAR</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_query build');
 is($dri->get_info('action'),'transfer','domain_transfer_query get_info(action)');
@@ -212,7 +212,7 @@ is($R1,$E1.'<command><check><host:check xmlns:host="urn:ietf:params:xml:ns:host-
 is($rc->is_success(),1,'host_check multi is_success');
 is($dri->get_info('exist','host','ns10.example2.com'),0,'host_check multi get_info(exist) 1/3');
 is($dri->get_info('exist','host','ns20.example2.com'),1,'host_check multi get_info(exist) 2/3');
-is($dri->get_info('exist_reason','host',,'ns20.example2.com'),'In use','host_check multi get_info(exist_reason)');
+is($dri->get_info('exist_reason','host','ns20.example2.com'),'In use','host_check multi get_info(exist_reason)');
 is($dri->get_info('exist','host','ns30.example2.com'),0,'host_check multi get_info(exist) 3/3');
 
 
@@ -280,7 +280,7 @@ my $co;
 $R2=$E1.'<response>'.r().'<resData><contact:chkData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:cd><contact:id avail="1">sh8000</contact:id></contact:cd></contact:chkData></resData>'.$TRID.'</response>'.$E2;
 $co=$dri->local_object('contact')->srid('sh8000'); #->auth({pw=>'2fooBAR'});
 $rc=$dri->contact_check($co);
-is($R1,$E1.'<command><check><contact:check xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8000</contact:id></contact:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_check build');
+is($R1,$E1.'<command><check><contact:check xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8000</contact:id></contact:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_check build'); 
 is($rc->is_success(),1,'contact_check is_success');
 is($dri->get_info('action'),'check','contact_check get_info(action)');
 is($dri->get_info('exist'),0,'contact_check get_info(exist)');
@@ -552,7 +552,7 @@ $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-0
 $rc=$dri->process('session','noop',[]);
 $R2='';
 $rc=$dri->process('session','login',['ClientX','foo-BAR2',{only_local_extensions => 1}]);
-is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://www.verisign.com/epp/authExt-1.0</extURI><extURI>http://www.verisign.com/epp/authSession-1.0</extURI><extURI>http://www.verisign.com/epp/balance-1.0</extURI><extURI>http://www.verisign.com/epp/zoneMgt-1.0</extURI><extURI>urn:ietf:params:xml:ns:changePoll-1.0</extURI><extURI>urn:ietf:params:xml:ns:coa-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.0</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build only_local_extensions');
+is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://www.verisign.com/epp/authExt-1.0</extURI><extURI>http://www.verisign.com/epp/authSession-1.0</extURI><extURI>http://www.verisign.com/epp/balance-1.0</extURI><extURI>http://www.verisign.com/epp/sync-1.0</extURI><extURI>http://www.verisign.com/epp/whoisInf-1.0</extURI><extURI>http://www.verisign.com/epp/zoneMgt-1.0</extURI><extURI>urn:ietf:params:xml:ns:changePoll-1.0</extURI><extURI>urn:ietf:params:xml:ns:coa-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.0</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build only_local_extensions');
 
 $dri->target('VeriSign::COM_NET')->add_current_profile('extensions_addrem','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['-VeriSign::NameStore']});
 $R2=$E1.'<greeting><svID>Example EPP server epp.example.com</svID><svDate>2000-06-08T22:00:00.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><lang>fr</lang><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://custom/obj1ext-1.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
