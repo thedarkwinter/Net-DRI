@@ -151,6 +151,6 @@
          "http://www.dotandco.com/services/software/Net-DRI/index.en#license"
       ]
    },
-   "version" : "0.96_10",
+   "version" : "0.96_11",
    "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

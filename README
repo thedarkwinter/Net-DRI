@@ -46,7 +46,7 @@ Currently Net::DRI ships with:
   * VeriSign extensions: Sync, WhoisInfo, WhoWas, PremiumDomain, Suggestion, ClientAttributes, Balance
   * IDN extension (draft-ietf-eppext-idnmap-02)
   * KeyRelay extension (RFC 8063)
-  * AllocationToken extension (draft-ietf-regext-allocation-token-05)
+  * AllocationToken extension (draft-ietf-regext-allocation-token-07)
   * AusRegistry extensions: KeyValue, IDN, Variant, Sync
   * CentralNic extensions: Release, TTL, WebForwarding, Pricing
   * CloudRegistry extension: LaunchPhase
@@ -63,19 +63,20 @@ Currently Net::DRI ships with:
     * https://tools.ietf.org/html/draft-mayrhofer-eppext-servicemessage-00
     * https://tools.ietf.org/html/draft-wilcox-cira-idn-eppext-00
     * https://tools.ietf.org/html/draft-ietf-regext-change-poll-07
-    * https://tools.ietf.org/html/draft-ietf-regext-bundling-registration-00
+    * https://tools.ietf.org/html/draft-ietf-regext-bundling-registration-03
     * https://ausregistry.github.io/doc/price-1.2/price-1.2.html
     * http://rightside.co/fileadmin/downloads/policies/Rightside_Price_Categories.pdf
     * https://tools.ietf.org/html/draft-brown-epp-reverse-00
     * https://tools.ietf.org/html/draft-wang-eppext-contact-verification-01
     * https://tools.ietf.org/html/draft-wang-eppext-domain-verification-01
-    * https://tools.ietf.org/html/draft-ietf-regext-verificationcode-02
+    * https://tools.ietf.org/html/draft-ietf-regext-verificationcode-03
     * https://gitlab.centralnic.com/centralnic/epp-auxcontact-extension/blob/1b7a0e935523b306387d236908017ea7ba72f794/draft-brown-auxcontact.txt
     * https://gitlab.centralnic.com/centralnic/epp-registration-type-extension/blob/e210c27730c8926324e502efff4d0ad77190d7c2/draft-brown-regtype.txt
-    * https://tools.ietf.org/html/draft-lozano-ietf-eppext-registrar-expiration-date-01
-    * https://tools.ietf.org/html/draft-bortzmeyer-regext-epp-dname-00
+    * https://tools.ietf.org/html/draft-lozano-ietf-regext-registrar-expiration-date-00
+    * https://tools.ietf.org/html/draft-bortzmeyer-regext-epp-dname-02
     * https://gitlab.centralnic.com/centralnic/epp-artrecord-extension/raw/fd935a927252f4420e233adce877830782a22ba4/draft-brown-artRecord.txt
     * Nomulus (Google) extensions from https://github.com/google/nomulus/
+    * https://tools.ietf.org/html/draft-ietf-regext-validate-03
 - a full DAS (Domain Availability Service) implementation for .BE .EU .NL .AU
 - a full Whois implementation (RFC 3912) for thin and thick registries :
      support included for domain names in .COM .NET .ORG .BIZ .INFO .AERO

@@ -356,6 +356,21 @@ other protocols (Whois,DAS,RRI,RRP) or transports *might* not work in this versi
 + Added TMDB DRD using TMDB.pm
 
 
+0.96_11 2018-05-14 DEVELOPMENT RELEASE
+
+See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,
+other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in this version.
+
++ Not generating xsd:schemaLocation attributes for any local XML generation, this also simplifies namespace handling internally in a lot of places
++ Protocol/EPP/Extensions/Validate : new module to implement https://tools.ietf.org/html/draft-ietf-regext-validate-03
+= Protocol/EPP/Extensions/DNAME : updated to draft-bortzmeyer-regext-epp-dname-02
+= Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate : updated to draft-lozano-ietf-regext-registrar-expiration-date-00
+= Protocol/EPP/Extensions/AllocationToken : updated to draft-ietf-regext-allocation-token-07
+= Protocol/EPP/Extensions/CNNIC/Bundling : updated to draft-ietf-regext-bundling-registration-03
+= Protocol/EPP/Extensions/VerificationCode : update to draft-ietf-regext-verificationcode-03
+= Rename internal _main XML namespace to either rri or epp.
+- Protocol/EPP/Extensions/ChangePoll : fix draft name in documentation
+
 0.96_10 2018-03-11 DEVELOPMENT RELEASE
 
 See warning in 0.96_01: this version enables only EPP over TCP/TLS and IRIS DCHK over UDP,

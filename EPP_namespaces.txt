@@ -76,7 +76,6 @@ http://www.verisign.com/epp/idnLang-1.0
 http://www.verisign.com/epp/jobsContact-1.0
 http://www.verisign.com/epp/lowbalance-poll-1.0
 http://www.verisign.com/epp/premiumdomain-1.0
-http://www.verisign.com/epp/registry-1.0  WIP
 http://www.verisign.com/epp/rgp-poll-1.0
 http://www.verisign.com/epp/sync-1.0
 http://www.verisign.com/epp/whowas-1.0
@@ -142,6 +141,7 @@ urn:ietf:params:xml:ns:rrExDate-1.0
 urn:ietf:params:xml:ns:secDNS-1.0
 urn:ietf:params:xml:ns:secDNS-1.1
 urn:ietf:params:xml:ns:signedMark-1.0
+urn:ietf:params:xml:ns:validate-0.1
 urn:ietf:params:xml:ns:vericontact-1.0
 urn:ietf:params:xml:ns:veridomain-1.0
 urn:ietf:params:xml:ns:verificationCode-1.0
