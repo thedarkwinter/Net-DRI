@@ -1,6 +1,7 @@
 ## Domain Registry Interface, EPP IDN Language (EPP-IDN-Lang-Mapping.pdf)
 ##
 ## Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>. All rights reserved.
+## Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -16,6 +17,7 @@ package Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage;
 
 use strict;
 use warnings;
+use feature 'state';
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -50,6 +52,7 @@ Tonnerre Lombard E<lt>tonnerre.lombard@sygroup.chE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008,2013 Tonnerre Lombard <tonnerre.lombard@sygroup.ch>.
+Copyright (c) 2016 Patrick Mevzek <netdri@dotandco.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,13 +69,9 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands
 {
  my ($class,$version)=@_;
- my %tmp=(
-           create => [ \&create, undef ],
-           check =>  [ \&check, undef ],
-           check_multi =>  [ \&check, undef ],
-         );
+ state $cmds = { 'domain' => { 'create' => [ \&create, undef ], 'check' => [ \&check, undef ], 'check_multi' =>  [ \&check, undef ], } };
 
- return { 'domain' => \%tmp };
+ return $cmds;
 }
 
 sub setup
