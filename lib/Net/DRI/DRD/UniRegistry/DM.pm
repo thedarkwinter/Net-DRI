@@ -20,7 +20,6 @@ use strict;
 use warnings;
 
 use base qw/Net::DRI::DRD::UniRegistry::UniRegistry/;
-use Net::DRI::Data::Contact::UniRegistry;
 
 use DateTime::Duration;
 
@@ -105,16 +104,10 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{ 'brown_fee_version' => '0.7' }) if $type eq 'epp';
- return;
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistryDM',{ 'brown_fee_version' => '0.7' }) if $type eq 'epp';
 }
 
-sub set_factories
-{
- my ($self,$po)=@_;
- $po->factories('contact',sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); });
- return;
-}
+
 
 ####################################################################################################
 1;
