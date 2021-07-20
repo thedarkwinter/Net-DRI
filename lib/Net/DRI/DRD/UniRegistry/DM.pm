@@ -104,7 +104,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistryDM',{ 'brown_fee_version' => '0.7' }) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::DM',{ 'brown_fee_version' => '0.7' }) if $type eq 'epp';
 }
 
 

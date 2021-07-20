@@ -13,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::Protocol::EPP::Extensions::UniRegistryDM;
+package Net::DRI::Protocol::EPP::Extensions::DM;
 
 use strict;
 use warnings;

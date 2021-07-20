@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 40;
+use Test::More tests => 46;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -98,7 +98,7 @@ is($rc->is_success(),1,'Session login is_success');
 # enforce local extensions
 $R2='';
 $rc=$dri->process('session','login',['ClientX','foo-BAR2',{client_newpassword => 'bar-FOO2', only_local_extensions => 1 }]);
-is($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><newPW>bar-FOO2</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>http://ns.uniregistry.net/eps-1.0</objURI><svcExtension><extURI>http://ns.uniregistry.net/market-1.0</extURI><extURI>urn:afilias:params:xml:ns:association-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.7</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'Session login build only_local_extensions = 1');
+is($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><newPW>bar-FOO2</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>http://ns.uniregistry.net/eps-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:fee-0.7</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'Session login build only_local_extensions = 1');
 is($rc->is_success(),1,'Session login, only local, is_success');
 
 
@@ -107,7 +107,6 @@ $R2=$E1.'<response>'.r(1500).$TRID.'</response>'.$E2;
 $rc=$dri->process('session','logout',[]);
 is($R1,$E1.'<command><logout/><clTRID>ABC-12345</clTRID></command>'.$E2,'session logout build');
 is($rc->is_success(),1,'session logout is_success');
-
 
 
 #####################
@@ -134,7 +133,7 @@ is_string($R1,$E1.'<command><poll msgID="b4d5ae3f-0014-4087-9a1e-a3a400bb202f" o
 
 
 #####################
-## Centric Extension
+## Domains
 
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example22.dm</domain:name></domain:cd><domain:cd><domain:name avail="0">examexample2.dm</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check('example22.dm','examexample2.dm');
@@ -144,44 +143,32 @@ is($dri->get_info('exist','domain','example22.dm'),0,'domain_check .dm multi get
 is($dri->get_info('exist','domain','examexample2.dm'),1,'domain_check .dm multi get_info(exist) 2/2');
 is($dri->get_info('exist_reason','domain','examexample2.dm'),'In use','domain_check .dm multi get_info(exist_reason)');
 
-
-
 # domain info
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.dm</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:infData></resData>'.'<extension><urc:registrant xmlns:urc="http://ns.uniregistry.net/centric-1.0"><urc:postalInfo type="int"><urc:name>John Doe</urc:name><urc:org>Example Inc.</urc:org><urc:addr><urc:street>123 Example Dr.</urc:street><urc:street>Suite 100</urc:street><urc:city>Dulles</urc:city><urc:sp>VA</urc:sp><urc:pc>20166-6503</urc:pc><urc:cc>US</urc:cc></urc:addr></urc:postalInfo><urc:postalInfo type="loc"><urc:name>Juan Ordonez</urc:name><urc:org>Ejemplo Compania An6nima</urc:org><urc:addr><urc:street>123 Calle Ejemplo</urc:street><urc:street>Local numero 60</urc:street><urc:city>Caracas</urc:city><urc:sp>DC</urc:sp><urc:pc>1010</urc:pc><urc:cc>VE</urc:cc></urc:addr></urc:postalInfo><urc:voice x="1234">+1.7035555555</urc:voice><urc:fax x="4321">+1.7035555556</urc:fax><urc:email>jdoe@example.com</urc:email><urc:emailAlt>jdoe2@foobar.net</urc:emailAlt><urc:mobile>+1.6504231234</urc:mobile><urc:security><urc:challenge><urc:question>Question 1</urc:question><urc:answer>Answer 1</urc:answer></urc:challenge><urc:challenge><urc:question>Question 2</urc:question><urc:answer>Answer 2</urc:answer></urc:challenge><urc:challenge><urc:question>Question 3</urc:question><urc:answer>Answer 3</urc:answer></urc:challenge></urc:security></urc:registrant></extension>'.$TRID.'</response>'.$E2;$rc=$dri->domain_info('example3.dm');
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.dm</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:infData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_info('example3.dm');
 is($dri->get_info('action'),'info','domain_info get_info(action)');
-#my $c = $dri->get_info('contact')->get('urc');
-#is($c->name(),'Juan Ordonez','domain_info get_info(urc name)');
-#is($c->mobile(),'+1.6504231234','domain_info get_info(urc mobile)');
-#is($c->alt_email(),'jdoe2@foobar.net','domain_info get_info(urc alt_email)');
-#is_deeply($c->challenge(),[ {question => 'Question 1',answer=>'Answer 1'},{question => 'Question 2',answer=>'Answer 2'},{question => 'Question 3',answer=>'Answer 3'} ],'domain_info get_info(urc challenge)');
 
-#  # a URC standard contact... careful to create the correct type of contact here!
-#my $urc = $dri->local_object('urc_contact');
-#$urc->name(['Juan Ordonez','John Doe'])->org(['Ejemplo Compania An6nima','Example Inc.'])->street([['123 Calle Ejemplo','Local numero 60'],['123 Example Dr.','Suite 100']])->city(['Caracas','Dulles'])->sp(['DC','VA'])->pc(['1010','20166-6503'])->cc(['VE','US'])->voice('+1.7035555555x1234')->fax('+1.7035555556x4321')->email('jdoe@example.com');
-#$urc->alt_email('jdoe2@foobar.net');
-#$urc->mobile('+1.6504231234');
-#my @ch = ( {question => 'Question 1',answer=>'Answer 1'},{question => 'Question 2',answer=>'Answer 2'},{question => 'Question 3',answer=>'Answer 3'} );
-#$urc->challenge(\@ch);
-#
-#my $cs=$dri->local_object('contactset');
-##$cs->set($c,'registrant'); # we are skipping the other contact types for the purpose of this test as we are just testing the extension
-#$cs->set($urc,'urc');
+# domain create (With Fee)
+$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.dm</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.7" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.7 fee-0.7.xsd"><fee:currency>USD</fee:currency><fee:period unit="y">1</fee:period><fee:fee>5.00</fee:fee><fee:balance>-5.00</fee:balance><fee:creditLimit>1000.00</fee:creditLimit></fee:creData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_create('example3.dm',{pure_create=>1,auth=>{pw=>'2fooBAR'},duration=>DateTime::Duration->new(years=>2),fee=>{currency=>'USD',fee=>'5.00'}});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.dm</domain:name><domain:period unit="y">2</domain:period><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><fee:create xmlns:fee="urn:ietf:params:xml:ns:fee-0.7" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.7 fee-0.7.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml');
+is($rc->is_success(),1,'domain_create is is_success');
+is($dri->get_info('action'),'create','domain_create get_info (action)');
+$d=$rc->get_data('fee');
+is($d->{currency},'USD','Fee extension: domain_create parse currency');
+is($d->{fee},5.00,'Fee extension: domain_create parse fee');
+is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
+is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
 
-# create with bid
-$R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.dm</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;
-#$rc=$dri->domain_create('example3.dm',{pure_create=>1,auth=>{pw=>'2fooBAR'},contact=>$cs} );
-$rc=$dri->domain_create('example3.dm',{pure_create=>1,auth=>{pw=>'2fooBAR'}} );
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.dm</domain:name><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create>'.'<extension><urc:registrant xmlns:urc="http://ns.uniregistry.net/centric-1.0" xsi:schemaLocation="http://ns.uniregistry.net/centric-1.0 centric-1.0.xsd"><urc:postalInfo type="loc"><urc:name>Juan Ordonez</urc:name><urc:org>Ejemplo Compania An6nima</urc:org><urc:addr><urc:street>123 Calle Ejemplo</urc:street><urc:street>Local numero 60</urc:street><urc:city>Caracas</urc:city><urc:sp>DC</urc:sp><urc:pc>1010</urc:pc><urc:cc>VE</urc:cc></urc:addr></urc:postalInfo><urc:postalInfo type="int"><urc:name>John Doe</urc:name><urc:org>Example Inc.</urc:org><urc:addr><urc:street>123 Example Dr.</urc:street><urc:street>Suite 100</urc:street><urc:city>Dulles</urc:city><urc:sp>VA</urc:sp><urc:pc>20166-6503</urc:pc><urc:cc>US</urc:cc></urc:addr></urc:postalInfo><urc:voice x="1234">+1.7035555555</urc:voice><urc:fax x="4321">+1.7035555556</urc:fax><urc:email>jdoe@example.com</urc:email><urc:emailAlt>jdoe2@foobar.net</urc:emailAlt><urc:mobile>+1.6504231234</urc:mobile><urc:security><urc:challenge><urc:question>Question 1</urc:question><urc:answer>Answer 1</urc:answer></urc:challenge><urc:challenge><urc:question>Question 2</urc:question><urc:answer>Answer 2</urc:answer></urc:challenge><urc:challenge><urc:question>Question 3</urc:question><urc:answer>Answer 3</urc:answer></urc:challenge></urc:security></urc:registrant></extension>'.'<clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build_xml');
-
-# domain update bid
+# domain update
 $R2=$E1.'<response>' . r() . $TRID . '</response>' . $E2;
 my $toc=$dri->local_object('changes');
-#$toc->set('urc',$urc);
+$toc->add('ns',$dri->local_object('hosts')->set('ns2.example.com'));
 $rc=$dri->domain_update('example3.dm',$toc);
-is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.dm</domain:name></domain:update></update>'.'<extension><urc:registrant xmlns:urc="http://ns.uniregistry.net/centric-1.0" xsi:schemaLocation="http://ns.uniregistry.net/centric-1.0 centric-1.0.xsd"><urc:postalInfo type="loc"><urc:name>Juan Ordonez</urc:name><urc:org>Ejemplo Compania An6nima</urc:org><urc:addr><urc:street>123 Calle Ejemplo</urc:street><urc:street>Local numero 60</urc:street><urc:city>Caracas</urc:city><urc:sp>DC</urc:sp><urc:pc>1010</urc:pc><urc:cc>VE</urc:cc></urc:addr></urc:postalInfo><urc:postalInfo type="int"><urc:name>John Doe</urc:name><urc:org>Example Inc.</urc:org><urc:addr><urc:street>123 Example Dr.</urc:street><urc:street>Suite 100</urc:street><urc:city>Dulles</urc:city><urc:sp>VA</urc:sp><urc:pc>20166-6503</urc:pc><urc:cc>US</urc:cc></urc:addr></urc:postalInfo><urc:voice x="1234">+1.7035555555</urc:voice><urc:fax x="4321">+1.7035555556</urc:fax><urc:email>jdoe@example.com</urc:email><urc:emailAlt>jdoe2@foobar.net</urc:emailAlt><urc:mobile>+1.6504231234</urc:mobile><urc:security><urc:challenge><urc:question>Question 1</urc:question><urc:answer>Answer 1</urc:answer></urc:challenge><urc:challenge><urc:question>Question 2</urc:question><urc:answer>Answer 2</urc:answer></urc:challenge><urc:challenge><urc:question>Question 3</urc:question><urc:answer>Answer 3</urc:answer></urc:challenge></urc:security></urc:registrant></extension>'.'<clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build_xml');
+is($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example3.dm</domain:name><domain:add><domain:ns><domain:hostObj>ns2.example.com</domain:hostObj></domain:ns></domain:add></domain:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build_xml');
 
 
-# Host
+##### Host
 $R2=$E1.'<response>'.r().'<resData><host:creData xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns101.example1.com</host:name><host:crDate>1999-04-03T22:00:00.0Z</host:crDate></host:creData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->host_create($dri->local_object('hosts')->add('ns101.example1.com',['193.0.2.2','193.0.2.29'],['2000:0:0:0:8:800:200C:417A']));
 is($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns101.example1.com</host:name><host:addr ip="v4">193.0.2.2</host:addr><host:addr ip="v4">193.0.2.29</host:addr><host:addr ip="v6">2000:0:0:0:8:800:200C:417A</host:addr></host:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'host_create build');
@@ -191,93 +178,20 @@ $d=$dri->get_info('crDate');
 isa_ok($d,'DateTime','host_create get_info(crDate)');
 is($d.'','1999-04-03T22:00:00','host_create get_info(crDate) value');
 
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$toc=$dri->local_object('changes');
+$toc->add('ip',$dri->local_object('hosts')->add('ns1.example1.com',['193.0.2.22'],[]));
+$toc->add('status',$dri->local_object('status')->no('update'));
+$toc->del('ip',$dri->local_object('hosts')->add('ns1.example1.com',[],['2000:0:0:0:8:800:200C:417A']));
+$toc->set('name','ns104.example2.com');
+$rc=$dri->host_update('ns103.example1.com',$toc);
+is($R1,$E1.'<command><update><host:update xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns103.example1.com</host:name><host:add><host:addr ip="v4">193.0.2.22</host:addr><host:status s="clientUpdateProhibited"/></host:add><host:rem><host:addr ip="v6">2000:0:0:0:8:800:200C:417A</host:addr></host:rem><host:chg><host:name>ns104.example2.com</host:name></host:chg></host:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'host_update build');
+is($rc->is_success(),1,'host_update is_success');
 
-exit 0;
-
-# enforce local extensions
-$R2='';
-$rc=$dri->process('session','login',['ClientX','foo-BAR2',{client_newpassword => 'bar-FOO2', only_local_extensions => 1 }]);
-is($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><newPW>bar-FOO2</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>http://ns.uniregistry.net/eps-1.0</objURI><svcExtension><extURI>http://ns.uniregistry.net/centric-1.0</extURI><extURI>http://ns.uniregistry.net/market-1.0</extURI><extURI>urn:afilias:params:xml:ns:association-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.7</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'ICM - session login build only_local_extensions = 1');
-is($rc->is_success(),1,'ICM - session login, only local, is_success');
-
-# now add for standard uniregistry profile just to assure that we are not sending new tweak: $rp->{default_product} eq 'ICM'
-# greeting from Production - we can see that Afilias::Association Afilias::IPR are not listed!
-$dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_current_registry('UniRegistry::UniRegistry');
-$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-$R2=$E1.'<greeting>
-    <svID>Uniregistry Production LAX1</svID>
-    <svDate>2019-11-11T10:40:46.559Z</svDate>
-    <svcMenu>
-      <version>1.0</version>
-      <lang>en</lang>
-      <lang>es</lang>
-      <lang>fr</lang>
-      <objURI>urn:ietf:params:xml:ns:domain-1.0</objURI>
-      <objURI>urn:ietf:params:xml:ns:host-1.0</objURI>
-      <objURI>urn:ietf:params:xml:ns:contact-1.0</objURI>
-      <objURI>http://ns.uniregistry.net/eps-1.0</objURI>
-      <svcExtension>
-        <extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI>
-        <extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI>
-        <extURI>urn:ietf:params:xml:ns:idn-1.0</extURI>
-        <extURI>http://ns.uniregistry.net/centric-1.0</extURI>
-        <extURI>urn:ietf:params:xml:ns:launch-1.0</extURI>
-        <extURI>http://www.verisign.com/epp/sync-1.0</extURI>
-        <extURI>urn:ietf:params:xml:ns:fee-0.7</extURI>
-      </svcExtension>
-    </svcMenu>
-    <dcp>
-      <access>
-        <all/>
-      </access>
-      <statement>
-        <purpose>
-          <admin/>
-          <prov/>
-        </purpose>
-        <recipient>
-          <ours/>
-          <public/>
-        </recipient>
-        <retention>
-          <stated/>
-        </retention>
-      </statement>
-    </dcp>
-  </greeting>'.$E2;
-$rc=$dri->process('session','noop',[]);
-is($R1,$E1.'<hello/>'.$E2,'session noop build (hello command)');
-is($rc->is_success(),1,'session noop is_success');
-is($rc->get_data('session','server','server_id'),'Uniregistry Production LAX1','session noop get_data(session,server,server_id)');
-is($rc->get_data('session','server','date'),'2019-11-11T10:40:46','session noop get_data(session,server,date)');
-is_deeply($rc->get_data('session','server','version'),['1.0'],'session noop get_data(session,server,version)');
-is_deeply($rc->get_data('session','server','lang'),['en','es','fr'],'session noop get_data(session,server,lang)');
-is_deeply($rc->get_data('session','server','objects'),['urn:ietf:params:xml:ns:domain-1.0','urn:ietf:params:xml:ns:host-1.0','urn:ietf:params:xml:ns:contact-1.0','http://ns.uniregistry.net/eps-1.0'],'session noop get_data(session,server,objects)');
-is_deeply($rc->get_data('session','server','extensions_announced'),['urn:ietf:params:xml:ns:secDNS-1.1','urn:ietf:params:xml:ns:rgp-1.0','urn:ietf:params:xml:ns:idn-1.0','http://ns.uniregistry.net/centric-1.0','urn:ietf:params:xml:ns:launch-1.0','http://www.verisign.com/epp/sync-1.0','urn:ietf:params:xml:ns:fee-0.7'],'session noop get_data(session,server,extensions_announced)');
-is_deeply($rc->get_data('session','server','extensions_selected'),['urn:ietf:params:xml:ns:secDNS-1.1','urn:ietf:params:xml:ns:rgp-1.0','urn:ietf:params:xml:ns:idn-1.0','http://ns.uniregistry.net/centric-1.0','urn:ietf:params:xml:ns:launch-1.0','http://www.verisign.com/epp/sync-1.0','urn:ietf:params:xml:ns:fee-0.7'],'session noop get_data(session,server,extensions_selected)');
-is($rc->get_data('session','server','dcp_string'),'<access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement>','session noop get_data(session,server,dcp_string)');
-$R2='';
-$rc=$dri->process('session','login',['ClientX','foo-BAR2',{client_newpassword => 'bar-FOO2', only_local_extensions => 0}]);
-is($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><newPW>bar-FOO2</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>http://ns.uniregistry.net/eps-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>http://ns.uniregistry.net/centric-1.0</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>http://www.verisign.com/epp/sync-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.7</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'ICM - session login build only_local_extensions = 0');
-is($rc->is_success(),1,'UniRegistry::UniRegistry - session login is_success');
-# enforce local extensions on login just to assure that Afilias::Association Afilias::IPR is not sent for standard Uniregistry profile!
-$R2='';
-$rc=$dri->process('session','login',['ClientX','foo-BAR2',{client_newpassword => 'bar-FOO2', only_local_extensions => 1}]);
-is($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><newPW>bar-FOO2</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>http://ns.uniregistry.net/eps-1.0</objURI><svcExtension><extURI>http://ns.uniregistry.net/centric-1.0</extURI><extURI>http://ns.uniregistry.net/market-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.7</extURI><extURI>urn:ietf:params:xml:ns:idn-1.0</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'ICM - session login build only_local_extensions = 1');
-is($rc->is_success(),1,'UniRegistry::UniRegistry - session login, only local, is_success');
-
-# add <host:create> test to check old bug - wasn't parsing Host namespace :p
-$R2=$E1.'<response>'.r().'<resData><host:creData xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns101.example1.com</host:name><host:crDate>1999-04-03T22:00:00.0Z</host:crDate></host:creData></resData>'.$TRID.'</response>'.$E2;
-$rc=$dri->host_create($dri->local_object('hosts')->add('ns101.example1.com',['193.0.2.2','193.0.2.29'],['2000:0:0:0:8:800:200C:417A']));
-is($R1,$E1.'<command><create><host:create xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns101.example1.com</host:name><host:addr ip="v4">193.0.2.2</host:addr><host:addr ip="v4">193.0.2.29</host:addr><host:addr ip="v6">2000:0:0:0:8:800:200C:417A</host:addr></host:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'host_create build');
-is($dri->get_info('action'),'create','host_create get_info(action)');
-is($dri->get_info('exist'),1,'host_create get_info(exist)');
-$d=$dri->get_info('crDate');
-isa_ok($d,'DateTime','host_create get_info(crDate)');
-is($d.'','1999-04-03T22:00:00','host_create get_info(crDate) value');
-
-# test CentralNic::Fee-07 domain_check domain_create ( extension )
+$R2=$E1.'<response>'.r().$TRID.'</response>'.$E2;
+$rc=$dri->host_delete('ns102.example1.com');
+is($R1,$E1.'<command><delete><host:delete xmlns:host="urn:ietf:params:xml:ns:host-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd"><host:name>ns102.example1.com</host:name></host:delete></delete><clTRID>ABC-12345</clTRID></command>'.$E2,'host_delete build');
+is($rc->is_success(),1,'host_delete is_success');
 
 
 exit 0;
