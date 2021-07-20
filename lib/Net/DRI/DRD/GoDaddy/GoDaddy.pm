@@ -163,4 +163,165 @@ sub verify_name_domain
 }
 
 ####################################################################################################
+sub mzb_check
+{
+ my ($self,$ndr,@p)=@_;
+ my (@names,$rd);
+ foreach my $p (@p)
+ {
+  if (defined $p && ref $p eq 'HASH')
+  {
+   Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in mzb_check') if defined $rd;
+   $rd=Net::DRI::Util::create_params('mzb_check',$p);
+  }
+  push @names,$p;
+ }
+ Net::DRI::Exception::usererr_insufficient_parameters('mzb_check needs at least one label to check') unless @names;
+ $rd={} unless defined $rd;
+
+ my (@rs,@todo);
+ my (%seenlab,%seenrc);
+ foreach my $label (@names)
+ {
+  next if exists $seenlab{$label};
+  $seenlab{$label}=1;
+  my $rs=$ndr->try_restore_from_cache('mzb',$label,'check');
+  if (! defined $rs)
+  {
+   push @todo,$label;
+  } else
+  {
+   push @rs,$rs unless exists $seenrc{''.$rs}; ## Some ResultStatus may relate to multiple labels (this is why we are doing this anyway !), so make sure not to use the same ResultStatus multiple times
+   $seenrc{''.$rs}=1;
+  }
+ }
+ return Net::DRI::Util::link_rs(@rs) unless @todo;
+
+ if (@todo > 1 && $ndr->protocol()->has_action('mzb','check_multi'))
+ {
+  my $l=$self->info('check_limit');
+  if (! defined $l)
+  {
+   $ndr->log_output('notice','core','No check_limit specified in driver, assuming 10 for mzb_check action. Please report if you know the correct value');
+   $l=10;
+  }
+  while (@todo)
+  {
+   my @lt=splice(@todo,0,$l);
+   push @rs,$ndr->process('mzb','check_multi',[\@lt,$rd]);
+  }
+ } else ## either one label only, or more than one but no check_multi available at protocol level
+ {
+  push @rs,map { $ndr->process('mzb','check',[$_,$rd]); } @todo;
+ }
+ return Net::DRI::Util::link_rs(@rs);
+}
+
+sub mzb_info
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('mzb','info',[$id,$rd]);
+}
+
+sub mzb_exempt
+{
+ my ($self,$ndr,@p)=@_;
+ my (@names,$rd);
+ foreach my $p (@p)
+ {
+  if (defined $p && ref $p eq 'HASH')
+  {
+   Net::DRI::Exception::usererr_invalid_parameters('Only one optional ref hash with extra parameters is allowed in mzb_exempt') if defined $rd;
+   $rd=Net::DRI::Util::create_params('mzb_exempt',$p);
+  }
+  push @names,$p;
+ }
+ Net::DRI::Exception::usererr_insufficient_parameters('mzb_exempt needs at least one label to check') unless @names;
+ $rd={} unless defined $rd;
+
+ my (@rs,@todo);
+ my (%seenlab,%seenrc);
+ foreach my $label (@names)
+ {
+  next if exists $seenlab{$label};
+  $seenlab{$label}=1;
+  my $rs=$ndr->try_restore_from_cache('mzb',$label,'check');
+  if (! defined $rs)
+  {
+   push @todo,$label;
+  } else
+  {
+   push @rs,$rs unless exists $seenrc{''.$rs}; ## Some ResultStatus may relate to multiple labels (this is why we are doing this anyway !), so make sure not to use the same ResultStatus multiple times
+   $seenrc{''.$rs}=1;
+  }
+ }
+ return Net::DRI::Util::link_rs(@rs) unless @todo;
+
+ if (@todo > 1 && $ndr->protocol()->has_action('mzb','exempt_multi'))
+ {
+  my $l=$self->info('exempt_limit');
+  if (! defined $l)
+  {
+   $ndr->log_output('notice','core','No exempt_limit specified in driver, assuming 10 for mzb_exempt action. Please report if you know the correct value');
+   $l=10;
+  }
+  while (@todo)
+  {
+   my @lt=splice(@todo,0,$l);
+   push @rs,$ndr->process('mzb','exempt_multi',[\@lt,$rd]);
+  }
+ } else ## either one label only, or more than one but no exempt_multi available at protocol level
+ {
+  push @rs,map { $ndr->process('mzb','exempt',[$_,$rd]); } @todo;
+ }
+ return Net::DRI::Util::link_rs(@rs);
+}
+
+sub mzb_create
+{
+ my ($self,$reg,$id,$rd)=@_;
+ $id = $id->[0] if ref($id) eq 'ARRAY' && scalar(@$id) eq 1;
+ return $reg->process('mzb','create',[$id,$rd]);
+}
+
+sub mzb_delete
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('mzb','delete',[$id,$rd]);
+}
+
+sub mzb_renew
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('mzb','renew',[$id,$rd]);
+}
+
+# by documentation only op="request" is supported for mzb objects
+sub mzb_transfer_request
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('mzb','transfer_request',[$id,$rd]);
+}
+
+sub mzb_update
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('mzb','update',[$id,$rd]);
+}
+
+# used to set a password to permit the registration of a domain object blocked by an mzb object
+sub mzb_release_create
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('mzb','release_create',[$id,$rd]);
+}
+
+# used to delete a password set to permit the registration of a domain object blocked by an mzb object
+sub mzb_release_delete
+{
+ my ($self,$reg,$id,$rd)=@_;
+ return $reg->process('mzb','release_delete',[$id,$rd]);
+}
+
+####################################################################################################
 1;

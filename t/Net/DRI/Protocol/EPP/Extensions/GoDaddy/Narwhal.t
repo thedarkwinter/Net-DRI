@@ -35,7 +35,7 @@ $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1, trid_factory => sub { retur
 # To use standard
 $dri->add_current_registry('GoDaddy::GoDaddy');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'Neustar::Narwhal (standard): loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee GoDaddy::MZB/],'GoDaddy (standard): loaded_modules');
 
 # To se ARI extensions instead
 $dri->add_current_profile('p2','epp_ari',{f_send=>\&mysend,f_recv=>\&myrecv});
