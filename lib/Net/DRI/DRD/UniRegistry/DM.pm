@@ -96,7 +96,11 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'UniRegistry::DM'; }
 
-sub tlds     { return ('dm'); }
+sub tlds     {
+	my $cctld = 'dm';
+    my @secondary = (map { $_.'.'.$cctld } qw/co com net org/);	 
+	return ($cctld,@secondary); 
+}
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
