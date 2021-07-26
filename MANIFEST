@@ -42,6 +42,7 @@ lib/Net/DRI/Data/Contact/IE.pm
 lib/Net/DRI/Data/Contact/IIS.pm
 lib/Net/DRI/Data/Contact/IT.pm
 lib/Net/DRI/Data/Contact/JOBS.pm
+lib/Net/DRI/Data/Contact/JP.pm
 lib/Net/DRI/Data/Contact/LU.pm
 lib/Net/DRI/Data/Contact/LV.pm
 lib/Net/DRI/Data/Contact/Neustar.pm
@@ -72,7 +73,6 @@ lib/Net/DRI/Data/StatusList.pm
 lib/Net/DRI/DRD.pm
 lib/Net/DRI/DRD/AdamsNames.pm
 lib/Net/DRI/DRD/Afilias/Afilias.pm
-lib/Net/DRI/DRD/Afilias/IN.pm
 lib/Net/DRI/DRD/Afilias/PIR.pm
 lib/Net/DRI/DRD/Afilias/Shared.pm
 lib/Net/DRI/DRD/AFNIC/AFNIC.pm
@@ -110,6 +110,7 @@ lib/Net/DRI/DRD/Gandi.pm
 lib/Net/DRI/DRD/GDI.pm
 lib/Net/DRI/DRD/GMORegistry/BRRegistry.pm
 lib/Net/DRI/DRD/GMORegistry/GMORegistry.pm
+lib/Net/DRI/DRD/GMORegistry/JPRS.pm
 lib/Net/DRI/DRD/GMORegistry/KYOTO.pm
 lib/Net/DRI/DRD/GMORegistry/PANDI.pm
 lib/Net/DRI/DRD/GMORegistry/SHOP.pm
@@ -147,7 +148,6 @@ lib/Net/DRI/DRD/RESTENA.pm
 lib/Net/DRI/DRD/SIDN/GTLD.pm
 lib/Net/DRI/DRD/SIDN/NL.pm
 lib/Net/DRI/DRD/SITA.pm
-lib/Net/DRI/DRD/SONIC.pm
 lib/Net/DRI/DRD/SWITCH.pm
 lib/Net/DRI/DRD/TangoRS/CORE.pm
 lib/Net/DRI/DRD/TangoRS/TangoRS.pm
@@ -165,7 +165,6 @@ lib/Net/DRI/DRD/TRA/BH.pm
 lib/Net/DRI/DRD/UniRegistry/COOP.pm
 lib/Net/DRI/DRD/UniRegistry/EPS.pm
 lib/Net/DRI/DRD/UniRegistry/ICM.pm
-lib/Net/DRI/DRD/UniRegistry/INC.pm
 lib/Net/DRI/DRD/UniRegistry/DM.pm
 lib/Net/DRI/DRD/UniRegistry/UniRegistry.pm
 lib/Net/DRI/DRD/UPU.pm
@@ -358,8 +357,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/IE.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IENUMAT.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IIS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IIS/Extensions.pm
-lib/Net/DRI/Protocol/EPP/Extensions/IN.pm
-lib/Net/DRI/Protocol/EPP/Extensions/IN/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IRegistry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ISPAPI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ISPAPI/KeyValue.pm
@@ -369,6 +366,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/IT/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/SecDNS.pm
+lib/Net/DRI/Protocol/EPP/Extensions/JP.pm
+lib/Net/DRI/Protocol/EPP/Extensions/JP/JPEX.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Keygroup.pm
 lib/Net/DRI/Protocol/EPP/Extensions/KeyRelay.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LaunchPhase.pm
@@ -408,11 +407,9 @@ lib/Net/DRI/Protocol/EPP/Extensions/Nominet/DirectRights.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Notifications.pm
-lib/Net/DRI/Protocol/EPP/Extensions/Nominet/QualifiedLawyer.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NSgroup.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NZ.pm
-lib/Net/DRI/Protocol/EPP/Extensions/PH.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PIR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Contact.pm
@@ -581,7 +578,6 @@ LICENSE
 Makefile.PL
 MANIFEST			This list of files
 META.json
-META.yml
 README
 README.md
 SUPPORT
@@ -631,7 +627,6 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.8.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.9.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/SKNIC.t
-t/Net/DRI/Protocol/EPP/Extensions/CentralNicGW.t
 t/Net/DRI/Protocol/EPP/Extensions/ChangePoll.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
 t/Net/DRI/Protocol/EPP/Extensions/CL.t
@@ -672,6 +667,7 @@ t/Net/DRI/Protocol/EPP/Extensions/IE.t
 t/Net/DRI/Protocol/EPP/Extensions/IIS.t
 t/Net/DRI/Protocol/EPP/Extensions/IN.t
 t/Net/DRI/Protocol/EPP/Extensions/IT.t
+t/Net/DRI/Protocol/EPP/Extensions/JP.t
 t/Net/DRI/Protocol/EPP/Extensions/Keygroup.t
 t/Net/DRI/Protocol/EPP/Extensions/KeyRelay.t
 t/Net/DRI/Protocol/EPP/Extensions/KNET.t
@@ -695,7 +691,6 @@ t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.t
 t/Net/DRI/Protocol/EPP/Extensions/NO.t
 t/Net/DRI/Protocol/EPP/Extensions/Nominet.t
 t/Net/DRI/Protocol/EPP/Extensions/Nominet/Amazon.t
-t/Net/DRI/Protocol/EPP/Extensions/Nominet/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/NSgroup.t
 t/Net/DRI/Protocol/EPP/Extensions/NZ.t
 t/Net/DRI/Protocol/EPP/Extensions/PIR.t

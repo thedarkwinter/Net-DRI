@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 540;
+use Test::More tests => 544;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -31,6 +31,7 @@ use_ok('Net::DRI::Data::Contact::FRED');
 use_ok('Net::DRI::Data::Contact::IIS');
 use_ok('Net::DRI::Data::Contact::IT');
 use_ok('Net::DRI::Data::Contact::JOBS');
+use_ok('Net::DRI::Data::Contact::JP');
 use_ok('Net::DRI::Data::Contact::LU');
 use_ok('Net::DRI::Data::Contact::LV');
 use_ok('Net::DRI::Data::Contact::NominetMMX');
@@ -96,6 +97,7 @@ use_ok('Net::DRI::DRD::FRED');
 use_ok('Net::DRI::DRD::GDI');
 use_ok('Net::DRI::DRD::GMORegistry::BRRegistry');
 use_ok('Net::DRI::DRD::GMORegistry::GMORegistry');
+use_ok('Net::DRI::DRD::GMORegistry::JPRS');
 use_ok('Net::DRI::DRD::GMORegistry::KYOTO');
 use_ok('Net::DRI::DRD::GMORegistry::PANDI');
 use_ok('Net::DRI::DRD::GMORegistry::SHOP');
@@ -348,6 +350,8 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::IT::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::IT::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::IT::Notifications');
 use_ok('Net::DRI::Protocol::EPP::Extensions::IT::SecDNS');
+use_ok('Net::DRI::Protocol::EPP::Extensions::JP');
+use_ok('Net::DRI::Protocol::EPP::Extensions::JP::JPEX');
 use_ok('Net::DRI::Protocol::EPP::Extensions::Keygroup');
 use_ok('Net::DRI::Protocol::EPP::Extensions::KeyRelay');
 use_ok('Net::DRI::Protocol::EPP::Extensions::LaunchPhase');
