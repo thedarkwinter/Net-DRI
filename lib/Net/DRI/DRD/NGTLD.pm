@@ -399,7 +399,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      bep_type => 1, # dedicated registry
      tlds => [ qw/zuerich/ ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','CentralNic::RegType','CentralNic::AuxContact'], 'brown_fee_version' => '0.5' }],
-     whois_server => 'whois.centralnic.com',
+     whois_server => 'whois.nic.zuerich',
      verify_icann_reserved => 0,
      verify_check_name => 0,
    };
