@@ -376,9 +376,9 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 =pod
 
 
-=head2 Zurich
+=head2 Zuerich
 
- $dri->add_registry('NGTLD',{provider=>'centralnic_zurich'});
+ $dri->add_registry('NGTLD',{provider=>'centralnic_zuerich'});
 
 =head3 Status: Working
 
@@ -394,7 +394,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
 
 =cut
 
- if ($bep eq 'centralnic_zurich') {
+ if ($bep eq 'centralnic_zuerich') {
    return {
      bep_type => 1, # dedicated registry
      tlds => [ qw/zuerich/ ],
