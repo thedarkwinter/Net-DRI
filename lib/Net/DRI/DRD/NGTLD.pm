@@ -346,7 +346,7 @@ Contended TLD's not included
 
 =head3 Custom extensions:
 
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.4
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
 
 =head3 Notes
 
@@ -371,6 +371,38 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      verify_icann_reserved => 0,
      verify_check_name => 0,
     };
+ }
+
+=pod
+
+
+=head2 Zurich
+
+ $dri->add_registry('NGTLD',{provider=>'centralnic_zurich'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+zuerich
+
+Contended TLD's not included
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
+
+=cut
+
+ if ($bep eq 'centralnic_zurich') {
+   return {
+     bep_type => 1, # dedicated registry
+     tlds => [ qw/zuerich/ ],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','CentralNic::RegType','CentralNic::AuxContact'], 'brown_fee_version' => '0.5' }],
+     whois_server => 'whois.centralnic.com',
+     verify_icann_reserved => 0,
+     verify_check_name => 0,
+   };
  }
 
 =pod
