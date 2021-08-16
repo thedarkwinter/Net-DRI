@@ -80,7 +80,7 @@ sub new
 }
 
 sub periods { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name { return 'CentralNic::CentralNic'; }
+sub name { return 'CentralNic::Zuerich'; }
 sub tlds { return qw/zuerich/; } 
 sub object_types { return ('domain','ns','contact'); }
 sub profile_types { return qw/epp/; }
@@ -88,8 +88,7 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::
-',{'brown_fee_version' => '0.5'}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CentralNic',{'brown_fee_version' => '0.5'}) if $type eq 'epp';
  return;
 }
 
