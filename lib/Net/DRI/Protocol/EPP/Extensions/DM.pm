@@ -1,7 +1,8 @@
 ## Domain Registry Interface, UniRegistry EPP extensions
 ##
-## Copyright (c) 2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
-##           (c) 2013 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+##           (c) 2021 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
