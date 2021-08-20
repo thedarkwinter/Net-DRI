@@ -13,6 +13,10 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
+###
+## README: Verisign JobsContact extension not in use anymore but we are keeping it... for now :)
+###
+
 package Net::DRI::Data::Contact::JOBS;
 
 use strict;
@@ -29,6 +33,8 @@ __PACKAGE__->register_attributes(qw(jobinfo));
 Net::DRI::Data::Contact::JOBS - Handle .JOBS contact data for Net::DRI
 
 =head1 DESCRIPTION
+
+NOTE: Verisign JobsContact extension not in use anymore but we are keeping it... for now :)
 
 This subclass of Net::DRI::Data::Contact adds accessors and validation for
 .JOBS specific data.

@@ -13,6 +13,10 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
+###
+## README: Verisign JobsContact extension not in use anymore but we are keeping it... for now :)
+###
+
 package Net::DRI::Protocol::EPP::Extensions::VeriSign::JobsContact;
 
 use strict;
@@ -27,6 +31,8 @@ use Net::DRI::Util;
 Net::DRI::Protocol::EPP::Extensions::VeriSign::JobsContact - .JOBS EPP contact extensions for Net::DRI
 
 =head1 DESCRIPTION
+
+NOTE: Verisign JobsContact extension not in use anymore but we are keeping it... for now :)
 
 Please see the README file for details.
 

@@ -38,9 +38,11 @@ lib/Net/DRI/Data/Contact/EURid.pm
 lib/Net/DRI/Data/Contact/FCCN.pm
 lib/Net/DRI/Data/Contact/FICORA.pm
 lib/Net/DRI/Data/Contact/FRED.pm
+lib/Net/DRI/Data/Contact/IE.pm
 lib/Net/DRI/Data/Contact/IIS.pm
 lib/Net/DRI/Data/Contact/IT.pm
 lib/Net/DRI/Data/Contact/JOBS.pm
+lib/Net/DRI/Data/Contact/JP.pm
 lib/Net/DRI/Data/Contact/LU.pm
 lib/Net/DRI/Data/Contact/LV.pm
 lib/Net/DRI/Data/Contact/Neustar.pm
@@ -71,7 +73,6 @@ lib/Net/DRI/Data/StatusList.pm
 lib/Net/DRI/DRD.pm
 lib/Net/DRI/DRD/AdamsNames.pm
 lib/Net/DRI/DRD/Afilias/Afilias.pm
-lib/Net/DRI/DRD/Afilias/IN.pm
 lib/Net/DRI/DRD/Afilias/PIR.pm
 lib/Net/DRI/DRD/Afilias/Shared.pm
 lib/Net/DRI/DRD/AFNIC/AFNIC.pm
@@ -85,6 +86,7 @@ lib/Net/DRI/DRD/CGIBR/BR.pm
 lib/Net/DRI/DRD/CGIBR/GTLD.pm
 lib/Net/DRI/DRD/CIRA/CA.pm
 lib/Net/DRI/DRD/CIRA/Fury.pm
+lib/Net/DRI/DRD/CIRA/IE.pm
 lib/Net/DRI/DRD/CNNIC/CN.pm
 lib/Net/DRI/DRD/CNNIC/GTLD.pm
 lib/Net/DRI/DRD/CoCCA/CoCCA.pm
@@ -108,6 +110,7 @@ lib/Net/DRI/DRD/Gandi.pm
 lib/Net/DRI/DRD/GDI.pm
 lib/Net/DRI/DRD/GMORegistry/BRRegistry.pm
 lib/Net/DRI/DRD/GMORegistry/GMORegistry.pm
+lib/Net/DRI/DRD/GMORegistry/JPRS.pm
 lib/Net/DRI/DRD/GMORegistry/KYOTO.pm
 lib/Net/DRI/DRD/GMORegistry/PANDI.pm
 lib/Net/DRI/DRD/GMORegistry/SHOP.pm
@@ -145,7 +148,6 @@ lib/Net/DRI/DRD/RESTENA.pm
 lib/Net/DRI/DRD/SIDN/GTLD.pm
 lib/Net/DRI/DRD/SIDN/NL.pm
 lib/Net/DRI/DRD/SITA.pm
-lib/Net/DRI/DRD/SONIC.pm
 lib/Net/DRI/DRD/SWITCH.pm
 lib/Net/DRI/DRD/TangoRS/CORE.pm
 lib/Net/DRI/DRD/TangoRS/TangoRS.pm
@@ -160,9 +162,9 @@ lib/Net/DRI/DRD/TeleInfo.pm
 lib/Net/DRI/DRD/TMDB.pm
 lib/Net/DRI/DRD/TRA/AE.pm
 lib/Net/DRI/DRD/TRA/BH.pm
+lib/Net/DRI/DRD/UniRegistry/COOP.pm
 lib/Net/DRI/DRD/UniRegistry/EPS.pm
 lib/Net/DRI/DRD/UniRegistry/ICM.pm
-lib/Net/DRI/DRD/UniRegistry/INC.pm
 lib/Net/DRI/DRD/UniRegistry/UniRegistry.pm
 lib/Net/DRI/DRD/UPU.pm
 lib/Net/DRI/DRD/VeriSign/COM_NET.pm
@@ -278,11 +280,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/SkContactIdent.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ChangePoll.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CIRA.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Agreement.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Contact.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Domain.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.pm
-lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Notifications.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CIRA/Fury.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CIRA/FuryIE.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CL.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CL/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CloudRegistry.pm
@@ -353,11 +352,10 @@ lib/Net/DRI/Protocol/EPP/Extensions/HTTP.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IDN.pm
+lib/Net/DRI/Protocol/EPP/Extensions/IE.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IENUMAT.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IIS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IIS/Extensions.pm
-lib/Net/DRI/Protocol/EPP/Extensions/IN.pm
-lib/Net/DRI/Protocol/EPP/Extensions/IN/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IRegistry.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ISPAPI.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ISPAPI/KeyValue.pm
@@ -367,6 +365,8 @@ lib/Net/DRI/Protocol/EPP/Extensions/IT/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/Notifications.pm
 lib/Net/DRI/Protocol/EPP/Extensions/IT/SecDNS.pm
+lib/Net/DRI/Protocol/EPP/Extensions/JP.pm
+lib/Net/DRI/Protocol/EPP/Extensions/JP/JPEX.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Keygroup.pm
 lib/Net/DRI/Protocol/EPP/Extensions/KeyRelay.pm
 lib/Net/DRI/Protocol/EPP/Extensions/LaunchPhase.pm
@@ -391,7 +391,6 @@ lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/EXTContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Fee.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNLanguage.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Message.pm
-lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Neustar.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NEWGTLD.pm
@@ -407,11 +406,9 @@ lib/Net/DRI/Protocol/EPP/Extensions/Nominet/DirectRights.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Notifications.pm
-lib/Net/DRI/Protocol/EPP/Extensions/Nominet/QualifiedLawyer.pm
 lib/Net/DRI/Protocol/EPP/Extensions/Nominet/Session.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NSgroup.pm
 lib/Net/DRI/Protocol/EPP/Extensions/NZ.pm
-lib/Net/DRI/Protocol/EPP/Extensions/PH.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PIR.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL.pm
 lib/Net/DRI/Protocol/EPP/Extensions/PL/Contact.pm
@@ -580,7 +577,6 @@ LICENSE
 Makefile.PL
 MANIFEST			This list of files
 META.json
-META.yml
 README
 README.md
 SUPPORT
@@ -630,10 +626,8 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.8.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.9.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/SKNIC.t
-t/Net/DRI/Protocol/EPP/Extensions/CentralNicGW.t
 t/Net/DRI/Protocol/EPP/Extensions/ChangePoll.t
 t/Net/DRI/Protocol/EPP/Extensions/CIRA.t
-t/Net/DRI/Protocol/EPP/Extensions/CIRA/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/CL.t
 t/Net/DRI/Protocol/EPP/Extensions/CN.t
 t/Net/DRI/Protocol/EPP/Extensions/CNNIC/Bundling.t
@@ -668,9 +662,11 @@ t/Net/DRI/Protocol/EPP/Extensions/GracePeriod.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/RegistrarExpirationDate.t
 t/Net/DRI/Protocol/EPP/Extensions/IDN.t
+t/Net/DRI/Protocol/EPP/Extensions/IE.t
 t/Net/DRI/Protocol/EPP/Extensions/IIS.t
 t/Net/DRI/Protocol/EPP/Extensions/IN.t
 t/Net/DRI/Protocol/EPP/Extensions/IT.t
+t/Net/DRI/Protocol/EPP/Extensions/JP.t
 t/Net/DRI/Protocol/EPP/Extensions/Keygroup.t
 t/Net/DRI/Protocol/EPP/Extensions/KeyRelay.t
 t/Net/DRI/Protocol/EPP/Extensions/KNET.t
@@ -690,12 +686,10 @@ t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/KeyValue.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Narwhal.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Price.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/TMCHApplication.t
-t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/UIN.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.t
 t/Net/DRI/Protocol/EPP/Extensions/NO.t
 t/Net/DRI/Protocol/EPP/Extensions/Nominet.t
 t/Net/DRI/Protocol/EPP/Extensions/Nominet/Amazon.t
-t/Net/DRI/Protocol/EPP/Extensions/Nominet/QualifiedLawyer.t
 t/Net/DRI/Protocol/EPP/Extensions/NSgroup.t
 t/Net/DRI/Protocol/EPP/Extensions/NZ.t
 t/Net/DRI/Protocol/EPP/Extensions/PIR.t
