@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 543;
+use Test::More tests => 546;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -151,6 +151,7 @@ use_ok('Net::DRI::DRD::TMDB');
 use_ok('Net::DRI::DRD::TRA::AE');
 use_ok('Net::DRI::DRD::TRA::BH');
 use_ok('Net::DRI::DRD::UniRegistry::COOP');
+use_ok('Net::DRI::DRD::UniRegistry::DM');
 use_ok('Net::DRI::DRD::UniRegistry::EPS');
 use_ok('Net::DRI::DRD::UniRegistry::ICM');
 use_ok('Net::DRI::DRD::UniRegistry::UniRegistry');
@@ -293,6 +294,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::DK');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DK::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DK::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DK::Host');
+use_ok('Net::DRI::Protocol::EPP::Extensions::DM');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DNSBE');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DNSBE::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::DNSBE::Domain');
