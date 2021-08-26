@@ -116,6 +116,11 @@ sub _build_dkhm_contact {
 		$mes->command_extension($eid_mobile,$c->mobile());
 	}
 
+	if (defined $c->management()) {
+    my $eid=$mes->command_extension_register('dkhm:management','xmlns:dkhm="'.$ns.'"');
+    $mes->command_extension($eid,$c->management);
+  }
+
   return;
 }
 

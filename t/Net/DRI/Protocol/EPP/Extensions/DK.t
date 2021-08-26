@@ -49,7 +49,7 @@ is($rc->is_success(),1,'session logout is_success');
 ####################################################################################################
 ####### Contact Commands ########
 
-### 1.1 Contact Create
+### 1.1 Contact Create (with management)
 $co=$dri->local_object('contact');
 $co->name('Johnny Login');
 $co->org('DK Hostmaster A/S');
@@ -63,8 +63,9 @@ $co->email('tech@dk-hostmaster.dk');
 #$co->ean('453784957293'); # 'EAN' number of the contact (not supported by userType 'individual')
 $co->vat('1234567891231'); # 'VAT' number of the entity.
 $co->type('company'); # Type of contact (company|public_organization|association|individual)
+$co->management('registrar');   #contact managemtn overide (registrar|registrant)
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>auto</contact:id><contact:postalInfo type="loc"><contact:name>Johnny Login</contact:name><contact:org>DK Hostmaster A/S</contact:org><contact:addr><contact:street>Kalvebod brygge 45, 3. sal</contact:street><contact:city>Copenhagen V</contact:city><contact:pc>1560</contact:pc><contact:cc>DK</contact:cc></contact:addr></contact:postalInfo><contact:postalInfo type="int"><contact:name>Johnny Login</contact:name><contact:org>DK Hostmaster A/S</contact:org><contact:addr><contact:street>Kalvebod brygge 45, 3. sal</contact:street><contact:city>Copenhagen V</contact:city><contact:pc>1560</contact:pc><contact:cc>DK</contact:cc></contact:addr></contact:postalInfo><contact:voice>+45.33646060</contact:voice><contact:fax/><contact:email>tech@dk-hostmaster.dk</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><extension><dkhm:userType xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">company</dkhm:userType><dkhm:CVR xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">1234567891231</dkhm:CVR></extension><clTRID>ABC-12345</clTRID></command></epp>','contact_create build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>auto</contact:id><contact:postalInfo type="loc"><contact:name>Johnny Login</contact:name><contact:org>DK Hostmaster A/S</contact:org><contact:addr><contact:street>Kalvebod brygge 45, 3. sal</contact:street><contact:city>Copenhagen V</contact:city><contact:pc>1560</contact:pc><contact:cc>DK</contact:cc></contact:addr></contact:postalInfo><contact:postalInfo type="int"><contact:name>Johnny Login</contact:name><contact:org>DK Hostmaster A/S</contact:org><contact:addr><contact:street>Kalvebod brygge 45, 3. sal</contact:street><contact:city>Copenhagen V</contact:city><contact:pc>1560</contact:pc><contact:cc>DK</contact:cc></contact:addr></contact:postalInfo><contact:voice>+45.33646060</contact:voice><contact:fax/><contact:email>tech@dk-hostmaster.dk</contact:email><contact:authInfo><contact:pw/></contact:authInfo></contact:create></create><extension><dkhm:userType xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">company</dkhm:userType><dkhm:CVR xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">1234567891231</dkhm:CVR><dkhm:management xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">registrar</dkhm:management></extension><clTRID>ABC-12345</clTRID></command></epp>','contact_create build');
 is($rc->is_success(),1,'contact_create is_success');
 
 ### Contact Update
@@ -121,8 +122,8 @@ $dh=$dri->local_object('hosts');
 $dh->add('ns1.dk-hostmaster.dk');
 $dh->add('ns2.dk-hostmaster.dk');
 $R2 = $E1 . '<response><result code="1001"><msg>Create domain pending for dk-xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3"hostmaster-test-906.dk</msg></result><extension><dkhm:trackingNo xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2014061800002</dkhm:trackingNo></extension>' . $TRID . '</response>' . $E2;
-$rc=$dri->domain_create('dk-hostmaster-test-906.dk',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,confirmation_token=>'testtoken',auth=>{pw=>''}});
-is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>dk-hostmaster-test-906.dk</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.dk-hostmaster.dk</domain:hostObj><domain:hostObj>ns2.dk-hostmaster.dk</domain:hostObj></domain:ns><domain:registrant>DKHM1-DK</domain:registrant><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><dkhm:orderconfirmationToken xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">testtoken</dkhm:orderconfirmationToken></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
+$rc=$dri->domain_create('dk-hostmaster-test-906.dk',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,confirmation_token=>'testtoken',auth=>{pw=>''},management=>'registrar'});
+is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>dk-hostmaster-test-906.dk</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.dk-hostmaster.dk</domain:hostObj><domain:hostObj>ns2.dk-hostmaster.dk</domain:hostObj></domain:ns><domain:registrant>DKHM1-DK</domain:registrant><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><dkhm:orderconfirmationToken xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">testtoken</dkhm:orderconfirmationToken><dkhm:management xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">registrar</dkhm:management></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($rc->is_success(),1,'domain_create is_success');
 is($dri->get_info('tracking_no'),'2014061800002','domain_create_parse get_info(tracking_no)');
 
@@ -132,6 +133,49 @@ $rc=$dri->domain_check('blockeddomain.dk');
 is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>blockeddomain.dk</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check build');
 is($rc->is_success(),1,'domain_check is_success');
 is($dri->get_info('advisory'),'Blocked','domain_check_extension get_info(advisory)');
+
+### Domain Info with AuthIfnoToken
+$R2 = $E1 . '<response>
+    <result code="1000">
+      <msg>Command completed successfully</msg>
+    </result>
+    <resData>
+      <domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">
+        <domain:name>dk-hostmaster.dk</domain:name>
+        <domain:roid>EXAMPLE1-REP</domain:roid>
+        <domain:status s="ok"/>
+        <domain:registrant>jd1234</domain:registrant>
+        <domain:contact type="admin">sh8013</domain:contact>
+        <domain:contact type="tech">sh8013</domain:contact>
+        <domain:ns>
+          <domain:hostObj>ns1.example.com</domain:hostObj>
+          <domain:hostObj>ns1.example.net</domain:hostObj>
+        </domain:ns>
+        <domain:host>ns1.example.com</domain:host>
+        <domain:host>ns2.example.com</domain:host>
+        <domain:clID>ClientX</domain:clID>
+        <domain:crID>ClientY</domain:crID>
+        <domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate>
+        <domain:upID>ClientX</domain:upID>
+        <domain:upDate>1999-12-03T09:00:00.0Z</domain:upDate>
+        <domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate>
+        <domain:trDate>2000-04-08T09:00:00.0Z</domain:trDate>
+        <domain:authInfo>
+          <domain:pw>DKHM1-DK-098f6bcd4621d373cade4e832627b4f6</domain:pw>
+        </domain:authInfo>
+      </domain:infData>
+    </resData>
+    <extension>
+      <dkhm:authInfoExDate xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2018-11-14T09:00:00.0Z</dkhm:authInfoExDate>
+    </extension>
+' . $TRID . '</response>' . $E2;
+
+$rc=$dri->domain_info('dk-hostmaster.dk');
+is_string($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">dk-hostmaster.dk</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_info_build');
+is($rc->is_success(),1,'domain_info is_success');
+is_deeply($dri->get_info('auth', 'domain', 'dk-hostmaster.dk'), { pw => 'DKHM1-DK-098f6bcd4621d373cade4e832627b4f6' }, 'domain_info auth token retrived');
+is ($dri->get_info('auth_info_ex_date', 'domain', 'dk-hostmaster.dk'), '2018-11-14T09:00:00.0Z', 'domain_info auth_token expiration date retrieved');
+
 
 ####################################################################################################
 ####### Verisign balance + RGP standard ########
