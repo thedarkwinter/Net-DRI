@@ -82,6 +82,7 @@ lib/Net/DRI/DRD/auDA.pm
 lib/Net/DRI/DRD/BookMyName.pm
 lib/Net/DRI/DRD/CentralNic/CentralNic.pm
 lib/Net/DRI/DRD/CentralNic/SKNIC.pm
+lib/Net/DRI/DRD/CentralNic/Zuerich.pm
 lib/Net/DRI/DRD/CGIBR/BR.pm
 lib/Net/DRI/DRD/CGIBR/GTLD.pm
 lib/Net/DRI/DRD/CIRA/CA.pm
