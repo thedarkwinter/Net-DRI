@@ -82,6 +82,7 @@ lib/Net/DRI/DRD/auDA.pm
 lib/Net/DRI/DRD/BookMyName.pm
 lib/Net/DRI/DRD/CentralNic/CentralNic.pm
 lib/Net/DRI/DRD/CentralNic/SKNIC.pm
+lib/Net/DRI/DRD/CentralNic/Zuerich.pm
 lib/Net/DRI/DRD/CGIBR/BR.pm
 lib/Net/DRI/DRD/CGIBR/GTLD.pm
 lib/Net/DRI/DRD/CIRA/CA.pm
@@ -165,6 +166,7 @@ lib/Net/DRI/DRD/TRA/BH.pm
 lib/Net/DRI/DRD/UniRegistry/COOP.pm
 lib/Net/DRI/DRD/UniRegistry/EPS.pm
 lib/Net/DRI/DRD/UniRegistry/ICM.pm
+lib/Net/DRI/DRD/UniRegistry/DM.pm
 lib/Net/DRI/DRD/UniRegistry/UniRegistry.pm
 lib/Net/DRI/DRD/UPU.pm
 lib/Net/DRI/DRD/VeriSign/COM_NET.pm
