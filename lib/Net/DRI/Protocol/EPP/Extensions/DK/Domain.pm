@@ -74,11 +74,12 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands {
 	my ( $class, $version)=@_;
 	my %tmp=(
-	  'check'  => [ undef, \&check_parse ],
-	  'info'   => [ undef, \&_parse_dkhm_domain ],
-	  'create' => [ \&create, \&_parse_dkhm_domain ],
-	  'renew'  => [ undef, \&_parse_dkhm_domain ],
-	  'update' =>	[ undef, \&_parse_dkhm_domain ]
+	  'check'      => [ undef, \&check_parse ],
+	  'info'       => [ undef, \&_parse_dkhm_domain ],
+	  'create'     => [ \&create, \&_parse_dkhm_domain ],
+	  'renew'      => [ undef, \&_parse_dkhm_domain ],
+	  'update'     => [ undef, \&_parse_dkhm_domain ],
+	  'withdraw'   => [ \&withdraw, undef ],
 	);
 
 	return { 'domain' => \%tmp };
@@ -123,7 +124,13 @@ sub _parse_dkhm_domain
 		$rinfo->{domain}->{$oname}->{registrant_validated} = $data->getFirstChild()->textContent();
 	}
   if ($data = $mes->get_extension('dkhm','authInfoExDate')) {
-    $rinfo->{domain}->{$oname}->{auth_info_ex_date} = $data->getFirstChild()->textContent();
+    $rinfo->{domain}->{$oname}->{auth_info_ex_date} = $po->parse_iso8601($data->getFirstChild()->textContent());
+  }
+  if ($data = $mes->get_extension('dkhm','delDate')) {
+    $rinfo->{domain}->{$oname}->{del_date} = $po->parse_iso8601($data->getFirstChild()->textContent());
+  }
+  if ($data = $mes->get_extension('dkhm','autoRenew')) {
+    $rinfo->{domain}->{$oname}->{auto_renew} = $data->getFirstChild()->textContent();
   }
 
 	return;
@@ -149,6 +156,44 @@ sub check_parse {
 	}
 
   return;
+}
+
+sub withdraw {
+    my ( $epp, $domain, $rd ) = @_;
+    my $mes = $epp->message();
+
+    Net::DRI::Exception::usererr_insufficient_parameters(
+        'Witdraw command requires a domain name')
+        unless ( defined($domain) && $domain );
+
+    my (undef,$NS,$NSX)=$mes->nsattrs('dkhm');
+
+    my $eid = $mes->command_extension_register( 'command',
+              'xmlns="' 
+            . $NS
+            . '" xsi:schemaLocation="'
+            . $NS
+            . " $NSX"
+            . '"' );
+
+    my $cltrid=$mes->cltrid();
+
+    my %domns;
+    $domns{'xmlns:domain'}       = $NS;
+    $domns{'xsi:schemaLocation'} = $NS . " $NSX";
+
+    my $r=$mes->command_extension(
+        $eid,
+        [   [   'withdraw',
+                [   'domain:withdraw', [ 'domain:name', $domain ],
+                    \%domns, \%domns
+                ]
+            ],
+            [ 'clTRID', $cltrid ]
+        ]
+       );
+
+    return $r;
 }
 
 1;

@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 36;
+use Test::More tests => 46;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=30; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -167,15 +167,18 @@ $R2 = $E1 . '<response>
     </resData>
     <extension>
       <dkhm:authInfoExDate xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2018-11-14T09:00:00.0Z</dkhm:authInfoExDate>
+      <dkhm:delDate xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2021-01-31T00:00:00.0Z</dkhm:delDate>
+      <dkhm:autoRenew xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">true</dkhm:autoRenew>
     </extension>
 ' . $TRID . '</response>' . $E2;
 
 $rc=$dri->domain_info('dk-hostmaster.dk');
 is_string($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">dk-hostmaster.dk</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_info_build');
 is($rc->is_success(),1,'domain_info is_success');
-is_deeply($dri->get_info('auth', 'domain', 'dk-hostmaster.dk'), { pw => 'DKHM1-DK-098f6bcd4621d373cade4e832627b4f6' }, 'domain_info auth token retrived');
-is ($dri->get_info('auth_info_ex_date', 'domain', 'dk-hostmaster.dk'), '2018-11-14T09:00:00.0Z', 'domain_info auth_token expiration date retrieved');
-
+is_deeply($dri->get_info('auth', 'domain', 'dk-hostmaster.dk'), { pw => 'DKHM1-DK-098f6bcd4621d373cade4e832627b4f6' }, 'domain_info auth token retrieved');
+is ($dri->get_info('auth_info_ex_date', 'domain', 'dk-hostmaster.dk'), '2018-11-14T09:00:00', 'domain_info auth_token expiration date retrieved');
+is ($dri->get_info('del_date', 'domain', 'dk-hostmaster.dk'), '2021-01-31T00:00:00', 'domain_info domain delDate retrieved');
+is ($dri->get_info('auto_renew', 'domain', 'dk-hostmaster.dk'), 'true', 'domain_info domain autoRenew retrieved');
 
 ####################################################################################################
 ####### Verisign balance + RGP standard ########
@@ -206,5 +209,29 @@ $toc->set('rgp',{ op => 'report', report => {predata=>'Pre-delete registration d
 $rc=$dri->domain_update('example52.dk',$toc);
 is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example52.dk</domain:name></domain:update></update><extension><rgp:update xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"><rgp:restore op="report"><rgp:report><rgp:preData>Pre-delete registration data goes here. Both XML and free text are allowed.</rgp:preData><rgp:postData>Post-restore registration data goes here. Both XML and free text are allowed.</rgp:postData><rgp:delTime>2003-07-10T22:00:00.0Z</rgp:delTime><rgp:resTime>2003-07-20T22:00:00.0Z</rgp:resTime><rgp:resReason>Registrant error.</rgp:resReason><rgp:statement>This registrar has not restored the Registered Name in order to assume the rights to use or sell the Registered Name for itself or for any third party.</rgp:statement><rgp:statement>The information in this report is true to best of this registrar\'s knowledge, and this registrar acknowledges that intentionally supplying false information in this report shall constitute an incurable material breach of the Registry-Registrar Agreement.</rgp:statement><rgp:other>Supporting information goes here.</rgp:other></rgp:report></rgp:restore></rgp:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build +RGP/restore_report');
 is($rc->is_success(),1,'domain_update is_success +RGP');
+
+#Domain update unset authinfo 
+$R2 = $E1 . ' <response>
+    <result code="1000">
+      <msg>Command completed successfully</msg>
+    </result>
+    <msgQ count="10" id="1">
+    </msgQ>
+' . $TRID . '</response>' . $E2;
+$toc=Net::DRI::Data::Changes->new();
+$toc->set(auth=>{pw=>undef});
+$rc=$dri->domain_update('example.dk',$toc);
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example.dk</domain:name><domain:chg><domain:authInfo><domain:null/></domain:authInfo></domain:chg></domain:update></update><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_update build set authinfo');
+is($rc->is_success(), 1, 'Domain update unset authinfo sucess');
+
+# The withdraw command extension
+$R2 = $E1 . ' <response>
+    <result code="1000">
+      <msg>Command completed successfully</msg>
+    </result>
+' . $TRID . '</response>' . $E2;
+$rc=$dri->domain_withdraw('eksempel.dk');
+is_string($R1, $E1.'<extension><command xmlns="urn:dkhm:params:xml:ns:dkhm-4.3" xsi:schemaLocation="urn:dkhm:params:xml:ns:dkhm-4.3 dkhm-4.3.xsd"><withdraw><domain:withdraw xmlns:domain="urn:dkhm:params:xml:ns:dkhm-4.3" xsi:schemaLocation="urn:dkhm:params:xml:ns:dkhm-4.3 dkhm-4.3.xsd"><domain:name>eksempel.dk</domain:name></domain:withdraw></withdraw><clTRID>ABC-12345</clTRID></command></extension>'.$E2,'domain_withdraw build command');
+is($rc->is_success(),1,'domain_withdraw is_success');
 
 exit 0;

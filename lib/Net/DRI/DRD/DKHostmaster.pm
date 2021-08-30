@@ -79,6 +79,7 @@ sub new {
 	$self->{info}->{host_as_attr}=0;
 	$self->{info}->{contact_i18n}=6; ## LOC OR INT (Loc for .dk contacts, int for rest of world)
 	$self->{info}->{force_native_idn}=1;
+	$self->{info}->{use_null_auth}= 1;
 	return $self;
 }
 
@@ -105,6 +106,18 @@ sub balance_info
  my ($self,$ndr)=@_;
  return $ndr->process('balance','info');
 }
+
+sub domain_withdraw {
+  my ( $self, $ndr, $domain, $rd ) = @_;
+  $self->enforce_domain_name_constraints($ndr,$domain,'withdraw');
+
+  $rd=Net::DRI::Util::create_params('domain_withdraw',$rd);
+
+  my $rc = $ndr->process( 'domain', 'withdraw', [ $domain, $rd ] );
+  return $rc;
+}
+
+
 
 ####################################################################################################
 1;
