@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 46;
+use Test::More tests => 52;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=30; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -121,11 +121,12 @@ $cs->add($dri->local_object('contact')->srid('DKHM1-DK'),'registrant');
 $dh=$dri->local_object('hosts');
 $dh->add('ns1.dk-hostmaster.dk');
 $dh->add('ns2.dk-hostmaster.dk');
-$R2 = $E1 . '<response><result code="1001"><msg>Create domain pending for dk-xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3"hostmaster-test-906.dk</msg></result><extension><dkhm:trackingNo xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2014061800002</dkhm:trackingNo></extension>' . $TRID . '</response>' . $E2;
+$R2 = $E1 . '<response><result code="1001"><msg>Create domain pending for dk-xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3"hostmaster-test-906.dk</msg></result><extension><dkhm:trackingNo xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2014061800002</dkhm:trackingNo><dkhm:url xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">https://selfservice-dk-hostmaster.dk/6102505a2e8d0cfbe8c3c99ea49977f36e2d4ee3</dkhm:url></extension>' . $TRID . '</response>' . $E2;
 $rc=$dri->domain_create('dk-hostmaster-test-906.dk',{pure_create=>1,duration=>DateTime::Duration->new(years=>1),contact=>$cs,ns=>$dh,confirmation_token=>'testtoken',auth=>{pw=>''},management=>'registrar'});
 is($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>dk-hostmaster-test-906.dk</domain:name><domain:period unit="y">1</domain:period><domain:ns><domain:hostObj>ns1.dk-hostmaster.dk</domain:hostObj><domain:hostObj>ns2.dk-hostmaster.dk</domain:hostObj></domain:ns><domain:registrant>DKHM1-DK</domain:registrant><domain:authInfo><domain:pw/></domain:authInfo></domain:create></create><extension><dkhm:orderconfirmationToken xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">testtoken</dkhm:orderconfirmationToken><dkhm:management xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">registrar</dkhm:management></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 is($rc->is_success(),1,'domain_create is_success');
 is($dri->get_info('tracking_no'),'2014061800002','domain_create_parse get_info(tracking_no)');
+is($dri->get_info('url'),'https://selfservice-dk-hostmaster.dk/6102505a2e8d0cfbe8c3c99ea49977f36e2d4ee3','domain_create_parse get_info(url)');
 
 ### 2.2 Domain Check
 $R2 = $E1 . '<response><result code="1000"><msg>Check result</msg></result><resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">blockeddomain.dk</domain:name></domain:cd></domain:chkData></resData><extension><dkhm:domainAdvisory xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3" domain="blockeddomain.dk" advisory="Blocked" /></extension>' . $TRID . '</response>' . $E2;
@@ -233,5 +234,36 @@ $R2 = $E1 . ' <response>
 $rc=$dri->domain_withdraw('eksempel.dk');
 is_string($R1, $E1.'<extension><command xmlns="urn:dkhm:params:xml:ns:dkhm-4.3" xsi:schemaLocation="urn:dkhm:params:xml:ns:dkhm-4.3 dkhm-4.3.xsd"><withdraw><domain:withdraw xmlns:domain="urn:dkhm:params:xml:ns:dkhm-4.3" xsi:schemaLocation="urn:dkhm:params:xml:ns:dkhm-4.3 dkhm-4.3.xsd"><domain:name>eksempel.dk</domain:name></domain:withdraw></withdraw><clTRID>ABC-12345</clTRID></command></extension>'.$E2,'domain_withdraw build command');
 is($rc->is_success(),1,'domain_withdraw is_success');
+
+# Message
+#$R2 = $E1 . '<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="43" id="27389"><qDate>2008-04-07T09:28:40.163Z</qDate><msg lang="en">domain authInfo</msg></msgQ><resData><extdom:pollAuthInfo xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.1" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.1 extdom-2.1.xsd"><extdom:domain><extdom:name>test.com.pl</extdom:name><extdom:authInfo><extdom:pw>JuhIFbrKfX4xReybrUe1pZs</extdom:pw></extdom:authInfo></extdom:domain></extdom:pollAuthInfo></resData>' . $TRID . '</response>' . $E2;
+$R2 = $E1 . '
+  <response>
+    <result code="1301">
+      <msg>Command completed successfully; ack to dequeue</msg>
+    </result>
+    <msgQ count="1" id="2">
+      <msg>Created domain for eksempel.dk has been approved</msg>
+    </msgQ>
+    <resData>
+      <domain:panData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">
+        <domain:name paResult="1">eksempel.dk</domain:name>
+        <domain:paTRID>
+          <clTRID>916e2f64ca0956a1bfc24140b23b8fb3</clTRID>
+          <svTRID>001C6E66-761D-11E8-8775-F5EABB5937F7-2018062200008</svTRID>
+        </domain:paTRID>
+        <domain:paDate>2018-06-22T15:07:00.0Z</domain:paDate></domain:panData>
+    </resData>
+    <extension>
+      <dkhm:risk_assessment xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">N/A</dkhm:risk_assessment>
+    </extension>
+    ' . $TRID . '
+  </response>' . $E2;
+$rc = $dri->message_retrieve();
+is($rc->is_success(), 1, 'message_retrieve');
+is($dri->get_info('last_id'), 2, 'message get_info last_id');
+is($dri->get_info('content', 'message', '2'), 'Created domain for eksempel.dk has been approved', 'message text retrieved');
+is($dri->get_info('risk_assessment','domain', 'eksempel.dk'),'N/A', 'domain get_info risk_assessment');  #dedicate message parse risk_assessment
+is($dri->get_info('risk_assessment', 'message', '2'), 'N/A', 'message get_info risk_assessment'); #defaut risk assessment in message
 
 exit 0;

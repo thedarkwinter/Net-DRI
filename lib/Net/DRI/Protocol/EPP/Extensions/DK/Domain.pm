@@ -98,10 +98,10 @@ sub _build_dkhm_domain
 	my $eid=$mes->command_extension_register('dkhm:orderconfirmationToken','xmlns:dkhm="'.$ns.'"');
 	$mes->command_extension($eid,$rd->{confirmation_token});
 
-  if ( Net::DRI::Util::has_key($rd,'management') ) {
-    my $eid=$mes->command_extension_register('dkhm:management','xmlns:dkhm="'.$ns.'"');
-    $mes->command_extension($eid,$rd->{management});
-  }
+	if ( Net::DRI::Util::has_key($rd,'management') ) {
+		my $eid=$mes->command_extension_register('dkhm:management','xmlns:dkhm="'.$ns.'"');
+		$mes->command_extension($eid,$rd->{management});
+	}
 
 	return;
 }
@@ -123,15 +123,18 @@ sub _parse_dkhm_domain
 	if ($data = $mes->get_extension('dkhm','registrant_validated')) {
 		$rinfo->{domain}->{$oname}->{registrant_validated} = $data->getFirstChild()->textContent();
 	}
-  if ($data = $mes->get_extension('dkhm','authInfoExDate')) {
-    $rinfo->{domain}->{$oname}->{auth_info_ex_date} = $po->parse_iso8601($data->getFirstChild()->textContent());
-  }
-  if ($data = $mes->get_extension('dkhm','delDate')) {
-    $rinfo->{domain}->{$oname}->{del_date} = $po->parse_iso8601($data->getFirstChild()->textContent());
-  }
-  if ($data = $mes->get_extension('dkhm','autoRenew')) {
-    $rinfo->{domain}->{$oname}->{auto_renew} = $data->getFirstChild()->textContent();
-  }
+	if ($data = $mes->get_extension('dkhm','url')) {
+		$rinfo->{domain}->{$oname}->{url} = $data->getFirstChild()->textContent();
+	}
+	if ($data = $mes->get_extension('dkhm','authInfoExDate')) {
+		$rinfo->{domain}->{$oname}->{auth_info_ex_date} = $po->parse_iso8601($data->getFirstChild()->textContent());
+	}
+	if ($data = $mes->get_extension('dkhm','delDate')) {
+		$rinfo->{domain}->{$oname}->{del_date} = $po->parse_iso8601($data->getFirstChild()->textContent());
+	}
+	if ($data = $mes->get_extension('dkhm','autoRenew')) {
+		$rinfo->{domain}->{$oname}->{auto_renew} = $data->getFirstChild()->textContent();
+	}
 
 	return;
 }
@@ -163,7 +166,7 @@ sub withdraw {
     my $mes = $epp->message();
 
     Net::DRI::Exception::usererr_insufficient_parameters(
-        'Witdraw command requires a domain name')
+        'Withdraw command requires a domain name')
         unless ( defined($domain) && $domain );
 
     my (undef,$NS,$NSX)=$mes->nsattrs('dkhm');
