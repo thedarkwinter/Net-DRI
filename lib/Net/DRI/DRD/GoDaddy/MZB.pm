@@ -29,7 +29,8 @@ Net::DRI::DRD::GoDaddy::MZB - GoDaddy::MZB Driver for Net::DRI
 =head1 DESCRIPTION
 
 Additional MZB extension GoDaddy::MZB
-GoDaddy::MZB use a dedicated server and the following standard extensions. Please see the test files for more examples.
+
+GoDaddys MZB protocol block mechanism runs in the same standard EPP server - listing all the (current) other EPP extensions just as reference:
 
 =head2 Standard extensions:
 
