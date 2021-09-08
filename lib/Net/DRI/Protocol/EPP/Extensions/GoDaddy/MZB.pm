@@ -24,7 +24,7 @@ use Net::DRI::Exception;
 
 =head1 NAME
 
-Net::DRI::Protocol::EPP::Extensions::GoDaddy::MZB - MZB  xtension for GoDaddy
+Net::DRI::Protocol::EPP::Extensions::GoDaddy::MZB - MZB extension for GoDaddy block mechanism
 
 =head1 DESCRIPTION
 
