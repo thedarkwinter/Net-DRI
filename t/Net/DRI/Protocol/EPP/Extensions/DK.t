@@ -236,7 +236,6 @@ is_string($R1, $E1.'<extension><command xmlns="urn:dkhm:params:xml:ns:dkhm-4.3" 
 is($rc->is_success(),1,'domain_withdraw is_success');
 
 # Message
-#$R2 = $E1 . '<response><result code="1301"><msg lang="en">Command completed successfully; ack to dequeue</msg></result><msgQ count="43" id="27389"><qDate>2008-04-07T09:28:40.163Z</qDate><msg lang="en">domain authInfo</msg></msgQ><resData><extdom:pollAuthInfo xmlns:extdom="http://www.dns.pl/nask-epp-schema/extdom-2.1" xsi:schemaLocation="http://www.dns.pl/nask-epp-schema/extdom-2.1 extdom-2.1.xsd"><extdom:domain><extdom:name>test.com.pl</extdom:name><extdom:authInfo><extdom:pw>JuhIFbrKfX4xReybrUe1pZs</extdom:pw></extdom:authInfo></extdom:domain></extdom:pollAuthInfo></resData>' . $TRID . '</response>' . $E2;
 $R2 = $E1 . '
   <response>
     <result code="1301">
