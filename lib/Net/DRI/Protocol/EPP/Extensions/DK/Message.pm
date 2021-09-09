@@ -44,7 +44,7 @@ Paulo Castanheira, E<lt>paulo.s.castanheira@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2021 Tonnerre Lombard <paulo.s.castanheira@gmail.com>.
+Copyright (c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
