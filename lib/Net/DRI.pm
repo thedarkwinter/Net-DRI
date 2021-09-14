@@ -226,7 +226,7 @@ sub new
      'ID' => 'GMORegistry::PANDI',
      'IM' => 'Domicilium',
      'IN' => 'Afilias::IN',
-     'INFO' => 'Afilias::Afilias',
+     'INFO' => 'Donuts', # Second Move INFO => Afilias::Afilias => Donuts
      'IT' => 'IITCNR',
      'JP' => 'GMORegistry::JPRS',
      'KSRegistry' => 'CentralNic::CentralNic',
@@ -236,7 +236,7 @@ sub new
      'MAM' => 'Nominet::MMX',
      'ME' => 'Afilias::Shared',
      'MN' => 'Afilias::Shared',
-     'MOBI' => 'Afilias::Afilias',
+     'MOBI' => 'Donuts', # Second Move MOBI => Afilias::Afilias => Donuts
      'MSKIX' => 'TCI::MSKIX',
      'MX' => 'NICMexico',
      'MX_GTLD' => 'ECOMLAC',
@@ -253,7 +253,7 @@ sub new
      'ORG' => 'Afilias::PIR',
      'PH' => 'CoCCA::PH',
      'PL' => 'NASK',
-     'PRO' => 'Afilias::Afilias',
+     'PRO' => 'Donuts', # Second Move PRO => Afilias::Afilias => Donuts, but pro extention needs in Afilias::Shared
      'PT' => 'DNSPT',
      'RegBox' => 'NicAT::RegBox',
      'RF' => 'TCI::RF',
@@ -282,6 +282,7 @@ sub new
      'Verisign::NAME' => 'VeriSign::NameStore',
      'VNDS' => 'VeriSign::COM_NET', # warning, this was actually split into COM_NET and NameStore!
      'WS' => 'GDI',
+     'Afilias::Afilias' => 'Donuts' # TLds moved to Donuts but extentions only work if using Afilias::Shared
   };
 
  return $self;
@@ -400,7 +401,7 @@ sub tld2reg
 
 sub installed_registries
 {
- return qw/AdamsNames Afilias::Afilias Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::SKNIC CentralNic::Zuerich CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CIRA::IE CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium::BE DNSBelgium::GTLD DNSPT Domicilium Donuts DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::JPRS GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET LVRegistry NASK Neustar::Narwhal NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::Amazon Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE TRA::BH UniRegistry::COOP UniRegistry::UniRegistry UniRegistry::ICM UniRegistry::INC UniRegistry::DM UPU VeriSign::COM_NET VeriSign::NameStore VeriSign::VeriSign ZACR/;
+ return qw/AdamsNames Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::SKNIC CentralNic::Zuerich CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CIRA::IE CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium::BE DNSBelgium::GTLD DNSPT Domicilium Donuts DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::JPRS GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET LVRegistry NASK Neustar::Narwhal NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::Amazon Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE TRA::BH UniRegistry::COOP UniRegistry::UniRegistry UniRegistry::ICM UniRegistry::INC UniRegistry::DM UPU VeriSign::COM_NET VeriSign::NameStore VeriSign::VeriSign ZACR/;
 }
 
 ####################################################################################################

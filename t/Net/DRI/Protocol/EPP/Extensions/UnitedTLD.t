@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 80;
+use Test::More tests => 81;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -24,6 +24,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
 $dri->add_registry('NGTLD',{provider=>'donuts'});
 $dri->target('donuts')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
+
 
 my ($rc,$toc,$ch1,$ch2);
 
@@ -153,6 +155,14 @@ is($dri->get_info('balance'),'200000.00','registrar_balance get_info (balance)')
 is($dri->get_info('final'),'0.00','registrar_balance get_info (final)');
 is($dri->get_info('restricted'),'500.00','registrar_balance get_info (restricted)');
 is($dri->get_info('notification'),'1000.00','registrar_balance get_info (notification)');
+
+# Afilias Migration to donuts September 2021
+my @tlds = qw/ac archi bet bio black blue green info io kim lgbt llc lotto mobi organic pet pink poker pro promo red sh shiksha ski vote voto xn--5tzm5g xn--6frz82g/;
+my @domains = map {"test.$_"} @tlds;
+my $domain_xml = join('', map(qq(<domain:cd><domain:name avail="1">$_</domain:name></domain:cd>), @domains));
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">'.$domain_xml.'</domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check(@domains);
+is($rc->is_success(),1,'migrated tlds exist');
 
 ##########################
 #Check 'standard' category (zacr)

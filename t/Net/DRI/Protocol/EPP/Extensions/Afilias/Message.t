@@ -24,16 +24,16 @@ sub r       { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_current_registry('Afilias::Afilias',{clid => 'ClientX'});
+$dri->add_current_registry('Afilias::Shared',{clid => 'ClientX'});
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my ($rc,$ok,$cs,$st,$p);
 
 ####################################################################################################
 ## OXRS
-$R2=$E1."<response><result code='2005'><msg lang='en-US'>Parameter value syntax error</msg><value xmlns:oxrs='urn:afilias:params:xml:ns:oxrs-1.0'><oxrs:xcp>2005:Parameter value syntax error (ContactAuthInfoType:AUTHT range (6-16))</oxrs:xcp></value></result>".$TRID."</response>".$E2;
+$R2=$E1."<response><result code='2005'><msg lang='en-US'>Parameter value syntax error</msg><value xmlns:oxrs='urn:afilias:params:xml:ns:oxrs-1.0'><oxrs:xcp>2005:Parameter value syntax error (ContactAuthecoType:AUTHT range (6-16))</oxrs:xcp></value></result>".$TRID."</response>".$E2;
 
-$rc=$dri->domain_check('toto.info');
-is_deeply([$rc->get_extended_results()],[{from=>'oxrs',type=>'text',message=>'2005:Parameter value syntax error (ContactAuthInfoType:AUTHT range (6-16))'}],'oxrs error message parsing');
+$rc=$dri->domain_check('toto.eco');
+is_deeply([$rc->get_extended_results()],[{from=>'oxrs',type=>'text',message=>'2005:Parameter value syntax error (ContactAuthecoType:AUTHT range (6-16))'}],'oxrs error message parsing');
 
 exit 0;

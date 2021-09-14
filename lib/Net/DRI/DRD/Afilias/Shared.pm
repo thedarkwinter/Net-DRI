@@ -104,7 +104,7 @@ sub name     { return 'Afilias::Shared'; }
 
 sub tlds     {
  my @legacygTLDs = qw/asia/;
- my @newgTLDs = qw/xn--4gbrim xn--kput3i bnpparibas eco ged global indians ist istanbul ltda onl rich spa srl vegas zara/;
+ my @newgTLDs = qw/xn--4gbrim xn--kput3i bnpparibas eco ged indians ist istanbul ltda onl rich spa srl vegas zara/;
  my @ccTLDs = (
      'ag',(map { $_.'.ag'} qw/co com net nom org/),
      'bz',(map { $_.'.bz'} qw/co com net org/),
@@ -141,4 +141,14 @@ sub verify_name_domain
 }
 
 ####################################################################################################
+####################################################################################################
+## Copied from old PRO DRD
+## TODO : $av should be checked here to be syntaxically correct before doing process()
+
+sub av_create { my ($self,$ndr,$av,$ep)=@_; return $ndr->process('av','create',[$av,$ep]); }
+sub av_check  { my ($self,$ndr,$av,$ep)=@_; return $ndr->process('av','check',[$av,$ep]); }
+sub av_info   { my ($self,$ndr,$av,$ep)=@_; return $ndr->process('av','info',[$av,$ep]); }
+
+####################################################################################################
+
 1;

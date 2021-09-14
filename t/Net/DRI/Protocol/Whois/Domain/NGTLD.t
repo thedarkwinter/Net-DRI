@@ -94,8 +94,8 @@ is($r->name(),'Ville de Paris','domain_info get_info (contact) registrant name')
 is($r->org(),undef,'domain_info get_info (contact) registrant org');
 
 ####################################################################################################
-# Afilias
-$R2='Domain Name:NIC.PINK
+# Afilias::Shared
+$R2='Domain Name:NIC.ECO
 Domain ID: D51961279-LRMS
 Creation Date: 2014-03-14T16:20:28Z
 Updated Date: 2014-05-13T20:31:49Z
@@ -144,10 +144,10 @@ Tech Phone Ext:
 Tech Fax: +1.2157065701
 Tech Fax Ext:
 Tech Email:support@afilias.info
-Name Server:A0.NIC.PINK
-Name Server:A2.NIC.PINK
-Name Server:B0.NIC.PINK
-Name Server:C0.NIC.PINK
+Name Server:A0.NIC.ECO
+Name Server:A2.NIC.ECO
+Name Server:B0.NIC.ECO
+Name Server:C0.NIC.ECO
 Name Server:
 Name Server:
 Name Server:
@@ -161,12 +161,12 @@ DNSSEC:Unsigned
 
 Access to AFILIAS WHOIS information is provided to assist persons in determining the contents of a domain name registration record in the Afilias registry database. The data in this record is provided by Afilias Limited for informational purposes only, and Afilias does not guarantee its accuracy.  This service is intended only for query-based access. You agree that you will use this data only for lawful purposes and that, under no circumstances will you use this data to(a) allow, enable, or otherwise support the transmission by e-mail, telephone, or facsimile of mass unsolicited, commercial advertising or solicitations to entities other than the data recipient\'s own existing customers; or (b) enable high volume, automated, electronic processes that send queries or data to the systems of Registry Operator, a Registrar, or Afilias except as reasonably necessary to register domain names or modify existing registrations. All rights reserved. Afilias reserves the right to modify these terms at any time. By submitting this query, you agree to abide by this policy.';
 
-$dri->add_registry('NGTLD',{provider=>'afilias'});
-$dri->target('afilias')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.pink');
-is($rc->is_success(),1,'AFILIAS domain_info is_success');
+$dri->add_registry('NGTLD',{provider=>'afiliassrs'});
+$dri->target('afiliassrs')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$rc = $dri->domain_info('nic.eco');
+is($rc->is_success(),1,'AFILIAS Shared domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.pink','domain_info get_info (name)');
+is($dri->get_info('name'),'nic.eco','domain_info get_info (name)');
 is($dri->get_info('id'),'D51961279-LRMS','domain_info get_info (id)');
 is($dri->get_info('clName'),'Afilias (R719-LRMS)','domain_info get_info (clName)');
 is($dri->get_info('clIANA'),'800219','domain_info get_info (clIANA)');
@@ -182,7 +182,7 @@ is($dri->get_info('wuDate'),undef,'domain_info get_info (wuDate)'); # They don't
 $h=$dri->get_info('ns');
 isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
 @hs=$h->get_names();
-is_deeply(\@hs,['a0.nic.pink','a2.nic.pink','b0.nic.pink','c0.nic.pink'],'domain_info get_info (ns) get_names');
+is_deeply(\@hs,['a0.nic.eco','a2.nic.eco','b0.nic.eco','c0.nic.eco'],'domain_info get_info (ns) get_names');
 $c=$dri->get_info('contact');
 isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
 is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');
