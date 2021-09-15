@@ -2,7 +2,9 @@
 
 use strict;
 use warnings;
-use Test::More tests => 545;
+
+use Test::More tests => 548;
+
 
 BEGIN {
 use_ok('Net::DRI');
@@ -101,6 +103,7 @@ use_ok('Net::DRI::DRD::GMORegistry::JPRS');
 use_ok('Net::DRI::DRD::GMORegistry::KYOTO');
 use_ok('Net::DRI::DRD::GMORegistry::PANDI');
 use_ok('Net::DRI::DRD::GMORegistry::SHOP');
+use_ok('Net::DRI::DRD::GoDaddy::MZB');
 use_ok('Net::DRI::DRD::HostmasterUA');
 use_ok('Net::DRI::DRD::ICANN');
 use_ok('Net::DRI::DRD::IENUMAT');
@@ -333,6 +336,8 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::FRED::Domain');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FRED::KeySET');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FRED::Message');
 use_ok('Net::DRI::Protocol::EPP::Extensions::FRED::NSSET');
+use_ok('Net::DRI::Protocol::EPP::Extensions::GoDaddy');
+use_ok('Net::DRI::Protocol::EPP::Extensions::GoDaddy::MZB');
 use_ok('Net::DRI::Protocol::EPP::Extensions::GL');
 use_ok('Net::DRI::Protocol::EPP::Extensions::GracePeriod');
 use_ok('Net::DRI::Protocol::EPP::Extensions::HTTP');
