@@ -157,7 +157,7 @@ is($dri->get_info('restricted'),'500.00','registrar_balance get_info (restricted
 is($dri->get_info('notification'),'1000.00','registrar_balance get_info (notification)');
 
 # Afilias Migration to donuts September 2021
-my @tlds = qw/ac archi bet bio black blue green info io kim lgbt llc lotto mobi organic pet pink poker pro promo red sh shiksha ski vote voto xn--5tzm5g xn--6frz82g/;
+my @tlds = qw/ac archi bet bio black blue green info io kim lgbt llc lotto mobi organic pet pink poker pro promo red sh shiksha ski vote voto watches xn--5tzm5g xn--6frz82g/;
 my @domains = map {"test.$_"} @tlds;
 my $domain_xml = join('', map(qq(<domain:cd><domain:name avail="1">$_</domain:name></domain:cd>), @domains));
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">'.$domain_xml.'</domain:chkData></resData>'.$TRID.'</response>'.$E2;
