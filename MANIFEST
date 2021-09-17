@@ -72,7 +72,6 @@ lib/Net/DRI/Data/RegistryObject.pm
 lib/Net/DRI/Data/StatusList.pm
 lib/Net/DRI/DRD.pm
 lib/Net/DRI/DRD/AdamsNames.pm
-lib/Net/DRI/DRD/Afilias/Afilias.pm
 lib/Net/DRI/DRD/Afilias/PIR.pm
 lib/Net/DRI/DRD/Afilias/Shared.pm
 lib/Net/DRI/DRD/AFNIC/AFNIC.pm
