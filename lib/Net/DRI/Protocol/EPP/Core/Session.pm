@@ -179,10 +179,21 @@ sub logout
 sub login
 {
  my ($po,$login,$password,$rdata)=@_;
+ 
+ use Data::Dumper;
+ $Data::Dumper::Maxdepth = 4;
+ #print Dumper($po->{custom}{new_pw_lengths});
+ 
+ 
+ # Non-standard min/max passord lengths enforced by some regestries; see lib/Net/DRI/DRD/NASK.pm
+ my @login_lengths  = exists $po->{custom} && exists $po->{custom}{login_lengths}  ? @{$po->{custom}{login_lengths}} : (3,16);
+ my @pw_lengths     = exists $po->{custom} && exists $po->{custom}{pw_lengths}     ? @{$po->{custom}{pw_lengths}}    : (6,16);
+ my @new_pw_lengths = exists $po->{custom} && exists $po->{custom}{new_pw_lengths} ? @{$po->{custom}{new_pw_lengths}} : (6,16);
+ 
  Net::DRI::Exception::usererr_insufficient_parameters('login')    unless defined $login && length $login;
  Net::DRI::Exception::usererr_insufficient_parameters('password') unless defined $password && length $password;
- Net::DRI::Exception::usererr_invalid_parameters('login')         unless Net::DRI::Util::xml_is_token($login,3,16);
- Net::DRI::Exception::usererr_invalid_parameters('password')      unless Net::DRI::Util::xml_is_token($password,6,16);
+ Net::DRI::Exception::usererr_invalid_parameters('login')         unless Net::DRI::Util::xml_is_token($login,@login_lengths);
+ Net::DRI::Exception::usererr_invalid_parameters('password')      unless Net::DRI::Util::xml_is_token($password,@pw_lengths);
 
  my $mes=$po->message();
  $mes->command(['login']);
@@ -192,7 +203,7 @@ sub login
 
  if (Net::DRI::Util::has_key($rdata,'client_newpassword'))
  {
-  Net::DRI::Exception::usererr_invalid_parameters('client_newpassword') unless Net::DRI::Util::xml_is_token($rdata->{client_newpassword},6,16);
+  Net::DRI::Exception::usererr_invalid_parameters('client_newpassword') unless Net::DRI::Util::xml_is_token($rdata->{client_newpassword},@new_pw_lengths);
   push @d,['newPW',$rdata->{client_newpassword}];
  }
 

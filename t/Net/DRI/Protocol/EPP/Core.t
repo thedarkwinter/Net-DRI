@@ -8,7 +8,8 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 276;
+use Test::More tests => 282;
+use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -465,6 +466,14 @@ $rc=$dri->process('session','login',['ClientX','foo-BAR2',{client_newpassword =>
 is($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><newPW>bar-FOO2</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://custom/obj1ext-1.0</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build');
 is($rc->is_success(),1,'session login is_success');
 
+$R2='';
+throws_ok { $dri->process('session','login',['x'x2,'x'x6])} qr/Invalid parameters: login/, 'min login length error ok';
+throws_ok { $dri->process('session','login',['x'x17,'x'x6])} qr/Invalid parameters: login/, 'max login length error ok';
+throws_ok { $dri->process('session','login',['x'x3,'x'x5])} qr/Invalid parameters: password/, 'min pw length error ok';
+throws_ok { $dri->process('session','login',['x'x3,'x'x17])} qr/Invalid parameters: password/, 'max pw length error ok';
+throws_ok { $dri->process('session','login',['x'x3,'x'x6,{client_newpassword => 'x'x5}])} qr/Invalid parameters: client_newpassword/, 'min new pw length error ok';
+throws_ok { $dri->process('session','login',['x'x3,'x'x6,{client_newpassword => 'x'x17}])} qr/Invalid parameters: client_newpassword/, 'max new pw length error ok';
+
 ####################################################################################################
 ## Registry Messages
 
@@ -574,6 +583,7 @@ $rc=$dri->process('session','noop',[]);
 $R2='';
 $rc=$dri->process('session','login',['ClientX','foo-BAR2',{extensions_filter => \&extfilter}]);
 is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://custom/obj1ext-2.0</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build extensions_filter');
+
 
 
 exit 0;

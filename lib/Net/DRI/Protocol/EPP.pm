@@ -95,9 +95,9 @@ sub new
  $drd->set_factories($self) if $drd->can('set_factories');
  $self->factories('message',sub { my $m=Net::DRI::Protocol::EPP::Message->new(@_); $m->ns($self->ns()); $m->version($version); return $m; });
  $self->factories('status',sub { return Net::DRI::Protocol::EPP::Core::Status->new(); });
-
  $self->_load($rp);
  $self->setup($rp);
+ $self->{custom} = $rp->{custom} if exists $rp->{custom};
  return $self;
 }
 
