@@ -309,6 +309,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/DK.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DK/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DK/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DK/Host.pm
+lib/Net/DRI/Protocol/EPP/Extensions/DK/Message.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DNSBE.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DNSBE/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/DNSBE/Domain.pm
