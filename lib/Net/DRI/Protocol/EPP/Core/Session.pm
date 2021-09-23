@@ -179,16 +179,11 @@ sub logout
 sub login
 {
  my ($po,$login,$password,$rdata)=@_;
- 
- use Data::Dumper;
- $Data::Dumper::Maxdepth = 4;
- #print Dumper($po->{custom}{new_pw_lengths});
- 
- 
+
  # Non-standard min/max passord lengths enforced by some regestries; see lib/Net/DRI/DRD/NASK.pm
- my @login_lengths  = exists $po->{custom} && exists $po->{custom}{login_lengths}  ? @{$po->{custom}{login_lengths}} : (3,16);
- my @pw_lengths     = exists $po->{custom} && exists $po->{custom}{pw_lengths}     ? @{$po->{custom}{pw_lengths}}    : (6,16);
- my @new_pw_lengths = exists $po->{custom} && exists $po->{custom}{new_pw_lengths} ? @{$po->{custom}{new_pw_lengths}} : (6,16);
+ my @login_lengths  = exists $po->{cparms} && exists $po->{cparms}{login_lengths}  ? @{$po->{cparms}{login_lengths}}  : (3,16);
+ my @pw_lengths     = exists $po->{cparms} && exists $po->{cparms}{pw_lengths}     ? @{$po->{cparms}{pw_lengths}}     : (6,16);
+ my @new_pw_lengths = exists $po->{cparms} && exists $po->{cparms}{new_pw_lengths} ? @{$po->{cparms}{new_pw_lengths}} : (6,16);
  
  Net::DRI::Exception::usererr_insufficient_parameters('login')    unless defined $login && length $login;
  Net::DRI::Exception::usererr_insufficient_parameters('password') unless defined $password && length $password;

@@ -955,8 +955,8 @@ is_deeply($rc->get_data('session','server','extensions_selected'),['http://www.d
 # # length: from 20 to 64 => optional <newPW> element
 
 $R2='';
-$rc=$dri->process('session','login',['ClientX','thisismyoldpass-foo-BAR2',{client_newpassword => 'thisismynewpass-FOO2BAR2021'}]);
-is($R1,$E1.'<command><login><clID>ClientX</clID><pw>thisismyoldpass-foo-BAR2</pw><newPW>thisismynewpass-FOO2BAR2021</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>http://www.dns.pl/nask-epp-schema/contact-2.1</objURI><objURI>http://www.dns.pl/nask-epp-schema/host-2.1</objURI><objURI>http://www.dns.pl/nask-epp-schema/domain-2.1</objURI><objURI>http://www.dns.pl/nask-epp-schema/future-2.1</objURI><svcExtension><extURI>http://www.dns.pl/nask-epp-schema/extcon-2.1</extURI><extURI>http://www.dns.pl/nask-epp-schema/extdom-2.1</extURI><extURI>http://www.dns.pl/nask-epp-schema/secDNS-2.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build');
+$rc=$dri->process('session','login',['ClientX','foo-BAR2',{client_newpassword => 'thisismynewpass-FOO2BAR2021'}]);
+is($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><newPW>thisismynewpass-FOO2BAR2021</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>http://www.dns.pl/nask-epp-schema/contact-2.1</objURI><objURI>http://www.dns.pl/nask-epp-schema/host-2.1</objURI><objURI>http://www.dns.pl/nask-epp-schema/domain-2.1</objURI><objURI>http://www.dns.pl/nask-epp-schema/future-2.1</objURI><svcExtension><extURI>http://www.dns.pl/nask-epp-schema/extcon-2.1</extURI><extURI>http://www.dns.pl/nask-epp-schema/extdom-2.1</extURI><extURI>http://www.dns.pl/nask-epp-schema/secDNS-2.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build');
 is($rc->is_success(),1,'session login with pass length 6-60 and  newpass length 20-60 is_success');
 
 $R2='';

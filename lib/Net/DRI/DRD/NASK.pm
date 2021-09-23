@@ -95,7 +95,7 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::HTTP',{protocol_connection=>'Net::DRI::Protocol::EPP::Extensions::HTTP'},'Net::DRI::Protocol::EPP::Extensions::PL',{custom => {pw_lengths => [6,64], new_pw_lengths => [20,64]}}) if $type eq 'epp'; ## EPP is over HTTPS here
+ return ('Net::DRI::Transport::HTTP',{protocol_connection=>'Net::DRI::Protocol::EPP::Extensions::HTTP'},'Net::DRI::Protocol::EPP::Extensions::PL',{pw_lengths => [6,64], new_pw_lengths => [20,64]}) if $type eq 'epp'; ## EPP is over HTTPS here
  return;
 }
 

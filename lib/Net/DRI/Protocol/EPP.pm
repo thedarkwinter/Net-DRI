@@ -97,7 +97,7 @@ sub new
  $self->factories('status',sub { return Net::DRI::Protocol::EPP::Core::Status->new(); });
  $self->_load($rp);
  $self->setup($rp);
- $self->{custom} = $rp->{custom} if exists $rp->{custom};
+ $self->{cparms} = $rp;
  return $self;
 }
 
