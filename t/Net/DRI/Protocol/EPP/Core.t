@@ -585,7 +585,6 @@ $rc=$dri->process('session','login',['ClientX','foo-BAR2',{extensions_filter => 
 is_string($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><options><version>1.0</version><lang>en</lang></options><svcs><objURI>urn:ietf:params:xml:ns:obj1</objURI><objURI>urn:ietf:params:xml:ns:obj2</objURI><objURI>urn:ietf:params:xml:ns:obj3</objURI><svcExtension><extURI>http://custom/obj1ext-2.0</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build extensions_filter');
 
 
-
 exit 0;
 
 sub extfilter { my (@exts)=@_; return map { s/1\.0/2.0/; $_; } @exts; }
