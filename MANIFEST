@@ -115,6 +115,8 @@ lib/Net/DRI/DRD/GMORegistry/JPRS.pm
 lib/Net/DRI/DRD/GMORegistry/KYOTO.pm
 lib/Net/DRI/DRD/GMORegistry/PANDI.pm
 lib/Net/DRI/DRD/GMORegistry/SHOP.pm
+lib/Net/DRI/DRD/GoDaddy/MZB.pm
+lib/Net/DRI/DRD/GoDaddy/TWNIC.pm
 lib/Net/DRI/DRD/HostmasterUA.pm
 lib/Net/DRI/DRD/ICANN.pm
 lib/Net/DRI/DRD/IENUMAT.pm
@@ -128,7 +130,6 @@ lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
 lib/Net/DRI/DRD/Neustar/IN.pm
 lib/Net/DRI/DRD/Neustar/Narwhal.pm
-lib/Net/DRI/DRD/Neustar/TWNIC.pm
 lib/Net/DRI/DRD/NGTLD.pm
 lib/Net/DRI/DRD/NicAT/AT.pm
 lib/Net/DRI/DRD/NicAT/RegBox.pm
