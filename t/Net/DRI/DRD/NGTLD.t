@@ -195,34 +195,34 @@ is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Sock
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase CentralNic::Fee/],'teleinfo: loaded_modules');
 
 # Neustar Legacy (hotels)
-$rc = $dri->add_registry('NGTLD',{provider => 'neustar','name'=>'hotels'});
-is($rc->{last_registry},'hotels','neustar: add_registry');
+$rc = $dri->add_registry('NGTLD',{provider => 'godaddy_dedicated','name'=>'hotels'});
+is($rc->{last_registry},'hotels','godaddy_dedicated: add_registry');
 $rc = $dri->target('hotels')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-is($rc->is_success(),1,'neustar: add_current_profile');
-is($dri->name(),'hotels','neustar: name');
-is_deeply([$dri->tlds()],['hotels'],'neustar: tlds');
+is($rc->is_success(),1,'godaddy_dedicated: add_current_profile');
+is($dri->name(),'hotels','godaddy_dedicated: name');
+is_deeply([$dri->tlds()],['hotels'],'godaddy_dedicated: tlds');
 @periods = $dri->periods();
-is($#periods,9,'neustar: periods');
-is_deeply( [$dri->object_types()],['domain','contact','ns'],'neustar: object_types');
-is_deeply( [$dri->profile_types()],['epp','whois'],'neustar: profile_types');
+is($#periods,9,'godaddy_dedicated: periods');
+is_deeply( [$dri->object_types()],['domain','contact','ns'],'godaddy_dedicated: object_types');
+is_deeply( [$dri->profile_types()],['epp','whois'],'godaddy_dedicated: profile_types');
 $drd = $dri->{registries}->{hotels}->{driver};
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{extensions => ['-NeuLevel::WhoisType','-ARI::KeyValue','-NeuLevel::EXTContact'], 'brown_fee_version' => '0.6' }],'neustar: epp transport_protocol_default');
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message CentralNic::Fee/],'neustar: loaded_modules');
-is($drd->{bep}->{bep_type},1,'neustar: bep_type');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{extensions => ['-NeuLevel::WhoisType','-ARI::KeyValue','-NeuLevel::EXTContact'], 'brown_fee_version' => '0.6' }],'godaddy_dedicated: epp transport_protocol_default');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message CentralNic::Fee/],'godaddy_dedicated: loaded_modules');
+is($drd->{bep}->{bep_type},1,'godaddy_dedicated: bep_type');
 
-# Neustar-Narwhal Using ARI extensions
-$rc = $dri->add_registry('NGTLD',{provider => 'ari'});
-is($rc->{last_registry},'ari','neustar-ari: add_registry');
-$rc = $dri->target('ari')->add_current_profile('ari','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-$drd = $dri->{registries}->{ari}->{driver};
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block  NeuLevel::CO NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'neustar-ari: loaded_modules');
+# GoDaddy DNRS Using Legacy ARI extensions
+$rc = $dri->add_registry('NGTLD',{provider => 'godaddy_legacy'});
+is($rc->{last_registry},'godaddy_legacy','godaddy_legacy: add_registry');
+$rc = $dri->target('godaddy_legacy')->add_current_profile('godaddy_legacy','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{godaddy_legacy}->{driver};
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block  NeuLevel::CO NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'godaddy_legacy: loaded_modules');
 
 # Neustar-Narwhal Using Starndard extensions
-$rc = $dri->add_registry('NGTLD',{provider => 'narwhal'});
-is($rc->{last_registry},'narwhal','neustar-narwhal: add_registry');
-$rc = $dri->target('narwhal')->add_current_profile('narwhal','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-$drd = $dri->{registries}->{'narwhal'}->{driver};
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'neustar-narwhal: loaded_modules');
+$rc = $dri->add_registry('NGTLD',{provider => 'godaddy_dnrs'});
+is($rc->{last_registry},'godaddy_dnrs','godaddy_dnrs: add_registry');
+$rc = $dri->target('godaddy_dnrs')->add_current_profile('godaddy_dnrs','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$drd = $dri->{registries}->{'godaddy_dnrs'}->{driver};
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'godaddy_dnrs: loaded_modules');
 
 ####################################################################################################
 #### ngTLD Methods

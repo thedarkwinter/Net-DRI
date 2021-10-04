@@ -698,7 +698,7 @@ Contended TLD's not included
    } if $bep eq 'knet';
 
 =pod
-
+FIXME
 =head2 Neustar Narwhal / ex - ARI
 
  $dri->add_registry('NGTLD',{provider=>'ari'}); # To use ARI extensions
@@ -805,8 +805,8 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Neustar->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::Neustar'],
-     whois_server => 'whois.aridnrs.net.au',
- } if $bep eq 'ari';
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+ } if $bep eq 'godaddy_legacy';
 
  return {
      bep_type => 2, # shared registry
@@ -839,15 +839,15 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{ 'brown_fee_version' => '0.6' }],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Neustar->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::Neustar'],
-     whois_server => 'whois.aridnrs.net.au',
- } if $bep eq 'narwal' || $bep eq 'narwhal';
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+ } if $bep eq 'godaddy_dnrs';
 
  return {
      bep_type => 1, # dedicated registry
      tlds => ['hotels htc ipiranga itau'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{extensions => ['-NeuLevel::WhoisType','-ARI::KeyValue','-NeuLevel::EXTContact'], 'brown_fee_version' => '0.6' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'neustar';
+   } if $bep eq 'godaddy_dedicated';
 
 =pod
 
