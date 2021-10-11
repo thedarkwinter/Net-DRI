@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -23,17 +24,17 @@ use Net::DRI::Data::Contact::Neustar;
 
 ####################################################################################################
 =pod
-FIXME
+
 =head1 NAME
 
-Net::DRI::DRD::Neustar::Narwhal - Neustar Driver for Net::DRI
+Net::DRI::DRD::GoDaddy::DNRS - GoDaddy DNRS for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension For Neustar Narwhal platform. Most Neustar TLDs are now operated on this shared platform, including all ARI TLDs, most of the
-ngTLDs that Neustar operated on its legacy platform, as well as older gTLDs and ccTLDs, which are gradually getting moved to this platform.
+Additional domain extension For GoDaddy DNRS (former Neustar Narwhal) platform. Former Neustar TLDs are now operated on this shared platform, including all ARI TLDs,
+most of the ngTLDs that Neustar operated on its legacy platform, as well as older gTLDs and ccTLDs.
 
-Neustar utilises the following standard, and custom extensions, in many cases supporting two versions for the same functionallity.
+GoDaddy::DNRS, as did Neustar::Narwhal, utilises the following standard and custom extensions, in many cases supporting two versions for the same functionallity.
 Please see the test files for more examples.
 
 =head2 Standard extensions:
@@ -88,12 +89,14 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Paulo Castanheira <paulo.s.castanheira@gmail.com
 
 =head1 COPYRIGHT
 
-Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
+(c) 2014 Patrick Mevzek <netdri@dotandco.com>.
 (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

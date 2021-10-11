@@ -74,8 +74,8 @@ There are a number of options that can be defined in the hash send to this unit
 
 =head3 Selecting a back end provider
 
- $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'Neustar'});
- $dri->target('Neustar')->add_current_profile(....);
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'godaddy_dnrs'});
+ $dri->target('godaddy_dnrs')->add_current_profile(....);
 
 =head3 Backend providers with shared environments
 
@@ -86,12 +86,12 @@ Donuts is an example of a backend that provides a single platform for all their 
 
 =head3 Backend providers with dedicated environments
 
-Neustar is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
-e.g: add a custom target name, by default this is the back end provider name, but in this instance we select tube
+DNSBelgium is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
+e.g: add a custom target name, by default this is the back end provider name, but in this instance we select brussels
 Note, if the name you specified matches one of the TLD's and you have not manually specified the tld list, if will use only this TLD. If the name doesn't match a TLD, it will make all TLD's by the prover available in the DRD
 
- $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'tube'});
- $dri->target('tube')->add_current_profile(....);
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'dnsbelgium',name=>'brussels'});
+ $dri->target('brussels')->add_current_profile(....);
 
 =cut
 
@@ -698,25 +698,28 @@ Contended TLD's not included
    } if $bep eq 'knet';
 
 =pod
-FIXME
-=head2 Neustar Narwhal / ex - ARI
 
- $dri->add_registry('NGTLD',{provider=>'ari'}); # To use ARI extensions
+=head2 GoDaddy DNRS (Former Neustar Narwhal/ARI)
 
- $dri->add_registry('NGTLD',{provider=>'narwhal'}); # To use Standard/Nesutar extensions
+ $dri->add_registry('NGTLD',{provider=>'godaddy_dnrs'}); # To use Standard/Neustar extensions
 
- $dri->add_registry('NGTLD',{provider=>'neustar'}); # To use neustar legacy system (being phased out)
+ $dri->add_registry('NGTLD',{provider=>'godaddy_legacy'}); # To use ARI extensions
 
 =head3 Status: Working
 
 =head3 TLDs
 
-Legacy (use 'neustar')
-Neustar operates dedicated connections per TLD, so it is recommended to use the name parameter to select the TLD.
+=begin comment
+
+Godaddy DNRS Legacy Dedicated (use 'godaddy_dedicated' or 'neustar')
+Neustar used to operate dedicated connections per TLD, so you could to use the name parameter to select the TLD.
+Uncomment the godaddy_dedicated if needed.
 
 biz hotels htc ipiranga itau
 
-Narwhal (use 'ari' or 'narwhal') or DRD::Narwhal
+=end comment
+
+GoDaddy DNRS (former Narwhal) (use 'godaddy_dnrs' or 'godaddy_legacy') or DRD::GoDaddy::DNRS
 
 aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball basketball bible bid biz booking boots box buzz calvinklein cancerresearch caravan cartier catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co commbank compare coupon courses cricket cuisinella date dell discover doha download duns dupont earth everbank faith farmers ferrero film flickr flir ford fox frontier ftr gap giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe lifeinsurance lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping pramerica praxi pru prudential qvc racing review rmit rocher rugby safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj yahoo yandex zero zippo
 
@@ -732,7 +735,7 @@ L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
 
 L<Net::DRI::Protocol::EPP::Extensions::AllocationToken> urn:ietf:params:xml:ns:allocationToken-1.0
 
-=head3 Custom extensions (NeuLevel Narwhal)
+=head3 Custom extensions (Godaddy DNRS Legacy former Narwhal)
 
 L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::Message> urn:ietf:params:xml:ns:neulevel-1.0
 
@@ -760,17 +763,16 @@ L<Net::DRI::Protocol::EPP::Extensions::ARI::Block> urn:ar:params:xml:ns:block-1.
 
 =head3 Notes
 
-1. You can select from "narwhal" or "ari" which use different extensions. "ari" uses custom ARI extensions, while "narwhal" uses the more standardizes extensions.
-It is recommended that "neustar" legacy is not used, but rather use the DRD::Neustar::* Drivers.
+1. You can select from "godaddy_dnrs" or "godaddy_legacy" which use different extensions. "godaddy_legacy" uses custom ARI extensions, while "godaddy_dnrs" uses the more standardizes extensions.
 
 2. ARI's implementation of LaunchPhase (TMCH) differers from the standard, however the units are built to mimic the standard extension's usage
 
 3. In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension for contacts and domains.
 See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::NeuLevel::EXTContact>
 
- $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'nyc'}); # using name
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'godaddy_dnrs',name=>'nyc'}); # using name
  $dri->target('nyc')->add_current_profile(....);
- $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'whatever',tlds=['nyc']}); # using tld
+ $dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'godaddy_dnrs',name=>'whatever',tlds=['nyc']}); # using tld
 
 =cut
 
@@ -806,7 +808,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Neustar->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::Neustar'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
- } if $bep eq 'godaddy_legacy';
+ } if $bep eq 'ari' || $bep eq 'godaddy_legacy';
 
  return {
      bep_type => 2, # shared registry
@@ -840,14 +842,16 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Neustar->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::Neustar'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
- } if $bep eq 'godaddy_dnrs';
+ } if $bep eq 'narwal' || $bep eq 'narwhal' || $bep eq 'godaddy_dnrs';
 
- return {
-     bep_type => 1, # dedicated registry
-     tlds => ['hotels htc ipiranga itau'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{extensions => ['-NeuLevel::WhoisType','-ARI::KeyValue','-NeuLevel::EXTContact'], 'brown_fee_version' => '0.6' }],
-     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-   } if $bep eq 'godaddy_dedicated';
+# Legacy Dedicated Servers; uncomment if needed
+#
+# return {
+#     bep_type => 1, # dedicated registry
+#     tlds => ['hotels htc ipiranga itau'],
+#     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{extensions => ['-NeuLevel::WhoisType','-ARI::KeyValue','-NeuLevel::EXTContact'], 'brown_fee_version' => '0.6' }],
+#     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+#   } if if $bep eq 'neustar' || $bep eq 'godaddy_dedicated';
 
 =pod
 

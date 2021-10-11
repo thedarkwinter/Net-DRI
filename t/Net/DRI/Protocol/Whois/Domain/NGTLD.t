@@ -196,7 +196,7 @@ is($r->org(),'Afilias Ltd.','domain_info get_info (contact) registrant org');
 
 
 ####################################################################################################
-# ARI (Neustar Narwahl)
+# GoDaddy DNRS (Former ARI/Neustar Narwhal)
 
 $R2='Domain Name: nic.aaa
 Domain ID: D215DA75E3E0A4133AE5DD1B3BE26C3E6-ARI
@@ -281,10 +281,10 @@ This information has been prepared and published in order to represent administr
 
 We may discontinue or amend any part or the whole of these Terms of Service from time to time at our absolute discretion.';
 
-$dri->add_registry('NGTLD',{provider=>'ari'});
-$dri->target('ari')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('NGTLD',{provider=>'godaddy_legacy'});
+$dri->target('godaddy_legacy')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
 $rc = $dri->domain_info('nic.aaa');
-is($rc->is_success(),1,'ARI domain_info is_success');
+is($rc->is_success(),1,'Godaddy Legacy domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
 is($dri->get_info('name'),'nic.aaa','domain_info get_info (name)');
 is($dri->get_info('id'),'D215DA75E3E0A4133AE5DD1B3BE26C3E6-ARI','domain_info get_info (id)');
