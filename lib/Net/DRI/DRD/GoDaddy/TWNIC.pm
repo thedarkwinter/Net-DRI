@@ -1,6 +1,7 @@
-## Domain Registry Interface, Neustar (TWNIC) policies
+## Domain Registry Interface, GoDaddy (TWNIC) policies
 ##
 ## Copyright (c) 2018 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+## Copyright (c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -12,7 +13,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::Neustar::TWNIC;
+package Net::DRI::DRD::GoDaddy::TWNIC;
 
 use strict;
 use warnings;
@@ -25,7 +26,7 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::Neustar::TWNIC - Neustar (TWNIC) policies for Net::DRI
+Net::DRI::DRD::GoDaddy::TWNIC - GoDaddy (TWNIC) policies for Net::DRI
 Supported TLDs: .tw, .club.tw, .com.tw, .ebiz.tw, .game.tw, .net.tw, .org.tw, .xn--kpry57d, .xn--kprw13d
 
 =head1 DESCRIPTION
@@ -46,11 +47,13 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
+Paulo Castanheira E<lt>paulo.s.castanheira@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
 Copyright (c) 2018 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+Copyright (c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -74,7 +77,7 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'Neustar::TWNIC'; }
+sub name     { return 'GoDaddy::TWNIC'; }
 sub tlds     { return ('tw', 'xn--kpry57d', 'xn--kprw13d', map { $_.'.tw'} qw/club com ebiz game net org/ ); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }

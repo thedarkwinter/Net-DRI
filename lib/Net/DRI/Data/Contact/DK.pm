@@ -24,7 +24,7 @@ use base qw(Net::DRI::Data::Contact);
 
 use Net::DRI::Exception;
 
-__PACKAGE__->register_attributes(qw(vat type ean pnumber mobile alt_email contact_validated));
+__PACKAGE__->register_attributes(qw(vat type ean pnumber mobile alt_email contact_validated management));
 
 =pod
 
@@ -177,6 +177,11 @@ sub validate {
 			push @errs,'"vat" field is not supported by this contact type (individual)' if (defined $self->vat());
 		}
   }
+
+  if ( my $management = $self->management() ) {
+    push @errs,'"management" field  can only accept the values registrar|registrant' if ! grep {/^$management$/} qw/registrar registrant/ ;
+  }
+
 	Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join(' / ',@errs)) if @errs;
 
 	return 1; # everything is as it should be!

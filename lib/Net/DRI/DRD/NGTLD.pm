@@ -340,13 +340,13 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi design fans feedback forum fun gay gent hair homes host icu inc ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts
+art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi design fans feedback forum fun gay gent hair homes host icu inc ink london love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts
 
 Contended TLD's not included
 
 =head3 Custom extensions:
 
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.4
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
 
 =head3 Notes
 
@@ -359,7 +359,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi design fans feedback forum fun gay gent hair homes host icu inc ink love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts/;
+    my @ngtlds = qw/art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi design fans feedback forum fun gay gent hair homes host icu inc ink london love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts/;
     my @ngtlds_contested = qw/hotel mail/; # some of these might go to other registries
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds);
 
@@ -371,6 +371,38 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
      verify_icann_reserved => 0,
      verify_check_name => 0,
     };
+ }
+
+=pod
+
+
+=head2 Zuerich
+
+ $dri->add_registry('NGTLD',{provider=>'centralnic_zuerich'});
+
+=head3 Status: Working
+
+=head3 TLDs
+
+zuerich
+
+Contended TLD's not included
+
+=head3 Custom extensions:
+
+L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.5
+
+=cut
+
+ if ($bep eq 'centralnic_zuerich') {
+   return {
+     bep_type => 1, # dedicated registry
+     tlds => [ qw/zuerich/ ],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','CentralNic::RegType','CentralNic::AuxContact'], 'brown_fee_version' => '0.5' }],
+     whois_server => 'whois.nic.zuerich',
+     verify_icann_reserved => 0,
+     verify_check_name => 0,
+   };
  }
 
 =pod
@@ -767,7 +799,8 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'wtc', 'xn--1ck2e1b', 'xn--80aqecdr1a', 'xn--bck1b9a5dre4c', 'xn--cck2b3b', 'xn--eckvdtc9d', 'xn--fct429k', 'xn--g2xx48c', 'xn--gckr3f0f',
         'xn--gk3at1e', 'xn--jvr189m', 'xn--kcrx77d1x4a', 'xn--kpu716f', 'xn--mgba3a3ejt', 'xn--mgba7c0bbn0a', 'xn--mgbb9fbpob', 'xn--mgbi4ecexp',
         'xn--ngbc5azd', 'xn--pbt977c', 'xn--rovu88b', 'xn--tiq49xqyj', 'yahoo', 'yandex',
-        'zero', 'zippo'
+        'zero', 'zippo',
+        'adult', 'porn', 'sex', 'xxx'
      ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::ARI',{}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Neustar->new(@_); } } ],
@@ -800,7 +833,8 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
         'wtc', 'xn--1ck2e1b', 'xn--80aqecdr1a', 'xn--bck1b9a5dre4c', 'xn--cck2b3b', 'xn--eckvdtc9d', 'xn--fct429k', 'xn--g2xx48c', 'xn--gckr3f0f',
         'xn--gk3at1e', 'xn--jvr189m', 'xn--kcrx77d1x4a', 'xn--kpu716f', 'xn--mgba3a3ejt', 'xn--mgba7c0bbn0a', 'xn--mgbb9fbpob', 'xn--mgbi4ecexp',
         'xn--ngbc5azd', 'xn--pbt977c', 'xn--rovu88b', 'xn--tiq49xqyj', 'yahoo', 'yandex',
-        'zero', 'zippo'
+        'zero', 'zippo',
+        'adult', 'porn', 'sex', 'xxx'
      ],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::Neustar',{ 'brown_fee_version' => '0.6' }],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::Neustar->new(@_); } } ],
@@ -854,8 +888,8 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-abogado bayern beer boston bradesco broadway casa cooking dds fashion fishing fit garden gop gucci horse law london luxe miami pharmacy rodeo surf vip vodka wedding work yoga
-# README: .gucci/.pharmacy is not part of MMX but loading here because has a similar logic :p
+abogado bayern beer boston bradesco broadway career casa cooking dds fashion fishing fit garden gop gucci horse jobs law luxe med miami pharmacy realestate realtor rodeo surf vip vodka wedding work yoga
+# README: .career/.gucci/.jobs/.med/.pharmacy/.realestate/.realtor is not part of MMX but loading here because has a similar logic :p
 
 =head3 Nominet-Amazon: TLDs migrated in 2019 from Neustar into Nominet management
 
@@ -872,7 +906,7 @@ amazon audible author aws book bot buy call circle deal fast fire free got hot i
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['abogado', 'bayern', 'beer', 'boston', 'bradesco', 'broadway', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'gucci', 'horse', 'law', 'london', 'luxe', 'miami', 'pharmacy', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
+     tlds => ['abogado', 'bayern', 'beer', 'boston', 'bradesco', 'broadway', 'career', 'casa', 'cooking', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'gucci', 'horse', 'jobs', 'law', 'luxe', 'med', 'miami', 'pharmacy', 'realestate', 'realtor', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
@@ -1281,7 +1315,7 @@ L<Net::DRI::Protocol::EPP::Extensions::UniRegistry::EPS> (Extended Protection Se
 
 =head3 TLDs
 
-xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe xn--9dbq2a azure bing career crs hotmail java maif microsoft oracle pictet realestate realtor sca shell sky xbox windows
+xn--pssy2u xn--c1yn36f xn--11b4c3d xn--t60b56a xn--c2br7g xn--42c2d9a xn--j1aef xn--3pxu8k xn--hdb9cza1b xn--mk1bu44c xn--fhbei xn--tckwe xn--9dbq2a azure bing crs hotmail java maif microsoft oracle pictet sca shell sky xbox windows
 
 Note: As VeriSign has started to use the RFC8748 Fee extension (fee-1.0), we are no longer supporting PremiumDomain and CentralNic::Fee to avoid conflicts
 
@@ -1307,7 +1341,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Fee>
  return {
      bep_type => 2,
      contact_i18n => 7, # They accept LOC *or* INT, but only one of them.
-     tlds => ['com','net','cc','tv','name','jobs','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','xn--9dbq2a','azure','bing','career','crs','hotmail','java','maif','microsoft','oracle','pictet','realestate','realtor','sca','shell','sky','xbox','windows'],
+     tlds => ['com','net','cc','tv','name','xn--pssy2u','xn--c1yn36f','xn--11b4c3d','xn--t60b56a','xn--c2br7g','xn--42c2d9a','xn--j1aef','xn--3pxu8k','xn--hdb9cza1b','xn--mk1bu44c','xn--fhbei','xn--tckwe','xn--9dbq2a','azure','bing','crs','hotmail','java','maif','microsoft','oracle','pictet','sca','shell','sky','xbox','windows'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{'disable_idn' => 1, custom => ['VeriSign::Sync', 'VeriSign::PollLowBalance', 'VeriSign::PollRGP', 'VeriSign::IDNLanguage', 'VeriSign::WhoWas', 'VeriSign::Suggestion', 'VeriSign::ClientAttributes', 'VeriSign::TwoFactorAuth', 'VeriSign::ZoneManagement', 'VeriSign::Balance', 'VeriSign::NameStore', 'Fee'], 'fee_version' => '1.0'}],
      whois_server => 'ccwhois.verisign-grs.com',
    } if $bep eq 'verisign';
