@@ -41,7 +41,7 @@ is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::P
 $dri->add_current_profile('p2','epp_ari',{f_send=>\&mysend,f_recv=>\&myrecv});
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::CO NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'GoDaddy DNRS (Ari): loaded_modules');
 
-# To use NGTLD with legacy nuestar dedicated servers, uncomment the godaddy_dedicated block in NGTLD
+# To use NGTLD with legacy neustar dedicated servers, uncomment the godaddy_dedicated block in NGTLD
 #
 # $dri->add_current_registry('NGTLD',{provider => 'godaddy_dedicated', 'name' => 'hotels'});
 # $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});

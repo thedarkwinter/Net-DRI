@@ -1531,8 +1531,8 @@ sub domain_check_claims
   # Afilias/GoDaddy::DNRS/CentralNIC/CoreNic/CRR/Donuts/GMO/KS/PIR/RegBox/Rightside/StartingDot/Tango/UniRegistry
 
   # These registres use claims as phase + phase_name us sub_phase. domain_check_claims('test-validate.tube',{phase=>'landrush'});
-  # MAM/KNet   (Knet seems to work either way - but rather put it here)
-  $lp->{sub_phase} = $rd->{phase} if ($bep =~ m/^(?:mam|knet)/);
+  # KNet   (Knet seems to work either way - but rather put it here)
+  $lp->{sub_phase} = $rd->{phase} if ($bep =~ m/^(?:knet)/);
   # i think there is much more to do here
  }
  $rd->{lp} = $lp;

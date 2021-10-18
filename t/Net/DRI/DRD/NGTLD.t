@@ -217,7 +217,7 @@ $rc = $dri->target('godaddy_legacy')->add_current_profile('godaddy_legacy','epp'
 $drd = $dri->{registries}->{godaddy_legacy}->{driver};
 is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block  NeuLevel::CO NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'godaddy_legacy: loaded_modules');
 
-# GoDaddy DNRS Using Starndard/Neustar extensions
+# GoDaddy DNRS Using Standard/Neustar extensions
 $rc = $dri->add_registry('NGTLD',{provider => 'godaddy_dnrs'});
 is($rc->{last_registry},'godaddy_dnrs','godaddy_dnrs: add_registry');
 $rc = $dri->target('godaddy_dnrs')->add_current_profile('godaddy_dnrs','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
@@ -240,7 +240,7 @@ is($lpres->{'phase'},'claims','domain_check_claims get_info(phase)');
 is($lpres->{'claim_key'},'2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001','domain_check_claims get_info(claim_key)');
 is($lpres->{'validator_id'},'sample','domain_check_claims get_info(validator_id)');
 
-# Dodaddy DNRS dedicate (former neustar) subphase = landrush (required). Uncomment godaddy_dedicated in NGTLD.t if needed
+# GoDaddy DNRS dedicate (former neustar) subphase = landrush (required). Uncomment godaddy_dedicated in NGTLD.t if needed
 #$rc = $dri->target('hotels');
 #$R2=$E1.'<response>'.r().'<extension><launch:chkData xmlns:launch="urn:ietf:params:xml:ns:launch-1.0"><launch:phase name="landrush">claims</launch:phase><launch:cd><launch:name exists="1">test.hotels</launch:name><launch:claimKey validatorID="sample">2013041500/2/6/9/rJ1NrDO92vDsAzf7EQzgjX4R0000000001</launch:claimKey></launch:cd></launch:chkData></extension>'.$TRID.'</response>'.$E2;
 #$rc = $dri->domain_check_claims('test.hotels',{phase=>'landrush'});
