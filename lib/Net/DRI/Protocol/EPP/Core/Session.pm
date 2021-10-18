@@ -180,7 +180,7 @@ sub login
 {
  my ($po,$login,$password,$rdata)=@_;
 
- # Non-standard min/max passord lengths enforced by some regestries; see lib/Net/DRI/DRD/NASK.pm
+ # Non-standard min/max password lengths enforced by some registries; see lib/Net/DRI/DRD/NASK.pm
  my @login_lengths  = exists $po->{cparms} && exists $po->{cparms}{login_lengths}  ? @{$po->{cparms}{login_lengths}}  : (3,16);
  my @pw_lengths     = exists $po->{cparms} && exists $po->{cparms}{pw_lengths}     ? @{$po->{cparms}{pw_lengths}}     : (6,16);
  my @new_pw_lengths = exists $po->{cparms} && exists $po->{cparms}{new_pw_lengths} ? @{$po->{cparms}{new_pw_lengths}} : (6,16);
