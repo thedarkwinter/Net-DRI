@@ -41,7 +41,8 @@ Partially implemented KeySys extension
 sub register_commands
 {
     my %tmp=(
-        update => [ \&update, undef ],
+        info    => [ undef, \&info_parse ],
+        update  => [ \&update, undef ],
     );
     return { 'domain' => \%tmp };
 }
@@ -50,6 +51,29 @@ sub setup
 {
  my ($class,$po,$version)=@_;
  $po->ns({ 'keysys' => [ 'http://www.key-systems.net/epp/keysys-1.0','keysys-1.0.xsd' ] });
+ return;
+}
+
+sub info_parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ 
+ my $mes=$po->message();
+ return unless $mes->is_success();
+ 
+ my $resdata=$mes->get_extension('keysys','resData');
+ return unless defined $resdata;
+ 
+ my $infdata = ($resdata->getChildrenByTagName('keysys:infData'))[0];
+ return unless defined $infdata;
+
+ foreach my $el (Net::DRI::Util::xml_list_children($infdata)){
+   my ($n,$c)=@$el;
+   $rinfo->{domain}->{$oname}->{"ks_".$n} = $n =~/date/i || 1
+                                            ? eval { $po->parse_iso8601($c->textContent()) } || $c->textContent() 
+                                            : $c->textContent();
+ }
+
  return;
 }
 

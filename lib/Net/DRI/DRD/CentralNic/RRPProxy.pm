@@ -99,12 +99,10 @@ sub new
 }
 
 sub periods { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name { return 'CentralNic::RRPPRoxy'; }
+sub name { return 'CentralNic::RRPProxy'; }
 sub tlds {
-  my @cctlds = qw/ac ae af ag ai al am ar as at ax az/; # TODO
-  my @gtlds = qw/aero/; # TODO 
-  my @ngtlds = qw/abogado/; # TODO
-  return (@cctlds,@gtlds,@ngtlds);
+  my @cctlds = qw/am la/;
+  return (@cctlds);
 }
 
 sub object_types { return ('domain','ns','contact'); }
@@ -113,7 +111,7 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
  my ($self,$type)=@_;
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RRPPRoxy',{'brown_fee_version' => '0.7'}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RRPProxy',{'brown_fee_version' => '0.7'}) if $type eq 'epp';
  return;
 }
 
