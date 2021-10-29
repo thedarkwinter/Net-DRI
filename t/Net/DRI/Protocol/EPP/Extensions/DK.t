@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 76;
+use Test::More tests => 79;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=30; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -168,6 +168,7 @@ $R2 = $E1 . '<response>
     </resData>
     <extension>
       <dkhm:authInfoExDate xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2018-11-14T09:00:00.0Z</dkhm:authInfoExDate>
+      <dkhm:authInfo expdate="2021-10-17T14:16:35.0Z" op="transfer" xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">REG-0-d5288a8aa482bcf2fb5152bfbb7d877d</dkhm:authInfo>
       <dkhm:delDate xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2021-01-31T00:00:00.0Z</dkhm:delDate>
       <dkhm:autoRenew xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">true</dkhm:autoRenew>
     </extension>
@@ -178,6 +179,9 @@ is_string($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml
 is($rc->is_success(),1,'domain_info is_success');
 is_deeply($dri->get_info('auth', 'domain', 'dk-hostmaster.dk'), { pw => 'DKHM1-DK-098f6bcd4621d373cade4e832627b4f6' }, 'domain_info auth token retrieved');
 is ($dri->get_info('auth_info_ex_date', 'domain', 'dk-hostmaster.dk'), '2018-11-14T09:00:00', 'domain_info auth_token expiration date retrieved');
+is ($dri->get_info('auth_info_token', 'domain', 'dk-hostmaster.dk'), 'REG-0-d5288a8aa482bcf2fb5152bfbb7d877d', 'domain_info auth_info_token retrieved');
+is ($dri->get_info('auth_info_token_expdate', 'domain', 'dk-hostmaster.dk'), '2021-10-17T14:16:35', 'domain_info auth_info_token_expdate retrieved');
+is ($dri->get_info('auth_info_token_op', 'domain', 'dk-hostmaster.dk'), 'transfer', 'domain_info auth_info_token_op retrieved');
 is ($dri->get_info('del_date', 'domain', 'dk-hostmaster.dk'), '2021-01-31T00:00:00', 'domain_info domain delDate retrieved');
 is ($dri->get_info('auto_renew', 'domain', 'dk-hostmaster.dk'), 'true', 'domain_info domain autoRenew retrieved');
 
