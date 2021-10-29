@@ -22,8 +22,8 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_registry('Neustar::TWNIC');
-$dri->target('Neustar::TWNIC')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+$dri->add_registry('GoDaddy::TWNIC');
+$dri->target('GoDaddy::TWNIC')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 print $@->as_string() if $@;
 
 my $rc;
@@ -33,11 +33,11 @@ my ($dh,@c,$toc,$cs,$csadd,$csdel,$c1,$c2);
 
 ####################################################################################################
 # README: test based on their OT&E greeting. Strange urn:ietf:params:xml:ns:neulevel should not be urn:ietf:params:xml:ns:neulevel-1.0 ???
-$R2=$E1.'<greeting><svID>Neustar EPP Server:tw10</svID><svDate>2018-04-17T10:03:55.0Z</svDate><svcMenu><version>1.0</version><lang>en-US</lang><objURI>urn:ietf:params:xml:ns:contact</objURI><objURI>urn:ietf:params:xml:ns:host</objURI><objURI>urn:ietf:params:xml:ns:domain</objURI><objURI>urn:ietf:params:xml:ns:svcsub</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:neulevel</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
+$R2=$E1.'<greeting><svID>GoDaddy EPP Server:tw10</svID><svDate>2018-04-17T10:03:55.0Z</svDate><svcMenu><version>1.0</version><lang>en-US</lang><objURI>urn:ietf:params:xml:ns:contact</objURI><objURI>urn:ietf:params:xml:ns:host</objURI><objURI>urn:ietf:params:xml:ns:domain</objURI><objURI>urn:ietf:params:xml:ns:svcsub</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:neulevel</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build (hello command)');
 is($rc->is_success(),1,'session noop is_success');
-is($rc->get_data('session','server','server_id'),'Neustar EPP Server:tw10','session noop get_data(session,server,server_id)');
+is($rc->get_data('session','server','server_id'),'GoDaddy EPP Server:tw10','session noop get_data(session,server,server_id)');
 is($rc->get_data('session','server','date'),'2018-04-17T10:03:55','session noop get_data(session,server,date)');
 is_deeply($rc->get_data('session','server','version'),['1.0'],'session noop get_data(session,server,version)');
 is_deeply($rc->get_data('session','server','lang'),['en-US'],'session noop get_data(session,server,lang)');
