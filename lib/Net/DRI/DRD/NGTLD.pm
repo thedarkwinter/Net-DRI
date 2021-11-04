@@ -299,14 +299,14 @@ Afilias SRS has extended their plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-ngtlds: xn--4gbrim xn--kput3i bnpparibas eco ged global indians ist istanbul ltda onl rich spa srl vegas zara
+ngtlds: xn--4gbrim xn--kput3i bnpparibas ged global indians ist istanbul ltda onl rich spa srl vegas zara
 gtlds: mobi
 cctlds: ag bz gi lc mn me sc vc
 
 =cut
 
  if ($bep eq 'afiliassrs') {
-   my @ngtlds = qw/xn--4gbrim xn--kput3i bnpparibas eco ged global indians ist istanbul ltda onl rich spa srl vegas zara/;
+   my @ngtlds = qw/xn--4gbrim xn--kput3i bnpparibas ged global indians ist istanbul ltda onl rich spa srl vegas zara/;
    my @gtlds = qw/asia/;
    my @cctlds = (
        'ag',(map { $_.'.ag'} qw/co com net nom org/),
@@ -602,7 +602,7 @@ They will be adding a fury.xsd extension
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['kiwi', 'sx'],
+     tlds => ['eco', 'kiwi', 'sx'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{ custom => ['CentralNic::Fee'], 'brown_fee_version' => '0.11' }],
    } if $bep eq 'fury';
