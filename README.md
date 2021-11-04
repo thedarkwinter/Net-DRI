@@ -14,7 +14,6 @@ Net-DRI-0.X-tdw is a fork of Net-DRI from Patrick Mevzek based on Net-DRI-0.96_0
   This is a consequence of an old design decision that no DRD module should have a TLD as name.
   Now, by default a DRD of a TLD registry will have the sponsor name as listed on IANA website._"
 * While the upstream favours the Registry name for DRD, I favour the BackendOperator::Platform Naming
-  * So instead of (.travel) Tralliance, I use Neustar::Tralliance, though there is variation in here I am still working on!
   * Its sometimes more clean to use Backend::TLD when the platform is for a single TLD and the operator is the backend.
   * For instance, GMORegistry::GMORegistry, and GMORegistry::BRRegistry, and GMORegistry::SHOP
   * Note, using old DRD names will probably still work as they will be automaticaly remapped. Probably.
@@ -27,7 +26,7 @@ Based on draft-ietf-eppext-launchphase-07 / draft-ietf-regext-launchphase-00
 Based on draft-ietf-regext-epp-fees-06 (fee-0.23)
 
 ##### New gTLD backend providers (RO's)
-Afnic, Afilias, Amazon (Neustar), ARI (now Neustar), CoCCA, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media (Nominet), Fury Registry (CIRA), GMO Registry, KNET, KSRegistry, Minds And Machines (Nominet-MMX), Neustar, Nic.BR, Nic.MX, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, SIDN, Tango from KNIPP, TCI, TeleInfo, UniRegistry, Verisign, ZACR
+Afnic, Afilias, Amazon (GoDaddy DNRS, Former Neustar/ARI), CoCCA, CentralNIC, CoreNIC, Charleston Road Registry, CNNIC, Donuts, Famous Four Media (Nominet), Fury Registry (CIRA), GMO Registry, KNET, KSRegistry, Minds And Machines (Nominet-MMX), Nic.BR, Nic.MX, Nominet, OpenRegistry, Registry-in-a-Box from NicAT, Rightside, SIDN, Tango from KNIPP, TCI, TeleInfo, UniRegistry, Verisign, ZACR
 
 ##### Planned/Possible support for providers
 None
@@ -50,8 +49,8 @@ $dri->add_registry('NGTLD',{clid => '...',provider=>'...',name=>'...', tlds=>[]}
 ##### Selecting a back end provider
 
 ```perl
-$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'Neustar'});
-$dri->target('Neustar')->add_current_profile(....);
+$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'godaddy_dnrs'});
+$dri->target('godaddy_dnrs')->add_current_profile(....);
 ```
 
 ##### Backend providers with shared environments
@@ -65,21 +64,21 @@ $dri->target('donuts')->add_current_profile(....);
 
 ##### Backend providers with dedicated environments
 
-Neustar is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
-e.g: add a custom target name, by default this is the back end provider name, but in this instance we select buzz
+DNSBelgium is an example of a backend provider that provides a dedicated environment per TLD, so you may like to use the TLD as the target name.
+e.g: add a custom target name, by default this is the back end provider name, but in this instance we select 'brussels'
 Note, if the name you specified matches one of the TLD's and you have not manually specified the tld list, if will use only this TLD. If the name doesn't match a TLD, it will make all TLD's by the prover available in the DRD
 
 ```perl
-$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'neustar',name=>'buzz'});
-$dri->target('buzz')->add_current_profile(....);
+$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'dnsbelgium',name=>'brussels'});
+$dri->target('brussels')->add_current_profile(....);
 ```
 
 Some TLDs have specific extensions that need to be loaded. In the case of NYC it is required to either set name or tlds parameter in order to load the Nexus extension
 
 ```perl
-$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'nyc'}); # using name
+$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'godaddy_dnrs',name=>'nyc'}); # using name
 $dri->target('nyc')->add_current_profile(....);
-$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'ari',name=>'whatever',tlds=['nyc']}); # using tld
+$dri->add_registry('NGTLD',{clid => 'ClientX',provider=>'godaddy_dnrs',name=>'whatever',tlds=['nyc']}); # using tld
 ```
 
 ##### Some experimental ngTLD functions

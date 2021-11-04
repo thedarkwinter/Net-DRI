@@ -22,7 +22,7 @@ sub r { my ($c,$m)=@_;  return '<result code="'.($c || 1000).'"><msg>'.($m || 'C
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
-$dri->add_current_registry('Neustar::Narwhal',{clid => 'ClientX'});
+$dri->add_current_registry('GoDaddy::DNRS',{clid => 'ClientX'});
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 my ($rc,$ok,$cs,$st,$p,$c1,$c2,$d,$unspec);
@@ -51,7 +51,7 @@ is("".$d,'2001-04-03T22:00:00','domain_create get_info(exDate) value');
 
 
 # domain info
-$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns="urn:ietf:params:xml:ns:domain-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>EXAMPLE1.CO</domain:name><domain:roid>D20342671-US</domain:roid><domain:status s="clientHold"/><domain:registrant>COUS-7135</domain:registrant><domain:contact type="admin">TEST123</domain:contact><domain:contact type="billing">TEST123</domain:contact><domain:contact type="tech">TEST123</domain:contact><domain:ns><domain:hostObj>NS1.TEST.CO</domain:hostObj><domain:hostObj>NS2.TEST.CO</domain:hostObj><domain:hostObj>NS3.TEST.CO</domain:hostObj></domain:ns><domain:clID>NEUSTAR</domain:clID><domain:crID>NEUSTAR</domain:crID><domain:crDate>2009-06-09T15:55:37.0Z</domain:crDate><domain:upID>NEUSTAR</domain:upID><domain:upDate>2009-09-16T12:51:30.0Z</domain:upDate><domain:exDate>2014-06-08T23:59:59.0Z</domain:exDate><domain:authInfo><domain:pw>abcdef123</domain:pw></domain:authInfo></domain:infData></resData><extension><neulevel:extension xmlns="urn:ietf:params:xml:ns:neulevel-1.0" xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>DomainSuspendedIndicator=expired</neulevel:unspec></neulevel:extension></extension>'.$TRID.'</response>'.$E2;
+$R2=$E1.'<response>'.r().'<resData><domain:infData xmlns="urn:ietf:params:xml:ns:domain-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>EXAMPLE1.CO</domain:name><domain:roid>D20342671-US</domain:roid><domain:status s="clientHold"/><domain:registrant>COUS-7135</domain:registrant><domain:contact type="admin">TEST123</domain:contact><domain:contact type="billing">TEST123</domain:contact><domain:contact type="tech">TEST123</domain:contact><domain:ns><domain:hostObj>NS1.TEST.CO</domain:hostObj><domain:hostObj>NS2.TEST.CO</domain:hostObj><domain:hostObj>NS3.TEST.CO</domain:hostObj></domain:ns><domain:clID>DNRS</domain:clID><domain:crID>DNRS</domain:crID><domain:crDate>2009-06-09T15:55:37.0Z</domain:crDate><domain:upID>DNRS</domain:upID><domain:upDate>2009-09-16T12:51:30.0Z</domain:upDate><domain:exDate>2014-06-08T23:59:59.0Z</domain:exDate><domain:authInfo><domain:pw>abcdef123</domain:pw></domain:authInfo></domain:infData></resData><extension><neulevel:extension xmlns="urn:ietf:params:xml:ns:neulevel-1.0" xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:neulevel-1.0 neulevel-1.0.xsd"><neulevel:unspec>DomainSuspendedIndicator=expired</neulevel:unspec></neulevel:extension></extension>'.$TRID.'</response>'.$E2;
 $rc = $dri->domain_info('example1.co');
 is($rc->is_success(),1,'domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');

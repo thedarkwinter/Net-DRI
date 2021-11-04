@@ -1,7 +1,8 @@
-## Domain Registry Interface, Neustar (Narwhal) policies
+## Domain Registry Interface, GoDaddy (DNRS) policies
 ##
 ## Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -13,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::Neustar::Narwhal;
+package Net::DRI::DRD::GoDaddy::DNRS;
 
 use strict;
 use warnings;
@@ -26,14 +27,14 @@ use Net::DRI::Data::Contact::Neustar;
 
 =head1 NAME
 
-Net::DRI::DRD::Neustar::Narwhal - Neustar Driver for Net::DRI
+Net::DRI::DRD::GoDaddy::DNRS - GoDaddy DNRS for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension For Neustar Narwhal platform. Most Neustar TLDs are now operated on this shared platform, including all ARI TLDs, most of the
-ngTLDs that Neustar operated on its legacy platform, as well as older gTLDs and ccTLDs, which are gradually getting moved to this platform.
+Additional domain extension For GoDaddy DNRS (former Neustar Narwhal) platform. Former Neustar TLDs are now operated on this shared platform, including all ARI TLDs,
+most of the ngTLDs that Neustar operated on its legacy platform, as well as older gTLDs and ccTLDs.
 
-Neustar utilises the following standard, and custom extensions, in many cases supporting two versions for the same functionallity.
+GoDaddy::DNRS, as did Neustar::Narwhal, utilises the following standard and custom extensions, in many cases supporting two versions for the same functionallity.
 Please see the test files for more examples.
 
 =head2 Standard extensions:
@@ -88,12 +89,14 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 =head1 AUTHOR
 
-Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Paulo Castanheira <paulo.s.castanheira@gmail.com
 
 =head1 COPYRIGHT
 
-Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
+(c) 2014 Patrick Mevzek <netdri@dotandco.com>.
 (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
+
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -118,7 +121,7 @@ sub new
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 
-sub name     { return 'Neustar::Narwhal'; }
+sub name     { return 'GoDaddy::DNRS'; }
 
 sub tlds     { return qw/aaa able accountant aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball basketball bible bid biz booking boots box buzz calvinklein cancerresearch caravan cartier catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co com.co net.co nom.co commbank compare coupon courses cricket cuisinella date dell discover doha download duns dupont earth everbank faith farmers ferrero film flickr flir ford fox frontier ftr gap giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe lifeinsurance lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu mint mlb mobily moe monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping pramerica praxi pru prudential qvc racing review rmit rocher rugby safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj yahoo yandex zero zippo adult porn sex xxx/; }
 

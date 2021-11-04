@@ -22,7 +22,7 @@ sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2? $R2 : $E1.'<respon
 sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m || 'Command completed successfully').'</msg></result>'; }
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_registry('Neustar::Narwhal'); # for testing EXTContact
+$dri->add_registry('GoDaddy::DNRS'); # for testing EXTContact
 $dri->target('nyc')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions=>['NeuLevel::EXTContact']});
 
 my $rc;
@@ -58,7 +58,7 @@ is($c->nexus_category(),'INDIV','contact_info parse nexus_category (.NYC)');
 is($c->ext_contact(),'Y','contact_info parse ext_contact (.NYC)');
 
 ###
-## .US - NeuLevel tests - this was basically copy pasted from old US::Contact tests (before migration to Neustar::Narwhal)
+## .US - NeuLevel tests - this was basically copy pasted from old US::Contact tests (before migration to Neustar::Narwhal then to GoDaddy DNRS)
 ###
 $c=$dri->local_object('contact');
 $c->srid('abcde')->name('abc')->org('abc.org')->street(['123 d street'])->city('reston')->pc(20194)->sp('VA')->cc('US')->fax('+1.2345678901x1234')->email('xxx@yyy.com');

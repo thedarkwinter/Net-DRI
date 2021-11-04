@@ -28,7 +28,7 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
 # $rc = $dri->add_registry('NGTLD',{provider => 'ari'});
 # To use ARI extensions instead
-$rc = $dri->add_current_registry('Neustar::Narwhal');
+$rc = $dri->add_current_registry('GoDaddy::DNRS');
 $dri->add_current_profile('p2','epp_ari',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 #####################
@@ -200,7 +200,7 @@ $lpres = $dri->get_info('lp');
 is($lpres->{application_id},'NEWAPP123','domain_create lp get_info (sunrise application_id)');
 
 ## SUNRISE - SMD XML::Element
-my $po=$dri->target('Neustar::Narwhal')->{profiles}->{p1}->{protocol};
+my $po=$dri->target('GoDaddy::DNRS')->{profiles}->{p1}->{protocol};
 eval { Net::DRI::Protocol::EPP::Extensions::ICANN::MarkSignedMark::setup(undef,$po,undef);};
 my $parser=XML::LibXML->new();
 my ($doc,$root,$rh);

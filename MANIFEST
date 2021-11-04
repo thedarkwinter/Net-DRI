@@ -115,6 +115,7 @@ lib/Net/DRI/DRD/GMORegistry/JPRS.pm
 lib/Net/DRI/DRD/GMORegistry/KYOTO.pm
 lib/Net/DRI/DRD/GMORegistry/PANDI.pm
 lib/Net/DRI/DRD/GMORegistry/SHOP.pm
+lib/Net/DRI/DRD/GoDaddy/DNRS.pm
 lib/Net/DRI/DRD/GoDaddy/MZB.pm
 lib/Net/DRI/DRD/GoDaddy/TWNIC.pm
 lib/Net/DRI/DRD/HostmasterUA.pm
@@ -129,7 +130,6 @@ lib/Net/DRI/DRD/KNET.pm
 lib/Net/DRI/DRD/LVRegistry.pm
 lib/Net/DRI/DRD/NASK.pm
 lib/Net/DRI/DRD/Neustar/IN.pm
-lib/Net/DRI/DRD/Neustar/Narwhal.pm
 lib/Net/DRI/DRD/NGTLD.pm
 lib/Net/DRI/DRD/NicAT/AT.pm
 lib/Net/DRI/DRD/NicAT/RegBox.pm
@@ -661,6 +661,8 @@ t/Net/DRI/Protocol/EPP/Extensions/Fee/Fee-0.23.t
 t/Net/DRI/Protocol/EPP/Extensions/Fee/Fee-1.0.t
 t/Net/DRI/Protocol/EPP/Extensions/FICORA.t
 t/Net/DRI/Protocol/EPP/Extensions/FRED.t
+t/Net/DRI/Protocol/EPP/Extensions/GoDaddy/DNRS.pm
+t/Net/DRI/Protocol/EPP/Extensions/GoDaddy/MZB.pm
 t/Net/DRI/Protocol/EPP/Extensions/GMORegistry.t
 t/Net/DRI/Protocol/EPP/Extensions/GracePeriod.t
 t/Net/DRI/Protocol/EPP/Extensions/ICANN/MarkSignedMark.t
@@ -687,7 +689,6 @@ t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Fee.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDN.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/IDNVariant.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/KeyValue.t
-t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Narwhal.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/Price.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/TMCHApplication.t
 t/Net/DRI/Protocol/EPP/Extensions/NeuLevel/WhoisType.t

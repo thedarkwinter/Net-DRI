@@ -22,7 +22,7 @@ sub r      { my ($c,$m)=@_; return '<result code="'.($c || 1000).'"><msg>'.($m |
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->{trid_factory}=sub { return 'ABC-12345'; };
 # .CO migrated to Narwal, but to keep this 0.6 test working, I have simply forced the extension selection and version
-$dri->add_current_registry('Neustar::Narwhal');
+$dri->add_current_registry('GoDaddy::DNRS');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv}, {extensions=>['-ARI::Price','CentralNic::Fee'],brown_fee_version=>'0.6'});
 
 my $rc;
@@ -32,9 +32,9 @@ my ($dh, @c, $fee, $cs, $c1, $c2);
 
 ####################################################################################################
 ## Fee extension version 0.6 http://tools.ietf.org/html/draft-brown-epp-fees-03
-## Fee-0.6 (In use by Charlseston Road Registry, Famous Four Media, and Neustar [at least for .co])
+## Fee-0.6 (In use by Charlseston Road Registry, Famous Four Media, and GoDaddy [at least for .co])
 ## We use a greeting here to switch the namespace version here to -0.6 testing
-$R2=$E1.'<greeting><svID>Neustar EPP Server:co</svID><svDate>2015-06-18T10:03:23.0Z</svDate><svcMenu><version>1.0</version><lang>en-US</lang><objURI>urn:ietf:params:xml:ns:contact</objURI><objURI>urn:ietf:params:xml:ns:host</objURI><objURI>urn:ietf:params:xml:ns:domain</objURI><objURI>urn:ietf:params:xml:ns:svcsub</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:neulevel</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:fee-0.6</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
+$R2=$E1.'<greeting><svID>GoDaddy DNRS EPP Server:co</svID><svDate>2015-06-18T10:03:23.0Z</svDate><svcMenu><version>1.0</version><lang>en-US</lang><objURI>urn:ietf:params:xml:ns:contact</objURI><objURI>urn:ietf:params:xml:ns:host</objURI><objURI>urn:ietf:params:xml:ns:domain</objURI><objURI>urn:ietf:params:xml:ns:svcsub</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:neulevel</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:fee-0.6</extURI></svcExtension></svcMenu><dcp><access><all /></access><statement><purpose><admin /><prov /></purpose><recipient><ours /><public /></recipient><retention><stated /></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.6','Fee 0.6 loaded correctly');
 ####################################################################################################

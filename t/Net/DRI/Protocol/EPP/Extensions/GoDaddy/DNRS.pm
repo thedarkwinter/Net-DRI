@@ -10,7 +10,7 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
-use Test::More tests => 3;
+use Test::More tests => 2;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -33,17 +33,17 @@ $dri=Net::DRI::TrapExceptions->new({cache_ttl => -1, trid_factory => sub { retur
 # We should probably test these with greetings??
 
 # To use standard
-$dri->add_current_registry('Neustar::Narwhal');
+$dri->add_current_registry('GoDaddy::DNRS');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'Neustar::Narwhal (standard): loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message NeuLevel::EXTContact NeuLevel::WhoisType ARI::KeyValue CentralNic::Fee/],'GoDaddy::DNRS (standard): loaded_modules');
 
 # To se ARI extensions instead
 $dri->add_current_profile('p2','epp_ari',{f_send=>\&mysend,f_recv=>\&myrecv});
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::CO NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'Neustar::Narwhal (Ari): loaded_modules');
+is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS AllocationToken ARI::IDNVariant ARI::KeyValue ARI::ExAvail ARI::Price ARI::TMCHApplication ARI::Block NeuLevel::CO NeuLevel::Message NeuLevel::WhoisType NeuLevel::EXTContact/],'GoDaddy DNRS (Ari): loaded_modules');
 
-# To use NGTLD with legacy
-$dri->add_current_registry('NGTLD',{provider => 'neustar', 'name' => 'hotels'});
-$dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-
-is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message CentralNic::Fee/],'NGTLD/Neustar (legacy): loaded_modules');
+# To use NGTLD with legacy neustar dedicated servers, uncomment the godaddy_dedicated block in NGTLD
+#
+# $dri->add_current_registry('NGTLD',{provider => 'godaddy_dedicated', 'name' => 'hotels'});
+# $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+#is_deeply( $dri->protocol()->{loaded_modules},[@core_modules, map { 'Net::DRI::Protocol::EPP::Extensions::'.$_ } qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken NeuLevel::CO NeuLevel::Message CentralNic::Fee/],'NGTLD/GoDaddy dedicated (legacy): loaded_modules');
 exit 0;
