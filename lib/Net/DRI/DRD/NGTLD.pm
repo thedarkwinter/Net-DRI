@@ -340,9 +340,13 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi design fans feedback forum fun gay gent hair homes host icu inc ink london love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts
+art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi design fans feedback forum fun gay gent hair homes host icu inc ink london love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts 
 
 Contended TLD's not included
+
+=head3 CCTLDs
+
+bh .xn--mgbcpq6gpa1a biz.bh cc.bh com.bh edu.bh info.bh me.bh med.bh name.bh net.bh org.bh
 
 =head3 Custom extensions:
 
@@ -361,7 +365,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
     my @ngtlds = qw/art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi design fans feedback forum fun gay gent hair homes host icu inc ink london love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wiki wme xyz yachts/;
     my @ngtlds_contested = qw/hotel mail/; # some of these might go to other registries
-    my @cctlds = qw/bh .xn--mgbcpq6gpa1a/, map {$_.'.bh'} qw/biz cc com edu info me med name net org/;
+    my @cctlds = (qw/bh .xn--mgbcpq6gpa1a/, map {$_.'.bh'} qw/biz cc com edu info me med name net org/);
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds,@cctlds);
 
     return {
@@ -969,7 +973,7 @@ L<Net::DRI::Protocol::EPP::Extensions::Afilias::Validation> urn:ietf:params:xml:
 
 =head3 TLDs
 
-bh berlin hamburg versicherung ikano
+berlin hamburg versicherung ikano
 
 Contended TLD's not included
 
@@ -987,7 +991,7 @@ L<Net::DRI::Protocol::EPP::Extensions::RegBox::ServiceMessage> http://tld-box.at
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['bh','berlin','hamburg','versicherung','ikano'],
+     tlds => ['berlin','hamburg','versicherung','ikano'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::RegBox',{'brown_fee_version' => '0.9'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::RegBox->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::RegBox'],
