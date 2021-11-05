@@ -840,7 +840,7 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-abogado bayern beer boston bradesco broadway career casa cooking dds fashion fishing fit garden gop gucci horse jobs law luxe med miami pharmacy realestate realtor rodeo surf vip vodka wedding work yoga
+bayern bradesco broadway career gop gucci horse jobs med pharmacy realestate realtor rodeo surf vip vodka wedding work yoga
 # README: .career/.gucci/.jobs/.med/.pharmacy/.realestate/.realtor is not part of MMX but loading here because has a similar logic :p
 
 =head3 Nominet-Amazon: TLDs migrated in 2019 from Neustar into Nominet management
