@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 15;
+use Test::More tests => 17;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -274,5 +274,33 @@ like($rc->get_data('agreement', 'cira', 'content'), qr/Registrant Agreement: Ver
 # $rc=$dri->message_retrieve();
 # is($rc->get_data('message',1901,'msg_id'),'3027','notification parsing msg_id');
 # is($rc->get_data('message',1901,'domain_name'),'example.ca','notification parsing domain_name');
+
+########################
+### Cira Fury eco Domain
+$dri->add_registry('NGTLD',{provider=>'fury'});
+$dri->target('fury')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
+
+$R2='';
+$co=$dri->local_object('contact');
+$co->srid('furycontact2');
+$co->name('Fury Contact2');
+$co->street(['123 Main Street']);
+$co->city('Ottawa');
+$co->sp('ON');
+$co->pc('K1S5K5');
+$co->cc('CA');
+$co->voice('+1.6121221222');
+$co->email('furycontact@fury.eco');
+$co->auth({ pw => 'password' });
+$co->lang('en');
+$rc=$dri->contact_create($co);
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>furycontact2</contact:id><contact:postalInfo type="loc"><contact:name>Fury Contact2</contact:name><contact:addr><contact:street>123 Main Street</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K1S5K5</contact:pc><contact:cc>CA</contact:cc></contact:addr></contact:postalInfo><contact:postalInfo type="int"><contact:name>Fury Contact2</contact:name><contact:addr><contact:street>123 Main Street</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K1S5K5</contact:pc><contact:cc>CA</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.6121221222</contact:voice><contact:email>furycontact@fury.eco</contact:email><contact:authInfo><contact:pw>password</contact:pw></contact:authInfo></contact:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+
+$cs=$dri->local_object('contactset');
+$cs->add($dri->local_object('contact')->srid('furycontact2'),'registrant');
+$cs->add($dri->local_object('contact')->srid('furycontact2'),'admin');
+$rc=$dri->domain_create('test.eco',{pure_create=>1, auth=>{pw=>'password'},contact=>$cs});
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>test.eco</domain:name><domain:registrant>furycontact2</domain:registrant><domain:contact type="admin">furycontact2</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_create build');
+
 
 exit 0;
