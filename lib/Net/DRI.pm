@@ -200,7 +200,7 @@ sub new
      'AT' => 'NicAT::AT',
      'AU' => 'auDA',
      'BE' => 'DNSBelgium::BE',
-     'BH' => 'CentralNic::CentralNic', #BH => TRA::BH => CentralNic::CentralNic
+     'BH' => 'CentralNic::CentralNic',
      'BIZ' => 'Neustar::Narwhal',
      'BR' => 'CGIBR::BR',
      'BZ' => 'Afilias::Shared',
@@ -271,6 +271,7 @@ sub new
      'TCI' => 'TCI::TCI',
      'TCI_gTLD' => 'TCI::GTLD',
      'Telnic' => 'Neustar::Narwhal',
+     'TRA::BH' => 'CentralNic::CentralNic',
      'TRAVEL' => 'Neustar::Narwhal',
      'UNIREG' => 'UniRegistry::UniRegistry',
      'UniRegistry' => 'UniRegistry::UniRegistry',
