@@ -28,7 +28,7 @@ use Net::DRI::Data::Contact::DK;
 use Net::DRI::Util;
 use Net::DRI::Exception;
 
-__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete contact_transfer contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse contact_renew domain_delete domain_transfer domain_transfer_accept domains_transfer_reject domains_transfer_cancel/);
+__PACKAGE__->make_exception_for_unavailable_operations(qw/contact_delete contact_transfer contact_transfer_stop contact_transfer_query contact_transfer_accept contact_transfer_refuse contact_renew domain_delete domain_transfer_accept domains_transfer_reject domains_transfer_cancel/);
 
 =pod
 

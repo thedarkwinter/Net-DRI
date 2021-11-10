@@ -138,6 +138,11 @@ sub _parse_dkhm_domain
 	if ($data = $mes->get_extension('dkhm','autoRenew')) {
 		$rinfo->{domain}->{$oname}->{auto_renew} = $data->getFirstChild()->textContent();
 	}
+	if ($data = $mes->get_extension('dkhm','authInfo')) {
+		$rinfo->{domain}->{$oname}->{auth_info_token} = $data->getFirstChild()->textContent();
+		$rinfo->{domain}->{$oname}->{auth_info_token_expdate} = $po->parse_iso8601($data->getAttribute('expdate'));
+		$rinfo->{domain}->{$oname}->{auth_info_token_op} = $data->getAttribute('op');;
+  }
 
 	return;
 }
