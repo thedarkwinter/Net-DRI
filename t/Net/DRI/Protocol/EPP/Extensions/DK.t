@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 52;
+use Test::More tests => 79;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=30; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -168,6 +168,7 @@ $R2 = $E1 . '<response>
     </resData>
     <extension>
       <dkhm:authInfoExDate xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2018-11-14T09:00:00.0Z</dkhm:authInfoExDate>
+      <dkhm:authInfo expdate="2021-10-17T14:16:35.0Z" op="transfer" xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">REG-0-d5288a8aa482bcf2fb5152bfbb7d877d</dkhm:authInfo>
       <dkhm:delDate xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">2021-01-31T00:00:00.0Z</dkhm:delDate>
       <dkhm:autoRenew xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">true</dkhm:autoRenew>
     </extension>
@@ -178,8 +179,49 @@ is_string($R1,$E1.'<command><info><domain:info xmlns:domain="urn:ietf:params:xml
 is($rc->is_success(),1,'domain_info is_success');
 is_deeply($dri->get_info('auth', 'domain', 'dk-hostmaster.dk'), { pw => 'DKHM1-DK-098f6bcd4621d373cade4e832627b4f6' }, 'domain_info auth token retrieved');
 is ($dri->get_info('auth_info_ex_date', 'domain', 'dk-hostmaster.dk'), '2018-11-14T09:00:00', 'domain_info auth_token expiration date retrieved');
+is ($dri->get_info('auth_info_token', 'domain', 'dk-hostmaster.dk'), 'REG-0-d5288a8aa482bcf2fb5152bfbb7d877d', 'domain_info auth_info_token retrieved');
+is ($dri->get_info('auth_info_token_expdate', 'domain', 'dk-hostmaster.dk'), '2021-10-17T14:16:35', 'domain_info auth_info_token_expdate retrieved');
+is ($dri->get_info('auth_info_token_op', 'domain', 'dk-hostmaster.dk'), 'transfer', 'domain_info auth_info_token_op retrieved');
 is ($dri->get_info('del_date', 'domain', 'dk-hostmaster.dk'), '2021-01-31T00:00:00', 'domain_info domain delDate retrieved');
 is ($dri->get_info('auto_renew', 'domain', 'dk-hostmaster.dk'), 'true', 'domain_info domain autoRenew retrieved');
+
+
+#### Domain Transfer (No pending, only serverApproved)
+
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>eksempel.dk</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-08T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID><domain:acDate>2000-06-13T22:00:00.0Z</domain:acDate><domain:exDate>2002-09-08T22:00:00.0Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;#{
+$rc=$dri->domain_transfer_start('eksempel.dk',{auth=>{pw=>'DKHM1-DK-098f6bcd4621d373cade4e832627b4f6'},duration=>DateTime::Duration->new(years=>1)});
+is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>eksempel.dk</domain:name><domain:period unit="y">1</domain:period><domain:authInfo><domain:pw>DKHM1-DK-098f6bcd4621d373cade4e832627b4f6</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');is($dri->get_info('action'),'transfer','domain_transfer_start get_info(action)');
+is($dri->get_info('exist'),1,'domain_transfer_start get_info(exist)');
+is($dri->get_info('trStatus'),'serverApproved','domain_transfer_start get_info(trStatus)');
+is($dri->get_info('reID'),'ClientX','domain_transfer_start get_info(reID)');
+$d=$dri->get_info('reDate');
+isa_ok($d,'DateTime','domain_transfer_start get_info(reDate)');
+is("".$d,'2000-06-08T22:00:00','domain_transfer_start get_info(reDate) value');
+is($dri->get_info('acID'),'ClientY','domain_transfer_start get_info(acID)');
+$d=$dri->get_info('acDate');
+isa_ok($d,'DateTime','domain_transfer_start get_info(acDate)');
+is("".$d,'2000-06-13T22:00:00','domain_transfer_start get_info(acDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_transfer_start get_info(exDate)');
+is("".$d,'2002-09-08T22:00:00','domain_transfer_start get_info(exDate) value');
+
+$R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>eksempel.dk</domain:name><domain:trStatus>serverApproved</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-06T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID><domain:acDate>2000-06-11T22:00:00.0Z</domain:acDate><domain:exDate>2002-09-08T22:00:00.0Z</domain:exDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_query('eksempel.dk',{auth=>{pw=>'DKHM1-DK-098f6bcd4621d373cade4e832627b4f6'}});
+is($R1,$E1.'<command><transfer op="query"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>eksempel.dk</domain:name><domain:authInfo><domain:pw>DKHM1-DK-098f6bcd4621d373cade4e832627b4f6</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_query build');
+is($dri->get_info('action'),'transfer','domain_transfer_query get_info(action)');
+is($dri->get_info('exist'),1,'domain_transfer_query get_info(exist)');
+is($dri->get_info('trStatus'),'serverApproved','domain_transfer_query get_info(trStatus)');
+is($dri->get_info('reID'),'ClientX','domain_transfer_query get_info(reID)');
+$d=$dri->get_info('reDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(reDate)');
+is("".$d,'2000-06-06T22:00:00','domain_transfer_query get_info(reDate) value');
+is($dri->get_info('acID'),'ClientY','domain_transfer_query get_info(acID)');
+$d=$dri->get_info('acDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(acDate)');
+is("".$d,'2000-06-11T22:00:00','domain_transfer_query get_info(acDate) value');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','domain_transfer_query get_info(exDate)');
+is("".$d,'2002-09-08T22:00:00','domain_transfer_query get_info(exDate) value');
 
 ####################################################################################################
 ####### Verisign balance + RGP standard ########
