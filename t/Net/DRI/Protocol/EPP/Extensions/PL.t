@@ -7,7 +7,8 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 505;
+use Test::More tests => 511;
+use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -947,6 +948,23 @@ is_deeply($rc->get_data('session','server','lang'),['en','pl'],'session noop get
 is_deeply($rc->get_data('session','server','objects'),['http://www.dns.pl/nask-epp-schema/contact-2.1','http://www.dns.pl/nask-epp-schema/host-2.1','http://www.dns.pl/nask-epp-schema/domain-2.1','http://www.dns.pl/nask-epp-schema/future-2.1'],'session noop get_data(session,server,objects)');
 is_deeply($rc->get_data('session','server','extensions_announced'),['http://www.dns.pl/nask-epp-schema/extcon-2.1','http://www.dns.pl/nask-epp-schema/extdom-2.1','http://www.dns.pl/nask-epp-schema/secDNS-2.1'],'session noop get_data(session,server,extensions_announced)');
 is_deeply($rc->get_data('session','server','extensions_selected'),['http://www.dns.pl/nask-epp-schema/extcon-2.1','http://www.dns.pl/nask-epp-schema/extdom-2.1','http://www.dns.pl/nask-epp-schema/secDNS-2.1'],'session noop get_data(session,server,extensions_selected)');
+
+
+# non standard rules - usually max pw is 16 but NASK now defined
+# length: from 6 to 64 => <pw>
+# length: from 20 to 64 => optional <newPW> element
+
+$R2='';
+$rc=$dri->process('session','login',['ClientX','foo-BAR2',{client_newpassword => 'thisismynewpass-FOO2BAR2021'}]);
+is($R1,$E1.'<command><login><clID>ClientX</clID><pw>foo-BAR2</pw><newPW>thisismynewpass-FOO2BAR2021</newPW><options><version>1.0</version><lang>en</lang></options><svcs><objURI>http://www.dns.pl/nask-epp-schema/contact-2.1</objURI><objURI>http://www.dns.pl/nask-epp-schema/host-2.1</objURI><objURI>http://www.dns.pl/nask-epp-schema/domain-2.1</objURI><objURI>http://www.dns.pl/nask-epp-schema/future-2.1</objURI><svcExtension><extURI>http://www.dns.pl/nask-epp-schema/extcon-2.1</extURI><extURI>http://www.dns.pl/nask-epp-schema/extdom-2.1</extURI><extURI>http://www.dns.pl/nask-epp-schema/secDNS-2.1</extURI></svcExtension></svcs></login><clTRID>ABC-12345</clTRID></command>'.$E2,'session login build');
+is($rc->is_success(),1,'session login with pass length 6-64 and newpass length 20-64 is_success');
+
+$R2='';
+throws_ok { $dri->process('session','login',['ClientX','x'x5,{client_newpassword => 'x'x20}])} qr/Invalid parameters: password/, 'min pw length error ok';
+throws_ok { $dri->process('session','login',['ClientX','x'x65,{client_newpassword => 'x'x20}])} qr/Invalid parameters: password/, 'max pw length error ok';
+throws_ok { $dri->process('session','login',['ClientX','x'x6,{client_newpassword => 'x'x19}])} qr/Invalid parameters: client_newpassword/, 'min new pw length error ok';
+throws_ok { $dri->process('session','login',['ClientX','x'x6,{client_newpassword => 'x'x65}])} qr/Invalid parameters: client_newpassword/, 'max new pw length error ok';
+
 ####################################################################################################
 
 exit 0;

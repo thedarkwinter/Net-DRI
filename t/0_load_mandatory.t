@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 553;
+use Test::More tests => 552;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -151,7 +151,6 @@ use_ok('Net::DRI::DRD::TeleInfo');
 use_ok('Net::DRI::DRD::TELEGreenland');
 use_ok('Net::DRI::DRD::TMDB');
 use_ok('Net::DRI::DRD::TRA::AE');
-use_ok('Net::DRI::DRD::TRA::BH');
 use_ok('Net::DRI::DRD::UniRegistry::COOP');
 use_ok('Net::DRI::DRD::UniRegistry::DM');
 use_ok('Net::DRI::DRD::UniRegistry::EPS');
