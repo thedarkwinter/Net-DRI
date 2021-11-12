@@ -91,6 +91,8 @@ sub validate
  $change||=0;
  my @errs;
  $self->SUPER::validate($change); ## will trigger an Exception if problem
+ # 'org' field is not EPP enable anymore. For the name of legal entity, it must be entered in 'name'
+ push @errs,'org is not EPP enable - for the name of the legal entity it must be intered in name' if  defined($self->org());
  push @errs,'tipo_identificacion' unless (defined($self->tipo_identificacion()) && $self->tipo_identificacion() =~ m/^(0|1|3)$/);
  push @errs,'identificacion' unless defined($self->identificacion());
  Net::DRI::Exception::usererr_invalid_parameters('Invalid contact information: '.join('/',@errs)) if @errs;
