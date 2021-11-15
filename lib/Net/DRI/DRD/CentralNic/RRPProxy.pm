@@ -101,7 +101,7 @@ sub new
 sub periods { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name { return 'CentralNic::RRPProxy'; }
 sub tlds {
-  my @cctlds = qw/am la/;
+  my @cctlds = qw/am la dj/;
   return (@cctlds);
 }
 

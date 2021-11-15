@@ -42,7 +42,7 @@ sub register_commands
 {
     my %tmp=(
         info    => [ undef, \&info_parse ],
-        update  => [ \&update, undef ],
+#        update  => [ \&update, undef ], #.la and am dont use keysys:accept-trade, keeping function for other tlds or other keysys params if needed later 
     );
     return { 'domain' => \%tmp };
 }
@@ -69,7 +69,7 @@ sub info_parse
 
  foreach my $el (Net::DRI::Util::xml_list_children($infdata)){
    my ($n,$c)=@$el;
-   $rinfo->{domain}->{$oname}->{"ks_".$n} = $n =~/date/i || 1
+   $rinfo->{domain}->{$oname}->{"ks_".$n} = $n =~/date/i
                                             ? eval { $po->parse_iso8601($c->textContent()) } || $c->textContent() 
                                             : $c->textContent();
  }
