@@ -4,6 +4,7 @@
 ## Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 ## Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ## Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+## Copyright (c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -54,6 +55,7 @@ Copyright (c) 2006-2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserve
 Copyright (c) 2014-2015 David Makuni <d.makuni@live.co.uk>. All rights reserved.
 Copyright (c) 2013-2015 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 Copyright (c) 2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+Copyright (c) 2021 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,13 +70,13 @@ See the LICENSE file that comes with this distribution for more details.
 
 sub setup {
     my ( $self, $rp ) = @_;
-    $self->ns({dkhm => ['urn:dkhm:params:xml:ns:dkhm-3.0','dkhm-3.0.xsd']});
+    $self->ns({dkhm => ['urn:dkhm:params:xml:ns:dkhm-4.3','dkhm-4.3.xsd']});
     $self->capabilities('host_update','status',undef);
     $self->capabilities('host_update','requested_ns_admin',['set']);
     return;
 }
 
-sub default_extensions { return qw/SecDNS DK::Domain DK::Host DK::Contact/; }
+sub default_extensions { return qw/SecDNS DK::Domain DK::Host DK::Contact VeriSign::Balance GracePeriod DK::Message/; }
 
 ####################################################################################################
 1;

@@ -200,7 +200,7 @@ sub new
      'AT' => 'NicAT::AT',
      'AU' => 'auDA',
      'BE' => 'DNSBelgium::BE',
-     'BH' => 'TRA::BH',
+     'BH' => 'CentralNic::CentralNic',
      'BIZ' => 'Neustar::Narwhal',
      'BR' => 'CGIBR::BR',
      'BZ' => 'Afilias::Shared',
@@ -244,6 +244,7 @@ sub new
      'Neustar::COInternet' => 'Neustar::Narwhal',
      'Neustar::Narwal' => 'Neustar::Narwhal', # i spelt it wrong, change before its too late!
      'Neustar::TRAVEL' => 'Neustar::Narwhal',
+     'Neustar::TWNIC' => 'GoDaddy::TWNIC',
      'Neustar::US' => 'Neustar::Narwhal',
      'NAME' => 'VeriSign::NameStore',
      'NO' => 'NORID',
@@ -270,6 +271,7 @@ sub new
      'TCI' => 'TCI::TCI',
      'TCI_gTLD' => 'TCI::GTLD',
      'Telnic' => 'Neustar::Narwhal',
+     'TRA::BH' => 'CentralNic::CentralNic',
      'TRAVEL' => 'Neustar::Narwhal',
      'UNIREG' => 'UniRegistry::UniRegistry',
      'UniRegistry' => 'UniRegistry::UniRegistry',
@@ -401,8 +403,7 @@ sub tld2reg
 
 sub installed_registries
 {
-
- return qw/AdamsNames Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::SKNIC CentralNic::Zuerich CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CIRA::IE CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium::BE DNSBelgium::GTLD DNSPT Domicilium Donuts DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::JPRS GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP GoDaddy::MZB HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET LVRegistry NASK Neustar::Narwhal NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::Amazon Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE TRA::BH UniRegistry::COOP UniRegistry::UniRegistry UniRegistry::ICM UniRegistry::INC UniRegistry::DM UPU VeriSign::COM_NET VeriSign::NameStore VeriSign::VeriSign ZACR/;
+ return qw/AdamsNames Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::SKNIC CentralNic::Zuerich CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CIRA::IE CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium::BE DNSBelgium::GTLD DNSPT Domicilium Donuts DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::JPRS GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP GoDaddy::MZB GoDaddy::TWNIC HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET LVRegistry NASK Neustar::Narwhal NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::Amazon Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE UniRegistry::COOP UniRegistry::UniRegistry UniRegistry::ICM UniRegistry::INC UniRegistry::DM UPU VeriSign::COM_NET VeriSign::NameStore VeriSign::VeriSign ZACR/;
 }
 
 ####################################################################################################
