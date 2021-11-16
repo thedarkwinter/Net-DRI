@@ -95,7 +95,7 @@ is($r->org(),undef,'domain_info get_info (contact) registrant org');
 
 ####################################################################################################
 # Afilias::Shared
-$R2='Domain Name:NIC.ECO
+$R2='Domain Name:NIC.BNPPARIBAS
 Domain ID: D51961279-LRMS
 Creation Date: 2014-03-14T16:20:28Z
 Updated Date: 2014-05-13T20:31:49Z
@@ -144,10 +144,10 @@ Tech Phone Ext:
 Tech Fax: +1.2157065701
 Tech Fax Ext:
 Tech Email:support@afilias.info
-Name Server:A0.NIC.ECO
-Name Server:A2.NIC.ECO
-Name Server:B0.NIC.ECO
-Name Server:C0.NIC.ECO
+Name Server:A0.NIC.BNPPARIBAS
+Name Server:A2.NIC.BNPPARIBAS
+Name Server:B0.NIC.BNPPARIBAS
+Name Server:C0.NIC.BNPPARIBAS
 Name Server:
 Name Server:
 Name Server:
@@ -163,10 +163,10 @@ Access to AFILIAS WHOIS information is provided to assist persons in determining
 
 $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 $dri->target('afiliassrs')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.eco');
+$rc = $dri->domain_info('nic.bnpparibas');
 is($rc->is_success(),1,'AFILIAS Shared domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.eco','domain_info get_info (name)');
+is($dri->get_info('name'),'nic.bnpparibas','domain_info get_info (name)');
 is($dri->get_info('id'),'D51961279-LRMS','domain_info get_info (id)');
 is($dri->get_info('clName'),'Afilias (R719-LRMS)','domain_info get_info (clName)');
 is($dri->get_info('clIANA'),'800219','domain_info get_info (clIANA)');
@@ -182,7 +182,7 @@ is($dri->get_info('wuDate'),undef,'domain_info get_info (wuDate)'); # They don't
 $h=$dri->get_info('ns');
 isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
 @hs=$h->get_names();
-is_deeply(\@hs,['a0.nic.eco','a2.nic.eco','b0.nic.eco','c0.nic.eco'],'domain_info get_info (ns) get_names');
+is_deeply(\@hs,['a0.nic.bnpparibas','a2.nic.bnpparibas','b0.nic.bnpparibas','c0.nic.bnpparibas'],'domain_info get_info (ns) get_names');
 $c=$dri->get_info('contact');
 isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
 is_deeply([$c->types()],['admin','registrant','tech'],'domain_info get_info (contactSet) types');

@@ -33,7 +33,7 @@ my ($rc,$ok,$cs,$st,$p);
 ## OXRS
 $R2=$E1."<response><result code='2005'><msg lang='en-US'>Parameter value syntax error</msg><value xmlns:oxrs='urn:afilias:params:xml:ns:oxrs-1.0'><oxrs:xcp>2005:Parameter value syntax error (ContactAuthecoType:AUTHT range (6-16))</oxrs:xcp></value></result>".$TRID."</response>".$E2;
 
-$rc=$dri->domain_check('toto.eco');
+$rc=$dri->domain_check('toto.bnpparibas');
 is_deeply([$rc->get_extended_results()],[{from=>'oxrs',type=>'text',message=>'2005:Parameter value syntax error (ContactAuthecoType:AUTHT range (6-16))'}],'oxrs error message parsing');
 
 exit 0;
