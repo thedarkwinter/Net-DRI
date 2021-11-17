@@ -38,7 +38,7 @@ my $ok=eval {
 };
 print $@->as_string() if ! $ok;
 $dri->{trid_factory} = sub { return 'ABC-12345'; };
-$dri->add_current_registry('Afilias::Afilias');
+$dri->add_current_registry('Afilias::Shared');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{extensions => ['Afilias::RPro', 'Afilias::AV']});
 print $@->as_string() if ! $ok;
 
@@ -58,10 +58,10 @@ $cs->add($dri->local_object('contact')->srid('testcontact2'), 'admin');
 $cs->add($dri->local_object('contact')->srid('testcontact3'), 'registrant');
 
 $ok=eval {
-	$rc = $dri->domain_create('wirzenius.law.pro', {
+	$rc = $dri->domain_create('wirzenius.org.ag', {
                 pure_create => 1,
-		ns => $dri->local_object('hosts')->add('ns1.test.pro')->
-			add('ns2.test.pro'),
+		ns => $dri->local_object('hosts')->add('ns1.test.ag')->
+			add('ns2.test.ag'),
 		duration =>	new DateTime::Duration(years => 4),
 		contact =>	$cs,
 		pro =>		{
@@ -78,13 +78,13 @@ $ok=eval {
 print(STDERR $@->as_string()) if ! $ok;
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'domain create');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>wirzenius.law.pro</domain:name><domain:period unit="y">4</domain:period><domain:ns><domain:hostObj>ns1.test.pro</domain:hostObj><domain:hostObj>ns2.test.pro</domain:hostObj></domain:ns><domain:registrant>testcontact3</domain:registrant><domain:contact type="admin">testcontact2</domain:contact><domain:contact type="tech">testcontact1</domain:contact><domain:authInfo><domain:pw>testTest</domain:pw></domain:authInfo></domain:create></create><extension><rpro:proDomain xmlns:rpro="http://registrypro.pro/2003/epp/1/rpro-epp-2.0" xsi:schemaLocation="http://registrypro.pro/2003/epp/1/rpro-epp-2.0 rpro-epp-2.0.xsd"><rpro:registrationType>Resolving</rpro:registrationType><rpro:authorization roid="RPRODEF-SAMPLE-1">FAKETEXT</rpro:authorization></rpro:proDomain></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain create xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>wirzenius.org.ag</domain:name><domain:period unit="y">4</domain:period><domain:ns><domain:hostObj>ns1.test.ag</domain:hostObj><domain:hostObj>ns2.test.ag</domain:hostObj></domain:ns><domain:registrant>testcontact3</domain:registrant><domain:contact type="admin">testcontact2</domain:contact><domain:contact type="tech">testcontact1</domain:contact><domain:authInfo><domain:pw>testTest</domain:pw></domain:authInfo></domain:create></create><extension><rpro:proDomain xmlns:rpro="http://registrypro.pro/2003/epp/1/rpro-epp-2.0" xsi:schemaLocation="http://registrypro.pro/2003/epp/1/rpro-epp-2.0 rpro-epp-2.0.xsd"><rpro:registrationType>Resolving</rpro:registrationType><rpro:authorization roid="RPRODEF-SAMPLE-1">FAKETEXT</rpro:authorization></rpro:proDomain></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain create xml');
 
 $ok=eval {
-	$rc = $dri->domain_create('bucerius.law.pro', {
+	$rc = $dri->domain_create('bucerius.org.ag', {
                 pure_create => 1,
-		ns => $dri->local_object('hosts')->add('ns1.test.pro')->
-			add('ns2.test.pro'),
+		ns => $dri->local_object('hosts')->add('ns1.test.ag')->
+			add('ns2.test.ag'),
 		duration =>	new DateTime::Duration(years => 4),
 		contact =>	$cs,
 		pro =>		{
@@ -102,7 +102,7 @@ $ok=eval {
 print(STDERR $@->as_string()) if ! $ok;
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'domain activate');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>bucerius.law.pro</domain:name><domain:period unit="y">4</domain:period><domain:ns><domain:hostObj>ns1.test.pro</domain:hostObj><domain:hostObj>ns2.test.pro</domain:hostObj></domain:ns><domain:registrant>testcontact3</domain:registrant><domain:contact type="admin">testcontact2</domain:contact><domain:contact type="tech">testcontact1</domain:contact><domain:authInfo><domain:pw>testTest</domain:pw></domain:authInfo></domain:create></create><extension><rpro:proDomain xmlns:rpro="http://registrypro.pro/2003/epp/1/rpro-epp-2.0" xsi:schemaLocation="http://registrypro.pro/2003/epp/1/rpro-epp-2.0 rpro-epp-2.0.xsd"><rpro:registrationType activate="y">Resolving</rpro:registrationType><rpro:authorization roid="RPRODEF-SAMPLE-1">FAKETEXT</rpro:authorization></rpro:proDomain></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain activate xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>bucerius.org.ag</domain:name><domain:period unit="y">4</domain:period><domain:ns><domain:hostObj>ns1.test.ag</domain:hostObj><domain:hostObj>ns2.test.ag</domain:hostObj></domain:ns><domain:registrant>testcontact3</domain:registrant><domain:contact type="admin">testcontact2</domain:contact><domain:contact type="tech">testcontact1</domain:contact><domain:authInfo><domain:pw>testTest</domain:pw></domain:authInfo></domain:create></create><extension><rpro:proDomain xmlns:rpro="http://registrypro.pro/2003/epp/1/rpro-epp-2.0" xsi:schemaLocation="http://registrypro.pro/2003/epp/1/rpro-epp-2.0 rpro-epp-2.0.xsd"><rpro:registrationType activate="y">Resolving</rpro:registrationType><rpro:authorization roid="RPRODEF-SAMPLE-1">FAKETEXT</rpro:authorization></rpro:proDomain></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain activate xml');
 
 ## Update a domain
 $R2 = $E1 . '<response>' . r(1001,'Command completed successfully; ' .
@@ -112,30 +112,30 @@ my $todo = $dri->local_object('changes');
 $todo->set('pro', +{ redirect => 'localhost.localnet' });
 
 $ok=eval {
-	$rc = $dri->domain_update('localhost.eng.pro', $todo);
+	$rc = $dri->domain_update('localhost.net.ag', $todo);
 	1;
 };
 print(STDERR $@->as_string()) if ! $ok;
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'domain update');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>localhost.eng.pro</domain:name></domain:update></update><extension><rpro:proDomain xmlns:rpro="http://registrypro.pro/2003/epp/1/rpro-epp-2.0" xsi:schemaLocation="http://registrypro.pro/2003/epp/1/rpro-epp-2.0 rpro-epp-2.0.xsd"><rpro:redirectTarget>localhost.localnet</rpro:redirectTarget></rpro:proDomain></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain update xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>localhost.net.ag</domain:name></domain:update></update><extension><rpro:proDomain xmlns:rpro="http://registrypro.pro/2003/epp/1/rpro-epp-2.0" xsi:schemaLocation="http://registrypro.pro/2003/epp/1/rpro-epp-2.0 rpro-epp-2.0.xsd"><rpro:redirectTarget>localhost.localnet</rpro:redirectTarget></rpro:proDomain></extension><clTRID>ABC-12345</clTRID></command></epp>', 'domain update xml');
 
 ## Query a domain
 $R2 = $E1 . '<response>' . r(1000,'Command completed successfully') .
-	'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>cocaine.cpa.pro</domain:name><domain:roid>DM1234-PRO</domain:roid><domain:status s="ok"/><domain:registrant>jordynbuchanan</domain:registrant><domain:contact type="admin">jordynbuchanan</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:host>ns1.cocaine.cpa.pro</domain:host><domain:ns><domain:hostObj>ns1.test.pro</domain:hostObj><domain:hostObj>ns2.test.pro</domain:hostObj></domain:ns><domain:host>ns2.cocaine.cpa.pro</domain:host><domain:clID>RegistrarX</domain:clID><domain:crID>RegistrarY</domain:crID><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:upID>RegistrarX</domain:upID><domain:upDate>1999-12-03T09:00:00.0Z</domain:upDate><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate><domain:trDate>2000-04-08T09:00:00.0Z</domain:trDate><domain:authInfo><domain:pw>testTest</domain:pw></domain:authInfo></domain:infData></resData><extension><rpro:proDomain xmlns:rpro="http://registrypro.pro/2003/epp/1/rpro-epp-2.0" xsi:schemaLocation="http://registrypro.pro/2003/epp/1/rpro-epp-2.0 rpro-epp-2.0.xsd"><rpro:registrationType>PremiumIPDefensive</rpro:registrationType><rpro:tradeMark><rpro:tradeMarkName>Coke</rpro:tradeMarkName><rpro:tradeMarkJurisdiction>US</rpro:tradeMarkJurisdiction><rpro:tradeMarkDate>1991-12-11</rpro:tradeMarkDate><rpro:tradeMarkNumber>349876</rpro:tradeMarkNumber></rpro:tradeMark></rpro:proDomain></extension>' .
+	'<resData><domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>cocaine.com.ag</domain:name><domain:roid>DM1234-PRO</domain:roid><domain:status s="ok"/><domain:registrant>jordynbuchanan</domain:registrant><domain:contact type="admin">jordynbuchanan</domain:contact><domain:contact type="tech">sh8013</domain:contact><domain:host>ns1.cocaine.com.ag</domain:host><domain:ns><domain:hostObj>ns1.test.ag</domain:hostObj><domain:hostObj>ns2.test.ag</domain:hostObj></domain:ns><domain:host>ns2.cocaine.com.ag</domain:host><domain:clID>RegistrarX</domain:clID><domain:crID>RegistrarY</domain:crID><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:upID>RegistrarX</domain:upID><domain:upDate>1999-12-03T09:00:00.0Z</domain:upDate><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate><domain:trDate>2000-04-08T09:00:00.0Z</domain:trDate><domain:authInfo><domain:pw>testTest</domain:pw></domain:authInfo></domain:infData></resData><extension><rpro:proDomain xmlns:rpro="http://registrypro.pro/2003/epp/1/rpro-epp-2.0" xsi:schemaLocation="http://registrypro.pro/2003/epp/1/rpro-epp-2.0 rpro-epp-2.0.xsd"><rpro:registrationType>PremiumIPDefensive</rpro:registrationType><rpro:tradeMark><rpro:tradeMarkName>Coke</rpro:tradeMarkName><rpro:tradeMarkJurisdiction>US</rpro:tradeMarkJurisdiction><rpro:tradeMarkDate>1991-12-11</rpro:tradeMarkDate><rpro:tradeMarkNumber>349876</rpro:tradeMarkNumber></rpro:tradeMark></rpro:proDomain></extension>' .
 	$TRID . '</response>' . $E2;
 $ok=eval {
-	$rc = $dri->domain_info('cocaine.cpa.pro');
+	$rc = $dri->domain_info('cocaine.com.ag');
 	1;
 };
 print(STDERR $@->as_string()) if ! $ok;
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'domain query is_success');
-is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">cocaine.cpa.pro</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command></epp>', 'domain query xml');
+is($R1, '<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"><command><info><domain:info xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name hosts="all">cocaine.com.ag</domain:name></domain:info></info><clTRID>ABC-12345</clTRID></command></epp>', 'domain query xml');
 
-my $pro = $dri->get_info('pro', 'domain', 'cocaine.cpa.pro');
+my $pro = $dri->get_info('pro', 'domain', 'cocaine.com.ag');
 isa_ok($pro, 'HASH');
-is($dri->get_info('name', 'domain', 'cocaine.cpa.pro'), 'cocaine.cpa.pro',
+is($dri->get_info('name', 'domain', 'cocaine.com.ag'), 'cocaine.com.ag',
 	'domain query name');
 is($pro->{type}, 'PremiumIPDefensive', 'domain query type');
 is($pro->{tmname}, 'Coke', 'domain query trademark name');
