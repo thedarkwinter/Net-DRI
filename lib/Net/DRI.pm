@@ -284,7 +284,7 @@ sub new
      'Verisign::NAME' => 'VeriSign::NameStore',
      'VNDS' => 'VeriSign::COM_NET', # warning, this was actually split into COM_NET and NameStore!
      'WS' => 'GDI',
-     'Afilias::Afilias' => 'Donuts' # TLds moved to Donuts but extentions only work if using Afilias::Shared
+     'Afilias::Afilias' => 'Donuts'
   };
 
  return $self;

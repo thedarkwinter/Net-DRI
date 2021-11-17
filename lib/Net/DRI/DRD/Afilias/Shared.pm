@@ -142,7 +142,7 @@ sub verify_name_domain
 
 ####################################################################################################
 ####################################################################################################
-## Copied from old PRO DRD
+## Copied from old PRO DRD to support the PRO extension, if its loaded additionally (see Pro extension test )
 ## TODO : $av should be checked here to be syntaxically correct before doing process()
 
 sub av_create { my ($self,$ndr,$av,$ep)=@_; return $ndr->process('av','create',[$av,$ep]); }
