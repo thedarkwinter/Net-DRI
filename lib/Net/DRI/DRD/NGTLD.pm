@@ -250,46 +250,6 @@ alsace aquarelle aquitaine banque bzh corsica frogans lancaster leclerc mma ovh 
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'afnic';
 
-=pod
-
-
-=head2 Afilias
-
-Afilias operates a shared enveronment for its own TLDs (set provider to 'afilias'), and a separate shared environment for their clients ('afiliassrs').
-
-=head3 Status: Working
-
-=head3 Custom extensions:
-
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage> urn:afilias:params:xml:ns:idn-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:ipr-1.1
-
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::Price> urn:ietf:params:xml:ns:price-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
-
-=head3 Afilias Own TLDs
-
-Afilias has extended the .INFO plaform to include these newGTLDs
-
- $dri->add_registry('NGTLD',{provider=>'afilias'}); # own tlds
-
-info mobi pro xn--5tzm5g xn--6frz82g archi bet bio black blue green kim lgbt llc lotto meet organic pet pink poker promo red shiksha ski vote voto
-
-Contended TLD's not included
-
-=cut
-
- return {
-     bep_type => 2, # shared registry
-     tlds => ['info','mobi','pro','law.pro','jur.pro','bar.pro','med.pro','cpa.pro','aca.pro','eng.pro','io','sh','ac',
-              'xn--5tzm5g', 'xn--6frz82g','archi','bet','bio','black','blue','green','kim','lgbt','llc','lotto','meet','organic','pet','pink','poker','promo','red','shiksha','ski','vote','voto'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::AfiliasSRS',{'brown_fee_version' => '0.8'}],
-     whois_server => 'whois.afilias.net',
-   } if $bep eq 'afilias';
 
 =pod
 
@@ -299,14 +259,13 @@ Afilias SRS has extended their plaform to include these newGTLDs
 
  $dri->add_registry('NGTLD',{provider=>'afiliassrs'});
 
-ngtlds: xn--4gbrim xn--kput3i bnpparibas ged global indians ist istanbul ltda onl rich spa srl vegas zara
-gtlds: mobi
+ngtlds: xn--4gbrim xn--kput3i bnpparibas ged indians ist istanbul ltda onl rich spa srl vegas zara
 cctlds: ag bz gi lc mn me sc vc
 
 =cut
 
  if ($bep eq 'afiliassrs') {
-   my @ngtlds = qw/xn--4gbrim xn--kput3i bnpparibas ged global indians ist istanbul ltda onl rich spa srl vegas zara/;
+   my @ngtlds = qw/xn--4gbrim xn--kput3i bnpparibas ged indians ist istanbul ltda onl rich spa srl vegas zara/;
    my @gtlds = qw/asia/;
    my @cctlds = (
        'ag',(map { $_.'.ag'} qw/co com net nom org/),
@@ -554,7 +513,7 @@ xn--flw351e xn--q9jyb4c xn--qcka1pmc ads android app boo cal channel chrome dad 
 
 =head3 TLDs
 
-academy accountants actor agency airforce apartments architect army associates attorney auction band bargains bike bingo boutique broker builders business cab cafe camera camp capital cards care careers cash casino catering center charity chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction consulting contact contractors cool coupons credit creditcard cruises dance dating deals degree delivery democrat dental dentist diamonds digital direct directory discount doctor dog domains dpml.pub dpml.zone education email energy engineer engineering enterprises equipment estate events exchange expert exposed express fail family fan farm finance financial fish fitness flights florist football forex forsale foundation fund furniture futbol fyi gallery games gifts gives glass gmbh gold golf graphics gratis gripe group guide guru haus healthcare hockey holdings holiday hospital house immo immobilien industries institute insure international investments irish jetzt jewelry kaufen kitchen land lawyer lease legal life lighting limited limo live loans ltd maison management market markets marketing mba media medical memorial moda money mortgage movie navy network news ninja observer partners parts pets photography photos pictures pizza place plumbing plus productions properties pub realty recipes rehab reise reisen rentals repair report republican restaurant reviews rip rocks run sale salon sarl school schule services shoes shopping show singles soccer social software solar solutions sports studio style supplies supply support surgery systems tax taxi team technology tennis theater tienda tips tires today tools tours town toys trading training travel university vacations ventures vet viajes video villas vin vision voyage watch wine works world wtf xn--czrs0t xn--fjq720a xn--unup4y xn--vhquv zone
+ac academy accountants actor agency airforce apartments archi architect army associates attorney auction band bargains bet bike bingo bio black blue boutique broker builders business cab cafe camera camp capital cards care careers cash casino catering center charity chat cheap church city claims cleaning clinic clothing coach codes coffee community company computer condos construction consulting contact contractors cool coupons credit creditcard cruises dance dating deals degree delivery democrat dental dentist diamonds digital direct directory discount doctor dog domains dpml.pub dpml.zone education email energy engineer engineering enterprises equipment estate events exchange expert exposed express fail family fan farm finance financial fish fitness flights florist football forex forsale foundation fund furniture futbol fyi gallery games gifts gives glass global gmbh gold golf graphics gratis green gripe group guide guru haus healthcare hockey holdings holiday hospital house immo immobilien industries info institute insure international investments io irish jetzt jewelry kaufen kim kitchen land lawyer lease legal lgbt life lighting limited limo live llc loans lotto ltd maison management market marketing markets mba media medical memorial mobi moda money mortgage movie navy network news ninja observer organic partners parts pet pets photography photos pictures pink pizza place plumbing plus poker pro law.pro jur.pro bar.pro med.pro cpa.pro aca.pro eng.pro productions promo properties pub realty recipes red rehab reise reisen rentals repair report republican restaurant reviews rip rocks run sale salon sarl school schule services sh shiksha shoes shopping show singles ski soccer social software solar solutions sports studio style supplies supply support surgery systems tax taxi team technology tennis theater tienda tips tires today tools tours town toys trading training travel university vacations ventures vet viajes video villas vin vision vote voto voyage watch watches wine works world wtf xn--5tzm5g xn--6frz82g xn--czrs0t xn--fjq720a xn--unup4y xn--vhquv zone
 
 =head3 Custom extensions
 
@@ -573,7 +532,7 @@ In order to submit DPML blocks OR DMPL Overrides, submit a domain_create with th
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['dpml.pub','dpml.zone','academy','accountants','actor','agency','airforce','apartments','architect','army','associates','attorney','auction','band','bargains','bike','bingo','boutique','broker','builders','business','cab','cafe','camera','camp','capital','cards','care','careers','cash','casino','catering','center','charity','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','consulting','contact','contractors','cool','coupons','credit','creditcard','cruises','dance','dating','deals','degree','delivery','democrat','dental','dentist','diamonds','digital','direct','directory','discount','doctor','dog','domains','education','email','energy','engineer','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','express','fail','family','fan','farm','finance','financial','fish','fitness','flights','florist','football','forex','forsale','foundation','fund','furniture','futbol','fyi','gallery','games','gifts','gives','glass','gmbh','gold','golf','graphics','gratis','gripe','group','guide','guru','haus','healthcare','hockey','holdings','holiday','hospital','house','immo','immobilien','industries','institute','insure','international','investments','irish','jetzt','jewelry','kaufen','kitchen','land','lawyer','lease','legal','life','lighting','limited','limo','live','loans','ltd','maison','management','market','markets','marketing','mba','media','medical','memorial','moda','money','mortgage','movie','navy','network','news','ninja','observer','partners','parts','pets','photography','photos','pictures','pizza','place','plumbing','plus','productions','properties','pub','realty','recipes','rehab','reise','reisen','rentals','repair','report','republican','restaurant','reviews','rip','rocks','run','sale','salon','sarl','school','schule','services','shoes','shopping','show','singles','soccer','social','software','solar','solutions','sports','studio','style','supplies','supply','support','surgery','systems','tax','taxi','team','technology','tennis','theater','tienda','tips','tires','today','tools','tours','town','toys','trading','training','travel','university','vacations','ventures','vet','viajes','video','villas','vin','vision','voyage','watch','wine','works','world','wtf','xn--czrs0t','xn--fjq720a','xn--unup4y','xn--vhquv','zone'],
+     tlds => ['ac','academy','accountants','actor','agency','airforce','apartments','archi','architect','army','associates','attorney','auction','band','bargains','bet','bike','bingo','bio','black','blue','boutique','broker','builders','business','cab','cafe','camera','camp','capital','cards','care','careers','cash','casino','catering','center','charity','chat','cheap','church','city','claims','cleaning','clinic','clothing','coach','codes','coffee','community','company','computer','condos','construction','consulting','contact','contractors','cool','coupons','credit','creditcard','cruises','dance','dating','deals','degree','delivery','democrat','dental','dentist','diamonds','digital','direct','directory','discount','doctor','dog','domains','dpml.pub','dpml.zone','education','email','energy','engineer','engineering','enterprises','equipment','estate','events','exchange','expert','exposed','express','fail','family','fan','farm','finance','financial','fish','fitness','flights','florist','football','forex','forsale','foundation','fund','furniture','futbol','fyi','gallery','games','gifts','gives','glass','global','gmbh','gold','golf','graphics','gratis','green','gripe','group','guide','guru','haus','healthcare','hockey','holdings','holiday','hospital','house','immo','immobilien','industries','info','institute','insure','international','investments','io','irish','jetzt','jewelry','kaufen','kim','kitchen','land','lawyer','lease','legal','lgbt','life','lighting','limited','limo','live','llc','loans','lotto','ltd','maison','management','market','marketing','markets','mba','media','medical','memorial','mobi','moda','money','mortgage','movie','navy','network','news','ninja','observer','organic','partners','parts','pet','pets','photography','photos','pictures','pink','pizza','place','plumbing','plus','poker','pro','law.pro','jur.pro','bar.pro','med.pro','cpa.pro','aca.pro','eng.pro','productions','promo','properties','pub','realty','recipes','red','rehab','reise','reisen','rentals','repair','report','republican','restaurant','reviews','rip','rocks','run','sale','salon','sarl','school','schule','services','sh','shiksha','shoes','shopping','show','singles','ski','soccer','social','software','solar','solutions','sports','studio','style','supplies','supply','support','surgery','systems','tax','taxi','team','technology','tennis','theater','tienda','tips','tires','today','tools','tours','town','toys','trading','training','travel','university','vacations','ventures','vet','viajes','video','villas','vin','vision','vote','voto','voyage','watch','watches','wine','works','world','wtf','xn--5tzm5g','xn--6frz82g','xn--czrs0t','xn--fjq720a','xn--unup4y','xn--vhquv','zone'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}],
      whois_server => 'whois.donuts.co',
      check_limit => 5,
@@ -779,7 +738,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
 
 =cut
 
- my @neustar_tlds = qw/aaa able abogado accountant adult aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball basketball beer bible bid biz booking boots boston box buzz calvinklein cancerresearch caravan cartier casa catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co com.co commbank compare cooking coupon courses cricket cuisinella date dds dell discover doha download duns dupont earth everbank faith farmers fashion ferrero film fishing fit flickr flir ford fox frontier ftr gap garden giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe law lifeinsurance lilly lincoln loan loft luxe luxury marshalls mattel mcd mcdonalds melbourne men menu miami mint mlb mobily moe monash montblanc moto mtn mutual nba net.co netbank netflix neustar nfl nike nom.co northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping porn pramerica praxi pru prudential qvc racing review rmit rocher rugby safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven sex skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj xxx yahoo yandex zero zippo/;
+ my @neustar_tlds = qw/aaa able abogado accountant adult aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball basketball beer bible bid biz booking boots boston box buzz calvinklein cancerresearch caravan cartier casa catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co com.co net.co nom.co commbank compare cooking coupon courses cricket cuisinella date dds dell discover doha download duns dupont earth everbank faith farmers fashion ferrero film fishing fit flickr flir ford fox frontier ftr gap garden giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe law lifeinsurance lilly lincoln loan loft luxe luxury marshalls mattel mcd mcdonalds melbourne men menu miami mint mlb mobily moe monash montblanc moto mtn mutual nba net.co netbank netflix neustar nfl nike nom.co northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping porn pramerica praxi pru prudential qvc racing review rmit rocher rugby safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven sex skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj xxx yahoo yandex zero zippo/;
 
  return {
      bep_type => 2, # shared registry
