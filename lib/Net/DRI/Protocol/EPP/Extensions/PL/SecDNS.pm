@@ -90,6 +90,7 @@ sub setup
 
 # by their technical documentation ("NASK_EPP_en.pdf > 5.9 <domain:update>") update is slightly different
 # for example they don't accept <secDNS:chg> element
+# the order of the <secDNS:rem> and <secDNS:add> elements is critical when both <secDNS:rem> and <secDNS:add> elements are given. The <secDNS:rem> element must be defined first!
 sub update
 {
  my ($epp,$domain,$todo)=@_;
@@ -101,12 +102,12 @@ sub update
  my @def=grep { defined } ($toadd,$todel);
  return unless @def;
 
- Net::DRI::Exception::usererr_invalid_parameters('In NASK SecDNS-2.1, only add or del is possible, not more than one of them') if (@def>1);
  my $eid=$mes->command_extension_register('secDNS','update',{});
 
  my @n;
- push @n,['secDNS:add',Net::DRI::Protocol::EPP::Extensions::SecDNS::add_interfaces(ref $toadd eq 'ARRAY' ? $toadd : [ $toadd ] )] if defined $toadd;
+ # as described before <secDNS:rem> element must be defined first!
  push @n,['secDNS:rem',Net::DRI::Protocol::EPP::Extensions::SecDNS::add_interfaces(ref $todel eq 'ARRAY' ? $todel : [ $todel ] )] if defined $todel;
+ push @n,['secDNS:add',Net::DRI::Protocol::EPP::Extensions::SecDNS::add_interfaces(ref $toadd eq 'ARRAY' ? $toadd : [ $toadd ] )] if defined $toadd;
  $mes->command_extension($eid,\@n);
 
  return;
