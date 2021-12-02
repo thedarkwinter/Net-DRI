@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 552;
+use Test::More tests => 551;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -61,7 +61,6 @@ use_ok('Net::DRI::Data::RegistryObject');
 use_ok('Net::DRI::Data::StatusList');
 use_ok('Net::DRI::DRD');
 use_ok('Net::DRI::DRD::AdamsNames');
-use_ok('Net::DRI::DRD::Afilias::Afilias');
 use_ok('Net::DRI::DRD::Afilias::PIR');
 use_ok('Net::DRI::DRD::Afilias::Shared');
 use_ok('Net::DRI::DRD::AFNIC::AFNIC');

@@ -7,7 +7,8 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 42;
+use Test::More tests => 43;
+use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -150,7 +151,6 @@ is($c->tipo_identificacion(),1,'contact_info get_info');
 $c = $dri->local_object('contact');
 $c->srid(12345);
 $c->name('Mike Ekim');
-$c->org('Ekim Inc');
 $c->street(['123 Long Road']);
 $c->pc('BG123');
 $c->city('Boglog');
@@ -162,8 +162,11 @@ $c->tipo_identificacion(1);
 $c->identificacion('ME123');
 $R2=$E1.'<response>'.r().'<resData><contact:creData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>12345</contact:id><contact:crDate>2009-10-14T14:48:35.0</contact:crDate></contact:creData></resData>'.$TRID.'</response>'.$E2;
 $rc = $dri->contact_create($c);
-is_string($R1, $E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:postalInfo type="loc"><contact:name>Mike Ekim</contact:name><contact:org>Ekim Inc</contact:org><contact:addr><contact:street>123 Long Road</contact:street><contact:city>Boglog</contact:city><contact:pc>BG123</contact:pc><contact:cc>ES</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.1234561</contact:voice><contact:email>mike@ekim.es</contact:email><contact:es_tipo_identificacion>1</contact:es_tipo_identificacion><contact:es_identificacion>ME123</contact:es_identificacion></contact:create></create>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'contact_create build');
+is_string($R1, $E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:postalInfo type="loc"><contact:name>Mike Ekim</contact:name><contact:addr><contact:street>123 Long Road</contact:street><contact:city>Boglog</contact:city><contact:pc>BG123</contact:pc><contact:cc>ES</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.1234561</contact:voice><contact:email>mike@ekim.es</contact:email><contact:es_tipo_identificacion>1</contact:es_tipo_identificacion><contact:es_identificacion>ME123</contact:es_identificacion></contact:create></create>'.$ES_EXT.'<clTRID>ABC-12345</clTRID></command></epp>', 'contact_create build');
 is($rc->is_success(), 1, 'contact_create is_success');
+# test new changes - where org field was deprecated for contact objects
+$c->org('Ekim Inc');
+throws_ok { $dri->contact_create($c) } qr/ org is not EPP enable/, 'contact_create - parse invalid param value: org';
 
 
 #update - not supported by es

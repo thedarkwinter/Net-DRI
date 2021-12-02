@@ -144,12 +144,14 @@ sub contact_create_build
  my $mes=$epp->message();
 
  ## validate() has been called, we are sure that type exists
- my @n;
- push @n,['jpex:domain suffix="'.$contact->suffix().'"'] if $contact->suffix();
- push @n,['jpex:contact alloc="'.$contact->alloc().'"'] if $contact->alloc();
+ if ($contact->suffix() && $contact->alloc()) {
+  my @n;
+  push @n,['jpex:domain suffix="'.$contact->suffix().'"'];
+  push @n,['jpex:contact alloc="'.$contact->alloc().'"'];
 
- my $eid=build_command_extension($mes,$epp,'jpex:create');
- $mes->command_extension($eid,[@n]);
+  my $eid=build_command_extension($mes,$epp,'jpex:create');
+  $mes->command_extension($eid,[@n]);
+ }
 
  return;
 }
