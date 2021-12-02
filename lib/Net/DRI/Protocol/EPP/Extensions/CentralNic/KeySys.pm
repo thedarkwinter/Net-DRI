@@ -40,11 +40,11 @@ Partially implemented KeySys extension
 
 sub register_commands
 {
-    my %tmp=(
-        info    => [ undef, \&info_parse ],
-#        update  => [ \&update, undef ], #.la and am dont use keysys:accept-trade, keeping function for other tlds or other keysys params if needed later 
-    );
-    return { 'domain' => \%tmp };
+ my %tmp=(
+  info    => [ undef, \&info_parse ],
+#  update  => [ \&update, undef ], #.la and am dont use keysys:accept-trade, keeping function for other tlds or other keysys params if needed later 
+ );
+ return { 'domain' => \%tmp };
 }
 
 sub setup
@@ -68,10 +68,10 @@ sub info_parse
  return unless defined $infdata;
 
  foreach my $el (Net::DRI::Util::xml_list_children($infdata)){
-   my ($n,$c)=@$el;
-   $rinfo->{domain}->{$oname}->{"ks_".$n} = $n =~/date/i
-                                            ? eval { $po->parse_iso8601($c->textContent()) } || $c->textContent() 
-                                            : $c->textContent();
+  my ($n,$c)=@$el;
+  $rinfo->{domain}->{$oname}->{"ks_".$n} = $n =~/date/i
+                                           ? eval { $po->parse_iso8601($c->textContent()) } || $c->textContent() 
+                                           : $c->textContent();
  }
 
  return;
@@ -79,18 +79,18 @@ sub info_parse
 
 sub update
 {
-    my ($epp, $domain, $rd) = @_;
+ my ($epp, $domain, $rd) = @_;
 
-    if (!Net::DRI::Util::check_isa($rd,'Net::DRI::Data::Changes') || !$rd->{'registrant'}) {
-        return
-    }
+ if (!Net::DRI::Util::check_isa($rd,'Net::DRI::Data::Changes') || !$rd->{'registrant'}) {
+  return
+ }
 
-    my $mes = $epp->message();
-    my $eid=$mes->command_extension_register('keysys:update','xmlns:keysys="http://www.key-systems.net/epp/keysys-1.0"', 'keysys');
-    my @kv = ();
-    push @kv, ['keysys:domain', ['keysys:accept-trade', 1]];
-    $mes->command_extension($eid,\@kv);
-    return;
+ my $mes = $epp->message();
+ my $eid=$mes->command_extension_register('keysys:update','xmlns:keysys="http://www.key-systems.net/epp/keysys-1.0"', 'keysys');
+ my @kv = ();
+ push @kv, ['keysys:domain', ['keysys:accept-trade', 1]];
+ $mes->command_extension($eid,\@kv);
+ return;
 }
 
 ####################################################################################################

@@ -7,7 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 
-use Test::More tests => 5;
+use Test::More tests => 10;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -84,8 +84,14 @@ $R2=$E1.'<response>'.r().'
    </extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_info('example1.am');
 is($rc->is_success(),1,'domain_info is is_success');
-is($dri->get_info('action'),'info','domain_info get_info (action)'); #FIXME isnt this standard???
 is($dri->get_info('name'),'example1.am','domain_info get_info (name)');
+is($dri->get_info('ks_renDate')->ymd,'2026-01-31','domain_info get_info (ks_renDate)');
+is($dri->get_info('ks_punDate')->ymd,'2025-12-27','domain_info get_info (ks_punDate)');
+is($dri->get_info('ks_domain-roid'),'1850955283_DOMAIN_COM-VRSN','domain_info get_info (ks_domain-roid)');
+is($dri->get_info('ks_renewalmode'),'DEFAULT','domain_info get_info (ks_renewalmode)');
+is($dri->get_info('ks_transferlock'),1,'domain_info get_info (ks_transferlock)');
+is($dri->get_info('ks_transfermode'),'DEFAULT','domain_info get_info (ks_transfermode)');
+
 
 ## domain create
 $R2='';
@@ -105,8 +111,6 @@ $rc=$dri->domain_create('example2.am',{ pure_create  => 1,
 	                                      ns           => $ns,
 	                                      auth         => {pw=>'2fooBAR'},
                                       });
-# FIXME Keysys params needed for am/la
-#is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example2.am</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.domaindiscount24.net</domain:hostObj><domain:hostObj>ns2.domaindiscount24.net</domain:hostObj><domain:hostObj>ns3.domaindiscount24.net</domain:hostObj></domain:ns><domain:registrant>P-JCD21</domain:registrant><domain:contact type="admin">P-JCD21</domain:contact><domain:contact type="billing">P-JCD21</domain:contact><domain:contact type="tech">P-JCD21</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><extension><keysys:create xmlns:keysys="http://www.key-systems.net/epp/keysys-1.0"><keysys:domain><keysys:whois-rsp>Example</keysys:whois-rsp><keysys:whois-url>http://www.example.com</keysys:whois-url></keysys:domain></keysys:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 
 is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example2.am</domain:name><domain:period unit="y">2</domain:period><domain:ns><domain:hostObj>ns1.domaindiscount24.net</domain:hostObj><domain:hostObj>ns2.domaindiscount24.net</domain:hostObj><domain:hostObj>ns3.domaindiscount24.net</domain:hostObj></domain:ns><domain:registrant>P-JCD21</domain:registrant><domain:contact type="admin">P-JCD21</domain:contact><domain:contact type="billing">P-JCD21</domain:contact><domain:contact type="tech">P-JCD21</domain:contact><domain:authInfo><domain:pw>2fooBAR</domain:pw></domain:authInfo></domain:create></create><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_create build');
 
