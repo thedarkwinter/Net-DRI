@@ -101,6 +101,7 @@ sub new
 sub periods { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name { return 'CentralNic::RRPProxy'; }
 sub tlds {
+ # Aditional domains can be added from https://wiki.rrpproxy.net/domains/tlds
  my @cctlds = qw/am la dj/;
  return (@cctlds);
 }

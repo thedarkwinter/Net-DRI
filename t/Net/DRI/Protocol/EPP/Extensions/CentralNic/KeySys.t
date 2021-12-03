@@ -88,7 +88,5 @@ is($rc->is_success(),1,'domain_info is_success');
 is($dri->get_info('ks_domain-roid','domain','example1.am'),'1850955283_DOMAIN_COM-VRSN','domain_info get_info (ks_key)');
 is($dri->get_info('ks_renDate','domain','example1.am'),'2026-01-31T13:46:20','domain_info get_info (ks_key date)');
 
-### FIXME Add Update Test
-
 ####################################################################################################
 exit 0;
