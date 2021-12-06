@@ -210,13 +210,13 @@ is($d->{fee},5.00,'Fee extension: domain_transfer parse fee');
 $dri->add_registry('NGTLD',{provider=>'centralnic'});
 $dri->target('centralnic')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">eapdom1.wiki</domain:name></domain:cd><domain:cd><domain:name avail="1">eapdom1.broadway</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.5"><fee:cd><fee:name>eapdom1.wiki</fee:name><fee:currency>USD</fee:currency><fee:command>create</fee:command><fee:period unit="y">1</fee:period><fee:fee description="Registration Fee" refundable="1">20.00</fee:fee><fee:fee description="Early Access Fee" refundable="0">1000.00</fee:fee></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('eapdom1.wiki',{fee=>{action=>'create'}});
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>eapdom1.wiki</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.5" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.5 fee-0.5.xsd"><fee:domain><fee:name>eapdom1.wiki</fee:name><fee:command>create</fee:command></fee:domain></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build');
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">eapdom1.website</domain:name></domain:cd><domain:cd><domain:name avail="1">eapdom1.broadway</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.5"><fee:cd><fee:name>eapdom1.website</fee:name><fee:currency>USD</fee:currency><fee:command>create</fee:command><fee:period unit="y">1</fee:period><fee:fee description="Registration Fee" refundable="1">20.00</fee:fee><fee:fee description="Early Access Fee" refundable="0">1000.00</fee:fee></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('eapdom1.website',{fee=>{action=>'create'}});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>eapdom1.website</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.5" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.5 fee-0.5.xsd"><fee:domain><fee:name>eapdom1.website</fee:name><fee:command>create</fee:command></fee:domain></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build');
 is($dri->get_info('action'),'check','domain_check get_info(action)');
 is($dri->get_info('exist'),0,'domain_check get_info(exist)');
 $d = shift @{$dri->get_info('fee')};
-is($d->{domain},'eapdom1.wiki','Fee extension: domain_check single parse domain');
+is($d->{domain},'eapdom1.website','Fee extension: domain_check single parse domain');
 is($d->{premium},0,'Fee extension: domain_check single parse premium');
 is($d->{currency},'USD','Fee extension: domain_check single parse currency');
 is($d->{action},'create','Fee extension: domain_check single parse action');
