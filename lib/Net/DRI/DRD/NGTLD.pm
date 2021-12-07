@@ -804,7 +804,7 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-bayern bradesco broadway career gop gucci jobs med pharmacy realestate realtor
+bradesco broadway career gop gucci jobs med pharmacy realestate realtor
 # README: .career/.gucci/.jobs/.med/.pharmacy/.realestate/.realtor is not part of MMX but loading here because has a similar logic :p
 
 =head3 Nominet-Amazon: TLDs migrated in 2019 from Neustar into Nominet management
@@ -822,7 +822,7 @@ amazon audible author aws book bot buy call circle deal fast fire free got hot i
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['bayern', 'bradesco', 'broadway', 'career', 'gop', 'gucci', 'jobs', 'med', 'pharmacy', 'realestate', 'realtor'],
+     tlds => ['bradesco', 'broadway', 'career', 'gop', 'gucci', 'jobs', 'med', 'pharmacy', 'realestate', 'realtor'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
@@ -978,7 +978,7 @@ L<NET::DRI::Protocol::EPP::Extensions::MX::IDN>
 
 =head3 TLDs
 
-ruhr gmx ifm nrw whoswho
+bayern ruhr gmx ifm nrw whoswho
 
 =head3 Custom extensions:
 
@@ -998,7 +998,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.core
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['ruhr','gmx','ifm','nrw','whoswho'],
+     tlds => ['bayern','ruhr','gmx','ifm','nrw','whoswho'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version => $tangorsversion}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'tango' || $bep eq 'tangors';
