@@ -224,8 +224,8 @@ sub fee_set_parse
     } elsif ($name eq 'fee')
     # Fees are kind of loosely defined based on free text description field with refundable also possible. This will total it up and concat the description and refundable fields but its only human readable
     {
-      $set->{fee} = 0 unless exists $set->{fee};
-      $set->{fee} += $content->textContent();
+      $set->{fee} = '0.00' unless exists $set->{fee};
+      $set->{fee} = sprintf("%.2f", ($set->{'fee'} + $content->textContent())); # wasn't appending x.00 for some reason. Using this way to avoid such problem :p
       $set->{description} = '' unless exists $set->{description};
       if ($content->hasAttribute('description'))
       {
@@ -233,7 +233,7 @@ sub fee_set_parse
         my $d = lc $content->getAttribute('description');
         $d =~ s/ /_/g;
         $d = 'early_access_fee' if $d =~ m/early_access/;
-        $set->{"fee_$d"} = 0 + $content->textContent();
+        $set->{"fee_$d"} = $content->textContent();
       }
       if ($content->hasAttribute('refundable') && $content->getAttribute('refundable') eq '1') {
         $set->{description} .= "Refundable"; #TODO remove in regext-fee (0.12?), the description shold not contain these
@@ -536,7 +536,7 @@ sub transform_parse
       } elsif ($name =~ m/^(fee|balance|creditLimit)/)
       {
         my $k= ($1 eq 'creditLimit') ? 'credit_limit' : $1;
-        $p{$k}=0+$content->textContent();
+        $p{$k}=$content->textContent();
       }
     }
     $rinfo->{domain}->{$oname}->{fee}=\%p;

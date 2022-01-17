@@ -48,8 +48,8 @@ is($d->{domain},'crrc.top','Fee extension: domain_check single parse domain');
 is($d->{premium},1,'Fee extension: domain_check single parse premium');
 is($d->{currency},'CNY','Fee extension: domain_check single parse currency');
 is($d->{action},'create','Fee extension: domain_check single parse action');
-is($d->{duration}->years(),1,'Fee extension: domain_check singe parse duration');
-is($d->{fee},100.00,'Fee extension: domain_check singe parse fee');
+is($d->{duration}->years(),1,'Fee extension: domain_check single parse duration');
+is($d->{fee},'100.00','Fee extension: domain_check single parse fee');
 
 ## fee-create
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>crrc.top</domain:name><domain:crDate>2016-04-11T07:31:58.0Z</domain:crDate><domain:exDate>2017-04-11T07:31:58.0Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.8"><fee:currency>CNY</fee:currency><fee:fee applied="delayed" grace-period="P8D" refundable="1">100.00</fee:fee><fee:balance>9664204.00</fee:balance></fee:creData></extension>'.$TRID.'</response>'.$E2;

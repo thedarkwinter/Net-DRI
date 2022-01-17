@@ -52,7 +52,7 @@ is($d->{currency},'USD','Fee extension: domain_check_price parse currency');
 is($d->{action},'create','Fee extension: domain_check_price parse action');
 is($d->{phase},'open','Fee extension: domain_check_price parse phase');
 is($d->{duration}->years(),1,'Fee extension: domain_check_price parse duration');
-is($d->{fee},20.00,'Fee extension: domain_check_price parse fee');
+is($d->{fee},'20.00','Fee extension: domain_check_price parse fee');
 is($d->{class},'CO Default Tier','Fee extension: domain_check_price parse classe');
 
 # using the standardised methods
@@ -60,9 +60,9 @@ is($dri->get_info('is_premium'),0,'domain_check get_info (is_premium) undef');
 isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration) is DateTime::Duration');
 is($dri->get_info('price_duration')->years(),1,'domain_check get_info (price_duration)');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),'20','domain_check get_info (create_price)');
-is($dri->get_info('renew_price'),20,'domain_check get_info (renew_price) 20');
-is($dri->get_info('transfer_price'),20,'domain_check get_info (transfer_price) 20');
+is($dri->get_info('create_price'),'20.00','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),'20.00','domain_check get_info (renew_price) 20');
+is($dri->get_info('transfer_price'),'20.00','domain_check get_info (transfer_price) 20');
 is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
 
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="0">expensiveshoes.co</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns="urn:ietf:params:xml:ns:fee-0.6" xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:cd><fee:name>expensiveshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">create</fee:command><fee:period unit="y">1</fee:period><fee:fee>12000.00</fee:fee><fee:class>CO Tier5</fee:class></fee:cd><fee:cd><fee:name>expensiveshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">renew</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee><fee:class>CO Default Tier</fee:class></fee:cd><fee:cd><fee:name>expensiveshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">transfer</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee><fee:class>CO Default Tier</fee:class></fee:cd><fee:cd><fee:name>expensiveshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">restore</fee:command><fee:period unit="y">1</fee:period></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
@@ -70,16 +70,16 @@ $rc=$dri->domain_check_price('expensiveshoes.co');
 is($rc->is_success(),1,'domain_check_price is is_success');
 is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium) 1');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),12000,'domain_check get_info (create_price)');
-is($dri->get_info('renew_price'),20,'domain_check get_info (renew_price) 20');
+is($dri->get_info('create_price'),'12000.00','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),'20.00','domain_check get_info (renew_price) 20');
 
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="0">ruggedshoes.co</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns="urn:ietf:params:xml:ns:fee-0.6" xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:cd><fee:name>ruggedshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">create</fee:command><fee:period unit="y">1</fee:period><fee:fee>7000.00</fee:fee><fee:class>CO Tier4</fee:class></fee:cd><fee:cd><fee:name>ruggedshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">renew</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee><fee:class>CO Default Tier</fee:class></fee:cd><fee:cd><fee:name>ruggedshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">transfer</fee:command><fee:period unit="y">1</fee:period><fee:fee>20.00</fee:fee><fee:class>CO Default Tier</fee:class></fee:cd><fee:cd><fee:name>ruggedshoes.co</fee:name><fee:currency>USD</fee:currency><fee:command phase="open">restore</fee:command><fee:period unit="y">1</fee:period></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->domain_check_price('ruggedshoes.co');
 is($rc->is_success(),1,'domain_check_price is is_success');
 is($dri->get_info('is_premium'),1,'domain_check get_info (is_premium) undef');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),7000,'domain_check get_info (create_price)');
-is($dri->get_info('renew_price'),20,'domain_check get_info (renew_price) undef');
+is($dri->get_info('create_price'),'7000.00','domain_check get_info (create_price)');
+is($dri->get_info('renew_price'),'20.00','domain_check get_info (renew_price) undef');
 
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.co</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.6" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.6 fee-0.6.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee><fee:balance>-5.00</fee:balance><fee:creditLimit>1000.00</fee:creditLimit></fee:creData></extension>'.$TRID.'</response>'.$E2;
 $cs=$dri->local_object('contactset');
@@ -95,9 +95,9 @@ is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_create parse currency');
-is($d->{fee},5.00,'Fee extension: domain_create parse fee');
-is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
-is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
+is($d->{fee},'5.00','Fee extension: domain_create parse fee');
+is($d->{balance},'-5.00','Fee extension: domain_create parse balance');
+is($d->{credit_limit},'1000.00','Fee extension: domain_create parse credit limit');
 
 # create with multiple fees and 'description', 'refundable', 'grace-period', 'applied'attributes
 # couldn't find a example on rfc but should be something like this!

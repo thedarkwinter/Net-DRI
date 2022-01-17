@@ -47,7 +47,7 @@ is($dri->get_info('object_id','message',124),'foobar.sncf','message_retrieve get
 
 #####################
 ## PremiumDomain
-## Note, I think they don't ise this any more? Instead they use fee-0.11 (at least for paris and alsace)
+## Note, I think they don't ise this any more? Instead they use fee-1.0 (at least for paris and alsace)
 
 ## Old format (?)
 my $price = { duration=>DateTime::Duration->new(years=>5) };
@@ -79,26 +79,19 @@ is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) 
 
 
 ####################################################################################################
-## Fee-0.11
+## Fee-1.0
 $dri->add_registry('NGTLD',{provider => 'afnic',name=>'paris'} );
 $dri->target('paris')->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
-$R2=$E1.'<greeting><svID>EPPPRODServeronepp.prive.nic.TLD(V2.0.0)</svID><svDate>2016-09-15T13:03:32.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:fee-0.11</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
+$R2=$E1.'<greeting><svID>EPPPRODServeronepp.prive.nic.TLD(V2.0.0)</svID><svDate>2016-09-15T13:03:32.0Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:launch-1.0</extURI><extURI>urn:ietf:params:xml:ns:epp:fee-1.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
-is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.11','Fee 0.11 loaded correctly');
+is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:epp:fee-1.0','Fee 1.0 loaded correctly');
 
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">foobarfeev011.paris</domain:name></domain:cd><domain:cd><domain:name avail="1">foobarfeev011.paris</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:cd avail="1"><fee:object><domain:name>foobarfeev011.paris</domain:name></fee:object><fee:command>create</fee:command><fee:currency>EUR</fee:currency><fee:period unit="y">1</fee:period><fee:fee description="create standard" refundable="1" grace-period="P5D">29.00</fee:fee><fee:class>standard</fee:class></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('foobarfeev011.paris',{fee=>{action=>'create', duration=>DateTime::Duration->new(years=>1), 'currency' => 'EUR'}});
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobarfeev011.paris</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.11 fee-0.11.xsd"><fee:command>create</fee:command><fee:currency>EUR</fee:currency><fee:period unit="y">1</fee:period></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check build');
-is($dri->get_info('action'),'check','domain_check get_info(action)');
-is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">foobarfee1-0.paris</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:currency>USD</fee:currency><fee:cd avail="1"><fee:objID>foobarfee1-0.paris</fee:objID><fee:command name="create" phase="sunrise"><fee:period unit="y">1</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">10.00</fee:fee><fee:fee description="Application Fee" refundable="0" applied="immediate">500.00</fee:fee></fee:command></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('foobarfee1-0.paris',{fee=>{currency => 'USD',command=>'create'}});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobarfee1-0.paris</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:epp:fee-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:epp:fee-1.0 fee-1.0.xsd"><fee:currency>USD</fee:currency><fee:command name="create"/></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_...');
 
-$d = shift @{$dri->get_info('fee')};
-is($d->{domain},'foobarfeev011.paris','Fee extension: domain_check single parse domain');
-is($d->{class},'standard','Fee extension: domain_check single parse class');
-is($d->{currency},'EUR','Fee extension: domain_check single parse currency');
-is($d->{action},'create','Fee extension: domain_check single parse action');
-is($d->{duration}->years(),1,'Fee extension: domain_check single parse duration');
-is($d->{grace_period},'P5D','Fee extension: domain_check single parse grace_period ');
-is($d->{fee},29.00,'Fee extension: domain_check single parse fee');
-
+is($rc->is_success(),1,'domain_check is_success');
+is($dri->get_info('action'),'check','domain_check get_info (action)');
+is($dri->get_info('exist','domain','foobarfee1-0.paris'),0,'domain_check get_info(exist)');
+use Data::Dumper; print Dumper($rc);
 exit 0;
