@@ -236,15 +236,15 @@ alsace aquarelle aquitaine banque bzh corsica frogans lancaster leclerc mma ovh 
 
  return {
     bep_type => 1, # dedicated regsitry
-    tlds => ['alsace', 'paris'],
-    transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['AFNIC::RegistryMessage', 'CentralNic::Fee'], 'brown_fee_version' => '0.11'}],
+    tlds => ['alsace', 'corsica', 'paris'],
+    transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['AFNIC::RegistryMessage', 'Fee'], 'fee_version' => '1.0'}],
     contact_i18n => 1, # can only use the "loc" type
     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-  } if $bep eq 'afnic' && $tld =~ m/(?:alsace|paris)/;
+  } if $bep eq 'afnic' && $tld =~ m/(?:alsace|corsica|paris)/;
 
  return {
      bep_type => 1, # dedicated regsitry
-     tlds => ['aquarelle', 'aquitaine', 'banque', 'bzh', 'corsica', 'frogans', 'lancaster', 'leclerc', 'mma', 'ovh', 'sncf'],
+     tlds => ['aquarelle', 'aquitaine', 'banque', 'bzh', 'frogans', 'lancaster', 'leclerc', 'mma', 'ovh', 'sncf'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['AFNIC::RegistryMessage', 'AFNIC::PremiumDomain']}],
      contact_i18n => 1, # can only use the "loc" type
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
