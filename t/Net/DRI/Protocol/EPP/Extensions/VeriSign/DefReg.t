@@ -11,7 +11,7 @@ use DateTime::Duration;
 
 use Data::Dumper;
 
-use Test::More tests => 66;
+use Test::More tests => 72;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -29,7 +29,7 @@ $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('VeriSign::NameStore');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv},{default_product=>'name',extensions=>['VeriSign::NameStore']});
 
-my ($rc,$s,$cs);
+my ($rc,$s,$cs,$d);
 
 ########################################################################################################
 
@@ -144,6 +144,14 @@ is_string($R1,$E1.'<command><delete><defReg:delete xmlns:defReg="http://www.nic.
 $R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result><resData><defReg:renData xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE9-REP</defReg:roid><defReg:exDate>2001-04-03T22:00:00.0Z</defReg:exDate></defReg:renData></resData>'.$TRID.'</response>'.$E2;
 $rc=$dri->defreg_renew('EXAMPLE9-REP', {duration => DateTime::Duration->new(years=>1), current_expiration => DateTime->new(year=>2000,month=>4,day=>3)});
 is_string($R1,$E1.'<command><renew><defReg:renew xmlns:defReg="http://www.nic.name/epp/defReg-1.0" xsi:schemaLocation="http://www.nic.name/epp/defReg-1.0 defReg-1.0.xsd"><defReg:roid>EXAMPLE9-REP</defReg:roid><defReg:curExpDate>2000-04-03</defReg:curExpDate><defReg:period unit="y">1</defReg:period></defReg:renew></renew><extension><namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1" xsi:schemaLocation="http://www.verisign-grs.com/epp/namestoreExt-1.1 namestoreExt-1.1.xsd"><namestoreExt:subProduct>name</namestoreExt:subProduct></namestoreExt:namestoreExt></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'defreg_renew build_xml');
+# add new tests to review exDate parse, etc
+is($rc->is_success(),1,'defreg_renew is_success');
+is($dri->get_info('action'),'renew','defreg_renew get_info(action)');
+is($dri->get_info('exist'),1,'defreg_renew get_info(exist)');
+is($dri->get_info('roid'),'EXAMPLE9-REP','defreg_renew get_info(roid)');
+$d=$dri->get_info('exDate');
+isa_ok($d,'DateTime','defreg_renew get_info(exDate)');
+is("".$d,'2001-04-03T22:00:00','defreg_renew get_info(exDate) value');
 
 # defreg update
 $R2=$E1.'<response><result code="1000"><msg>Command completed successfully</msg></result>'.$TRID.'</response>'.$E2;

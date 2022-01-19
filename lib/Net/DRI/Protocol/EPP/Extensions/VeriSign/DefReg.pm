@@ -78,7 +78,7 @@ sub register_commands
             info   => [ \&info, \&info_parse ],
             delete => [ \&delete ],
 	          update => [ \&update ],
-	          renew  => [ \&renew ],
+	          renew  => [ \&renew, \&renew_parse ],
             transfer_query => [ \&transfer_query, \&transfer_parse ],
             transfer_request => [ \&transfer_request, \&transfer_parse ],
             transfer_cancel => [ \&transfer_cancel, \&transfer_parse ],
@@ -335,6 +335,13 @@ sub renew
 
   $mes->command_body(\@d);
   return;
+}
+
+sub renew_parse
+{
+ my ($po,$otype,$oaction,$oname,$rinfo)=@_;
+ $oaction = 'renew';
+ return _parse_defref(@_,'renData');
 }
 
 sub transfer_request { return _build_transfer(@_,'request'); }
