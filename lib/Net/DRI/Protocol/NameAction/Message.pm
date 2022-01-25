@@ -24,7 +24,7 @@ use Net::DRI::Exception;
 use Net::DRI::Util;
 
 use base qw(Class::Accessor::Chained::Fast Net::DRI::Protocol::Message);
-__PACKAGE__->mk_accessors(qw(version client_auth command command_attributes response_attributes response_code response_text response_is_success));
+__PACKAGE__->mk_accessors(qw(version client_auth command command_attributes response_code response_text response_command response_is_success));
 
 =pod
 
@@ -74,7 +74,7 @@ sub new
  my $self={ results => [], command => {}};
  bless($self,$class);
 
- $self->version('0.9');
+ $self->version('1.04');
  return $self;
 }
 
@@ -170,38 +170,6 @@ sub _obj2dt
  return @r;
 }
 
-sub _dt2obj ## no critic (Subroutines::RequireFinalReturn)
-{
- my ($doc)=@_;
- my $c=$doc->getFirstChild();
- return unless defined($c);
- while (defined($c) && $c->nodeType()!=1) { $c=$c->getNextSibling(); }
- return $doc->textContent() unless (defined($c) && $c->nodeType()==1);
- my $n=$c->nodeName();
- if ($n eq 'dt_scalar')
- {
-  return $c->textContent();
- } elsif ($n eq 'dt_assoc')
- {
-  my %r;
-  foreach my $item ($c->getChildrenByTagName('item'))
-  {
-   $r{$item->getAttribute('key')}=_dt2obj($item);
-  }
-  return \%r;
- } elsif ($n eq 'dt_array')
- {
-  my @r;
-  foreach my $item ($c->getChildrenByTagName('item'))
-  {
-   $r[$item->getAttribute('key')]=_dt2obj($item);
-  }
-  return \@r;
- }
-
- Net::DRI::Exception::err_assert('_dt2obj ca not deal with node name '.$n);
-}
-
 sub parse
 {
  my ($self,$dr,$rinfo,$otype,$oaction,$msgsent)=@_;
@@ -211,46 +179,26 @@ sub parse
 
  my $parser=XML::LibXML->new();
  my $doc=$parser->parse_string($dr->as_string());
+ 
  my $root=$doc->getDocumentElement();
  Net::DRI::Exception->die(0,'protocol/NameAction',1,'Unsuccessful parse, root element is not "nck" but '.$root->getName()) unless ($root->getName() eq 'nck');
 
- my $resp=$root->getElementsByTagName('response');
+ my $resp = $root->getElementsByTagName('response');
  Net::DRI::Exception->die(0,'protocol/NameAction',1,'Unsuccessful parse, expected only one "response" node below root, found '.$resp->size()) unless ($resp->size()==1);
  
- my @nodes = $resp->get_node(1)->getChildrenByTagName('command');
- Net::DRI::Exception->die(0,'protocol/NameAction',1,'Unsuccessful parse, expected only one "command" node below responset, found '.scalar(@nodes)) unless (scalar(@nodes)==1);
+ my $cmd = $resp->get_node(1)->getChildrenByTagName('command');
+ Net::DRI::Exception->die(0,'protocol/NameAction',1,'Unsuccessful parse, expected only one "command" node below responset, found '.$cmd->size()) unless ($cmd->size()==1);
+ $self->response_command($cmd->get_node(0)->textContent());
  
- @nodes = $resp->get_node(1)->getChildrenByTagName('value');
- Net::DRI::Exception->die(0,'protocol/NameAction',1,'Unsuccessful parse, expected only one "command" node below responset, found '.scalar(@nodes)) unless (scalar(@nodes)==1);
+ my $val = $resp->get_node(1)->getChildrenByTagName('value');
+ Net::DRI::Exception->die(0,'protocol/NameAction',1,'Unsuccessful parse, expected only one "value" node below responset, found '.$val->size()) unless ($val->size()==1);
+ $self->response_code($val->get_node(0)->textContent());
  
- my $msg =$root->getElementsByTagName('message');
- Net::DRI::Exception->die(0,'protocol/NameAction',1,'Unsuccessful parse, expected only one "message" node below root, found '.$resp->size()) unless ($resp->size()==1);
- 
- $self->response_text($msg->get_node()->textContent());
-# {
-#  my $key=$item->getAttribute('key');
-#  next if ($key eq 'protocol' || $key eq 'action' || $key eq 'object'); ## protocol is XCP, action is always REPLY, and we already have object in command()
-#  if ($key eq 'attributes') ## specific data about requested action, should always be an hash based on documentation
-#  {
-#   $self->response_attributes(_dt2obj($item));
-#   next;
-#  }
-#  if ($key eq 'response_code') ## meaning is action-specific
-#  {
-#   $self->response_code($item->textContent());
-#   next;
-#  }
-#  if ($key eq 'response_text') ## meaning is action-specific
-#  {
-#   
-#   next;
-#  }
-#  if ($key eq 'is_success') ## 0 if not successful, 1 if action was successful
-#  {
-#   $self->response_is_success($item->textContent());
-#   next;
-#  }
-# }
+ my $msg=$root->getElementsByTagName('message');
+ Net::DRI::Exception->die(0,'protocol/NameAction',1,'Unsuccessful parse, expected only one "message" node below root, found '.$msg->size()) unless ($msg->size()==1);
+ $self->response_text($msg->get_node(0)->textContent());
+
+ $self->response_is_success(1);
  return;
 }
 

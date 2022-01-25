@@ -89,6 +89,28 @@ sub build_msg_cookie
  return;
 }
 
+sub check
+{
+ my ($nma,$domain,$rd)=@_;
+ my $msg=$nma->message();
+ $msg->command();
+ return;
+}
+
+sub check_parse
+{
+ my ($nma,$otype,$oaction,$oname,$rinfo)=@_;
+ #use Data::Dumper; print Dumper(\@_);
+ print join ",", @_;
+ my $mes=$nma->message();
+ return unless $mes->is_success();
+
+ $rinfo->{domain}->{$oname}->{action}='check';
+ $rinfo->{domain}->{$oname}->{exist}=$mes->response_code() ? 0 : 1;
+ $rinfo->{domain}->{$oname}->{exist_reason}=$mes->response_text();
+ return;
+}
+
 sub info
 {
  my ($xcp,$domain,$rd)=@_;
@@ -176,27 +198,7 @@ sub parse_contact
  return $c;
 }
 
-sub check
-{
- my ($nma,$domain,$rd)=@_;
- my $msg=$nma->message();
- $msg->command();
- #$msg->command_attributes({domain => $domain});
- return;
-}
 
-sub check_parse
-{
- my ($xcp,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$xcp->message();
- return unless $mes->is_success();
-
- $rinfo->{domain}->{$oname}->{action}='check';
- my $ra=$mes->response_attributes();
- $rinfo->{domain}->{$oname}->{exist}=(exists $ra->{status} && defined($ra->{status}) && $ra->{status} eq 'available' && $mes->response_code()==210)? 0 : 1;
- $rinfo->{domain}->{$oname}->{exist_reason}=$mes->response_text();
- return;
-}
 
 sub create
 {

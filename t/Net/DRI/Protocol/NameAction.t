@@ -47,95 +47,9 @@ is($R1,'https://ncktest.nameaction.com/interface?User=ncktest&Pass=ncktest&Comma
 is($rc->is_success(),1,'domain_check is_success');
 is($dri->get_info('action'),'check','domain_check get_info(action)');
 is($dri->get_info('exist'),0,'domain_check get_info(exist)');
-is($dri->get_info('exist','domain','example3.com'),0,'domain_check get_info(exist) from cache');
-
+is($dri->get_info('exist','domain','nameaction.cl'),0,'domain_check get_info(exist) from cache');
 
 exit 1;
-
-#===Contact sets to test registration===================================
-
-my $admin_co=<<'EOF';
-<dt_assoc>
-   <item key="address1">32 Catmas Street</item>
-   <item key="address2">Suite 100</item>
-   <item key="address3">Admin</item>
-   <item key="city">SomeCity</item>
-   <item key="country">US</item>
-   <item key="email">admin@example.com</item>
-   <item key="fax">+1.4165550125</item>
-   <item key="first_name">Adler</item>
-   <item key="last_name">Admin</item>
-   <item key="org_name">Catmas Inc.</item>
-   <item key="phone">+1.4165550123x1812</item>
-   <item key="postal_code">90210</item>
-   <item key="state">CA</item>
-   <item key="url">http://www.catmas.com</item>
-</dt_assoc>
-EOF
-
-my $defcs=<<"EOF";
-<item key="contact_set">
-   <dt_assoc>
-      <item key="admin">
-      $admin_co
-      </item>
-      <item key="billing">
-         <dt_assoc>
-            <item key="first_name">Bill</item>
-            <item key="last_name">Billing</item>
-            <item key="phone">+1.4165550123x1248</item>
-            <item key="fax">+1.4165550136</item>
-            <item key="email">billing\@example.com</item>
-            <item key="org_name">Catmas Inc.</item>
-            <item key="address1">32 Catmas Street</item>
-            <item key="address2">Suite 200</item>
-            <item key="address3">Billing</item>
-            <item key="city">SomeCity</item>
-            <item key="state">CA</item>
-            <item key="country">US</item>
-            <item key="postal_code">90210</item>
-            <item key="url">http://www.catmas.com</item>
-         </dt_assoc>
-      </item>
-      <item key="owner">
-         <dt_assoc>
-            <item key="first_name">Owen</item>
-            <item key="last_name">Owner</item>
-            <item key="phone">+1.4165550123x1902</item>
-            <item key="fax">+1.4165550124</item>
-            <item key="email">owner\@example.com</item>
-            <item key="org_name">Catmas Inc.</item>
-            <item key="address1">32 Catmas Street</item>
-            <item key="address2">Suite 500</item>
-            <item key="address3">Owner</item>
-            <item key="city">SomeCity</item>
-            <item key="state">CA</item>
-            <item key="country">US</item>
-            <item key="postal_code">90210</item>
-            <item key="url">http://www.catmas.com</item>
-         </dt_assoc>
-      </item>
-      <item key="tech">
-         <dt_assoc>
-            <item key="first_name">Tim</item>
-            <item key="last_name">Tech</item>
-            <item key="phone">+1.4165550123x1243</item>
-            <item key="fax">+1.4165550125</item>
-            <item key="email">techie\@example.com</item>
-            <item key="org_name">Catmas Inc.</item>
-            <item key="address1">32 Catmas Street</item>
-            <item key="address2">Suite 100</item>
-            <item key="address3">Tech</item>
-            <item key="city">SomeCity</item>
-            <item key="state">CA</item>
-            <item key="country">US</item>
-            <item key="postal_code">90210</item>
-            <item key="url">http://www.catmas.com</item>
-          </dt_assoc>
-      </item>
-   </dt_assoc>
-</item>
-EOF
 
 #===Test registration with default name servers===================================
 
@@ -155,7 +69,8 @@ my $co=$dri->local_object('contact');
 $co->srid('daniel'); # Portfolio user name for OpenSRS?
 $co->auth('daniel'); # Portfolio password for OpenSRS?
 $co->name('Admin'); # Should be firstname, name => lastname.
-$co->firstname('Adler');
+$co->firstname('John');
+$co->lastname('Doe');
 $co->org('Catmas Inc.');
 $co->street(['32 Catmas Street','Suite 100','Admin']);
 $co->city('SomeCity');
@@ -172,47 +87,7 @@ $cs->set($co,'admin');
 $cs->set($co,'billing');
 
 $r=<<"EOF";
-<?xml version='1.0' encoding='UTF-8' standalone='no' ?>
-<!DOCTYPE OPS_envelope SYSTEM 'ops.dtd'>
-<OPS_envelope>
-	<header>
-		<version>0.9</version>
-	</header>
-	<body>
-		<data_block>
-			<dt_assoc>
-				<item key="action">sw_register</item>
-				<item key="object">domain</item>
-				<item key="protocol">XCP</item>
-				<item key="registrant_ip">10.0.10.19</item>
-				<item key="attributes">
-				<dt_assoc>
-<item key="contact_set">
-   <dt_assoc>
-      <item key="admin">
-      $admin_co
-      </item>
-      <item key="billing">
-      $admin_co
-      </item>
-      <item key="owner">
-      $admin_co
-      </item>
-   </dt_assoc>
-</item>
-					<item key="custom_nameservers">0</item>
-					<item key="custom_tech_contact">0</item>
-					<item key="domain">example-nsi.net</item>
-					<item key="period">10</item>
-					<item key="reg_password">daniel</item>
-					<item key="reg_type">new</item>
-					<item key="reg_username">daniel</item>
-				</dt_assoc>
-				</item>
-			</dt_assoc>
-		</data_block>
-	</body>
-</OPS_envelope>
+https://ncktest.nameaction.com/interface?User=ncktest&Pass=ncktest&Command=Create&SLD=nameaction&TLD=cl&Year=1&RegistrantName=JohnDoe&RegistrantOrganization=NameAction DomainLA&RegistrantAddress=1156 HighStreet&RegistrantCity=California&RegistrantCountryCode=US&RegistrantPostalCode=95064&RegistrantPhone=1.1234567&RegistrantEmail=j.doe@nameaction.com&AdminName=John Doe&AdminOrganization=NameAction DomainLA&AdminAddress=1156 HighStreet&AdminCity=California&AdminCountryCode=US&AdminPostalCode=95064&AdminPhone=1.1234567&AdminEmail=j.doe@nameaction.com&TechName=JohnDoe&TechOrganization=NameAction Domain LA&TechAddress=1156 HighStreet&TechCity=California&TechCountryCode=US&TechPostalCode=95064&TechPhone=1.1234567&TechEmail=j.doe@nameaction.com&NS1=ns1.nameaction.com&NS2=ns2.nameaction.com&IP1=200.27.54.210&IP2=200.27.54.211&InfoPL=55555555-5
 EOF
 
 $rc=$dri->domain_create('example-nsi.net',{username => 'daniel', password => 'daniel', contact => $cs, registrant_ip => '10.0.10.19', pure_create => 1, duration => DateTime::Duration->new(years =>10)});
@@ -289,13 +164,13 @@ $r=<<"EOF";
 <item key="contact_set">
    <dt_assoc>
       <item key="admin">
-      $admin_co
+      admin_co
       </item>
       <item key="billing">
-      $admin_co
+      admin_co
       </item>
       <item key="owner">
-      $admin_co
+      admin_co
       </item>
    </dt_assoc>
 </item>
@@ -525,13 +400,13 @@ $r=<<"EOF";
 <item key="contact_set">
    <dt_assoc>
       <item key="admin">
-      $admin_co
+      admin_co
       </item>
       <item key="billing">
-      $admin_co
+      admin_co
       </item>
       <item key="owner">
-      $admin_co
+      admin_co
       </item>
    </dt_assoc>
 </item>
