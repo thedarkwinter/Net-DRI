@@ -9,7 +9,7 @@ use DateTime::Duration;
 
 use Data::Dumper; # TODO: delete me when all done :p
 
-use Test::More tests => 89;
+use Test::More tests => 90;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -296,6 +296,9 @@ is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:i
 $R2='';
 $rc=$dri->domain_trade_start('trade.jp',{ryid=>'REG-90-0000-0001',handle=>'TEST12'});
 is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>trade.jp</domain:name><domain:period unit="y">0</domain:period></domain:transfer></transfer><extension><jpex:transfer xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp" transfer="registrant"/><jpex:contact alloc="registrant"><jpex:ryid>REG-90-0000-0001</jpex:ryid></jpex:contact><jpex:contact alloc="public"><jpex:handle>TEST12</jpex:handle></jpex:contact></jpex:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_trade_request build');
+# trade variation - without ryid (possible todo even if by JPRS support: "may not success from time to time")
+$rc=$dri->domain_trade_start('trade-with-no-ryid.jp',{handle=>'TEST13'});
+is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>trade-with-no-ryid.jp</domain:name><domain:period unit="y">0</domain:period></domain:transfer></transfer><extension><jpex:transfer xmlns:jpex="urn:ietf:params:xml:ns:jpex-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:jpex-1.0 jpex-1.0.xsd"><jpex:domain suffix="jp" transfer="registrant"/><jpex:contact alloc="public"><jpex:handle>TEST13</jpex:handle></jpex:contact></jpex:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_trade_request (no ryid) build');
 
 
 

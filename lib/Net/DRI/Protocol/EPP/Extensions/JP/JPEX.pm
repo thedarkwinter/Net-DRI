@@ -275,9 +275,8 @@ sub transfer_request
  return;
 }
 
-# README: by the documentation is seems that this is only acceptable 10 days before the expiry date
-# added trade (as per documentation) but such is not possible todo. in order to change contact registrant object details
-# this need to be done via a <contact:update> - not possible to use <domain:update> to set a new registrant as well!
+# README: by JPRS support this is needed in some specific cases
+# they also suggested to try to send the command without ryid and from my tests it worked but as they said: "(may not success from time to time)"
 sub trade_request
 {
  my ($epp,$domain,$rd)=@_;
@@ -288,9 +287,10 @@ sub trade_request
  $mes->command_body(\@d);
 
  my @jpex;
- Net::DRI::Exception::usererr_insufficient_parameters('ryid and handle missing') unless ( $rd->{'ryid'} && $rd->{'handle'} );
+ Net::DRI::Exception::usererr_insufficient_parameters('handle missing') unless ( $rd->{'handle'} );
  push @jpex,['jpex:domain suffix="jp" transfer="registrant"'];
- push @jpex,['jpex:contact', ['jpex:ryid', $rd->{'ryid'}], {'alloc'=>'registrant'}];
+ # JPRS: "Normally, the current reseller/registrar should provide the REG-ID (jpex:ryid). If it is not provided, please try executing the command with the ryid blank as suggested above."
+ push @jpex,['jpex:contact', ['jpex:ryid', $rd->{'ryid'}], {'alloc'=>'registrant'}] if $rd->{'ryid'};
  push @jpex,['jpex:contact', ['jpex:handle', $rd->{'handle'}], {'alloc'=>'public'}];
 
  my $eid=build_command_extension($mes,$epp,'jpex:transfer');
