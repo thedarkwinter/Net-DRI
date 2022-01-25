@@ -34,7 +34,9 @@ Additional domain extension United TLD New Generic TLDs.  This extension set is 
 
 ####################################################################################################
 
-sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken UnitedTLD::Charge UnitedTLD::Finance ARI::KeyValue/; }
+# README: Donuts is not announcing ChangePoll in their <greeting> but they are using it as confirmed by them via mail:
+# "Regarding the extension schema not being included in the greeting command, our engineering team  will consider its inclusion in the future release and as always will communicate the channel in the release notes."
+sub default_extensions { return qw/GracePeriod SecDNS LaunchPhase IDN AllocationToken UnitedTLD::Charge UnitedTLD::Finance ARI::KeyValue ChangePoll/; }
 
 ####################################################################################################
 1;
