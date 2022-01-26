@@ -236,15 +236,15 @@ alsace aquarelle aquitaine banque bzh corsica frogans lancaster leclerc mma ovh 
 
  return {
     bep_type => 1, # dedicated regsitry
-    tlds => ['alsace', 'paris'],
+    tlds => ['alsace', 'corsica', 'paris'],
     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['AFNIC::RegistryMessage', 'Fee'], 'fee_version' => '1.0'}],
     contact_i18n => 1, # can only use the "loc" type
     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
-  } if $bep eq 'afnic' && $tld =~ m/(?:alsace|paris)/;
+  } if $bep eq 'afnic' && $tld =~ m/(?:alsace|corsica|paris)/;
 
  return {
      bep_type => 1, # dedicated regsitry
-     tlds => ['aquarelle', 'aquitaine', 'banque', 'bzh', 'corsica', 'frogans', 'lancaster', 'leclerc', 'mma', 'ovh', 'sncf'],
+     tlds => ['aquarelle', 'aquitaine', 'banque', 'bzh', 'frogans', 'lancaster', 'leclerc', 'mma', 'ovh', 'sncf'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{disable_idn=>1,custom=>['AFNIC::RegistryMessage', 'AFNIC::PremiumDomain']}],
      contact_i18n => 1, # can only use the "loc" type
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
@@ -682,7 +682,7 @@ biz hotels htc ipiranga itau
 
 Narwhal (use 'ari' or 'narwhal') or DRD::Narwhal
 
-aaa able abogado accountant adult aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball basketball bible bid biz booking boots boston box buzz calvinklein cancerresearch caravan cartier casa catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co com.co commbank compare cooking coupon courses cricket cuisinella date dell discover doha download duns dupont earth everbank faith farmers ferrero film flickr flir ford fox frontier ftr gap giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe lifeinsurance lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu miami mint mlb mobily moe monash montblanc moto mtn mutual nba net.co netbank netflix neustar nfl nike nom.co northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping porn pramerica praxi pru prudential qvc racing review rmit rocher rugby safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven sex skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj xxx yahoo yandex zero zippo
+aaa able abogado accountant adult aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball basketball beer bible bid biz booking boots boston box buzz calvinklein cancerresearch caravan cartier casa catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co com.co commbank compare cooking coupon courses cricket cuisinella date dds dell discover doha download duns dupont earth everbank faith farmers fashion ferrero film fishing fit flickr flir ford fox frontier ftr gap garden giving grainger hbo health homegoods homesense honeywell horse hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe law lifeinsurance lilly lincoln loan loft luxe luxury marshalls mattel mcd mcdonalds melbourne men menu miami mint mlb mobily moe monash montblanc moto mtn mutual nba net.co netbank netflix neustar nfl nike nom.co northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping porn pramerica praxi pru prudential qvc racing review rmit rocher rodeo rugby safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven sex skype song staples starhub statefarm stream study sucks surf swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade tube us vip virgin vista vistaprint vivo vodka voting vu vuelos walter watches weather weatherchannel webcam wedding williamhill win winners woodside work wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj xxx yahoo yandex yoga zero zippo
 
 =head3 Standard extensions:
 
@@ -738,7 +738,7 @@ See: L<Net::DRI::Data::Contact::ARI> and L<Net::DRI::Protocol::EPP::Extensions::
 
 =cut
 
- my @neustar_tlds = qw/aaa able abogado accountant adult aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball basketball bible bid biz booking boots boston box buzz calvinklein cancerresearch caravan cartier casa catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co com.co net.co nom.co commbank compare cooking coupon courses cricket cuisinella date dell discover doha download duns dupont earth everbank faith farmers ferrero film flickr flir ford fox frontier ftr gap giving grainger hbo health homegoods homesense honeywell hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe lifeinsurance lilly lincoln loan loft luxury marshalls mattel mcd mcdonalds melbourne men menu miami mint mlb mobily moe monash montblanc moto mtn mutual nba net.co netbank netflix neustar nfl nike nom.co northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping porn pramerica praxi pru prudential qvc racing review rmit rocher rugby safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven sex skype song staples starhub statefarm stream study sucks swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade tube us virgin vista vistaprint vivo voting vu vuelos walter watches weather weatherchannel webcam williamhill win winners woodside wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj xxx yahoo yandex zero zippo/;
+ my @neustar_tlds = qw/aaa able abogado accountant adult aetna afl aig americanexpress amex amica analytics anz aramco athleta auspost axa banamex bananarepublic bank barclaycard barclays baseball basketball beer bible bid biz booking boots boston box buzz calvinklein cancerresearch caravan cartier casa catholic cba cbn cbre chase chintai chloe cisco citadel citi cloud club co com.co net.co nom.co commbank compare cooking coupon courses cricket cuisinella date dds dell discover doha download duns dupont earth everbank faith farmers fashion ferrero film fishing fit flickr flir ford fox frontier ftr gap garden giving grainger hbo health homegoods homesense honeywell horse hoteles hotels hsbc htc hyatt ibm ieee insurance intel intuit ipiranga iselect itau iwc jlc jmp jnj jpmorgan kinder kpmg krd kred lanxess latrobe law lifeinsurance lilly lincoln loan loft luxe luxury marshalls mattel mcd mcdonalds melbourne men menu miami mint mlb mobily moe monash montblanc moto mtn mutual nba netbank netflix neustar nfl nike northwesternmutual nyc office olayan olayangroup oldnavy one open osaka pamperedchef panerai party passagens pfizer philips physio piaget ping porn pramerica praxi pru prudential qvc racing review rmit rocher rodeo rugby safety sandvik sandvikcoromant sas saxo schmidt science scor seek select seven sex skype song staples starhub statefarm stream study sucks surf swiftcover sydney tab taipei taobao target tdk tel teva tjmaxx tjx tkmaxx tmall trade tube us vip virgin vista vistaprint vivo vodka voting vu vuelos walter watches weather weatherchannel webcam wedding williamhill win winners woodside work wtc xn--1ck2e1b xn--80aqecdr1a xn--bck1b9a5dre4c xn--cck2b3b xn--eckvdtc9d xn--fct429k xn--g2xx48c xn--gckr3f0f xn--gk3at1e xn--jvr189m xn--kcrx77d1x4a xn--kpu716f xn--mgba3a3ejt xn--mgba7c0bbn0a xn--mgbb9fbpob xn--mgbi4ecexp xn--ngbc5azd xn--pbt977c xn--rovu88b xn--tiq49xqyj xxx yahoo yandex yoga zero zippo/;
 
  return {
      bep_type => 2, # shared registry
@@ -804,7 +804,7 @@ cymru wales bbc
 
 =head3 Nominet-MMX: TLDs migrated in 2016 from Mind + Machines into Nominet management
 
-bayern beer bradesco broadway career dds fashion fishing fit garden gop gucci horse jobs law luxe med pharmacy realestate realtor rodeo surf vip vodka wedding work yoga
+bradesco broadway career gop gucci jobs med pharmacy realestate realtor
 # README: .career/.gucci/.jobs/.med/.pharmacy/.realestate/.realtor is not part of MMX but loading here because has a similar logic :p
 
 =head3 Nominet-Amazon: TLDs migrated in 2019 from Neustar into Nominet management
@@ -822,7 +822,7 @@ amazon audible author aws book bot buy call circle deal fast fire free got hot i
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['bayern', 'beer', 'bradesco', 'broadway', 'career', 'dds', 'fashion', 'fishing', 'fit', 'garden', 'gop', 'gucci', 'horse', 'jobs', 'law', 'luxe', 'med', 'pharmacy', 'realestate', 'realtor', 'rodeo', 'surf', 'vip', 'vodka', 'wedding', 'work', 'yoga'],
+     tlds => ['bradesco', 'broadway', 'career', 'gop', 'gucci', 'jobs', 'med', 'pharmacy', 'realestate', 'realtor'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::NEWGTLD',{custom => ['CentralNic::Fee','AllocationToken'], 'brown_fee_version' => '0.5' }],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'nominet-mmx';
@@ -978,7 +978,7 @@ L<NET::DRI::Protocol::EPP::Extensions::MX::IDN>
 
 =head3 TLDs
 
-ruhr gmx ifm nrw whoswho
+bayern ruhr gmx ifm nrw whoswho
 
 =head3 Custom extensions:
 
@@ -998,7 +998,7 @@ L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.core
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['ruhr','gmx','ifm','nrw','whoswho'],
+     tlds => ['bayern','ruhr','gmx','ifm','nrw','whoswho'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version => $tangorsversion}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'tango' || $bep eq 'tangors';

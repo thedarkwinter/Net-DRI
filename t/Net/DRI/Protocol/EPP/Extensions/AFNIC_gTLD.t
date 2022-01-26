@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 34;
+use Test::More tests => 42;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -47,7 +47,7 @@ is($dri->get_info('object_id','message',124),'foobar.sncf','message_retrieve get
 
 #####################
 ## PremiumDomain
-## Note, I think they don't ise this any more? Instead they use fee-1.0 (at least for paris and alsace)
+## Note, I think they don't use this any more? Instead they use fee-1.0 (at least for paris, alsace and corsica)
 
 ## Old format (?)
 my $price = { duration=>DateTime::Duration->new(years=>5) };
@@ -86,12 +86,29 @@ $R2=$E1.'<greeting><svID>EPPPRODServeronepp.prive.nic.TLD(V2.0.0)</svID><svDate>
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:epp:fee-1.0','Fee 1.0 loaded correctly');
 
-$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">foobarfee1-0.paris</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:currency>USD</fee:currency><fee:cd avail="1"><fee:objID>foobarfee1-0.paris</fee:objID><fee:command name="create" phase="sunrise"><fee:period unit="y">1</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">10.00</fee:fee><fee:fee description="Application Fee" refundable="0" applied="immediate">500.00</fee:fee></fee:command></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
-$rc=$dri->domain_check('foobarfee1-0.paris',{fee=>{currency => 'USD',command=>'create'}});
-is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobarfee1-0.paris</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:epp:fee-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:epp:fee-1.0 fee-1.0.xsd"><fee:currency>USD</fee:currency><fee:command name="create"/></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_...');
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">foobarcheckprice.paris</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:epp:fee-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:currency>EUR</fee:currency><fee:cd avail="1"><fee:objID>foobarcheckprice.paris</fee:objID><fee:class>standard</fee:class><fee:command name="restore" standard="1"><fee:fee description="restore standard" grace-period="P7D" refundable="1">29.00</fee:fee></fee:command><fee:command name="transfer" standard="1"><fee:period unit="y">1</fee:period><fee:fee description="transfer standard" grace-period="P5D" refundable="1">29.00</fee:fee></fee:command><fee:command name="create" standard="1"><fee:period unit="y">1</fee:period><fee:fee description="create standard" grace-period="P5D" refundable="1">29.00</fee:fee></fee:command><fee:command name="renew" standard="1"><fee:period unit="y">1</fee:period><fee:fee description="renew standard" grace-period="P5D" refundable="1">29.00</fee:fee></fee:command></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check_price('foobarcheckprice.paris');
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobarcheckprice.paris</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:epp:fee-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:epp:fee-1.0 fee-1.0.xsd"><fee:command name="create"/><fee:command name="renew"/><fee:command name="transfer"/><fee:command name="restore"/></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check_price build');
+is($dri->get_info('action'),'check','domain_check_price get_info(action)');
+is($dri->get_info('exist'),0,'domain_check_price get_info(exist)');
 
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">foobar.paris</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:epp:fee-1.0" xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><fee:currency>USD</fee:currency><fee:cd avail="1"><fee:objID>foobar.paris</fee:objID><fee:command name="create" phase="sunrise"><fee:period unit="y">1</fee:period><fee:fee description="Registration Fee" refundable="1" grace-period="P5D">10.00</fee:fee><fee:fee description="Application Fee" refundable="0" applied="immediate">500.00</fee:fee></fee:command></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('foobar.paris',{fee=>{currency => 'USD',command=>'create'}});
+is_string($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>foobar.paris</domain:name></domain:check></check><extension><fee:check xmlns:fee="urn:ietf:params:xml:ns:epp:fee-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:epp:fee-1.0 fee-1.0.xsd"><fee:currency>USD</fee:currency><fee:command name="create"/></fee:check></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'Fee extension: domain_check (premium) build_xml');
 is($rc->is_success(),1,'domain_check is_success');
 is($dri->get_info('action'),'check','domain_check get_info (action)');
-is($dri->get_info('exist','domain','foobarfee1-0.paris'),0,'domain_check get_info(exist)');
-use Data::Dumper; print Dumper($rc);
+is($dri->get_info('exist'),0,'domain_check get_info(exist)');
+$d = shift @{$dri->get_info('fee')};
+is($d->{domain},'foobar.paris','domain_check get_info(domain)');
+is($d->{price_avail},1,'domain_check parse fee (price_avail)');
+is($d->{premium},0,'domain_check parse premium');
+is($d->{currency},'USD','domain_check get_info(currency)');
+is($d->{command}->{create}->{fee_registration_fee},10.00,'domain_check get_info(fee_registration_fee)');
+is($d->{command}->{create}->{fee_application_fee},500.00,'domain_check get_info(fee_application_fee)');
+is($d->{command}->{create}->{fee},510.00,'domain_check get_info(fee)'); # fees are added together for the total. this is debateable!
+is($d->{command}->{create}->{description},'Registration Fee (Refundable) (Grace=>P5D),Application Fee (Applied=>immediate)','domain_check get_info(description)'); # descriptions melded into a string
+is($d->{command}->{create}->{phase},'sunrise','domain_check get_info(phase)');
+is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)');
+is($d->{command}->{create}->{duration}->years(),'1','domain_check get_info(duration)');
+
 exit 0;
