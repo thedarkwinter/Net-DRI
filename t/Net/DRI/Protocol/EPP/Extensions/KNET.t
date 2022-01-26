@@ -7,6 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 use Scalar::Util qw(looks_like_number); # README: lets do a temp debug to run all tests AND trigger if a fee is not a number! https://perldoc.perl.org/Scalar::Util
+use String::Numeric qw(is_decimal); # lets add extra set of tests: Fee (standard) and BrownFee (only under KNET)
 
 use Test::More tests => 16;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -71,6 +72,10 @@ is($d->{balance},9664204.00,'Fee extension: domain_create parse balance'); # ...
 # README lets assure its a number :p
 is( looks_like_number($d->{fee}), 1, 'fee is a number' );
 is( looks_like_number($d->{balance}), 1, 'balance is a number' );
+is( is_decimal($d->{fee}), 1, 'fee is a decimal' );
+is( is_decimal($d->{balance}), 1, 'balance is a decimal' );
+# extra module/test to checks if it's a decimal!!!
+
 # END README lets assure its a number :p
 is($d->{fee},'100.00','Fee extension: domain_create parse fee');
 is($d->{balance},'9664204.00','Fee extension: domain_create parse balance');
