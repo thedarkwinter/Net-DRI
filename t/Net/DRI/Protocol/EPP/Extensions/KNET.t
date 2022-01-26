@@ -6,6 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
+use Scalar::Util qw(looks_like_number); # README: lets do a temp debug to run all tests AND trigger if a fee is not a number! https://perldoc.perl.org/Scalar::Util
 
 use Test::More tests => 16;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -65,8 +66,14 @@ is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
 is($d->{currency},'CNY','Fee extension: domain_create parse currency');
-is($d->{fee},100.00,'Fee extension: domain_create parse fee');
-is($d->{balance},9664204.00,'Fee extension: domain_create parse balance');
+is($d->{fee},100.00,'Fee extension: domain_create parse fee'); #  README: THIS TEST IS NOT CORRECT! Truncating 100.00 => should be represent under single quotes
+is($d->{balance},9664204.00,'Fee extension: domain_create parse balance'); # ... SAME HERE
+# README lets assure its a number :p
+is( looks_like_number($d->{fee}), 1, 'fee is a number' );
+is( looks_like_number($d->{balance}), 1, 'balance is a number' );
+# END README lets assure its a number :p
+is($d->{fee},'100.00','Fee extension: domain_create parse fee');
+is($d->{balance},'9664204.00','Fee extension: domain_create parse balance');
 
 ####################################################################################################
 exit 0;

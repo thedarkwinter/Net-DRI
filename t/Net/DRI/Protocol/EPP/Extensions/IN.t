@@ -173,8 +173,8 @@ is($rc->is_success(),1,'fee 0.6 extension: domain_create is is_success');
 is($dri->get_info('action'),'create','fee 0.6 extension: domain_create get_info (action)');
 $d=$rc->get_data('fee');
 is($d->{currency},'INR','fee 0.6 extension: domain_create parse currency');
-is($d->{fee},100.00,'fee 0.6 extension: domain_create parse fee');
-is($d->{balance},9664204.00,'fee 0.6 extension: domain_create parse balance');
+is($d->{fee},'100.00','fee 0.6 extension: domain_create parse fee');
+is($d->{balance},'9664204.00','fee 0.6 extension: domain_create parse balance');
 
 #####################################################################################################
 ######### Closing Commands ########

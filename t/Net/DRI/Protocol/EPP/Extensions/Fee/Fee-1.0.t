@@ -7,6 +7,7 @@ use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
 use Data::Dumper;
+use Scalar::Util qw(looks_like_number); # README: lets do a temp debug to run all tests AND trigger if a fee is not a number! https://perldoc.perl.org/Scalar::Util
 
 use Test::More tests => 146;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -337,6 +338,10 @@ is($d->{currency},'USD','domain_check get_info(currency)');
 is($d->{command}->{create}->{fee_registration_fee},'10.00','domain_check get_info(fee_registration_fee)');
 is($d->{command}->{create}->{fee_application_fee},'500.00','domain_check get_info(fee_application_fee)');
 is($d->{command}->{create}->{fee},'510.00','domain_check get_info(fee)'); # fees are added together for the total. this is debateable!
+# double check if its a number for each case: registration, application and both reg+appl
+is( looks_like_number($d->{command}->{create}->{fee_registration_fee}), 1, 'fee_registration_fee is a number' );
+is( looks_like_number($d->{command}->{create}->{fee_application_fee}), 1, 'fee_application_fee is a number' );
+is( looks_like_number($d->{command}->{create}->{fee}), 1, 'fee_application_fee is a number' );
 is($d->{command}->{create}->{description},'Registration Fee (Refundable) (Grace=>P5D),Application Fee (Applied=>immediate)','domain_check get_info(description)'); # descriptions melded into a string
 is($d->{command}->{create}->{phase},'sunrise','domain_check get_info(phase)');
 is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)');
