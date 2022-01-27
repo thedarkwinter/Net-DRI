@@ -89,19 +89,26 @@ sub build_msg_cookie
  return;
 }
 
+sub _build_command {
+  my ($mes,$action,$domain,$attrs) = @_;
+	Net::DRI::Exception->die(1,'NameAction/Domain',2,'Domain name needed') unless $domain; #FIXME handle multiple domains? see epp Util.pm
+	#Command=Check&SLD=nameaction&TLD=cl'
+	$cmd = 
+	return $cmd;
+}
+
 sub check
 {
  my ($nma,$domain,$rd)=@_;
  my $msg=$nma->message();
- $msg->command();
+ my $cmd = _build_command($msg,'check',$domain);
+ $msg->command($cmd);
  return;
 }
 
 sub check_parse
 {
  my ($nma,$otype,$oaction,$oname,$rinfo)=@_;
- #use Data::Dumper; print Dumper(\@_);
- print join ",", @_;
  my $mes=$nma->message();
  return unless $mes->is_success();
 

@@ -84,13 +84,10 @@ sub write_message
 {
  my ($class,$to,$msg)=@_;
  my $t=$to->transport_data();
- my $req=HTTP::Request->new('POST',$t->{remote_url});
-# $req->header('Content-Type','text/xml');
-# $req->header('X-Username',$t->{client_login});
-# my $body=Net::DRI::Util::encode_utf8($msg->get_body());
-# $req->header('X-Signature',Digest::MD5::md5_hex(Digest::MD5::md5_hex($body,$t->{client_password}),$t->{client_password})); ## client_password is in fact the reseller key
+ my $url = sprintf('%s?%s', $t->{remote_url}, join('&',$t->{client_login},$t->{client_password}));
+ my $req=HTTP::Request->new('POST',$url);
+ $req->header('Content-Type','text/xml');
  $req->content('');
- ## Content-Length will be automatically computed during Transport by LWP::UserAgent
  return $req;
 }
 
