@@ -80,11 +80,11 @@ sub name         { return 'OpenSRS'; }
 ## See http://opensrs.com/site/services/domains/pricing
 sub tlds         { return (qw/com net org info biz mobi pro name asia tel/,
                            qw/co me pw tv ws xxx jobs aero coop/,
-                           qw/ac ag ai ar br bz ca cc cl ec gd gs gy hn ht lc ms mx pe pm pr sr sx tc us uy vc ve vg/,
+                           qw/ac ag ai ar br bz ca cc cl ec gd lc ms mx pe pm pr sr sx tc us uy vc ve vg/,
                            qw/at be ch cz de dk es eu fi fr gr gg gl hr hu im is it je li lt lu lv md nl no pl pt ro ru se si ua uk/,
-                           qw/af am cn hk in io jp kg kr la mn my ph qa sg tl tm tw/,
+                           qw/am cn hk in io jp kg kr la mn my ph qa sg tm tw/,
                            qw/ae cd cm il ly ma mu re sc sh so st to yt za/,
-                           qw/as au cx fm hm ki nu nz sb tf tk wf/,
+                           qw/as au fm hm nu nz tf tk wf/,
                           ); }
 sub object_types { return ('domain','ns'); }
 sub profile_types { return qw/xcp/; }
