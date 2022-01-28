@@ -80,7 +80,7 @@ sub name    { return 'CoCCA::CoCCA'; }
 # README: this is not a shared platform!
 sub tlds
 {
-  my @others = qw/cc cm cx gs ki mg mu na nf ng sb/;
+  my @others = qw/cc cm cx gs ki mg mu ms na nf ng sb/;
   my @af = qw/af com.af/;
   my @gy = qw/gy com.gy co.gy net.gy/;
   my @hn = qw/hn com.hn/;
