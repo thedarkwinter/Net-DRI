@@ -6,8 +6,6 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 use DateTime::Duration;
-use Scalar::Util qw(looks_like_number); # README: lets do a temp debug to run all tests AND trigger if a fee is not a number! https://perldoc.perl.org/Scalar::Util
-use String::Numeric qw(is_decimal); # lets add extra set of tests: Fee (standard) and BrownFee (only under KNET)
 
 use Test::More tests => 16;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -67,21 +65,6 @@ is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
 is($d->{currency},'CNY','Fee extension: domain_create parse currency');
-is($d->{fee},100.00,'Fee extension: domain_create parse fee'); #  README: THIS TEST IS NOT CORRECT! Truncating 100.00 => should be represent under single quotes
-is($d->{balance},9664204.00,'Fee extension: domain_create parse balance'); # ... SAME HERE
-my $float=100.00;
-use Data::Dumper; print Dumper($float); print ("\n$float\n");
-is($float,100.00,'This test passing BUT Perl displays 100 and not 100.00'); # Perl is truncating the number
-is($float,'100.00','Test failing because '); # because return 100 - why so many tests with fees set as INT positive number are passing when they shouldn't :(
-
-# README lets assure its a number :p
-is( looks_like_number($d->{fee}), 1, 'fee is a number' );
-is( looks_like_number($d->{balance}), 1, 'balance is a number' );
-is( is_decimal($d->{fee}), 0, 'fee is a decimal' );
-is( is_decimal($d->{balance}), 0, 'balance is a decimal' );
-# extra module/test to checks if it's a decimal!!!
-
-# END README lets assure its a number :p
 is($d->{fee},'100.00','Fee extension: domain_create parse fee');
 is($d->{balance},'9664204.00','Fee extension: domain_create parse balance');
 
