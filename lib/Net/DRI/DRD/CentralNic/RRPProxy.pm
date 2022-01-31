@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2008-2011,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014,2021 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -32,8 +33,6 @@ use Net::DRI::Util;
 Net::DRI::DRD::CentralNic::RRPProxy - CentralNic RRPProxy Registry driver for Net::DRI
 
 =head1 DESCRIPTION
-
-Please see the README file for details.
 
 Additional domain extension used new Generic TLDs
 
@@ -71,11 +70,13 @@ E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
 
 Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 Michael Holloway, E<lt>michael@thedarkwinter.comE<gt>
+Paulo Castanheira E<lt>paulo.s.castanheira@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
 Copyright (c) 2014 Patrick Mevzek <netdri@dotandco.com>.
 (c) 2014,2021 Michael Holloway <michael@thedarkwinter.com>.
+(c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify

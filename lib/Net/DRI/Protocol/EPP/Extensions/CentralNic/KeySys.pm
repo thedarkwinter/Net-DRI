@@ -2,6 +2,7 @@
 ##
 ## Copyright (c) 2020 Ivan Borzenkov <ivan.borenkov@gmail.com>. All rights reserved.
 ##           (c) 2021 Michael Holloway <michael@thedarkwiner.com>. All rights reserved.
+##           (c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##

@@ -3,6 +3,7 @@
 ##
 ## Copyright (c) 2007-2011 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014,2021 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
