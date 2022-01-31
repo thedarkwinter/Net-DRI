@@ -87,7 +87,7 @@ sub tlds
   my @ht = qw/ht com.ht/;
   my @so = qw/so com.so edu.so gov.so me.so net.so org.so/;
   my @tl = qw/tl com.tl/;
-  return (@others,@so);
+  return (@others,@af,@gy,@hn,@ht,@so,@tl);
 }
 
 sub object_types { return ('domain','ns','contact'); }
