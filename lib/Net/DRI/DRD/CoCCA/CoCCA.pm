@@ -96,7 +96,7 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
   my ($self,$type)=@_;
-  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA', {'brown_fee_version' => '0.8'}) if $type eq 'epp';
+  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA', {'fee_version' => '1.0'}) if $type eq 'epp';
   #FIXME: Currently the server is reporting fee-1.0, but with format of fee-0.8. In short, its currently broken.
   return;
 }
