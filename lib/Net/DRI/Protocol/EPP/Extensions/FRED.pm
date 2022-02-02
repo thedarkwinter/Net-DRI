@@ -70,7 +70,7 @@ sub setup {
   my ($self,$rp)=@_;
   $self->{defaulti18ntype}='loc'; # The registry does not provide contact postalinfo i18n type, although it is mandatory by EPP
   $self->ns({ domain    => ['http://www.nic.cz/xml/epp/domain-1.4','domain-1.4.xsd'],
-              contact   => ['http://www.nic.cz/xml/epp/contact-1.6','contact-1.6.1.xsd'],
+              contact   => ['http://www.nic.cz/xml/epp/contact-1.6','contact-1.6.4.xsd'],
               keyset    => ['http://www.nic.cz/xml/epp/keyset-1.3','keyset-1.3.xsd'],
               fred      => ['http://www.nic.cz/xml/epp/fred-1.5','fred-1.5.xsd'],
               nsset     => ['http://www.nic.cz/xml/epp/nsset-1.2','nsset-1.2.xsd']
