@@ -80,7 +80,7 @@ sub name    { return 'CoCCA::CoCCA'; }
 # README: this is not a shared platform!
 sub tlds
 {
-  my @others = qw/cc cm cx gs ki mg mu ms na nf ng sb/;
+  my @others = qw/cc cm cx gl gs ki mg mu ms na nf ng sb/;
   my @af = qw/af com.af/;
   my @gy = qw/gy com.gy co.gy net.gy/;
   my @hn = qw/hn com.hn/;
@@ -97,7 +97,6 @@ sub transport_protocol_default
 {
   my ($self,$type)=@_;
   return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA', {'fee_version' => '1.0'}) if $type eq 'epp';
-  #FIXME: Currently the server is reporting fee-1.0, but with format of fee-0.8. In short, its currently broken.
   return;
 }
 
