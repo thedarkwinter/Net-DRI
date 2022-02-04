@@ -18,6 +18,7 @@ use strict;
 use warnings;
 
 use XML::LibXML ();
+use URI;
 
 use Net::DRI::Protocol::ResultStatus;
 use Net::DRI::Exception;
@@ -124,7 +125,9 @@ sub result_status
 sub is_success { return shift->response_is_success(); }
 sub as_string  {
   my $self=shift;
-  my $cmd=$self->command();	
+  my $uri = URI->new();
+  $uri->query_form($self->{command});
+  return $uri->query();
 }
 
 sub _obj2dt
@@ -173,8 +176,7 @@ sub _obj2dt
 sub parse
 {
  my ($self,$dr,$rinfo,$otype,$oaction,$msgsent)=@_;
- use Data::Dumper;
- print Dumper(@_); 
+ #use Data::Dumper; print Dumper(@_); 
  $self->command($msgsent->command()); ## Copy over for reference from message sent
 
  my $parser=XML::LibXML->new();

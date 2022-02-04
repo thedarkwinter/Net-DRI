@@ -5,6 +5,7 @@ use warnings;
 
 use Net::DRI;
 use Net::DRI::Data::Raw;
+use Net::DRI::Protocol::NameAction::Connection;
 use DateTime::Duration;
 use DateTime;
 use Test::More tests => 45;
@@ -15,7 +16,13 @@ if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 our ($R1,$R2);
 our (@R1,@R2); #FIXME
 
-sub mysend { my ($transport,$count,$msg)=@_; $R1 = $msg->as_string(); return 1;}
+sub mysend { my ($transport,$count,$msg,$ctx)=@_;
+  *{Net::DRI::Transport::Dummy::transport_data} = sub { return {remote_url       => 'https://ncktest.nameaction.com/interface',
+  	                                                            client_login     => 'ncktest',
+  	                                                            client_password  => 'ncktest'}};
+  $R1 = Net::DRI::Protocol::NameAction::Connection->build_url($transport,$msg);
+  return 1;
+}
 sub myrecv { return Net::DRI::Data::Raw->new_from_string($R2); }
 sub munge { my $in=shift; $in=~s/>\s*</></sg; chomp($in); return $in; }
 
@@ -23,7 +30,7 @@ my $RESELLERID=''; #'LOGIN';
 
 my $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10});
 $dri->add_registry('NameAction');
-$dri->target('NameAction')->add_current_profile('p1','nameaction',{f_send=>\&mysend,f_recv=>\&myrecv,client_login=>'LOGIN',client_password=>'PASSWORD',remote_url=>'http://localhost/'});
+$dri->target('NameAction')->add_current_profile('p1','nameaction',{f_send=>\&mysend,f_recv=>\&myrecv});#,client_login=>'LOGIN',client_password=>'PASSWORD',remote_url=>'http://localhost/'});
 
 my ($r,$rc,$rd,$ns,$cs);
 

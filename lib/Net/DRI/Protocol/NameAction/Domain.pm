@@ -20,6 +20,7 @@ use warnings;
 
 use Net::DRI::Exception;
 use Net::DRI::Util;
+use URI;
 
 =pod
 
@@ -92,9 +93,14 @@ sub build_msg_cookie
 sub _build_command {
   my ($mes,$action,$domain,$attrs) = @_;
 	Net::DRI::Exception->die(1,'NameAction/Domain',2,'Domain name needed') unless $domain; #FIXME handle multiple domains? see epp Util.pm
-	#Command=Check&SLD=nameaction&TLD=cl'
-	$cmd = 
-	return $cmd;
+
+  my ($sdl, $tld) = ($domain =~ /^([^\.]+)\.(.+)$/);
+  my @fragments = ( 'Command'  => ucfirst($action), #FIXME check if uppercase is really needed 
+                    'SLD'      => $sdl,
+                    'TLD'      => $tld
+                  );
+  push @fragments, %$attrs if defined $attrs && ref $attrs eq 'HASH';
+  return \@fragments
 }
 
 sub check

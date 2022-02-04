@@ -19,6 +19,7 @@ use warnings;
 
 use Digest::MD5 ();
 use HTTP::Request ();
+use URI;
 
 use Net::DRI::Util;
 use Net::DRI::Exception;
@@ -71,7 +72,6 @@ sub init
 {
  my ($class,$to)=@_;
  my $t=$to->transport_data();
-
  foreach my $p (qw/client_login client_password remote_url/)
  {
   Net::DRI::Exception::usererr_insufficient_parameters($p.' must be defined') unless (exists($t->{$p}) && $t->{$p});
@@ -83,12 +83,24 @@ sub init
 sub write_message
 {
  my ($class,$to,$msg)=@_;
- my $t=$to->transport_data();
- my $url = sprintf('%s?%s', $t->{remote_url}, join('&',$t->{client_login},$t->{client_password}));
+ my $url = build_url(@_);
  my $req=HTTP::Request->new('POST',$url);
  $req->header('Content-Type','text/xml');
  $req->content('');
  return $req;
+}
+
+sub build_url
+{
+ my ($class,$to,$msg)=@_;
+ my $t=$to->transport_data();
+ 
+ my $uri = URI->new($t->{remote_url});
+ $uri->query_form(  User => $t->{client_login},
+                    Pass => $t->{client_password},
+                    @{$msg->command()}
+                  );
+ return $uri->as_string();
 }
 
 ## From transport (various types) to Net::DRI::Data::Raw object (which will be parsed inside Protocol::reaction)
