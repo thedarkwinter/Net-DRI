@@ -120,7 +120,7 @@ is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Sock
 is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:epp:fee-1.0','Cocca Fee 1.0 loaded correctly');
 
 ####################################################################################################
-## Use production greeting since OT&E doesnt anounce fee
+## Use production greeting since OT&E doesnt announce fee
 $R2=$E1.'<greeting><svID>CoCCA</svID><svDate>2022-02-02T12:19:03.979Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:auxcontact-0.1</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:epp:fee-1.0</extURI><extURI>https://production.coccaregistry.net/cocca-activation-1.0</extURI><extURI>urn:ietf:params:xml:ns:contact-id-1.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
 $rc=$dri->process('session','noop',[]);
 is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:epp:fee-1.0','Cocca Fee-1.0 loaded correctly');
