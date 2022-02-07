@@ -211,27 +211,25 @@ sub parse_contact
  return $c;
 }
 
-
-
 sub create
 {
- my ($xcp,$domain,$rd)=@_;
-
- sw_register($xcp, $domain, $rd, 'new'); # TBD: premium, sunrise, whois_privacy
+ my ($nma,$domain,$rd)=@_;
+ my $msg=$nma->message();
+ 
+ my $cmd = _build_command($msg,'create',$domain);
+ $msg->command($cmd);
  return;
 }
 
 sub create_parse
 {
- my ($xcp,$otype,$oaction,$oname,$rinfo)=@_;
- my $mes=$xcp->message();
+ my ($nma,$otype,$oaction,$oname,$rinfo)=@_;
+ my $mes=$nma->message();
  return unless $mes->is_success();
 
  $rinfo->{domain}->{$oname}->{action}='create';
- my $ra=$mes->response_attributes();
- foreach (qw/admin_email cancelled_orders error id queue_request_id forced_pending whois_privacy/) {
-  $rinfo->{domain}->{$oname}->{$_} = $ra->{$_} if exists $ra->{$_};
- }
+ $rinfo->{domain}->{$oname}->{exist}=$mes->response_code() ? 0 : 1;
+ $rinfo->{domain}->{$oname}->{exist_reason}=$mes->response_text();
  return;
 }
 

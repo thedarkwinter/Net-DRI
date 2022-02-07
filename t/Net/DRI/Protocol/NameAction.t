@@ -56,9 +56,11 @@ is($dri->get_info('action'),'check','domain_check get_info(action)');
 is($dri->get_info('exist'),0,'domain_check get_info(exist)');
 is($dri->get_info('exist','domain','nameaction.cl'),0,'domain_check get_info(exist) from cache');
 
-exit 1;
-
 #===Test registration with default name servers===================================
+
+$r=<<"EOF";
+https://ncktest.nameaction.com/interface?User=ncktest&Pass=ncktest&Command=Create&SLD=nameaction&TLD=cl&Year=1&RegistrantName=JohnDoe&RegistrantOrganization=NameAction DomainLA&RegistrantAddress=1156 HighStreet&RegistrantCity=California&RegistrantCountryCode=US&RegistrantPostalCode=95064&RegistrantPhone=1.1234567&RegistrantEmail=j.doenameaction.com&AdminName=John Doe&AdminOrganization=NameAction DomainLA&AdminAddress=1156 HighStreet&AdminCity=California&AdminCountryCode=US&AdminPostalCode=95064&AdminPhone=1.1234567&AdminEmail=j.doenameaction.com&TechName=JohnDoe&TechOrganization=NameAction Domain LA&TechAddress=1156 HighStreet&TechCity=California&TechCountryCode=US&TechPostalCode=95064&TechPhone=1.1234567&TechEmail=j.doenameaction.com&NS1=ns1.nameaction.com&NS2=ns2.nameaction.com&IP1=200.27.54.210&IP2=200.27.54.211&InfoPL=55555555-5
+EOF
 
 push @R2,<<'EOF';
 <nck>
@@ -72,41 +74,49 @@ push @R2,<<'EOF';
 EOF
 
 $cs=$dri->local_object('contactset');
-my $co=$dri->local_object('contact');
-$co->srid('daniel'); # Portfolio user name for OpenSRS?
-$co->auth('daniel'); # Portfolio password for OpenSRS?
-$co->name('Admin'); # Should be firstname, name => lastname.
-$co->firstname('John');
-$co->lastname('Doe');
-$co->org('Catmas Inc.');
-$co->street(['32 Catmas Street','Suite 100','Admin']);
-$co->city('SomeCity');
-$co->sp('CA');
-$co->pc('90210');
-$co->cc('US');
-$co->voice('+1.4165550123x1812');
-$co->fax('+1.4165550125');
-$co->email('admin@example.com');
-$co->url('http://www.catmas.com');
+my $reg_co=$dri->local_object('contact');
+#$reg_co->srid('daniel'); # Portfolio user name for OpenSRS?
+#$reg_co->auth('daniel'); # Portfolio password for OpenSRS?
+#$reg_co->name('Admin'); # Should be firstname, name => lastname.
+$reg_co->name('John Doe');
+$reg_co->org('NameAction DomainLA');
+$reg_co->street(['1156 HighStreet','','']);
+$reg_co->city('California');
+#$reg_co->sp('CA');
+$reg_co->pc('95064');
+$reg_co->cc('US');
+$reg_co->voice('1.1234567');
+#$reg_co->fax('+1.4165550125');
+$reg_co->email('j.doenameaction.com');
+#$reg_co->url('http://www.catmas.com');
 
-$cs->set($co,'registrant');
-$cs->set($co,'admin');
-$cs->set($co,'billing');
+$cs->set($reg_co,'registrant');
+$cs->set($reg_co,'admin');
+$cs->set($reg_co,'tech');
 
-$r=<<"EOF";
-https://ncktest.nameaction.com/interface?User=ncktest&Pass=ncktest&Command=Create&SLD=nameaction&TLD=cl&Year=1&RegistrantName=JohnDoe&RegistrantOrganization=NameAction DomainLA&RegistrantAddress=1156 HighStreet&RegistrantCity=California&RegistrantCountryCode=US&RegistrantPostalCode=95064&RegistrantPhone=1.1234567&RegistrantEmail=j.doenameaction.com&AdminName=John Doe&AdminOrganization=NameAction DomainLA&AdminAddress=1156 HighStreet&AdminCity=California&AdminCountryCode=US&AdminPostalCode=95064&AdminPhone=1.1234567&AdminEmail=j.doenameaction.com&TechName=JohnDoe&TechOrganization=NameAction Domain LA&TechAddress=1156 HighStreet&TechCity=California&TechCountryCode=US&TechPostalCode=95064&TechPhone=1.1234567&TechEmail=j.doenameaction.com&NS1=ns1.nameaction.com&NS2=ns2.nameaction.com&IP1=200.27.54.210&IP2=200.27.54.211&InfoPL=55555555-5
-EOF
+$ns = $dri->local_object('hosts')->set(['ns1.example.com',''],['ns1.example.net']);
 
-$rc=$dri->domain_create('example-nsi.net',{username => 'daniel', password => 'daniel', contact => $cs, registrant_ip => '10.0.10.19', pure_create => 1, duration => DateTime::Duration->new(years =>10)});
-is_string(munge(shift(@R1)),munge($r),'domain_create (default name servers)');
+$rc = $dri->domain_create('nameaction.cl',{ pure_create =>1, 
+                                            duration    => DateTime::Duration->new(years=>2),
+                                            ns          => $ns,
+                                            contact     => $cs,
+                                            auth        => {pw=>'2fooBAR'}});
+
+is_string($R1,$r,'domain_create build');
 is($rc->is_success(),1,'domain_create is_success (default name servers)');
-#is($rc->native_code(),200,'domain_create native_code (default name servers)');
 is($rc->code(),1000,'domain_create code (default name servers)');
-is($dri->get_info('id'),3735281,'domain_create id');
+is($dri->get_info('action'),'create','domain_create get_info(action)');
+is($dri->get_info('exist'),1,'domain_create get_info(exist)');
+#is($dri->get_info('id'),3735281,'domain_create id');
+#is($rc->native_code(),200,'domain_create native_code (default name servers)');
 #is($dri->get_info_keys(),'admin_email','domain_create response keys');
 #is($dri->get_info('registration_code'),200,'domain_create get_info(registration_code)');
 #is($dri->get_info('domain','example-nsi.net','admin_email'),'jsmith@catmas.com','domain_create get_info(admin_email)');
-is($dri->get_info('admin_email'),'jsmith@catmas.com','domain_create get_info(admin_email)');
+#is($dri->get_info('admin_email'),'jsmith@catmas.com','domain_create get_info(admin_email)');
+
+
+
+exit 1;
 
 #===Test registration with default name servers===================================
 
