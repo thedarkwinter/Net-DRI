@@ -277,7 +277,7 @@ sub parse_disclose
  foreach my $el (Net::DRI::Util::xml_list_children($disclose))
  {
   my ($name,$node)=@$el;
-  if ($name=~m/^(name|org|addr)$/)
+  if ($name=~m/^(name|org|addr)$/ && $node->hasAttribute('type')) #Some TLDs dont implement the RFC exactly (ie: addr without type), fixed here to avoid warnings and badly constructed hash keys
   {
    $r{$1.'_'.$node->getAttribute('type')}=$flag;
   } else

@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 57;
+use Test::More tests => 59;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -116,9 +116,15 @@ $dri->{trid_factory}=sub { return 'ABC-12345'; };
 $dri->add_current_registry('CoCCA::CoCCA');
 $dri->target('CoCCA::CoCCA')->add_current_profile('p1', 'epp', { f_send=> \&mysend, f_recv=> \&myrecv });
 $drd = $dri->driver();
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA',{'brown_fee_version' => '0.8'}],'CoCCA - epp transport_protocol_default');
-is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:fee-0.8','Cocca Brown-Fee 0.8 loaded correctly');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA',{'fee_version' => '1.0'}],'CoCCA - epp transport_protocol_default');
+is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:epp:fee-1.0','CoCCA Fee 1.0 loaded correctly');
 
+####################################################################################################
+## Use production greeting since OT&E doesnt announce fee
+$R2=$E1.'<greeting><svID>CoCCA</svID><svDate>2022-02-02T12:19:03.979Z</svDate><svcMenu><version>1.0</version><lang>en</lang><objURI>urn:ietf:params:xml:ns:contact-1.0</objURI><objURI>urn:ietf:params:xml:ns:domain-1.0</objURI><objURI>urn:ietf:params:xml:ns:host-1.0</objURI><svcExtension><extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI><extURI>urn:ietf:params:xml:ns:auxcontact-0.1</extURI><extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI><extURI>urn:ietf:params:xml:ns:epp:fee-1.0</extURI><extURI>https://production.coccaregistry.net/cocca-activation-1.0</extURI><extURI>urn:ietf:params:xml:ns:contact-id-1.0</extURI></svcExtension></svcMenu><dcp><access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement></dcp></greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($dri->protocol()->ns()->{fee}->[0],'urn:ietf:params:xml:ns:epp:fee-1.0','CoCCA Fee-1.0 loaded correctly');
+is_deeply([$dri->tlds()],[qw/cc cm cx gs mg mu na ng af com.af gl co.gl com.gl gy co.gy com.gy net.gy hn com.hn ht com.ht ki com.ki ms com.ms org.ms nf com.nf sb com.sb net.sb so com.so edu.so gov.so me.so net.so org.so tl com.tl/],'CoCCA cctld: all tlds');
 
 ### balance
 $R2=$E1.'<response>'.r(1301,'Command completed successfully; ack to dequeue').'<msgQ count="1" id="47981"><qDate>2018-11-15T00:00:07.134Z</qDate><msg lang="en"><![CDATA[<tld name="so"><balance>-2167.25</balance><credit-limit>0.00</credit-limit></tld>]]></msg></msgQ>'.$TRID.'</response>'.$E2;

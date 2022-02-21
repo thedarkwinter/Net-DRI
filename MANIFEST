@@ -80,6 +80,7 @@ lib/Net/DRI/DRD/ARNES.pm
 lib/Net/DRI/DRD/auDA.pm
 lib/Net/DRI/DRD/BookMyName.pm
 lib/Net/DRI/DRD/CentralNic/CentralNic.pm
+lib/Net/DRI/DRD/CentralNic/RRPProxy.pm
 lib/Net/DRI/DRD/CentralNic/SKNIC.pm
 lib/Net/DRI/DRD/CentralNic/Zuerich.pm
 lib/Net/DRI/DRD/CGIBR/BR.pm
@@ -277,6 +278,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/CAT/Domain.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/AuxContact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee.pm
+lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/KeySys.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.pm
 lib/Net/DRI/Protocol/EPP/Extensions/CentralNic/SkContactIdent.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ChangePoll.pm
@@ -428,6 +430,7 @@ lib/Net/DRI/Protocol/EPP/Extensions/RF.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RO/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RO/Domain.pm
+lib/Net/DRI/Protocol/EPP/Extensions/RRPProxy.pm
 lib/Net/DRI/Protocol/EPP/Extensions/RU.pm
 lib/Net/DRI/Protocol/EPP/Extensions/SecDNS.pm
 lib/Net/DRI/Protocol/EPP/Extensions/ServiceMessage.pm
@@ -626,6 +629,7 @@ t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.6.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.7.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.8.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/Fee-0.9.t
+t/Net/DRI/Protocol/EPP/Extensions/CentralNic/KeySys.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/RegType.t
 t/Net/DRI/Protocol/EPP/Extensions/CentralNic/SKNIC.t
 t/Net/DRI/Protocol/EPP/Extensions/ChangePoll.t
