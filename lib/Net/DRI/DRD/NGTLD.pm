@@ -299,7 +299,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi fans feedback forum fun gent hair homes host icu inc london love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wme xyz yachts 
+art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi fans feedback forum fun gent hair homes host icu inc london love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wme xyz yachts
 
 Contended TLD's not included
 
