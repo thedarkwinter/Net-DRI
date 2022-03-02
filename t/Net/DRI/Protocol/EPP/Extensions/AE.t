@@ -35,7 +35,7 @@ my ($c,$cs,$ns);
 ######## Initial Commands ########
 
 my $drd = $dri->driver();
-is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv1'},'Net::DRI::Protocol::EPP',{}],'AE - epp transport_protocol_default');
+is_deeply( [$drd->transport_protocol_default('epp')],['Net::DRI::Transport::Socket',{ssl_version => 'TLSv1'},'Net::DRI::Protocol::EPP::Extensions::AE',{}],'AE - epp transport_protocol_default');
 $R2='';
 $rc=$dri->process('session','noop',[]);
 is($R1,$E1.'<hello/>'.$E2,'session noop build');

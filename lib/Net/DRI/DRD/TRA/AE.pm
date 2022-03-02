@@ -80,7 +80,7 @@ sub new
 
 sub periods       { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name          { return 'TRA::AE'; }
-sub tlds          { return ('ae',map { $_.'.ae'} qw/net co org sch/ ); }
+sub tlds          { return (qw/ae xn--mgbaam7a8h/,map { $_.'.ae'} qw/net co org sch/ ); }
 sub object_types  { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }
 
@@ -88,7 +88,7 @@ sub transport_protocol_default
 {
 	my ($self,$type)=@_;
 
-	return ('Net::DRI::Transport::Socket',{ssl_version => 'TLSv1'},'Net::DRI::Protocol::EPP',{}) if $type eq 'epp';
+	return ('Net::DRI::Transport::Socket',{ssl_version => 'TLSv1'},'Net::DRI::Protocol::EPP::Extensions::AE',{}) if $type eq 'epp';
 ## return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
 	return;
 }
