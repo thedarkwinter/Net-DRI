@@ -318,7 +318,7 @@ is($r->org(),undef,'domain_info get_info (contact) registrant org');
 ####################################################################################################
 # Centralnic
 $R2='Domain ID:CNIC-DO1465579
-Domain Name:NIC.WIKI
+Domain Name:NIC.WEBSITE
 Created On:2013-09-11T11:57:19.0Z
 Last Updated On:2014-03-28T15:17:00.0Z
 Expiration Date:2014-09-11T23:59:59.0Z
@@ -378,12 +378,12 @@ Sponsoring Registrar Fax:+44.8700170901
 Sponsoring Registrar Website:http://www.centralnic.com/
 Referral URL:http://www.centralnic.com/
 WHOIS Server:whois.centralnic.com
-Name Server:NS0.NIC.WIKI
-Name Server:NS1.NIC.WIKI
-Name Server:NS2.NIC.WIKI
-Name Server:NS3.NIC.WIKI
-Name Server:NS4.NIC.WIKI
-Name Server:NS5.NIC.WIKI
+Name Server:NS0.NIC.WEBSITE
+Name Server:NS1.NIC.WEBSITE
+Name Server:NS2.NIC.WEBSITE
+Name Server:NS3.NIC.WEBSITE
+Name Server:NS4.NIC.WEBSITE
+Name Server:NS5.NIC.WEBSITE
 DNSSEC:Unsigned
 >>> Last update of WHOIS database: 2014-05-27T09:37:40.0Z <<<
 
@@ -399,10 +399,10 @@ blacklisted. All data is (c) CentralNic Ltd https://www.centralnic.com/';
 
 $dri->add_registry('NGTLD',{provider=>'centralnic'});
 $dri->target('centralnic')->add_current_profile('p1','whois',{f_send=>\&mysend,f_recv=>\&myrecv});
-$rc = $dri->domain_info('nic.wiki');
+$rc = $dri->domain_info('nic.website');
 is($rc->is_success(),1,'CENTRALNIC domain_info is_success');
 is($dri->get_info('action'),'info','domain_info get_info (action)');
-is($dri->get_info('name'),'nic.wiki','domain_info get_info (name)');
+is($dri->get_info('name'),'nic.website','domain_info get_info (name)');
 is($dri->get_info('id'),'CNIC-DO1465579','domain_info get_info (id)');
 is($dri->get_info('clName'),'CentralNic Ltd','domain_info get_info (clName)');
 is($dri->get_info('clIANA'),'9999','domain_info get_info (clIANA)');
@@ -426,7 +426,7 @@ is($dri->get_info('wuDate'),'2014-05-27T09:37:40','domain_info get_info (wuDate)
 $h=$dri->get_info('ns');
 isa_ok($h,'Net::DRI::Data::Hosts','domain_info get_info (ns)');
 @hs=$h->get_names();
-is_deeply(\@hs,['ns0.nic.wiki','ns1.nic.wiki','ns2.nic.wiki','ns3.nic.wiki','ns4.nic.wiki','ns5.nic.wiki'],'domain_info get_info (ns) get_names');
+is_deeply(\@hs,['ns0.nic.website','ns1.nic.website','ns2.nic.website','ns3.nic.website','ns4.nic.website','ns5.nic.website'],'domain_info get_info (ns) get_names');
 $c=$dri->get_info('contact');
 isa_ok($c,'Net::DRI::Data::ContactSet','domain_info get_info (contactSet)');
 is_deeply([$c->types()],['admin','billing','registrant','tech'],'domain_info get_info (contactSet) types');
