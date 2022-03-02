@@ -24,7 +24,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 sub default_extensions {
  my ($self,$pp) = @_;
- my @extensions = qw/GracePeriod SecDNS LauchPhase AusRegistry::IDN AusRegistry::KeyValue AusRegistry::Price AusRegistry::Sync AusRegistry::Variant/;
+ my @extensions = qw/GracePeriod SecDNS LaunchPhase AusRegistry::IDN AusRegistry::KeyValue AusRegistry::Price AusRegistry::Sync AusRegistry::Variant/;
  return @extensions;
 }
 
