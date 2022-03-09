@@ -22,6 +22,12 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 ####################################################################################################
 
+sub setup {
+  my ( $self, $rp ) = @_;
+  $self->factories('idn',sub { return @_ });
+  return;
+}
+
 sub default_extensions {
  my ($self,$pp) = @_;
  my @extensions = qw/GracePeriod SecDNS LaunchPhase AusRegistry::IDN AusRegistry::KeyValue AusRegistry::Price AusRegistry::Sync AusRegistry::Variant/;

@@ -36,8 +36,7 @@ sub register_commands
 sub setup
 {
  my ($class,$po,$version)=@_;
- $po->ns({ 'idn' => [ 'urn:X-ar:params:xml:ns:idnadomain-1.0','idnadomain-1.0.xsd' ],
-         });
+ $po->ns({ 'idn' => [ 'urn:X-ar:params:xml:ns:idnadomain-1.0','idnadomain-1.0.xsd' ]});
  return;
 }
 
@@ -101,14 +100,14 @@ sub create_build
 
  return unless Net::DRI::Util::has_key($rd,'idn');
 
- Net::DRI::Exception::usererr_invalid_parameters(q{Value for "idn" key must be a ref hash, not: }.$rd->{idn}) unless $rd->{idn} eq 'HASH';
+ Net::DRI::Exception::usererr_invalid_parameters(q{Value for "idn" key must be a ref hash, not: }.$rd->{idn}) unless ref($rd->{idn}) eq 'HASH';
  Net::DRI::Exception::usererr_insufficient_parameters(q{IDN ref hash must have a language key}) unless exists $rd->{idn}->{language} && defined $rd->{idn}->{language};
  Net::DRI::Exception::usererr_invalid_parameters(q{IDN language tag value must be of type XML schema language}) unless Net::DRI::Util::xml_is_language($rd->{idn}->{language});
  Net::DRI::Exception::usererr_insufficient_parameters(q{IDN ref hash must have a user_form key}) unless exists $rd->{idn}->{user_form} && defined $rd->{idn}->{user_form};
  Net::DRI::Exception::usererr_invalid_parameters(q{IDN user_form value must be of type XML token from 1 to 255 characters}) unless Net::DRI::Util::xml_is_token($rd->{idn}->{user_form},1,255);
 
  my $eid=$mes->command_extension_register('idn','create');
- $mes->command_extension($eid,['userForm',{language => $rd->{idn}->{language}},$rd->{idn}->{user_form}]);
+ $mes->command_extension($eid,['idn:userForm',{language => $rd->{idn}->{language}},$rd->{idn}->{user_form}]);
 
  return;
 }
