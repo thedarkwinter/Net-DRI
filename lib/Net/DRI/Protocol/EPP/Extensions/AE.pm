@@ -24,7 +24,7 @@ use base qw/Net::DRI::Protocol::EPP/;
 
 sub setup {
   my ( $self, $rp ) = @_;
-  $self->factories('idn',sub { return @_ });
+  $self->factories('idn',sub { return @_ }); # Overide standard IDN data object conversion, use suplied data hash
   return;
 }
 

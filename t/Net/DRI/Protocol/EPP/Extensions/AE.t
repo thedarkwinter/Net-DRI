@@ -146,6 +146,9 @@ $d=$dri->get_info('exDate');
 isa_ok($d,'DateTime','domain_info get_info(exDate)');
 is("".$d,'2023-03-07T18:37:27','domain_info get_info(exDate) value');
 is_deeply($dri->get_info('auth'),{pw=>'0;wurc;I08P[0JM]'},'domain_info get_info(auth)');
+is($dri->get_info('language'),'ar-AE','domain_info get_info(language)');# idn standard
+$d=$dri->get_info('idn');
+is_deeply($d,{'user_form' => "عصفور.امارات", 'canonical_form' => "عصفور",'language' => 'ar-AE'}, 'domain_info get_info(idn)'); #AE idn data
 
 #####################################################################################################
 ######### Closing Commands ########
