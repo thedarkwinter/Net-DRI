@@ -1,6 +1,6 @@
-## Domain Registry Interface, OpenSRS XCP Protocol
+## Domain Registry Interface, NameAction Protocol
 ##
-## Copyright (c) 2008-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -25,7 +25,7 @@ use Net::DRI::Protocol::NameAction::Message;
 
 =head1 NAME
 
-Net::DRI::Protocol::OpenSRS::XCP - OpenSRS XCP Protocol for Net::DRI
+Net::DRI::Protocol::NameAction - NameAction Protocol for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -35,21 +35,17 @@ Please see the README file for details.
 
 For now, support questions should be sent to:
 
-E<lt>netdri@dotandco.comE<gt>
+E<lt>paulo.s.castanheira@gmail.comE<gt>
 
 Please also see the SUPPORT file in the distribution.
 
-=head1 SEE ALSO
-
-E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
-
 =head1 AUTHOR
 
-Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+Paulo Castanheira, E<lt>paulo.s.castanheira@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2012,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2022 Patrick Mevzek <paulo.s.castanheira@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -69,8 +65,10 @@ sub new
  my $drd=$ctx->{registry}->driver();
  my $self=$c->SUPER::new($ctx);
  $self->name('nameaction');
- $self->version('1.0.4'); ## Specification March 17, 2008
+ $self->version('1.0.4');
  $self->factories('message',sub { my $m=Net::DRI::Protocol::NameAction::Message->new(); return $m; });
+ $self->capabilities('domain_update','contact',['set']);
+ $self->capabilities('domain_update','ns',['set']);
  $self->_load($rp);
  return $self;
 }

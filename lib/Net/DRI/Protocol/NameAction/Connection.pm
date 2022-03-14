@@ -1,6 +1,6 @@
-## Domain Registry Interface, OpenSRS XCP Connection handling
+## Domain Registry Interface, NameAction Connection handling
 ##
-## Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
+## Copyright (c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -30,7 +30,7 @@ use Net::DRI::Protocol::ResultStatus;
 
 =head1 NAME
 
-Net::DRI::Protocol::OpenSRS::XCP::Connection - OpenSRS XCP Connection handling for Net::DRI
+Net::DRI::Protocol::NameAction::Connection - NameAction Connection handling for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -40,21 +40,17 @@ Please see the README file for details.
 
 For now, support questions should be sent to:
 
-E<lt>netdri@dotandco.comE<gt>
+E<lt>paulo.s.castanheira@gmail.comE<gt>
 
 Please also see the SUPPORT file in the distribution.
 
-=head1 SEE ALSO
-
-E<lt>http://www.dotandco.com/services/software/Net-DRI/E<gt>
-
 =head1 AUTHOR
 
-Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
+Paulo Castanheira, E<lt>paulo.s.castanheira@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2010,2013 Patrick Mevzek <netdri@dotandco.com>.
+Copyright (c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
