@@ -73,8 +73,28 @@ sub new
 
 sub periods      { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name         { return 'NameAction'; }
-sub tlds         { return (qw/cl/,
-                          ); }
+sub tlds         { 
+ #my @tlds = qw/ai ar aw bo br cl co cr cu ec ga gt jm kn ng ni pa pe pr py sv uy ve/;
+ my @tlds = qw/ai ar aw bo cl co cr cu ec ga gt kn ni pa pe sv uy/;
+ my @ar = map {$_.'.ar'} qw/com net org/;
+ my @bo = map {$_.'.bo'} qw/com net org/;
+ my @br = map {$_.'.br'} qw/com eco emp esp etc ind inf net org radio rec srv tmp tv/;
+ my @cr = map {$_.'.cr'} qw/co/;
+ my @cu = map {$_.'.cu'} qw/com/;
+ my @jm = map {$_.'.jm'} qw/com/;
+ my @kn = map {$_.'.kn'} qw/com net org/;
+ my @ng = map {$_.'.ng'} qw/com/;
+ my @ni = map {$_.'.ni'} qw/biz co com/;
+ my @pa = map {$_.'.pa'} qw/com/;
+ my @pe = map {$_.'.pe'} qw/com org/;
+ my @pr = map {$_.'.pr'} qw/com/;
+ my @py = map {$_.'.py'} qw/com/;
+ my @sv = map {$_.'.sv'} qw/com/;
+ my @uy = map {$_.'.uy'} qw/com/;
+ my @ve = map {$_.'.ve'} qw/co com firm info net org rec web/;
+ 
+ return @tlds,@ar,@bo,@br,@cr,@cu,@jm,@kn,@ng,@ni,@pa,@pe,@pr,@py,@sv,@uy,@ve;
+}
 sub object_types { return ('domain'); }
 sub profile_types { return qw/nameaction/; }
 
