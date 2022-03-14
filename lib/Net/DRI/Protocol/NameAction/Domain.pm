@@ -350,8 +350,6 @@ sub _build_all_ns
  return @hostnames, @ipv4;
 }
 
-
-
 sub _build_duration
 {
  my ($years) = @_;

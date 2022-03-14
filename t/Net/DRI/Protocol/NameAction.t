@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use Net::DRI::Protocol::NameAction::Connection;
 use DateTime::Duration;
 use DateTime;
-use Test::More tests => 45;
+use Test::More tests => 34;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
