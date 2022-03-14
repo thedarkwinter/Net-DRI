@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 548;
+use Test::More tests => 551;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -69,6 +69,7 @@ use_ok('Net::DRI::DRD::ARNES');
 use_ok('Net::DRI::DRD::auDA');
 use_ok('Net::DRI::DRD::BookMyName');
 use_ok('Net::DRI::DRD::CentralNic::CentralNic');
+use_ok('Net::DRI::DRD::CentralNic::RRPProxy');
 use_ok('Net::DRI::DRD::CentralNic::SKNIC');
 use_ok('Net::DRI::DRD::CentralNic::Zuerich');
 use_ok('Net::DRI::DRD::CGIBR::BR');
@@ -265,6 +266,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::AuxContact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::RegType');
+use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::KeySys');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CentralNic::SkContactIdent');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ChangePoll');
 use_ok('Net::DRI::Protocol::EPP::Extensions::CIRA');
@@ -415,6 +417,7 @@ use_ok('Net::DRI::Protocol::EPP::Extensions::RF');
 use_ok('Net::DRI::Protocol::EPP::Extensions::RO');
 use_ok('Net::DRI::Protocol::EPP::Extensions::RO::Contact');
 use_ok('Net::DRI::Protocol::EPP::Extensions::RO::Domain');
+use_ok('Net::DRI::Protocol::EPP::Extensions::RRPProxy');
 use_ok('Net::DRI::Protocol::EPP::Extensions::RU');
 use_ok('Net::DRI::Protocol::EPP::Extensions::SecDNS');
 use_ok('Net::DRI::Protocol::EPP::Extensions::ServiceMessage');

@@ -80,9 +80,19 @@ sub name    { return 'CoCCA::CoCCA'; }
 # README: this is not a shared platform!
 sub tlds
 {
-  my @others = qw/cx gs tl ki mu nf ht na ng cc cm sb mg/;
+  my @others = qw/cc cm cx gs mg mu na ng/;
+  my @af = qw/af com.af/;
+  my @gl = qw/gl co.gl com.gl/;
+  my @gy = qw/gy co.gy com.gy net.gy/;
+  my @hn = qw/hn com.hn/;
+  my @ht = qw/ht com.ht/;
+  my @ki = qw/ki com.ki/;
+  my @ms = qw/ms com.ms org.ms/;
+  my @nf = qw/nf com.nf/;
+  my @sb = qw/sb com.sb net.sb/;
   my @so = qw/so com.so edu.so gov.so me.so net.so org.so/;
-  return (@others,@so);
+  my @tl = qw/tl com.tl/;
+  return (@others,@af,@gl,@gy,@hn,@ht,@ki,@ms,@nf,@sb,@so,@tl);
 }
 
 sub object_types { return ('domain','ns','contact'); }
@@ -91,8 +101,7 @@ sub profile_types { return qw/epp/; }
 sub transport_protocol_default
 {
   my ($self,$type)=@_;
-  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA', {'brown_fee_version' => '0.8'}) if $type eq 'epp';
-  #FIXME: Currently the server is reporting fee-1.0, but with format of fee-0.8. In short, its currently broken.
+  return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::CoCCA', {'fee_version' => '1.0'}) if $type eq 'epp';
   return;
 }
 
