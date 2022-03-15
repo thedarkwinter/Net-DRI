@@ -215,6 +215,7 @@ lib/Net/DRI/Protocol/EPP/Core/Host.pm
 lib/Net/DRI/Protocol/EPP/Core/RegistryMessage.pm
 lib/Net/DRI/Protocol/EPP/Core/Session.pm
 lib/Net/DRI/Protocol/EPP/Core/Status.pm
+lib/Net/DRI/Protocol/EPP/Extensions/AE.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AERO.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AERO/Contact.pm
 lib/Net/DRI/Protocol/EPP/Extensions/AERO/Domain.pm
