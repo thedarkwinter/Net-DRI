@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 551;
+use Test::More tests => 557;
 
 BEGIN {
 use_ok('Net::DRI');
@@ -34,6 +34,7 @@ use_ok('Net::DRI::Data::Contact::JOBS');
 use_ok('Net::DRI::Data::Contact::JP');
 use_ok('Net::DRI::Data::Contact::LU');
 use_ok('Net::DRI::Data::Contact::LV');
+use_ok('Net::DRI::Data::Contact::NameAction');
 use_ok('Net::DRI::Data::Contact::NominetMMX');
 use_ok('Net::DRI::Data::Contact::Neustar');
 use_ok('Net::DRI::Data::Contact::NO');
@@ -114,6 +115,7 @@ use_ok('Net::DRI::DRD::IRegistry');
 use_ok('Net::DRI::DRD::ISPAPI');
 use_ok('Net::DRI::DRD::KNET');
 use_ok('Net::DRI::DRD::LVRegistry');
+use_ok('Net::DRI::DRD::NameAction');
 use_ok('Net::DRI::DRD::NASK');
 use_ok('Net::DRI::DRD::Neustar::IN');
 use_ok('Net::DRI::DRD::Neustar::Narwhal');
@@ -491,6 +493,10 @@ use_ok('Net::DRI::Protocol::IRIS::LWZ');
 use_ok('Net::DRI::Protocol::IRIS::Message');
 use_ok('Net::DRI::Protocol::IRIS::XCP');
 use_ok('Net::DRI::Protocol::Message');
+use_ok('Net::DRI::Protocol::NameAction');
+use_ok('Net::DRI::Protocol::NameAction::Connection');
+use_ok('Net::DRI::Protocol::NameAction::Domain');
+use_ok('Net::DRI::Protocol::NameAction::Message');
 use_ok('Net::DRI::Protocol::OpenSRS::XCP');
 use_ok('Net::DRI::Protocol::OpenSRS::XCP::Account');
 use_ok('Net::DRI::Protocol::OpenSRS::XCP::Connection');

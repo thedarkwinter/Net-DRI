@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use Net::DRI::Protocol::NameAction::Connection;
 use DateTime::Duration;
 use DateTime;
-use Test::More tests => 34;
+use Test::More tests => 36;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -52,7 +52,7 @@ is($dri->get_info('exist'),0,'domain_check get_info(exist)');
 
 ### Create
 
-$r="https://ncktest.nameaction.com/interface?User=ncktest&Pass=ncktest&Command=Create&SLD=nameaction&TLD=cl&Year=2&RegistrantName=JohnDoe&RegistrantOrganization=NameAction+DomainLA&RegistrantAddress=1156+HighStreet&RegistrantCity=California&RegistrantCountryCode=US&RegistrantPostalCode=95064&RegistrantPhone=1.1234567&RegistrantEmail=j.doenameaction.com&AdminName=JohnDoe&AdminOrganization=NameAction+DomainLA&AdminAddress=1156+HighStreet&AdminCity=California&AdminCountryCode=US&AdminPostalCode=95064&AdminPhone=1.1234567&AdminEmail=j.doenameaction.com&TechName=JohnDoe&TechOrganization=NameAction+DomainLA&TechAddress=1156+HighStreet&TechCity=California&TechCountryCode=US&TechPostalCode=95064&TechPhone=1.1234567&TechEmail=j.doenameaction.com&NS1=ns1.nameaction.com&NS2=ns2.nameaction.com&IP1=200.27.54.210&IP2=200.27.54.211&InfoPL=55555555-5";
+$r='https://ncktest.nameaction.com/interface?User=ncktest&Pass=ncktest&Command=Create&SLD=nameaction&TLD=cl&Year=2&RegistrantName=JohnDoe&RegistrantOrganization=NameAction+DomainLA&RegistrantAddress=1156+HighStreet&RegistrantCity=California&RegistrantCountryCode=US&RegistrantPostalCode=95064&RegistrantPhone=1.1234567&RegistrantEmail=j.doe%40nameaction.com&AdminName=JohnDoe&AdminOrganization=NameAction+DomainLA&AdminAddress=1156+HighStreet&AdminCity=California&AdminCountryCode=US&AdminPostalCode=95064&AdminPhone=1.1234567&AdminEmail=j.doe%40nameaction.com&TechName=JohnDoe&TechOrganization=NameAction+DomainLA&TechAddress=1156+HighStreet&TechCity=California&TechCountryCode=US&TechPostalCode=95064&TechPhone=1.1234567&TechEmail=j.doe%40nameaction.com&NS1=ns1.nameaction.com&NS2=ns2.nameaction.com&IP1=200.27.54.210&IP2=200.27.54.211&InfoPL=55555555-5';
 
 $R2 = <<'EOF';
 <nck>
@@ -68,6 +68,8 @@ EOF
 
 $cs=$dri->local_object('contactset');
 my $co=$dri->local_object('contact');
+isa_ok($co,'Net::DRI::Data::Contact::NameAction','local_object(contact)');
+
 $co->name('JohnDoe');
 $co->org('NameAction DomainLA');
 $co->street(['1156 HighStreet','','']);
@@ -75,7 +77,7 @@ $co->city('California');
 $co->pc('95064');
 $co->cc('US');
 $co->voice('1.1234567');
-$co->email('j.doenameaction.com');
+$co->email('j.doe@nameaction.com');
 
 $cs->set($co,'registrant');
 $cs->set($co,'admin');
@@ -119,7 +121,7 @@ is($dri->get_info('exist'),1,'domain_renew get_info(exist)');
 
 ### Update 
 
-$r="https://ncktest.nameaction.com/interface?User=ncktest&Pass=ncktest&Command=Modify&SLD=nameaction&TLD=cl&RegistrantName=JohnDoe&RegistrantOrganization=NameAction+DomainLA&RegistrantAddress=1156+HighStreet&RegistrantCity=California&RegistrantCountryCode=US&RegistrantPostalCode=95064&RegistrantPhone=1.1234567&RegistrantEmail=j.doenameaction.com&AdminName=JohnDoe&AdminOrganization=NameAction+DomainLA&AdminAddress=1156+HighStreet&AdminCity=California&AdminCountryCode=US&AdminPostalCode=95064&AdminPhone=1.1234567&AdminEmail=j.doenameaction.com&NS1=ns1.nameaction.com&NS2=ns2.nameaction.com&IP1=200.27.54.210&IP2=200.27.54.211";
+$r="https://ncktest.nameaction.com/interface?User=ncktest&Pass=ncktest&Command=Modify&SLD=nameaction&TLD=cl&RegistrantName=JohnDoe&RegistrantOrganization=NameAction+DomainLA&RegistrantAddress=1156+HighStreet&RegistrantCity=California&RegistrantCountryCode=US&RegistrantPostalCode=95064&RegistrantPhone=1.1234567&RegistrantEmail=j.doe%40nameaction.com&AdminName=JohnDoe&AdminOrganization=NameAction+DomainLA&AdminAddress=1156+HighStreet&AdminCity=California&AdminCountryCode=US&AdminPostalCode=95064&AdminPhone=1.1234567&AdminEmail=j.doe%40nameaction.com&NS1=ns1.nameaction.com&NS2=ns2.nameaction.com&IP1=200.27.54.210&IP2=200.27.54.211";
 
 $R2 = <<'EOF';
 <nck>
@@ -142,7 +144,7 @@ $co->city('California');
 $co->pc('95064');
 $co->cc('US');
 $co->voice('1.1234567');
-$co->email('j.doenameaction.com');
+$co->email('j.doe@nameaction.com');
 
 $cs->set($co,'registrant');
 $cs->set($co,'admin');
@@ -213,6 +215,7 @@ is($rc->is_success(),1,'domain_info is_success');
 my $s=$dri->get_info('contact');
 isa_ok($s,'Net::DRI::Data::ContactSet','domain_info get_info(contact)');
 is_deeply([$s->types()],['admin','registrant','tech'],'domain_info get_info(contact) types');
+isa_ok($co,'Net::DRI::Data::Contact::NameAction','domain_info get_info(contact)');
 is($s->get('registrant')->name(),'NameAction Domain LA','domain_info get_info(contact) registrant name');
 is($s->get('admin')->name(),'John Doe','domain_info get_info(contact) admin name');
 is($s->get('tech')->name(),'John Doe','domain_info get_info(contact) tech name');

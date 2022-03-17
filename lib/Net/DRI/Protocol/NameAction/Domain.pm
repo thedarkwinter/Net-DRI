@@ -313,16 +313,19 @@ sub _build_command
 
 sub _build_contact {
  my ($contact,$type) = @_;
+ 
+ $contact->validate();
+ 
  my $add_ref = $contact->street();
  Net::DRI::Exception::usererr_insufficient_parameters('at least 1 line of address is needed') unless $add_ref && ref($add_ref) eq 'ARRAY' && @$add_ref && $add_ref->[0];
-
+ 
  my @fragments = ( 
-  ucfirst($type).'Name'          => $contact->name(),
-  ucfirst($type).'Organization'  => $contact->org(),
+  ucfirst($type).'Name'          => scalar($contact->name()),
+  ucfirst($type).'Organization'  => scalar($contact->org()),
   ucfirst($type).'Address'       => join(' ', grep {$_} @$add_ref),
-  ucfirst($type).'City'          => $contact->city(),
-  ucfirst($type).'CountryCode'   => $contact->cc(),
-  ucfirst($type).'PostalCode'    => $contact->pc(),
+  ucfirst($type).'City'          => scalar($contact->city()),
+  ucfirst($type).'CountryCode'   => scalar($contact->cc()),
+  ucfirst($type).'PostalCode'    => scalar($contact->pc()),
   ucfirst($type).'Phone'         => $contact->voice(),
   ucfirst($type).'Email'         => $contact->email(),
  );
@@ -341,7 +344,7 @@ sub _build_all_ns
   my ($hostname, $ipv4) = $ns->get_details($i);
   
   Net::DRI::Exception::usererr_insufficient_parameters("invalid host $1 hostname") unless Net::DRI::Util::is_hostname($hostname);
-  Net::DRI::Exception::usererr_insufficient_parameters('invalid host $1 ipv4') unless Net::DRI::Util::is_ipv4($ipv4->[0]);
+  Net::DRI::Exception::usererr_insufficient_parameters("invalid host $1 ipv4") unless Net::DRI::Util::is_ipv4($ipv4->[0]);
   push @hostnames, ('NS'.$i => $hostname);
   
   push @ipv4, ('IP'.$i => $ipv4->[0]) ;

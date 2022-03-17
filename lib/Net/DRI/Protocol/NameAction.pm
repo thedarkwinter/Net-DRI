@@ -20,6 +20,7 @@ use warnings;
 use base qw(Net::DRI::Protocol);
 
 use Net::DRI::Protocol::NameAction::Message;
+use Net::DRI::Data::Contact::NameAction;
 
 =pod
 
@@ -45,7 +46,7 @@ Paulo Castanheira, E<lt>paulo.s.castanheira@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2022 Patrick Mevzek <paulo.s.castanheira@gmail.com>.
+Copyright (c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -66,7 +67,8 @@ sub new
  my $self=$c->SUPER::new($ctx);
  $self->name('nameaction');
  $self->version('1.0.4');
- $self->factories('message',sub { my $m=Net::DRI::Protocol::NameAction::Message->new(); return $m; });
+ $self->factories('message',sub { return Net::DRI::Protocol::NameAction::Message->new(); });
+ $self->factories('contact',sub { return Net::DRI::Data::Contact::NameAction->new(); });
  $self->capabilities('domain_update','contact',['set']);
  $self->capabilities('domain_update','ns',['set']);
  $self->_load($rp);
