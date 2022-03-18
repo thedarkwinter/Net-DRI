@@ -82,6 +82,7 @@ sub tlds
 {
   my @others = qw/cc cm cx gs mg mu na ng/;
   my @af = qw/af com.af/;
+  my @ai = qw/ai com.ai net.ai off.ai org.ai/
   my @gl = qw/gl co.gl com.gl/;
   my @gy = qw/gy co.gy com.gy net.gy/;
   my @hn = qw/hn com.hn/;
