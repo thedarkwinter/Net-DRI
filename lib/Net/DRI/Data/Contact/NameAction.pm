@@ -19,6 +19,8 @@ use warnings;
 
 use base qw/Net::DRI::Data::Contact/;
 
+PACKAGE__->register_attributes();
+
 =pod
 
 =head1 NAME
