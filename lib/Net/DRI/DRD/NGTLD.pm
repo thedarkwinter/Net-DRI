@@ -1109,9 +1109,9 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =head3 TLDs
 
-creditunion
+creditunion love
 
-UniRegistry use a distinct server for this TLD (epp.registry.coop:700)
+UNR no longer own any TLDs so from now on they plan to use a distinct server for some TLDs: .coop (epp.registry.coop:700), .love (epp.registry.love:700)
 
 =head3 Standard extensions:
 
@@ -1130,13 +1130,13 @@ UniRegistry use a distinct server for this TLD (epp.registry.coop:700)
 =cut
 
  return {
-     bep_type => 1, # dedicated (that I am aware :p)
-     tlds => ['creditunion'],
+     bep_type => 1, # dedicated (Since UNR no longer own any TLDs from now on and for some TLDs: "... most of our TLDs will be operated separately by their respective registry operators")
+     tlds => ['creditunion', 'love'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
-     whois_server => 'whois.registry.coop',
-   } if $bep eq 'unireg_coop';
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+   } if $bep eq 'unireg_nonshared';
 
 =pod
 

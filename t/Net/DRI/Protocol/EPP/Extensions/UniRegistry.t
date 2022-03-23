@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 55;
+use Test::More tests => 60;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -88,9 +88,9 @@ is($dri->get_info('reID','message',124),'registrar_a','message_retrieve get_info
 
 
 #####################
-## Test COOP new profile (.creditunion TLD)
+## Test NonShared new profile (.creditunion and .love TLD)
 $dri=Net::DRI::TrapExceptions->new({cache_ttl => 10, trid_factory => sub { return 'ABC-12345'}, logging => 'null' });
-$dri->add_current_registry('UniRegistry::COOP');
+$dri->add_current_registry('UniRegistry::NonShared');
 $dri->add_current_profile('p1','epp',{f_send=>\&mysend,f_recv=>\&myrecv});
 
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example22.creditunion</domain:name></domain:cd><domain:cd><domain:name avail="0">examexample2.creditunion</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
@@ -100,6 +100,14 @@ is($rc->is_success(),1,'domain_check .creditunion multi is_success');
 is($dri->get_info('exist','domain','example22.creditunion'),0,'domain_check .creditunion multi get_info(exist) 1/2');
 is($dri->get_info('exist','domain','examexample2.creditunion'),1,'domain_check .creditunion multi get_info(exist) 2/2');
 is($dri->get_info('exist_reason','domain','examexample2.creditunion'),'In use','domain_check .creditunion multi get_info(exist_reason)');
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example22.love</domain:name></domain:cd><domain:cd><domain:name avail="0">examexample2.love</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example22.love','examexample2.love');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example22.love</domain:name><domain:name>examexample2.love</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check .love multi build');
+is($rc->is_success(),1,'domain_check .love multi is_success');
+is($dri->get_info('exist','domain','example22.love'),0,'domain_check .love multi get_info(exist) 1/2');
+is($dri->get_info('exist','domain','examexample2.love'),1,'domain_check .love multi get_info(exist) 2/2');
+is($dri->get_info('exist_reason','domain','examexample2.love'),'In use','domain_check .love multi get_info(exist_reason)');
 
 
 
