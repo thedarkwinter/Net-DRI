@@ -19,7 +19,7 @@ package Net::DRI::DRD::UniRegistry::NonShared;
 use strict;
 use warnings;
 
-use base qw/Net::DRI::DRD::UniRegistry::UniRegistry//;
+use base qw/Net::DRI::DRD::UniRegistry::UniRegistry/;
 use Net::DRI::Data::Contact::UniRegistry;
 
 use DateTime::Duration;
@@ -97,7 +97,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'UniRegistry::NonShared'; }
 
-sub tlds     { return ('creditunion love'); }
+sub tlds     { return ('creditunion', 'love'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
