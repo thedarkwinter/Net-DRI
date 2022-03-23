@@ -82,6 +82,7 @@ sub tlds
 {
   my @others = qw/as cc cm cx gs mg mu na ng/;
   my @af = qw/af com.af/;
+  my @ai = qw/ai com.ai net.ai off.ai org.ai/
   my @gg = qw/gg co.gg net.gg org.gg/;
   my @gl = qw/gl co.gl com.gl/;
   my @gy = qw/gy co.gy com.gy net.gy/;
@@ -94,7 +95,7 @@ sub tlds
   my @sb = qw/sb com.sb net.sb/;
   my @so = qw/so com.so edu.so gov.so me.so net.so org.so/;
   my @tl = qw/tl com.tl/;
-  return (@others,@af,@gg,@gl,@gy,@hn,@ht,@je,@ki,@ms,@nf,@sb,@so,@tl);
+  return (@others,@af,@ai,@gg,@gl,@gy,@hn,@ht,@je,@ki,@ms,@nf,@sb,@so,@tl);
 }
 
 sub object_types { return ('domain','ns','contact'); }
