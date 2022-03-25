@@ -19,7 +19,7 @@ use warnings;
 
 use base qw/Net::DRI::Data::Contact/;
 
-PACKAGE__->register_attributes();
+__PACKAGE__->register_attributes();
 
 =pod
 
