@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use Net::DRI::Protocol::NameAction::Connection;
 use DateTime::Duration;
 use DateTime;
-use Test::More tests => 36;
+use Test::More tests => 37;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -203,7 +203,7 @@ $R2 = <<'EOF';
         <ip2>200.27.54.211</ip2>
       </hosts>
       <expirydate>2012-02-13 00:00:00</expirydate>
-      <status>Registred</status>
+      <status>Registered</status>
     </details>
   </message>
 </nck> 
@@ -223,8 +223,8 @@ my $dh=$dri->get_info('ns');
 isa_ok($dh,'Net::DRI::Data::Hosts','domain_info get_info(subordinate_hosts)');
 my @c=$dh->get_names();
 is_deeply(\@c,['ns1.nameaction.com','ns2.nameaction.com'],'domain_info get_info(host) get_names');
-my $d=$dri->get_info('expirydate');
-is($d,'2012-02-13 00:00:00','domain_info get_info(expirydate) value');
+is($dri->get_info('exDate'),'2012-02-13T00:00:00','domain_info get_info(exDate) value');
+is_deeply([$dri->get_info('status')->list_status()],['Registered'],'domain_info get_info(status) list');
 
 ### Domain Info Error
 

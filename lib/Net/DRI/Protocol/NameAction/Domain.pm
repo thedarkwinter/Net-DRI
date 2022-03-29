@@ -224,7 +224,9 @@ sub info_parse
   $rinfo->{domain}->{$oname}->{ns}=$nso;
  }
  
- $rinfo->{domain}->{$oname}->{expirydate}=$ra->{expiry_date};
+ my $strp=$nma->build_strptime_parser(pattern => '%F %T');
+ $rinfo->{domain}->{$oname}->{exDate}=$strp->parse_datetime($ra->{expiry_date});
+ $rinfo->{domain}->{$oname}->{status}=$nma->create_local_object('status')->add($ra->{status}); 
 }
 
 sub delete

@@ -21,6 +21,7 @@ use base qw(Net::DRI::Protocol);
 
 use Net::DRI::Protocol::NameAction::Message;
 use Net::DRI::Data::Contact::NameAction;
+use Net::DRI::Protocol::NameAction::Status;
 
 =pod
 
@@ -69,6 +70,7 @@ sub new
  $self->version('1.0.4');
  $self->factories('message',sub { return Net::DRI::Protocol::NameAction::Message->new(); });
  $self->factories('contact',sub { return Net::DRI::Data::Contact::NameAction->new(); });
+ $self->factories('status',sub { return Net::DRI::Protocol::NameAction::Status->new(); });
  $self->capabilities('domain_update','contact',['set']);
  $self->capabilities('domain_update','ns',['set']);
  $self->_load($rp);
