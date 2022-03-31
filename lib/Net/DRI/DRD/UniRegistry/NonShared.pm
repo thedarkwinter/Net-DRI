@@ -1,8 +1,8 @@
-## Domain Registry Interface, UniRegistry::COOP Driver
+## Domain Registry Interface, UniRegistry::NonShared Driver
 ##
 ## Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2021 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
-##           (c) 2021 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
+##           (c) 2022 Paulo Jorge <paullojorgge@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -14,7 +14,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::UniRegistry::COOP;
+package Net::DRI::DRD::UniRegistry::NonShared;
 
 use strict;
 use warnings;
@@ -28,13 +28,13 @@ use DateTime::Duration;
 
 =head1 NAME
 
-Net::DRI::DRD::UniRegistry::COOP - UniRegistry::COOP Driver for Net::DRI
+Net::DRI::DRD::UniRegistry::NonShared - UniRegistry::NonShared Driver for Net::DRI
 
 =head1 DESCRIPTION
 
-Additional domain extension UniRegistry::COOP New Generic TLDs
+Additional domain extension UniRegistry::NonShared New Generic TLDs
 
-UniRegistry::COOP utilises a dedicated server and the following standard extensions. Please see the test files for more examples.
+UniRegistry::NonShared profile is used for all UNR TLDs that use a dedicated server and the following standard extensions. Please see the test files for more examples.
 
 =head2 Standard extensions:
 
@@ -71,7 +71,7 @@ Paulo Jorge, E<lt>paullojorgge@gmail.comE<gt>
 
 Copyright (c) 2021 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2021 Michael Holloway <michael@thedarkwinter.com>.
-          (c) 2021 Paulo Jorge <paullojorgge@gmail.com>.
+          (c) 2022 Paulo Jorge <paullojorgge@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -95,9 +95,9 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'UniRegistry::COOP'; }
+sub name     { return 'UniRegistry::NonShared'; }
 
-sub tlds     { return ('creditunion'); }
+sub tlds     { return ('creditunion', 'love'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 

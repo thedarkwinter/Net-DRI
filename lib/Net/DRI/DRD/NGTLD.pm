@@ -299,7 +299,7 @@ cctlds: ag bz gi lc mn me sc vc
 
 =head3 TLDs
 
-art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi fans feedback forum fun gent hair homes host icu inc london love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wme xn--4gbrim xyz yachts
+art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi fans feedback forum fun gent hair homes host icu inc london luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wme xn--4gbrim xyz yachts
 
 Contended TLD's not included
 
@@ -322,7 +322,7 @@ L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xm
     my @nets = (map { $_.'.net' } qw/uk se gb jp hu in/);
     my @orgs = (map { $_.'.org' } qw/us ae/);
     my @others = qw/pw com.de com.se co.nl fm radio.fm radio.am gd vg/;
-    my @ngtlds = qw/art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi fans feedback forum fun gent hair homes host icu inc london love luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wme xn--4gbrim xyz yachts/;
+    my @ngtlds = qw/art auto autos baby bar beauty best blog boats bond budapest build cam car cars ceo cfd college cyou dealer desi fans feedback forum fun gent hair homes host icu inc london luxury makeup monster motorcycles online ooo pid press protection qpon quest reit rent rest saarland sbs security site skin space spreadbetting storage store tech theatre tickets uno website wme xn--4gbrim xyz yachts/;
     my @ngtlds_contested = qw/hotel mail/; # some of these might go to other registries
     my @cctlds = (qw/bh .xn--mgbcpq6gpa1a/, map {$_.'.bh'} qw/biz cc com edu info me med name net org/);
     my @tlds = (@coms,@nets,@orgs,@others,@ngtlds,@cctlds);
@@ -1109,9 +1109,9 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =head3 TLDs
 
-creditunion
+creditunion love
 
-UniRegistry use a distinct server for this TLD (epp.registry.coop:700)
+UNR no longer own any TLDs so from now on they plan to use a distinct server for some TLDs: .coop (epp.registry.coop:700), .love (epp.registry.love:700)
 
 =head3 Standard extensions:
 
@@ -1130,13 +1130,13 @@ UniRegistry use a distinct server for this TLD (epp.registry.coop:700)
 =cut
 
  return {
-     bep_type => 1, # dedicated (that I am aware :p)
-     tlds => ['creditunion'],
+     bep_type => 1, # dedicated (Since UNR no longer own any TLDs from now on and for some TLDs: "... most of our TLDs will be operated separately by their respective registry operators")
+     tlds => ['creditunion','love'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
-     whois_server => 'whois.registry.coop',
-   } if $bep eq 'unireg_coop';
+     whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
+   } if $bep eq 'unireg_nonshared';
 
 =pod
 
