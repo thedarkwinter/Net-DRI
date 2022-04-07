@@ -144,7 +144,7 @@ sub _parse_dkhm_contact {
   	$c->alt_email($data->getFirstChild()->textContent());
 	}
   if ($data = $mes->get_extension('dkhm','CVR')) {
-  	$c->var($data->getFirstChild()->textContent());
+	$c->vat($data->getFirstChild()->textContent());
 	}
   if ($data = $mes->get_extension('EAN','secondaryEmail')) {
   	$c->ean($data->getFirstChild()->textContent());
