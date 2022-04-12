@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 use utf8;
-use Test::More tests => 79;
+use Test::More tests => 81;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=30; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
 
@@ -81,12 +81,14 @@ $toc->set('info',$co);
 $rc=$dri->contact_update($co_old,$toc);
 is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>sh8013</contact:id><contact:add><contact:status s="clientDeleteProhibited"/></contact:add><contact:chg><contact:postalInfo type="int"><contact:org/><contact:addr><contact:street>124 Example Dr.</contact:street><contact:street>Suite 200</contact:street><contact:city>Dulles</contact:city><contact:sp>VA</contact:sp><contact:pc>20166-6503</contact:pc><contact:cc>US</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.7034444444</contact:voice><contact:fax/><contact:authInfo><contact:pw>2fooBAR</contact:pw></contact:authInfo><contact:disclose flag="1"><contact:voice/><contact:email/></contact:disclose></contact:chg></contact:update></update><extension><dkhm:secondaryEmail xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">email@eksempel.dk</dkhm:secondaryEmail><dkhm:mobilephone xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">+1.7034444445</dkhm:mobilephone></extension><clTRID>ABC-12345</clTRID></command></epp>','contact_update build');
 
-$R2 = $E1 . '<response><result code="1000"><msg>Info result</msg></result><resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>DKHM1-DK</contact:id><contact:roid>DKHM1-DK</contact:roid><contact:status s="serverUpdateProhibited" /><contact:status s="serverTransferProhibited" /><contact:status s="linked" /><contact:status s="serverDeleteProhibited" /><contact:postalInfo type="loc"><contact:name>DK Hostmaster A/S</contact:name><contact:addr><contact:street>Kalvebod Brygge 45,3</contact:street><contact:city>København V</contact:city><contact:pc>1560</contact:pc><contact:cc>DK</contact:cc></contact:addr></contact:postalInfo><contact:voice>+45.33646060</contact:voice><contact:email>anonymous@dk-hostmaster.dk</contact:email><contact:clID>DKHM1-DK</contact:clID><contact:crID>n/a</contact:crID><contact:crDate>2013-01-24T15:40:37.0Z</contact:crDate></contact:infData></resData><extension><dkhm:contact_validated xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">1</dkhm:contact_validated></extension>' . $TRID . '</response>' . $E2;
+$R2 = $E1 . '<response><result code="1000"><msg>Info result</msg></result><resData><contact:infData xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"><contact:id>DKHM1-DK</contact:id><contact:roid>DKHM1-DK</contact:roid><contact:status s="serverUpdateProhibited" /><contact:status s="serverTransferProhibited" /><contact:status s="linked" /><contact:status s="serverDeleteProhibited" /><contact:postalInfo type="loc"><contact:name>DK Hostmaster A/S</contact:name><contact:addr><contact:street>Kalvebod Brygge 45,3</contact:street><contact:city>København V</contact:city><contact:pc>1560</contact:pc><contact:cc>DK</contact:cc></contact:addr></contact:postalInfo><contact:voice>+45.33646060</contact:voice><contact:email>anonymous@dk-hostmaster.dk</contact:email><contact:clID>DKHM1-DK</contact:clID><contact:crID>n/a</contact:crID><contact:crDate>2013-01-24T15:40:37.0Z</contact:crDate></contact:infData></resData><extension><dkhm:contact_validated xmlns:dkhm="urn:dkhm:params:xml:ns:dkhm-4.3">1</dkhm:contact_validated><dkhm:CVR xmlns:dkhm=\'urn:dkhm:params:xml:ns:dkhm-4.3\'>12345</dkhm:CVR><dkhm:userType xmlns:dkhm=\'urn:dkhm:params:xml:ns:dkhm-4.3\'>company</dkhm:userType></extension>' . $TRID . '</response>' . $E2;
 $rc=$dri->contact_info($dri->local_object('contact')->srid('DKHM1-DK'));
 is($rc->is_success(), 1, 'contact_info is_success');
 $co = $dri->get_info('self');
 is($co->name(), 'DK Hostmaster A/S', 'contact_info get_info name');
 is($co->contact_validated(), 1, 'contact_info get_info contact_validated');
+is($co->vat(), 12345, 'contact_info get_info vat');
+is($co->type(), 'company', 'contact_info get_info type');
 
 ####################################################################################################
 ####### Host Commands ########
