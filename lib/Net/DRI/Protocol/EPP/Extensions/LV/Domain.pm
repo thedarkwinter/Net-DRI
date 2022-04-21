@@ -72,8 +72,9 @@ See the LICENSE file that comes with this distribution for more details.
 sub register_commands {
 	my ( $class, $version)=@_;
 	my %tmp=( 
-		update => [ \&update, undef ],
-		info   => [ undef, \&info_parse ],
+		update           => [ \&update, undef ],
+		info             => [ undef, \&info_parse ],
+		transfer_request => [ \&transfer, undef ],
 	);
 	
 	return { 'domain' => \%tmp };
@@ -140,6 +141,27 @@ sub update {
 	$mes->command_extension($eid,\@e);
 
 	return;
+}
+
+sub transfer {
+  my ($epp,$domain,$rd)=@_;
+  my $mes=$epp->message();
+
+  return unless Net::DRI::Util::has_ns($rd);
+  Net::DRI::Exception::usererr_insufficient_parameters('At least one host needed') unless $rd->{ns}->count()>0;
+
+  my @e;
+  for (my $i = 1; $i <= $rd->{ns}->count(); $i++) {
+    my ($hostname) = $rd->{ns}->get_details($i);
+
+    Net::DRI::Exception::usererr_insufficient_parameters("invalid hostname '$hostname'") unless Net::DRI::Util::is_hostname($hostname);
+
+    push @e,['lvdomain:hostAttr',['lvdomain:hostName',$hostname]];
+  }
+  my $eid=$mes->command_extension_register('lvdomain:transfer',sprintf('xmlns:lvdomain="%s" xsi:schemaLocation="%s %s"',$mes->nsattrs('ext_domain')));
+  $mes->command_extension($eid,['lvdomain:ns',@e]);
+
+  return;
 }
 
 ####################################################################################################
