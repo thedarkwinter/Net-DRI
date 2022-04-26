@@ -6,7 +6,7 @@ use warnings;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 102;
+use Test::More tests => 105;
 
 our $E1='<?xml version="1.0" encoding="UTF-8" standalone="no"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">';
 our $E2='</epp>';
@@ -191,6 +191,16 @@ isa_ok($s,'Net::DRI::Data::StatusList','domain_info get_info(status) 5/6');
 is_deeply([$s->list_status()],['serverTransferProhibited'],'domain_info get_info(status) list 5/6');
 is($dri->get_info('exist','domain','xn--belgi-rsa.be'),0,'domain_check multi get_info(exist) 6/6');
 
+# Transfer Error ( for dnsbe:ext message testing )
+my $cs=$dri->local_object('contactset');
+my $c1=$dri->local_object('contact')->srid('jd1234');
+$cs->set($c1,'registrant');
+$cs->set($c1,'billing');
+$R2='<?xml version="1.0" encoding="UTF-8"?><epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:dnsbe="http://www.dns.be/xml/epp/dnsbe-1.0"><response><result code="2308"><msg>Data management policy violation</msg></result><extension><dnsbe:ext><dnsbe:result><dnsbe:msg>domain [dns-domain-22] has invalid status (clientTransferProhibited)</dnsbe:msg></dnsbe:result></dnsbe:ext></extension>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_transfer_start('dns-domain-22.be', {contact=>$cs});
+is($rc->is_success(),0,'domain_transfer error');
+is($rc->code(),2308,'domain_transfer error_code');
+is_deeply([$rc->get_extended_results()],[{'type' => 'text','message' => 'domain [applecard] has invalid status (clientTransferProhibited)','from' => 'dnsbe'}],'domain_transfer error extra info');
 
 ####################################################################################################
 ## add test to debug dnsbelgium, new TLDs issue with poll message

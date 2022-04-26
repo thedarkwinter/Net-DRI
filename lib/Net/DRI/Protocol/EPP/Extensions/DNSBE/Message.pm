@@ -71,11 +71,11 @@ sub parse
  my $mes=$po->message();
 
  ## Parse dnsbe:ext
- my $result=$mes->get_extension('dnsbe','result');
+ my $result=$mes->get_extension('dnsbe','result') || $mes->get_extension('dnsbe','ext'); # Although dnsbe:result tag shouldn't be immediately below extensions tag, keeping the parse for possible backwards compatability
  return unless $result;
 
  ## We add it to the latest status extra_info seen.
- foreach my $el ($result->getChildrenByTagNameNS($mes->ns('dnsbe'),'msg'))
+ foreach my $el ($result->getElementsByTagNameNS($mes->ns('dnsbe'),'msg'))
  {
   $mes->add_to_extra_info({from => 'dnsbe', type => 'text', message => $el->textContent()});
  }
