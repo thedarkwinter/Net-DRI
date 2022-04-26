@@ -200,7 +200,7 @@ $R2='<?xml version="1.0" encoding="UTF-8"?><epp xmlns="urn:ietf:params:xml:ns:ep
 $rc=$dri->domain_transfer_start('dns-domain-22.be', {contact=>$cs});
 is($rc->is_success(),0,'domain_transfer error');
 is($rc->code(),2308,'domain_transfer error_code');
-is_deeply([$rc->get_extended_results()],[{'type' => 'text','message' => 'domain [applecard] has invalid status (clientTransferProhibited)','from' => 'dnsbe'}],'domain_transfer error extra info');
+is_deeply([$rc->get_extended_results()],[{'type' => 'text','message' => 'domain [dns-domain-22] has invalid status (clientTransferProhibited)','from' => 'dnsbe'}],'domain_transfer error extra info');
 
 ####################################################################################################
 ## add test to debug dnsbelgium, new TLDs issue with poll message
