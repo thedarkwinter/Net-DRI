@@ -9,7 +9,7 @@ use DateTime;
 use DateTime::Duration;
 use utf8;
 
-use Test::More tests => 83;
+use Test::More tests => 84;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -207,6 +207,14 @@ is($dri->get_info('reID','message','555'),'new_regisrtar','message get_info reID
 $R2=$E1.'<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><trID><clTRID>5de52339104fa</clTRID><svTRID>LVNIC-20191202-31b3c6c4fc6f3119757ec5605410c28a-2</svTRID></trID></response>'.$E2;
 $rc=$dri->domain_transfer_start('transfer-accept-testuser-1.lv',{auth=>{pw=>'transfer-accept-testuser-1.lv'}});
 is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-accept-testuser-1.lv</domain:name><domain:authInfo><domain:pw>transfer-accept-testuser-1.lv</domain:pw></domain:authInfo></domain:transfer></transfer><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build');
+
+### Transfer REQUEST operation with ns update
+$dh=$dri->local_object('hosts');
+$dh->add('ns3.dns.lv');
+$dh->add('ns4.dns.lv');
+$R2=$E1.'<response><result code="1000"><msg lang="en">Command completed successfully</msg></result><trID><clTRID>5de52339104fa</clTRID><svTRID>LVNIC-20191202-31b3c6c4fc6f3119757ec5605410c28a-2</svTRID></trID></response>'.$E2;
+$rc=$dri->domain_transfer_start('transfer-accept-testuser-1.lv',{auth=>{pw=>'transfer-accept-testuser-1.lv'}, ns => $dh});
+is($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-accept-testuser-1.lv</domain:name><domain:authInfo><domain:pw>transfer-accept-testuser-1.lv</domain:pw></domain:authInfo></domain:transfer></transfer><extension><lvdomain:transfer xmlns:lvdomain="http://www.nic.lv/epp/schema/lvdomain-ext-1.0" xsi:schemaLocation="http://www.nic.lv/epp/schema/lvdomain-ext-1.0 lvdomain-ext-1.0.xsd"><lvdomain:ns><lvdomain:hostAttr><lvdomain:hostName>ns3.dns.lv</lvdomain:hostName></lvdomain:hostAttr><lvdomain:hostAttr><lvdomain:hostName>ns4.dns.lv</lvdomain:hostName></lvdomain:hostAttr></lvdomain:ns></lvdomain:transfer></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_transfer_request build with ns');
 
 ### Transfer informative QUERY operation
 $R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>transfer-accept-ignored-4.lv</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>TestUser2</domain:reID><domain:reDate>2019-12-02T16:44:09+02:00</domain:reDate><domain:acID>TestUser</domain:acID><domain:acDate>2019-12-08T00:00:00+02:00</domain:acDate></domain:trnData></resData>'.$TRID.'</response>'.$E2;
