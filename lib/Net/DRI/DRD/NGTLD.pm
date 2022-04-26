@@ -1134,7 +1134,6 @@ UNR no longer own any TLDs so from now on they plan to use a distinct server for
      tlds => ['creditunion','hiphop','love'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
-     requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'unireg_nonshared';
 
