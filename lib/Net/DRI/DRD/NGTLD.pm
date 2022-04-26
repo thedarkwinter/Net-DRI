@@ -1067,7 +1067,7 @@ xn--3ds443g xn--fiq228c5hs xn--nyqy26a xn--rhqv96g xn--vuq861b
 
 =head3 TLDs
 
-audio blackfriday christmas click country diet flowers game gift guitars help hiphop hiv hosting juegos link lol mom photo pics property sexy tattoo trust
+audio blackfriday christmas click country diet flowers game gift guitars help hiv hosting juegos link lol mom photo pics property sexy tattoo trust
 
 Contended TLD's not included
 
@@ -1098,7 +1098,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
  return {
      bep_type => 2, # shared registry
-     tlds => ['audio','blackfriday','christmas','click','country','diet','flowers','game','gift','guitars','help','hiphop','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo','trust'],
+     tlds => ['audio','blackfriday','christmas','click','country','diet','flowers','game','gift','guitars','help','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo','trust'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
@@ -1109,7 +1109,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =head3 TLDs
 
-creditunion love
+creditunion hiphop love
 
 UNR no longer own any TLDs so from now on they plan to use a distinct server for some TLDs: .coop (epp.registry.coop:700), .love (epp.registry.love:700)
 
@@ -1131,7 +1131,7 @@ UNR no longer own any TLDs so from now on they plan to use a distinct server for
 
  return {
      bep_type => 1, # dedicated (Since UNR no longer own any TLDs from now on and for some TLDs: "... most of our TLDs will be operated separately by their respective registry operators")
-     tlds => ['creditunion','love'],
+     tlds => ['creditunion','hiphop','love'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],

@@ -97,7 +97,7 @@ sub new
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
 sub name     { return 'UniRegistry::NonShared'; }
 
-sub tlds     { return ('creditunion', 'love'); }
+sub tlds     { return ('creditunion', 'hiphop', 'love'); }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp/; }
 
