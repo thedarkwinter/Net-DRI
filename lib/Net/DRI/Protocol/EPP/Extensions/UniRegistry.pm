@@ -39,11 +39,13 @@ sub core_modules
  return @c;
 }
 
+## tucows purchased uniregistry and now they're in the process of moving from shared epp server => one server perl tld (they don't use Centric/Market and Sync extensions, only UNIREG AND ICM products)
 ## icm profile use 2x extra extensions - afilias association and ipr - related with migration from Afilias to Uniregistry::ICM platform
 sub default_extensions
 {
  my ($self,$rp)=@_;
- my @c=qw/GracePeriod SecDNS IDN LaunchPhase UniRegistry::Centric UniRegistry::RegistryMessage UniRegistry::Market VeriSign::Sync CentralNic::Fee/;
+ my @c=qw/GracePeriod SecDNS IDN LaunchPhase UniRegistry::RegistryMessage CentralNic::Fee/;
+ push @c,qw/UniRegistry::Centric UniRegistry::Market VeriSign::Sync/ if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} =~ m/^(ICM|UNIREG)$/;
  push @c,qw/Afilias::Association Afilias::IPR/ if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'ICM';
 
  return @c;

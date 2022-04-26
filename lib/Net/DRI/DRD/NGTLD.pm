@@ -1099,7 +1099,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
  return {
      bep_type => 2, # shared registry
      tlds => ['audio','blackfriday','christmas','click','country','diet','flowers','game','gift','guitars','help','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo','trust'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7', 'default_product'=>'UNIREG'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
      whois_server => 'whois.uniregistry.net',
