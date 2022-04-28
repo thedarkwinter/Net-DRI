@@ -7,7 +7,7 @@ use utf8;
 use Net::DRI;
 use Net::DRI::Data::Raw;
 
-use Test::More tests => 164;
+use Test::More tests => 167;
 use Test::Exception;
 
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
@@ -577,7 +577,7 @@ $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success<
           <contact:changed xmlns:contact="http://registry.denic.de/contact/3.0">2017-01-06T15:51:08+02:00</contact:changed>
         </domain:contact>
         <dnsentry:dnsentry xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="dnsentry:A">
-          <dnsentry:owner>www.aimmune.de.</dnsentry:owner>
+          <dnsentry:owner>de-example-entry-only.de.</dnsentry:owner>
           <dnsentry:rdata>
             <dnsentry:address>81.91.170.22</dnsentry:address>
           </dnsentry:rdata>
@@ -601,11 +601,10 @@ $cs->set($dri->local_object('contact')->srid('DENIC-1000006-DENIC'), 'registrant
 $changes->del('contact', $cs);
 $changes->add('ns', $dri->local_object('hosts')->add('ns4.de-example-entry-only.de',
 	['87.233.175.19'],[]));
-$changes->del('ns', $dri->local_object('hosts')->add('ns3.de-example-entry-only.de'));
 $rc = $dri->domain_update('de-example-entry-only.de', $changes);
 isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
 is($rc->is_success(), 1, 'Domain successfully updated');
-is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:update><domain:handle>de-example-entry-only.de</domain:handle><domain:ace>de-example-entry-only.de</domain:ace><domain:contact role="abusecontact">DENIC-1000002-ABUSE</domain:contact><domain:contact role="generalrequest">DENIC-1000002-GENERAL</domain:contact><domain:contact role="holder">DENIC-1000002-MAX</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns1.de-example.de.</dnsentry:nameserver></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example-entry-only.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns2.de-example-entry-only.de.</dnsentry:nameserver><dnsentry:address>193.171.255.36</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example-entry-only.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns4.de-example-entry-only.de.</dnsentry:nameserver><dnsentry:address>87.233.175.19</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry></domain:update><ctid>ABC-12345</ctid></registry-request>', 'Update Domain Two XML correct');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:update><domain:handle>de-example-entry-only.de</domain:handle><domain:ace>de-example-entry-only.de</domain:ace><domain:contact role="abusecontact">DENIC-1000002-ABUSE</domain:contact><domain:contact role="generalrequest">DENIC-1000002-GENERAL</domain:contact><domain:contact role="holder">DENIC-1000002-MAX</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example-entry-only.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns4.de-example-entry-only.de.</dnsentry:nameserver><dnsentry:address>87.233.175.19</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry></domain:update><ctid>ABC-12345</ctid></registry-request>', 'Update Domain Two XML correct');
 
 
 ####################################################################################################
