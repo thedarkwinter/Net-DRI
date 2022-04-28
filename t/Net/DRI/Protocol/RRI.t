@@ -542,6 +542,72 @@ is($rc->is_success(), 1, 'Domain successfully updated');
 is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:update><domain:handle>de-example.de</domain:handle><domain:ace>de-example.de</domain:ace><domain:contact role="abusecontact">DENIC-1000002-ABUSE</domain:contact><domain:contact role="generalrequest">DENIC-1000002-GENERAL</domain:contact><domain:contact role="holder">DENIC-1000002-MAX</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns1.de-example.de.</dnsentry:nameserver></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns2.de-example.de.</dnsentry:nameserver><dnsentry:address>193.171.255.36</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns4.de-example.de.</dnsentry:nameserver><dnsentry:address>87.233.175.19</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry></domain:update><ctid>ABC-12345</ctid></registry-request>', 'Update Domain XML correct');
 
 
+
+# Domain update 2 - Registry only parsing address element under dnsentry
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result><tr:data>
+      <domain:infoData xmlns:domain="http://registry.denic.de/domain/3.0">
+        <domain:handle>de-example-entry-only.de</domain:handle>
+        <domain:ace>de-example-entry-only.de</domain:ace>
+        <domain:status>connect</domain:status>
+        <domain:regAccId>DENIC-1000006</domain:regAccId>
+        <domain:regAccName>DENIC eG</domain:regAccName>
+        <domain:contact role="generalrequest">
+          <contact:handle xmlns:contact="http://registry.denic.de/contact/3.0">DENIC-1000006-GENERAL-REQUEST</contact:handle>
+          <contact:type xmlns:contact="http://registry.denic.de/contact/3.0">REQUEST</contact:type>
+          <contact:uri-template xmlns:contact="http://registry.denic.de/contact/3.0">mailto:dbs@denic.de</contact:uri-template>
+          <contact:changed xmlns:contact="http://registry.denic.de/contact/3.0">2018-08-13T14:14:18+02:00</contact:changed>
+        </domain:contact>
+        <domain:contact role="abusecontact">
+          <contact:handle xmlns:contact="http://registry.denic.de/contact/3.0">DENIC-1000006-ABUSE-CONTACT</contact:handle>
+          <contact:type xmlns:contact="http://registry.denic.de/contact/3.0">REQUEST</contact:type>
+          <contact:uri-template xmlns:contact="http://registry.denic.de/contact/3.0">mailto:abuse@denic.de?subject=domain:{Ulabel}</contact:uri-template>
+          <contact:changed xmlns:contact="http://registry.denic.de/contact/3.0">2018-08-13T14:14:18+02:00</contact:changed>
+        </domain:contact>
+        <domain:contact role="holder">
+          <contact:handle xmlns:contact="http://registry.denic.de/contact/3.0">DENIC-1000006-DENIC</contact:handle>
+          <contact:type xmlns:contact="http://registry.denic.de/contact/3.0">ORG</contact:type>
+          <contact:name xmlns:contact="http://registry.denic.de/contact/3.0">DENIC eG</contact:name>
+          <contact:postal xmlns:contact="http://registry.denic.de/contact/3.0">
+            <contact:address>Kaiserstraße 75 - 77</contact:address>
+            <contact:postalCode>60329</contact:postalCode>
+            <contact:city>Frankfurt am Main</contact:city>
+            <contact:countryCode>DE</contact:countryCode>
+          </contact:postal>
+          <contact:email xmlns:contact="http://registry.denic.de/contact/3.0">info@denic.de</contact:email>
+          <contact:changed xmlns:contact="http://registry.denic.de/contact/3.0">2017-01-06T15:51:08+02:00</contact:changed>
+        </domain:contact>
+        <dnsentry:dnsentry xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="dnsentry:A">
+          <dnsentry:owner>www.aimmune.de.</dnsentry:owner>
+          <dnsentry:rdata>
+            <dnsentry:address>81.91.170.22</dnsentry:address>
+          </dnsentry:rdata>
+        </dnsentry:dnsentry>
+        <domain:changed>2022-04-22T13:09:40+02:00</domain:changed>
+      </domain:infoData>
+    </tr:data>
+  </tr:transaction>' . $E2;
+$rc = $dri->domain_info('de-example-entry-only.de');
+$R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
+my $changes = $dri->local_object('changes');
+$cs = $dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('DENIC-1000002-GENERAL'), 'generalrequest');
+$cs->set($dri->local_object('contact')->srid('DENIC-1000002-ABUSE'), 'abusecontact');
+$cs->set($dri->local_object('contact')->srid('DENIC-1000002-MAX'), 'registrant');
+$changes->add('contact', $cs);
+$cs = $dri->local_object('contactset');
+$cs->set($dri->local_object('contact')->srid('DENIC-1000006-GENERAL-REQUEST'), 'generalrequest');
+$cs->set($dri->local_object('contact')->srid('DENIC-1000006-ABUSE-CONTACT'), 'abusecontact');
+$cs->set($dri->local_object('contact')->srid('DENIC-1000006-DENIC'), 'registrant');
+$changes->del('contact', $cs);
+$changes->add('ns', $dri->local_object('hosts')->add('ns4.de-example-entry-only.de',
+	['87.233.175.19'],[]));
+$changes->del('ns', $dri->local_object('hosts')->add('ns3.de-example-entry-only.de'));
+$rc = $dri->domain_update('de-example-entry-only.de', $changes);
+isa_ok($rc, 'Net::DRI::Protocol::ResultStatus');
+is($rc->is_success(), 1, 'Domain successfully updated');
+is_string($R1, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><registry-request xmlns="http://registry.denic.de/global/3.0" xmlns:dnsentry="http://registry.denic.de/dnsentry/3.0" xmlns:domain="http://registry.denic.de/domain/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><domain:update><domain:handle>de-example-entry-only.de</domain:handle><domain:ace>de-example-entry-only.de</domain:ace><domain:contact role="abusecontact">DENIC-1000002-ABUSE</domain:contact><domain:contact role="generalrequest">DENIC-1000002-GENERAL</domain:contact><domain:contact role="holder">DENIC-1000002-MAX</domain:contact><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns1.de-example.de.</dnsentry:nameserver></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example-entry-only.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns2.de-example-entry-only.de.</dnsentry:nameserver><dnsentry:address>193.171.255.36</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry><dnsentry:dnsentry xsi:type="dnsentry:NS"><dnsentry:owner>de-example-entry-only.de.</dnsentry:owner><dnsentry:rdata><dnsentry:nameserver>ns4.de-example-entry-only.de.</dnsentry:nameserver><dnsentry:address>87.233.175.19</dnsentry:address></dnsentry:rdata></dnsentry:dnsentry></domain:update><ctid>ABC-12345</ctid></registry-request>', 'Update Domain Two XML correct');
+
+
 ####################################################################################################
 ## Poll Message Operations
 
