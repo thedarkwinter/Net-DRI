@@ -588,7 +588,7 @@ $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success<
   </tr:transaction>' . $E2;
 $rc = $dri->domain_info('de-example-entry-only.de');
 $R2 = $E1 . '<tr:transaction><tr:stid>' . $TRID . '</tr:stid><tr:result>success</tr:result></tr:transaction>' . $E2;
-my $changes = $dri->local_object('changes');
+$changes = $dri->local_object('changes');
 $cs = $dri->local_object('contactset');
 $cs->set($dri->local_object('contact')->srid('DENIC-1000002-GENERAL'), 'generalrequest');
 $cs->set($dri->local_object('contact')->srid('DENIC-1000002-ABUSE'), 'abusecontact');
