@@ -628,7 +628,7 @@ sub update
  my $cs = $rd->{contact};
  my $secdns = $rd->{secdns};
 
- Net::DRI::Exception::usererr_invalid_parameters('Must specify contact set and name servers with update command (or use the proper API)') unless (Net::DRI::Util::isa_contactset($cs) && Net::DRI::Util::isa_hosts($ns));
+ Net::DRI::Exception::usererr_invalid_parameters('Must specify contact set and name servers with update command (or use the proper API)') unless (Net::DRI::Util::isa_contactset($cs) && Net::DRI::Util::isa_nsgroup($ns));
 
  if ((grep { ! /^(?:add|del)$/ } $todo->types('ns')) ||
      (grep { ! /^(?:add|del)$/ } $todo->types('contact')))
