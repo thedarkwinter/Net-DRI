@@ -80,7 +80,7 @@ sub parse_greeting
  my $g=$mes->node_greeting();
  return unless $mes->is_success() && defined $g; ## make sure we are not called for all parsing operations (after poll), just after true greeting
 
- $po->switch_to_highest_namespace_version('frnic');
+ $po->ns({ 'frnic' => [ 'http://www.afnic.fr/xml/epp/frnic-2.0','frnic-2.0.xsd' ] }); # force like this due recent problems in production!
  return;
 }
 

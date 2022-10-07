@@ -68,7 +68,7 @@ See the LICENSE file that comes with this distribution for more details.
 sub setup
 {
  my ($self,$rp)=@_;
- $self->ns({frnic=>['http://www.afnic.fr/xml/epp/frnic-1.4','frnic-1.4.xsd']});
+ $self->ns({frnic=>['http://www.afnic.fr/xml/epp/frnic-2.0','frnic-2.0.xsd']});
  $self->capabilities('domain_update','registrant',undef); ## a trade is required
  $self->capabilities('contact_update','status',undef); ## No changes in status possible for .FR contacts
  $self->capabilities('contact_update','disclose',['add','del']);
@@ -81,7 +81,7 @@ sub setup
 }
 
 sub core_contact_types { return ('admin','tech'); } ## No billing contact in .FR
-sub default_extensions { return qw/AFNIC::Session AFNIC::Domain AFNIC::Contact AFNIC::Notifications GracePeriod SecDNS/; }
+sub default_extensions { return qw/AFNIC::Session AFNIC::Domain AFNIC::Contact AFNIC::Notifications GracePeriod SecDNS Fee LaunchPhase/; }
 
 ####################################################################################################
 1;
