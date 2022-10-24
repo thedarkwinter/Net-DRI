@@ -8,7 +8,7 @@ use Net::DRI::Data::Raw;
 use DateTime;
 use DateTime::Duration;
 
-use Test::More tests => 60;
+use Test::More tests => 75;
 use Test::Exception;
 eval { no warnings; require Test::LongString; Test::LongString->import(max => 100); $Test::LongString::Context=50; };
 if ( $@ ) { no strict 'refs'; *{'main::is_string'}=\&main::is; }
@@ -108,6 +108,65 @@ is($rc->is_success(),1,'domain_check .love multi is_success');
 is($dri->get_info('exist','domain','example22.love'),0,'domain_check .love multi get_info(exist) 1/2');
 is($dri->get_info('exist','domain','examexample2.love'),1,'domain_check .love multi get_info(exist) 2/2');
 is($dri->get_info('exist_reason','domain','examexample2.love'),'In use','domain_check .love multi get_info(exist_reason)');
+
+$R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:cd><domain:name avail="1">example22.hiphop</domain:name></domain:cd><domain:cd><domain:name avail="0">examexample2.hiphop</domain:name><domain:reason>In use</domain:reason></domain:cd></domain:chkData></resData>'.$TRID.'</response>'.$E2;
+$rc=$dri->domain_check('example22.hiphop','examexample2.hiphop');
+is($R1,$E1.'<command><check><domain:check xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>example22.hiphop</domain:name><domain:name>examexample2.hiphop</domain:name></domain:check></check><clTRID>ABC-12345</clTRID></command>'.$E2,'domain_check .hiphop multi build');
+is($rc->is_success(),1,'domain_check .hiphop multi is_success');
+is($dri->get_info('exist','domain','example22.hiphop'),0,'domain_check .hiphop multi get_info(exist) 1/2');
+is($dri->get_info('exist','domain','examexample2.hiphop'),1,'domain_check .hiphop multi get_info(exist) 2/2');
+is($dri->get_info('exist_reason','domain','examexample2.hiphop'),'In use','domain_check .hiphop multi get_info(exist_reason)');
+
+$R2=$E1.'<greeting>
+    <svID>hiphop EPP Server</svID>
+    <svDate>2022-04-26T14:55:00.310Z</svDate>
+    <svcMenu>
+      <version>1.0</version>
+      <lang>en</lang>
+      <lang>es</lang>
+      <lang>fr</lang>
+      <objURI>urn:ietf:params:xml:ns:domain-1.0</objURI>
+      <objURI>urn:ietf:params:xml:ns:host-1.0</objURI>
+      <objURI>urn:ietf:params:xml:ns:contact-1.0</objURI>
+      <objURI>http://ns.uniregistry.net/eps-1.0</objURI>
+      <svcExtension>
+        <extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI>
+        <extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI>
+        <extURI>urn:ietf:params:xml:ns:idn-1.0</extURI>
+        <extURI>urn:ietf:params:xml:ns:launch-1.0</extURI>
+        <extURI>urn:ietf:params:xml:ns:fee-0.7</extURI>
+      </svcExtension>
+    </svcMenu>
+    <dcp>
+      <access>
+        <all/>
+      </access>
+      <statement>
+        <purpose>
+          <admin/>
+          <prov/>
+        </purpose>
+        <recipient>
+          <ours/>
+          <public/>
+        </recipient>
+        <retention>
+          <stated/>
+        </retention>
+      </statement>
+    </dcp>
+  </greeting>'.$E2;
+$rc=$dri->process('session','noop',[]);
+is($R1,$E1.'<hello/>'.$E2,'session noop build (hello command)');
+is($rc->is_success(),1,'session noop is_success');
+is($rc->get_data('session','server','server_id'),'hiphop EPP Server','session noop get_data(session,server,server_id)');
+is($rc->get_data('session','server','date'),'2022-04-26T14:55:00','session noop get_data(session,server,date)');
+is_deeply($rc->get_data('session','server','version'),['1.0'],'session noop get_data(session,server,version)');
+is_deeply($rc->get_data('session','server','lang'),['en','es','fr'],'session noop get_data(session,server,lang)');
+is_deeply($rc->get_data('session','server','objects'),['urn:ietf:params:xml:ns:domain-1.0','urn:ietf:params:xml:ns:host-1.0','urn:ietf:params:xml:ns:contact-1.0','http://ns.uniregistry.net/eps-1.0'],'session noop get_data(session,server,objects)');
+is_deeply($rc->get_data('session','server','extensions_announced'),['urn:ietf:params:xml:ns:secDNS-1.1','urn:ietf:params:xml:ns:rgp-1.0','urn:ietf:params:xml:ns:idn-1.0','urn:ietf:params:xml:ns:launch-1.0','urn:ietf:params:xml:ns:fee-0.7'],'session noop get_data(session,server,extensions_announced)');
+is_deeply($rc->get_data('session','server','extensions_selected'),['urn:ietf:params:xml:ns:secDNS-1.1','urn:ietf:params:xml:ns:rgp-1.0','urn:ietf:params:xml:ns:idn-1.0','urn:ietf:params:xml:ns:launch-1.0','urn:ietf:params:xml:ns:fee-0.7'],'session noop get_data(session,server,extensions_selected)');
+is($rc->get_data('session','server','dcp_string'),'<access><all/></access><statement><purpose><admin/><prov/></purpose><recipient><ours/><public/></recipient><retention><stated/></retention></statement>','session noop get_data(session,server,dcp_string)');
 
 
 
