@@ -69,9 +69,9 @@ is($d->{action},'create','domain_check multi get_info(action) 1/4');
 is($d->{phase},'sunrise','domain_check multi get_info(phase) 1/4');
 is($d->{sub_phase},undef,'domain_check multi get_info(sub_phase) 1/4');
 is($d->{duration}->years(),'1','domain_check multi get_info(duration) 1/4');
-is($d->{fee},5.00,'domain_check multi get_info(fee) 1/4');
-#is($d->{fee_application_fee},5.00,'domain_check multi parse fee (fee_application_fee) 1/4');
-is($d->{fee_registration_fee},5.00,'domain_check multi parse fee (fee_registration_fee) 1/4');
+is($d->{fee},'5.00','domain_check multi get_info(fee) 1/4');
+#is($d->{fee_application_fee},'5.00','domain_check multi parse fee (fee_application_fee) 1/4');
+is($d->{fee_registration_fee},'5.00','domain_check multi parse fee (fee_registration_fee) 1/4');
 is($d->{grace_period},'P5D','domain_check multi parse fee (grace_period) 1/4');
 is($d->{refundable},'1','domain_check multi parse fee (refundable) 1/4');
 $d = shift @{$dri->get_info('fee','domain','holidays.space')};
@@ -82,7 +82,7 @@ is($d->{action},'create','domain_check multi get_info(action) 2/4');
 is($d->{phase},'claims','domain_check multi get_info(phase) 2/4');
 is($d->{sub_phase},'landrush','domain_check multi get_info(sub_phase) 2/4');
 is($d->{duration}->years(),'2','domain_check multi get_info(duration) 2/4');
-is($d->{fee},5.00,'domain_check multi get_info(fee) 2/4');
+is($d->{fee},'5.00','domain_check multi get_info(fee) 2/4');
 $d = shift @{$dri->get_info('fee','domain','hotels.space')};
 is($d->{domain},'hotels.space','domain_check multi get_info(domain) 3/4');
 is($d->{premium},0,'domain_check multi parse premium 3/4');
@@ -97,9 +97,9 @@ is($d->{reason},'minimum period is 2 years.','domain_check multi parse fee (reas
 # Note: we can no longer check different types in one command - so create only here
 is($dri->get_info('is_premium','domain','hotels.space'),0,'domain_check_multi get_info (is_premium) undef');
 is($dri->get_info('price_duration','domain','tourism.space')->years(),1,'domain_check get_info (price_duration)');
-is($dri->get_info('create_price','domain','holidays.space'),5.00,'domain_check_multi get_info (create_price)');
-#is($dri->get_info('transfer_price','domain','hotels.space'),12.50,'domain_check_multi get_info (transfer_price)');
-#is($dri->get_info('restore_price','domain','restaurants.space'),25,'domain_check_multi get_info (restore_price)');
+is($dri->get_info('create_price','domain','holidays.space'),'5.00','domain_check_multi get_info (create_price)');
+#is($dri->get_info('transfer_price','domain','hotels.space'),'12.50','domain_check_multi get_info (transfer_price)');
+#is($dri->get_info('restore_price','domain','restaurants.space'),'25.00','domain_check_multi get_info (restore_price)');
 
 ####################################################################################################
 ### Copied From fee-0.9 tests an manually adjusted
@@ -117,9 +117,9 @@ is($d->{premium},1,'Fee extension: domain_check single parse premium');
 is($d->{class},'premium','Fee extension: domain_check single parse class');
 is($d->{currency},'EUR','Fee extension: domain_check single parse currency');
 is($d->{action},'renew','Fee extension: domain_check single parse action');
-is($d->{duration}->years(),2,'Fee extension: domain_check singe parse duration');
+is($d->{duration}->years(),2,'Fee extension: domain_check single parse duration');
 is($d->{grace_period},'P5D','domain_check multi single fee (grace_period) 1/4');
-is($d->{fee},650.00,'Fee extension: domain_check single parse fee');
+is($d->{fee},'650.00','Fee extension: domain_check single parse fee');
 
 
 $dri->cache_clear();
@@ -135,8 +135,8 @@ is($d->{premium},1,'Fee extension: domain_check_price single parse premium');
 is($d->{currency},'USD','Fee extension: domain_check_price single parse currency');
 is($d->{action},'create','Fee extension: domain_check_price single parse action');
 is($d->{duration}->years(),2,'Fee extension: domain_check_price single parse duration');
-is($d->{fee_registration_fee},5000.00,'Fee extension: domain_check_price single parse fee (fee_registration_fee)');
-is($d->{fee},5000.00,'Fee extension: domain_check_price single parse fee');
+is($d->{fee_registration_fee},'5000.00','Fee extension: domain_check_price single parse fee (fee_registration_fee)');
+is($d->{fee},'5000.00','Fee extension: domain_check_price single parse fee');
 is($d->{phase},'sunrise','Fee extension: domain_check_price single parse phase');
 
 # using the standardised methods
@@ -146,10 +146,10 @@ isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_i
 is($dri->get_info('price_duration')->years(),2,'domain_check get_info (price_duration)');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
 is($dri->get_info('price_category'),'premium','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),5000,'domain_check get_info (create_price)');
-#is($dri->get_info('renew_price'),9.95,'domain_check get_info (renew_price) undef');
-#is($dri->get_info('transfer_price'),9.95,'domain_check get_info (transfer_price) undef');
-#is($dri->get_info('restore_price'),9.95,'domain_check get_info (restore_price) undef');
+is($dri->get_info('create_price'),'5000.00','domain_check get_info (create_price)');
+#is($dri->get_info('renew_price'),'9.95','domain_check get_info (renew_price) undef');
+#is($dri->get_info('transfer_price'),'9.95','domain_check get_info (transfer_price) undef');
+#is($dri->get_info('restore_price'),'9.95','domain_check get_info (restore_price) undef');
 
 ## domain create
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.space</domain:name><domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate><domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate></domain:creData></resData><extension><fee:creData xmlns:fee="urn:ietf:params:xml:ns:fee-0.11" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.11 fee-0.11.xsd"><fee:currency>USD</fee:currency><fee:period unit="y">1</fee:period><fee:fee>5.00</fee:fee><fee:balance>-5.00</fee:balance><fee:creditLimit>1000.00</fee:creditLimit></fee:creData></extension>'.$TRID.'</response>'.$E2;
@@ -165,9 +165,9 @@ is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_create parse currency');
-is($d->{fee},5.00,'Fee extension: domain_create parse fee');
-is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
-is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
+is($d->{fee},'5.00','Fee extension: domain_create parse fee');
+is($d->{balance},'-5.00','Fee extension: domain_create parse balance');
+is($d->{credit_limit},'1000.00','Fee extension: domain_create parse credit limit');
 
 ####################################################################################################
 exit 0;

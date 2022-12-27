@@ -103,9 +103,9 @@ is($d->{domain},'foobar.paris','domain_check get_info(domain)');
 is($d->{price_avail},1,'domain_check parse fee (price_avail)');
 is($d->{premium},0,'domain_check parse premium');
 is($d->{currency},'USD','domain_check get_info(currency)');
-is($d->{command}->{create}->{fee_registration_fee},10.00,'domain_check get_info(fee_registration_fee)');
-is($d->{command}->{create}->{fee_application_fee},500.00,'domain_check get_info(fee_application_fee)');
-is($d->{command}->{create}->{fee},510.00,'domain_check get_info(fee)'); # fees are added together for the total. this is debateable!
+is($d->{command}->{create}->{fee_registration_fee},'10.00','domain_check get_info(fee_registration_fee)');
+is($d->{command}->{create}->{fee_application_fee},'500.00','domain_check get_info(fee_application_fee)');
+is($d->{command}->{create}->{fee},'510.00','domain_check get_info(fee)'); # fees are added together for the total. this is debateable!
 is($d->{command}->{create}->{description},'Registration Fee (Refundable) (Grace=>P5D),Application Fee (Applied=>immediate)','domain_check get_info(description)'); # descriptions melded into a string
 is($d->{command}->{create}->{phase},'sunrise','domain_check get_info(phase)');
 is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)');
