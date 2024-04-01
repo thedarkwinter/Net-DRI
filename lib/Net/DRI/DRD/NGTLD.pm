@@ -978,7 +978,7 @@ L<NET::DRI::Protocol::EPP::Extensions::MX::IDN>
 
 =head3 TLDs
 
-bayern ruhr gmx ifm nrw whoswho
+bayern ruhr gmx ifm nrw whoswho tel
 
 =head3 Custom extensions:
 
@@ -993,12 +993,13 @@ L<Net::DRI::Protocol::EPP::Extensions::TangoRS::LaunchPhase> : http://xmlns.core
  my $tangorsversion; # setting this variable because this profile use distinct fee extensions per TLD :(
  $tangorsversion = undef; # no fee - default
  $tangorsversion = '1.0' if $tld eq 'nrw'; # fee standard (rfc8748)
+ $tangorsversion = '0.8' if $tld eq 'tel'; # fee standard (rfc8748)
  $tangorsversion = '0.21' if $tld eq 'whoswho'; # draft fee version 0.21
  # no idea about the other TLDs: gmx and ifm - simply add, and share please, if needed :)
 
  return {
      bep_type => 1, # dedicated registry
-     tlds => ['bayern','ruhr','gmx','ifm','nrw','whoswho'],
+     tlds => ['bayern','ruhr','gmx','ifm','nrw','whoswho','tel'],
      transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::TangoRS',{fee_version => $tangorsversion}],
      whois_server => (defined $tld && $tld =~ m/\w+/ ? 'whois.nic.' . $tld : undef),
    } if $bep eq 'tango' || $bep eq 'tangors';
