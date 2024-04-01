@@ -190,6 +190,7 @@ sub new
 
  # used for backwards compatibility on depricated TLDs in function check_depricated_drd
  $self->{depricated_drd_map} = {
+     'Afilias::PIR' => 'Donuts::PIR',
      'ARI' => 'Neustar::Narwhal',
      'AE' => 'TRA::AE',
      'AERO' => 'SITA',
@@ -251,7 +252,7 @@ sub new
      'Nominet' => 'Nominet::UK',
      'NU' => 'IIS',
      'NZ' => 'InternetNZ',
-     'ORG' => 'Afilias::PIR',
+     'ORG' => 'Donuts::PIR', # Second Move ORG => Afilias::PIR => Donuts::PIR
      'PH' => 'CoCCA::PH',
      'PL' => 'NASK',
      'PRO' => 'Donuts', # Second Move PRO => Afilias::Afilias => Donuts, but pro extention needs in Afilias::Shared
@@ -403,7 +404,7 @@ sub tld2reg
 
 sub installed_registries
 {
- return qw/AdamsNames Afilias::IN Afilias::PIR Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::RRPProxy CentralNic::SKNIC CentralNic::Zuerich CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CIRA::IE CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium::BE DNSBelgium::GTLD DNSPT Domicilium Donuts DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::JPRS GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP GoDaddy::MZB GoDaddy::TWNIC HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET LVRegistry NASK Neustar::Narwhal NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::Amazon Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE UniRegistry::COOP UniRegistry::UniRegistry UniRegistry::ICM UniRegistry::INC UniRegistry::DM UPU VeriSign::COM_NET VeriSign::NameStore VeriSign::VeriSign ZACR/;
+ return qw/AdamsNames Afilias::IN Afilias::Shared AFNIC::AFNIC AFNIC::GTLD ARNES auDA BookMyName CentralNic::CentralNic CentralNic::RRPProxy CentralNic::SKNIC CentralNic::Zuerich CGIBR::BR CGIBR::GTLD CIRA::CA CIRA::Fury CIRA::IE CNNIC::CN CNNIC::GTLD CoCCA::CoCCA CoCCA::GTLD CoCCA::PH CRR Deloitte DENIC DKHostmaster DNSBelgium::BE DNSBelgium::GTLD DNSPT Domicilium Donuts Donuts::PIR DotCooperation ECOMLAC EURid FRED Gandi GDI GMORegistry::BRRegistry GMORegistry::GMORegistry GMORegistry::JPRS GMORegistry::KYOTO GMORegistry::PANDI GMORegistry::SHOP GoDaddy::MZB GoDaddy::TWNIC HostmasterUA ICANN IENUMAT IIS IITCNR InternetNZ IRegistry ISPAPI KNET LVRegistry NASK Neustar::Narwhal NGTLD NicAT::AT NicAT::RegBox NICEC NICMexico NICRO Nominet::Amazon Nominet::GTLD Nominet::MMX Nominet::UK NORID OpenSRS OVH puntCAT RedES RESTENA SIDN::GTLD SIDN::NL SITA SWITCH TangoRS::CORE TangoRS::TangoRS TCI::GTLD TCI::MSKIX TCI::RF TCI::RU TCI::SU TCI::TCI TELEGreenland TeleInfo TMDB TRA::AE UniRegistry::COOP UniRegistry::UniRegistry UniRegistry::ICM UniRegistry::INC UniRegistry::DM UPU VeriSign::COM_NET VeriSign::NameStore VeriSign::VeriSign ZACR/;
 }
 
 ####################################################################################################
