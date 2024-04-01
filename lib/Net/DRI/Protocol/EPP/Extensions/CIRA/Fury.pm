@@ -53,7 +53,7 @@ sub setup
  my ($class,$po,$version)=@_;
 
  state $ns = {
-    'fury' => [ 'urn:ietf:params:xml:ns:fury-2.0', 'fury-2.0.xsd' ],
+    'fury' => [ 'urn:ietf:params:xml:ns:fury-2.1', 'fury-2.1.xsd' ],
     'fury-rgp' => [ 'urn:ietf:params:xml:ns:fury-rgp-1.0', 'fury-rgp-1.0.xsd' ],
  };
  $po->ns($ns);
