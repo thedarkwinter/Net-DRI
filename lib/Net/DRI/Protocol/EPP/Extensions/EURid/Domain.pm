@@ -179,6 +179,10 @@ sub info
  my ($epp,$domain,$rd)=@_;
  my $mes=$epp->message();
 
+ my @d=Net::DRI::Protocol::EPP::Util::domain_build_command($mes,'info',$domain);
+ push @d,Net::DRI::Protocol::EPP::Util::domain_build_authinfo($epp,$rd->{auth}) if Net::DRI::Util::has_auth($rd);
+ $mes->command_body(\@d);
+
  if (Net::DRI::Util::has_key($rd,'authinfo_request') && $rd->{authinfo_request})
  {
   my $eid=$mes->command_extension_register('authInfo','info');
