@@ -129,12 +129,17 @@ sub domain_update
  $rd=Net::DRI::Util::create_params('domain_update',$rd);
  my $cs = $reg->get_info('contact', 'domain', $dom);
  my $ns = $reg->get_info('ns', 'domain', $dom);
-
+ $cs = $reg->get_info('contact') if (!defined($cs));
+ $ns = $reg->get_info('ns') if (!defined($ns));
  if (!defined($cs) || !defined($ns))
  {
   my $res = $reg->process('domain', 'info', [$dom]);
-  $cs = $reg->get_info('contact', 'domain', $dom) if ($res->is_success());
-  $ns = $reg->get_info('ns', 'domain', $dom) if ($res->is_success());
+  if ($res->is_success()) {
+   $cs = $reg->get_info('contact', 'domain', $dom);
+   $cs = $reg->get_info('contact') if (!defined($cs));
+   $ns = $reg->get_info('ns', 'domain', $dom);
+   $ns = $reg->get_info('ns') if (!defined($ns));
+  }
  }
 
  $rd->{contact} = $cs unless (defined($rd->{contact}));

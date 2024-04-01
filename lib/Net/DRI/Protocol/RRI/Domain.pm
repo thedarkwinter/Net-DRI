@@ -186,7 +186,8 @@ sub info_parse
   elsif ($name eq 'status')
   {
    my $val = $c->getFirstChild()->getData();
-   $rinfo->{domain}->{$oname}->{exist} = ($val eq 'connect')? 1 : 0;
+   $rinfo->{domain}->{$oname}->{exist} = ($val eq 'connect' or $val eq 'failed')? 1 : 0;
+   $rinfo->{domain}->{$oname}->{status} = $val;
   }
   elsif ($name eq 'contact')
   {
@@ -208,6 +209,12 @@ sub info_parse
    $rinfo->{domain}->{$oname}->{clID} =
    $rinfo->{domain}->{$oname}->{crID} =
    $rinfo->{domain}->{$oname}->{upID} = $c->getFirstChild()->getData();
+  }
+  elsif ($name eq 'expire')
+  {
+   $rinfo->{domain}->{$oname}->{exDate} =
+	DateTime::Format::ISO8601->new()->
+		parse_datetime($c->getFirstChild()->getData());
   }
   elsif ($name eq 'changed')
   {
