@@ -43,6 +43,7 @@ sub core_modules
 sub default_extensions
 {
  my ($self,$rp)=@_;
+ $self->{brown_fee_version} = $rp->{brown_fee_version} if defined $rp->{brown_fee_version};
  my @c=qw/GracePeriod SecDNS IDN LaunchPhase UniRegistry::Centric UniRegistry::RegistryMessage UniRegistry::Market VeriSign::Sync CentralNic::Fee/;
  push @c,qw/Afilias::Association Afilias::IPR/ if exists $rp->{default_product} && defined $rp->{default_product} && $rp->{default_product} eq 'ICM';
 
