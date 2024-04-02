@@ -383,6 +383,13 @@ sub domain_update_build
  my ($epp, $domain, $todo)=@_;
  my $mes=$epp->message();
 
+ if ($todo->{'rgp'}) {
+  my @dd;
+  push @dd, ['domain:name',$domain];
+  push @dd, ['domain:chg',''];
+  $mes->command_body(@dd);
+ }
+
  # since there is only the privacy attribute, and it is binary,
  # we can emulate the silly add+rem from registry by a simple and logical set
  my $toset = $todo->set('privacy');
