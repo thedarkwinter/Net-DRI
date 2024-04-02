@@ -57,7 +57,7 @@ is($d->{domain},'explore-0.space','domain_check get_info(domain)');
 is($d->{price_avail},1,'domain_check parse fee (price_avail)');
 is($d->{premium},0,'domain_check parse premium');
 is($d->{currency},'USD','domain_check get_info(currency)');
-is($d->{command}->{create}->{fee},10.00,'domain_check get_info(fee)');
+is($d->{command}->{create}->{fee},'10.00','domain_check get_info(fee)');
 is($d->{command}->{create}->{phase},undef,'domain_check get_info(phase)');
 is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)');
 is($d->{command}->{create}->{duration}->years(),'2','domain_check get_info(duration)');
@@ -65,6 +65,6 @@ is($d->{command}->{create}->{duration}->years(),'2','domain_check get_info(durat
 # using the standardised methods
 is($dri->get_info('is_premium'),0,'domain_checkget_info (is_premium) 0');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),10.00,'domain_check get_info (create_price)');
+is($dri->get_info('create_price'),'10.00','domain_check get_info (create_price)');
 
 exit 0;
