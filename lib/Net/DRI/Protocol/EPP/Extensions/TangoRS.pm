@@ -40,6 +40,9 @@ sub default_extensions {
  if ($self && ($self->{logging_ctx}->{profile} =~ m/nrw/ || $self->{logging_ctx}->{registry} =~ m/nrw/)) {
   $pp->{fee_version} = '1.0';
   @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction Fee/;
+ } elsif ($self && ($self->{logging_ctx}->{profile} =~ m/tel/ || $self->{logging_ctx}->{registry} =~ m/tel/)) {
+  $pp->{fee_version} = '1.0';
+  @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction TangoRS::WhoisType Fee/;
  } elsif ($self && ($self->{logging_ctx}->{profile} =~ m/whoswho/ || $self->{logging_ctx}->{registry} =~ m/whoswho/)) {
   $pp->{fee_version} = '0.21';
   @ext = qw/GracePeriod SecDNS LaunchPhase TangoRS::IDN TangoRS::Auction CentralNic::Fee/;
