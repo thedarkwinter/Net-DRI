@@ -48,7 +48,7 @@ $co->lang('en');
 $co->legal_form('CCT');
 $co->agreement({version => 'default', signed => 1});
 $rc=$dri->contact_create($co);
-is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>furycontact</contact:id><contact:postalInfo type="loc"><contact:name>Fury Contact</contact:name><contact:addr><contact:street>123 Main Street</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K1S5K5</contact:pc><contact:cc>CA</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.6121221222</contact:voice><contact:email>furycontact@fury.ca</contact:email><contact:authInfo><contact:pw>password</contact:pw></contact:authInfo></contact:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.0" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.0 fury-2.0.xsd"><fury:properties><fury:property><fury:key>AGREEMENT_VERSION</fury:key><fury:value default="true"/></fury:property><fury:property><fury:key>CPR</fury:key><fury:value>CCT</fury:value></fury:property><fury:property><fury:key>LANGUAGE</fury:key><fury:value>EN</fury:value></fury:property></fury:properties></fury:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
+is_string($R1,$E1.'<command><create><contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>furycontact</contact:id><contact:postalInfo type="loc"><contact:name>Fury Contact</contact:name><contact:addr><contact:street>123 Main Street</contact:street><contact:city>Ottawa</contact:city><contact:sp>ON</contact:sp><contact:pc>K1S5K5</contact:pc><contact:cc>CA</contact:cc></contact:addr></contact:postalInfo><contact:voice>+1.6121221222</contact:voice><contact:email>furycontact@fury.ca</contact:email><contact:authInfo><contact:pw>password</contact:pw></contact:authInfo></contact:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.1" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.1 fury-2.1.xsd"><fury:properties><fury:property><fury:key>AGREEMENT_VERSION</fury:key><fury:value default="true"/></fury:property><fury:property><fury:key>CPR</fury:key><fury:value>CCT</fury:value></fury:property><fury:property><fury:key>LANGUAGE</fury:key><fury:value>EN</fury:value></fury:property></fury:properties></fury:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2,'contact_create build');
 
 
 $R2=$E1.'<response>'.r().'
@@ -80,7 +80,7 @@ $R2=$E1.'<response>'.r().'
 </contact:infData>
 </resData>
 <extension>
-<fury:info xmlns:fury="urn:ietf:params:xml:ns:fury-2.0">
+<fury:info xmlns:fury="urn:ietf:params:xml:ns:fury-2.1">
 <fury:properties>
 <fury:property>
 <fury:key>LANGUAGE</fury:key>
@@ -116,7 +116,7 @@ $toc->set('info',$co2);
 $toc->add('lang','fr');
 $toc->del('lang','en');
 $rc=$dri->contact_update($co, $toc);
-is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>agreed2</contact:id><contact:chg><contact:email>noprops@domain.fr</contact:email></contact:chg></contact:update></update><extension><fury:update xmlns:fury="urn:ietf:params:xml:ns:fury-2.0" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.0 fury-2.0.xsd"><fury:add><fury:properties><fury:property><fury:key>LANGUAGE</fury:key><fury:value>FR</fury:value></fury:property></fury:properties></fury:add><fury:rem><fury:properties><fury:property><fury:key>LANGUAGE</fury:key><fury:value>EN</fury:value></fury:property></fury:properties></fury:rem></fury:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'contact_update build');
+is_string($R1,$E1.'<command><update><contact:update xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"><contact:id>agreed2</contact:id><contact:chg><contact:email>noprops@domain.fr</contact:email></contact:chg></contact:update></update><extension><fury:update xmlns:fury="urn:ietf:params:xml:ns:fury-2.1" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.1 fury-2.1.xsd"><fury:add><fury:properties><fury:property><fury:key>LANGUAGE</fury:key><fury:value>FR</fury:value></fury:property></fury:properties></fury:add><fury:rem><fury:properties><fury:property><fury:key>LANGUAGE</fury:key><fury:value>EN</fury:value></fury:property></fury:properties></fury:rem></fury:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'contact_update build');
 
 # ####################################################################################################
 ## Domain commands
@@ -125,7 +125,7 @@ my $cs=$dri->local_object('contactset');
 $cs->add($dri->local_object('contact')->srid('furycontact'),'registrant');
 $cs->add($dri->local_object('contact')->srid('furycontact'),'admin');
 $rc=$dri->domain_create('xn--test-dmain-wbb.ca',{pure_create=>1, auth=>{pw=>'password'},contact=>$cs,privacy=>1});
-is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>xn--test-dmain-wbb.ca</domain:name><domain:registrant>furycontact</domain:registrant><domain:contact type="admin">furycontact</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.0" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.0 fury-2.0.xsd"><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PRIVATE</fury:value></fury:property></fury:properties></fury:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_create build');
+is_string($R1,$E1.'<command><create><domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>xn--test-dmain-wbb.ca</domain:name><domain:registrant>furycontact</domain:registrant><domain:contact type="admin">furycontact</domain:contact><domain:authInfo><domain:pw>password</domain:pw></domain:authInfo></domain:create></create><extension><fury:create xmlns:fury="urn:ietf:params:xml:ns:fury-2.1" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.1 fury-2.1.xsd"><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PRIVATE</fury:value></fury:property></fury:properties></fury:create></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_create build');
 
 $R2=$E1.'<response>'.r().'
 <resData>
@@ -151,7 +151,7 @@ $R2=$E1.'<response>'.r().'
 <idn:table>fr</idn:table>
 <idn:uname>test-dômain.ca</idn:uname>
 </idn:data>
-<fury:info xmlns:fury="urn:ietf:params:xml:ns:fury-2.0">
+<fury:info xmlns:fury="urn:ietf:params:xml:ns:fury-2.1">
 <fury:properties>
 <fury:property>
 <fury:key>PRIVACY</fury:key>
@@ -183,14 +183,14 @@ $toc=$dri->local_object('changes');
 $toc->set('auth', { pw => 'password2' });
 $toc->set('privacy', 0);
 $rc=$dri->domain_update('xn--nwtst-bsac.ca', $toc);
-is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>xn--nwtst-bsac.ca</domain:name><domain:chg><domain:authInfo><domain:pw>password2</domain:pw></domain:authInfo></domain:chg></domain:update></update><extension><fury:update xmlns:fury="urn:ietf:params:xml:ns:fury-2.0" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.0 fury-2.0.xsd"><fury:add><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PUBLIC</fury:value></fury:property></fury:properties></fury:add><fury:rem><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PRIVATE</fury:value></fury:property></fury:properties></fury:rem></fury:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_update build');
+is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>xn--nwtst-bsac.ca</domain:name><domain:chg><domain:authInfo><domain:pw>password2</domain:pw></domain:authInfo></domain:chg></domain:update></update><extension><fury:update xmlns:fury="urn:ietf:params:xml:ns:fury-2.1" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.1 fury-2.1.xsd"><fury:add><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PUBLIC</fury:value></fury:property></fury:properties></fury:add><fury:rem><fury:properties><fury:property><fury:key>PRIVACY</fury:key><fury:value>PRIVATE</fury:value></fury:property></fury:properties></fury:rem></fury:update></extension><clTRID>ABC-12345</clTRID></command>'.$E2, 'domain_update build');
 
 ####################################################################################################
 ## Agreement
 
 $R2=$E1.'<response>'.r().'
 <extension>
-<fury:response xmlns:fury="urn:ietf:params:xml:ns:fury-2.0">
+<fury:response xmlns:fury="urn:ietf:params:xml:ns:fury-2.1">
 <fury:infData>
 <fury:language>en</fury:language>
 <fury:properties>
@@ -262,7 +262,7 @@ agree as follows:
 </fury:response>
 </extension>'.$TRID.'</response>'.$E2;
 $rc=$dri->agreement_info('en');
-is_string($R1,$E1.'<extension><fury:command xmlns:fury="urn:ietf:params:xml:ns:fury-2.0" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.0 fury-2.0.xsd"><fury:info><fury:language>en</fury:language><fury:properties><fury:property><fury:key>AGREEMENT_VERSION</fury:key><fury:value default="true"/></fury:property></fury:properties></fury:info></fury:command></extension>'.$E2, 'agreement_info build');
+is_string($R1,$E1.'<extension><fury:command xmlns:fury="urn:ietf:params:xml:ns:fury-2.1" xsi:schemaLocation="urn:ietf:params:xml:ns:fury-2.1 fury-2.1.xsd"><fury:info><fury:language>en</fury:language><fury:properties><fury:property><fury:key>AGREEMENT_VERSION</fury:key><fury:value default="true"/></fury:property></fury:properties></fury:info></fury:command></extension>'.$E2, 'agreement_info build');
 is($rc->get_data('agreement', 'cira', 'language'), 'en', 'agreement_info parse language');
 is($rc->get_data('agreement', 'cira', 'version'), '2.0', 'agreement_info parse version');
 like($rc->get_data('agreement', 'cira', 'content'), qr/Registrant Agreement: Version 2.0/, 'agreement_info parse content');
