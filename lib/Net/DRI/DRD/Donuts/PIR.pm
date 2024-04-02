@@ -3,6 +3,7 @@
 ## Copyright (c) 2006-2009 Rony Meyer <perl@spot-light.ch>. All rights reserved.
 ##           (c) 2010-2011,2016 Patrick Mevzek <netdri@dotandco.com>. All rights reserved.
 ##           (c) 2014-2017 Michael Holloway <michael@thedarkwinter.com>. All rights reserved.
+##           (c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com>. All rights reserved.
 ##
 ## This file is part of Net::DRI
 ##
@@ -14,7 +15,7 @@
 ## See the LICENSE file that comes with this distribution for more details.
 ####################################################################################################
 
-package Net::DRI::DRD::Afilias::PIR;
+package Net::DRI::DRD::Donuts::PIR;
 
 use strict;
 use warnings;
@@ -29,9 +30,9 @@ use DateTime::Duration;
 
 Additional domain extensions for the PIR Registry Platform
 
-Afilias/PIR has extended the .ORG plaform to include these TLDs in a Shared Registry System
+Donuts/PIR has extended the .ORG plaform to include these TLDs in a Shared Registry System
 
-Afilias utilises the following standard extensions. Please see the test files for more examples.
+Donuts utilises the following standard extensions. Please see the test files for more examples.
 
 =head2 Standard extensions:
 
@@ -41,17 +42,15 @@ Afilias utilises the following standard extensions. Please see the test files fo
 
 =head3 L<Net::DRI::Protocol::EPP::Extensions::LaunchPhase> urn:ietf:params:xml:ns:launch-1.0
 
+=head3 L<Net::DRI::Protocol::EPP::Extensions::IDN> urn:ietf:params:xml:ns:idn-1.0
+
 =head2 Custom extensions:
 
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::IDNLanguage> urn:afilias:params:xml:ns:idn-1.0
+=head3 L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Charge> http://www.unitedtld.com/epp/charge-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::IPR> urn:afilias:params:xml:ns:ipr-1.1
+=head3 L<NET::DRI::Protocol::EPP::Extensions::UnitedTLD::Finance> http://www.unitedtld.com/epp/finance-1.0
 
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::Registrar> urn:ietf:params:xml:ns:registrar-1.0
-
-L<Net::DRI::Protocol::EPP::Extensions::CentralNic::Fee> urn:centralnic:params:xml:ns:fee-0.7
-
-L<Net::DRI::Protocol::EPP::Extensions::Afilias::Validation> urn:ietf:params:xml:ns:validation-1.0
+=head3 L<NET::DRI::Protocol::EPP::Extensions::ARI::KeyValue> urn:X-ar:params:xml:ns:kv-1.1
 
 =head1 DESCRIPTION
 
@@ -78,6 +77,7 @@ Patrick Mevzek, E<lt>netdri@dotandco.comE<gt>
 Copyright (c) 2006-2009 Rony Meyer <perl@spot-light.ch>.
           (c) 2010-2011,2016 Patrick Mevzek <netdri@dotandco.com>.
           (c) 2017 Michael Holloway <michael@thedarkwinter.com>.
+          (c) 2022 Paulo Castanheira <paulo.s.castanheira@gmail.com>.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -102,8 +102,8 @@ sub new
 }
 
 sub periods  { return map { DateTime::Duration->new(years => $_) } (1..10); }
-sub name     { return 'Afilias::PIR'; }
-sub tlds     { return qw/org xn--c1avg xn--i1b6b1a6a2e xn--nqv7f xn--tqq33ed31aqia ngo ong/; }
+sub name     { return 'Donuts::PIR'; }
+sub tlds     { return qw/org xn--c1avg xn--i1b6b1a6a2e xn--nqv7f ngo ong charity foundation gives/; }
 sub object_types { return ('domain','contact','ns'); }
 sub profile_types { return qw/epp whois/; }
 
@@ -111,8 +111,8 @@ sub transport_protocol_default
 {
  my ($self,$type)=@_;
 
- return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::PIR',{'brown_fee_version' => '0.7'}) if $type eq 'epp';
- return ('Net::DRI::Transport::Socket',{remote_host=>'whois.publicinterestregistry.net'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
+ return ('Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UnitedTLD',{}) if $type eq 'epp';
+ return ('Net::DRI::Transport::Socket',{remote_host=>'whois.publicinterestregistry.org'},'Net::DRI::Protocol::Whois',{}) if $type eq 'whois';
  return;
 }
 
