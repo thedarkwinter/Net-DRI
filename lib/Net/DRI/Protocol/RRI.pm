@@ -29,7 +29,7 @@ use Net::DRI::Data::Contact::DENIC;
 
 =head1 NAME
 
-Net::DRI::Protocol::RRI - RRI Protocol (DENIC-29-EN_3.0) for Net::DRI
+Net::DRI::Protocol::RRI - RRI Protocol (DENIC-29-EN_4.0) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -83,13 +83,13 @@ sub new
  foreach my $o (qw/registrant auth/)   { $self->capabilities('domain_update',$o,['set']); }
 
  $self->{ns}={
-  _main		=> ['http://registry.denic.de/global/3.0'],
-  tr		=> ['http://registry.denic.de/transaction/3.0'],
-  contact	=> ['http://registry.denic.de/contact/3.0'],
-  domain	=> ['http://registry.denic.de/domain/3.0'],
-  dnsentry	=> ['http://registry.denic.de/dnsentry/3.0'],
-  msg		=> ['http://registry.denic.de/msg/3.0'],
-  regacc	=> ['http://registry.denic.de/regacc/3.0'],
+  _main		=> ['http://registry.denic.de/global/4.0'],
+  tr		=> ['http://registry.denic.de/transaction/4.0'],
+  contact	=> ['http://registry.denic.de/contact/4.0'],
+  domain	=> ['http://registry.denic.de/domain/4.0'],
+  dnsentry	=> ['http://registry.denic.de/dnsentry/4.0'],
+  msg		=> ['http://registry.denic.de/msg/4.0'],
+  regacc	=> ['http://registry.denic.de/regacc/4.0'],
   xsi		=> ['http://www.w3.org/2001/XMLSchema-instance'],  
  };
 
@@ -113,7 +113,7 @@ sub _load
 sub transport_default
 {
  my ($self)=@_;
- return (protocol_connection => 'Net::DRI::Protocol::RRI::Connection', protocol_version => '3.0');
+ return (protocol_connection => 'Net::DRI::Protocol::RRI::Connection', protocol_version => '4.0');
 }
 
 ####################################################################################################
