@@ -29,7 +29,7 @@ use Net::DRI::Data::Contact::DENIC;
 
 =head1 NAME
 
-Net::DRI::Protocol::RRI - RRI Protocol (DENIC-29-EN_3.0) for Net::DRI
+Net::DRI::Protocol::RRI - RRI Protocol (DENIC-29-EN_4.0) for Net::DRI
 
 =head1 DESCRIPTION
 
@@ -113,7 +113,7 @@ sub _load
 sub transport_default
 {
  my ($self)=@_;
- return (protocol_connection => 'Net::DRI::Protocol::RRI::Connection', protocol_version => '3.0');
+ return (protocol_connection => 'Net::DRI::Protocol::RRI::Connection', protocol_version => '4.0');
 }
 
 ####################################################################################################
