@@ -132,6 +132,14 @@ sub domain_parse {
     my $mes = $po->message();
     return unless $mes->is_success();
 
+    # parse authCode (optional)
+    my $updData = $mes->get_extension( $mes->ns('iis'), 'updData' );
+    if ( defined $updData ) {
+        foreach my $el ( $updData->getElementsByTagNameNS( $mes->ns('iis'), 'pw' ) ) {
+            $rinfo->{domain}->{$oname}->{auth} = { pw => $el->textContent() };
+	}
+    }
+
     # only domain info should be parsed
     return if ( ( !defined $otype ) || ( $otype ne 'domain' ) );
 
