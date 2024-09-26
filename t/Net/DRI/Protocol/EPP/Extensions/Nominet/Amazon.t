@@ -97,9 +97,9 @@ is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_create parse currency');
-is($d->{fee},5.00,'Fee extension: domain_create parse fee');
-is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
-is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
+is($d->{fee},'5.00','Fee extension: domain_create parse fee');
+is($d->{balance},'-5.00','Fee extension: domain_create parse balance');
+is($d->{credit_limit},'1000.00','Fee extension: domain_create parse credit limit');
 
 ###
 # domain check multi - transition from Neustar to Nominet phase 2

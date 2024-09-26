@@ -156,9 +156,9 @@ is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_create parse currency');
-is($d->{fee},5.00,'Fee extension: domain_create parse fee');
-is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
-is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
+is($d->{fee},'5.00','Fee extension: domain_create parse fee');
+is($d->{balance},'-5.00','Fee extension: domain_create parse balance');
+is($d->{credit_limit},'1000.00','Fee extension: domain_create parse credit limit');
 
 #Create Second LVL domain
 $R2=$E1.'<response>'.r().'<resData><domain:creData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:name>example3.com.dm</domain:name><domain:crDate>2010-08-10T15:38:26.623854Z</domain:crDate><domain:exDate>2012-08-10T15:38:26.623854Z</domain:exDate></domain:creData></resData>'.$TRID.'</response>'.$E2;

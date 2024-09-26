@@ -57,7 +57,7 @@ is($d->{domain},'explore-0.space','domain_check get_info(domain)');
 is($d->{price_avail},1,'domain_check parse fee (price_avail)');
 is($d->{premium},0,'domain_check parse premium');
 is($d->{currency},'USD','domain_check get_info(currency)');
-is($d->{command}->{create}->{fee},10.00,'domain_check get_info(fee)');
+is($d->{command}->{create}->{fee},'10.00','domain_check get_info(fee)');
 is($d->{command}->{create}->{phase},undef,'domain_check get_info(phase)');
 is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)');
 is($d->{command}->{create}->{duration}->years(),'2','domain_check get_info(duration)');
@@ -65,7 +65,7 @@ is($d->{command}->{create}->{duration}->years(),'2','domain_check get_info(durat
 # using the standardised methods
 is($dri->get_info('is_premium'),0,'domain_checkget_info (is_premium) 0');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),10.00,'domain_check get_info (create_price)');
+is($dri->get_info('create_price'),'10.00','domain_check get_info (create_price)');
 
 
 ###################
@@ -107,7 +107,7 @@ is($d->{domain},'explore-c0.space','domain_check get_info(domain)');
 is($d->{price_avail},1,'domain_check parse fee (price_avail)');
 is($d->{premium},0,'domain_check parse premium');
 is($d->{currency},'USD','domain_check get_info(currency)');
-is($d->{command}->{create}->{fee},10.00,'domain_check get_info(fee)');
+is($d->{command}->{create}->{fee},'10.00','domain_check get_info(fee)');
 is($d->{command}->{create}->{phase},undef,'domain_check get_info(phase)');
 is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)');
 is($d->{command}->{create}->{duration}->years(),'2','domain_check get_info(duration)');
@@ -115,7 +115,7 @@ is($d->{command}->{create}->{duration}->years(),'2','domain_check get_info(durat
 # using the standardised methods
 is($dri->get_info('is_premium'),0,'domain_checkget_info (is_premium) 0');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),10.00,'domain_check get_info (create_price)');
+is($dri->get_info('create_price'),'10.00','domain_check get_info (create_price)');
 
 ###################
 ###### domain_check_multi
@@ -153,30 +153,30 @@ is($d->{domain},'explore.space','domain_check get_info(domain)');
 is($d->{price_avail},1,'domain_check parse fee (price_avail)');
 is($d->{premium},0,'domain_check parse premium');
 is($d->{currency},'USD','domain_check get_info(currency)');
-is($d->{command}->{create}->{fee},10.00,'domain_check multi get_info(create fee)');
+is($d->{command}->{create}->{fee},'10.00','domain_check multi get_info(create fee)');
 is($d->{command}->{create}->{phase},undef,'domain_check multi get_info(create phase)');
 is($d->{command}->{create}->{sub_phase},undef,'domain_check multi get_info(create sub_phase)');
 is($d->{command}->{create}->{duration}->years(),'2','domain_check multi get_info(create duration)');
-is($d->{command}->{renew}->{fee},5,'domain_check multi get_info(renew fee)');
-is($d->{command}->{transfer}->{fee},5,'domain_check multi get_info(renew fee)');
-is($d->{command}->{restore}->{fee},5,'domain_check multi get_info(restore fee)');
+is($d->{command}->{renew}->{fee},'5.00','domain_check multi get_info(renew fee)');
+is($d->{command}->{transfer}->{fee},'5.00','domain_check multi get_info(renew fee)');
+is($d->{command}->{restore}->{fee},'5.00','domain_check multi get_info(restore fee)');
 
 # using the standardised methods
 is($dri->get_info('is_premium','domain','explore.space'),0,'domain_check get_info (is_premium) undef');
 is($dri->get_info('price_currency','domain','explore.space'),'USD','domain_check get_info (price_currency)');
 is($dri->get_info('price_duration','domain','explore.space')->years(),2,'domain_check get_info (price_currency)');
-is($dri->get_info('create_price','domain','explore.space'),10.00,'domain_check get_info (create_price)');
-is($dri->get_info('renew_price','domain','explore.space'),5.00,'domain_check get_info (renew_price)');
-is($dri->get_info('transfer_price','domain','explore.space'),5.00,'domain_check get_info (transfer_price)');
-is($dri->get_info('restore_price','domain','explore.space'),5.00,'domain_check get_info (restpre_price)');
+is($dri->get_info('create_price','domain','explore.space'),'10.00','domain_check get_info (create_price)');
+is($dri->get_info('renew_price','domain','explore.space'),'5.00','domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price','domain','explore.space'),'5.00','domain_check get_info (transfer_price)');
+is($dri->get_info('restore_price','domain','explore.space'),'5.00','domain_check get_info (restpre_price)');
 
 is($dri->get_info('is_premium','domain','discover.space'),0,'domain_check get_info (is_premium) undef');
 is($dri->get_info('price_currency','domain','discover.space'),'USD','domain_check get_info (price_currency)');
 is($dri->get_info('price_duration','domain','discover.space')->years(),5,'domain_check get_info (price_currency)');
-is($dri->get_info('create_price','domain','discover.space'),25.00,'domain_check get_info (create_price)');
-is($dri->get_info('renew_price','domain','discover.space'),5.00,'domain_check get_info (renew_price)');
-is($dri->get_info('transfer_price','domain','discover.space'),5.00,'domain_check get_info (transfer_price)');
-is($dri->get_info('restore_price','domain','discover.space'),5.00,'domain_check get_info (restpre_price)');
+is($dri->get_info('create_price','domain','discover.space'),'25.00','domain_check get_info (create_price)');
+is($dri->get_info('renew_price','domain','discover.space'),'5.00','domain_check get_info (renew_price)');
+is($dri->get_info('transfer_price','domain','discover.space'),'5.00','domain_check get_info (transfer_price)');
+is($dri->get_info('restore_price','domain','discover.space'),'5.00','domain_check get_info (restpre_price)');
 
 
 $d = shift @{$dri->get_info('fee','domain','colonize.space')};
@@ -205,13 +205,13 @@ is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_create parse currency');
-is($d->{fee},5.00,'Fee extension: domain_create parse fee');
-is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
-is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
+is($d->{fee},'5.00','Fee extension: domain_create parse fee');
+is($d->{balance},'-5.00','Fee extension: domain_create parse balance');
+is($d->{credit_limit},'1000.00','Fee extension: domain_create parse credit limit');
 
 # using the standardised methods
 is($dri->get_info('price_currency'),'USD','domain_create get_info (price_currency)');
-is($dri->get_info('create_price'),5,'domain_create get_info (create_price)');
+is($dri->get_info('create_price'),'5.00','domain_create get_info (create_price)');
 
 ###################
 ###### domain_create with multiple fee elements
@@ -231,9 +231,9 @@ $rc=$dri->domain_delete('explore.space');
 is($rc->is_success(),1,'domain_delete is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_delete parse currency');
-is($d->{credit},-5.00,'Fee extension: domain_delete parse credit');
+is($d->{credit},'-5.00','Fee extension: domain_delete parse credit');
 is($d->{description},'AGP Credit','Fee extension: domain_delete parse credit description');
-is($d->{balance},1005.00,'Fee extension: domain_delete parse balance');
+is($d->{balance},'1005.00','Fee extension: domain_delete parse balance');
 
 
 ###################
@@ -245,11 +245,11 @@ is_string($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:x
 is($rc->is_success(),1,'domain_renew is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_renew parse currency');
-is($d->{fee},5.00,'Fee extension: domain_renew parse fee');
+is($d->{fee},'5.00','Fee extension: domain_renew parse fee');
 
 # using the standardised methods
 is($dri->get_info('price_currency'),'USD','domain_renew get_info (price_currency)');
-is($dri->get_info('renew_price'),5,'domain_renew get_info (renew_price)');
+is($dri->get_info('renew_price'),'5.00','domain_renew get_info (renew_price)');
 
 
 
@@ -261,11 +261,11 @@ is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain
 is($rc->is_success(),1,'domain_transfer is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_transfer parse currency');
-is($d->{fee},5.00,'Fee extension: domain_transfer parse fee');
+is($d->{fee},'5.00','Fee extension: domain_transfer parse fee');
 
 # using the standardised methods
 is($dri->get_info('price_currency'),'USD','domain_transfer get_info (price_currency)');
-is($dri->get_info('transfer_price'),5,'domain_transfer get_info (transfer_price)');
+is($dri->get_info('transfer_price'),'5.00','domain_transfer get_info (transfer_price)');
 
 
 ###################
@@ -280,11 +280,11 @@ is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params
 is($rc->is_success(),1,'domain_update is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_transfer parse currency');
-is($d->{fee},5.00,'Fee extension: domain_transfer parse fee');
+is($d->{fee},'5.00','Fee extension: domain_transfer parse fee');
 
 # using the standardised methods
 is($dri->get_info('price_currency'),'USD','domain_update (restore) get_info (price_currency)');
-is($dri->get_info('restore_price'),5,'domain_update (restore) get_info (restore_price)');
+is($dri->get_info('restore_price'),'5.00','domain_update (restore) get_info (restore_price)');
 
 
 
@@ -306,7 +306,7 @@ is($d->{domain},'premium-0.space','domain_check get_info(domain)');
 is($d->{price_avail},1,'domain_check parse fee (price_avail)');
 is($d->{premium},1,'domain_check parse premium');
 is($d->{currency},'USD','domain_check get_info(currency)');
-is($d->{command}->{create}->{fee},100.00,'domain_check get_info(fee)');
+is($d->{command}->{create}->{fee},'100.00','domain_check get_info(fee)');
 is($d->{command}->{create}->{phase},undef,'domain_check get_info(phase)');
 is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)');
 is($d->{command}->{create}->{duration}->years(),'1','domain_check get_info(duration)');
@@ -314,7 +314,7 @@ is($d->{command}->{create}->{duration}->years(),'1','domain_check get_info(durat
 # using the standardised methods
 is($dri->get_info('is_premium'),1,'domain_checkget_info (is_premium) 0');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),100.00,'domain_check get_info (create_price)');
+is($dri->get_info('create_price'),'100.00','domain_check get_info (create_price)');
 
 ####################################################################################################
 ###### domain_check with more than 1 fee element (e.g. sunrise)
@@ -334,9 +334,9 @@ is($d->{domain},'sunrise.space','domain_check get_info(domain)');
 is($d->{price_avail},1,'domain_check parse fee (price_avail)');
 is($d->{premium},0,'domain_check parse premium');
 is($d->{currency},'USD','domain_check get_info(currency)');
-is($d->{command}->{create}->{fee_registration_fee},10.00,'domain_check get_info(fee_registration_fee)');
-is($d->{command}->{create}->{fee_application_fee},500.00,'domain_check get_info(fee_application_fee)');
-is($d->{command}->{create}->{fee},510.00,'domain_check get_info(fee)'); # fees are added together for the total. this is debateable!
+is($d->{command}->{create}->{fee_registration_fee},'10.00','domain_check get_info(fee_registration_fee)');
+is($d->{command}->{create}->{fee_application_fee},'500.00','domain_check get_info(fee_application_fee)');
+is($d->{command}->{create}->{fee},'510.00','domain_check get_info(fee)'); # fees are added together for the total. this is debateable!
 is($d->{command}->{create}->{description},'Registration Fee (Refundable) (Grace=>P5D),Application Fee (Applied=>immediate)','domain_check get_info(description)'); # descriptions melded into a string
 is($d->{command}->{create}->{phase},'sunrise','domain_check get_info(phase)');
 is($d->{command}->{create}->{sub_phase},undef,'domain_check get_info(sub_phase)');
@@ -345,17 +345,17 @@ is($d->{command}->{create}->{duration}->years(),'1','domain_check get_info(durat
 # since 0.21, there is a better way of accessing different fee types with more detail
 is_deeply(\@{$d->{command}->{create}->{fee_types}},['registration_fee','application_fee'],'domain_check get_info(fee_types)');
 is($d->{command}->{create}->{registration_fee}->{description},'Registration Fee','domain_check get_info(registration_fee->description)');
-is($d->{command}->{create}->{registration_fee}->{fee},10.00,'domain_check get_info(registration_fee->fee)');
+is($d->{command}->{create}->{registration_fee}->{fee},'10.00','domain_check get_info(registration_fee->fee)');
 is($d->{command}->{create}->{registration_fee}->{refundable},1,'domain_check get_info(registration_fee->refundable)');
 is($d->{command}->{create}->{registration_fee}->{grace_period},'P5D','domain_check get_info(registration_fee->grace_period)');
 is($d->{command}->{create}->{application_fee}->{description},'Application Fee','domain_check get_info(application_fee->description)');
-is($d->{command}->{create}->{application_fee}->{fee},500.00,'domain_check get_info(application_fee->fee)');
+is($d->{command}->{create}->{application_fee}->{fee},'500.00','domain_check get_info(application_fee->fee)');
 is($d->{command}->{create}->{application_fee}->{applied},'immediate','domain_check get_info(application_fee->applied)');
 
 # using the standardised methods
 is($dri->get_info('is_premium'),0,'domain_checkget_info (is_premium) 0');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),510.00,'domain_check get_info (create_price)');
+is($dri->get_info('create_price'),'510.00','domain_check get_info (create_price)');
 
 ####################################################################################################
 ###### domain_check_price

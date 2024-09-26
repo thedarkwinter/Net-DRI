@@ -53,15 +53,15 @@ is($d->{domain},'exdom1.broadway','Fee extension: domain_check single parse doma
 is($d->{premium},0,'Fee extension: domain_check single parse premium');
 is($d->{currency},'USD','Fee extension: domain_check single parse currency');
 is($d->{action},'create','Fee extension: domain_check single parse action');
-is($d->{duration}->years(),1,'Fee extension: domain_check singe parse duration');
-is($d->{fee},10.00,'Fee extension: domain_check singe parse fee');
+is($d->{duration}->years(),1,'Fee extension: domain_check single parse duration');
+is($d->{fee},'10.00','Fee extension: domain_check single parse fee');
 
 # using the standardised methods
 is($dri->get_info('is_premium'),0,'domain_check get_info (is_premium) no');
 isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration) is DateTime::Duration');
 is($dri->get_info('price_duration')->years(),1,'domain_check get_info (price_duration)');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),10.00,'domain_check get_info (create_price)');
+is($dri->get_info('create_price'),'10.00','domain_check get_info (create_price)');
 is($dri->get_info('renew_price'),undef,'domain_check get_info (renew_price) undef');
 is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');
 is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
@@ -76,8 +76,8 @@ $d = shift @{$dri->get_info('fee')};
 is($d->{domain},'exdom1.gop','Fee extension: domain_check single parse domain');
 is($d->{currency},'USD','Fee extension: domain_check single parse currency');
 is($d->{action},'create','Fee extension: domain_check single parse action');
-is($d->{duration}->years(),2,'Fee extension: domain_check singe parse duration');
-is($d->{fee},10.00,'Fee extension: domain_check singe parse fee');
+is($d->{duration}->years(),2,'Fee extension: domain_check single parse duration');
+is($d->{fee},'10.00','Fee extension: domain_check single parse fee');
 
 ## Check: single domain with two fee actions/commands
 $R2=$E1.'<response>'.r().'<resData><domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"><domain:cd><domain:name avail="1">exdom2.broadway</domain:name></domain:cd><domain:cd><domain:name avail="1">exdom2.broadway</domain:name></domain:cd></domain:chkData></resData><extension><fee:chkData xmlns:fee="urn:ietf:params:xml:ns:fee-0.5"><fee:cd><fee:name premium="false">exdom2.broadway</fee:name><fee:currency>USD</fee:currency><fee:command>create</fee:command><fee:period unit="y">1</fee:period><fee:fee description="Phase Fee">0.00</fee:fee><fee:fee description="Registration Fee">10.00</fee:fee></fee:cd><fee:cd><fee:name premium="true">exdom2.broadway</fee:name><fee:currency>USD</fee:currency><fee:command>create</fee:command><fee:period unit="y">1</fee:period><fee:fee description="Phase Fee">0.00</fee:fee><fee:fee description="Registration Fee">1000.00</fee:fee></fee:cd></fee:chkData></extension>'.$TRID.'</response>'.$E2;
@@ -90,14 +90,14 @@ is($d1->{domain},'exdom2.broadway','Fee extension: domain_check single parse dom
 is($d1->{premium},0,'Fee extension: domain_check single parse premium');
 is($d1->{currency},'USD','Fee extension: domain_check single parse currency');
 is($d1->{action},'create','Fee extension: domain_check single parse action');
-is($d1->{duration}->years(),1,'Fee extension: domain_check singe parse duration');
-is($d1->{fee},10.00,'Fee extension: domain_check singe parse fee');
+is($d1->{duration}->years(),1,'Fee extension: domain_check single parse duration');
+is($d1->{fee},'10.00','Fee extension: domain_check single parse fee');
 is($d2->{domain},'exdom2.broadway','Fee extension: domain_check single parse domain');
 is($d2->{premium},1,'Fee extension: domain_check single parse premium');
 is($d2->{currency},'USD','Fee extension: domain_check single parse currency');
 is($d2->{action},'create','Fee extension: domain_check single parse action');
-is($d2->{duration}->years(),1,'Fee extension: domain_check singe parse duration');
-is($d2->{fee},1000.00,'Fee extension: domain_check singe parse fee');
+is($d2->{duration}->years(),1,'Fee extension: domain_check single parse duration');
+is($d2->{fee},'1000.00','Fee extension: domain_check single parse fee');
 
 
 ## TODO
@@ -125,10 +125,10 @@ is($dri->get_info('is_premium'),0,'domain_check_price get_info (is_premium) no')
 isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check_price get_info (price_duration) is DateTime::Duration');
 is($dri->get_info('price_duration')->years(),1,'domain_check_price get_info (price_duration)');
 is($dri->get_info('price_currency'),'USD','domain_check_price get_info (price_currency)');
-is($dri->get_info('create_price'),10.00,'domain_check_price get_info (create_price)');
-is($dri->get_info('renew_price'),10.00,'domain_check_price get_info (renew_price)');
-is($dri->get_info('transfer_price'),5,'domain_check_price get_info (transfer_price)');
-is($dri->get_info('restore_price'),20,'domain_check_price get_info (restore_price)');
+is($dri->get_info('create_price'),'10.00','domain_check_price get_info (create_price)');
+is($dri->get_info('renew_price'),'10.00','domain_check_price get_info (renew_price)');
+is($dri->get_info('transfer_price'),'5.00','domain_check_price get_info (transfer_price)');
+is($dri->get_info('restore_price'),'20.00','domain_check_price get_info (restore_price)');
 
 ####################################################################################################
 ### EPP Info Command ###
@@ -145,7 +145,7 @@ is($d->{currency},'USD','Fee extension: domain_info parse currency');
 is($d->{action},'create','Fee extension: domain_info parse action');
 is($d->{phase},'sunrise','Fee extension: domain_info parse phase');
 is($d->{duration}->years(),1,'Fee extension: domain_info parse duration');
-is($d->{fee},10.00,'Fee extension: domain_check parse fee');
+is($d->{fee},'10.00','Fee extension: domain_check parse fee');
 
 ## Transfer query
 # No examples to test using the RFC as reference (only the command response).
@@ -171,9 +171,9 @@ is($rc->is_success(),1,'domain_create is is_success');
 is($dri->get_info('action'),'create','domain_create get_info (action)');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_create parse currency');
-is($d->{fee},5.00,'Fee extension: domain_create parse fee');
-is($d->{balance},-5.00,'Fee extension: domain_create parse balance');
-is($d->{credit_limit},1000.00,'Fee extension: domain_create parse credit limit');
+is($d->{fee},'5.00','Fee extension: domain_create parse fee');
+is($d->{balance},'-5.00','Fee extension: domain_create parse balance');
+is($d->{credit_limit},'1000.00','Fee extension: domain_create parse credit limit');
 
 ## Renew
 $R2=$E1.'<response>'.r().'<resData><domain:renData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.broadway</domain:name><domain:exDate>2005-04-03T22:00:00.0Z</domain:exDate></domain:renData></resData><extension><fee:renData xmlns:fee="urn:ietf:params:xml:ns:fee-0.5" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.5 fee-0.5.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:renData></extension>'.$TRID.'</response>'.$E2;
@@ -182,7 +182,7 @@ is_string($R1,$E1.'<command><renew><domain:renew xmlns:domain="urn:ietf:params:x
 is($rc->is_success(),1,'domain_renew is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_renew parse currency');
-is($d->{fee},5.00,'Fee extension: domain_renew parse fee');
+is($d->{fee},'5.00','Fee extension: domain_renew parse fee');
 
 ## Transfer
 $R2=$E1.'<response>'.r().'<resData><domain:trnData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"><domain:name>exdomain.broadway</domain:name><domain:trStatus>pending</domain:trStatus><domain:reID>ClientX</domain:reID><domain:reDate>2000-06-08T22:00:00.0Z</domain:reDate><domain:acID>ClientY</domain:acID><domain:acDate>2000-06-13T22:00:00.0Z</domain:acDate><domain:exDate>2002-09-08T22:00:00.0Z</domain:exDate></domain:trnData></resData><extension><fee:trnData xmlns:fee="urn:ietf:params:xml:ns:fee-0.5" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.5 fee-0.5.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:trnData></extension>'.$TRID.'</response>'.$E2;
@@ -191,7 +191,7 @@ is_string($R1,$E1.'<command><transfer op="request"><domain:transfer xmlns:domain
 is($rc->is_success(),1,'domain_transfer is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_transfer parse currency');
-is($d->{fee},5.00,'Fee extension: domain_transfer parse fee');
+is($d->{fee},'5.00','Fee extension: domain_transfer parse fee');
 
 ## Update
 $R2=$E1.'<response>'.r().'<extension><fee:updData xmlns:fee="urn:ietf:params:xml:ns:fee-0.5" xsi:schemaLocation="urn:ietf:params:xml:ns:fee-0.5 fee-0.5.xsd"><fee:currency>USD</fee:currency><fee:fee>5.00</fee:fee></fee:updData></extension>'.$TRID.'</response>'.$E2;
@@ -203,7 +203,7 @@ is_string($R1,$E1.'<command><update><domain:update xmlns:domain="urn:ietf:params
 is($rc->is_success(),1,'domain_update is is_success');
 $d=$rc->get_data('fee');
 is($d->{currency},'USD','Fee extension: domain_transfer parse currency');
-is($d->{fee},5.00,'Fee extension: domain_transfer parse fee');
+is($d->{fee},'5.00','Fee extension: domain_transfer parse fee');
 
 ####################################################################################################
 ## EAP
@@ -220,18 +220,18 @@ is($d->{domain},'eapdom1.website','Fee extension: domain_check single parse doma
 is($d->{premium},0,'Fee extension: domain_check single parse premium');
 is($d->{currency},'USD','Fee extension: domain_check single parse currency');
 is($d->{action},'create','Fee extension: domain_check single parse action');
-is($d->{duration}->years(),1,'Fee extension: domain_check singe parse duration');
-is($d->{fee},1020.00,'Fee extension: domain_check singe parse fee');
-is($d->{fee_registration_fee},20.00,'Fee extension: domain_check singe parse registration_fee');
-is($d->{fee_early_access_fee},1000.00,'Fee extension: domain_check singe parse early_access_fee');
+is($d->{duration}->years(),1,'Fee extension: domain_check single parse duration');
+is($d->{fee},'1020.00','Fee extension: domain_check single parse fee');
+is($d->{fee_registration_fee},'20.00','Fee extension: domain_check single parse registration_fee');
+is($d->{fee_early_access_fee},'1000.00','Fee extension: domain_check single parse early_access_fee');
 
 # using the standardised methods
 is($dri->get_info('is_premium'),0,'domain_check get_info (is_premium) no');
 isa_ok($dri->get_info('price_duration'),'DateTime::Duration','domain_check get_info (price_duration) is DateTime::Duration');
 is($dri->get_info('price_duration')->years(),1,'domain_check get_info (price_duration)');
 is($dri->get_info('price_currency'),'USD','domain_check get_info (price_currency)');
-is($dri->get_info('create_price'),1020.00,'domain_check get_info (create_price)');
-is($dri->get_info('eap_price'),1000.00,'domain_check get_info (eap_price)');
+is($dri->get_info('create_price'),'1020.00','domain_check get_info (create_price)');
+is($dri->get_info('eap_price'),'1000.00','domain_check get_info (eap_price)');
 is($dri->get_info('renew_price'),undef,'domain_check get_info (renew_price) undef');
 is($dri->get_info('transfer_price'),undef,'domain_check get_info (transfer_price) undef');
 is($dri->get_info('restore_price'),undef,'domain_check get_info (restore_price) undef');
