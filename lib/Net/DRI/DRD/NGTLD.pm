@@ -1063,6 +1063,7 @@ xn--3ds443g xn--fiq228c5hs xn--nyqy26a xn--rhqv96g xn--vuq861b
 =head2 UniRegistry (Internet Systems Consortium)
 
  $dri->add_registry('NGTLD',{provider=>'unireg'});
+ $dri->add_registry('NGTLD',{provider=>'tucows'});
 
 =head3 Status: Working
 
@@ -1088,7 +1089,7 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
 
 =cut
 
- if ($bep eq 'unireg') {
+ if ($bep eq 'unireg' or $bep eq 'tucows') {
   # These methods are in the DRD
   require Net::DRI::DRD::UniRegistry::UniRegistry;
   *market_check = sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_check(@_); };
@@ -1097,14 +1098,20 @@ L<Net::DRI::Protocol::EPP::Extensions::VeriSign::Sync> http://www.verisign.com/e
   *market_update= sub { return Net::DRI::DRD::UniRegistry::UniRegistry::market_update(@_); };
  }
 
+ my @custom = [];
+ if ($bep eq 'unireg') {
+    push @custom, 'UniRegistry::Market';
+    push @custom, 'UniRegistry::Centric';
+ }
+
  return {
      bep_type => 2, # shared registry
      tlds => ['audio','blackfriday','christmas','click','country','diet','flowers','game','gift','guitars','help','hiphop','hiv','home','hosting','juegos','link','lol','mom','photo','pics','property','sexy','tattoo','trust'],
-     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'brown_fee_version' => '0.7'}],
+     transport_protocol_default => ['Net::DRI::Transport::Socket',{},'Net::DRI::Protocol::EPP::Extensions::UniRegistry',{'custom' => @custom, 'brown_fee_version' => '0.7'}],
      factories => [ {'object'=>'contact','factory' => sub { return Net::DRI::Data::Contact::UniRegistry->new(@_); } } ],
      requires => [ 'Net::DRI::Data::Contact::UniRegistry'],
      whois_server => 'whois.uniregistry.net',
-   } if $bep eq 'unireg';
+   } if ($bep eq 'unireg' or $bep eq 'tucows');
 
 =pod
 
