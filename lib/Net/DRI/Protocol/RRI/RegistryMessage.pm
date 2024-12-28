@@ -105,6 +105,7 @@ sub parse_poll
  my $msgid = $msgdata->getAttribute('msgid');
  return unless (defined($msgid) && $msgid);
  $rinfo->{message}->{session}->{last_id}=$msgid; ## needed here and not lower below, in case of pure text registry message
+ $rinfo->{message}->{info}->{id} = $msgid;
  
  my $rd = {};
  $rd->{id} = $msgid;
@@ -112,13 +113,26 @@ sub parse_poll
  $rd->{lang} = 'en';
  $rd->{qdate} = DateTime::Format::ISO8601->new()->parse_datetime($msgdata->getAttribute('msgtime'));
  $rd->{objtype} = 'domain';
+ $rd->{object_type} = 'domain';
 
  my $el = $msgdata;#->getFirstChild();
  my $action = undef;
- my @actions = ( 'authInfo2Notify', 'authInfo2Delete', 'authInfoExpire', 'chprovAuthInfo', 'expire', 'expireWarning', 'domainDelete' );
- foreach (@actions) {
-  next unless ($el->getElementsByTagNameNS($mes->ns('msg'), $_));
-  $action = $rd->{action} = $_;
+ my %actions = (
+     'authInfo2Notify' => [ 'authInfo', 'notify' ],
+     'authInfo2Delete' => [ 'authInfo', 'delete' ],
+     'authInfoExpire' => [ 'authInfo', 'expire' ],
+     'chprovAuthInfo' => [ 'domain', 'chprovAuthInfo' ],
+     'expire' => [ 'domain', 'expire' ],
+     'expireWarning' => [ 'domain', 'expireWarning' ],
+     'domainDelete' => [ 'domain', 'delete' ],
+     'contactDelete' => [ 'contact', 'delete' ],
+ );
+ foreach my $key (keys %actions) {
+  next unless ($el->getElementsByTagNameNS($mes->ns('msg'), $key));
+  my $info = $actions{$key};
+  $rd->{object_type} = $info->[0];
+  $rd->{action} = $info->[1];
+  $action = $key;
  }
 
  # domain and clID
@@ -146,17 +160,38 @@ sub parse_poll
    $rd->{authInfoExpire} = DateTime::Format::ISO8601->new()->parse_datetime($authexps[0]->getFirstChild()->getData()) if (@authexps);
   }
 
+ if ($action eq 'contactDelete') {
+  my @hndls = $el->getElementsByTagNameNS($mes->ns('msg'), 'handle');
+  if (@hndls) {
+   my @contacts;
+   foreach my $hndl (@hndls) {
+    push @contacts, $hndl->getFirstChild()->getData();
+   }
+   $rd->{content} = join( ',', @contacts);
+  }
+ }
+
  $rd->{content} = $dn . ' change of provider to ' . $new if ($action eq 'chprovAuthInfo');
- $rd->{content} = $dn . ' will expire on ' .  $rd->{exDate}->ymd . ' at ' . $rd->{exDate}->hms if ($action eq 'expireWarning');
- $rd->{content} = $dn . ' expired on ' .  $rd->{exDate}->ymd . ' at ' . $rd->{exDate}->hms if ($action eq 'expire');
- $rd->{content} = $dn . ' deleted by DENIC legal department on ' .  $rd->{exDate}->ymd . ' at ' . $rd->{exDate}->hms if ($action eq 'domainDelete');
- $rd->{content} = $dn . ' authinfo expired on '.  $rd->{authInfoExpire}->ymd if ($action eq 'authInfoExpire');
+ $rd->{content} = $dn . ' will expire on ' .  dateToText($rd->{exDate}) if ($action eq 'expireWarning');
+ $rd->{content} = $dn . ' expired on ' .  dateToText($rd->{exDate}) if ($action eq 'expire');
+ $rd->{content} = $dn . ' deleted by DENIC legal department on ' .  dateToText($rd->{exDate}) if ($action eq 'domainDelete');
+ $rd->{content} = $dn . ' authinfo expired on '.  dateToText($rd->{authInfoExpire}) if ($action eq 'authInfoExpire');
  $rd->{content} = $dn . ' authinfo2 created' if ($action eq 'authInfo2Notify');
  $rd->{content} = $dn . ' authinfo2 deleted' if ($action eq 'authInfo2Delete');
  $rd->{content} = $dn . ' ' . $action unless (defined $rd->{content});
  
  $rinfo->{message}->{$msgid} = $rd;
  return;
+}
+
+sub dateToText
+{
+ my ($date) = @_;
+ if (defined $date && Net::DRI::Util::check_isa($date,'DateTime'))
+ {
+  return $date->ymd . ' at ' . $date->hms;
+ }
+ return '';
 }
 
 ####################################################################################################
