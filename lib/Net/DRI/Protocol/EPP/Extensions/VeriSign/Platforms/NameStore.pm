@@ -78,7 +78,7 @@ sub default_extensions
  $self->{fee_version} = $rp->{fee_version} if exists $rp->{fee_version};
  # As VeriSign has started to use the RFC8748 Fee extension (fee-1.0), we are no longer supporting PremiumDomain and CentralNic::Fee to avoid conflicts
  # These can still be loaded manually in add_current_profile()
- my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::WhoWas VeriSign::Suggestion VeriSign::Balance GracePeriod SecDNS ChangePoll LaunchPhase VeriSign::DefReg VeriSign::EmailFwd Fee/;
+ my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::Balance GracePeriod SecDNS ChangePoll LaunchPhase VeriSign::DefReg VeriSign::EmailFwd Fee/;
  push @c,'VeriSign::NameStore'; ## this must come last
  return @c;
 }

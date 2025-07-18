@@ -76,7 +76,7 @@ sub setup
 sub default_extensions
 {
  my ($self,$rp)=@_;
- my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::ClientAttributes VeriSign::Balance VeriSign::WhoisInfo GracePeriod SecDNS ChangePoll/;
+ my @c=qw/VeriSign::Sync VeriSign::PollLowBalance VeriSign::PollRGP VeriSign::IDNLanguage VeriSign::Balance GracePeriod SecDNS ChangePoll/;
  push @c,qw/VeriSign::TwoFactorAuth VeriSign::ZoneManagement/; ## not explained in VeriSign SDK Prog Guide, so just add them here
  push @c,'VeriSign::NameStore'; ## this must come last
  return @c;
