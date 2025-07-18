@@ -177,7 +177,7 @@ sub add_namestore_ext
  ## Use detected product if its a domain OR a host in a valid product
  unless ($object eq 'domain')
  {
-  $ext = $epp->{current_product} || 'dotCOM';
+  $ext = $epp->{current_product} || 'COM';
   # for defensive registrations is mandatory to use `name` instead of `NAME` (dont ask me why) lets force it
   $ext = 'name' if $object eq 'defReg';
  }
