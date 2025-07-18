@@ -178,7 +178,7 @@ sub add_namestore_ext
  unless ($object eq 'domain')
  {
   $ext = $epp->{current_product} || 'dotCOM';
-  # for defensive registrations is mandatory to use `name` instead of `dotNAME` (dont ask me why) lets force it
+  # for defensive registrations is mandatory to use `name` instead of `NAME` (dont ask me why) lets force it
   $ext = 'name' if $object eq 'defReg';
  }
  $epp->{current_product} = $ext;
