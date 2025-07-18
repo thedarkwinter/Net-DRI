@@ -691,7 +691,7 @@ other protocols (DAS,RRI,RRP) or transports (EPP over HTTPS) will not work in th
 - Protocol/EPP/Extensions/PL/Domain : bugfix for update (from https://github.com/jimmybergman/Net-DRI/commit/56c85840a524ab27013b9cc2f47de6f4b0bf579a )
 - Protocol/EPP/Extensions/SIDN/Message : field can be empty, handle it + protect in ResultStatus
 - Protocol/EPP/Extensions/SE/Extensions : use node_resdata()
-- Protocol/EPP/Extensions/VeriSign : do not load WhoisInfo for TV, like for CC (contributed by Marc Winoto)
+- Protocol/EPP/Extensions/VeriSign : do not load WhoisInfo for dotTV, like for dotCC (contributed by Marc Winoto)
 
 0.96_01 2011-03-13 DEVELOPMENT RELEASE (not to be used in production without extensive testing if upgrading from some previous version)
 
