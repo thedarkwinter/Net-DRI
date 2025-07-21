@@ -158,10 +158,7 @@ sub add_namestore_ext
  ## We do not know what will happen in case of check_multi with multiple TLDs
  my $ext;
  $domain=$domain->[0] if (ref($domain) eq 'ARRAY');
- if ($domain =~ m/\.(com|net|cc|tv|jobs)$/)
- {
-  $ext = 'dot' . uc $1;
- } elsif ($domain =~ m/\.(name)$/)
+ if ($domain =~ m/\.(name)$/)
  {
   $ext = 'name'; # the below regex breaks with third levels!
  } elsif ($domain =~ m/\.(.*)$/)
@@ -177,8 +174,8 @@ sub add_namestore_ext
  ## Use detected product if its a domain OR a host in a valid product
  unless ($object eq 'domain')
  {
-  $ext = $epp->{current_product} || 'dotCOM';
-  # for defensive registrations is mandatory to use `name` instead of `dotNAME` (dont ask me why) lets force it
+  $ext = $epp->{current_product} || 'COM';
+  # for defensive registrations is mandatory to use `name` instead of `NAME` (dont ask me why) lets force it
   $ext = 'name' if $object eq 'defReg';
  }
  $epp->{current_product} = $ext;
