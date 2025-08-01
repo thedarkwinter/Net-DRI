@@ -255,8 +255,8 @@ sub fee_element_parse
   return unless $content;
   # Fees are kind of loosely defined based on free text description field with refundable, applied, grace-period also possible.
   # The main fee is the total of them all, its not necessarily correct, but there you have it.
-  $set->{fee} = 0 unless exists $set->{fee};
-  $set->{fee} += $content->textContent();
+  $set->{fee} = '0.00' unless exists $set->{fee};
+  $set->{fee} = sprintf("%.2f", ($set->{'fee'} + $content->textContent())); # wasn't appending x.00 for some reason. Using this way to avoid such problem :p
   my $d = 'default';
   if ($content->hasAttribute('description'))
   {
@@ -264,7 +264,7 @@ sub fee_element_parse
     $d = lc $content->getAttribute('description');
     $d =~ s/ /_/g;
     $d = 'early_access_fee' if $d =~ m/early_access/;
-    $set->{"fee_$d"} = 0 + $content->textContent();
+    $set->{"fee_$d"} = $content->textContent();
     $set->{$d}->{description} =  $content->getAttribute('description');
     push @{$set->{fee_types}}, $d;
   }
@@ -283,7 +283,7 @@ sub fee_element_parse
     $set->{applied} = $content->getAttribute('applied');
     $set->{$d}->{applied} =  $content->getAttribute('applied');
   }
-  $set->{$d}->{fee} = 0+$content->textContent();
+  $set->{$d}->{fee} = $content->textContent();
   return;
 }
 
@@ -486,7 +486,7 @@ sub transform_parse
       } elsif ($name =~ m/^(fee|balance|creditLimit|credit)/)
       {
         my $k= ($1 eq 'creditLimit') ? 'credit_limit' : $1;
-        $p{$k}=0+$content->textContent();
+        $p{$k}=$content->textContent();
         $p{'description'} = $content->getAttribute('description') if $content->hasAttribute('description');
       }
     }
